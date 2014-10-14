@@ -1,0 +1,17 @@
+{
+    "name": "cultuurnet/udb3",
+    "description": "UDB3 PHP libraries",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Kristof Coomans",
+            "email": "kristof@2dotstwice.be"
+        }
+    ],
+    "require": {},
+    "extra": {
+      "branch-alias": {
+        "dev-master": "0.x-dev"
+      }
+    }
+}

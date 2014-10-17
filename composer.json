@@ -8,7 +8,9 @@
             "email": "kristof@2dotstwice.be"
         }
     ],
-    "require": {},
+    "require": {
+        "cultuurnet\search": "guzzle-39-update"
+    },
     "autoload": {
         "psr-4": {
             "CultuurNet\\UDB3\\": "src/"

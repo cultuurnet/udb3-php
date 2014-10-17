@@ -37,12 +37,14 @@ class LegacySearchService implements SearchServiceInterface
         $groupParam = new Parameter\Group();
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);
+        $typeParam = new Parameter\FilterQuery('type:event');
 
         $params = array(
             $qParam,
             $groupParam,
             $limitParam,
-            $startParam
+            $startParam,
+            $typeParam,
         );
 
         $response = $this->searchAPI2->search($params);

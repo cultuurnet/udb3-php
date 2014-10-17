@@ -25,7 +25,7 @@ class DefaultSearchService implements SearchServiceInterface
         $this->searchAPI2 = $search;
     }
 
-    public function search($query, $limit = 30, $start = 0)
+    protected function _search($query, $limit, $start)
     {
         $qParam = new Parameter\Query($query);
         $groupParam = new Parameter\Group();
@@ -40,6 +40,13 @@ class DefaultSearchService implements SearchServiceInterface
         );
 
         $response = $this->searchAPI2->search($params);
+
+        return $response;
+    }
+
+    public function search($query, $limit = 30, $start = 0)
+    {
+        $response = $this->_search($query, $limit, $start);
 
         $result = SearchResult::fromXml(new \SimpleXMLElement($response->getBody(true), 0, false, \CultureFeed_Cdb_Default::CDB_SCHEME_URL));
         

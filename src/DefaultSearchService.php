@@ -27,11 +27,13 @@ class DefaultSearchService implements SearchServiceInterface
     public function search($query, $limit = 30, $start = 0)
     {
         $q = new Parameter\Query($query);
+        $group = new Parameter\Group();
         $start = new Parameter\Start($start);
         $limit = new Parameter\Rows($limit);
 
         $params = array(
             $q,
+            $group,
             $limit,
             $start
         );
@@ -47,10 +49,21 @@ class DefaultSearchService implements SearchServiceInterface
         );
 
         foreach ($result->getItems() as $item) {
+            /** @var \CultureFeed_Cdb_Item_Event $event */
+            $event = $item->getEntity();
+            // @todo Handle language dynamically, currently hardcoded to nl.
+            /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
+            $detail = $event->getDetails()->getDetailByLanguage('nl');
+            $pictures = $detail->getMedia()->byMediaType(\CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO);
+            $pictures->rewind();
+            $picture = count($pictures) > 0 ? $pictures->current() : NULL;
             $return['results'][] = array(
                 '@id' => $item->getId(),
-                // @todo Language should be configurable.
-                'title' => $item->getTitle('nl'),
+                'title' => $detail->getTitle(),
+                'shortDescription' => $detail->getShortDescription(),
+                'calendarSummary' => $detail->getCalendarSummary(),
+                'image' => $picture ? $picture->getHLink() : NULL,
+                'location' => $event->getLocation()->getLabel(),
             );
         }
 

@@ -26,16 +26,16 @@ class DefaultSearchService implements SearchServiceInterface
 
     public function search($query, $limit = 30, $start = 0)
     {
-        $q = new Parameter\Query($query);
-        $group = new Parameter\Group();
-        $start = new Parameter\Start($start);
-        $limit = new Parameter\Rows($limit);
+        $qParam = new Parameter\Query($query);
+        $groupParam = new Parameter\Group();
+        $startParam = new Parameter\Start($start);
+        $limitParam = new Parameter\Rows($limit);
 
         $params = array(
-            $q,
-            $group,
-            $limit,
-            $start
+            $qParam,
+            $groupParam,
+            $limitParam,
+            $startParam
         );
 
         $response = $this->searchAPI2->search($params);
@@ -43,9 +43,13 @@ class DefaultSearchService implements SearchServiceInterface
         $result = SearchResult::fromXml(new \SimpleXMLElement($response->getBody(true), 0, false, \CultureFeed_Cdb_Default::CDB_SCHEME_URL));
         
         // @todo split this off to another class
+        // @todo context and type should probably be injected at a higher level.
         $return = array(
-            'total' => $result->getTotalCount(),
-            'results' => array(),
+            '@context' => 'http://www.w3.org/ns/hydra/context.jsonld',
+            '@type' => 'PagedCollection',
+            'itemsPerPage' => $limit,
+            'totalItems' => $result->getTotalCount(),
+            'member' => array(),
         );
 
         foreach ($result->getItems() as $item) {
@@ -57,9 +61,12 @@ class DefaultSearchService implements SearchServiceInterface
             $pictures = $detail->getMedia()->byMediaType(\CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO);
             $pictures->rewind();
             $picture = count($pictures) > 0 ? $pictures->current() : NULL;
-            $return['results'][] = array(
+            $return['member'][] = array(
+                // @todo provide Event-LD context here
+                // @todo make id a dereferenceable URI (http://en.wikipedia.org/wiki/Dereferenceable_Uniform_Resource_Identifier)
+                '@context' => '/api/1.0/event.jsonld',
                 '@id' => $item->getId(),
-                'title' => $detail->getTitle(),
+                'name' => $detail->getTitle(),
                 'shortDescription' => $detail->getShortDescription(),
                 'calendarSummary' => $detail->getCalendarSummary(),
                 'image' => $picture ? $picture->getHLink() : NULL,

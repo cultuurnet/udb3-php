@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\SearchAPI2;
 
 
+use CultuurNet\UDB3\IriGeneratorInterface;
+
 class ResultSetPullParser
 {
     /**
@@ -14,11 +16,17 @@ class ResultSetPullParser
     protected $xmlReader;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
      * @param \XMLReader $xmlReader
      */
-    public function __construct(\XMLReader $xmlReader)
+    public function __construct(\XMLReader $xmlReader, IriGeneratorInterface $iriGenerator)
     {
         $this->xmlReader = $xmlReader;
+        $this->iriGenerator = $iriGenerator;
     }
 
     /**
@@ -39,7 +47,7 @@ class ResultSetPullParser
 
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
                 $results['member'][] = array(
-                    '@id' => 'http://culudb-silex.dev:8080/event/' . $r->getAttribute('cdbid'),
+                    '@id' => $this->iriGenerator->iri($r->getAttribute('cdbid')),
                 );
             }
         }

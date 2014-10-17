@@ -12,7 +12,7 @@ class PullParsingSearchService extends LegacySearchService {
     {
         $response = $this->_search($query, $limit, $start);
 
-        $parser = new SearchAPI2\ResultSetPullParser(new \XMLReader());
+        $parser = new SearchAPI2\ResultSetPullParser(new \XMLReader(), $this->iriGenerator);
 
         $return = $parser->getResultSet($response->getBody(true));
 

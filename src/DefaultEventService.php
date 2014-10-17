@@ -17,9 +17,17 @@ class DefaultEventService implements EventServiceInterface
      */
     protected $searchAPI2;
 
-    public function __construct(SearchServiceInterface $searchAPI2)
+    /**
+     * Callback to call to get the local IRI of an event.
+     *
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    public function __construct(SearchServiceInterface $searchAPI2, IriGeneratorInterface $iriGenerator)
     {
         $this->searchAPI2 = $searchAPI2;
+        $this->iriGenerator = $iriGenerator;
     }
 
     /**
@@ -43,7 +51,8 @@ class DefaultEventService implements EventServiceInterface
         foreach ($result->getItems() as $item) {
             /** @var \CultureFeed_Cdb_Item_Event $event */
             $cdbEvent = $item->getEntity();
-            $event = new EventLD($cdbEvent);
+            $iri = $this->iriGenerator->iri($cdbEvent->getCdbId());
+            $event = new EventLD($iri, $cdbEvent);
             return $event;
         }
     }

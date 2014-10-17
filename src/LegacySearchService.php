@@ -20,9 +20,15 @@ class LegacySearchService implements SearchServiceInterface
      */
     protected $searchAPI2;
 
-    public function __construct(SearchAPI2\SearchServiceInterface $search)
+    /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    public function __construct(SearchAPI2\SearchServiceInterface $search, IriGeneratorInterface $iriGenerator)
     {
         $this->searchAPI2 = $search;
+        $this->iriGenerator = $iriGenerator;
     }
 
     protected function _search($query, $limit, $start)
@@ -63,7 +69,7 @@ class LegacySearchService implements SearchServiceInterface
         foreach ($result->getItems() as $item) {
             /** @var \CultureFeed_Cdb_Item_Event $event */
             $cdbEvent = $item->getEntity();
-            $event = new EventLD($cdbEvent);
+            $event = new EventLD($this->iriGenerator->iri($cdbEvent->getCdbId()), $cdbEvent);
             $return['member'][] = $event;
         }
 

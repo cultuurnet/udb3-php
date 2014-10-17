@@ -13,9 +13,19 @@ class EventLD implements \JsonSerializable
      */
     protected $event;
 
-    public function __construct(\CultureFeed_Cdb_Item_Event $event)
+    /**
+     * @var string
+     */
+    protected $iri;
+
+    /**
+     * @param string $iri
+     * @param \CultureFeed_Cdb_Item_Event $event
+     */
+    public function __construct($iri, \CultureFeed_Cdb_Item_Event $event)
     {
         $this->event = $event;
+        $this->iri = $iri;
     }
 
     /**
@@ -36,8 +46,7 @@ class EventLD implements \JsonSerializable
         return array(
             // @todo provide Event-LD context here relative to the base URI
             '@context' => '/api/1.0/event.jsonld',
-            // @todo make id a dereferenceable URI (http://en.wikipedia.org/wiki/Dereferenceable_Uniform_Resource_Identifier)
-            '@id' => 'http://culudb-silex.dev:8080/event/' . $this->event->getCdbId(),
+            '@id' => $this->iri,
             'name' => $detail->getTitle(),
             'shortDescription' => $detail->getShortDescription(),
             'calendarSummary' => $detail->getCalendarSummary(),

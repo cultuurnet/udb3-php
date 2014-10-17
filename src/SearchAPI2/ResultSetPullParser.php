@@ -39,7 +39,7 @@ class ResultSetPullParser
 
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
                 $results['member'][] = array(
-                    '@id' => $r->getAttribute('cdbid'),
+                    '@id' => 'http://culudb-silex.dev:8080/event/' . $r->getAttribute('cdbid'),
                 );
             }
         }

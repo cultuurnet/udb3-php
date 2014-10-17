@@ -37,7 +37,7 @@ class EventLD implements \JsonSerializable
             // @todo provide Event-LD context here relative to the base URI
             '@context' => '/api/1.0/event.jsonld',
             // @todo make id a dereferenceable URI (http://en.wikipedia.org/wiki/Dereferenceable_Uniform_Resource_Identifier)
-            '@id' => $this->event->getCdbId(),
+            '@id' => 'http://culudb-silex.dev:8080/event/' . $this->event->getCdbId(),
             'name' => $detail->getTitle(),
             'shortDescription' => $detail->getShortDescription(),
             'calendarSummary' => $detail->getCalendarSummary(),

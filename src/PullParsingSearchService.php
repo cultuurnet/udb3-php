@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3;
 
 
-class PullParsingSearchService extends DefaultSearchService {
+class PullParsingSearchService extends LegacySearchService {
 
     public function search($query, $limit = 30, $start = 0)
     {

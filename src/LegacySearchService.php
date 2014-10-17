@@ -11,9 +11,9 @@ use CultuurNet\UDB3\Cdb\EventLD;
 use CultuurNet\UDB3\SearchAPI2;
 
 /**
- * Search service implementation using Search API v2.
+ * Search service implementation using Search API v2, loading full cdb XML.
  */
-class DefaultSearchService implements SearchServiceInterface
+class LegacySearchService implements SearchServiceInterface
 {
     /**
      * @var SearchAPI2\SearchServiceInterface

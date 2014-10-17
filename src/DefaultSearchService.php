@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\Search\Parameter;
 use CultuurNet\Search\SearchResult;
+use CultuurNet\UDB3\Cdb\EventLD;
 use CultuurNet\UDB3\SearchAPI2;
 
 /**
@@ -54,24 +55,9 @@ class DefaultSearchService implements SearchServiceInterface
 
         foreach ($result->getItems() as $item) {
             /** @var \CultureFeed_Cdb_Item_Event $event */
-            $event = $item->getEntity();
-            // @todo Handle language dynamically, currently hardcoded to nl.
-            /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
-            $detail = $event->getDetails()->getDetailByLanguage('nl');
-            $pictures = $detail->getMedia()->byMediaType(\CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO);
-            $pictures->rewind();
-            $picture = count($pictures) > 0 ? $pictures->current() : NULL;
-            $return['member'][] = array(
-                // @todo provide Event-LD context here
-                // @todo make id a dereferenceable URI (http://en.wikipedia.org/wiki/Dereferenceable_Uniform_Resource_Identifier)
-                '@context' => '/api/1.0/event.jsonld',
-                '@id' => $item->getId(),
-                'name' => $detail->getTitle(),
-                'shortDescription' => $detail->getShortDescription(),
-                'calendarSummary' => $detail->getCalendarSummary(),
-                'image' => $picture ? $picture->getHLink() : NULL,
-                'location' => $event->getLocation()->getLabel(),
-            );
+            $cdbEvent = $item->getEntity();
+            $event = new EventLD($cdbEvent);
+            $return['member'][] = $event;
         }
 
         return $return;

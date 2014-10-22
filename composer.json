@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "cultuurnet/search": "dev-guzzle-39-update"
+    "cultuurnet/search": "~1.1"
   },
   "autoload": {
     "psr-4": {

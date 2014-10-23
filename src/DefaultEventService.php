@@ -8,12 +8,12 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\Search\SearchResult;
 use CultuurNet\UDB3\Cdb\EventLD;
-use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
+use CultuurNet\UDB3\SearchAPI2 as SearchAPI2;
 
 class DefaultEventService implements EventServiceInterface
 {
     /**
-     * @var SearchServiceInterface
+     * @var SearchAPI2\SearchServiceInterface
      */
     protected $searchAPI2;
 
@@ -24,7 +24,7 @@ class DefaultEventService implements EventServiceInterface
      */
     protected $iriGenerator;
 
-    public function __construct(SearchServiceInterface $searchAPI2, IriGeneratorInterface $iriGenerator)
+    public function __construct(SearchAPI2\SearchServiceInterface $searchAPI2, IriGeneratorInterface $iriGenerator)
     {
         $this->searchAPI2 = $searchAPI2;
         $this->iriGenerator = $iriGenerator;

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Search;
 
 /**
  * Interface for a service responsible for search-related tasks.

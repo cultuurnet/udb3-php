@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Iri;
 
 /**
  * IRI generator implementation that delegates the actual task to a PHP

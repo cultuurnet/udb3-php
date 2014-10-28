@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Iri;
 
 /**
  * Generates dereferenceable IRIs for JSON-LD subjects.

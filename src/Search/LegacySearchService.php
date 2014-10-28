@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Search;
 use CultuurNet\Search\Parameter;
 use CultuurNet\Search\SearchResult;
 use CultuurNet\UDB3\Cdb\EventLD;
-use CultuurNet\UDB3\IriGeneratorInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\SearchAPI2;
 
 /**

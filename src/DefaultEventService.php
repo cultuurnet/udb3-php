@@ -10,6 +10,7 @@ use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\Search\SearchResult;
 use CultuurNet\UDB3\Cdb\EventLD;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\SearchAPI2 as SearchAPI2;
 
 /**

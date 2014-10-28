@@ -12,5 +12,14 @@ namespace CultuurNet\UDB3;
  */
 interface IriGeneratorInterface
 {
+    /**
+     * Generate a derefereneable IRI.
+     *
+     * @param string $item
+     *  A string uniquely identifying the subject.
+     *
+     * @return string
+     *   A dereferenceable IRI.
+     */
     public function iri($item);
 } 

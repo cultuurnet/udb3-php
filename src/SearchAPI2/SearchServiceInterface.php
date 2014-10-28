@@ -5,13 +5,17 @@
 
 namespace CultuurNet\UDB3\SearchAPI2;
 
-use CultuurNet\Auth\Guzzle\OAuthProtectedService;
 use CultuurNet\Search\Parameter\Parameter;
 use Guzzle\Http\Message\Response;
 
+/**
+ * Interface for the SearchAPI2 search service, in the context of UDB3.
+ */
 interface SearchServiceInterface
 {
     /**
+     * Finds CDB items.
+     *
      * @param Parameter[] $params
      *
      * @return Response

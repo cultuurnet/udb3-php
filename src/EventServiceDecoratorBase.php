@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3;
 
-
+/**
+ * Base class for EventServiceInterface decorators.
+ */
 abstract class EventServiceDecoratorBase implements EventServiceInterface
 {
     /**
@@ -13,13 +15,18 @@ abstract class EventServiceDecoratorBase implements EventServiceInterface
      */
     protected $decoratee;
 
+    /**
+     * Construct a new decorator.
+     *
+     * @param EventServiceInterface $decoratee
+     *   The EventServiceInterface to decorate.
+     */
     public function __construct(EventServiceInterface $decoratee) {
         $this->decoratee = $decoratee;
     }
 
     /**
-     * @param string $id
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getEvent($id)
     {

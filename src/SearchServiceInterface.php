@@ -5,13 +5,23 @@
 
 namespace CultuurNet\UDB3;
 
-
+/**
+ * Interface for a service responsible for search-related tasks.
+ */
 interface SearchServiceInterface
 {
     /**
-     * @param string $q
-     * @return array
-     *  A Event-LD array.
+     * Find UDB3 data based on an arbitrary query.
+     *
+     * @param string $query
+     *   An arbitrary query.
+     * @param int $limit
+     *   How many items to retrieve.
+     * @param int $start
+     *   Offset to start from.
+     *
+     * @return array|\JsonSerializable
+     *  A JSON-LD array or JSON serializable object.
      */
-    public function search($q, $limit = 30, $start = 0);
+    public function search($query, $limit = 30, $start = 0);
 } 

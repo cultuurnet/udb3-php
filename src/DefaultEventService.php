@@ -6,10 +6,15 @@
 namespace CultuurNet\UDB3;
 
 
+use CultuurNet\Search\Parameter\Group;
+use CultuurNet\Search\Parameter\Query;
 use CultuurNet\Search\SearchResult;
 use CultuurNet\UDB3\Cdb\EventLD;
 use CultuurNet\UDB3\SearchAPI2 as SearchAPI2;
 
+/**
+ * Default EventServiceInterface implementation that uses Search API 2.
+ */
 class DefaultEventService implements EventServiceInterface
 {
     /**
@@ -24,6 +29,12 @@ class DefaultEventService implements EventServiceInterface
      */
     protected $iriGenerator;
 
+    /**
+     * Constructs a new DefaultEventService.
+     *
+     * @param SearchAPI2\SearchServiceInterface $searchAPI2
+     * @param IriGeneratorInterface $iriGenerator
+     */
     public function __construct(SearchAPI2\SearchServiceInterface $searchAPI2, IriGeneratorInterface $iriGenerator)
     {
         $this->searchAPI2 = $searchAPI2;
@@ -37,8 +48,8 @@ class DefaultEventService implements EventServiceInterface
     {
         $cdbidCondition = 'cdbid:' . $id;
         $response = $this->searchAPI2->search(array(
-                new \CultuurNet\Search\Parameter\Query($cdbidCondition),
-                new \CultuurNet\Search\Parameter\Group(),
+                new Query($cdbidCondition),
+                new Group(),
             ));
 
         $result = SearchResult::fromXml(new \SimpleXMLElement($response->getBody(true), 0, false, \CultureFeed_Cdb_Default::CDB_SCHEME_URL));

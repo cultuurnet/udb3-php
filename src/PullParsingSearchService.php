@@ -5,14 +5,27 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\SearchAPI2;
 
+/**
+ * SearchServiceInterface implementation that parses the results with a XML pull
+ * parser, decreasing the memory usage and improving speed.
+ */
 class PullParsingSearchService extends LegacySearchService {
 
+    /**
+     * @var SearchAPI2\ResultSetPullParser
+     */
+    protected $pullParser;
+
+    /**
+     * {@inheritdoc}
+     */
     public function search($query, $limit = 30, $start = 0)
     {
         $response = $this->_search($query, $limit, $start);
 
-        $parser = new SearchAPI2\ResultSetPullParser(new \XMLReader(), $this->iriGenerator);
+        $parser = $this->getPullParser();
 
         $return = $parser->getResultSet($response->getBody(true));
 
@@ -26,4 +39,18 @@ class PullParsingSearchService extends LegacySearchService {
 
         return $return;
     }
-} 
+
+    /**
+     * @return SearchAPI2\ResultSetPullParser
+     */
+    protected function getPullParser()
+    {
+        if (!$this->pullParser) {
+            $this->pullParser = new SearchAPI2\ResultSetPullParser(
+                new \XMLReader(),
+                $this->iriGenerator
+            );
+        }
+        return $this->pullParser;
+    }
+}

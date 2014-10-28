@@ -8,6 +8,10 @@ namespace CultuurNet\UDB3\SearchAPI2;
 
 use CultuurNet\UDB3\IriGeneratorInterface;
 
+/**
+ * Parser using XML pull parsing to extract the ids from the CDBXML-formatted
+ * results returned by Search API 2.
+ */
 class ResultSetPullParser
 {
     /**
@@ -22,6 +26,7 @@ class ResultSetPullParser
 
     /**
      * @param \XMLReader $xmlReader
+     * @param \CultuurNet\UDB3\IriGeneratorInterface $iriGenerator
      */
     public function __construct(\XMLReader $xmlReader, IriGeneratorInterface $iriGenerator)
     {
@@ -30,7 +35,13 @@ class ResultSetPullParser
     }
 
     /**
+     * Creates a result set.
+     *
      * @param string $cdbxml
+     *   The CDBXML-formatted search results.
+     *
+     * @return array
+     *   Search results as a JSON-LD array.
      */
     public function getResultSet($cdbxml)
     {

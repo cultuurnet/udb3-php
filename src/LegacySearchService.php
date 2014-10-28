@@ -11,7 +11,8 @@ use CultuurNet\UDB3\Cdb\EventLD;
 use CultuurNet\UDB3\SearchAPI2;
 
 /**
- * Search service implementation using Search API v2, loading full cdb XML.
+ * Search service implementation using Search API v2, loading full cdb XML
+ * in DOM with the CultuurNet CDB library.
  */
 class LegacySearchService implements SearchServiceInterface
 {
@@ -25,12 +26,30 @@ class LegacySearchService implements SearchServiceInterface
      */
     protected $iriGenerator;
 
+    /**
+     * Constructs a new LegacySearchService.
+     *
+     * @param SearchAPI2\SearchServiceInterface $search
+     * @param IriGeneratorInterface $iriGenerator
+     */
     public function __construct(SearchAPI2\SearchServiceInterface $search, IriGeneratorInterface $iriGenerator)
     {
         $this->searchAPI2 = $search;
         $this->iriGenerator = $iriGenerator;
     }
 
+    /**
+     * Finds items matching an arbitrary query.
+     *
+     *  @param string $query
+     *   An arbitrary query.
+     * @param int $limit
+     *   How many items to retrieve.
+     * @param int $start
+     *   Offset to start from.
+     *
+     * @return \Guzzle\Http\Message\Response
+     */
     protected function _search($query, $limit, $start)
     {
         $qParam = new Parameter\Query($query);
@@ -52,6 +71,9 @@ class LegacySearchService implements SearchServiceInterface
         return $response;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function search($query, $limit = 30, $start = 0)
     {
         $response = $this->_search($query, $limit, $start);

@@ -5,7 +5,10 @@
 
 namespace CultuurNet\UDB3\Cdb;
 
-
+/**
+ * Wrapper around a CultureFeed_Cdb_Item_Event instance, adding special
+ * treatment upon JSON serialization.
+ */
 class EventLD implements \JsonSerializable
 {
     /**

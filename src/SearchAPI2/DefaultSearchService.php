@@ -22,8 +22,7 @@ class DefaultSearchService extends OAuthProtectedService implements SearchServic
 
         $collector = new Collector();
         $collector->addParameters($params, $request->getQuery());
-
-        $request->getQuery()->add('q', '*.*');
+        
         $response = $request->send();
 
         return $response;

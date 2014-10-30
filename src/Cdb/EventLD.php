@@ -39,7 +39,13 @@ class EventLD implements \JsonSerializable
     {
         // @todo Handle language dynamically, currently hardcoded to nl.
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
-        $detail = $this->event->getDetails()->getDetailByLanguage('nl');
+        $language_fallbacks = array('nl', 'en', 'fr', 'de');
+        foreach ($language_fallbacks as $language) {
+            $detail = $this->event->getDetails()->getDetailByLanguage($language);
+            if ($detail) {
+                break;
+            }
+        }
         $pictures = $detail->getMedia()->byMediaType(
             \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
         );

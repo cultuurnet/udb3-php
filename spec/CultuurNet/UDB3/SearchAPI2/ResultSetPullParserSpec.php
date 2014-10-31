@@ -11,7 +11,7 @@ use Prophecy\Argument;
  */
 class ResultSetPullParserSpec extends ObjectBehavior
 {
-    function it_is_initializable(
+    function it_is_initializable_with_a_XMLReader_and_a_IriGeneratorInterface(
         \XMLReader $xmlReader,
         IriGeneratorInterface $iriGenerator
     ) {

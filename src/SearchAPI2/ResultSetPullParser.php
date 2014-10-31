@@ -28,8 +28,10 @@ class ResultSetPullParser
      * @param \XMLReader $xmlReader
      * @param \CultuurNet\UDB3\Iri\IriGeneratorInterface $iriGenerator
      */
-    public function __construct(\XMLReader $xmlReader, IriGeneratorInterface $iriGenerator)
-    {
+    public function __construct(
+        \XMLReader $xmlReader,
+        IriGeneratorInterface $iriGenerator
+    ) {
         $this->xmlReader = $xmlReader;
         $this->iriGenerator = $iriGenerator;
     }
@@ -58,7 +60,9 @@ class ResultSetPullParser
 
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
                 $results['member'][] = array(
-                    '@id' => $this->iriGenerator->iri($r->getAttribute('cdbid')),
+                    '@id' => $this->iriGenerator->iri(
+                        $r->getAttribute('cdbid')
+                    ),
                 );
             }
         }

@@ -5,8 +5,8 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
-use CultuurNet\UDB3\TagEventsCommand;
-use CultuurNet\UDB3\TagEventEvent;
+use CultuurNet\UDB3\Event\TagEvents;
+use CultuurNet\UDB3\Event\EventWasTagged;
 
 class EventTaggerTest extends CommandHandlerScenarioTestCase
 {

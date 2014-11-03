@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Tagging;
+namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
@@ -8,29 +8,29 @@ use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\UDB3\TagEventsCommand;
 use CultuurNet\UDB3\TagEventEvent;
 
-class TagEventsCommandHandlerTest extends CommandHandlerScenarioTestCase
+class EventTaggerTest extends CommandHandlerScenarioTestCase
 {
     protected function createCommandHandler(EventStoreInterface $eventStore, EventBusInterface $eventBus)
     {
-        $repository = new TaggingRepository($eventStore, $eventBus);
+        $repository = new EventRepository($eventStore, $eventBus);
 
-        return new TagEventsCommandHandler($repository);
+        return new EventTagger($repository);
     }
 
     /**
      * @test
      */
-    public function it_can_tag_a_list_of_events_with_a_tag()
+    public function it_can_tag_a_list_of_events_with_a_keyword()
     {
         $ids = ['eventId1', 'eventId2'];
-        $tag = 'awesome';
+        $keyword = 'awesome';
 
         $this->scenario
           ->given([])
-          ->when(new TagEventsCommand($ids, $tag))
+          ->when(new TagEvents($ids, $keyword))
           ->then([
-            new TagEventEvent($ids[0], $tag),
-            new TagEventEvent($ids[1], $tag)
+            new EventWasTagged($ids[0], $keyword),
+            new EventWasTagged($ids[1], $keyword)
           ]);
     }
 } 

@@ -3,9 +3,25 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\Bundle\BroadwayBundle\Command\Command;
-
-class TagEvents extends Command
+class TagEvents
 {
+    protected $eventIds;
 
+    protected $keyword;
+
+    public function __construct($eventIds, $keyword)
+    {
+        $this->eventIds = $eventIds;
+        $this->keyword = $keyword;
+    }
+
+    public function getEventIds()
+    {
+        return $this->eventIds;
+    }
+
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
 } 

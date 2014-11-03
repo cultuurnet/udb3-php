@@ -5,16 +5,16 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
-use CultuurNet\UDB3\Event\TagEvents;
-use CultuurNet\UDB3\Event\EventWasTagged;
 
 class EventTaggerTest extends CommandHandlerScenarioTestCase
 {
-    protected function createCommandHandler(EventStoreInterface $eventStore, EventBusInterface $eventBus)
-    {
+    protected function createCommandHandler(
+        EventStoreInterface $eventStore,
+        EventBusInterface $eventBus
+    ) {
         $repository = new EventRepository($eventStore, $eventBus);
 
-        return new EventTagger($repository);
+        return new EventCommandHandler($repository);
     }
 
     /**
@@ -26,11 +26,24 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $keyword = 'awesome';
 
         $this->scenario
-          ->given([])
-          ->when(new TagEvents($ids, $keyword))
-          ->then([
-            new EventWasTagged($ids[0], $keyword),
-            new EventWasTagged($ids[1], $keyword)
-          ]);
+            ->withAggregateId($ids[0])
+            ->given(
+                [
+                    new EventCreated($ids[0])
+                ]
+            )
+            ->withAggregateId($ids[1])
+            ->given(
+                [
+                    new EventCreated($ids[1])
+                ]
+            )
+            ->when(new TagEvents($ids, $keyword))
+            ->then(
+                [
+                    new EventWasTagged($ids[0], $keyword),
+                    new EventWasTagged($ids[1], $keyword)
+                ]
+            );
     }
-} 
+}

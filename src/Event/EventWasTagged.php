@@ -17,4 +17,22 @@ class EventWasTagged extends EventEvent
     {
         return $this->keyword;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + array(
+            'keyword' => $this->keyword,
+        );
+    }
+
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['event_id'], $data['keyword']);
+    }
 }

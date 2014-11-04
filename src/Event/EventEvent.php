@@ -6,7 +6,9 @@
 namespace CultuurNet\UDB3\Event;
 
 
-abstract class EventEvent
+use Broadway\Serializer\SerializableInterface;
+
+abstract class EventEvent implements SerializableInterface
 {
     protected $eventId;
 
@@ -19,4 +21,23 @@ abstract class EventEvent
     {
         return $this->eventId;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return array(
+            'event_id' => $this->eventId,
+        );
+    }
+
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['event_id']);
+    }
+
 }

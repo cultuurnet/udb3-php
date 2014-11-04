@@ -45,13 +45,15 @@ class EventRepository extends EventSourcingRepository
         try {
             $event = $this->load($eventId);
         } catch (AggregateNotFoundException $e) {
-            $results = $this->search->search(new Query('cdbid:' . $eventId));
+            $results = $this->search->search(
+                [new Query('cdbid:' . $eventId)]
+            );
 
-            $cdbxml = $results->getBody(true);
+            $cdbXml = $results->getBody(true);
 
             $reader = new \XMLReader();
 
-            $reader->open($cdbxml);
+            $reader->xml($cdbXml);
 
             while ($reader->read()) {
                 switch ($reader->nodeType) {

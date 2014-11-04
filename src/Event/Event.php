@@ -22,6 +22,14 @@ class Event extends EventSourcedAggregateRoot
         return $event;
     }
 
+    static public function importFromUDB2($eventId, $cdbXml)
+    {
+        $event = new self();
+        $event->apply(new EventImportedFromUDB2($eventId, $cdbXml));
+
+        return $event;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -52,5 +60,24 @@ class Event extends EventSourcedAggregateRoot
     protected function applyEventWasTagged(EventWasTagged $eventTagged)
     {
         $this->keywords[] = $eventTagged->getKeyword();
+    }
+
+    protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $eventImported)
+    {
+        $this->eventId = $eventImported->getEventId();
+        $cdbXml = $eventImported->getCdbXml();
+
+        $udb2SimpleXml = new \SimpleXMLElement(
+            $cdbXml,
+            0,
+            false,
+            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+        );
+
+        $udb2Event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
+            $udb2SimpleXml
+        );
+
+        $this->keywords = array_values($udb2Event->getKeywords());
     }
 }

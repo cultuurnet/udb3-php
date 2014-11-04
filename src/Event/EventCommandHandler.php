@@ -20,8 +20,7 @@ class EventCommandHandler extends CommandHandler
     public function handleTagEvents(TagEvents $tagEvents)
     {
         foreach ($tagEvents->getEventIds() as $eventId) {
-            /** @var Event $event */
-            $event = $this->eventRepository->load($eventId);
+            $event = $this->eventRepository->ensureEventCreated($eventId);
             $event->tag($tagEvents->getKeyword());
             $this->eventRepository->add($event);
         }

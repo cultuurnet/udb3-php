@@ -93,7 +93,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
             'event1'
         ];
 
-        $this->setExpectedException('Exception', 'invalid keyword');
+        $this->setExpectedException('InvalidArgumentException', 'invalid keyword');
 
         $this->commandBus->expects($this->never())
             ->method('dispatch');
@@ -129,7 +129,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $eventIds = [];
 
-        $this->setExpectedException('Exception', 'no event Ids to tag');
+        $this->setExpectedException('InvalidArgumentException', 'no event Ids to tag');
 
         $this->commandBus->expects($this->never())
             ->method('dispatch');

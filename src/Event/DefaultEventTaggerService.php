@@ -41,11 +41,11 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
     public function tagEventsById($eventIds, $keyword)
     {
         if (!isset($keyword) || strlen($keyword) == 0) {
-            throw new \Exception('invalid keyword');
+            throw new \InvalidArgumentException('invalid keyword');
         }
 
         if (!isset($eventIds) || count($eventIds) == 0) {
-            throw new \Exception('no event Ids to tag');
+            throw new \InvalidArgumentException('no event Ids to tag');
         }
 
         $events = [];

@@ -22,4 +22,5 @@ interface EventServiceInterface {
      * @throws EventNotFoundException if an event can not be found for the given id
      */
     public function getEvent($id);
-} 
+}
+

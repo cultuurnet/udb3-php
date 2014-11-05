@@ -4,11 +4,12 @@
 namespace CultuurNet\UDB3\Event;
 
 
-use Broadway\CommandHandling\SimpleCommandBus;
+use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 
-class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
+class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
+{
 
     /**
      * @var DefaultEventTaggerService
@@ -21,22 +22,30 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
     protected $eventService;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|SimpleCommandBus
+     * @var \PHPUnit_Framework_MockObject_MockObject|CommandBusInterface
      */
     protected $commandBus;
 
     public function setUp()
     {
-        $this->eventService = $this->getMock('CultuurNet\\UDB3\\EventServiceInterface', array('getEvent'));
-        $this->commandBus = $this->getMock('Broadway\\CommandHandling\\SimpleCommandBus', array('dispatch'));
+        $this->eventService = $this->getMock(
+            'CultuurNet\\UDB3\\EventServiceInterface'
+        );
 
-        $this->eventTagger = new DefaultEventTaggerService($this->eventService, $this->commandBus);
+        $this->commandBus = $this->getMock(
+            'Broadway\\CommandHandling\\CommandBusInterface'
+        );
+
+        $this->eventTagger = new DefaultEventTaggerService(
+            $this->eventService,
+            $this->commandBus
+        );
     }
 
     /**
      * @test
      */
-    public function it_dispatches_a_tag_command_for_a_single_id ()
+    public function it_dispatches_a_tag_command_for_a_single_id()
     {
         $eventIds = [
             'event1'
@@ -55,7 +64,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
     /**
      * @test
      */
-    public function it_dispatches_a_tag_command_for_multiple_ids ()
+    public function it_dispatches_a_tag_command_for_multiple_ids()
     {
         $eventIds = [
             'event1',
@@ -78,7 +87,8 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
     /**
      * @test
      */
-    public function it_does_not_tag_empty_keywords () {
+    public function it_does_not_tag_empty_keywords()
+    {
         $eventIds = [
             'event1'
         ];
@@ -94,7 +104,8 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
     /**
      * @test
      */
-    public function it_does_not_dispatch_a_command_when_an_event_is_not_found () {
+    public function it_does_not_dispatch_a_command_when_an_event_is_not_found()
+    {
         $eventIds = [
             'event1',
         ];
@@ -114,7 +125,8 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
     /**
      * @test
      */
-    public function it_does_not_dispatch_a_command_when_no_ids_are_provided () {
+    public function it_does_not_dispatch_a_command_when_no_ids_are_provided()
+    {
         $eventIds = [];
 
         $this->setExpectedException('Exception', 'no event Ids to tag');

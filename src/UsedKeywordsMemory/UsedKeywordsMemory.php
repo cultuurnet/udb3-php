@@ -7,7 +7,6 @@ namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed;
 
 class UsedKeywordsMemory extends EventSourcedAggregateRoot
 {
@@ -54,5 +53,22 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot
         array_unshift($this->usedKeywords, $keywordUsed->getKeyword());
 
         $this->shrinkToMaximumSize();
+    }
+
+    /**
+     * @param string $userId
+     * @return static
+     */
+    public static function create($userId)
+    {
+        $usedKeywordsMemory = new static();
+        $usedKeywordsMemory->apply(new Created($userId));
+
+        return $usedKeywordsMemory;
+    }
+
+    protected function applyCreated(Created $created)
+    {
+        $this->userId = $created->getUserId();
     }
 }

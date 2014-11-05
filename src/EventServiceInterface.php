@@ -18,6 +18,8 @@ interface EventServiceInterface {
      *
      * @return array
      *   An event array.
+     *
+     * @throws EventNotFoundException if an event can not be found for the given id
      */
     public function getEvent($id);
 } 

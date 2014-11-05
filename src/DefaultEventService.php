@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3;
 
 
+use Broadway\EventStore\EventStreamNotFoundException;
 use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\Search\SearchResult;
@@ -57,7 +58,7 @@ class DefaultEventService implements EventServiceInterface
 
         // @todo Decent exception handling.
         if ($result->getCurrentCount() !== 1) {
-            throw new \Exception('Event should occur exactly once. Occurrences: ' . $result->getCurrentCount());
+            throw new EventNotFoundException(sprintf('Event with id: %s not found.', $id));
         }
 
         foreach ($result->getItems() as $item) {

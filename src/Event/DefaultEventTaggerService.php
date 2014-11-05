@@ -8,7 +8,10 @@ use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 
-class EventTaggerService {
+/**
+ * The default event tagger service that uses an event service to validate ids and a command bus to do the actual tagging.
+ */
+class DefaultEventTaggerService implements EventTaggerServiceInterface{
 
     /**
      * @var EventServiceInterface
@@ -20,6 +23,10 @@ class EventTaggerService {
      */
     protected $commandBus;
 
+    /**
+     * @param EventServiceInterface $eventService
+     * @param CommandBusInterface $commandBus
+     */
     public function __construct(
         EventServiceInterface $eventService,
         CommandBusInterface $commandBus
@@ -30,11 +37,8 @@ class EventTaggerService {
     }
 
     /**
-     * @param $eventIds string[]
-     * @param $keyword string
-     * @return string command id
-     * @throws EventNotFoundException
-     * @throws \Exception
+     * {@inheritdoc}
+     * @return string The id of the command that's doing the tagging.
      */
     public function tagEventsById($eventIds, $keyword)
     {

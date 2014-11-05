@@ -8,10 +8,10 @@ use Broadway\CommandHandling\SimpleCommandBus;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 
-class EventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
+class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var EventTaggerService
+     * @var DefaultEventTaggerService
      */
     protected $eventTagger;
 
@@ -30,7 +30,7 @@ class EventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
         $this->eventService = $this->getMock('CultuurNet\UDB3\EventServiceInterface', array('getEvent'));
         $this->commandBus = $this->getMock('Broadway\CommandHandling\SimpleCommandBus', array('dispatch'));
 
-        $this->eventTagger = new EventTaggerService($this->eventService, $this->commandBus);
+        $this->eventTagger = new DefaultEventTaggerService($this->eventService, $this->commandBus);
     }
 
     /**

@@ -56,7 +56,14 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('event1'));
 
         $this->commandBus->expects($this->once())
-            ->method('dispatch');
+            ->method('dispatch')
+            ->with(
+                $this->equalTo(
+                    new TagEvents(
+                        array('event1'),
+                        'some-keyword'
+                    )
+                ));
 
         $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
     }
@@ -79,7 +86,15 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->commandBus->expects($this->once())
-            ->method('dispatch');
+            ->method('dispatch')
+            ->with(
+                $this->equalTo(
+                    new TagEvents(
+                        array('event1', 'event2'),
+                        'some-keyword'
+                    )
+                )
+            );
 
         $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
     }

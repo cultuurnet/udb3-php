@@ -27,8 +27,8 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp()
     {
-        $this->eventService = $this->getMock('CultuurNet\UDB3\EventServiceInterface', array('getEvent'));
-        $this->commandBus = $this->getMock('Broadway\CommandHandling\SimpleCommandBus', array('dispatch'));
+        $this->eventService = $this->getMock('CultuurNet\\UDB3\\EventServiceInterface', array('getEvent'));
+        $this->commandBus = $this->getMock('Broadway\\CommandHandling\\SimpleCommandBus', array('dispatch'));
 
         $this->eventTagger = new DefaultEventTaggerService($this->eventService, $this->commandBus);
     }
@@ -106,7 +106,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
         $this->commandBus->expects($this->never())
             ->method('dispatch');
 
-        $this->setExpectedException('CultuurNet\UDB3\EventNotFoundException');
+        $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
 
         $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
     }

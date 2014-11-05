@@ -88,4 +88,32 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->service->rememberKeywordUsed($userId, $keyword);
     }
+
+    /**
+     * @test
+     */
+    public function it_gives_me_the_memory_of_a_particular_user()
+    {
+        $userId = 3;
+
+        $expectedUsedKeywordsMemory = new UsedKeywordsMemory();
+        $expectedUsedKeywordsMemory->keywordUsed('foo');
+        $expectedUsedKeywordsMemory->keywordUsed('bar');
+
+        $this->repository->expects($this->once())
+            ->method('load')
+            ->with($userId)
+            ->will(
+                $this->returnValue(
+                    $expectedUsedKeywordsMemory
+                )
+            );
+
+        $usedKeywordsMemory = $this->service->getMemory($userId);
+
+        $this->assertEquals(
+            $expectedUsedKeywordsMemory,
+            $usedKeywordsMemory
+        );
+    }
 } 

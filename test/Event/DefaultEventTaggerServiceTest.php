@@ -16,12 +16,12 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
     protected $eventTagger;
 
     /**
-     * @var EventServiceInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|EventServiceInterface
      */
     protected $eventService;
 
     /**
-     * @var SimpleCommandBus
+     * @var \PHPUnit_Framework_MockObject_MockObject|SimpleCommandBus
      */
     protected $commandBus;
 
@@ -125,4 +125,3 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase {
         $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
     }
 }
- 

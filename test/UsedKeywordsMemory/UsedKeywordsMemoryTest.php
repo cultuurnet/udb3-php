@@ -103,5 +103,10 @@ class UsedKeywordsMemoryTest extends \PHPUnit_Framework_TestCase{
         $usedKeywords = $this->memory->getKeywords();
 
         $this->assertEquals(['keyword-1'], $usedKeywords);
+
+        $this->assertCount(
+            1,
+            $this->memory->getUncommittedEvents()->getIterator()
+        );
     }
 }

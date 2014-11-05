@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
 
-class KeywordUsed
+class KeywordUsed extends Event
 {
 
     /**
@@ -27,17 +27,21 @@ class KeywordUsed
         return $this->keyword;
     }
 
-    /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
     public function __construct($userId, $keyword)
     {
         $this->userId = $userId;
         $this->keyword = $keyword;
+    }
+
+    public static function deserialize(array $data)
+    {
+        return new static($data['user_id'], $data['keyword']);
+    }
+
+    public function serialize()
+    {
+        return parent::serialize() + array(
+            'keyword' => $this->keyword,
+        );
     }
 }

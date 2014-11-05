@@ -34,7 +34,11 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot
 
     public function keywordUsed($keyword)
     {
-        $this->apply(new KeywordUsed($this->userId, $keyword));
+        $lastUsedKeyword = reset($this->usedKeywords);
+
+        if ($keyword !== $lastUsedKeyword) {
+            $this->apply(new KeywordUsed($this->userId, $keyword));
+        }
     }
 
     protected function shrinkToMaximumSize()

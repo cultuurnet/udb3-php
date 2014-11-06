@@ -13,7 +13,6 @@
     }
   ],
   "require": {
-    "colinmollenhour/credis": "~1.4",
     "rase/socket.io-emitter": "~0.6",
     "monolog/monolog": "~1.11",
     "psr/log": "~1.0",
@@ -34,6 +33,5 @@
     "branch-alias": {
       "dev-master": "0.x-dev"
     }
-  },
-  "provide": {"ext-redis": "*"}
+  }
 }

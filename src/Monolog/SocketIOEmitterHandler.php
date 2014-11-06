@@ -7,24 +7,41 @@ namespace CultuurNet\UDB3\Monolog;
 
 
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger;
+use SocketIO\Emitter;
 
 class SocketIOEmitterHandler extends AbstractProcessingHandler
 {
     /**
-     * Writes the record down to the log of the implementing handler
-     *
-     * @param  array $record
-     * @return void
+     * @var Emitter
+     */
+    protected $emitter;
+
+    /**
+     * @param Emitter $emitter
+     * @param integer $level  The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
+     */
+    public function __construct(Emitter $emitter, $level = Logger::DEBUG, $bubble = true)
+    {
+        parent::__construct(
+            $level,
+            $bubble
+        );
+
+        $this->emitter = $emitter;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     protected function write(array $record)
     {
-        $redis = new \Credis_Client();
-        $emitter = new \SocketIO\Emitter($redis);
-        $emitter->emit(
-            'time',
+        $this->emitter->emit(
+            'news',
             array(
-                $record['formatted'],
-                $record['context']
+                'message' => $record['formatted'],
+                'context' => $record['context']
             )
         );
     }

@@ -6,7 +6,8 @@
 namespace CultuurNet\UDB3\CommandHandling;
 
 
-class QueueJob {
+class QueueJob
+{
 
     public function perform()
     {
@@ -23,4 +24,4 @@ class QueueJob {
 
         $commandBus->deferredDispatch($command);
     }
-} 
+}

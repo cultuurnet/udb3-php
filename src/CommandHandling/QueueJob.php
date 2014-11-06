@@ -8,6 +8,11 @@ namespace CultuurNet\UDB3\CommandHandling;
 
 class QueueJob {
 
+    /**
+     * @var \Resque_Job
+     */
+    public $job;
+
     public function perform()
     {
         $command = unserialize($this->args['command']);
@@ -16,6 +21,6 @@ class QueueJob {
 
         /** @var ResqueCommandBus $commandBus */
         $commandBus = $app['event_command_bus'];
-        $commandBus->deferredDispatch($command);
+        $commandBus->deferredDispatch($this->job->payload['id'], $command);
     }
 } 

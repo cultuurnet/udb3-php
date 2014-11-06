@@ -46,8 +46,11 @@ class ResqueCommandBus extends SimpleCommandBus {
 
     /**
      * Really dispatches the command to the proper handler to be executed.
+     *
+     * @param string $jobId
+     * @param mixed $command
      */
-    public function deferredDispatch($command)
+    public function deferredDispatch($jobId, $command)
     {
         parent::dispatch($command);
     }

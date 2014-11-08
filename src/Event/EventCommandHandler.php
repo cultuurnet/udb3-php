@@ -4,15 +4,16 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandHandler;
+use Broadway\Repository\RepositoryInterface;
 
 class EventCommandHandler extends CommandHandler
 {
     /**
-     * @var EventRepository
+     * @var RepositoryInterface
      */
     protected $eventRepository;
 
-    public function __construct(EventRepository $eventRepository)
+    public function __construct(RepositoryInterface $eventRepository)
     {
         $this->eventRepository = $eventRepository;
     }
@@ -20,7 +21,8 @@ class EventCommandHandler extends CommandHandler
     public function handleTagEvents(TagEvents $tagEvents)
     {
         foreach ($tagEvents->getEventIds() as $eventId) {
-            $event = $this->eventRepository->ensureEventCreated($eventId);
+            /** @var Event $event */
+            $event = $this->eventRepository->load($eventId);
             $event->tag($tagEvents->getKeyword());
             $this->eventRepository->add($event);
         }

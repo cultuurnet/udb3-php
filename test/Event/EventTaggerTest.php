@@ -14,8 +14,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     ) {
         $repository = new EventRepository(
             $eventStore,
-            $eventBus,
-            $this->getMock('\\CultuurNet\\UDB3\\SearchAPI2\\SearchServiceInterface')
+            $eventBus
         );
 
         return new EventCommandHandler($repository);

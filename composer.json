@@ -14,7 +14,9 @@
   ],
   "require": {
     "cultuurnet/search": "~1.1",
-    "broadway/broadway": "~0.2.0"
+    "broadway/broadway": "~0.2.0",
+    "chrisboulton/php-resque": "~1.2",
+    "cultuurnet/culturefeed-php": "~1.0"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

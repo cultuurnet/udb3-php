@@ -11,14 +11,27 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 use CultuurNet\UDB3\Log\ContextEnrichingLogger;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Broadway\Domain\Metadata;
+use Broadway\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Command bus for asynchronous processing with PHP-Resque
+ * Command bus decorator for asynchronous processing with PHP-Resque.
  */
-class ResqueCommandBus implements CommandBusInterface, LoggerAwareInterface
+class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareInterface, LoggerAwareInterface
 {
-
     use LoggerAwareTrait;
+
+    const EVENT_COMMAND_CONTEXT_SET = 'broadway.command_handling.context';
+
+    /**
+     * @var CommandBusInterface|ContextAwareInterface
+     */
+    protected $decoratee;
+
+    /**
+     * @var Metadata
+     */
+    protected $context;
 
     /**
      * @var string
@@ -26,25 +39,66 @@ class ResqueCommandBus implements CommandBusInterface, LoggerAwareInterface
     protected $queueName;
 
     /**
-     * @var CommandHandlerInterface[]
+     * @var EventDispatcherInterface
      */
-    protected $commandHandlers = array();
+    protected $eventDispatcher;
 
-
-    public function __construct($queueName)
-    {
+    /**
+     * @param CommandBusInterface $decoratee
+     * @param string $queueName
+     */
+    public function __construct(
+        CommandBusInterface $decoratee,
+        $queueName,
+        EventDispatcherInterface $dispatcher
+    ) {
+        parent::__construct($decoratee);
         $this->queueName = $queueName;
+        $this->eventDispatcher = $dispatcher;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContext(Metadata $context = null)
+    {
+        $this->context = $context;
+
+        if ($this->decoratee instanceof ContextAwareInterface) {
+            $this->decoratee->setContext($this->context);
+        }
+
+        $this->eventDispatcher->dispatch(
+            self::EVENT_COMMAND_CONTEXT_SET,
+            array(
+                'context' => $this->context,
+            )
+        );
+    }
+
+    /**
+     * Get the current execution context.
+     *
+     * @return Metadata
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
 
     /**
      * Dispatches the command $command to a queue.
      *
      * @param mixed $command
+     *
+     * @return string the command id
      */
     public function dispatch($command)
     {
         $args = array();
         $args['command'] = serialize($command);
+        $args['context'] = serialize($this->context);
         $id = \Resque::enqueue(
             $this->queueName,
             '\\CultuurNet\\UDB3\\CommandHandling\\QueueJob',
@@ -78,26 +132,21 @@ class ResqueCommandBus implements CommandBusInterface, LoggerAwareInterface
             $currentCommandLogger->info('job_started');
         }
 
-        foreach ($this->commandHandlers as $handler) {
-            if ($currentCommandLogger && $handler instanceof LoggerAwareInterface) {
-                $handler->setLogger($currentCommandLogger);
-            }
+        if ($this->decoratee instanceof LoggerAwareInterface) {
+            $this->decoratee->setLogger($currentCommandLogger);
+        }
 
-            $handler->handle($command);
+        try {
+            parent::dispatch($command);
+            $this->setContext(null);
+        }
+        catch (\Exception $e) {
+            $this->setContext(null);
+            throw $e;
         }
 
         if ($currentCommandLogger) {
             $currentCommandLogger->info('job_finished');
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function subscribe(CommandHandlerInterface $handler)
-    {
-        $this->commandHandlers[] = $handler;
-    }
-
-
-} 
+}

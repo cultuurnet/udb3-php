@@ -5,8 +5,14 @@ namespace CultuurNet\UDB3\Event;
 
 class TagEvents
 {
+    /**
+     * @var array
+     */
     protected $eventIds;
 
+    /**
+     * @var string
+     */
     protected $keyword;
 
     public function __construct($eventIds, $keyword)
@@ -24,4 +30,5 @@ class TagEvents
     {
         return $this->keyword;
     }
+
 } 

@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventSourcing\EventSourcingRepository;
+use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use CultuurNet\Search\Parameter\Query;
@@ -18,15 +19,23 @@ class EventRepository extends EventSourcingRepository
 
     protected $search;
 
+    /**
+     * @param EventStoreInterface $eventStore
+     * @param EventBusInterface $eventBus
+     * @param SearchServiceInterface $search
+     * @param EventStreamDecoratorInterface[] $eventStreamDecorators
+     */
     public function __construct(
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus,
-        SearchServiceInterface $search
+        SearchServiceInterface $search,
+        array $eventStreamDecorators = array()
     ) {
         parent::__construct(
             $eventStore,
             $eventBus,
-            '\CultuurNet\UDB3\Event\Event'
+            '\CultuurNet\UDB3\Event\Event',
+            $eventStreamDecorators
         );
 
         $this->search = $search;

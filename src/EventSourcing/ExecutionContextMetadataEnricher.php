@@ -5,10 +5,7 @@
 
 namespace CultuurNet\UDB3\EventSourcing;
 
-
-use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
-use Broadway\EventHandling\EventListenerInterface;
 use Broadway\EventSourcing\MetadataEnrichment\MetadataEnricherInterface;
 use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
 

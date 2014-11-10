@@ -38,7 +38,7 @@ final class EntryAPIFactory
             $tokenCredentials->getToken(),
             $tokenCredentials->getSecret()
         );
-        $oauthClient->setEndpoint($this->consumer->getTargetUrl() . '/entry/test.rest.uitdatabank.be/api/v2/');
+        $oauthClient->setEndpoint($this->consumer->getTargetUrl());
         return new \CultureFeed_EntryApi($oauthClient);
     }
 }

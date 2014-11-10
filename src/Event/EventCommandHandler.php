@@ -30,7 +30,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 
             if ($this->logger) {
                 $this->logger->info(
-                    'event_tagged',
+                    'event_was_tagged',
                     array(
                         'event_id' => $eventId,
                     )

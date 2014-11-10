@@ -75,7 +75,7 @@ class ResqueCommandBus implements CommandBusInterface, LoggerAwareInterface
         }
 
         if ($currentCommandLogger) {
-            $currentCommandLogger->info('start');
+            $currentCommandLogger->info('job_started');
         }
 
         foreach ($this->commandHandlers as $handler) {
@@ -87,7 +87,7 @@ class ResqueCommandBus implements CommandBusInterface, LoggerAwareInterface
         }
 
         if ($currentCommandLogger) {
-            $currentCommandLogger->info('finish');
+            $currentCommandLogger->info('job_finished');
         }
     }
 

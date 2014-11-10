@@ -81,13 +81,11 @@ class EventRepository implements RepositoryInterface
                     // At this point we need to have
                     // - the user associated with the event, from the metadata
                     // - the token and secret of the user stored in the database
-                    $token = '';
-                    $secret = '';
+                    $metadata = $domainMessage->getMetadata()->serialize();
+                    $tokenCredentials = $metadata['uitid_token_credentials'];
+                    //throw new \Exception($userId);
                     $entryAPI = $this->entryAPIFactory->withTokenCredentials(
-                        new TokenCredentials(
-                            $token,
-                            $secret
-                        )
+                        $tokenCredentials
                     );
                     $entryAPI->addTagToEvent(
                         $event,

@@ -5,9 +5,13 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandHandler;
 use Broadway\Repository\RepositoryInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class EventCommandHandler extends CommandHandler
+class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var RepositoryInterface
      */
@@ -25,6 +29,15 @@ class EventCommandHandler extends CommandHandler
             $event = $this->eventRepository->load($eventId);
             $event->tag($tagEvents->getKeyword());
             $this->eventRepository->add($event);
+
+            if ($this->logger) {
+                $this->logger->info(
+                    'event_was_tagged',
+                    array(
+                        'event_id' => $eventId,
+                    )
+                );
+            }
         }
     }
 }

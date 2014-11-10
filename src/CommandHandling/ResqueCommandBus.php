@@ -7,14 +7,19 @@ namespace CultuurNet\UDB3\CommandHandling;
 
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\CommandHandling\CommandHandlerInterface;
+use CultuurNet\UDB3\Log\ContextEnrichingLogger;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Broadway\Domain\Metadata;
 use Broadway\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Command bus decorator for asynchronous processing with PHP-Resque.
  */
-class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareInterface
+class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
 
     const EVENT_COMMAND_CONTEXT_SET = 'broadway.command_handling.context';
 
@@ -106,18 +111,42 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
 
     /**
      * Really dispatches the command to the proper handler to be executed.
+     *
+     * @param string $jobId
+     * @param mixed $command
      */
-    public function deferredDispatch($command)
+    public function deferredDispatch($jobId, $command)
     {
+        $currentCommandLogger = null;
+        if ($this->logger) {
+            $jobMetadata = array(
+                'job_id' => $jobId,
+            );
+            $currentCommandLogger = new ContextEnrichingLogger(
+                $this->logger,
+                $jobMetadata
+            );
+        }
+
+        if ($currentCommandLogger) {
+            $currentCommandLogger->info('job_started');
+        }
+
+        if ($this->decoratee instanceof LoggerAwareInterface) {
+            $this->decoratee->setLogger($currentCommandLogger);
+        }
+
         try {
             parent::dispatch($command);
-
-            // Reset the execution context after each command.
             $this->setContext(null);
-        } catch (\Exception $e) {
-            // Reset the execution context after each command.
+        }
+        catch (\Exception $e) {
             $this->setContext(null);
             throw $e;
+        }
+
+        if ($currentCommandLogger) {
+            $currentCommandLogger->info('job_finished');
         }
     }
 }

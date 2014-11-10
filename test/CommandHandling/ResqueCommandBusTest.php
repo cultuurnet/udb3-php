@@ -80,7 +80,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with($command);
 
-        $this->commandBus->deferredDispatch($command);
+        $this->commandBus->deferredDispatch(1, $command);
     }
 
     /**
@@ -111,7 +111,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
             ->with(null)
             ->after('dispatched');
 
-        $this->commandBus->deferredDispatch($command);
+        $this->commandBus->deferredDispatch(1, $command);
     }
 
     /**
@@ -154,7 +154,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
             $exception->getMessage()
         );
 
-        $this->commandBus->deferredDispatch($command);
+        $this->commandBus->deferredDispatch(1, $command);
     }
 
     /**
@@ -187,7 +187,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
         $command = new \stdClass();
         $command->foo = 'bar';
 
-        $this->commandBus->deferredDispatch($command);
+        $this->commandBus->deferredDispatch(1, $command);
     }
 }
 

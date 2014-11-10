@@ -71,6 +71,16 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
         );
     }
 
+    /**
+     * Get the current execution context.
+     *
+     * @return Metadata
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
 
     /**
      * Dispatches the command $command to a queue.
@@ -99,12 +109,15 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      */
     public function deferredDispatch($command)
     {
-        parent::dispatch($command);
+        try {
+            parent::dispatch($command);
 
-        // Reset the execution context after each command.
-        $this->context = null;
-        if ($this->decoratee instanceof ContextAwareInterface) {
-            $this->decoratee->setContext($this->context);
+            // Reset the execution context after each command.
+            $this->setContext(null);
+        } catch (\Exception $e) {
+            // Reset the execution context after each command.
+            $this->setContext(null);
+            throw $e;
         }
     }
 }

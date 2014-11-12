@@ -117,6 +117,7 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      */
     public function deferredDispatch($jobId, $command)
     {
+        $exception = NULL;
         $currentCommandLogger = null;
         if ($this->logger) {
             $jobMetadata = array(
@@ -138,15 +139,18 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
 
         try {
             parent::dispatch($command);
-            $this->setContext(null);
+        } catch (\Exception $e) {
+            $exception = $e;
         }
-        catch (\Exception $e) {
-            $this->setContext(null);
-            throw $e;
-        }
+
+        $this->setContext(null);
 
         if ($currentCommandLogger) {
             $currentCommandLogger->info('job_finished');
+        }
+
+        if ($exception) {
+            throw $exception;
         }
     }
 }

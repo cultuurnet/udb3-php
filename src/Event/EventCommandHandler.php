@@ -28,15 +28,28 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
             /** @var Event $event */
             $event = $this->eventRepository->load($eventId);
             $event->tag($tagEvents->getKeyword());
-            $this->eventRepository->add($event);
+            try {
+                $this->eventRepository->add($event);
 
-            if ($this->logger) {
-                $this->logger->info(
-                    'event_was_tagged',
-                    array(
-                        'event_id' => $eventId,
-                    )
-                );
+                if ($this->logger) {
+                    $this->logger->info(
+                        'event_was_tagged',
+                        array(
+                            'event_id' => $eventId,
+                        )
+                    );
+                }
+            }
+            catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        'event_was_not_tagged',
+                        array(
+                            //'exception' => $e,
+                            'error' => $e->getMessage()
+                        )
+                    );
+                }
             }
         }
     }

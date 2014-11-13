@@ -41,14 +41,48 @@ class EventLDProjector extends Projector
     protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
+        // @todo put this code in a separate class
+        // @todo put the SCHEME in a separate field of the event
+        // so old events can still be parsed when cdbxml changes
+        $udb2SimpleXml = new \SimpleXMLElement(
+            $eventImportedFromUDB2->getCdbXml(),
+            0,
+            false,
+            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+        );
+
+        $udb2Event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
+            $udb2SimpleXml
+        );
+
         $eventLd = new \stdClass();
+        $eventLd->{'@id'} = $this->iriGenerator->iri($eventImportedFromUDB2->getEventId());
 
+        // @todo provide Event-LD context here relative to the base URI
+        $eventLd->{'@context'} = '/api/1.0/event.jsonld';
 
-        // @todo set @context
-        // @todo load event from cdbxml and set properties on eventLd object
-        //$eventLdModel->name =
-        //$eventLdModel->calendarSummary =
-        //$eventLdModel->concept[] =
+        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
+        $language_fallbacks = array('nl', 'en', 'fr', 'de');
+        foreach ($language_fallbacks as $language) {
+            $detail = $udb2Event->getDetails()->getDetailByLanguage($language);
+            if ($detail) {
+                break;
+            }
+        }
+
+        $pictures = $detail->getMedia()->byMediaType(
+            \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
+        );
+
+        $pictures->rewind();
+        $picture = count($pictures) > 0 ? $pictures->current() : null;
+
+        $eventLd->name = $detail->getTitle();
+        $eventLd->shortDescription = $detail->getShortDescription();
+        $eventLd->concept = array_values($udb2Event->getKeywords());
+        $eventLd->calendarSummary = $detail->getCalendarSummary();
+        $eventLd->picture = $picture ? $picture->getHLink() : null;
+        $eventLd->location = $udb2Event->getLocation()->getLabel();
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

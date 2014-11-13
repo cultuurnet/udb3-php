@@ -38,7 +38,7 @@ class EventLDProjector extends Projector
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */
-    protected function applyEventImportedFromUDB(
+    protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $eventLd = new \stdClass();

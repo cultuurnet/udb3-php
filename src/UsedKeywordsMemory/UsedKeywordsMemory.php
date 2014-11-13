@@ -7,11 +7,15 @@ namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Keyword;
 
 class UsedKeywordsMemory extends EventSourcedAggregateRoot
 {
     protected $userId;
 
+    /**
+     * @var Keyword[]
+     */
     protected $usedKeywords;
 
     /**
@@ -22,6 +26,9 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot
         return $this->userId;
     }
 
+    /**
+     * @return Keyword[]
+     */
     public function getKeywords()
     {
         return array_values($this->usedKeywords);
@@ -32,11 +39,16 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot
         $this->usedKeywords = array();
     }
 
-    public function keywordUsed($keyword)
+    /**
+     * Remember a keyword was used.
+     *
+     * @param Keyword $keyword
+     */
+    public function keywordUsed(Keyword $keyword)
     {
         $lastUsedKeyword = reset($this->usedKeywords);
 
-        if ($keyword !== $lastUsedKeyword) {
+        if ((string)$keyword !== (string)$lastUsedKeyword) {
             $this->apply(new KeywordUsed($this->userId, $keyword));
         }
     }
@@ -48,6 +60,9 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot
         }
     }
 
+    /**
+     * @param KeywordUsed $keywordUsed
+     */
     protected function applyKeywordUsed(KeywordUsed $keywordUsed)
     {
         $key = array_search($keywordUsed->getKeyword(), $this->usedKeywords);

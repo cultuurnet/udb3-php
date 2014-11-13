@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Keyword;
 
 class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +41,7 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     public function it_remembers_keywords_per_user_in_a_repository()
     {
         $userId = 1;
-        $keyword = 'classical rock';
+        $keyword = new Keyword('classical rock');
 
         $usedKeywordsMemory = $this->getMock(
             'CultuurNet\\UDB3\\UsedKeywordsMemory\\UsedKeywordsMemory'
@@ -68,7 +69,7 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     public function it_initiates_an_empty_memory_for_new_users()
     {
         $userId = 2;
-        $keyword = 'jazz';
+        $keyword = new Keyword('jazz');
 
         $this->repository->expects($this->once())
             ->method('load')
@@ -97,8 +98,8 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
         $userId = 3;
 
         $expectedUsedKeywordsMemory = new UsedKeywordsMemory();
-        $expectedUsedKeywordsMemory->keywordUsed('foo');
-        $expectedUsedKeywordsMemory->keywordUsed('bar');
+        $expectedUsedKeywordsMemory->keywordUsed(new Keyword('foo'));
+        $expectedUsedKeywordsMemory->keywordUsed(new Keyword('bar'));
 
         $this->repository->expects($this->once())
             ->method('load')

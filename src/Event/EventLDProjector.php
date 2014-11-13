@@ -35,14 +35,6 @@ class EventLDProjector extends Projector
         $this->iriGenerator = $iriGenerator;
     }
 
-    public function handle(DomainMessageInterface $domainMessage)
-    {
-        return parent::handle(
-            $domainMessage
-        );
-    }
-
-
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */

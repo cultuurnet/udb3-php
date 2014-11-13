@@ -9,7 +9,7 @@ namespace CultuurNet\UDB3\UsedKeywordsMemory;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Keyword;
 
-class UsedKeywordsMemory extends EventSourcedAggregateRoot
+class UsedKeywordsMemory extends EventSourcedAggregateRoot implements \JsonSerializable
 {
     protected $userId;
 
@@ -90,4 +90,14 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot
     {
         $this->userId = $created->getUserId();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    function jsonSerialize()
+    {
+        return $this->usedKeywords;
+    }
+
+
 }

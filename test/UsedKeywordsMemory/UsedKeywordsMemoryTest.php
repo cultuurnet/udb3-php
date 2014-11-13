@@ -120,4 +120,19 @@ class UsedKeywordsMemoryTest extends \PHPUnit_Framework_TestCase
             $this->memory->getUncommittedEvents()->getIterator()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_be_serialized_to_a_json_array() {
+        $this->memory->keywordUsed(new Keyword('keyword-1'));
+        $this->memory->keywordUsed(new Keyword('keyword-2'));
+
+        $serializedMemory = json_encode($this->memory);
+
+        $this->assertEquals(
+            '["keyword-2","keyword-1"]',
+            $serializedMemory
+        );
+    }
 }

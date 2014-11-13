@@ -5,8 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
-use Broadway\EventStore\EventStreamNotFoundException;
 use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\Search\SearchResult;
@@ -37,8 +35,10 @@ class DefaultEventService implements EventServiceInterface
      * @param SearchAPI2\SearchServiceInterface $searchAPI2
      * @param IriGeneratorInterface $iriGenerator
      */
-    public function __construct(SearchAPI2\SearchServiceInterface $searchAPI2, IriGeneratorInterface $iriGenerator)
-    {
+    public function __construct(
+        SearchAPI2\SearchServiceInterface $searchAPI2,
+        IriGeneratorInterface $iriGenerator
+    ) {
         $this->searchAPI2 = $searchAPI2;
         $this->iriGenerator = $iriGenerator;
     }
@@ -49,16 +49,27 @@ class DefaultEventService implements EventServiceInterface
     public function getEvent($id)
     {
         $cdbidCondition = 'cdbid:' . $id;
-        $response = $this->searchAPI2->search(array(
+        $response = $this->searchAPI2->search(
+            array(
                 new Query($cdbidCondition),
                 new Group(),
-            ));
+            )
+        );
 
-        $result = SearchResult::fromXml(new \SimpleXMLElement($response->getBody(true), 0, false, \CultureFeed_Cdb_Default::CDB_SCHEME_URL));
+        $result = SearchResult::fromXml(
+            new \SimpleXMLElement(
+                $response->getBody(true),
+                0,
+                false,
+                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            )
+        );
 
         // @todo Decent exception handling.
         if ($result->getCurrentCount() !== 1) {
-            throw new EventNotFoundException(sprintf('Event with id: %s not found.', $id));
+            throw new EventNotFoundException(
+                sprintf('Event with id: %s not found.', $id)
+            );
         }
 
         foreach ($result->getItems() as $item) {

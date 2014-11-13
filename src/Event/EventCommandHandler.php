@@ -45,8 +45,9 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
                     $this->logger->error(
                         'event_was_not_tagged',
                         array(
-                            //'exception' => $e,
-                            'error' => $e->getMessage()
+                            'event_id' => $eventId,
+                            'error' => $e->getMessage(),
+                            'exception_class' => get_class($e),
                         )
                     );
                 }

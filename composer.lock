@@ -1,10 +1,9 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
-        "This file is @generated automatically"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "8a9bd23b6583a3eeee3c56dc618fca72",
+    "hash": "31a3304528519e3129380a8af1b4302f",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -168,17 +167,17 @@
             "time": "2014-09-12 14:14:07"
         },
         {
-            "name": "colinmollenhour/credis",
-            "version": "1.4",
+            "name": "chrisboulton/php-resque",
+            "version": "1.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/colinmollenhour/credis.git",
-                "reference": "2079564c61cc49867eddc3cc918c711564164d65"
+                "url": "https://github.com/chrisboulton/php-resque.git",
+                "reference": "0549d6c88a4aed934655b7c03b6153349d6c3ad0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/2079564c61cc49867eddc3cc918c711564164d65",
-                "reference": "2079564c61cc49867eddc3cc918c711564164d65",
+                "url": "https://api.github.com/repos/chrisboulton/php-resque/zipball/0549d6c88a4aed934655b7c03b6153349d6c3ad0",
+                "reference": "0549d6c88a4aed934655b7c03b6153349d6c3ad0",
                 "shasum": ""
             },
             "require": {
@@ -186,10 +185,9 @@
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    "Client.php",
-                    "Cluster.php"
-                ]
+                "psr-0": {
+                    "Resque": "lib"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -197,13 +195,19 @@
             ],
             "authors": [
                 {
-                    "name": "Colin Mollenhour",
-                    "email": "colin@mollenhour.com"
+                    "name": "Chris Boulton",
+                    "email": "chris@bigcommerce.com"
                 }
             ],
-            "description": "Credis is a lightweight interface to the Redis key-value store which wraps the phpredis library when available for better performance.",
-            "homepage": "https://github.com/colinmollenhour/credis",
-            "time": "2014-05-05 19:31:30"
+            "description": "Redis backed library for creating background jobs and processing them later. Based on resque for Ruby.",
+            "homepage": "http://www.github.com/chrisboulton/php-resque/",
+            "keywords": [
+                "background",
+                "job",
+                "redis",
+                "resque"
+            ],
+            "time": "2012-10-13 07:28:16"
         },
         {
             "name": "cultuurnet/auth",
@@ -254,16 +258,16 @@
         },
         {
             "name": "cultuurnet/cdb",
-            "version": "dev-release/2.x",
+            "version": "2.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Cdb.git",
-                "reference": "e547c9e6937f7ae77f1abd94d8f996839c682101"
+                "reference": "b754654957241848a9957bafd3502e74e8f9724e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/e547c9e6937f7ae77f1abd94d8f996839c682101",
-                "reference": "e547c9e6937f7ae77f1abd94d8f996839c682101",
+                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/b754654957241848a9957bafd3502e74e8f9724e",
+                "reference": "b754654957241848a9957bafd3502e74e8f9724e",
                 "shasum": ""
             },
             "type": "library",
@@ -284,7 +288,7 @@
                 "Apache-2.0"
             ],
             "description": "PHP library for hydrating/manipulating CultuurNet's Cdb XML documents",
-            "time": "2014-03-24 15:53:14"
+            "time": "2014-10-28 13:17:08"
         },
         {
             "name": "cultuurnet/search",
@@ -804,12 +808,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "53c6cf358bf50a3d31a003639245dac1d4de694b"
+                "reference": "ab41ed9a94196ce2793f400b88313918b4fc64dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/53c6cf358bf50a3d31a003639245dac1d4de694b",
-                "reference": "53c6cf358bf50a3d31a003639245dac1d4de694b",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/ab41ed9a94196ce2793f400b88313918b4fc64dc",
+                "reference": "ab41ed9a94196ce2793f400b88313918b4fc64dc",
                 "shasum": ""
             },
             "require": {
@@ -868,7 +872,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2014-10-29 06:32:01"
+            "time": "2014-11-11 12:05:51"
         },
         {
             "name": "psr/log",
@@ -954,16 +958,16 @@
         },
         {
             "name": "rhumsaa/uuid",
-            "version": "2.8.x-dev",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "3d753656edcd12f89f270b79775126a420770c5f"
+                "reference": "96a01caa11a2f4136293bf60bbe247597b3eeb36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/3d753656edcd12f89f270b79775126a420770c5f",
-                "reference": "3d753656edcd12f89f270b79775126a420770c5f",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/96a01caa11a2f4136293bf60bbe247597b3eeb36",
+                "reference": "96a01caa11a2f4136293bf60bbe247597b3eeb36",
                 "shasum": ""
             },
             "require": {
@@ -1016,21 +1020,21 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2014-10-30 05:40:17"
+            "time": "2014-11-09 18:48:45"
         },
         {
             "name": "symfony/console",
-            "version": "dev-master",
+            "version": "2.7.x-dev",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "2fc3644d2e10e14935b2c79e57a5185281eb1eb7"
+                "reference": "8c47430b88b646f91a0255fea7aef72dc7ca57e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/2fc3644d2e10e14935b2c79e57a5185281eb1eb7",
-                "reference": "2fc3644d2e10e14935b2c79e57a5185281eb1eb7",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/8c47430b88b646f91a0255fea7aef72dc7ca57e1",
+                "reference": "8c47430b88b646f91a0255fea7aef72dc7ca57e1",
                 "shasum": ""
             },
             "require": {
@@ -1049,7 +1053,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -1073,21 +1077,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-03 03:55:50"
+            "time": "2014-11-10 18:00:54"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "dev-master",
+            "version": "2.7.x-dev",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "dcf345d5ed96bc6c3b4521c1989670d2c9e5014e"
+                "reference": "8e5829263631e686bf4d1254b02411263b8fa228"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/dcf345d5ed96bc6c3b4521c1989670d2c9e5014e",
-                "reference": "dcf345d5ed96bc6c3b4521c1989670d2c9e5014e",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/8e5829263631e686bf4d1254b02411263b8fa228",
+                "reference": "8e5829263631e686bf4d1254b02411263b8fa228",
                 "shasum": ""
             },
             "require": {
@@ -1107,7 +1111,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -1131,7 +1135,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-03 03:55:50"
+            "time": "2014-11-10 18:00:54"
         }
     ],
     "packages-dev": [
@@ -1278,12 +1282,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/phpspec.git",
-                "reference": "4a3c51f502d4546e72a3559b20726360dd8346c4"
+                "reference": "e2554bd63e9a1941a89a44278ef34414813195ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/phpspec/zipball/4a3c51f502d4546e72a3559b20726360dd8346c4",
-                "reference": "4a3c51f502d4546e72a3559b20726360dd8346c4",
+                "url": "https://api.github.com/repos/phpspec/phpspec/zipball/e2554bd63e9a1941a89a44278ef34414813195ca",
+                "reference": "e2554bd63e9a1941a89a44278ef34414813195ca",
                 "shasum": ""
             },
             "require": {
@@ -1292,7 +1296,7 @@
                 "phpspec/php-diff": "~1.0.0",
                 "phpspec/prophecy": "~1.1",
                 "sebastian/exporter": "~1.0",
-                "symfony/console": "~2.1",
+                "symfony/console": "~2.3",
                 "symfony/event-dispatcher": "~2.1",
                 "symfony/finder": "~2.1",
                 "symfony/process": "~2.1",
@@ -1346,7 +1350,7 @@
                 "testing",
                 "tests"
             ],
-            "time": "2014-11-03 19:35:27"
+            "time": "2014-11-09 10:39:07"
         },
         {
             "name": "phpspec/prophecy",
@@ -1413,12 +1417,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "28d21b57c189cb72829056353de603c4d4da55a0"
+                "reference": "21b9006b7ceb7e1cb0b705615af31f67c8cd1692"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/28d21b57c189cb72829056353de603c4d4da55a0",
-                "reference": "28d21b57c189cb72829056353de603c4d4da55a0",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/21b9006b7ceb7e1cb0b705615af31f67c8cd1692",
+                "reference": "21b9006b7ceb7e1cb0b705615af31f67c8cd1692",
                 "shasum": ""
             },
             "require": {
@@ -1467,7 +1471,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-10-05 10:46:54"
+            "time": "2014-11-11 14:18:30"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2097,17 +2101,17 @@
         },
         {
             "name": "symfony/finder",
-            "version": "dev-master",
+            "version": "2.7.x-dev",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "d556a66cbe5b2b81e7abc75b4066b057fbc7af94"
+                "reference": "cd7fe8483f071508e9440b9966ff0aeb70b840a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/d556a66cbe5b2b81e7abc75b4066b057fbc7af94",
-                "reference": "d556a66cbe5b2b81e7abc75b4066b057fbc7af94",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/cd7fe8483f071508e9440b9966ff0aeb70b840a0",
+                "reference": "cd7fe8483f071508e9440b9966ff0aeb70b840a0",
                 "shasum": ""
             },
             "require": {
@@ -2116,7 +2120,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -2140,21 +2144,21 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
-            "time": "2014-10-26 07:46:28"
+            "time": "2014-11-10 18:00:54"
         },
         {
             "name": "symfony/process",
-            "version": "dev-master",
+            "version": "2.7.x-dev",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "8cf0045eb7796aac695d5f4b865dea8438fb5131"
+                "reference": "5f5c84ca0df9bd83e394e4884f928b27db81e11b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/8cf0045eb7796aac695d5f4b865dea8438fb5131",
-                "reference": "8cf0045eb7796aac695d5f4b865dea8438fb5131",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/5f5c84ca0df9bd83e394e4884f928b27db81e11b",
+                "reference": "5f5c84ca0df9bd83e394e4884f928b27db81e11b",
                 "shasum": ""
             },
             "require": {
@@ -2163,7 +2167,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -2187,21 +2191,21 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-03 19:49:01"
+            "time": "2014-11-10 18:00:54"
         },
         {
             "name": "symfony/yaml",
-            "version": "dev-master",
+            "version": "2.7.x-dev",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "9da3813f36985a4089f7e83c601a1034d125ff69"
+                "reference": "6165f4b5224c22de2873deb6a3a4e622044f0705"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/9da3813f36985a4089f7e83c601a1034d125ff69",
-                "reference": "9da3813f36985a4089f7e83c601a1034d125ff69",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6165f4b5224c22de2873deb6a3a4e622044f0705",
+                "reference": "6165f4b5224c22de2873deb6a3a4e622044f0705",
                 "shasum": ""
             },
             "require": {
@@ -2210,7 +2214,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -2234,13 +2238,12 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-03 03:55:50"
+            "time": "2014-11-10 18:00:54"
         }
     ],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": [],
-    "prefer-stable": false,
     "platform": [],
     "platform-dev": []
 }

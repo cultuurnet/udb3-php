@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Keyword;
 
 class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,11 +62,11 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo(
                     new TagEvents(
                         array('event1'),
-                        'some-keyword'
+                        new Keyword('some-keyword')
                     )
                 ));
 
-        $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
+        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
     }
 
     /**
@@ -91,29 +92,12 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo(
                     new TagEvents(
                         array('event1', 'event2'),
-                        'some-keyword'
+                        new Keyword('some-keyword')
                     )
                 )
             );
 
-        $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_tag_empty_keywords()
-    {
-        $eventIds = [
-            'event1'
-        ];
-
-        $this->setExpectedException('InvalidArgumentException', 'invalid keyword');
-
-        $this->commandBus->expects($this->never())
-            ->method('dispatch');
-
-        $this->eventTagger->tagEventsById($eventIds, '');
+        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
     }
 
     /**
@@ -134,7 +118,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
 
-        $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
+        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
     }
 
     /**
@@ -149,6 +133,6 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
         $this->commandBus->expects($this->never())
             ->method('dispatch');
 
-        $this->eventTagger->tagEventsById($eventIds, 'some-keyword');
+        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
     }
 }

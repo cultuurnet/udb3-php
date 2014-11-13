@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\EventNotFoundException;
+use CultuurNet\UDB3\Keyword;
 
 /**
  * Interface for an event tagger service.
@@ -13,11 +14,11 @@ use CultuurNet\UDB3\EventNotFoundException;
 interface EventTaggerServiceInterface
 {
     /**
-     * @param $eventIds string[]
-     * @param $keyword string
+     * @param string[] $eventIds
+     * @param Keyword $keyword
      * @return string command id
      * @throws EventNotFoundException
      * @throws \InvalidArgumentException
      */
-    public function tagEventsById($eventIds, $keyword);
+    public function tagEventsById($eventIds, Keyword $keyword);
 }

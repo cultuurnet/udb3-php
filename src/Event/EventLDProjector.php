@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\Domain\DomainMessageInterface;
 use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -78,7 +77,7 @@ class EventLDProjector extends Projector
         $eventLd->shortDescription = $detail->getShortDescription();
         $eventLd->concept = array_values($udb2Event->getKeywords());
         $eventLd->calendarSummary = $detail->getCalendarSummary();
-        $eventLd->picture = $picture ? $picture->getHLink() : null;
+        $eventLd->image = $picture ? $picture->getHLink() : null;
         $eventLd->location = $udb2Event->getLocation()->getLabel();
 
         $eventLdModel = new JsonDocument(

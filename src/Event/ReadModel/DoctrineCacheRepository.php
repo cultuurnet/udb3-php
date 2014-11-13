@@ -19,6 +19,11 @@ class DoctrineCacheRepository implements DocumentRepositoryInterface
     public function get($id)
     {
         $value = $this->cache->fetch($id);
+
+        if (false === $value) {
+            return NULL;
+        }
+
         return new JsonDocument($id, $value);
     }
 

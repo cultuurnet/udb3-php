@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3;
 
 
-class Keyword
+class Keyword implements \JsonSerializable
 {
     protected $value;
 
@@ -27,6 +27,14 @@ class Keyword
     }
 
     function __toString()
+    {
+        return $this->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    function jsonSerialize()
     {
         return $this->value;
     }

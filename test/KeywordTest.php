@@ -45,4 +45,14 @@ class KeywordTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('International', $keyword);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_be_serialized_to_a_json_string()
+    {
+        $keyword = new Keyword('International');
+        $serializedKeyword = json_encode($keyword);
+        $this->assertEquals('"International"', $serializedKeyword);
+    }
 } 

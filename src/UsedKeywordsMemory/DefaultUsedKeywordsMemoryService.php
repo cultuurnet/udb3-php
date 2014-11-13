@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Keyword;
 
 class DefaultUsedKeywordsMemoryService implements UsedKeywordsMemoryServiceInterface
 {
@@ -20,7 +21,7 @@ class DefaultUsedKeywordsMemoryService implements UsedKeywordsMemoryServiceInter
     /**
      * {@inheritdoc}
      */
-    public function rememberKeywordUsed($userId, $keyword)
+    public function rememberKeywordUsed($userId, Keyword $keyword)
     {
         $usedKeywordsMemory = $this->ensureCreated($userId);
 

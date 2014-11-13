@@ -10,7 +10,6 @@ use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use Broadway\Repository\RepositoryInterface as SourceRepository;
 
 class EventLDProjector extends Projector
 {

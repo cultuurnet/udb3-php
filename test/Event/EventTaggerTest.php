@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
+use CultuurNet\UDB3\Keyword;
 
 class EventTaggerTest extends CommandHandlerScenarioTestCase
 {
@@ -27,7 +28,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     public function it_can_tag_a_list_of_events_with_a_keyword()
     {
         $ids = ['eventId1', 'eventId2'];
-        $keyword = 'awesome';
+        $keyword = new Keyword('awesome');
 
         $this->scenario
             ->withAggregateId($ids[0])

@@ -3,6 +3,8 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Keyword;
+
 class TagEvents
 {
     /**
@@ -11,11 +13,11 @@ class TagEvents
     protected $eventIds;
 
     /**
-     * @var string
+     * @var Keyword
      */
     protected $keyword;
 
-    public function __construct($eventIds, $keyword)
+    public function __construct($eventIds, Keyword $keyword)
     {
         $this->eventIds = $eventIds;
         $this->keyword = $keyword;
@@ -26,6 +28,9 @@ class TagEvents
         return $this->eventIds;
     }
 
+    /**
+     * @return Keyword
+     */
     public function getKeyword()
     {
         return $this->keyword;

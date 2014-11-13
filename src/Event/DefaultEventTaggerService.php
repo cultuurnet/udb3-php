@@ -6,6 +6,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Keyword;
 
 /**
  * The default event tagger service that uses an event service to validate ids and a command bus to do the actual tagging.
@@ -38,12 +39,8 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
      * {@inheritdoc}
      * @return string The id of the command that's doing the tagging.
      */
-    public function tagEventsById($eventIds, $keyword)
+    public function tagEventsById($eventIds, Keyword $keyword)
     {
-        if (!isset($keyword) || strlen($keyword) == 0) {
-            throw new \InvalidArgumentException('invalid keyword');
-        }
-
         if (!isset($eventIds) || count($eventIds) == 0) {
             throw new \InvalidArgumentException('no event Ids to tag');
         }

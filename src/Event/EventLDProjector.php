@@ -55,11 +55,8 @@ class EventLDProjector extends Projector
             $udb2SimpleXml
         );
 
-        $eventLd = new \stdClass();
-        $eventLd->{'@id'} = $this->iriGenerator->iri($eventImportedFromUDB2->getEventId());
-
-        // @todo provide Event-LD context here relative to the base URI
-        $eventLd->{'@context'} = '/api/1.0/event.jsonld';
+        $document = $this->newDocument($eventImportedFromUDB2->getEventId());
+        $eventLd = $document->getBody();
 
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $language_fallbacks = array('nl', 'en', 'fr', 'de');
@@ -113,6 +110,23 @@ class EventLDProjector extends Projector
     }
 
     /**
+     * @param string $id
+     * @return JsonDocument
+     */
+    protected function newDocument($id)
+    {
+        $document = new JsonDocument($id);
+
+        $eventLd = $document->getBody();
+        $eventLd->{'@id'} = $this->iriGenerator->iri($id);
+
+        // @todo provide Event-LD context here relative to the base URI
+        $eventLd->{'@context'} = '/api/1.0/event.jsonld';
+
+        return $document->withBody($eventLd);
+    }
+
+    /**
      * @param EventEvent $event
      * @return JsonDocument
      */
@@ -120,10 +134,7 @@ class EventLDProjector extends Projector
         $document = $this->repository->get($event->getEventId());
 
         if (!$document) {
-            $document = new JsonDocument($event->getEventId());
-            $eventLd = $document->getBody();
-            $eventLd->{'@id'} = $this->iriGenerator->iri($event->getEventId());
-            $document = $document->withBody($eventLd);
+            return $this->newDocument($event->getEventId());
         }
 
         return $document;

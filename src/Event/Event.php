@@ -13,6 +13,7 @@ class Event extends EventSourcedAggregateRoot
      * Factory method to create a new event.
      *
      * @param string $eventId
+     * @return Event
      */
     static public function create($eventId)
     {

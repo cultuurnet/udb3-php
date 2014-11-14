@@ -56,4 +56,20 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
 
         return $commandId;
     }
+
+    /**
+     * {@inheritdoc}
+     * @return string The id of the command that's doing the tagging.
+     */
+    public function tagQuery($query, Keyword $keyword)
+    {
+        if (!isset($query) || strlen($query) == 0) {
+            throw new \InvalidArgumentException('query should not be empty');
+        }
+
+        $command = new TagQuery($query, $keyword);
+        $commandId = $this->commandBus->dispatch($command);
+
+        return $commandId;
+    }
 } 

@@ -81,7 +81,10 @@ class EventRepository implements RepositoryInterface
     public function add(AggregateRoot $aggregate)
     {
         if ($this->syncBack) {
-            $domainEventStream = $aggregate->getUncommittedEvents();
+            // We can not directly act on the aggregate, as the uncommitted events will
+            // be reset once we retrieve them, therefore we clone the object.
+            $double = clone $aggregate;
+            $domainEventStream = $double->getUncommittedEvents();
             $eventStream = $this->decorateForWrite(
                 $aggregate,
                 $domainEventStream

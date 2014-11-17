@@ -76,27 +76,42 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         } else {
             // change this pageSize value to increase or decrease the page size;
             $pageSize = 10;
-            $allResults = [];
             $pageCount =  ceil($totalItemCount / $pageSize);
             $pageCounter = 0;
+            $taggedEventIds = [];
 
             //Page querying the search service;
-            while($pageCounter < $pageCount) {
-                $results = $this->searchService->search($query, $pageSize, ($pageCounter * $pageSize));
-                $allResults = array_merge_recursive($allResults, $results);
+            while ($pageCounter < $pageCount) {
+                $start = $pageCounter * $pageSize;
+                // Sort ascending by creation date to make sure we get a quite consistent paging.
+                $sort = 'creationdate asc';
+                $results = $this->searchService->search($query, $pageSize, $start, $sort);
+
+                // Iterate the results of the current page and get their IDs
+                // by stripping them from the json-LD representation
+                foreach ($results['member'] as $event) {
+                    $expoId = explode('/',$event['@id']);
+                    $eventId = array_pop($expoId);
+
+                    if (!array_key_exists($eventId, $taggedEventIds)) {
+                        $taggedEventIds[$eventId] = $pageCounter;
+
+                        $this->tagEvent($tagQuery->getKeyword(), $eventId);
+                    }
+                    else {
+                        if ($this->logger) {
+                            $this->logger->error(
+                                'query_duplicate_event',
+                                array(
+                                    'query' => $query,
+                                    'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$taggedEventIds[$eventId]}"
+                                )
+                            );
+                        }
+                    }
+                }
                 ++$pageCounter;
             };
-
-            // Iterate all the results and get their IDs
-            // by stripping them from the json-LD representation
-            $eventIds = [];
-            foreach($allResults['member'] as $event) {
-                $expoId = explode('/',$event['@id']);
-                $eventIds[] = array_pop($expoId);
-            }
-
-            // Use the full list of IDs to tag all the events at once
-            $this->tagEventsById($eventIds, $tagQuery->getKeyword());
         };
     }
 

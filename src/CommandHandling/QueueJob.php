@@ -16,14 +16,14 @@ class QueueJob
 
     public function perform()
     {
-        $command = unserialize($this->args['command']);
+        $command = unserialize(base64_decode($this->args['command']));
         global $app;
 
         /** @var ResqueCommandBus $commandBus */
         $commandBus = $app['event_command_bus'];
 
         if ($commandBus instanceof ContextAwareInterface) {
-            $context = unserialize($this->args['context']);
+            $context = unserialize(base64_decode($this->args['context']));
             $commandBus->setContext($context);
         }
 

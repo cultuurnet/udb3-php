@@ -41,12 +41,7 @@ class KeywordUsed extends Event
 
     public static function deserialize(array $data)
     {
-        $keyword = @unserialize($data['keyword']);
-        // @todo Remove this temporary BC layer.
-        // compatibility layer start
-        if (false === $keyword) {
-            $keyword = new Keyword($data['keyword']);
-        }
+        $keyword = new Keyword($data['keyword']);
         // compatibility layer end
         return new static($data['user_id'], $keyword);
     }
@@ -54,7 +49,7 @@ class KeywordUsed extends Event
     public function serialize()
     {
         return parent::serialize() + array(
-            'keyword' => serialize($this->keyword),
+            'keyword' => (string)$this->keyword,
         );
     }
 }

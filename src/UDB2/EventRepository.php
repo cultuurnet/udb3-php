@@ -41,6 +41,11 @@ class EventRepository implements RepositoryInterface
     protected $entryAPIFactory;
 
     /**
+     * @var boolean
+     */
+    protected $syncBack = false;
+
+    /**
      * @var EventStreamDecoratorInterface[]
      */
     private $eventStreamDecorators = array();
@@ -57,6 +62,14 @@ class EventRepository implements RepositoryInterface
         $this->eventStreamDecorators = $eventStreamDecorators;
     }
 
+    public function syncBackOn() {
+        $this->syncBack = true;
+    }
+
+    public function syncBackOff() {
+        $this->syncBack = false;
+    }
+
     private function getType()
     {
         return '\\CultuurNet\\UDB3\\Event\\Event';
@@ -67,33 +80,41 @@ class EventRepository implements RepositoryInterface
      */
     public function add(AggregateRoot $aggregate)
     {
-        $domainEventStream = $aggregate->getUncommittedEvents();
-        $eventStream = $this->decorateForWrite($aggregate, $domainEventStream);
+        if ($this->syncBack) {
+            // We can not directly act on the aggregate, as the uncommitted events will
+            // be reset once we retrieve them, therefore we clone the object.
+            $double = clone $aggregate;
+            $domainEventStream = $double->getUncommittedEvents();
+            $eventStream = $this->decorateForWrite(
+                $aggregate,
+                $domainEventStream
+            );
 
-        /** @var DomainMessageInterface $domainMessage */
-        foreach ($eventStream as $domainMessage) {
-            $domainEvent = $domainMessage->getPayload();
-            switch (get_class($domainEvent)) {
-                case 'CultuurNet\\UDB3\\Event\\EventWasTagged':
-                    /** @var EventWasTagged $domainEvent */
-                    $event = new \CultureFeed_Cdb_Item_Event();
-                    $event->setCdbId($domainEvent->getEventId());
-                    // At this point we need to have
-                    // - the user associated with the event, from the metadata
-                    // - the token and secret of the user stored in the database
-                    $metadata = $domainMessage->getMetadata()->serialize();
-                    $tokenCredentials = $metadata['uitid_token_credentials'];
-                    //throw new \Exception($userId);
-                    $entryAPI = $this->entryAPIFactory->withTokenCredentials(
-                        $tokenCredentials
-                    );
-                    $entryAPI->addTagToEvent(
-                        $event,
-                        [$domainEvent->getKeyword()]
-                    );
-                    break;
-                default:
-                    // Ignore any other actions
+            /** @var DomainMessageInterface $domainMessage */
+            foreach ($eventStream as $domainMessage) {
+                $domainEvent = $domainMessage->getPayload();
+                switch (get_class($domainEvent)) {
+                    case 'CultuurNet\\UDB3\\Event\\EventWasTagged':
+                        /** @var EventWasTagged $domainEvent */
+                        $event = new \CultureFeed_Cdb_Item_Event();
+                        $event->setCdbId($domainEvent->getEventId());
+                        // At this point we need to have
+                        // - the user associated with the event, from the metadata
+                        // - the token and secret of the user stored in the database
+                        $metadata = $domainMessage->getMetadata()->serialize();
+                        $tokenCredentials = $metadata['uitid_token_credentials'];
+                        //throw new \Exception($userId);
+                        $entryAPI = $this->entryAPIFactory->withTokenCredentials(
+                            $tokenCredentials
+                        );
+                        $entryAPI->addTagToEvent(
+                            $event,
+                            [$domainEvent->getKeyword()]
+                        );
+                        break;
+                    default:
+                        // Ignore any other actions
+                }
             }
         }
 

@@ -97,8 +97,8 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
     public function dispatch($command)
     {
         $args = array();
-        $args['command'] = serialize($command);
-        $args['context'] = serialize($this->context);
+        $args['command'] = base64_encode(serialize($command));
+        $args['context'] = base64_encode(serialize($this->context));
         $id = \Resque::enqueue(
             $this->queueName,
             '\\CultuurNet\\UDB3\\CommandHandling\\QueueJob',
@@ -117,6 +117,7 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      */
     public function deferredDispatch($jobId, $command)
     {
+        var_dump($command);
         $exception = NULL;
         $currentCommandLogger = null;
         if ($this->logger) {

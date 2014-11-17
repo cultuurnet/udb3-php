@@ -45,7 +45,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 
         // do a pre query to test if the query is valid and check the item count
         try {
-            $preQueryResult = $this->searchService->search($query, 0, 0);
+            $preQueryResult = $this->searchService->search($query, 1, 0);
             $totalItemCount = $preQueryResult['totalItems'];
         }
         catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {

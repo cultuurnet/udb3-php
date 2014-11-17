@@ -35,7 +35,9 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 
     public function handleTagEvents(TagEvents $tagEvents)
     {
-        $this->tagEventsById($tagEvents->getEventIds(), $tagEvents->getKeyword());
+        foreach ($tagEvents->getEventIds() as $eventId) {
+            $this->tagEvent($tagEvents->getKeyword(), $eventId);
+        }
     }
 
     public function handleTagQuery(TagQuery $tagQuery)
@@ -98,34 +100,38 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         };
     }
 
-    protected function tagEventsById ($eventIds, Keyword $keyword)
+    /**
+     * Tags a single event with a keyword.
+     *
+     * @param Keyword $keyword
+     * @param $eventId
+     */
+    private function tagEvent(Keyword $keyword, $eventId)
     {
-        foreach ($eventIds as $eventId) {
-            /** @var Event $event */
-            $event = $this->eventRepository->load($eventId);
-            $event->tag($keyword);
-            try {
-                $this->eventRepository->add($event);
+        /** @var Event $event */
+        $event = $this->eventRepository->load($eventId);
+        $event->tag($keyword);
+        try {
+            $this->eventRepository->add($event);
 
-                if ($this->logger) {
-                    $this->logger->info(
-                      'event_was_tagged',
-                      array(
+            if ($this->logger) {
+                $this->logger->info(
+                    'event_was_tagged',
+                    array(
                         'event_id' => $eventId,
-                      )
-                    );
-                }
-            } catch (\Exception $e) {
-                if ($this->logger) {
-                    $this->logger->error(
-                      'event_was_not_tagged',
-                      array(
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'event_was_not_tagged',
+                    array(
                         'event_id' => $eventId,
                         'error' => $e->getMessage(),
                         'exception_class' => get_class($e),
-                      )
-                    );
-                }
+                    )
+                );
             }
         }
     }

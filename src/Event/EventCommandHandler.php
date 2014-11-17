@@ -72,14 +72,28 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
                 );
             }
         } else {
-            $allResults = $this->searchService->search($query, $totalItemCount, 0);
-            $eventIds = [];
+            // change this pageSize value to increase or decrease the page size;
+            $pageSize = 100;
+            $allResults = [];
+            $pageCount =  ceil($totalItemCount / $pageSize);
+            $pageCounter = 0;
 
+            //Page querying the search service;
+            while($pageCounter < $pageCount) {
+                $results = $this->searchService->search($query, $pageSize, ($pageCounter * $pageSize));
+                $allResults = array_merge($allResults, $results);
+                ++$pageCounter;
+            };
+
+            // Iterate all the results and get their IDs
+            // by stripping them from the json-LD representation
+            $eventIds = [];
             foreach($allResults['member'] as $event) {
                 $expoId = explode('/',$event['@id']);
                 $eventIds[] = array_pop($expoId);
             }
 
+            // Use the full list of IDs to tag all the events at once
             $this->tagEventsById($eventIds, $tagQuery->getKeyword());
         };
     }

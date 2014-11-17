@@ -48,10 +48,12 @@ class LegacySearchService implements SearchServiceInterface
      *   How many items to retrieve.
      * @param int $start
      *   Offset to start from.
+     * @param string $sort
+     *   Sorting to use.
      *
      * @return \Guzzle\Http\Message\Response
      */
-    protected function _search($query, $limit, $start)
+    protected function _search($query, $limit, $start, $sort = NULL)
     {
         $qParam = new Parameter\Query($query);
         $groupParam = new Parameter\Group();
@@ -67,6 +69,10 @@ class LegacySearchService implements SearchServiceInterface
             $typeParam,
         );
 
+        if ($sort) {
+            $params[] = new Parameter\Parameter('sort', $sort);
+        }
+
         $response = $this->searchAPI2->search($params);
 
         return $response;
@@ -75,9 +81,9 @@ class LegacySearchService implements SearchServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function search($query, $limit = 30, $start = 0)
+    public function search($query, $limit = 30, $start = 0, $sort = NULL)
     {
-        $response = $this->_search($query, $limit, $start);
+        $response = $this->_search($query, $limit, $start, $sort);
 
         $result = SearchResult::fromXml(new \SimpleXMLElement($response->getBody(true), 0, false, \CultureFeed_Cdb_Default::CDB_SCHEME_URL));
         

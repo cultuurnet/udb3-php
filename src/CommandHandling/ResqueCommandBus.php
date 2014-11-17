@@ -117,7 +117,6 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      */
     public function deferredDispatch($jobId, $command)
     {
-        var_dump($command);
         $exception = NULL;
         $currentCommandLogger = null;
         if ($this->logger) {

@@ -73,7 +73,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
             }
         } else {
             // change this pageSize value to increase or decrease the page size;
-            $pageSize = 100;
+            $pageSize = 10;
             $allResults = [];
             $pageCount =  ceil($totalItemCount / $pageSize);
             $pageCounter = 0;
@@ -81,7 +81,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
             //Page querying the search service;
             while($pageCounter < $pageCount) {
                 $results = $this->searchService->search($query, $pageSize, ($pageCounter * $pageSize));
-                $allResults = array_merge($allResults, $results);
+                $allResults = array_merge_recursive($allResults, $results);
                 ++$pageCounter;
             };
 

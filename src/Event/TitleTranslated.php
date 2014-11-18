@@ -31,4 +31,28 @@ class TitleTranslated extends PropertyTranslated
     {
         return $this->title;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        $value = parent::serialize() + array(
+            'title' => $this->title,
+        );
+
+        return $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['event_id'],
+            new Language($data['language']),
+            $data['title']
+        );
+    }
 } 

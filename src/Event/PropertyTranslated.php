@@ -27,4 +27,14 @@ abstract class PropertyTranslated extends EventEvent
     {
         return $this->language;
     }
-} 
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return parent::serialize() + array(
+            'language' => (string)$this->language,
+        );
+    }
+}

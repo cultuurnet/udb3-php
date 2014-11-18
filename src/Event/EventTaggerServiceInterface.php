@@ -21,4 +21,11 @@ interface EventTaggerServiceInterface
      * @throws \InvalidArgumentException
      */
     public function tagEventsById($eventIds, Keyword $keyword);
+
+    /**
+     * @param $query
+     * @param Keyword $keyword
+     * @return string The id of the command that's doing the tagging.
+     */
+    public function tagQuery($query, Keyword $keyword);
 }

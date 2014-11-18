@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Language;
 
-class TranslateTitle
+class TranslateTitle extends TranslateProperty
 {
     /**
      * @var string
@@ -32,25 +32,8 @@ class TranslateTitle
      */
     public function __construct($id, Language $language, $title)
     {
-        $this->id = $id;
-        $this->language = $language;
+        parent::__construct($id, $language);
         $this->title = $title;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return Language
-     */
-    public function getLanguage()
-    {
-        return $this->language;
     }
 
     /**

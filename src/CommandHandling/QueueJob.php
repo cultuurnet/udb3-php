@@ -8,25 +8,35 @@ namespace CultuurNet\UDB3\CommandHandling;
 
 class QueueJob
 {
-
     /**
      * @var \Resque_Job
      */
     public $job;
 
+    /**
+     * @var array
+     */
+    public $args;
+
+    /**
+     * @var ResqueCommandBus|ContextAwareInterface
+     */
+    private static $commandBus;
+
+    public static function setCommandBus(ResqueCommandBus $commandBus)
+    {
+        self::$commandBus = $commandBus;
+    }
+
     public function perform()
     {
         $command = unserialize(base64_decode($this->args['command']));
-        global $app;
 
-        /** @var ResqueCommandBus $commandBus */
-        $commandBus = $app['event_command_bus'];
-
-        if ($commandBus instanceof ContextAwareInterface) {
+        if (self::$commandBus instanceof ContextAwareInterface) {
             $context = unserialize(base64_decode($this->args['context']));
-            $commandBus->setContext($context);
+            self::$commandBus->setContext($context);
         }
 
-        $commandBus->deferredDispatch($this->job->payload['id'], $command);
+        self::$commandBus->deferredDispatch($this->job->payload['id'], $command);
     }
 }

@@ -30,6 +30,12 @@ class Rsp
      */
     protected $level;
 
+    /**
+     * @param string $version
+     * @param string $level
+     * @param string $code
+     * @param string $link
+     */
     private function __construct($version, $level, $code, $link)
     {
         $this->code = $code;
@@ -38,6 +44,10 @@ class Rsp
         $this->level = $level;
     }
 
+    /**
+     * @param string $xml
+     * @return static
+     */
     static public function fromResponseBody($xml)
     {
         $simpleXml = new \SimpleXMLElement($xml);
@@ -50,13 +60,35 @@ class Rsp
         );
     }
 
+    /**
+     * @return string
+     */
     public function getCode()
     {
         return $this->code;
     }
 
+    /**
+     * @return string
+     */
     public function getLevel()
     {
         return $this->level;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 } 

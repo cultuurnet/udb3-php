@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3\UDB2;
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
@@ -126,32 +127,20 @@ class EventRepository implements RepositoryInterface
 
                     case 'CultuurNet\\UDB3\\Event\\TitleTranslated':
                         /** @var TitleTranslated $domainEvent */
-                        $metadata = $domainMessage->getMetadata()->serialize();
-                        $tokenCredentials = $metadata['uitid_token_credentials'];
-                        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
-                            $tokenCredentials
-                        );
-                        $entryAPI->translateEventTitle(
-                            $domainEvent->getEventId(),
-                            $domainEvent->getLanguage(),
-                            $domainEvent->getTitle()
+                        $this->applyTitleTranslated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
                         );
                         break;
 
                     case 'CultuurNet\\UDB3\\Event\\DescriptionTranslated':
                         /** @var DescriptionTranslated $domainEvent */
-                        $metadata = $domainMessage->getMetadata()->serialize();
-                        $tokenCredentials = $metadata['uitid_token_credentials'];
-                        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
-                            $tokenCredentials
-                        );
-
-                        $entryAPI->translateEventDescription(
-                            $domainEvent->getEventId(),
-                            $domainEvent->getLanguage(),
-                            $domainEvent->getDescription()
+                        $this->applyDescriptionTranslated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
                         );
                         break;
+
                     default:
                         // Ignore any other actions
                 }
@@ -159,6 +148,45 @@ class EventRepository implements RepositoryInterface
         }
 
         $this->decoratee->add($aggregate);
+    }
+
+    private function applyTitleTranslated(
+        TitleTranslated $domainEvent,
+        Metadata $metadata
+    ) {
+        $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->translateEventTitle(
+            $domainEvent->getEventId(),
+            $domainEvent->getLanguage(),
+            $domainEvent->getTitle()
+        );
+    }
+
+    private function applyDescriptionTranslated(
+        DescriptionTranslated $domainEvent,
+        Metadata $metadata
+    ) {
+        $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->translateEventDescription(
+                $domainEvent->getEventId(),
+                $domainEvent->getLanguage(),
+                $domainEvent->getDescription()
+            );
+    }
+
+    /**
+     * @param Metadata $metadata
+     * @return EntryAPI
+     */
+    private function createImprovedEntryAPIFromMetadata(Metadata $metadata)
+    {
+        $metadata = $metadata->serialize();
+        $tokenCredentials = $metadata['uitid_token_credentials'];
+        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
+            $tokenCredentials
+        );
+
+        return $entryAPI;
     }
 
     private function decorateForWrite(

@@ -151,5 +151,13 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         }
     }
 
+    public function handleTranslateTitle(TranslateTitle $translateTitle)
+    {
+        /** @var Event $event */
+        $event = $this->eventRepository->load($translateTitle->getId());
 
+        $event->translateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
+
+        $this->eventRepository->add($event);
+    }
 }

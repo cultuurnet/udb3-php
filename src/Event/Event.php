@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Language;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -80,5 +81,19 @@ class Event extends EventSourcedAggregateRoot
         );
 
         $this->keywords = array_values($udb2Event->getKeywords());
+    }
+
+    /**
+     * @param Language $language
+     * @param string $title
+     */
+    public function translateTitle(Language $language, $title)
+    {
+        $this->apply(new TitleTranslated($this->eventId, $language, $title));
+    }
+
+    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+
     }
 }

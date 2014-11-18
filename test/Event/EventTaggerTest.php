@@ -6,6 +6,7 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 
 class EventTaggerTest extends CommandHandlerScenarioTestCase
@@ -67,7 +68,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     }
 
     /**
-     *@test
+     * @test
      */
     public function it_can_tag_all_results_of_a_search_query()
     {
@@ -81,7 +82,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                 '@id' => 'http://example.com/event/' . $i,
             );
 
-            $expectedSourcedEvents[] =  new EventWasTagged($i, $keyword);
+            $expectedSourcedEvents[] = new EventWasTagged($i, $keyword);
 
             $this->scenario
                 ->withAggregateId($i)
@@ -112,24 +113,50 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->when(new TagQuery('*.*', $keyword))
             ->then(
-               $expectedSourcedEvents
+                $expectedSourcedEvents
             );
     }
 
     /**
      * @test
      */
-    public function it_does_not_tag_events_when_a_search_error_occurs() {
+    public function it_does_not_tag_events_when_a_search_error_occurs()
+    {
         $this->search->expects($this->once())
             ->method('search')
-            ->will($this->throwException(
+            ->will(
+                $this->throwException(
                     new \Guzzle\Http\Exception\ClientErrorResponseException()
-                ));
+                )
+            );
 
         $this->scenario
             ->when(new TagQuery('---fsdfs', new Keyword('foo')))
             ->then(
                 []
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_the_title_of_an_event()
+    {
+        $id = '1';
+        $title = 'Voorbeeld';
+        $language = new Language('nl');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    new EventCreated($id)
+                ]
+            )
+            ->when(new TranslateTitle($id, $language, $title))
+            ->then(
+                [
+                    new TitleTranslated($id, $language, $title)
+                ]
             );
     }
 }

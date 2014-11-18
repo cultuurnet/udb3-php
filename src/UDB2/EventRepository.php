@@ -14,8 +14,10 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventWasTagged;
+use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 
 /**
@@ -41,6 +43,11 @@ class EventRepository implements RepositoryInterface
     protected $entryAPIFactory;
 
     /**
+     * @var EntryAPIImprovedFactory
+     */
+    protected $entryAPIImprovedFactory;
+
+    /**
      * @var boolean
      */
     protected $syncBack = false;
@@ -54,19 +61,23 @@ class EventRepository implements RepositoryInterface
         RepositoryInterface $decoratee,
         SearchServiceInterface $search,
         EntryAPIFactory $entryAPIFactory,
+        EntryAPIImprovedFactory $entryAPIImprovedFactory,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;
         $this->search = $search;
         $this->entryAPIFactory = $entryAPIFactory;
+        $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
     }
 
-    public function syncBackOn() {
+    public function syncBackOn()
+    {
         $this->syncBack = true;
     }
 
-    public function syncBackOff() {
+    public function syncBackOff()
+    {
         $this->syncBack = false;
     }
 
@@ -110,6 +121,35 @@ class EventRepository implements RepositoryInterface
                         $entryAPI->addTagToEvent(
                             $event,
                             [$domainEvent->getKeyword()]
+                        );
+                        break;
+
+                    case 'CultuurNet\\UDB3\\Event\\TitleTranslated':
+                        /** @var TitleTranslated $domainEvent */
+                        $metadata = $domainMessage->getMetadata()->serialize();
+                        $tokenCredentials = $metadata['uitid_token_credentials'];
+                        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
+                            $tokenCredentials
+                        );
+                        $entryAPI->translateEventTitle(
+                            $domainEvent->getEventId(),
+                            $domainEvent->getLanguage(),
+                            $domainEvent->getTitle()
+                        );
+                        break;
+
+                    case 'CultuurNet\\UDB3\\Event\\DescriptionTranslated':
+                        /** @var DescriptionTranslated $domainEvent */
+                        $metadata = $domainMessage->getMetadata()->serialize();
+                        $tokenCredentials = $metadata['uitid_token_credentials'];
+                        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
+                            $tokenCredentials
+                        );
+
+                        $entryAPI->translateEventDescription(
+                            $domainEvent->getEventId(),
+                            $domainEvent->getLanguage(),
+                            $domainEvent->getDescription()
                         );
                         break;
                     default:

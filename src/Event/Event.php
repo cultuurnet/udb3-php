@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
 
 class Event extends EventSourcedAggregateRoot
@@ -24,10 +25,25 @@ class Event extends EventSourcedAggregateRoot
         return $event;
     }
 
-    static public function importFromUDB2($eventId, $cdbXml)
-    {
+    /**
+     * @param string $eventId
+     * @param string $cdbXml
+     * @param string $cdbXmlNamespaceUri
+     * @return Event
+     */
+    static public function importFromUDB2(
+        $eventId,
+        $cdbXml,
+        $cdbXmlNamespaceUri
+    ) {
         $event = new self();
-        $event->apply(new EventImportedFromUDB2($eventId, $cdbXml));
+        $event->apply(
+            new EventImportedFromUDB2(
+                $eventId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
 
         return $event;
     }
@@ -64,20 +80,14 @@ class Event extends EventSourcedAggregateRoot
         $this->keywords[] = $eventTagged->getKeyword();
     }
 
-    protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $eventImported)
-    {
+    protected function applyEventImportedFromUDB2(
+        EventImportedFromUDB2 $eventImported
+    ) {
         $this->eventId = $eventImported->getEventId();
-        $cdbXml = $eventImported->getCdbXml();
 
-        $udb2SimpleXml = new \SimpleXMLElement(
-            $cdbXml,
-            0,
-            false,
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
-        );
-
-        $udb2Event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
-            $udb2SimpleXml
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventImported->getCdbXmlNamespaceUri(),
+            $eventImported->getCdbXml()
         );
 
         $this->keywords = array_values($udb2Event->getKeywords());
@@ -94,7 +104,9 @@ class Event extends EventSourcedAggregateRoot
 
     public function translateDescription(Language $language, $description)
     {
-        $this->apply(new DescriptionTranslated($this->eventId, $language, $description));
+        $this->apply(
+            new DescriptionTranslated($this->eventId, $language, $description)
+        );
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

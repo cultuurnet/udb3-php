@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\ReadModel\Projector;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -40,18 +41,9 @@ class EventLDProjector extends Projector
     protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
-        // @todo put this code in a separate class
-        // @todo put the SCHEME in a separate field of the event
-        // so old events can still be parsed when cdbxml changes
-        $udb2SimpleXml = new \SimpleXMLElement(
-            $eventImportedFromUDB2->getCdbXml(),
-            0,
-            false,
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
-        );
-
-        $udb2Event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
-            $udb2SimpleXml
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $eventImportedFromUDB2->getCdbXml()
         );
 
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());

@@ -47,43 +47,33 @@ class EventLDProjector extends Projector
         );
 
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());
-        $eventLd = $document->getBody();
+        $eventLd = $document->getBody();;
 
-        $translatedProperties = [
-          "name" => "getTitle",
-          "shortDescription" => "getShortDescription"
-        ];
-
-        $languages = array('nl', 'en', 'fr', 'de');
-        // Init detail to null and cast eventLD to array to add properties
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
-        $detail = NULL;
-        $eventLd = (array)$eventLd;
-        foreach ($languages as $language) {
+        $detail = null;
 
-            // The first language detail found will be used as the default
-            if(!$detail) {
-                $detail = $udb2Event->getDetails()->getDetailByLanguage($language);
+        /** @var \CultureFeed_Cdb_Data_EventDetail[] $details */
+        $details = $udb2Event->getDetails();
+
+        foreach ($details as $languageDetail) {
+            $language = $languageDetail->getLanguage();
+
+            // The first language detail found will be used to retrieve
+            // properties from which in UDB3 are not any longer considered
+            // to be language specific.
+            if (!$detail) {
+                $detail = $languageDetail;
             }
 
-            // Set the current detail to the active language so we can check for translated properties
-            $languageDetail = $udb2Event->getDetails()->getDetailByLanguage($language);
+            $eventLd->name[$language] = $languageDetail->getTitle();
 
-            // if details are found for the language, continue
-            if($languageDetail) {
-                // add translated properties to the eventLd
-                foreach ($translatedProperties as $property => $getterName) {
-                    $propertyValue = call_user_func(array($languageDetail, $getterName));
-
-                    if($propertyValue) {
-                        $eventLd[$property][$language] = $propertyValue;
-                    }
-                }
-            }
+            $descriptions = [
+                $languageDetail->getShortDescription(),
+                $languageDetail->getLongDescription()
+            ];
+            $descriptions = array_filter($descriptions);
+            $eventLd->description[$language] = implode('<br/>', $descriptions);
         }
-        //cast EventLD back to an object to before adding default properties
-        $eventLd = (object)$eventLd;
-
 
         $pictures = $detail->getMedia()->byMediaType(
             \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
@@ -92,9 +82,6 @@ class EventLDProjector extends Projector
         $pictures->rewind();
         $picture = count($pictures) > 0 ? $pictures->current() : null;
 
-        // commented out properties should be set with the foreach that iterates all the languages
-        //$eventLd->name = $detail->getTitle();
-        //$eventLd->shortDescription = $detail->getShortDescription();
         $eventLd->concept = array_values($udb2Event->getKeywords());
         $eventLd->calendarSummary = $detail->getCalendarSummary();
         $eventLd->image = $picture ? $picture->getHLink() : null;
@@ -128,6 +115,29 @@ class EventLDProjector extends Projector
         $this->repository->save($document->withBody($eventLd));
     }
 
+    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        $document = $this->loadDocumentFromRepository($titleTranslated);
+
+        $eventLd = $document->getBody();
+        $eventLd->name->{$titleTranslated->getLanguage()->getCode(
+        )} = $titleTranslated->getTitle();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    protected function applyDescriptionTranslated(
+        DescriptionTranslated $descriptionTranslated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionTranslated);
+
+        $eventLd = $document->getBody();
+        $eventLd->description->{$descriptionTranslated->getLanguage()->getCode(
+        )} = $descriptionTranslated->getDescription();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
     /**
      * @param string $id
      * @return JsonDocument
@@ -149,7 +159,8 @@ class EventLDProjector extends Projector
      * @param EventEvent $event
      * @return JsonDocument
      */
-    protected function loadDocumentFromRepository(EventEvent $event) {
+    protected function loadDocumentFromRepository(EventEvent $event)
+    {
         $document = $this->repository->get($event->getEventId());
 
         if (!$document) {

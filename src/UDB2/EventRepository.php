@@ -12,7 +12,6 @@ use Broadway\Domain\DomainMessageInterface;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventWasTagged;
@@ -179,7 +178,11 @@ class EventRepository implements RepositoryInterface
                 throw AggregateNotFoundException::create($id);
             }
 
-            $event = Event::importFromUDB2($id, $eventXml);
+            $event = Event::importFromUDB2(
+                $id,
+                $eventXml,
+                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            );
         }
 
         return $event;

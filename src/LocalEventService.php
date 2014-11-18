@@ -6,12 +6,10 @@
 namespace CultuurNet\UDB3;
 
 
-use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 class LocalEventService implements EventServiceInterface
 {
@@ -25,20 +23,13 @@ class LocalEventService implements EventServiceInterface
      */
     protected $eventRepository;
 
-    /**
-     * @var IriGeneratorInterface
-     */
-    protected $iriGenerator;
-
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
-        RepositoryInterface $eventRepository,
-        IriGeneratorInterface $iriGenerator
+        RepositoryInterface $eventRepository
     )
     {
         $this->documentRepository = $documentRepository;
         $this->eventRepository = $eventRepository;
-        $this->iriGenerator = $iriGenerator;
     }
 
     /**

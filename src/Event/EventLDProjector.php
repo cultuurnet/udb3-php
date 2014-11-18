@@ -57,14 +57,41 @@ class EventLDProjector extends Projector
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());
         $eventLd = $document->getBody();
 
+        $translatedProperties = [
+          "name" => "getTitle",
+          "shortDescription" => "getShortDescription"
+        ];
+
+        $languages = array('nl', 'en', 'fr', 'de');
+        // Init detail to null and cast eventLD to array to add properties
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
-        $language_fallbacks = array('nl', 'en', 'fr', 'de');
-        foreach ($language_fallbacks as $language) {
-            $detail = $udb2Event->getDetails()->getDetailByLanguage($language);
-            if ($detail) {
-                break;
+        $detail = NULL;
+        $eventLd = (array)$eventLd;
+        foreach ($languages as $language) {
+
+            // The first language detail found will be used as the default
+            if(!$detail) {
+                $detail = $udb2Event->getDetails()->getDetailByLanguage($language);
+            }
+
+            // Set the current detail to the active language so we can check for translated properties
+            $languageDetail = $udb2Event->getDetails()->getDetailByLanguage($language);
+
+            // if details are found for the language, continue
+            if($languageDetail) {
+                // add translated properties to the eventLd
+                foreach ($translatedProperties as $property => $getterName) {
+                    $propertyValue = call_user_func(array($languageDetail, $getterName));
+
+                    if($propertyValue) {
+                        $eventLd[$property][$language] = $propertyValue;
+                    }
+                }
             }
         }
+        //cast EventLD back to an object to before adding default properties
+        $eventLd = (object)$eventLd;
+
 
         $pictures = $detail->getMedia()->byMediaType(
             \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
@@ -73,8 +100,9 @@ class EventLDProjector extends Projector
         $pictures->rewind();
         $picture = count($pictures) > 0 ? $pictures->current() : null;
 
-        $eventLd->name = $detail->getTitle();
-        $eventLd->shortDescription = $detail->getShortDescription();
+        // commented out properties should be set with the foreach that iterates all the languages
+        //$eventLd->name = $detail->getTitle();
+        //$eventLd->shortDescription = $detail->getShortDescription();
         $eventLd->concept = array_values($udb2Event->getKeywords());
         $eventLd->calendarSummary = $detail->getCalendarSummary();
         $eventLd->image = $picture ? $picture->getHLink() : null;

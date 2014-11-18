@@ -160,4 +160,12 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 
         $this->eventRepository->add($event);
     }
+
+    public function handleTranslateDescription(TranslateDescription $translateDescription) {
+        $event = $this->eventRepository->load($translateDescription->getId());
+
+        $event->translateDescription($translateDescription->getLanguage(), $translateDescription->getDescription());
+
+        $this->eventRepository->add($event);
+    }
 }

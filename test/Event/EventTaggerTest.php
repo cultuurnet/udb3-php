@@ -159,4 +159,21 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                 ]
             );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_the_description_of_an_event()
+    {
+        $id = '1';
+        $description = 'Lorem ipsum dolor si amet...';
+        $language = new Language('nl');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [new EventCreated($id)]
+            )
+            ->when(new TranslateDescription($id, $language, $description))
+            ->then([new DescriptionTranslated($id, $language, $description)]);
+    }
 }

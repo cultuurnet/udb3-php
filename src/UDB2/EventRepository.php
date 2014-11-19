@@ -39,11 +39,6 @@ class EventRepository implements RepositoryInterface
     protected $search;
 
     /**
-     * @var EntryAPIFactory
-     */
-    protected $entryAPIFactory;
-
-    /**
      * @var EntryAPIImprovedFactory
      */
     protected $entryAPIImprovedFactory;
@@ -61,13 +56,11 @@ class EventRepository implements RepositoryInterface
     public function __construct(
         RepositoryInterface $decoratee,
         SearchServiceInterface $search,
-        EntryAPIFactory $entryAPIFactory,
         EntryAPIImprovedFactory $entryAPIImprovedFactory,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;
         $this->search = $search;
-        $this->entryAPIFactory = $entryAPIFactory;
         $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
     }

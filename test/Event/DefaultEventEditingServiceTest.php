@@ -61,6 +61,9 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->translateTitle($id, new Language('nl'), 'new title');
     }
 
+    /**
+     * @test
+     */
     public function it_refuses_to_translate_description_of_unknown_event()
     {
         $id = 'some-unknown-id';

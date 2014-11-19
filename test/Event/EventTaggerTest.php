@@ -43,7 +43,6 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     public function it_can_tag_a_list_of_events_with_a_keyword()
     {
         $ids = ['eventId1', 'eventId2'];
-        $keyword = new Keyword('awesome');
 
         $this->scenario
             ->withAggregateId($ids[0])
@@ -58,11 +57,11 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                     new EventCreated($ids[1])
                 ]
             )
-            ->when(new TagEvents($ids, $keyword))
+            ->when(new TagEvents($ids, new Keyword('awesome')))
             ->then(
                 [
-                    new EventWasTagged($ids[0], $keyword),
-                    new EventWasTagged($ids[1], $keyword)
+                    new EventWasTagged($ids[0], new Keyword('awesome')),
+                    new EventWasTagged($ids[1], new Keyword('awesome'))
                 ]
             );
     }
@@ -75,14 +74,13 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $events = [];
         $expectedSourcedEvents = [];
         $total = 60;
-        $keyword = new Keyword('foo');
 
         for ($i = 1; $i <= $total; $i++) {
             $events[] = array(
                 '@id' => 'http://example.com/event/' . $i,
             );
 
-            $expectedSourcedEvents[] = new EventWasTagged($i, $keyword);
+            $expectedSourcedEvents[] = new EventWasTagged($i, new Keyword('foo'));
 
             $this->scenario
                 ->withAggregateId($i)
@@ -111,7 +109,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             );
 
         $this->scenario
-            ->when(new TagQuery('*.*', $keyword))
+            ->when(new TagQuery('*.*', new Keyword('foo')))
             ->then(
                 $expectedSourcedEvents
             );
@@ -183,14 +181,13 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     public function it_can_tag_an_event()
     {
         $id = '1';
-        $keyword = new Keyword('foo');
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [new EventCreated($id)]
             )
-            ->when(new Tag($id, $keyword))
-            ->then([new EventWasTagged($id, $keyword)]);
+            ->when(new Tag($id, new Keyword('foo')))
+            ->then([new EventWasTagged($id, new Keyword('foo'))]);
     }
 
     /**
@@ -199,17 +196,16 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     public function it_can_erase_a_tag_from_an_event()
     {
         $id = '1';
-        $keyword = new Keyword('foo');
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [
                     new EventCreated($id),
-                    new EventWasTagged($id, $keyword)
+                    new EventWasTagged($id, new Keyword('foo'))
                 ]
             )
-            ->when(new EraseTag($id, $keyword))
-            ->then([new TagErased($id, $keyword)]);
+            ->when(new EraseTag($id, new Keyword('foo')))
+            ->then([new TagErased($id, new Keyword('foo'))]);
     }
 
     /**
@@ -218,13 +214,12 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     public function it_does_not_erase_a_tag_that_is_not_present_on_an_event()
     {
         $id = '1';
-        $keyword = new Keyword('foo');
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [new EventCreated($id)]
             )
-            ->when(new EraseTag($id, $keyword))
+            ->when(new EraseTag($id, new Keyword('foo')))
             ->then([]);
     }
 
@@ -235,17 +230,16 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     )
     {
         $id = '1';
-        $keyword = new Keyword('foo');
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [
                     new EventCreated($id),
-                    new EventWasTagged($id, $keyword),
-                    new TagErased($id, $keyword)
+                    new EventWasTagged($id, new Keyword('foo')),
+                    new TagErased($id, new Keyword('foo'))
                 ]
             )
-            ->when(new EraseTag($id, $keyword))
+            ->when(new EraseTag($id, new Keyword('foo')))
             ->then([]);
     }
 }

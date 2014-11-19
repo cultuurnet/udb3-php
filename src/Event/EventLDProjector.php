@@ -103,7 +103,22 @@ class EventLDProjector extends Projector
         $document = $this->loadDocumentFromRepository($eventTagged);
 
         $eventLd = $document->getBody();
-        $eventLd->concept[] = $eventTagged->getKeyword();
+        $eventLd->concept[] = (string)$eventTagged->getKeyword();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    public function applyTagErased(TagErased $tagErased)
+    {
+        $document = $this->loadDocumentFromRepository($tagErased);
+
+        $eventLd = $document->getBody();
+        $eventLd->concept = array_filter(
+            $eventLd->concept,
+            function ($keyword) use ($tagErased) {
+                return $keyword !== (string)$tagErased->getKeyword();
+            }
+        );
 
         $this->repository->save($document->withBody($eventLd));
     }

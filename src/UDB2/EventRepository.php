@@ -260,7 +260,11 @@ class EventRepository implements RepositoryInterface
                 throw AggregateNotFoundException::create($id);
             }
 
-            $event = Event::importFromUDB2($id, $eventXml);
+            $event = Event::importFromUDB2(
+                $id,
+                $eventXml,
+                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            );
         }
 
         return $event;

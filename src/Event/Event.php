@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
 
 class Event extends EventSourcedAggregateRoot
@@ -25,10 +26,25 @@ class Event extends EventSourcedAggregateRoot
         return $event;
     }
 
-    static public function importFromUDB2($eventId, $cdbXml)
-    {
+    /**
+     * @param string $eventId
+     * @param string $cdbXml
+     * @param string $cdbXmlNamespaceUri
+     * @return Event
+     */
+    static public function importFromUDB2(
+        $eventId,
+        $cdbXml,
+        $cdbXmlNamespaceUri
+    ) {
         $event = new self();
-        $event->apply(new EventImportedFromUDB2($eventId, $cdbXml));
+        $event->apply(
+            new EventImportedFromUDB2(
+                $eventId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
 
         return $event;
     }
@@ -76,10 +92,10 @@ class Event extends EventSourcedAggregateRoot
     protected function applyTagErased(TagErased $tagErased)
     {
         $this->keywords = array_filter(
-            $this->keywords,
-            function (Keyword $keyword) use ($tagErased) {
-                return $keyword != $tagErased->getKeyword();
-            }
+          $this->keywords,
+          function (Keyword $keyword) use ($tagErased) {
+              return $keyword != $tagErased->getKeyword();
+          }
         );
     }
 
@@ -89,15 +105,9 @@ class Event extends EventSourcedAggregateRoot
         $this->eventId = $eventImported->getEventId();
         $cdbXml = $eventImported->getCdbXml();
 
-        $udb2SimpleXml = new \SimpleXMLElement(
-            $cdbXml,
-            0,
-            false,
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
-        );
-
-        $udb2Event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
-            $udb2SimpleXml
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventImported->getCdbXmlNamespaceUri(),
+            $eventImported->getCdbXml()
         );
 
         $this->keywords = array();

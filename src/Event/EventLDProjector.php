@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\ReadModel\Projector;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -40,30 +41,38 @@ class EventLDProjector extends Projector
     protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
-        // @todo put this code in a separate class
-        // @todo put the SCHEME in a separate field of the event
-        // so old events can still be parsed when cdbxml changes
-        $udb2SimpleXml = new \SimpleXMLElement(
-            $eventImportedFromUDB2->getCdbXml(),
-            0,
-            false,
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
-        );
-
-        $udb2Event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
-            $udb2SimpleXml
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $eventImportedFromUDB2->getCdbXml()
         );
 
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());
-        $eventLd = $document->getBody();
+        $eventLd = $document->getBody();;
 
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
-        $language_fallbacks = array('nl', 'en', 'fr', 'de');
-        foreach ($language_fallbacks as $language) {
-            $detail = $udb2Event->getDetails()->getDetailByLanguage($language);
-            if ($detail) {
-                break;
+        $detail = null;
+
+        /** @var \CultureFeed_Cdb_Data_EventDetail[] $details */
+        $details = $udb2Event->getDetails();
+
+        foreach ($details as $languageDetail) {
+            $language = $languageDetail->getLanguage();
+
+            // The first language detail found will be used to retrieve
+            // properties from which in UDB3 are not any longer considered
+            // to be language specific.
+            if (!$detail) {
+                $detail = $languageDetail;
             }
+
+            $eventLd->name[$language] = $languageDetail->getTitle();
+
+            $descriptions = [
+                $languageDetail->getShortDescription(),
+                $languageDetail->getLongDescription()
+            ];
+            $descriptions = array_filter($descriptions);
+            $eventLd->description[$language] = implode('<br/>', $descriptions);
         }
 
         $pictures = $detail->getMedia()->byMediaType(
@@ -73,8 +82,6 @@ class EventLDProjector extends Projector
         $pictures->rewind();
         $picture = count($pictures) > 0 ? $pictures->current() : null;
 
-        $eventLd->name = $detail->getTitle();
-        $eventLd->shortDescription = $detail->getShortDescription();
         $eventLd->concept = array_values($udb2Event->getKeywords());
         $eventLd->calendarSummary = $detail->getCalendarSummary();
         $eventLd->image = $picture ? $picture->getHLink() : null;
@@ -120,6 +127,29 @@ class EventLDProjector extends Projector
                 return $keyword !== (string)$tagErased->getKeyword();
             }
         );
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        $document = $this->loadDocumentFromRepository($titleTranslated);
+
+        $eventLd = $document->getBody();
+        $eventLd->name->{$titleTranslated->getLanguage()->getCode(
+        )} = $titleTranslated->getTitle();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    protected function applyDescriptionTranslated(
+        DescriptionTranslated $descriptionTranslated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionTranslated);
+
+        $eventLd = $document->getBody();
+        $eventLd->description->{$descriptionTranslated->getLanguage()->getCode(
+        )} = $descriptionTranslated->getDescription();
 
         $this->repository->save($document->withBody($eventLd));
     }

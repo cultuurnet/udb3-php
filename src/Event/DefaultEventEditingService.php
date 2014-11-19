@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
@@ -68,4 +69,36 @@ class DefaultEventEditingService implements EventEditingServiceInterface
         // This validates if the eventId is valid.
         $this->eventService->getEvent($eventId);
     }
+
+    /**
+     * @param string $eventId
+     * @param Keyword $keyword
+     * @return string command id
+     * @throws EventNotFoundException
+     */
+    public function tag($eventId, Keyword $keyword)
+    {
+        $this->guardEventId($eventId);
+
+        return $this->commandBus->dispatch(
+            new Tag($eventId, $keyword)
+        );
+    }
+
+    /**
+     * @param string $eventId
+     * @param Keyword $keyword
+     * @return string command id
+     * @throws EventNotFoundException
+     */
+    public function eraseTag($eventId, Keyword $keyword)
+    {
+        $this->guardEventId($eventId);
+
+        return $this->commandBus->dispatch(
+            new EraseTag($eventId, $keyword)
+        );
+    }
+
+
 } 

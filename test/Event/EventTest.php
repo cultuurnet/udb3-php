@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\Event;
 
 
+use CultuurNet\UDB3\Keyword;
+
 class EventTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -23,17 +25,17 @@ class EventTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_tagged_with_multiple_keywords()
     {
-        $this->event->tag('foo');
+        $this->event->tag(new Keyword('foo'));
 
         $this->assertEquals(
-            array('foo'),
+            array(new Keyword('foo')),
             $this->event->getKeywords()
         );
 
-        $this->event->tag('bar');
+        $this->event->tag(new Keyword('bar'));
 
         $this->assertEquals(
-            array('foo', 'bar'),
+            array(new Keyword('foo'), new Keyword('bar')),
             $this->event->getKeywords()
         );
     }
@@ -43,11 +45,11 @@ class EventTest extends \PHPUnit_Framework_TestCase
      */
     public function it_only_applies_the_same_tag_once()
     {
-        $this->event->tag('foo');
-        $this->event->tag('foo');
+        $this->event->tag(new Keyword('foo'));
+        $this->event->tag(new Keyword('foo'));
 
         $this->assertEquals(
-            array('foo'),
+            array(new Keyword('foo')),
             $this->event->getKeywords()
         );
     }
@@ -66,14 +68,14 @@ class EventTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                'kunst',
-                'tentoonstelling',
-                'brugge',
-                'grafiek',
-                'oud sint jan',
-                'TRAEGHE GENUINE ARTS',
-                'janine de conink',
-                'brugge oktober'
+                new Keyword('kunst'),
+                new Keyword('tentoonstelling'),
+                new Keyword('brugge'),
+                new Keyword('grafiek'),
+                new Keyword('oud sint jan'),
+                new Keyword('TRAEGHE GENUINE ARTS'),
+                new Keyword('janine de conink'),
+                new Keyword('brugge oktober')
             ),
             $event->getKeywords()
         );

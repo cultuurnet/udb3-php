@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
 
@@ -61,13 +62,21 @@ class Event extends EventSourcedAggregateRoot
         return $this->keywords;
     }
 
-    public function tag($keyword)
+    public function tag(Keyword $keyword)
     {
         if (in_array($keyword, $this->keywords)) {
             return;
         }
 
         $this->apply(new EventWasTagged($this->eventId, $keyword));
+    }
+
+    public function eraseTag(Keyword $keyword)
+    {
+        if (!in_array($keyword, $this->keywords)) {
+            return;
+        }
+        $this->apply(new TagErased($this->eventId, $keyword));
     }
 
     protected function applyEventCreated(EventCreated $eventCreated)
@@ -80,17 +89,31 @@ class Event extends EventSourcedAggregateRoot
         $this->keywords[] = $eventTagged->getKeyword();
     }
 
+    protected function applyTagErased(TagErased $tagErased)
+    {
+        $this->keywords = array_filter(
+          $this->keywords,
+          function (Keyword $keyword) use ($tagErased) {
+              return $keyword != $tagErased->getKeyword();
+          }
+        );
+    }
+
     protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImported
     ) {
         $this->eventId = $eventImported->getEventId();
+        $cdbXml = $eventImported->getCdbXml();
 
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventImported->getCdbXmlNamespaceUri(),
             $eventImported->getCdbXml()
         );
 
-        $this->keywords = array_values($udb2Event->getKeywords());
+        $this->keywords = array();
+        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
+            $this->keywords[] = new Keyword($udb2Keyword);
+        }
     }
 
     /**

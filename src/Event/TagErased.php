@@ -1,11 +1,14 @@
 <?php
-
+/**
+ * @file
+ */
 
 namespace CultuurNet\UDB3\Event;
 
+
 use CultuurNet\UDB3\Keyword;
 
-class EventWasTagged extends EventEvent
+final class TagErased extends EventEvent
 {
     /**
      * @var Keyword
@@ -43,4 +46,5 @@ class EventWasTagged extends EventEvent
     {
         return new static($data['event_id'], new Keyword($data['keyword']));
     }
-}
+
+} 

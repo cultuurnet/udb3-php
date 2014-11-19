@@ -129,7 +129,8 @@ class EventLDProjector extends Projector
      * @param EventEvent $event
      * @return JsonDocument
      */
-    protected function loadDocumentFromRepository(EventEvent $event) {
+    protected function loadDocumentFromRepository(EventEvent $event)
+    {
         $document = $this->repository->get($event->getEventId());
 
         if (!$document) {

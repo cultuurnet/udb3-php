@@ -133,8 +133,8 @@ class EntryAPI extends OAuthProtectedService
         $request = $this->getClient()->delete(
             $this->eventKeywordsPath($eventId)
         );
-
-        $request->getPostFields()->add('keyword', (string)$keyword);
+        
+        $request->getQuery()->add('keyword', (string)$keyword);
 
         $response = $request->send();
 

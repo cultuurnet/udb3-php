@@ -46,7 +46,7 @@ class Event extends EventSourcedAggregateRoot
         return $this->keywords;
     }
 
-    public function tag($keyword)
+    public function tag(Keyword $keyword)
     {
         if (in_array($keyword, $this->keywords)) {
             return;
@@ -55,12 +55,11 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(new EventWasTagged($this->eventId, $keyword));
     }
 
-    public function eraseTag($keyword)
+    public function eraseTag(Keyword $keyword)
     {
         if (!in_array($keyword, $this->keywords)) {
             return;
         }
-
         $this->apply(new TagErased($this->eventId, $keyword));
     }
 
@@ -79,13 +78,14 @@ class Event extends EventSourcedAggregateRoot
         $this->keywords = array_filter(
             $this->keywords,
             function (Keyword $keyword) use ($tagErased) {
-                return $keyword !== $tagErased->getKeyword();
+                return $keyword != $tagErased->getKeyword();
             }
         );
     }
 
-    protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $eventImported)
-    {
+    protected function applyEventImportedFromUDB2(
+        EventImportedFromUDB2 $eventImported
+    ) {
         $this->eventId = $eventImported->getEventId();
         $cdbXml = $eventImported->getCdbXml();
 
@@ -100,7 +100,10 @@ class Event extends EventSourcedAggregateRoot
             $udb2SimpleXml
         );
 
-        $this->keywords = array_values($udb2Event->getKeywords());
+        $this->keywords = array();
+        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
+            $this->keywords[] = new Keyword($udb2Keyword);
+        }
     }
 
     /**
@@ -114,7 +117,9 @@ class Event extends EventSourcedAggregateRoot
 
     public function translateDescription(Language $language, $description)
     {
-        $this->apply(new DescriptionTranslated($this->eventId, $language, $description));
+        $this->apply(
+            new DescriptionTranslated($this->eventId, $language, $description)
+        );
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

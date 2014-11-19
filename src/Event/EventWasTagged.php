@@ -3,16 +3,24 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Keyword;
+
 class EventWasTagged extends EventEvent
 {
+    /**
+     * @var Keyword
+     */
     protected $keyword;
 
-    public function __construct($eventId, $keyword)
+    public function __construct($eventId, Keyword $keyword)
     {
         parent::__construct($eventId);
         $this->keyword = $keyword;
     }
 
+    /**
+     * @return Keyword
+     */
     public function getKeyword()
     {
         return $this->keyword;
@@ -24,7 +32,7 @@ class EventWasTagged extends EventEvent
     public function serialize()
     {
         return parent::serialize() + array(
-            'keyword' => $this->keyword,
+            'keyword' => (string)$this->keyword,
         );
     }
 
@@ -33,6 +41,6 @@ class EventWasTagged extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['keyword']);
+        return new static($data['event_id'], new Keyword($data['keyword']));
     }
 }

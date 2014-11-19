@@ -32,6 +32,24 @@ class EntryAPI extends OAuthProtectedService
     }
 
     /**
+     * @return \Guzzle\Http\Client
+     */
+    protected function getClient()
+    {
+        $client = parent::getClient();
+
+        $client->setDefaultOption(
+            'headers',
+            [
+                'Accept' => 'text/xml'
+            ]
+        );
+
+        return $client;
+    }
+
+
+    /**
      * @param string $eventId
      * @param Language $language
      * @param string $title

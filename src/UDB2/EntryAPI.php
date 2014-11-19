@@ -21,6 +21,10 @@ class EntryAPI extends OAuthProtectedService
 
     const KEYWORD_PRIVATE = 'PrivateKeyword';
 
+    const KEYWORDS_CREATED = 'KeywordsCreated';
+
+    const PRIVATE_KEYWORD = 'PrivateKeyword';
+
     protected function eventTranslationPath($eventId)
     {
         return "event/{$eventId}/translations";
@@ -116,9 +120,19 @@ class EntryAPI extends OAuthProtectedService
 
         $rsp = Rsp::fromResponseBody($response->getBody(true));
 
-        // @todo guard the response here
+        $this->guardKeywordResponseIsSuccessful($rsp);
 
         return $rsp;
+    }
+
+    public function guardKeywordResponseIsSuccessful(Rsp $rsp)
+    {
+        if ($rsp->getCode() === self::PRIVATE_KEYWORD) {
+            throw new PrivateKeywordException($rsp);
+        }
+        elseif ($rsp->getCode() !== self::KEYWORDS_CREATED) {
+            throw new UnexpectedKeywordErrorException($rsp);
+        }
     }
 
     /**

@@ -26,9 +26,9 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 
 
     public function __construct(
-      RepositoryInterface $eventRepository,
-      SearchServiceInterface $searchService)
-    {
+        RepositoryInterface $eventRepository,
+        SearchServiceInterface $searchService
+    ) {
         $this->eventRepository = $eventRepository;
         $this->searchService = $searchService;
     }
@@ -49,34 +49,33 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         try {
             $preQueryResult = $this->searchService->search($query, 1, 0);
             $totalItemCount = $preQueryResult['totalItems'];
-        }
-        catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
+        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
             if ($this->logger) {
                 $this->logger->error(
-                  'query_was_not_tagged',
-                  array(
-                    'query' => $query,
-                    'error' => $e->getMessage(),
-                    'exception_class' => get_class($e),
-                  )
+                    'query_was_not_tagged',
+                    array(
+                        'query' => $query,
+                        'error' => $e->getMessage(),
+                        'exception_class' => get_class($e),
+                    )
                 );
             }
         }
 
-        if($totalItemCount < 1) {
+        if ($totalItemCount < 1) {
             if ($this->logger) {
                 $this->logger->error(
-                  'query_was_not_tagged',
-                  array(
-                    'query' => $query,
-                    'error' => "query did not return any results"
-                  )
+                    'query_was_not_tagged',
+                    array(
+                        'query' => $query,
+                        'error' => "query did not return any results"
+                    )
                 );
             }
         } else {
             // change this pageSize value to increase or decrease the page size;
             $pageSize = 10;
-            $pageCount =  ceil($totalItemCount / $pageSize);
+            $pageCount = ceil($totalItemCount / $pageSize);
             $pageCounter = 0;
             $taggedEventIds = [];
 
@@ -85,20 +84,24 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
                 $start = $pageCounter * $pageSize;
                 // Sort ascending by creation date to make sure we get a quite consistent paging.
                 $sort = 'creationdate asc';
-                $results = $this->searchService->search($query, $pageSize, $start, $sort);
+                $results = $this->searchService->search(
+                    $query,
+                    $pageSize,
+                    $start,
+                    $sort
+                );
 
                 // Iterate the results of the current page and get their IDs
                 // by stripping them from the json-LD representation
                 foreach ($results['member'] as $event) {
-                    $expoId = explode('/',$event['@id']);
+                    $expoId = explode('/', $event['@id']);
                     $eventId = array_pop($expoId);
 
                     if (!array_key_exists($eventId, $taggedEventIds)) {
                         $taggedEventIds[$eventId] = $pageCounter;
 
                         $this->tagEvent($tagQuery->getKeyword(), $eventId);
-                    }
-                    else {
+                    } else {
                         if ($this->logger) {
                             $this->logger->error(
                                 'query_duplicate_event',
@@ -156,15 +159,42 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         /** @var Event $event */
         $event = $this->eventRepository->load($translateTitle->getId());
 
-        $event->translateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
+        $event->translateTitle(
+            $translateTitle->getLanguage(),
+            $translateTitle->getTitle()
+        );
 
         $this->eventRepository->add($event);
     }
 
-    public function handleTranslateDescription(TranslateDescription $translateDescription) {
+    public function handleTranslateDescription(
+        TranslateDescription $translateDescription
+    ) {
+        /** @var Event $event */
         $event = $this->eventRepository->load($translateDescription->getId());
 
-        $event->translateDescription($translateDescription->getLanguage(), $translateDescription->getDescription());
+        $event->translateDescription(
+            $translateDescription->getLanguage(),
+            $translateDescription->getDescription()
+        );
+
+        $this->eventRepository->add($event);
+    }
+
+    public function handleTag(Tag $tag)
+    {
+        /** @var Event $event */
+        $event = $this->eventRepository->load($tag->getEventId());
+        $event->tag($tag->getKeyword());
+
+        $this->eventRepository->add($event);
+    }
+
+    public function handleEraseTag(EraseTag $tag)
+    {
+        /** @var Event $event */
+        $event = $this->eventRepository->load($tag->getEventId());
+        $event->eraseTag($tag->getKeyword());
 
         $this->eventRepository->add($event);
     }

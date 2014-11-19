@@ -176,4 +176,76 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->when(new TranslateDescription($id, $language, $description))
             ->then([new DescriptionTranslated($id, $language, $description)]);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_tag_an_event()
+    {
+        $id = '1';
+        $keyword = new Keyword('foo');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [new EventCreated($id)]
+            )
+            ->when(new Tag($id, $keyword))
+            ->then([new EventWasTagged($id, $keyword)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_erase_a_tag_from_an_event()
+    {
+        $id = '1';
+        $keyword = new Keyword('foo');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    new EventCreated($id),
+                    new EventWasTagged($id, $keyword)
+                ]
+            )
+            ->when(new EraseTag($id, $keyword))
+            ->then([new TagErased($id, $keyword)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_erase_a_tag_that_is_not_present_on_an_event()
+    {
+        $id = '1';
+        $keyword = new Keyword('foo');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [new EventCreated($id)]
+            )
+            ->when(new EraseTag($id, $keyword))
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_erase_a_tag_from_an_event_that_has_been_erased_already(
+    )
+    {
+        $id = '1';
+        $keyword = new Keyword('foo');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    new EventCreated($id),
+                    new EventWasTagged($id, $keyword),
+                    new TagErased($id, $keyword)
+                ]
+            )
+            ->when(new EraseTag($id, $keyword))
+            ->then([]);
+    }
 }

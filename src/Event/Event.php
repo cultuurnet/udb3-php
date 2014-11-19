@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 
 class Event extends EventSourcedAggregateRoot
@@ -54,6 +55,15 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(new EventWasTagged($this->eventId, $keyword));
     }
 
+    public function eraseTag($keyword)
+    {
+        if (!in_array($keyword, $this->keywords)) {
+            return;
+        }
+
+        $this->apply(new TagErased($this->eventId, $keyword));
+    }
+
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
@@ -62,6 +72,16 @@ class Event extends EventSourcedAggregateRoot
     protected function applyEventWasTagged(EventWasTagged $eventTagged)
     {
         $this->keywords[] = $eventTagged->getKeyword();
+    }
+
+    protected function applyTagErased(TagErased $tagErased)
+    {
+        $this->keywords = array_filter(
+            $this->keywords,
+            function (Keyword $keyword) use ($tagErased) {
+                return $keyword !== $tagErased->getKeyword();
+            }
+        );
     }
 
     protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $eventImported)

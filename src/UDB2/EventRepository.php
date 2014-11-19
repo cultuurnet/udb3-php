@@ -9,12 +9,15 @@ namespace CultuurNet\UDB3\UDB2;
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventWasTagged;
+use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 
 /**
@@ -40,6 +43,11 @@ class EventRepository implements RepositoryInterface
     protected $entryAPIFactory;
 
     /**
+     * @var EntryAPIImprovedFactory
+     */
+    protected $entryAPIImprovedFactory;
+
+    /**
      * @var boolean
      */
     protected $syncBack = false;
@@ -53,19 +61,23 @@ class EventRepository implements RepositoryInterface
         RepositoryInterface $decoratee,
         SearchServiceInterface $search,
         EntryAPIFactory $entryAPIFactory,
+        EntryAPIImprovedFactory $entryAPIImprovedFactory,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;
         $this->search = $search;
         $this->entryAPIFactory = $entryAPIFactory;
+        $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
     }
 
-    public function syncBackOn() {
+    public function syncBackOn()
+    {
         $this->syncBack = true;
     }
 
-    public function syncBackOff() {
+    public function syncBackOff()
+    {
         $this->syncBack = false;
     }
 
@@ -111,6 +123,23 @@ class EventRepository implements RepositoryInterface
                             [$domainEvent->getKeyword()]
                         );
                         break;
+
+                    case 'CultuurNet\\UDB3\\Event\\TitleTranslated':
+                        /** @var TitleTranslated $domainEvent */
+                        $this->applyTitleTranslated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case 'CultuurNet\\UDB3\\Event\\DescriptionTranslated':
+                        /** @var DescriptionTranslated $domainEvent */
+                        $this->applyDescriptionTranslated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
                     default:
                         // Ignore any other actions
                 }
@@ -118,6 +147,45 @@ class EventRepository implements RepositoryInterface
         }
 
         $this->decoratee->add($aggregate);
+    }
+
+    private function applyTitleTranslated(
+        TitleTranslated $domainEvent,
+        Metadata $metadata
+    ) {
+        $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->translateEventTitle(
+            $domainEvent->getEventId(),
+            $domainEvent->getLanguage(),
+            $domainEvent->getTitle()
+        );
+    }
+
+    private function applyDescriptionTranslated(
+        DescriptionTranslated $domainEvent,
+        Metadata $metadata
+    ) {
+        $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->translateEventDescription(
+                $domainEvent->getEventId(),
+                $domainEvent->getLanguage(),
+                $domainEvent->getDescription()
+            );
+    }
+
+    /**
+     * @param Metadata $metadata
+     * @return EntryAPI
+     */
+    private function createImprovedEntryAPIFromMetadata(Metadata $metadata)
+    {
+        $metadata = $metadata->serialize();
+        $tokenCredentials = $metadata['uitid_token_credentials'];
+        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
+            $tokenCredentials
+        );
+
+        return $entryAPI;
     }
 
     private function decorateForWrite(

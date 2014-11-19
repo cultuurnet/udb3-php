@@ -29,5 +29,22 @@ final class TagErased extends EventEvent
         return $this->keyword;
     }
 
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + array(
+            'keyword' => (string)$this->keyword,
+        );
+    }
+
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['event_id'], new Keyword($data['keyword']));
+    }
 
 } 

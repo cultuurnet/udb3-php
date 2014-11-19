@@ -13,11 +13,11 @@ use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventWasTagged;
+use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 
@@ -125,6 +125,35 @@ class EventRepository implements RepositoryInterface
                         );
                         break;
 
+                    case 'CultuurNet\\UDB3\\Event\\TagErased':
+                        /** @var TagErased $domainEvent */
+                        // @todo Unfortunately the Guzzle-based service does not
+                        // seem to authenticate properly. we need to find out if
+                        // the OAUTH signature is correctly calculated for
+                        // DELETE requests.
+                        /*$this->applyTagErased(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );*/
+                        $event = new \CultureFeed_Cdb_Item_Event();
+                        $event->setCdbId($domainEvent->getEventId());
+                        // At this point we need to have
+                        // - the user associated with the event, from the metadata
+                        // - the token and secret of the user stored in the database
+                        $metadata = $domainMessage->getMetadata()->serialize();
+                        $tokenCredentials = $metadata['uitid_token_credentials'];
+                        //throw new \Exception($userId);
+                        $entryAPI = $this->entryAPIFactory->withTokenCredentials(
+                            $tokenCredentials
+                        );
+                        $entryAPI->removeTagFromEvent(
+                            $event,
+                            (string)$domainEvent->getKeyword()
+                        );
+                        break;
+
+                        break;
+
                     case 'CultuurNet\\UDB3\\Event\\TitleTranslated':
                         /** @var TitleTranslated $domainEvent */
                         $this->applyTitleTranslated(
@@ -148,6 +177,20 @@ class EventRepository implements RepositoryInterface
         }
 
         $this->decoratee->add($aggregate);
+    }
+
+    private function applyTagErased(
+        TagErased $tagErased,
+        Metadata $metadata
+    )
+    {
+        $rsp = $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->deleteKeyword(
+                $tagErased->getEventId(),
+                $tagErased->getKeyword()
+            );
+
+        var_dump($rsp);
     }
 
     private function applyTitleTranslated(

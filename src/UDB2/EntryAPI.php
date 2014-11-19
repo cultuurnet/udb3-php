@@ -102,6 +102,25 @@ class EntryAPI extends OAuthProtectedService
         return $rsp;
     }
 
+    public function addKeyword($eventId, Keyword $keyword)
+    {
+        $request = $this->getClient()->post(
+            $this->eventKeywordsPath($eventId),
+            null,
+            [
+                'keywords' => (string)$keyword,
+            ]
+        );
+
+        $response = $request->send();
+
+        $rsp = Rsp::fromResponseBody($response->getBody(true));
+
+        // @todo guard the response here
+
+        return $rsp;
+    }
+
     /**
      * @param string $eventId
      * @param Keyword $keyword

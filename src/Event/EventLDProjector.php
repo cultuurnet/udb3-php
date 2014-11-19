@@ -103,6 +103,7 @@ class EventLDProjector extends Projector
         $document = $this->loadDocumentFromRepository($eventTagged);
 
         $eventLd = $document->getBody();
+        // TODO: Check if the event is already tagged with the keyword?
         $eventLd->concept[] = (string)$eventTagged->getKeyword();
 
         $this->repository->save($document->withBody($eventLd));
@@ -113,8 +114,8 @@ class EventLDProjector extends Projector
         $document = $this->loadDocumentFromRepository($tagErased);
 
         $eventLd = $document->getBody();
-        $eventLd->concept = array_filter(
-            $eventLd->concept,
+        $eventLd->concept = (object)array_filter(
+            (array)$eventLd->concept,
             function ($keyword) use ($tagErased) {
                 return $keyword !== (string)$tagErased->getKeyword();
             }

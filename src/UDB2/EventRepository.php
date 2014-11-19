@@ -108,49 +108,18 @@ class EventRepository implements RepositoryInterface
                 switch (get_class($domainEvent)) {
                     case 'CultuurNet\\UDB3\\Event\\EventWasTagged':
                         /** @var EventWasTagged $domainEvent */
-                        $event = new \CultureFeed_Cdb_Item_Event();
-                        $event->setCdbId($domainEvent->getEventId());
-                        // At this point we need to have
-                        // - the user associated with the event, from the metadata
-                        // - the token and secret of the user stored in the database
-                        $metadata = $domainMessage->getMetadata()->serialize();
-                        $tokenCredentials = $metadata['uitid_token_credentials'];
-                        //throw new \Exception($userId);
-                        $entryAPI = $this->entryAPIFactory->withTokenCredentials(
-                            $tokenCredentials
-                        );
-                        $entryAPI->addTagToEvent(
-                            $event,
-                            [$domainEvent->getKeyword()]
+                        $this->applyEventWasTagged(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
                         );
                         break;
 
                     case 'CultuurNet\\UDB3\\Event\\TagErased':
                         /** @var TagErased $domainEvent */
-                        // @todo Unfortunately the Guzzle-based service does not
-                        // seem to authenticate properly. we need to find out if
-                        // the OAUTH signature is correctly calculated for
-                        // DELETE requests.
-                        /*$this->applyTagErased(
+                        $this->applyTagErased(
                             $domainEvent,
                             $domainMessage->getMetadata()
-                        );*/
-                        $event = new \CultureFeed_Cdb_Item_Event();
-                        $event->setCdbId($domainEvent->getEventId());
-                        // At this point we need to have
-                        // - the user associated with the event, from the metadata
-                        // - the token and secret of the user stored in the database
-                        $metadata = $domainMessage->getMetadata()->serialize();
-                        $tokenCredentials = $metadata['uitid_token_credentials'];
-                        //throw new \Exception($userId);
-                        $entryAPI = $this->entryAPIFactory->withTokenCredentials(
-                            $tokenCredentials
                         );
-                        $entryAPI->removeTagFromEvent(
-                            $event,
-                            (string)$domainEvent->getKeyword()
-                        );
-                        break;
 
                         break;
 
@@ -179,18 +148,26 @@ class EventRepository implements RepositoryInterface
         $this->decoratee->add($aggregate);
     }
 
+    private function applyEventWasTagged(
+        EventWasTagged $tagged,
+        Metadata $metadata
+    ) {
+        $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->addKeyword(
+                $tagged->getEventId(),
+                $tagged->getKeyword()
+            );
+    }
+
     private function applyTagErased(
         TagErased $tagErased,
         Metadata $metadata
-    )
-    {
-        $rsp = $this->createImprovedEntryAPIFromMetadata($metadata)
+    ) {
+        $this->createImprovedEntryAPIFromMetadata($metadata)
             ->deleteKeyword(
                 $tagErased->getEventId(),
                 $tagErased->getKeyword()
             );
-
-        var_dump($rsp);
     }
 
     private function applyTitleTranslated(
@@ -199,10 +176,10 @@ class EventRepository implements RepositoryInterface
     ) {
         $this->createImprovedEntryAPIFromMetadata($metadata)
             ->translateEventTitle(
-            $domainEvent->getEventId(),
-            $domainEvent->getLanguage(),
-            $domainEvent->getTitle()
-        );
+                $domainEvent->getEventId(),
+                $domainEvent->getLanguage(),
+                $domainEvent->getTitle()
+            );
     }
 
     private function applyDescriptionTranslated(

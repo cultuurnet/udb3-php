@@ -180,6 +180,9 @@ class EventRepository implements RepositoryInterface
     private function createImprovedEntryAPIFromMetadata(Metadata $metadata)
     {
         $metadata = $metadata->serialize();
+        if (!isset($metadata['uitid_token_credentials'])) {
+          throw new \RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
+        }
         $tokenCredentials = $metadata['uitid_token_credentials'];
         $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
             $tokenCredentials

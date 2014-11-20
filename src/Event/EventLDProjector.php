@@ -121,12 +121,16 @@ class EventLDProjector extends Projector
         $document = $this->loadDocumentFromRepository($tagErased);
 
         $eventLd = $document->getBody();
-        $eventLd->concept = (object)array_filter(
-            (array)$eventLd->concept,
+
+        $eventLd->concept = array_filter(
+            $eventLd->concept,
             function ($keyword) use ($tagErased) {
                 return $keyword !== (string)$tagErased->getKeyword();
             }
         );
+        // Ensure array keys start with 0 so json_encode() does encode it
+        // as an array and not as an object.
+        $eventLd->concept = array_values($eventLd->concept);
 
         $this->repository->save($document->withBody($eventLd));
     }

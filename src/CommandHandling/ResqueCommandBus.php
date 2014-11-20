@@ -140,6 +140,9 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
         try {
             parent::dispatch($command);
         } catch (\Exception $e) {
+            if ($currentCommandLogger) {
+              $currentCommandLogger->error('job_failed');
+            }
             $exception = $e;
         }
 

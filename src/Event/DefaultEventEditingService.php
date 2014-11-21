@@ -9,8 +9,10 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
 {
@@ -42,6 +44,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     public function translateTitle($eventId, Language $language, $title)
     {
         $this->guardEventId($eventId);
+        $this->guardTranslationLanguage($language);
 
         return $this->commandBus->dispatch(
             new TranslateTitle($eventId, $language, $title)
@@ -54,6 +57,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     public function translateDescription($eventId, Language $language, $description)
     {
         $this->guardEventId($eventId);
+        $this->guardTranslationLanguage($language);
 
         return $this->commandBus->dispatch(
             new TranslateDescription($eventId, $language, $description)
@@ -68,6 +72,13 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     {
         // This validates if the eventId is valid.
         $this->eventService->getEvent($eventId);
+    }
+
+    protected function guardTranslationLanguage(Language $language)
+    {
+        if (!LanguageCanBeTranslatedToSpecification::isSatisfiedBy($language)) {
+            throw new InvalidTranslationLanguageException($language);
+        }
     }
 
     /**

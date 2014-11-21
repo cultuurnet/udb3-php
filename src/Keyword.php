@@ -16,6 +16,7 @@ class Keyword implements \JsonSerializable
             throw new \InvalidArgumentException('Keyword should be a string');
         }
 
+        $value = trim($value);
         if ('' === $value) {
             throw new \InvalidArgumentException('Keyword should consist of at least one character');
         }

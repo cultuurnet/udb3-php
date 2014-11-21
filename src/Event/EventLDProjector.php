@@ -38,7 +38,7 @@ class EventLDProjector extends Projector
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */
-    protected function applyEventImportedFromUDB2(
+    public function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
@@ -82,7 +82,13 @@ class EventLDProjector extends Projector
         $pictures->rewind();
         $picture = count($pictures) > 0 ? $pictures->current() : null;
 
-        $eventLd->concept = array_values($udb2Event->getKeywords());
+        $keywords = array_filter(
+          array_values($udb2Event->getKeywords()),
+          function ($keyword) {
+              return (strlen(trim($keyword)) > 0);
+          });
+
+        $eventLd->concept = $keywords;
         $eventLd->calendarSummary = $detail->getCalendarSummary();
         $eventLd->image = $picture ? $picture->getHLink() : null;
         $eventLd->location = $udb2Event->getLocation()->getLabel();

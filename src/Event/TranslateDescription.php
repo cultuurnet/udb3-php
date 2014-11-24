@@ -5,12 +5,10 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Language;
 
 class TranslateDescription extends TranslateProperty
 {
-
     /**
      * @var string
      */
@@ -34,4 +32,4 @@ class TranslateDescription extends TranslateProperty
     {
         return $this->description;
     }
-} 
+}

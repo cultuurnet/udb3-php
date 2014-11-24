@@ -23,5 +23,5 @@ interface SearchServiceInterface
      * @return array|\JsonSerializable
      *  A JSON-LD array or JSON serializable object.
      */
-    public function search($query, $limit = 30, $start = 0, $sort = NULL);
-} 
+    public function search($query, $limit = 30, $start = 0, $sort = null);
+}

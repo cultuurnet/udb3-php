@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\Serializer\SerializableInterface;
 
 abstract class EventEvent implements SerializableInterface
@@ -39,5 +38,4 @@ abstract class EventEvent implements SerializableInterface
     {
         return new static($data['event_id']);
     }
-
 }

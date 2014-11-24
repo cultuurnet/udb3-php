@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessageInterface;
@@ -195,7 +194,7 @@ class EventRepository implements RepositoryInterface
     {
         $metadata = $metadata->serialize();
         if (!isset($metadata['uitid_token_credentials'])) {
-          throw new \RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
+            throw new \RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
         }
         $tokenCredentials = $metadata['uitid_token_credentials'];
         $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(

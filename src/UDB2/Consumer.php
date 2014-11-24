@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 use CultuurNet\Auth\ConsumerCredentials;
 
 final class Consumer
@@ -16,8 +15,7 @@ final class Consumer
     public function __construct(
         $targetUrl,
         ConsumerCredentials $consumerCredentials
-    )
-    {
+    ) {
         $this->targetUrl = $targetUrl;
         $this->consumerCredentials = $consumerCredentials;
     }
@@ -37,6 +35,4 @@ final class Consumer
     {
         return $this->targetUrl;
     }
-
-
-} 
+}

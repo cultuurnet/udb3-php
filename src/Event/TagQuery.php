@@ -5,7 +5,8 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Keyword;
 
-class TagQuery {
+class TagQuery
+{
     /**
      * @var string
      */
@@ -37,4 +38,4 @@ class TagQuery {
     {
         return $this->keyword;
     }
-} 
+}

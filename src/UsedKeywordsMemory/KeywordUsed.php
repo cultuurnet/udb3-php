@@ -5,12 +5,10 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use CultuurNet\UDB3\Keyword;
 
 class KeywordUsed extends Event
 {
-
     /**
      * @var Keyword
      */

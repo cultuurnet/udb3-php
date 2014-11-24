@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use CultuurNet\UDB3\Keyword;
 
 interface UsedKeywordsMemoryServiceInterface
@@ -22,5 +21,4 @@ interface UsedKeywordsMemoryServiceInterface
      * @return UsedKeywordsMemory
      */
     public function getMemory($userId);
-
 }

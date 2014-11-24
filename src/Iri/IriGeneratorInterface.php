@@ -22,4 +22,4 @@ interface IriGeneratorInterface
      *   A dereferenceable IRI.
      */
     public function iri($item);
-} 
+}

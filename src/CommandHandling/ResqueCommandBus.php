@@ -5,9 +5,7 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\CommandHandling\CommandHandlerInterface;
 use CultuurNet\UDB3\Log\ContextEnrichingLogger;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -117,7 +115,7 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      */
     public function deferredDispatch($jobId, $command)
     {
-        $exception = NULL;
+        $exception = null;
         $currentCommandLogger = null;
         if ($this->logger) {
             $jobMetadata = array(
@@ -141,7 +139,7 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
             parent::dispatch($command);
         } catch (\Exception $e) {
             if ($currentCommandLogger) {
-              $currentCommandLogger->error('job_failed');
+                $currentCommandLogger->error('job_failed');
             }
             $exception = $e;
         }

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
@@ -45,4 +44,4 @@ interface EventEditingServiceInterface
      * @throws EventNotFoundException
      */
     public function eraseTag($eventId, Keyword $keyword);
-} 
+}

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Log;
 
-
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 
@@ -45,4 +44,4 @@ class ContextEnrichingLogger implements LoggerInterface
 
         $this->decoratee->log($level, $message, $enrichedContext);
     }
-} 
+}

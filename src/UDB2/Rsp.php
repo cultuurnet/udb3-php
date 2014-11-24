@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 class Rsp
 {
     const LEVEL_INFO = 'INFO';
@@ -55,7 +54,7 @@ class Rsp
      * @param string $xml
      * @return static
      */
-    static public function fromResponseBody($xml)
+    public static function fromResponseBody($xml)
     {
         $simpleXml = new \SimpleXMLElement($xml);
 
@@ -104,4 +103,4 @@ class Rsp
     {
         return $this->message;
     }
-} 
+}

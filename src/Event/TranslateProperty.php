@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Language;
 
 abstract class TranslateProperty
@@ -42,4 +41,4 @@ abstract class TranslateProperty
     {
         return $this->language;
     }
-} 
+}

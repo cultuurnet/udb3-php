@@ -7,6 +7,7 @@ use Broadway\CommandHandling\CommandHandler;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -49,7 +50,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         try {
             $preQueryResult = $this->searchService->search($query, 1, 0);
             $totalItemCount = $preQueryResult['totalItems'];
-        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
+        } catch (ClientErrorResponseException $e) {
             if ($this->logger) {
                 $this->logger->error(
                     'query_was_not_tagged',

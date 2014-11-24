@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 class EventImportedFromUDB2 extends EventEvent
 {
     /**

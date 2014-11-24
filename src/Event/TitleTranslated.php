@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Language;
 
 class TitleTranslated extends PropertyTranslated
@@ -55,4 +54,4 @@ class TitleTranslated extends PropertyTranslated
             $data['title']
         );
     }
-} 
+}

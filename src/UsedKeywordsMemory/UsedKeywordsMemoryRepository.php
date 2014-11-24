@@ -5,14 +5,12 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\EventStoreInterface;
 
 class UsedKeywordsMemoryRepository extends EventSourcingRepository
 {
-
     public function __construct(
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus,

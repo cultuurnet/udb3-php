@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 class UnexpectedKeywordDeleteErrorException extends \Exception
 {
     protected $rsp;

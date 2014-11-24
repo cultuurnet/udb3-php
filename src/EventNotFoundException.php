@@ -3,7 +3,6 @@
 
 namespace CultuurNet\UDB3;
 
-
-class EventNotFoundException extends \Exception{
-
-} 
+class EventNotFoundException extends \Exception
+{
+}

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Domain\Metadata;
@@ -56,4 +55,4 @@ class SimpleContextAwareCommandBus implements CommandBusInterface, ContextAwareI
             $handler->handle($command);
         }
     }
-} 
+}

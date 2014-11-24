@@ -8,8 +8,8 @@ namespace CultuurNet\UDB3;
 /**
  * Interface for a service performing event related tasks.
  */
-interface EventServiceInterface {
-
+interface EventServiceInterface
+{
     /**
      * Get a single event by its id.
      *
@@ -23,4 +23,3 @@ interface EventServiceInterface {
      */
     public function getEvent($id);
 }
-

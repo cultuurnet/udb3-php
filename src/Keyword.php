@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 class Keyword implements \JsonSerializable
 {
     protected $value;
@@ -21,13 +20,13 @@ class Keyword implements \JsonSerializable
             throw new \InvalidArgumentException('Keyword should consist of at least one character');
         }
 
-        if (FALSE !== strpos($value, ';')) {
+        if (false !== strpos($value, ';')) {
             throw new \InvalidArgumentException('Keyword should not contain semicolons');
         }
         $this->value = $value;
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->value;
     }
@@ -35,8 +34,8 @@ class Keyword implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->value;
     }
-} 
+}

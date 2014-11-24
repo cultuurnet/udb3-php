@@ -21,7 +21,8 @@ abstract class EventServiceDecoratorBase implements EventServiceInterface
      * @param EventServiceInterface $decoratee
      *   The EventServiceInterface to decorate.
      */
-    public function __construct(EventServiceInterface $decoratee) {
+    public function __construct(EventServiceInterface $decoratee)
+    {
         $this->decoratee = $decoratee;
     }
 

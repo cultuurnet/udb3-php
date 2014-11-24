@@ -3,7 +3,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Keyword;
@@ -71,4 +70,4 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
 
         return $commandId;
     }
-} 
+}

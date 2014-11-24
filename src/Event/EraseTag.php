@@ -40,5 +40,4 @@ class EraseTag
     {
         return $this->keyword;
     }
-
-} 
+}

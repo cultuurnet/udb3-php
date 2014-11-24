@@ -53,7 +53,7 @@ class LegacySearchService implements SearchServiceInterface
      *
      * @return \Guzzle\Http\Message\Response
      */
-    protected function _search($query, $limit, $start, $sort = NULL)
+    protected function _search($query, $limit, $start, $sort = null)
     {
         $qParam = new Parameter\Query($query);
         $groupParam = new Parameter\Group();
@@ -81,11 +81,18 @@ class LegacySearchService implements SearchServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function search($query, $limit = 30, $start = 0, $sort = NULL)
+    public function search($query, $limit = 30, $start = 0, $sort = null)
     {
         $response = $this->_search($query, $limit, $start, $sort);
 
-        $result = SearchResult::fromXml(new \SimpleXMLElement($response->getBody(true), 0, false, \CultureFeed_Cdb_Default::CDB_SCHEME_URL));
+        $result = SearchResult::fromXml(
+            new \SimpleXMLElement(
+                $response->getBody(true),
+                0,
+                false,
+                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            )
+        );
         
         // @todo split this off to another class
         // @todo context and type should probably be injected at a higher level.

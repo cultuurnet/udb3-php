@@ -34,4 +34,4 @@ class Language
     {
         return $this->code;
     }
-} 
+}

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
-class Created extends Event {
-
-} 
+class Created extends Event
+{
+}

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Keyword;
 
@@ -94,10 +93,8 @@ class UsedKeywordsMemory extends EventSourcedAggregateRoot implements \JsonSeria
     /**
      * {@inheritdoc}
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->usedKeywords;
     }
-
-
 }

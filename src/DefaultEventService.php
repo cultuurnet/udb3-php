@@ -80,6 +80,4 @@ class DefaultEventService implements EventServiceInterface
             return $event;
         }
     }
-
-
-} 
+}

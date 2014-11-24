@@ -5,11 +5,10 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use Broadway\Serializer\SerializableInterface;
 
-abstract class Event implements SerializableInterface {
-
+abstract class Event implements SerializableInterface
+{
     /**
      * @var string
      */
@@ -45,4 +44,4 @@ abstract class Event implements SerializableInterface {
     {
         return $this->userId;
     }
-} 
+}

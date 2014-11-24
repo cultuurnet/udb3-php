@@ -47,7 +47,7 @@ class EventLDProjector extends Projector
         );
 
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());
-        $eventLd = $document->getBody();;
+        $eventLd = $document->getBody();
 
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
@@ -83,10 +83,11 @@ class EventLDProjector extends Projector
         $picture = count($pictures) > 0 ? $pictures->current() : null;
 
         $keywords = array_filter(
-          array_values($udb2Event->getKeywords()),
-          function ($keyword) {
-              return (strlen(trim($keyword)) > 0);
-          });
+            array_values($udb2Event->getKeywords()),
+            function ($keyword) {
+                return (strlen(trim($keyword)) > 0);
+            }
+        );
 
         $eventLd->concept = $keywords;
         $eventLd->calendarSummary = $detail->getCalendarSummary();
@@ -195,4 +196,4 @@ class EventLDProjector extends Projector
 
         return $document;
     }
-} 
+}

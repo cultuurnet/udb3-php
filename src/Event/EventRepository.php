@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
@@ -30,4 +29,4 @@ class EventRepository extends EventSourcingRepository
             $eventStreamDecorators
         );
     }
-} 
+}

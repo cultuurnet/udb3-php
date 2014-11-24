@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\SearchAPI2;
 
-
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 /**
@@ -69,4 +68,4 @@ class ResultSetPullParser
 
         return $results;
     }
-} 
+}

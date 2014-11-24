@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Keyword;
 
 class Tag
@@ -41,5 +40,4 @@ class Tag
     {
         return $this->keyword;
     }
-
-} 
+}

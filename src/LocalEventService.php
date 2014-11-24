@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -26,8 +25,7 @@ class LocalEventService implements EventServiceInterface
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
         RepositoryInterface $eventRepository
-    )
-    {
+    ) {
         $this->documentRepository = $documentRepository;
         $this->eventRepository = $eventRepository;
     }
@@ -58,8 +56,7 @@ class LocalEventService implements EventServiceInterface
         try {
             $event = $this->eventRepository->load($id);
             $this->eventRepository->add($event);
-        }
-        catch (AggregateNotFoundException $e) {
+        } catch (AggregateNotFoundException $e) {
             throw new EventNotFoundException(
                 sprintf('Event with id: %s not found.', $id)
             );
@@ -70,4 +67,4 @@ class LocalEventService implements EventServiceInterface
 
         return $document->getRawBody();
     }
-} 
+}

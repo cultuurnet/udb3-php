@@ -22,7 +22,7 @@ class CallableIriGenerator implements IriGeneratorInterface
      * @param callable $callback
      *   The callback to delegate the generation of IRIs to.
      */
-    public function __construct(Callable $callback)
+    public function __construct(callable $callback)
     {
         $this->callback = $callback;
     }
@@ -35,4 +35,4 @@ class CallableIriGenerator implements IriGeneratorInterface
         $callback = $this->callback;
         return $callback($item);
     }
-} 
+}

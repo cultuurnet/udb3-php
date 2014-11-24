@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 class LanguageCanBeTranslatedToSpecification
 {
     public static function isSatisfiedBy(Language $language)
@@ -18,4 +17,4 @@ class LanguageCanBeTranslatedToSpecification
 
         return in_array($language->getCode(), $languages);
     }
-} 
+}

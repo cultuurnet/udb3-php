@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Keyword;
 
 final class TagErased extends EventEvent
@@ -46,5 +45,4 @@ final class TagErased extends EventEvent
     {
         return new static($data['event_id'], new Keyword($data['keyword']));
     }
-
-} 
+}

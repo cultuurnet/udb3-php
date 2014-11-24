@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 use CultuurNet\Auth\Guzzle\OAuthProtectedService;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
@@ -129,8 +128,7 @@ class EntryAPI extends OAuthProtectedService
     {
         if ($rsp->getCode() === self::PRIVATE_KEYWORD) {
             throw new PrivateKeywordException($rsp);
-        }
-        elseif ($rsp->getCode() !== self::KEYWORDS_CREATED) {
+        } elseif ($rsp->getCode() !== self::KEYWORDS_CREATED) {
             throw new UnexpectedKeywordErrorException($rsp);
         }
     }

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 class UnexpectedTranslationErrorException extends \Exception
 {
     protected $rsp;
@@ -15,4 +14,4 @@ class UnexpectedTranslationErrorException extends \Exception
         $this->rsp = $rsp;
         parent::__construct('Pushing translation to UDB2 collaboration services failed with code: ' . $rsp->getCode());
     }
-} 
+}

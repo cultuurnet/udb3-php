@@ -28,10 +28,8 @@ class ExecutionContextMetadataEnricher implements MetadataEnricherInterface, Con
     {
         if ($this->metadata) {
             return $metadata->merge($this->metadata);
-        }
-        else {
+        } else {
             return $metadata;
         }
     }
-
 }

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Cdb;
 
-
 class EventItemFactory
 {
     /**
@@ -27,4 +26,4 @@ class EventItemFactory
             $udb2SimpleXml
         );
     }
-} 
+}

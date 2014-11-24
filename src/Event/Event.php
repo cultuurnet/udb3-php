@@ -18,7 +18,7 @@ class Event extends EventSourcedAggregateRoot
      * @param string $eventId
      * @return Event
      */
-    static public function create($eventId)
+    public static function create($eventId)
     {
         $event = new self();
         $event->apply(new EventCreated($eventId));
@@ -32,7 +32,7 @@ class Event extends EventSourcedAggregateRoot
      * @param string $cdbXmlNamespaceUri
      * @return Event
      */
-    static public function importFromUDB2(
+    public static function importFromUDB2(
         $eventId,
         $cdbXml,
         $cdbXmlNamespaceUri
@@ -92,10 +92,10 @@ class Event extends EventSourcedAggregateRoot
     protected function applyTagErased(TagErased $tagErased)
     {
         $this->keywords = array_filter(
-          $this->keywords,
-          function (Keyword $keyword) use ($tagErased) {
-              return $keyword != $tagErased->getKeyword();
-          }
+            $this->keywords,
+            function (Keyword $keyword) use ($tagErased) {
+                return $keyword != $tagErased->getKeyword();
+            }
         );
     }
 
@@ -103,7 +103,6 @@ class Event extends EventSourcedAggregateRoot
         EventImportedFromUDB2 $eventImported
     ) {
         $this->eventId = $eventImported->getEventId();
-        $cdbXml = $eventImported->getCdbXml();
 
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventImported->getCdbXmlNamespaceUri(),
@@ -134,6 +133,5 @@ class Event extends EventSourcedAggregateRoot
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)
     {
-
     }
 }

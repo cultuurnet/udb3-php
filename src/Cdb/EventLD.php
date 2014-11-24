@@ -35,7 +35,7 @@ class EventLD implements \JsonSerializable
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         // @todo Handle language dynamically, currently hardcoded to nl.
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
@@ -63,4 +63,4 @@ class EventLD implements \JsonSerializable
             'location' => $this->event->getLocation()->getLabel(),
         );
     }
-} 
+}

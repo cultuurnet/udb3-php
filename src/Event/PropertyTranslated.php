@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Language;
 
 abstract class PropertyTranslated extends EventEvent
@@ -15,7 +14,8 @@ abstract class PropertyTranslated extends EventEvent
      */
     protected $language;
 
-    public function __construct($id, Language $language) {
+    public function __construct($id, Language $language)
+    {
         $this->language = $language;
         parent::__construct($id);
     }

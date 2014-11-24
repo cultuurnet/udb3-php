@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 class InvalidTranslationLanguageException extends \RuntimeException
 {
     public function __construct(Language $language)
@@ -17,4 +16,4 @@ class InvalidTranslationLanguageException extends \RuntimeException
             )
         );
     }
-} 
+}

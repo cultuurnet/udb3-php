@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Monolog;
 
-
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use SocketIO\Emitter;
@@ -42,4 +41,4 @@ class SocketIOEmitterHandler extends AbstractProcessingHandler
 
         $this->emitter->emit($event, $data);
     }
-} 
+}

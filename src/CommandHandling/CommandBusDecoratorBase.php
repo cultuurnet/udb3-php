@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\CommandHandling\CommandHandlerInterface;
 
@@ -38,6 +37,4 @@ abstract class CommandBusDecoratorBase implements CommandBusInterface
     {
         $this->decoratee->subscribe($handler);
     }
-
-
-} 
+}

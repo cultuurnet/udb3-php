@@ -27,4 +27,4 @@ class DefaultSearchService extends OAuthProtectedService implements SearchServic
 
         return $response;
     }
-} 
+}

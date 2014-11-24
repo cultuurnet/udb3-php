@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-
 use CultuurNet\Auth\TokenCredentials;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Plugin\Log\LogPlugin;
@@ -22,8 +21,7 @@ final class EntryAPIImprovedFactory
      */
     public function __construct(
         Consumer $consumer
-    )
-    {
+    ) {
         $this->consumer = $consumer;
     }
 
@@ -40,10 +38,12 @@ final class EntryAPIImprovedFactory
         );
 
         // Print request and response for debugging purposes.
-        $adapter = new ClosureLogAdapter(function ($message, $priority, $extras) {
+        $adapter = new ClosureLogAdapter(
+            function ($message, $priority, $extras) {
                 // @todo handle $priority
                 print $message;
-            });
+            }
+        );
 
         $format = "\n\n# Request:\n{request}\n\n# Response:\n{response}\n\n# Errors: {curl_code} {curl_error}\n\n";
         $log = new LogPlugin($adapter, $format);
@@ -53,4 +53,3 @@ final class EntryAPIImprovedFactory
         return $entryApi;
     }
 }
-

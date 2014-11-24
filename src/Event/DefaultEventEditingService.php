@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -110,6 +109,4 @@ class DefaultEventEditingService implements EventEditingServiceInterface
             new EraseTag($eventId, $keyword)
         );
     }
-
-
-} 
+}

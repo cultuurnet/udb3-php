@@ -19,8 +19,7 @@ final class EntryAPIFactory
      */
     public function __construct(
         Consumer $consumer
-    )
-    {
+    ) {
         $this->consumer = $consumer;
     }
 

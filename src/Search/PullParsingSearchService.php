@@ -11,8 +11,8 @@ use CultuurNet\UDB3\SearchAPI2;
  * SearchServiceInterface implementation that parses the results with a XML pull
  * parser, decreasing the memory usage and improving speed.
  */
-class PullParsingSearchService extends LegacySearchService {
-
+class PullParsingSearchService extends LegacySearchService
+{
     /**
      * @var SearchAPI2\ResultSetPullParser
      */
@@ -21,7 +21,7 @@ class PullParsingSearchService extends LegacySearchService {
     /**
      * {@inheritdoc}
      */
-    public function search($query, $limit = 30, $start = 0, $sort = NULL)
+    public function search($query, $limit = 30, $start = 0, $sort = null)
     {
         $response = $this->_search($query, $limit, $start, $sort);
 

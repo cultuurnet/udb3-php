@@ -92,7 +92,21 @@ class EventLDProjector extends Projector
         $eventLd->concept = $keywords;
         $eventLd->calendarSummary = $detail->getCalendarSummary();
         $eventLd->image = $picture ? $picture->getHLink() : null;
-        $eventLd->location = $udb2Event->getLocation()->getLabel();
+
+        // Location.
+        $location = array();
+        $location_cdb = $udb2Event->getLocation();
+        $location['@id'] = $location_cdb->getCdbid();
+        $location['@type'] = 'Place';
+        $location['name'] = $location_cdb->getLabel();
+        $address = $location_cdb->getAddress()->getPhysicalAddress();
+        $location['address'] = array(
+          'addressCountry' => $address->getCountry(),
+          'addressLocality' => $address->getCity(),
+          'postalCode' => $address->getZip(),
+          'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
+        );
+        $eventLd->location = $location;
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

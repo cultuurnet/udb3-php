@@ -108,6 +108,24 @@ class EventLDProjector extends Projector
         );
         $eventLd->location = $location;
 
+        // Organiser.
+        $organiser = array();
+        $organiser_cdb = $udb2Event->getOrganiser();
+        $contact_info_cdb = $udb2Event->getContactInfo();
+        $organiser['name'] = $organiser_cdb->getLabel();
+        $organiser['email'] = array();
+        $mails = $contact_info_cdb->getMails();
+        foreach ($mails as $mail) {
+          $organiser['email'][] = $mail->getMailAddress();
+        }
+        $organiser['phone'] = array();
+        /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+        $phones = $contact_info_cdb->getPhones();
+        foreach ($phones as $phone) {
+          $organiser['phone'][] = $phone->getNumber();
+        }
+        $eventLd->organiser = $organiser;
+
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()
         );

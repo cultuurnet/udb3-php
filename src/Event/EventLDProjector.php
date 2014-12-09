@@ -109,22 +109,38 @@ class EventLDProjector extends Projector
         $eventLd->location = $location;
 
         // Organiser.
-        $organiser = array();
+
         $organiser_cdb = $udb2Event->getOrganiser();
         $contact_info_cdb = $udb2Event->getContactInfo();
-        $organiser['name'] = $organiser_cdb->getLabel();
-        $organiser['email'] = array();
-        $mails = $contact_info_cdb->getMails();
-        foreach ($mails as $mail) {
-          $organiser['email'][] = $mail->getMailAddress();
+
+        if($organiser_cdb && $contact_info_cdb) {
+          $organiser = array();
+          $organiser['name'] = $organiser_cdb->getLabel();
+          $organiser['email'] = array();
+          $mails = $contact_info_cdb->getMails();
+          foreach ($mails as $mail) {
+            $organiser['email'][] = $mail->getMailAddress();
+          }
+          $organiser['phone'] = array();
+          /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+          $phones = $contact_info_cdb->getPhones();
+          foreach ($phones as $phone) {
+            $organiser['phone'][] = $phone->getNumber();
+          }
+          $eventLd->organiser = $organiser;
         }
-        $organiser['phone'] = array();
-        /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
-        $phones = $contact_info_cdb->getPhones();
-        foreach ($phones as $phone) {
-          $organiser['phone'][] = $phone->getNumber();
+
+        // booking info
+        $bookingInfo = array();
+
+        $price = $detail->getPrice();
+        if($price) {
+          $bookingInfo['price'] = floatval($price->getValue());
+        } else {
+          $bookingInfo['price'] = 0.0;
         }
-        $eventLd->organiser = $organiser;
+        $bookingInfo['priceCurrency'] = 'EUR';
+        $eventLd->bookingInfo = $bookingInfo;
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

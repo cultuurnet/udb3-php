@@ -126,6 +126,12 @@ class EventLDProjector extends Projector
         }
         $eventLd->organiser = $organiser;
 
+        // booking info
+        $bookingInfo = array();
+        $bookingInfo['price'] = floatval($detail->getPrice()->getValue());
+        $bookingInfo['priceCurrency'] = 'EUR';
+        $eventLd->bookingInfo = $bookingInfo;
+
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()
         );

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Cultuurnet\UDB3\LocalPlaceService.
+ * Contains \Cultuurnet\UDB3\LocalEntityService.
  */
 
 namespace CultuurNet\UDB3;
@@ -12,7 +12,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 
-class LocalPlaceService implements PlaceServiceInterface
+class LocalEntityService implements EntityServiceInterface
 {
     /**
      * @var DocumentRepositoryInterface
@@ -22,28 +22,26 @@ class LocalPlaceService implements PlaceServiceInterface
     /**
      * @var RepositoryInterface
      */
-    protected $eventRepository;
+    protected $entityRepository;
 
+    /**
+     * Constructs the local entity service.
+     *
+     * @param DocumentRepositoryInterface $documentRepository
+     * @param RepositoryInterface $entityRepository
+     */
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
-        RepositoryInterface $eventRepository
+        RepositoryInterface $entityRepository
     ) {
         $this->documentRepository = $documentRepository;
-        $this->eventRepository = $eventRepository;
+        $this->entityRepository = $entityRepository;
     }
 
     /**
-     * Get a single event by its id.
-     *
-     * @param string $id
-     *   A string uniquely identifying an event.
-     *
-     * @return array
-     *   An event array.
-     *
-     * @throws EventNotFoundException if an event can not be found for the given id
+     * {@inheritdoc}
      */
-    public function getPlace($id)
+    public function getEntity($id)
     {
         /** @var JsonDocument $document */
         $document = $this->documentRepository->get($id);
@@ -54,13 +52,13 @@ class LocalPlaceService implements PlaceServiceInterface
 
         // @todo subsequent load and add are necessary for UDB2 repository
         // decorator, but this particular code should be moved over to an
-        // EventService decorator
+        // EntityService decorator
         try {
-            $event = $this->eventRepository->load($id);
-            $this->eventRepository->add($event);
+            $entity = $this->entityRepository->load($id);
+            $this->entityRepository->add($entity);
         } catch (AggregateNotFoundException $e) {
-            throw new EventNotFoundException(
-                sprintf('Event with id: %s not found.', $id)
+            throw new EntityNotFoundException(
+                sprintf('Entity with id: %s not found.', $id)
             );
         }
 
@@ -69,4 +67,5 @@ class LocalPlaceService implements PlaceServiceInterface
 
         return $document->getRawBody();
     }
+
 }

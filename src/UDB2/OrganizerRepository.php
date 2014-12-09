@@ -2,12 +2,12 @@
 
 /**
  * @file
- * Contains \Cultuurnet\UDB3\UDB2\PlaceRepository.
+ * Contains \Cultuurnet\UDB3\UDB2\OrganizerRepository.
  */
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\UDB3\Place\Place;
+use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\Search\Parameter\Query;
 
@@ -16,7 +16,7 @@ use CultuurNet\Search\Parameter\Query;
  *
  * When a failure on UDB2 occurs, the whole transaction will fail.
  */
-class PlaceRepository extends ActorRepository {
+class OrganizerRepository extends ActorRepository {
 
     /**
      * Returns the default params.
@@ -29,17 +29,18 @@ class PlaceRepository extends ActorRepository {
 
         return array(
             new Query('cdbid:' . $id),
-            new Query('type:actor')
+            new Query('type:actor'),
+            new Query(''),
         );
 
-  }
+    }
 
     /**
      * Returns the type.
      * @return string
      */
     protected function getType() {
-        return '\\CultuurNet\\UDB3\\Place\\Place';
+        return '\\CultuurNet\\UDB3\\Organizer\\Organizer';
     }
 
     /**
@@ -55,7 +56,7 @@ class PlaceRepository extends ActorRepository {
      */
     protected function importFromUDB2($id, $actorXml, $cdbSchemeUrl) {
 
-        return Place::importFromUDB2(
+        return Organizer::importFromUDB2(
             $id,
             $actorXml,
             $cdbSchemeUrl

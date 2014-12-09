@@ -2,12 +2,12 @@
 
 /**
  * @file
- * Contains \Cultuurnet\UDB3\Place\ActorActor.
+ * Contains \Cultuurnet\UDB3\Actor\ActorImportedFromUDB2.
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Actor;
 
-class ActorImportedFromUDB2 extends ActorActor
+class ActorImportedFromUDB2 extends ActorEvent
 {
     /**
      * @var string

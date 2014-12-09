@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Cultuurnet\UDB3\Place\ActorActor.
+ * Contains \Cultuurnet\UDB3\Actor\ActorEvent.
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Actor;
 
 use Broadway\Serializer\SerializableInterface;
 
-abstract class ActorActor implements SerializableInterface
+abstract class ActorEvent implements SerializableInterface
 {
     protected $actorId;
 
@@ -24,7 +24,7 @@ abstract class ActorActor implements SerializableInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -34,10 +34,11 @@ abstract class ActorActor implements SerializableInterface
     }
 
     /**
-     * @return mixed The object instance
+     * {@inheritdoc}
      */
     public static function deserialize(array $data)
     {
         return new static($data['actor_id']);
     }
+
 }

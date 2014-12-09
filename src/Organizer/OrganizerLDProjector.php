@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Cultuurnet\UDB3\Place\PlaceLDProjector.
+ * Contains \Cultuurnet\UDB3\Organizer\OrganizerLDProjector.
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Organizer;
 
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 
-class PlaceLDProjector extends ActorLDProjector
+class OrganizerLDProjector extends ActorLDProjector
 {
 
     /**
@@ -48,7 +48,6 @@ class PlaceLDProjector extends ActorLDProjector
 
         }
 
-        // Address
         $eventLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();
         /** @var \CultureFeed_Cdb_Data_Address[] $addresses **/
@@ -85,7 +84,7 @@ class PlaceLDProjector extends ActorLDProjector
         $eventLd->{'@id'} = $this->iriGenerator->iri($id);
 
         // @todo provide Event-LD context here relative to the base URI
-        $eventLd->{'@context'} = '/api/1.0/place.jsonld';
+        $eventLd->{'@context'} = '/api/1.0/organizer.jsonld';
 
         return $document->withBody($eventLd);
     }

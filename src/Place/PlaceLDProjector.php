@@ -27,50 +27,79 @@ class PlaceLDProjector extends ActorLDProjector
         );
 
         $document = $this->newDocument($actorImportedFromUDB2->getActorId());
-        $eventLd = $document->getBody();
+        $actorLd = $document->getBody();
 
         $detail = null;
 
-        /** @var \CultureFeed_Cdb_Data_DetailList[] $details */
+        // Details.
+        /** @var \CultureFeed_Cdb_Data_Detail[] $details */
         $details = $udb2Actor->getDetails();
 
         foreach ($details as $languageDetail) {
-          $language = $languageDetail->getLanguage();
 
-          // The first language detail found will be used to retrieve
-          // properties from which in UDB3 are not any longer considered
-          // to be language specific.
-          if (!$detail) {
-            $detail = $languageDetail;
-          }
+            $language = $languageDetail->getLanguage();
 
-          $eventLd->name[$language] = $languageDetail->getTitle();
+            // The first language detail found will be used to retrieve
+            // properties from which in UDB3 are not any longer considered
+            // to be language specific.
+            if (!$detail) {
+                $detail = $languageDetail;
+            }
+
+            $actorLd->name[$language] = $languageDetail->getTitle();
+            $actorLd->description[$language] = $languageDetail->getDescription();
 
         }
 
         // Address
-        $eventLd->addresses = array();
+        $actorLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();
         /** @var \CultureFeed_Cdb_Data_Address[] $addresses **/
         $addresses = $contact_cdb->getAddresses();
 
         foreach ($addresses as $address) {
 
-          $address = $address->getPhysicalAddress();
+            $address = $address->getPhysicalAddress();
 
-          $eventLd->addresses[] = array(
-            'addressCountry' => $address->getCountry(),
-            'addressLocality' => $address->getCity(),
-            'postalCode' => $address->getZip(),
-            'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
-          );
+            $actorLd->addresses[] = array(
+                'addressCountry' => $address->getCountry(),
+                'addressLocality' => $address->getCity(),
+                'postalCode' => $address->getZip(),
+                'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
+            );
+
         }
 
-        $eventLdModel = new JsonDocument(
+        // Booking info.
+        $bookingInfo = array(
+            'description' => '',
+            'name' => 'standard price',
+            'price' => 0.0,
+            'priceCurrency' => 'EUR',
+        );
+        $price = $detail->getPrice();
+
+        if ($price) {
+            $bookingInfo['description'] = floatval($price->getDescription());
+            $bookingInfo['name'] = floatval($price->getTitle());
+            $bookingInfo['price'] = floatval($price->getValue());
+        }
+        $actorLd->bookingInfo = $bookingInfo;
+
+
+        // Image.
+        $images = $detail->getMedia()->byMediaType(
+            \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
+        );
+        $images->rewind();
+        $image = count($images) > 0 ? $images->current() : null;
+        $actorLd->image = $image ? $image->getHLink() : null;
+
+        $actorLdModel = new JsonDocument(
             $actorImportedFromUDB2->getActorId()
         );
 
-        $this->repository->save($eventLdModel->withBody($eventLd));
+        $this->repository->save($actorLdModel->withBody($actorLd));
     }
 
     /**
@@ -81,13 +110,13 @@ class PlaceLDProjector extends ActorLDProjector
     {
         $document = new JsonDocument($id);
 
-        $eventLd = $document->getBody();
-        $eventLd->{'@id'} = $this->iriGenerator->iri($id);
+        $placeLd = $document->getBody();
+        $placeLd->{'@id'} = $this->iriGenerator->iri($id);
 
         // @todo provide Event-LD context here relative to the base URI
-        $eventLd->{'@context'} = '/api/1.0/place.jsonld';
+        $placeLd->{'@context'} = '/api/1.0/place.jsonld';
 
-        return $document->withBody($eventLd);
+        return $document->withBody($placeLd);
     }
 
 }

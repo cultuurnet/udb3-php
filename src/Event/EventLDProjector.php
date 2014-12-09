@@ -26,13 +26,19 @@ class EventLDProjector extends Projector
     /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
+     * @param Projector $placeLdProjector
+     * @param Projector $organizerLdProjector
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
-        IriGeneratorInterface $iriGenerator
+        IriGeneratorInterface $iriGenerator,
+        Projector $placeLdProjector,
+        Projector $organizerLdProjector
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
+        $this->placeLdProjector = $placeLdProjector;
+        $this->organizerLdProjector = $organizerLdProjector;
     }
 
     /**
@@ -96,7 +102,10 @@ class EventLDProjector extends Projector
         // Location.
         $location = array();
         $location_cdb = $udb2Event->getLocation();
-        $location['@id'] = $location_cdb->getCdbid();
+        $location_id = $location_cdb->getCdbid();
+        if ($location_id) {
+            $location['@id'] = $this->placeLdProjector->iriGenerator->iri($location_id);
+        }
         $location['@type'] = 'Place';
         $location['name'] = $location_cdb->getLabel();
         $address = $location_cdb->getAddress()->getPhysicalAddress();
@@ -109,37 +118,45 @@ class EventLDProjector extends Projector
         $eventLd->location = $location;
 
         // Organiser.
-
         $organiser_cdb = $udb2Event->getOrganiser();
         $contact_info_cdb = $udb2Event->getContactInfo();
-
-        if($organiser_cdb && $contact_info_cdb) {
-          $organiser = array();
-          $organiser['name'] = $organiser_cdb->getLabel();
-          $organiser['email'] = array();
-          $mails = $contact_info_cdb->getMails();
-          foreach ($mails as $mail) {
-            $organiser['email'][] = $mail->getMailAddress();
-          }
-          $organiser['phone'] = array();
-          /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
-          $phones = $contact_info_cdb->getPhones();
-          foreach ($phones as $phone) {
-            $organiser['phone'][] = $phone->getNumber();
-          }
-          $eventLd->organiser = $organiser;
+        $organiser_id = $organiser_cdb->getCdbid();
+        if ($organiser_id) {
+            $organiser['@id'] = $this->organizerLdProjector->iriGenerator->iri($organiser_id);
         }
 
-        // booking info
-        $bookingInfo = array();
+        if ($organiser_cdb && $contact_info_cdb) {
 
+            $organiser = array();
+            $organiser['name'] = $organiser_cdb->getLabel();
+            $organiser['email'] = array();
+            $mails = $contact_info_cdb->getMails();
+            foreach ($mails as $mail) {
+              $organiser['email'][] = $mail->getMailAddress();
+            }
+            $organiser['phone'] = array();
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+            $phones = $contact_info_cdb->getPhones();
+            foreach ($phones as $phone) {
+                $organiser['phone'][] = $phone->getNumber();
+            }
+            $eventLd->organiser = $organiser;
+        }
+
+        // Booking info.
+        $bookingInfo = array(
+            'description' => '',
+            'name' => 'standard price',
+            'price' => 0.0,
+            'priceCurrency' => 'EUR',
+        );
         $price = $detail->getPrice();
-        if($price) {
-          $bookingInfo['price'] = floatval($price->getValue());
-        } else {
-          $bookingInfo['price'] = 0.0;
+
+        if ($price) {
+            $bookingInfo['description'] = floatval($price->getDescription());
+            $bookingInfo['name'] = floatval($price->getTitle());
+            $bookingInfo['price'] = floatval($price->getValue());
         }
-        $bookingInfo['priceCurrency'] = 'EUR';
         $eventLd->bookingInfo = $bookingInfo;
 
         $eventLdModel = new JsonDocument(

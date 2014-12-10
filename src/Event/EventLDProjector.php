@@ -166,6 +166,24 @@ class EventLDProjector extends Projector
         // Input info.
         $eventLd->creator = $udb2Event->getCreatedBy();
 
+        // Concept.
+        $categories = array();
+        foreach ($udb2Event->getCategories() as $category) {
+            /* @var \Culturefeed_Cdb_Data_Category $category */
+            if ($category) {
+
+                $categories[] = array(
+                    'label' => $category->getName(),
+                    'domain' => $category->getType(),
+                    'id' => $category->getId(),
+                );
+
+            }
+
+        }
+        $eventLd->concept = $categories;
+
+
         // format using ISO-8601 with time zone designator
         $creationDate = \DateTime::createFromFormat(
           'Y-m-d?H:i:s',

@@ -37,8 +37,6 @@ class PlaceLDProjector extends ActorLDProjector
 
         foreach ($details as $languageDetail) {
 
-            $language = $languageDetail->getLanguage();
-
             // The first language detail found will be used to retrieve
             // properties from which in UDB3 are not any longer considered
             // to be language specific.
@@ -46,10 +44,10 @@ class PlaceLDProjector extends ActorLDProjector
                 $detail = $languageDetail;
             }
 
-            $actorLd->name[$language] = $languageDetail->getTitle();
-            $actorLd->description[$language] = $languageDetail->getDescription();
-
         }
+
+        $actorLd->name = $detail->getTitle();
+        $actorLd->description = $detail->getLongDescription();
 
         // Address
         $actorLd->addresses = array();

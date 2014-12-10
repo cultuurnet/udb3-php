@@ -102,7 +102,10 @@ class Actor extends EventSourcedAggregateRoot
 
         $this->keywords = array();
         foreach (array_values($udb2Actor->getKeywords()) as $udb2Keyword) {
-            $this->keywords[] = new Keyword($udb2Keyword);
+            $keyword = trim($udb2Keyword);
+            if ($keyword) {
+                $this->keywords[] = new Keyword($keyword);
+            }
         }
     }
 

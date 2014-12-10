@@ -59,4 +59,16 @@ class ActorLDProjector extends Projector
         return $document;
     }
 
+    /**
+     * Returns an iri.
+     *
+     * @param string $id
+     *   The id.
+     *
+     * @return string
+     */
+    public function iri($id) {
+        return $this->iriGenerator->iri($id);
+    }
+
 }

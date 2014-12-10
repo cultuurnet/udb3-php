@@ -31,11 +31,10 @@ class OrganizerLDProjector extends ActorLDProjector
 
         $detail = null;
 
-        /** @var \CultureFeed_Cdb_Data_DetailList[] $details */
+        /** @var \CultureFeed_Cdb_Data_Detail[] $details */
         $details = $udb2Actor->getDetails();
 
         foreach ($details as $languageDetail) {
-          $language = $languageDetail->getLanguage();
 
           // The first language detail found will be used to retrieve
           // properties from which in UDB3 are not any longer considered
@@ -44,9 +43,9 @@ class OrganizerLDProjector extends ActorLDProjector
             $detail = $languageDetail;
           }
 
-          $eventLd->name[$language] = $languageDetail->getTitle();
-
         }
+
+        $eventLd->name = $detail->getTitle();
 
         $eventLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();

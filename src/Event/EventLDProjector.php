@@ -104,7 +104,7 @@ class EventLDProjector extends Projector
         $location_cdb = $udb2Event->getLocation();
         $location_id = $location_cdb->getCdbid();
         if ($location_id) {
-            $location['@id'] = $this->placeLdProjector->iriGenerator->iri($location_id);
+            $location['@id'] = $this->placeLdProjector->iri($location_id);
         }
         $location['@type'] = 'Place';
         $location['name'] = $location_cdb->getLabel();
@@ -120,12 +120,13 @@ class EventLDProjector extends Projector
         // Organiser.
         $organiser_cdb = $udb2Event->getOrganiser();
         $contact_info_cdb = $udb2Event->getContactInfo();
-        $organiser_id = $organiser_cdb->getCdbid();
-        if ($organiser_id) {
-            $organiser['@id'] = $this->organizerLdProjector->iriGenerator->iri($organiser_id);
-        }
 
         if ($organiser_cdb && $contact_info_cdb) {
+
+            $organiser_id = $organiser_cdb->getCdbid();
+            if ($organiser_id) {
+                $organiser['@id'] = $this->organizerLdProjector->iri($organiser_id);
+            }
 
             $organiser = array();
             $organiser['name'] = $organiser_cdb->getLabel();

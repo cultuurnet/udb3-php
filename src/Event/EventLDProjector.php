@@ -95,7 +95,7 @@ class EventLDProjector extends Projector
             }
         );
 
-        $eventLd->concept = $keywords;
+        $eventLd->keywords = $keywords;
         $eventLd->calendarSummary = $detail->getCalendarSummary();
         $eventLd->image = $picture ? $picture->getHLink() : null;
 
@@ -166,11 +166,16 @@ class EventLDProjector extends Projector
         // Input info.
         $eventLd->creator = $udb2Event->getCreatedBy();
 
-        // Concept.
+        // Terms.
+        $themeBlacklist = [
+          'Thema onbepaald',
+          'Meerder kunstvormen',
+          'Meerdere filmgenres'
+        ];
         $categories = array();
         foreach ($udb2Event->getCategories() as $category) {
             /* @var \Culturefeed_Cdb_Data_Category $category */
-            if ($category) {
+            if ($category && !in_array($category->getName(), $themeBlacklist)) {
 
                 $categories[] = array(
                     'label' => $category->getName(),
@@ -181,7 +186,7 @@ class EventLDProjector extends Projector
             }
 
         }
-        $eventLd->concept = $categories;
+        $eventLd->terms = $categories;
 
 
         // format using ISO-8601 with time zone designator

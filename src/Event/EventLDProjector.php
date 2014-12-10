@@ -148,19 +148,33 @@ class EventLDProjector extends Projector
 
         // Booking info.
         $bookingInfo = array(
-            'description' => '',
-            'name' => 'standard price',
-            'price' => 0.0,
-            'priceCurrency' => 'EUR',
+          'description' => '',
+          'name' => 'standard price',
+          'price' => 0.0,
+          'priceCurrency' => 'EUR',
         );
         $price = $detail->getPrice();
 
         if ($price) {
-            $bookingInfo['description'] = floatval($price->getDescription());
-            $bookingInfo['name'] = floatval($price->getTitle());
-            $bookingInfo['price'] = floatval($price->getValue());
+          $bookingInfo['description'] = $price->getDescription();
+          $bookingInfo['name'] = $price->getTitle();
+          $bookingInfo['price'] = floatval($price->getValue());
         }
         $eventLd->bookingInfo = $bookingInfo;
+
+
+        // Input info.
+        $eventLd->creator = $udb2Event->getCreatedBy();
+
+        // format using ISO-8601 with time zone designator
+        $creationDate = \DateTime::createFromFormat(
+          'Y-m-d?H:i:s',
+          $udb2Event->getCreationDate(),
+          new \DateTimeZone('Europe/Brussels')
+        );
+        $eventLd->created = $creationDate->format('c');
+
+        $eventLd->publisher = $udb2Event->getOwner();
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

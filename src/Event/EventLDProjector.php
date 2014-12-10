@@ -135,7 +135,7 @@ class EventLDProjector extends Projector
             $organiser['email'] = array();
             $mails = $contact_info_cdb->getMails();
             foreach ($mails as $mail) {
-              $organiser['email'][] = $mail->getMailAddress();
+                $organiser['email'][] = $mail->getMailAddress();
             }
             $organiser['phone'] = array();
             /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
@@ -148,17 +148,17 @@ class EventLDProjector extends Projector
 
         // Booking info.
         $bookingInfo = array(
-          'description' => '',
-          'name' => 'standard price',
-          'price' => 0.0,
-          'priceCurrency' => 'EUR',
+            'description' => '',
+            'name' => 'standard price',
+            'price' => 0.0,
+            'priceCurrency' => 'EUR',
         );
         $price = $detail->getPrice();
 
         if ($price) {
-          $bookingInfo['description'] = $price->getDescription();
-          $bookingInfo['name'] = $price->getTitle();
-          $bookingInfo['price'] = floatval($price->getValue());
+            $bookingInfo['description'] = $price->getDescription();
+            $bookingInfo['name'] = $price->getTitle();
+            $bookingInfo['price'] = floatval($price->getValue());
         }
         $eventLd->bookingInfo = $bookingInfo;
 
@@ -186,9 +186,9 @@ class EventLDProjector extends Projector
 
         // format using ISO-8601 with time zone designator
         $creationDate = \DateTime::createFromFormat(
-          'Y-m-d?H:i:s',
-          $udb2Event->getCreationDate(),
-          new \DateTimeZone('Europe/Brussels')
+            'Y-m-d?H:i:s',
+            $udb2Event->getCreationDate(),
+            new \DateTimeZone('Europe/Brussels')
         );
         $eventLd->created = $creationDate->format('c');
 

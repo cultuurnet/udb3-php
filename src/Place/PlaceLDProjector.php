@@ -59,12 +59,16 @@ class PlaceLDProjector extends ActorLDProjector
 
             $address = $address->getPhysicalAddress();
 
-            $actorLd->addresses[] = array(
-                'addressCountry' => $address->getCountry(),
-                'addressLocality' => $address->getCity(),
-                'postalCode' => $address->getZip(),
-                'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
-            );
+            if ($address) {
+
+                $actorLd->addresses[] = array(
+                    'addressCountry' => $address->getCountry(),
+                    'addressLocality' => $address->getCity(),
+                    'postalCode' => $address->getZip(),
+                    'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
+                );
+
+            }
 
         }
 

@@ -109,12 +109,14 @@ class EventLDProjector extends Projector
         $location['@type'] = 'Place';
         $location['name'] = $location_cdb->getLabel();
         $address = $location_cdb->getAddress()->getPhysicalAddress();
-        $location['address'] = array(
-          'addressCountry' => $address->getCountry(),
-          'addressLocality' => $address->getCity(),
-          'postalCode' => $address->getZip(),
-          'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
-        );
+        if ($address) {
+            $location['address'] = array(
+                'addressCountry' => $address->getCountry(),
+                'addressLocality' => $address->getCity(),
+                'postalCode' => $address->getZip(),
+                'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
+            );
+        }
         $eventLd->location = $location;
 
         // Organiser.

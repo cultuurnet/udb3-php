@@ -27,7 +27,7 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $document = $this->newDocument($actorImportedFromUDB2->getActorId());
-        $eventLd = $document->getBody();
+        $actorLd = $document->getBody();
 
         $detail = null;
 
@@ -45,9 +45,9 @@ class OrganizerLDProjector extends ActorLDProjector
 
         }
 
-        $eventLd->name = $detail->getTitle();
+        $actorLd->name = $detail->getTitle();
 
-        $eventLd->addresses = array();
+        $actorLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();
         /** @var \CultureFeed_Cdb_Data_Address[] $addresses **/
         $addresses = $contact_cdb->getAddresses();
@@ -56,19 +56,24 @@ class OrganizerLDProjector extends ActorLDProjector
 
           $address = $address->getPhysicalAddress();
 
-          $eventLd->addresses[] = array(
-            'addressCountry' => $address->getCountry(),
-            'addressLocality' => $address->getCity(),
-            'postalCode' => $address->getZip(),
-            'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
-          );
+          if ($address) {
+
+            $actorLd->addresses[] = array(
+              'addressCountry' => $address->getCountry(),
+              'addressLocality' => $address->getCity(),
+              'postalCode' => $address->getZip(),
+              'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
+            );
+
+          }
+
         }
 
-        $eventLdModel = new JsonDocument(
+        $actorLdModel = new JsonDocument(
             $actorImportedFromUDB2->getActorId()
         );
 
-        $this->repository->save($eventLdModel->withBody($eventLd));
+        $this->repository->save($actorLdModel->withBody($actorLd));
     }
 
     /**

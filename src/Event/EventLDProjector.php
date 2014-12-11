@@ -42,6 +42,18 @@ class EventLDProjector extends Projector
     }
 
     /**
+     * @param $dateString
+     * @return \DateTime
+     */
+    public function formatUdb2Date ($dateString) {
+        return \DateTime::createFromFormat(
+            'Y-m-d?H:i:s',
+            $dateString,
+            new \DateTimeZone('Europe/Brussels')
+        );
+    }
+
+    /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */
     public function applyEventImportedFromUDB2(
@@ -188,16 +200,24 @@ class EventLDProjector extends Projector
         }
         $eventLd->terms = $categories;
 
-
         // format using ISO-8601 with time zone designator
-        $creationDate = \DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $udb2Event->getCreationDate(),
-            new \DateTimeZone('Europe/Brussels')
-        );
+        $creationDate = $this->formatUdb2Date($udb2Event->getCreationDate());
         $eventLd->created = $creationDate->format('c');
 
         $eventLd->publisher = $udb2Event->getOwner();
+
+
+        // Time info
+        $startDate = $this->formatUdb2Date($udb2Event->getAvailableFrom());
+        $endDate = $this->formatUdb2Date($udb2Event->getAvailableTo());
+        // if the end date is set to 2100 consider it permanent or recurring
+        // @TODO: add recurring and permanent event info using a yet to be decided format
+        if($endDate->format('Y') != '2100') {
+            $eventLd->startDate = $startDate->format('c');
+            if($endDate) {
+                $eventLd->endDate = $endDate->format('c');
+            }
+        }
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

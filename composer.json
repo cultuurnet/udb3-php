@@ -17,6 +17,7 @@
     "monolog/monolog": "~1.11",
     "psr/log": "~1.0",
     "cultuurnet/search": "~1.1",
+    "cultuurnet/entry": "~0.0@dev",
     "broadway/broadway": "~0.2.0",
     "chrisboulton/php-resque": "~1.2",
     "cultuurnet/culturefeed-php": "~1.0"
@@ -31,6 +32,7 @@
     }
   },
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "extra": {
     "branch-alias": {
       "dev-master": "0.x-dev"

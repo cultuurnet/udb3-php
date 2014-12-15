@@ -11,8 +11,9 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
-class LocalEntityService implements EntityServiceInterface
+abstract class LocalEntityService implements EntityServiceInterface
 {
     /**
      * @var DocumentRepositoryInterface
@@ -25,6 +26,11 @@ class LocalEntityService implements EntityServiceInterface
     protected $entityRepository;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
      * Constructs the local entity service.
      *
      * @param DocumentRepositoryInterface $documentRepository
@@ -32,10 +38,12 @@ class LocalEntityService implements EntityServiceInterface
      */
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
-        RepositoryInterface $entityRepository
+        RepositoryInterface $entityRepository,
+        IriGeneratorInterface $iriGenerator
     ) {
         $this->documentRepository = $documentRepository;
         $this->entityRepository = $entityRepository;
+        $this->iriGenerator = $iriGenerator;
     }
 
     /**
@@ -62,5 +70,10 @@ class LocalEntityService implements EntityServiceInterface
         }
 
         return $document->getRawBody();
+    }
+
+    public function iri($id)
+    {
+        return $this->iriGenerator->iri($id);
     }
 }

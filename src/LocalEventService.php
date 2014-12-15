@@ -55,7 +55,6 @@ class LocalEventService implements EventServiceInterface
         // EventService decorator
         try {
             $event = $this->eventRepository->load($id);
-            $this->eventRepository->add($event);
         } catch (AggregateNotFoundException $e) {
             throw new EventNotFoundException(
                 sprintf('Event with id: %s not found.', $id)
@@ -65,6 +64,8 @@ class LocalEventService implements EventServiceInterface
         /** @var JsonDocument $document */
         $document = $this->documentRepository->get($id);
 
-        return $document->getRawBody();
+        if ($document) {
+            return $document->getRawBody();
+        }
     }
 }

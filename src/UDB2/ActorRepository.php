@@ -16,7 +16,7 @@ use CultuurNet\Search\Parameter\Query;
  *
  * When a failure on UDB2 occurs, the whole transaction will fail.
  */
-class ActorRepository extends EntityRepository
+abstract class ActorRepository extends EntityRepository
 {
 
     /**

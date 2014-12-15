@@ -10,6 +10,8 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\PlaceService;
 
 class EventLDProjector extends Projector
 {
@@ -24,6 +26,17 @@ class EventLDProjector extends Projector
     protected $iriGenerator;
 
     /**
+     * @var OrganizerService
+     */
+    protected $organizerService;
+
+    /**
+     * @var PlaceService
+     */
+    protected $placeService;
+
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param Projector $placeLdProjector
@@ -32,13 +45,13 @@ class EventLDProjector extends Projector
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        Projector $placeLdProjector,
-        Projector $organizerLdProjector
+        PlaceService $placeService,
+        OrganizerService $organiserService
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
-        $this->placeLdProjector = $placeLdProjector;
-        $this->organizerLdProjector = $organizerLdProjector;
+        $this->organizerService = $organiserService;
+        $this->placeService = $placeService;
     }
 
     /**
@@ -51,6 +64,16 @@ class EventLDProjector extends Projector
             $dateString,
             new \DateTimeZone('Europe/Brussels')
         );
+    }
+
+    public function applyOrganizerProjectedToJSONLD() {
+        // @todo get events linked to this organizer, and update their JSON-LD
+        // representation
+    }
+
+    public function applyPlaceProjectedToJSONLD() {
+        // @todo get events linked to this place, and update their JSON-LD
+        // representation
     }
 
     /**
@@ -113,49 +136,55 @@ class EventLDProjector extends Projector
 
         // Location.
         $location = array();
+        $location['@type'] = 'Place';
+
         $location_cdb = $udb2Event->getLocation();
         $location_id = $location_cdb->getCdbid();
+
         if ($location_id) {
-            $location['@id'] = $this->placeLdProjector->iri($location_id);
+            $location['@id'] = $this->placeService->iri($location_id);
         }
-        $location['@type'] = 'Place';
-        $location['name'] = $location_cdb->getLabel();
-        $address = $location_cdb->getAddress()->getPhysicalAddress();
-        if ($address) {
-            $location['address'] = array(
-                'addressCountry' => $address->getCountry(),
-                'addressLocality' => $address->getCity(),
-                'postalCode' => $address->getZip(),
-                'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
-            );
+        else {
+            $location['name'] = $location_cdb->getLabel();
+            $address = $location_cdb->getAddress()->getPhysicalAddress();
+            if ($address) {
+                $location['address'] = array(
+                    'addressCountry' => $address->getCountry(),
+                    'addressLocality' => $address->getCity(),
+                    'postalCode' => $address->getZip(),
+                    'streetAddress' => $address->getStreet(
+                        ) . ' ' . $address->getHouseNumber(),
+                );
+            }
         }
         $eventLd->location = $location;
 
-        // Organiser.
-        $organiser_cdb = $udb2Event->getOrganiser();
+        // Organizer.
+        $organizer_cdb = $udb2Event->getOrganiser();
         $contact_info_cdb = $udb2Event->getContactInfo();
 
-        if ($organiser_cdb && $contact_info_cdb) {
+        if ($organizer_cdb && $contact_info_cdb) {
 
-            $organiser_id = $organiser_cdb->getCdbid();
-            if ($organiser_id) {
-                $organiser['@id'] = $this->organizerLdProjector->iri($organiser_id);
+            $organizer_id = $organizer_cdb->getCdbid();
+            if ($organizer_id) {
+                $organizer['@id'] = $this->organizerService->iri($organizer_id);
             }
-
-            $organiser = array();
-            $organiser['name'] = $organiser_cdb->getLabel();
-            $organiser['email'] = array();
-            $mails = $contact_info_cdb->getMails();
-            foreach ($mails as $mail) {
-                $organiser['email'][] = $mail->getMailAddress();
+            else {
+                $organizer = array();
+                $organizer['name'] = $organizer_cdb->getLabel();
+                $organizer['email'] = array();
+                $mails = $contact_info_cdb->getMails();
+                foreach ($mails as $mail) {
+                    $organizer['email'][] = $mail->getMailAddress();
+                }
+                $organizer['phone'] = array();
+                /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+                $phones = $contact_info_cdb->getPhones();
+                foreach ($phones as $phone) {
+                    $organizer['phone'][] = $phone->getNumber();
+                }
             }
-            $organiser['phone'] = array();
-            /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
-            $phones = $contact_info_cdb->getPhones();
-            foreach ($phones as $phone) {
-                $organiser['phone'][] = $phone->getNumber();
-            }
-            $eventLd->organiser = $organiser;
+            $eventLd->organizer = $organizer;
         }
 
         // Booking info.

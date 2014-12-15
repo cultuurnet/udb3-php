@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
+use CultuurNet\Search\Parameter\FilterQuery;
 use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\Search\Parameter\Query;
@@ -17,23 +18,6 @@ use CultuurNet\Search\Parameter\Query;
  * When a failure on UDB2 occurs, the whole transaction will fail.
  */
 class OrganizerRepository extends ActorRepository {
-
-    /**
-     * Returns the default params.
-     *
-     * @param $id
-     *
-     * @return array
-     */
-    protected function getParams($id) {
-
-        return array(
-            new Query('cdbid:' . $id),
-            new Query('type:actor'),
-            new Query(''),
-        );
-
-    }
 
     /**
      * Returns the type.
@@ -61,7 +45,6 @@ class OrganizerRepository extends ActorRepository {
             $actorXml,
             $cdbSchemeUrl
         );
-
     }
 
 }

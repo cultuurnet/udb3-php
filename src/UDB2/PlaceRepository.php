@@ -19,22 +19,6 @@ use CultuurNet\Search\Parameter\Query;
 class PlaceRepository extends ActorRepository {
 
     /**
-     * Returns the default params.
-     *
-     * @param $id
-     *
-     * @return array
-     */
-    protected function getParams($id) {
-
-        return array(
-            new Query('cdbid:' . $id),
-            new Query('type:actor')
-        );
-
-  }
-
-    /**
      * Returns the type.
      * @return string
      */

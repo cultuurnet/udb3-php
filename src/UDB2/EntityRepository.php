@@ -19,7 +19,7 @@ use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
  *
  * When a failure on UDB2 occurs, the whole transaction will fail.
  */
-class EntityRepository implements RepositoryInterface
+abstract class EntityRepository implements RepositoryInterface
 {
     /**
      * @var RepositoryInterface
@@ -146,5 +146,11 @@ class EntityRepository implements RepositoryInterface
      */
     public function load($id) {
     }
+
+    abstract protected function getParams($id);
+
+    abstract protected function getType();
+
+    abstract protected function importFromUDB2($id, $xml, $xmlNamespaceUrl);
 
 }

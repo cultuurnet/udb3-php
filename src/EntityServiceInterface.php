@@ -25,4 +25,6 @@ interface EntityServiceInterface
      */
     public function getEntity($id);
 
+    public function iri($id);
+
 }

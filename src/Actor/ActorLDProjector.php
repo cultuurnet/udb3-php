@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
-class ActorLDProjector extends Projector
+abstract class ActorLDProjector extends Projector
 {
     /**
      * @var DocumentRepositoryInterface
@@ -70,5 +70,11 @@ class ActorLDProjector extends Projector
     public function iri($id) {
         return $this->iriGenerator->iri($id);
     }
+
+    /**
+     * @param string $id
+     * @return JsonDocument
+     */
+    abstract protected function newDocument($id);
 
 }

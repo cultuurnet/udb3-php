@@ -267,6 +267,8 @@ class EventRepository implements RepositoryInterface
                 $eventXml,
                 \CultureFeed_Cdb_Default::CDB_SCHEME_URL
             );
+
+            $this->add($event);
         }
 
         return $event;

@@ -46,26 +46,21 @@ class LocalEntityService implements EntityServiceInterface
         /** @var JsonDocument $document */
         $document = $this->documentRepository->get($id);
 
-        if ($document) {
-            return $document->getRawBody();
-        }
+        if (!$document) {
+            // If the read model is not initialized yet, try to load
+            // the entity, which will initialize the read model.
+            try {
+                $this->entityRepository->load($id);
+            } catch (AggregateNotFoundException $e) {
+                throw new EntityNotFoundException(
+                    sprintf('Entity with id: %s not found.', $id)
+                );
+            }
 
-        // @todo subsequent load and add are necessary for UDB2 repository
-        // decorator, but this particular code should be moved over to an
-        // EntityService decorator
-        try {
-            $entity = $this->entityRepository->load($id);
-            $this->entityRepository->add($entity);
-        } catch (AggregateNotFoundException $e) {
-            throw new EntityNotFoundException(
-                sprintf('Entity with id: %s not found.', $id)
-            );
+            /** @var JsonDocument $document */
+            $document = $this->documentRepository->get($id);
         }
-
-        /** @var JsonDocument $document */
-        $document = $this->documentRepository->get($id);
 
         return $document->getRawBody();
     }
-
 }

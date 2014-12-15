@@ -80,6 +80,8 @@ class ActorRepository extends EntityRepository
                 $actorXml,
                 \CultureFeed_Cdb_Default::CDB_SCHEME_URL
             );
+
+            $this->add($actor);
         }
 
         return $actor;

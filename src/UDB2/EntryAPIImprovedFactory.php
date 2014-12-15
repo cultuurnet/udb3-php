@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use CultuurNet\Auth\TokenCredentials;
+use CultuurNet\Entry\EntryAPI;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Plugin\Log\LogPlugin;
 

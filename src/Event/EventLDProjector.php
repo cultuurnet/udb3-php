@@ -236,17 +236,77 @@ class EventLDProjector extends Projector
         $eventLd->publisher = $udb2Event->getOwner();
 
 
-        // Time info
-        $startDate = $this->formatUdb2Date($udb2Event->getAvailableFrom());
-        $endDate = $this->formatUdb2Date($udb2Event->getAvailableTo());
-        // if the end date is set to 2100 consider it permanent or recurring
-        // @TODO: add recurring and permanent event info using a yet to be decided format
-        if($endDate->format('Y') != '2100') {
-            $eventLd->startDate = $startDate->format('c');
-            if($endDate) {
-                $eventLd->endDate = $endDate->format('c');
-            }
+        // Calendar info
+        // To render the front-end we make a distinction between 4 calendar types
+        // Permanent and Periodic map directly to the Cdb calendar classes
+        // Simple timestamps are divided into single and multiple
+        $calendarType = 'unknown';
+        $calendar = $udb2Event->getCalendar();
+
+        if($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+            $calendarType = 'permanent';
         }
+
+        if($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            $calendarType = 'periodic';
+            $calendar->rewind();
+            $firstCalendarItem = $calendar->current();
+            $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
+            $startDate = $this->formatUdb2Date($startDateString);
+
+            if(iterator_count($calendar) > 1) {
+                $periodArray = iterator_to_array($calendar);
+                $lastCalendarItem = end($periodArray);
+            } else {
+                $lastCalendarItem = $firstCalendarItem;
+            }
+
+            $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
+            $endDate = $this->formatUdb2Date($endDateString);
+
+            $eventLd->startDate = $startDate->format('c');
+            $eventLd->endDate = $endDate->format('c');
+        }
+
+        if($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            $calendarType = 'single';
+            $calendar->rewind();
+            $firstCalendarItem = $calendar->current();
+            if($firstCalendarItem->getStartTime()) {
+                $dateString = $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
+            } else {
+                $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
+            }
+
+            $startDate = $this->formatUdb2Date($dateString);
+
+            if(iterator_count($calendar) > 1) {
+                $periodArray = iterator_to_array($calendar);
+                $lastCalendarItem = end($periodArray);
+            }  else {
+                $lastCalendarItem = $firstCalendarItem;
+            }
+
+            if($lastCalendarItem->getEndTime()) {
+                $endDateString = $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
+            } else if (iterator_count($calendar) > 1){
+                $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
+            }
+
+            if($endDateString) {
+                $endDate = $this->formatUdb2Date($endDateString);
+                $eventLd->endDate = $endDate->format('c');
+
+                if($startDate->format('Ymd') != $endDate->format('Ymd')) {
+                    $calendarType = 'multiple';
+                }
+            }
+
+            $eventLd->startDate = $startDate->format('c');
+
+        }
+
+        $eventLd->calendarType = $calendarType;
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

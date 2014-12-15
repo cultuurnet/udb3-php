@@ -8,6 +8,7 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Repository\AggregateNotFoundException;
+use CultuurNet\Search\Parameter\FilterQuery;
 use CultuurNet\Search\Parameter\Query;
 
 /**
@@ -29,7 +30,7 @@ class ActorRepository extends EntityRepository
 
         return array(
             new Query('cdbid:' . $id),
-            new Query('type:actor')
+            new FilterQuery('type:actor')
         );
 
     }

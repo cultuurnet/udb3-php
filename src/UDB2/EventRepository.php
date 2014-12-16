@@ -13,11 +13,14 @@ use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 
 /**
@@ -48,6 +51,16 @@ class EventRepository implements RepositoryInterface
     protected $syncBack = false;
 
     /**
+     * @var OrganizerService
+     */
+    protected $organizerService;
+
+    /**
+     * @var PlaceService
+     */
+    protected $placeService;
+
+    /**
      * @var EventStreamDecoratorInterface[]
      */
     private $eventStreamDecorators = array();
@@ -56,12 +69,16 @@ class EventRepository implements RepositoryInterface
         RepositoryInterface $decoratee,
         SearchServiceInterface $search,
         EntryAPIImprovedFactory $entryAPIImprovedFactory,
+        PlaceService $placeService,
+        OrganizerService $organizerService,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;
         $this->search = $search;
         $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
+        $this->organizerService = $organizerService;
+        $this->placeService = $placeService;
     }
 
     public function syncBackOn()
@@ -233,6 +250,7 @@ class EventRepository implements RepositoryInterface
         try {
             $event = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
+            // @todo Use Entry API instead of search service.
             $results = $this->search->search(
                 [new Query('cdbid:' . $id)]
             );
@@ -262,6 +280,12 @@ class EventRepository implements RepositoryInterface
                 throw AggregateNotFoundException::create($id);
             }
 
+            $udb2Event = EventItemFactory::createEventFromCdbXml(
+                \CultureFeed_Cdb_Default::CDB_SCHEME_URL,
+                $eventXml
+            );
+            $this->importDependencies($udb2Event);
+
             $event = Event::importFromUDB2(
                 $id,
                 $eventXml,
@@ -272,5 +296,23 @@ class EventRepository implements RepositoryInterface
         }
 
         return $event;
+    }
+
+    private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event) {
+        $location = $udb2Event->getLocation();
+        $placeId = NULL;
+        if ($location && $location->getCdbid()) {
+            $placeId = $location->getCdbid();
+            // Loading the place will implictly import it, or throw an error
+            // if the place is not known.
+            $place = $this->placeService->getEntity($placeId);
+        }
+
+        $organizer = $udb2Event->getOrganiser();
+        $organizerId = NULL;
+        if ($organizer && $organizer->getCdbid()) {
+            $organizerId = $organizer->getCdbid();
+            // @todo Import organizer.
+        }
     }
 }

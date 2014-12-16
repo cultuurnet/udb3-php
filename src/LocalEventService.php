@@ -22,12 +22,19 @@ class LocalEventService implements EventServiceInterface
      */
     protected $eventRepository;
 
+    /**
+     * @var Event\ReadModel\Relations\RepositoryInterface
+     */
+    protected $eventRelationsRepository;
+
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
-        RepositoryInterface $eventRepository
+        RepositoryInterface $eventRepository,
+        \CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface $eventRelationsRepository
     ) {
         $this->documentRepository = $documentRepository;
         $this->eventRepository = $eventRepository;
+        $this->eventRelationsRepository = $eventRelationsRepository;
     }
 
     /**
@@ -68,4 +75,24 @@ class LocalEventService implements EventServiceInterface
             return $document->getRawBody();
         }
     }
+
+    /**
+     * @param string $organizerId
+     * @return string[]
+     */
+    public function eventsOrganizedByOrganizer($organizerId)
+    {
+        $this->eventRelationsRepository->getEventsOrganizedByOrganizer($organizerId);
+    }
+
+    /**
+     * @param string $placeId
+     * @return string[]
+     */
+    public function eventsLocatedAtPlace($placeId)
+    {
+        return $this->eventRelationsRepository->getEventsLocatedAtPlace($placeId);
+    }
+
+
 }

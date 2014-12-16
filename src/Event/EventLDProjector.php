@@ -7,10 +7,13 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 
 class EventLDProjector extends Projector
@@ -35,6 +38,11 @@ class EventLDProjector extends Projector
      */
     protected $placeService;
 
+    /**
+     * @var EventServiceInterface
+     */
+    protected $eventService;
+
 
     /**
      * @param DocumentRepositoryInterface $repository
@@ -45,6 +53,7 @@ class EventLDProjector extends Projector
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
+        EventServiceInterface $eventService,
         PlaceService $placeService,
         OrganizerService $organiserService
     ) {
@@ -52,6 +61,7 @@ class EventLDProjector extends Projector
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organiserService;
         $this->placeService = $placeService;
+        $this->eventService = $eventService;
     }
 
     /**
@@ -66,14 +76,49 @@ class EventLDProjector extends Projector
         );
     }
 
-    public function applyOrganizerProjectedToJSONLD() {
+    protected function applyOrganizerProjectedToJSONLD() {
         // @todo get events linked to this organizer, and update their JSON-LD
         // representation
     }
 
-    public function applyPlaceProjectedToJSONLD() {
-        // @todo get events linked to this place, and update their JSON-LD
-        // representation
+    protected function applyPlaceProjectedToJSONLD(PlaceProjectedToJSONLD $placeProjectedToJSONLD) {
+        $eventsLocatedAtPlace = $this->eventsLocatedAtPlace(
+            $placeProjectedToJSONLD->getId()
+        );
+
+        $placeJSONLD = $this->placeService->getEntity(
+            $placeProjectedToJSONLD->getId()
+        );
+
+        foreach ($eventsLocatedAtPlace as $eventId) {
+            $document = $this->loadDocumentFromRepositoryByEventId(
+                $eventId
+            );
+            $eventLD = $document->getBody();
+            $eventLD->place = json_decode($placeJSONLD);
+        }
+    }
+
+    /**
+     * @param string $organizerId
+     * @return string[]
+     */
+    protected function eventsOrganizedByOrganizer($organizerId)
+    {
+        return $this->eventService->eventsOrganizedByOrganizer(
+            $organizerId
+        );
+    }
+
+    /**
+     * @param string $placeId
+     * @return string[]
+     */
+    protected function eventsLocatedAtPlace($placeId)
+    {
+        return $this->eventService->eventsLocatedAtPlace(
+            $placeId
+        );
     }
 
     /**
@@ -142,7 +187,7 @@ class EventLDProjector extends Projector
         $location_id = $location_cdb->getCdbid();
 
         if ($location_id) {
-            $location['@id'] = $this->placeService->iri($location_id);
+            $location += (array)$this->placeJSONLD($location_id);
         }
         else {
             $location['name'] = $location_cdb->getLabel();
@@ -323,6 +368,23 @@ class EventLDProjector extends Projector
         // @todo This just creates an empty event. Should we do anything here?
     }
 
+    protected function placeJSONLD($placeId)
+    {
+        try {
+            $placeJSONLD = $this->placeService->getEntity(
+                $placeId
+            );
+
+            return json_decode($placeJSONLD);
+        }
+        catch (EntityNotFoundException $e) {
+            // In case the place can not be found at the moment, just add its ID
+            return array(
+                '@id' => $this->placeService->iri($placeId)
+            );
+        }
+    }
+
     /**
      * @param EventWasTagged $eventTagged
      */
@@ -402,10 +464,18 @@ class EventLDProjector extends Projector
      */
     protected function loadDocumentFromRepository(EventEvent $event)
     {
-        $document = $this->repository->get($event->getEventId());
+        return $this->loadDocumentFromRepositoryByEventId($event->getEventId());
+    }
+
+    /**
+     * @param string $eventId
+     * @return JsonDocument
+     */
+    protected function loadDocumentFromRepositoryByEventId($eventId) {
+        $document = $this->repository->get($eventId);
 
         if (!$document) {
-            return $this->newDocument($event->getEventId());
+            return $this->newDocument($eventId);
         }
 
         return $document;

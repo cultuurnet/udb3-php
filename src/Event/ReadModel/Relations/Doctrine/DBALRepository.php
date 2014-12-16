@@ -3,9 +3,10 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Doctrine\Event\ReadModel\Relations;
+namespace CultuurNet\UDB3\Event\ReadModel\Relations\Doctrine;
 
 
+use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 
@@ -39,7 +40,8 @@ class DBALRepository implements RepositoryInterface
         $this->connection->commit();
     }
 
-    private function prepareInsertStatement() {
+    private function prepareInsertStatement()
+    {
         $table = $this->connection->quoteIdentifier($this->tableName);
         return $this->connection->prepare(
             "INSERT INTO {$table} SET
@@ -54,12 +56,40 @@ class DBALRepository implements RepositoryInterface
 
     public function getEventsLocatedAtPlace($placeId)
     {
-        // TODO: Implement getEventsLocatedAtPlace() method.
+        $q = $this->connection->createQueryBuilder();
+        $q
+            ->select('event')
+            ->from($this->tableName)
+            ->where('place = ?')
+            ->setParameter(0, $placeId);
+
+        $results = $q->execute();
+
+        $events = array();
+        while ($id = $results->fetchColumn(0)) {
+            $events[] = $id;
+        }
+
+        return $events;
     }
 
     public function getEventsOrganizedByOrganizer($organizerId)
     {
-        // TODO: Implement getEventsOrganizedByOrganizer() method.
+        $q = $this->connection->createQueryBuilder();
+        $q
+            ->select('event')
+            ->from($this->tableName)
+            ->where('organizer = ?')
+            ->setParameter(0, $organizerId);
+
+        $results = $q->execute();
+
+        $events = array();
+        while ($id = $results->fetchColumn(0)) {
+            $events[] = $id;
+        }
+
+        return $events;
     }
 
     /**
@@ -80,11 +110,23 @@ class DBALRepository implements RepositoryInterface
 
         $table = $schema->createTable($this->tableName);
 
-        $table->addColumn('event', 'string', array('length' => 32));
-        $table->addColumn('organizer', 'string', array('length' => 32));
-        $table->addColumn('place', 'string', array('length' => 32));
+        $table->addColumn(
+            'event',
+            'string',
+            array('length' => 32, 'notnull' => false)
+        );
+        $table->addColumn(
+            'organizer',
+            'string',
+            array('length' => 32, 'notnull' => false)
+        );
+        $table->addColumn(
+            'place',
+            'string',
+            array('length' => 32, 'notnull' => false)
+        );
 
-        $table->setPrimaryKey(array('event_id'));
+        $table->setPrimaryKey(array('event'));
 
         return $table;
     }

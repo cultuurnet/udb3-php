@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3\Actor;
 
+use Broadway\EventHandling\EventBusInterface;
 use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -25,15 +26,22 @@ abstract class ActorLDProjector extends Projector
     protected $iriGenerator;
 
     /**
+     * @var EventBusInterface
+     */
+    protected $eventBus;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
-        IriGeneratorInterface $iriGenerator
+        IriGeneratorInterface $iriGenerator,
+        EventBusInterface $eventBus
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
+        $this->eventBus = $eventBus;
     }
 
     /**

@@ -7,10 +7,14 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use Broadway\Domain\DomainEventStream;
+use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
+use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 
 class PlaceLDProjector extends ActorLDProjector
 {
@@ -52,7 +56,7 @@ class PlaceLDProjector extends ActorLDProjector
         // Address
         $actorLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();
-        /** @var \CultureFeed_Cdb_Data_Address[] $addresses **/
+        /** @var \CultureFeed_Cdb_Data_Address[] $addresses */
         $addresses = $contact_cdb->getAddresses();
 
         foreach ($addresses as $address) {
@@ -65,7 +69,8 @@ class PlaceLDProjector extends ActorLDProjector
                     'addressCountry' => $address->getCountry(),
                     'addressLocality' => $address->getCity(),
                     'postalCode' => $address->getZip(),
-                    'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
+                    'streetAddress' => $address->getStreet(
+                        ) . ' ' . $address->getHouseNumber(),
                 );
 
             }
@@ -102,6 +107,25 @@ class PlaceLDProjector extends ActorLDProjector
         );
 
         $this->repository->save($actorLdModel->withBody($actorLd));
+
+        $this->publishJSONLDUpdated(
+            $actorImportedFromUDB2->getActorId()
+        );
+    }
+
+    protected function publishJSONLDUpdated($id)
+    {
+        $generator = new Version4Generator();
+        $events[] = DomainMessage::recordNow(
+            $generator->generate(),
+            1,
+            new Metadata(),
+            new PlaceProjectedToJSONLD($id)
+        );
+
+        $this->eventBus->publish(
+            new DomainEventStream($events)
+        );
     }
 
     /**

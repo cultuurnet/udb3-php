@@ -293,8 +293,7 @@ class EventLDProjector extends Projector
         if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
             $calendarType = 'permanent';
         }
-
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+        else if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
             $calendarType = 'periodic';
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
@@ -314,8 +313,7 @@ class EventLDProjector extends Projector
             $eventLd->startDate = $startDate->format('c');
             $eventLd->endDate = $endDate->format('c');
         }
-
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        else if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
             $calendarType = 'single';
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();

@@ -234,22 +234,20 @@ class EventLDProjector extends Projector
             $eventLd->organizer = $organizer;
         }
 
-        // Booking info.
-        $bookingInfo = array(
-            'description' => '',
-            'name' => 'standard price',
-            'price' => 0.0,
-            'priceCurrency' => 'EUR',
-        );
+
         $price = $detail->getPrice();
 
         if ($price) {
+            $eventLd->bookingInfo = array();
+            // Booking info.
+            $bookingInfo = array(
+                'priceCurrency' => 'EUR',
+            );
             $bookingInfo['description'] = $price->getDescription();
             $bookingInfo['name'] = $price->getTitle();
             $bookingInfo['price'] = floatval($price->getValue());
+            $eventLd->bookingInfo[] = $bookingInfo;
         }
-        $eventLd->bookingInfo = $bookingInfo;
-
 
         // Input info.
         $eventLd->creator = $udb2Event->getCreatedBy();

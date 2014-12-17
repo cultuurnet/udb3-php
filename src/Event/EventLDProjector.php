@@ -68,7 +68,7 @@ class EventLDProjector extends Projector
      * @param $dateString
      * @return \DateTime
      */
-    public function formatUdb2Date ($dateString) {
+    public function dateFromUdb2DateString($dateString) {
         return \DateTime::createFromFormat(
             'Y-m-d?H:i:s',
             $dateString,
@@ -275,7 +275,7 @@ class EventLDProjector extends Projector
         $eventLd->terms = $categories;
 
         // format using ISO-8601 with time zone designator
-        $creationDate = $this->formatUdb2Date($udb2Event->getCreationDate());
+        $creationDate = $this->dateFromUdb2DateString($udb2Event->getCreationDate());
         $eventLd->created = $creationDate->format('c');
 
         $eventLd->publisher = $udb2Event->getOwner();
@@ -297,7 +297,7 @@ class EventLDProjector extends Projector
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
             $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
-            $startDate = $this->formatUdb2Date($startDateString);
+            $startDate = $this->dateFromUdb2DateString($startDateString);
 
             if(iterator_count($calendar) > 1) {
                 $periodArray = iterator_to_array($calendar);
@@ -307,7 +307,7 @@ class EventLDProjector extends Projector
             }
 
             $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
-            $endDate = $this->formatUdb2Date($endDateString);
+            $endDate = $this->dateFromUdb2DateString($endDateString);
 
             $eventLd->startDate = $startDate->format('c');
             $eventLd->endDate = $endDate->format('c');
@@ -323,7 +323,7 @@ class EventLDProjector extends Projector
                 $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
             }
 
-            $startDate = $this->formatUdb2Date($dateString);
+            $startDate = $this->dateFromUdb2DateString($dateString);
 
             if(iterator_count($calendar) > 1) {
                 $periodArray = iterator_to_array($calendar);
@@ -340,7 +340,7 @@ class EventLDProjector extends Projector
             }
 
             if($endDateString) {
-                $endDate = $this->formatUdb2Date($endDateString);
+                $endDate = $this->dateFromUdb2DateString($endDateString);
                 $eventLd->endDate = $endDate->format('c');
 
                 if($startDate->format('Ymd') != $endDate->format('Ymd')) {

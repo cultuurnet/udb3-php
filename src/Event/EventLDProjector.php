@@ -354,6 +354,10 @@ class EventLDProjector extends Projector
 
         $eventLd->calendarType = $calendarType;
 
+        $eventLd->sameAs = array(
+            'http://www.uitinvlaanderen.be/agenda/e/_/' . $eventImportedFromUDB2->getEventId(),
+        );
+
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()
         );

@@ -68,7 +68,8 @@ class EventLDProjector extends Projector
      * @param $dateString
      * @return \DateTime
      */
-    public function dateFromUdb2DateString($dateString) {
+    public function dateFromUdb2DateString($dateString)
+    {
         return \DateTime::createFromFormat(
             'Y-m-d?H:i:s',
             $dateString,
@@ -76,12 +77,15 @@ class EventLDProjector extends Projector
         );
     }
 
-    protected function applyOrganizerProjectedToJSONLD() {
+    protected function applyOrganizerProjectedToJSONLD()
+    {
         // @todo get events linked to this organizer, and update their JSON-LD
         // representation
     }
 
-    protected function applyPlaceProjectedToJSONLD(PlaceProjectedToJSONLD $placeProjectedToJSONLD) {
+    protected function applyPlaceProjectedToJSONLD(
+        PlaceProjectedToJSONLD $placeProjectedToJSONLD
+    ) {
         $eventsLocatedAtPlace = $this->eventsLocatedAtPlace(
             $placeProjectedToJSONLD->getId()
         );
@@ -188,8 +192,7 @@ class EventLDProjector extends Projector
 
         if ($location_id) {
             $location += (array)$this->placeJSONLD($location_id);
-        }
-        else {
+        } else {
             $location['name'] = $location_cdb->getLabel();
             $address = $location_cdb->getAddress()->getPhysicalAddress();
             if ($address) {
@@ -213,8 +216,7 @@ class EventLDProjector extends Projector
             $organizer_id = $organizer_cdb->getCdbid();
             if ($organizer_id) {
                 $organizer['@id'] = $this->organizerService->iri($organizer_id);
-            }
-            else {
+            } else {
                 $organizer = array();
                 $organizer['name'] = $organizer_cdb->getLabel();
                 $organizer['email'] = array();
@@ -254,9 +256,9 @@ class EventLDProjector extends Projector
 
         // Terms.
         $themeBlacklist = [
-          'Thema onbepaald',
-          'Meerder kunstvormen',
-          'Meerdere filmgenres'
+            'Thema onbepaald',
+            'Meerder kunstvormen',
+            'Meerdere filmgenres'
         ];
         $categories = array();
         foreach ($udb2Event->getCategories() as $category) {
@@ -275,7 +277,9 @@ class EventLDProjector extends Projector
         $eventLd->terms = $categories;
 
         // format using ISO-8601 with time zone designator
-        $creationDate = $this->dateFromUdb2DateString($udb2Event->getCreationDate());
+        $creationDate = $this->dateFromUdb2DateString(
+            $udb2Event->getCreationDate()
+        );
         $eventLd->created = $creationDate->format('c');
 
         $eventLd->publisher = $udb2Event->getOwner();
@@ -288,18 +292,18 @@ class EventLDProjector extends Projector
         $calendarType = 'unknown';
         $calendar = $udb2Event->getCalendar();
 
-        if($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
             $calendarType = 'permanent';
         }
 
-        if($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
             $calendarType = 'periodic';
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
             $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
             $startDate = $this->dateFromUdb2DateString($startDateString);
 
-            if(iterator_count($calendar) > 1) {
+            if (iterator_count($calendar) > 1) {
                 $periodArray = iterator_to_array($calendar);
                 $lastCalendarItem = end($periodArray);
             } else {
@@ -313,37 +317,41 @@ class EventLDProjector extends Projector
             $eventLd->endDate = $endDate->format('c');
         }
 
-        if($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
             $calendarType = 'single';
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
-            if($firstCalendarItem->getStartTime()) {
-                $dateString = $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
+            if ($firstCalendarItem->getStartTime()) {
+                $dateString = $firstCalendarItem->getDate(
+                    ) . 'T' . $firstCalendarItem->getStartTime();
             } else {
                 $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
             }
 
             $startDate = $this->dateFromUdb2DateString($dateString);
 
-            if(iterator_count($calendar) > 1) {
+            if (iterator_count($calendar) > 1) {
                 $periodArray = iterator_to_array($calendar);
                 $lastCalendarItem = end($periodArray);
-            }  else {
+            } else {
                 $lastCalendarItem = $firstCalendarItem;
             }
 
             $endDateString = null;
-            if($lastCalendarItem->getEndTime()) {
-                $endDateString = $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
-            } else if (iterator_count($calendar) > 1){
-                $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
+            if ($lastCalendarItem->getEndTime()) {
+                $endDateString = $lastCalendarItem->getDate(
+                    ) . 'T' . $lastCalendarItem->getEndTime();
+            } else {
+                if (iterator_count($calendar) > 1) {
+                    $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
+                }
             }
 
-            if($endDateString) {
+            if ($endDateString) {
                 $endDate = $this->dateFromUdb2DateString($endDateString);
                 $eventLd->endDate = $endDate->format('c');
 
-                if($startDate->format('Ymd') != $endDate->format('Ymd')) {
+                if ($startDate->format('Ymd') != $endDate->format('Ymd')) {
                     $calendarType = 'multiple';
                 }
             }
@@ -355,7 +363,8 @@ class EventLDProjector extends Projector
         $eventLd->calendarType = $calendarType;
 
         $eventLd->sameAs = array(
-            'http://www.uitinvlaanderen.be/agenda/e/_/' . $eventImportedFromUDB2->getEventId(),
+            'http://www.uitinvlaanderen.be/agenda/e/_/' . $eventImportedFromUDB2->getEventId(
+            ),
         );
 
         $eventLdModel = new JsonDocument(
@@ -381,8 +390,7 @@ class EventLDProjector extends Projector
             );
 
             return json_decode($placeJSONLD);
-        }
-        catch (EntityNotFoundException $e) {
+        } catch (EntityNotFoundException $e) {
             // In case the place can not be found at the moment, just add its ID
             return array(
                 '@id' => $this->placeService->iri($placeId)
@@ -476,7 +484,8 @@ class EventLDProjector extends Projector
      * @param string $eventId
      * @return JsonDocument
      */
-    protected function loadDocumentFromRepositoryByEventId($eventId) {
+    protected function loadDocumentFromRepositoryByEventId($eventId)
+    {
         $document = $this->repository->get($eventId);
 
         if (!$document) {

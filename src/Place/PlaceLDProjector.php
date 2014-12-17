@@ -54,7 +54,6 @@ class PlaceLDProjector extends ActorLDProjector
         $actorLd->description = $detail->getLongDescription();
 
         // Address
-        $actorLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();
         /** @var \CultureFeed_Cdb_Data_Address[] $addresses */
         $addresses = $contact_cdb->getAddresses();
@@ -65,7 +64,7 @@ class PlaceLDProjector extends ActorLDProjector
 
             if ($address) {
 
-                $actorLd->addresses[] = array(
+                $actorLd->address = array(
                     'addressCountry' => $address->getCountry(),
                     'addressLocality' => $address->getCity(),
                     'postalCode' => $address->getZip(),
@@ -73,6 +72,7 @@ class PlaceLDProjector extends ActorLDProjector
                         ) . ' ' . $address->getHouseNumber(),
                 );
 
+                break;
             }
 
         }

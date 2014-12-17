@@ -12,7 +12,7 @@ class LanguageCanBeTranslatedToSpecification
         $languages = [
             'fr',
             'en',
-            'du',
+            'de',
         ];
 
         return in_array($language->getCode(), $languages);

@@ -332,6 +332,7 @@ class EventLDProjector extends Projector
                 $lastCalendarItem = $firstCalendarItem;
             }
 
+            $endDateString = null;
             if($lastCalendarItem->getEndTime()) {
                 $endDateString = $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
             } else if (iterator_count($calendar) > 1){

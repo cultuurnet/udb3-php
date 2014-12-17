@@ -3,9 +3,10 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
+use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\PlaceService;
 
 class EventLDProjectorTest extends \PHPUnit_Framework_TestCase {
 
@@ -18,13 +19,36 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase {
           'CultuurNet\\UDB3\\Event\\ReadModel\\DocumentRepositoryInterface'
         );
 
+        $eventService = $this->getMock(
+            EventServiceInterface::class
+        );
+
+        $placeService = $this->getMock(
+            PlaceService::class,
+            array(),
+            array(),
+            '',
+            false
+        );
+
+        $organizerService = $this->getMock(
+            OrganizerService::class,
+            array(),
+            array(),
+            '',
+            false
+        );
+
         $iriGenerator = $this->getMock(
           'CultuurNet\\UDB3\\Iri\\IriGeneratorInterface'
         );
 
         $projector = new EventLDProjector(
           $documentRepository,
-          $iriGenerator
+          $iriGenerator,
+          $eventService,
+          $placeService,
+          $organizerService
         );
 
         $cdbXml = file_get_contents(__DIR__ . '/event_with_empty_keyword.cdbxml.xml');
@@ -41,7 +65,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase {
               function($jsonDocument){
                   $expectedKeywords = ['gent', 'Quiz', 'Gent on Files'];
                   $body = $jsonDocument->getBody();
-                return count(array_diff($expectedKeywords , (array)$body->concept)) == 0;
+                return count(array_diff($expectedKeywords , (array)$body->keywords)) == 0;
               }
             ));
 
@@ -51,4 +75,3 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase {
 
     }
 }
- 

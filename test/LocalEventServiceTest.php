@@ -27,13 +27,20 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $eventRepository;
 
+    /**
+     * @var \CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface||\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $eventRelationsRepository;
+
     public function setUp()
     {
         $this->documentRepository = $this->getMock('\\CultuurNet\\UDB3\\Event\\ReadModel\\DocumentRepositoryInterface');
         $this->eventRepository = $this->getMock('Broadway\\Repository\\RepositoryInterface');
+        $this->eventRelationsRepository = $this->getMock(Event\ReadModel\Relations\RepositoryInterface::class);
         $this->eventService = new LocalEventService(
             $this->documentRepository,
-            $this->eventRepository
+            $this->eventRepository,
+            $this->eventRelationsRepository
         );
     }
     /**

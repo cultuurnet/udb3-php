@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -43,12 +44,18 @@ class EventLDProjector extends Projector
      */
     protected $eventService;
 
+    /**
+     * @var  SluggerInterface
+     */
+    protected $slugger;
+
 
     /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
-     * @param Projector $placeLdProjector
-     * @param Projector $organizerLdProjector
+     * @param EventServiceInterface $eventService
+     * @param PlaceService $placeService
+     * @param OrganizerService $organiserService
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -62,6 +69,8 @@ class EventLDProjector extends Projector
         $this->organizerService = $organiserService;
         $this->placeService = $placeService;
         $this->eventService = $eventService;
+
+        $this->slugger = new CulturefeedSlugger();
     }
 
     /**
@@ -356,9 +365,9 @@ class EventLDProjector extends Projector
 
         $eventLd->calendarType = $calendarType;
 
+        $eventSlug = $this->slugger->slug($eventLd->name['nl']);
         $eventLd->sameAs = array(
-            'http://www.uitinvlaanderen.be/agenda/e/_/' . $eventImportedFromUDB2->getEventId(
-            ),
+            'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventImportedFromUDB2->getEventId(),
         );
 
         $eventLdModel = new JsonDocument(

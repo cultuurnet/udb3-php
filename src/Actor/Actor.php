@@ -73,7 +73,6 @@ class Actor extends EventSourcedAggregateRoot
         );
 
         return $actor;
-
     }
 
     /**
@@ -108,5 +107,4 @@ class Actor extends EventSourcedAggregateRoot
             }
         }
     }
-
 }

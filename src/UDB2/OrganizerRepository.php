@@ -17,13 +17,14 @@ use CultuurNet\Search\Parameter\Query;
  *
  * When a failure on UDB2 occurs, the whole transaction will fail.
  */
-class OrganizerRepository extends ActorRepository {
-
+class OrganizerRepository extends ActorRepository
+{
     /**
      * Returns the type.
      * @return string
      */
-    protected function getType() {
+    protected function getType()
+    {
         return '\\CultuurNet\\UDB3\\Organizer\\Organizer';
     }
 
@@ -38,13 +39,12 @@ class OrganizerRepository extends ActorRepository {
      *
      * @return ActorImportedFromUDB2
      */
-    protected function importFromUDB2($id, $actorXml, $cdbSchemeUrl) {
-
+    protected function importFromUDB2($id, $actorXml, $cdbSchemeUrl)
+    {
         return Organizer::importFromUDB2(
             $id,
             $actorXml,
             $cdbSchemeUrl
         );
     }
-
 }

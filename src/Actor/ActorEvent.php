@@ -40,5 +40,4 @@ abstract class ActorEvent implements SerializableInterface
     {
         return new static($data['actor_id']);
     }
-
 }

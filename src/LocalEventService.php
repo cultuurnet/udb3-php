@@ -93,6 +93,4 @@ class LocalEventService implements EventServiceInterface
     {
         return $this->eventRelationsRepository->getEventsLocatedAtPlace($placeId);
     }
-
-
 }

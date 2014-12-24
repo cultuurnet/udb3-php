@@ -298,9 +298,10 @@ class EventRepository implements RepositoryInterface
         return $event;
     }
 
-    private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event) {
+    private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
         $location = $udb2Event->getLocation();
-        $placeId = NULL;
+        $placeId = null;
         if ($location && $location->getCdbid()) {
             $placeId = $location->getCdbid();
             // Loading the place will implictly import it, or throw an error
@@ -309,7 +310,7 @@ class EventRepository implements RepositoryInterface
         }
 
         $organizer = $udb2Event->getOrganiser();
-        $organizerId = NULL;
+        $organizerId = null;
         if ($organizer && $organizer->getCdbid()) {
             $organizerId = $organizer->getCdbid();
             // @todo Import organizer.

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations\Doctrine;
 
-
 use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
@@ -130,5 +129,4 @@ class DBALRepository implements RepositoryInterface
 
         return $table;
     }
-
 }

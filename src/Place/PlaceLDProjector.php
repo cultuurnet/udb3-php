@@ -18,7 +18,6 @@ use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 
 class PlaceLDProjector extends ActorLDProjector
 {
-
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
@@ -40,14 +39,12 @@ class PlaceLDProjector extends ActorLDProjector
         $details = $udb2Actor->getDetails();
 
         foreach ($details as $languageDetail) {
-
             // The first language detail found will be used to retrieve
             // properties from which in UDB3 are not any longer considered
             // to be language specific.
             if (!$detail) {
                 $detail = $languageDetail;
             }
-
         }
 
         $actorLd->name = $detail->getTitle();
@@ -59,11 +56,9 @@ class PlaceLDProjector extends ActorLDProjector
         $addresses = $contact_cdb->getAddresses();
 
         foreach ($addresses as $address) {
-
             $address = $address->getPhysicalAddress();
 
             if ($address) {
-
                 $actorLd->address = array(
                     'addressCountry' => $address->getCountry(),
                     'addressLocality' => $address->getCity(),
@@ -74,7 +69,6 @@ class PlaceLDProjector extends ActorLDProjector
 
                 break;
             }
-
         }
 
         // Booking info.
@@ -144,5 +138,4 @@ class PlaceLDProjector extends ActorLDProjector
 
         return $document->withBody($placeLd);
     }
-
 }

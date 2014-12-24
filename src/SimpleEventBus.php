@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 use Broadway\Domain\DomainEventStream;
 
 /**
@@ -28,11 +27,13 @@ class SimpleEventBus extends \Broadway\EventHandling\SimpleEventBus
     /**
      * @param callable $callback
      */
-    public function beforeFirstPublication($callback) {
+    public function beforeFirstPublication($callback)
+    {
         $this->beforeFirstPublicationCallback = $callback;
     }
 
-    private function callBeforeFirstPublicationCallback() {
+    private function callBeforeFirstPublicationCallback()
+    {
         if ($this->beforeFirstPublicationCallback) {
             $callback = $this->beforeFirstPublicationCallback;
             $callback($this);

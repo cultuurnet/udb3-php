@@ -10,9 +10,9 @@ namespace CultuurNet\UDB3;
 /**
  * Interface for a service performing entity related tasks.
  */
-interface sluggerInterface
+interface SluggerInterface
 {
-  /**
+    /**
    * Returns the slug for a given string
    *
    * @param string $string
@@ -20,5 +20,4 @@ interface sluggerInterface
    * @return string
    **/
   public function slug($string);
-
 }

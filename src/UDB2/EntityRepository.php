@@ -82,7 +82,6 @@ abstract class EntityRepository implements RepositoryInterface
                 $aggregate,
                 $domainEventStream
             );
-
         }
 
         $this->decoratee->add($aggregate);
@@ -144,7 +143,8 @@ abstract class EntityRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function load($id) {
+    public function load($id)
+    {
     }
 
     abstract protected function getParams($id);
@@ -152,5 +152,4 @@ abstract class EntityRepository implements RepositoryInterface
     abstract protected function getType();
 
     abstract protected function importFromUDB2($id, $xml, $xmlNamespaceUrl);
-
 }

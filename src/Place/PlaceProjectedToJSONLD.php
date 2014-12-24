@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Place;
 
-
 class PlaceProjectedToJSONLD
 {
     /**

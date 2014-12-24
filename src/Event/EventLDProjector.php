@@ -221,7 +221,6 @@ class EventLDProjector extends Projector
         $contact_info_cdb = $udb2Event->getContactInfo();
 
         if ($organizer_cdb && $contact_info_cdb) {
-
             $organizer_id = $organizer_cdb->getCdbid();
             if ($organizer_id) {
                 $organizer['@id'] = $this->organizerService->iri($organizer_id);
@@ -271,15 +270,12 @@ class EventLDProjector extends Projector
         foreach ($udb2Event->getCategories() as $category) {
             /* @var \Culturefeed_Cdb_Data_Category $category */
             if ($category && !in_array($category->getName(), $themeBlacklist)) {
-
                 $categories[] = array(
                     'label' => $category->getName(),
                     'domain' => $category->getType(),
                     'id' => $category->getId(),
                 );
-
             }
-
         }
         $eventLd->terms = $categories;
 
@@ -360,7 +356,6 @@ class EventLDProjector extends Projector
             }
 
             $eventLd->startDate = $startDate->format('c');
-
         }
 
         $eventLd->calendarType = $calendarType;

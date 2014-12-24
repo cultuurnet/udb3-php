@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
-
 interface RepositoryInterface
 {
     public function storeRelations($eventId, $placeId, $organizerId);

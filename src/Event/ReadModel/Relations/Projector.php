@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
-
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 
@@ -16,7 +15,8 @@ class Projector extends \Broadway\ReadModel\Projector
      */
     protected $repository;
 
-    public function __construct($repository) {
+    public function __construct($repository)
+    {
         $this->repository = $repository;
     }
 
@@ -30,13 +30,13 @@ class Projector extends \Broadway\ReadModel\Projector
         );
 
         $location = $udb2Event->getLocation();
-        $placeId = NULL;
+        $placeId = null;
         if ($location->getCdbid()) {
             $placeId = $location->getCdbid();
         }
 
         $organizer = $udb2Event->getOrganiser();
-        $organizerId = NULL;
+        $organizerId = null;
         if ($organizer && $organizer->getCdbid()) {
             $organizerId = $organizer->getCdbid();
         }
@@ -44,7 +44,8 @@ class Projector extends \Broadway\ReadModel\Projector
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
 
-    protected function storeRelations($eventId, $placeId, $organizerId) {
+    protected function storeRelations($eventId, $placeId, $organizerId)
+    {
         $this->repository->storeRelations($eventId, $placeId, $organizerId);
     }
 }

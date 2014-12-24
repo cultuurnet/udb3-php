@@ -11,7 +11,6 @@ namespace CultuurNet\UDB3;
  */
 class CulturefeedSlugger implements SluggerInterface
 {
-
     public function slug($string)
     {
         return $this->culturefeed_search_slug($string);
@@ -29,9 +28,8 @@ class CulturefeedSlugger implements SluggerInterface
      * @return string
      *   A string representing the slug
      */
-    function culturefeed_search_slug($string, $length = 50, $separator = '-')
+    private function culturefeed_search_slug($string, $length = 50, $separator = '-')
     {
-
         // transliterate
         $string = $this->culturefeed_search_transliterate($string);
 
@@ -66,7 +64,6 @@ class CulturefeedSlugger implements SluggerInterface
         );
 
         return $string;
-
     }
 
     /**

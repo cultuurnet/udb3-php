@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 
 class OrganizerLDProjector extends ActorLDProjector
 {
-
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
@@ -35,14 +34,12 @@ class OrganizerLDProjector extends ActorLDProjector
         $details = $udb2Actor->getDetails();
 
         foreach ($details as $languageDetail) {
-
-          // The first language detail found will be used to retrieve
+            // The first language detail found will be used to retrieve
           // properties from which in UDB3 are not any longer considered
           // to be language specific.
           if (!$detail) {
-            $detail = $languageDetail;
+              $detail = $languageDetail;
           }
-
         }
 
         $actorLd->name = $detail->getTitle();
@@ -53,20 +50,16 @@ class OrganizerLDProjector extends ActorLDProjector
         $addresses = $contact_cdb->getAddresses();
 
         foreach ($addresses as $address) {
+            $address = $address->getPhysicalAddress();
 
-          $address = $address->getPhysicalAddress();
-
-          if ($address) {
-
-            $actorLd->addresses[] = array(
+            if ($address) {
+                $actorLd->addresses[] = array(
               'addressCountry' => $address->getCountry(),
               'addressLocality' => $address->getCity(),
               'postalCode' => $address->getZip(),
               'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
             );
-
-          }
-
+            }
         }
 
         $actorLdModel = new JsonDocument(
@@ -92,5 +85,4 @@ class OrganizerLDProjector extends ActorLDProjector
 
         return $document->withBody($eventLd);
     }
-
 }

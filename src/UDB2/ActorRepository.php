@@ -18,7 +18,6 @@ use CultuurNet\Search\Parameter\Query;
  */
 abstract class ActorRepository extends EntityRepository
 {
-
     /**
      * Returns the default params.
      *
@@ -26,13 +25,12 @@ abstract class ActorRepository extends EntityRepository
      *
      * @return array
      */
-    protected function getParams($id) {
-
+    protected function getParams($id)
+    {
         return array(
             new Query('cdbid:' . $id),
             new FilterQuery('type:actor')
         );
-
     }
 
   /**
@@ -46,7 +44,6 @@ abstract class ActorRepository extends EntityRepository
         try {
             $actor = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
-
             $params = $this->getParams($id);
 
             $results = $this->search->search($params);
@@ -87,5 +84,4 @@ abstract class ActorRepository extends EntityRepository
 
         return $actor;
     }
-
 }

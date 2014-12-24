@@ -75,7 +75,8 @@ abstract class ActorLDProjector extends Projector
      *
      * @return string
      */
-    public function iri($id) {
+    public function iri($id)
+    {
         return $this->iriGenerator->iri($id);
     }
 
@@ -84,5 +85,4 @@ abstract class ActorLDProjector extends Projector
      * @return JsonDocument
      */
     abstract protected function newDocument($id);
-
 }

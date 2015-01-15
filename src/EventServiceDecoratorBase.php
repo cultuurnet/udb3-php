@@ -33,4 +33,20 @@ abstract class EventServiceDecoratorBase implements EventServiceInterface
     {
         return $this->decoratee->getEvent($id);
     }
+
+    /**
+     * @param string $organizerId
+     * @return string[]
+     */
+    public function eventsOrganizedByOrganizer($organizerId) {
+        return $this->decoratee->eventsOrganizedByOrganizer($organizerId);
+    }
+
+    /**
+     * @param string $placeId
+     * @return string[] mixed
+     */
+    public function eventsLocatedAtPlace($placeId) {
+        return $this->decoratee->eventsLocatedAtPlace($placeId);
+    }
 }

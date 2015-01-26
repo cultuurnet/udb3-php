@@ -12,10 +12,13 @@ use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\Entry\EntryAPI;
 use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
+use CultuurNet\UDB3\Event\EventCreated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -146,6 +149,10 @@ class EventRepository implements RepositoryInterface
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
+                        break;
+
+                    case EventCreated::class:
+                        $this->applyEventCreated($domainEvent, $domainMessage->getMetadata());
                         break;
 
                     default:
@@ -315,5 +322,66 @@ class EventRepository implements RepositoryInterface
             $organizerId = $organizer->getCdbid();
             // @todo Import organizer.
         }
+    }
+
+    public function applyEventCreated(EventCreated $eventCreated, Metadata $metadata)
+    {
+        $event = new \CultureFeed_Cdb_Item_Event();
+
+        // This currently does not work when POSTed to the entry API
+        $event->setCdbId($eventCreated->getEventId());
+
+        $nlDetail = new \CultureFeed_Cdb_Data_EventDetail();
+        $nlDetail->setLanguage('nl');
+        $nlDetail->setTitle($eventCreated->getTitle());
+
+        $details = new \CultureFeed_Cdb_Data_EventDetailList();
+        $details->add($nlDetail);
+
+        // @todo: Look up location address and replace placeholder address here.
+        $address = new \CultureFeed_Cdb_Data_Address();
+        $virtualAddress = new \CultureFeed_Cdb_Data_Address_VirtualAddress('test');
+        $address->setVirtualAddress($virtualAddress);
+
+        $location = new \CultureFeed_Cdb_Data_Location($address);
+        $placeActor = new \CultureFeed_Cdb_Item_Actor();
+        $placeActor->setCdbId($eventCreated->getLocation());
+        $placeActorDetails = new \CultureFeed_Cdb_Data_ActorDetailList();
+        $placeActorNlDetail = new \CultureFeed_Cdb_Data_ActorDetail();
+        $placeActorNlDetail->setLanguage('nl');
+        // @todo: replace with real title of the place
+        $placeActorNlDetail->setTitle('test');
+        $placeActorDetails->add($placeActorNlDetail);
+        $placeActor->setDetails($placeActorDetails);
+        // @todo: Should we add at least the title of the actor as well here?
+        $location->setActor($placeActor);
+        $placeActorCategories = new \CultureFeed_Cdb_Data_CategoryList();
+        // @todo This is not suitable for a place, check if there are more suitable types of categories.
+        $concertCategory = new \CultureFeed_Cdb_Data_Category('eventtype', '0.50.4.0.0', 'Concert');
+        $placeActorCategories->add($concertCategory);
+        $placeActor->setCategories($placeActorCategories);
+
+        $event->setLocation($location);
+
+        $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
+        $concertCategory = new \CultureFeed_Cdb_Data_Category('eventtype', '0.50.4.0.0', 'Concert');
+        $event->getCategories()->add($concertCategory);
+
+        $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+        $calendar->add(
+            new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+                $eventCreated->getDate()->format('Y-m-d'),
+                $eventCreated->getDate()->format('H:i:s.u')
+            )
+        );
+        $event->setCalendar($calendar);
+
+        $event->setDetails($details);
+
+        $contactInfo = new \CultureFeed_Cdb_Data_ContactInfo();
+        $event->setContactInfo($contactInfo);
+
+        $cdbId = $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->createEvent($event);
     }
 }

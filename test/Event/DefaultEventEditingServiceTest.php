@@ -12,6 +12,7 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use Broadway\Repository\RepositoryInterface;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,7 +48,8 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
             $this->commandBus,
-            $this->uuidGenerator
+            $this->uuidGenerator,
+            $this->getMock(RepositoryInterface::class)
         );
     }
 

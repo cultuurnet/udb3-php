@@ -6,28 +6,17 @@
 namespace CultuurNet\UDB3\Event;
 
 
-class Title implements \JsonSerializable
+use CultuurNet\UDB3\TrimmedString;
+
+class Title extends TrimmedString implements \JsonSerializable
 {
-    private $value;
-
-    public function __construct($title)
+    public function __construct($value)
     {
-        if (!is_string($title)) {
-            throw new \InvalidArgumentException('Title must be a string.');
-        }
+        parent::__construct($value);
 
-        $title = trim($title);
-
-        if ($title == '') {
+        if ($this->isEmpty()) {
             throw new \InvalidArgumentException('Title can not be empty.');
         }
-
-        $this->value = $title;
-    }
-
-    function __toString()
-    {
-        return $this->value;
     }
 
     /**
@@ -35,8 +24,6 @@ class Title implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return (string) $this;
+        return (string)$this;
     }
-
-
 }

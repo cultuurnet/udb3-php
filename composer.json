@@ -20,7 +20,8 @@
     "cultuurnet/entry": "~0.0@dev",
     "broadway/broadway": "~0.2.0",
     "chrisboulton/php-resque": "~1.2",
-    "cultuurnet/culturefeed-php": "~1.0"
+    "cultuurnet/culturefeed-php": "~1.0",
+    "nicolopignatelli/valueobjects": "~2.0"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

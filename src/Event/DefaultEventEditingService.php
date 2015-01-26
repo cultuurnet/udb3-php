@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -32,6 +33,11 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     protected $uuidGenerator;
 
     /**
+     * @var RepositoryInterface
+     */
+    protected $eventRepository;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
@@ -39,11 +45,13 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     public function __construct(
         EventServiceInterface $eventService,
         CommandBusInterface $commandBus,
-        UuidGeneratorInterface $uuidGenerator
+        UuidGeneratorInterface $uuidGenerator,
+        RepositoryInterface $eventRepository
     ) {
         $this->eventService = $eventService;
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
+        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -129,7 +137,9 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     public function createEvent(Title $title, $location, $date)
     {
         $eventId = $this->uuidGenerator->generate();
-        Event::create($eventId, $title, $location, $date);
+        $event = Event::create($eventId, $title, $location, $date);
+
+        $this->eventRepository->add($event);
 
         return $eventId;
     }

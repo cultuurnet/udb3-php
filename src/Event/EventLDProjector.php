@@ -381,6 +381,7 @@ class EventLDProjector extends Projector
 
         $jsonLD = $document->getBody();
 
+        $jsonLD->{'@id'} = $this->iriGenerator->iri($eventCreated->getEventId());
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
             '@type' => 'Place',

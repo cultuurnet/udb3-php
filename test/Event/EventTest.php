@@ -17,7 +17,7 @@ class EventTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->event = Event::create('foo', 'some representative title', 'LOCATION-ABC-123', new \DateTime());
+        $this->event = Event::create('foo', new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime());
     }
 
     /**

@@ -46,11 +46,11 @@ interface EventEditingServiceInterface
     public function eraseTag($eventId, Keyword $keyword);
 
     /**
-     * @param string $title
+     * @param Title $title
      * @param string $location
      * @param mixed $date
      *
      * @return string $eventId
      */
-    public function createEvent($title, $location, $date);
+    public function createEvent(Title $title, $location, $date);
 }

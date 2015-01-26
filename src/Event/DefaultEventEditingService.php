@@ -120,13 +120,13 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
-     * @param string $title
+     * @param Title $title
      * @param string $location
      * @param mixed $date
      *
      * @return string $eventId
      */
-    public function createEvent($title, $location, $date)
+    public function createEvent(Title $title, $location, $date)
     {
         $eventId = $this->uuidGenerator->generate();
         Event::create($eventId, $title, $location, $date);

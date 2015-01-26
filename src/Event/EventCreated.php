@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Event;
 class EventCreated extends EventEvent
 {
     /**
-     * @var string
+     * @var Title
      */
     protected $title;
 
@@ -24,11 +24,11 @@ class EventCreated extends EventEvent
 
     /**
      * @param string $eventId
-     * @param string $title
+     * @param Title $title
      * @param string $location
      * @param \DateTime $date
      */
-    public function __construct($eventId, $title, $location, \DateTime $date)
+    public function __construct($eventId, Title $title, $location, \DateTime $date)
     {
         parent::__construct($eventId);
 
@@ -38,9 +38,9 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @param string $title
+     * @param Title $title
      */
-    private function setTitle($title)
+    private function setTitle(Title $title)
     {
         $this->title = $title;
     }
@@ -78,7 +78,7 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @return string
+     * @return Title
      */
     public function getTitle()
     {
@@ -93,7 +93,7 @@ class EventCreated extends EventEvent
         return parent::serialize() + array(
             'location' => $this->getLocation(),
             'date' => $this->getDate()->format('c'),
-            'title' => $this->getTitle(),
+            'title' => (string)$this->getTitle(),
         );
     }
 
@@ -104,7 +104,7 @@ class EventCreated extends EventEvent
     {
         return new static(
             $data['event_id'],
-            $data['title'],
+            new Title($data['title']),
             $data['location'],
             \DateTime::createFromFormat('c', $data['date'])
         );

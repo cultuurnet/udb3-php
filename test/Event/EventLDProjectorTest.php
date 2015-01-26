@@ -99,7 +99,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $eventId = $uuidGenerator->generate();
         $date = new \DateTime('2015-01-26T13:25:21+01:00');
 
-        $eventCreated = new EventCreated($eventId, 'some representative title', 'LOCATION-ABC-123', $date);
+        $eventCreated = new EventCreated($eventId, new Title('some representative title'), 'LOCATION-ABC-123', $date);
 
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;

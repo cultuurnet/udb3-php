@@ -48,13 +48,13 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($ids[0])
             ->given(
                 [
-                    new EventCreated($ids[0])
+                    new EventCreated($ids[0], 'some representative title', 'LOCATION-ABC-123', new \DateTime())
                 ]
             )
             ->withAggregateId($ids[1])
             ->given(
                 [
-                    new EventCreated($ids[1])
+                    new EventCreated($ids[1], 'another representative title', 'LOCATION-ABC-123', new \DateTime())
                 ]
             )
             ->when(new TagEvents($ids, new Keyword('awesome')))
@@ -86,7 +86,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                 ->withAggregateId($i)
                 ->given(
                     [
-                        new EventCreated($i)
+                        new EventCreated($i, 'some representative title', 'LOCATION-ABC-123', new \DateTime())
                     ]
                 );
         }
@@ -147,7 +147,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    new EventCreated($id)
+                    new EventCreated($id, 'some representative title', 'LOCATION-ABC-123', new \DateTime())
                 ]
             )
             ->when(new TranslateTitle($id, $language, $title))
@@ -169,7 +169,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [new EventCreated($id)]
+                [new EventCreated($id, 'some representative title', 'LOCATION-ABC-123', new \DateTime())]
             )
             ->when(new TranslateDescription($id, $language, $description))
             ->then([new DescriptionTranslated($id, $language, $description)]);
@@ -184,7 +184,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [new EventCreated($id)]
+                [new EventCreated($id,'some representative title', 'LOCATION-ABC-123', new \DateTime())]
             )
             ->when(new Tag($id, new Keyword('foo')))
             ->then([new EventWasTagged($id, new Keyword('foo'))]);
@@ -200,7 +200,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    new EventCreated($id),
+                    new EventCreated($id, 'some representative title', 'LOCATION-ABC-123', new \DateTime()),
                     new EventWasTagged($id, new Keyword('foo'))
                 ]
             )
@@ -217,7 +217,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [new EventCreated($id)]
+                [new EventCreated($id, 'some representative title', 'LOCATION-ABC-123', new \DateTime())]
             )
             ->when(new EraseTag($id, new Keyword('foo')))
             ->then([]);
@@ -234,7 +234,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    new EventCreated($id),
+                    new EventCreated($id, 'some representative title', 'LOCATION-ABC-123', new \DateTime()),
                     new EventWasTagged($id, new Keyword('foo')),
                     new TagErased($id, new Keyword('foo'))
                 ]

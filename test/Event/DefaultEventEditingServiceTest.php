@@ -11,6 +11,7 @@ use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,9 +40,14 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             'Broadway\\CommandHandling\\CommandBusInterface'
         );
 
+        $this->uuidGenerator = $this->getMock(
+            UuidGeneratorInterface::class
+        );
+
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
-            $this->commandBus
+            $this->commandBus,
+            $this->uuidGenerator
         );
     }
 

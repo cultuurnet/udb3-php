@@ -44,4 +44,13 @@ interface EventEditingServiceInterface
      * @throws EventNotFoundException
      */
     public function eraseTag($eventId, Keyword $keyword);
+
+    /**
+     * @param string $title
+     * @param string $location
+     * @param mixed $date
+     *
+     * @return string $eventId
+     */
+    public function createEvent($title, $location, $date);
 }

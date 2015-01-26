@@ -12,6 +12,7 @@ use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
 {
@@ -26,15 +27,23 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     protected $commandBus;
 
     /**
+     * @var UuidGeneratorInterface
+     */
+    protected $uuidGenerator;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
+     * @param UuidGeneratorInterface $uuidGenerator
      */
     public function __construct(
         EventServiceInterface $eventService,
-        CommandBusInterface $commandBus
+        CommandBusInterface $commandBus,
+        UuidGeneratorInterface $uuidGenerator
     ) {
         $this->eventService = $eventService;
         $this->commandBus = $commandBus;
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     /**
@@ -109,4 +118,21 @@ class DefaultEventEditingService implements EventEditingServiceInterface
             new EraseTag($eventId, $keyword)
         );
     }
+
+    /**
+     * @param string $title
+     * @param string $location
+     * @param mixed $date
+     *
+     * @return string $eventId
+     */
+    public function createEvent($title, $location, $date)
+    {
+        $eventId = $this->uuidGenerator->generate();
+        Event::create($eventId, $title, $location, $date);
+
+        return $eventId;
+    }
+
+
 }

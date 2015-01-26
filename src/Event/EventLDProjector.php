@@ -377,7 +377,20 @@ class EventLDProjector extends Projector
      */
     protected function applyEventCreated(EventCreated $eventCreated)
     {
-        // @todo This just creates an empty event. Should we do anything here?
+        $document = $this->newDocument($eventCreated->getEventId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->name['nl'] = $eventCreated->getTitle();
+        $jsonLD->location = array(
+            '@type' => 'Place',
+        ) + (array)$this->placeJSONLD($eventCreated->getLocation());
+
+
+        $jsonLD->calendarType = 'single';
+        $jsonLD->startDate = $eventCreated->getDate()->format('c');
+
+        $this->repository->save($document->withBody($jsonLD));
     }
 
     protected function placeJSONLD($placeId)

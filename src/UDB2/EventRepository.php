@@ -381,7 +381,10 @@ class EventRepository implements RepositoryInterface
         $contactInfo = new \CultureFeed_Cdb_Data_ContactInfo();
         $event->setContactInfo($contactInfo);
 
+        $cdbXml = new \CultureFeed_Cdb_Default();
+        $cdbXml->addItem($event);
+
         $cdbId = $this->createImprovedEntryAPIFromMetadata($metadata)
-            ->createEvent($event);
+            ->createEvent((string)$cdbXml);
     }
 }

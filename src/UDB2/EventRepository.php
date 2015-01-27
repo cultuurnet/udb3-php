@@ -12,6 +12,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\Entry\CreateEventErrorException;
 use CultuurNet\Entry\EntryAPI;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Actor\Actor;
@@ -384,7 +385,15 @@ class EventRepository implements RepositoryInterface
         $cdbXml = new \CultureFeed_Cdb_Default();
         $cdbXml->addItem($event);
 
-        $cdbId = $this->createImprovedEntryAPIFromMetadata($metadata)
-            ->createEvent((string)$cdbXml);
+        try {
+            $cdbId = $this->createImprovedEntryAPIFromMetadata($metadata)
+                ->createEvent((string)$cdbXml);
+        }
+        catch (CreateEventErrorException $e) {
+            // Ignore a NotFound error response for now.
+            if ($e->getRsp()->getCode() !== EntryAPI::NOT_FOUND) {
+                throw $e;
+            }
+        }
     }
 }

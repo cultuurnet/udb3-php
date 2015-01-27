@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\EventCreated;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 
 class Projector extends \Broadway\ReadModel\Projector
@@ -42,6 +43,15 @@ class Projector extends \Broadway\ReadModel\Projector
         }
 
         $this->storeRelations($eventId, $placeId, $organizerId);
+    }
+
+    protected function applyEventCreated(EventCreated $event) {
+        $eventId = $event->getEventId();
+
+        $location = $event->getLocation();
+
+        $organizer = null;
+        $this->storeRelations($eventId, $location, $organizer);
     }
 
     protected function storeRelations($eventId, $placeId, $organizerId)

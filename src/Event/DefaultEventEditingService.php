@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -14,6 +15,7 @@ use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\PlaceService;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
 {
@@ -38,6 +40,11 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     protected $eventRepository;
 
     /**
+     * @var PlaceService
+     */
+    protected $places;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
@@ -46,12 +53,14 @@ class DefaultEventEditingService implements EventEditingServiceInterface
         EventServiceInterface $eventService,
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $eventRepository
+        RepositoryInterface $eventRepository,
+        PlaceService $placeService
     ) {
         $this->eventService = $eventService;
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
         $this->eventRepository = $eventRepository;
+        $this->places = $placeService;
     }
 
     /**
@@ -133,10 +142,17 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      * @param mixed $date
      *
      * @return string $eventId
+     *
+     * @throws EntityNotFoundException If the location can not be found.
      */
     public function createEvent(Title $title, $location, $date)
     {
         $eventId = $this->uuidGenerator->generate();
+
+        // This will throw an EntityNotFoundException if the place does
+        // not exist.
+        $this->places->getEntity($location);
+
         $event = Event::create($eventId, $title, $location, $date);
 
         $this->eventRepository->add($event);

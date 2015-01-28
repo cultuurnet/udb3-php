@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d338bce822fd93b29696fdd848c47435",
+    "hash": "a6c987d36cd99c5b9a9b4176d4943d75",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -259,27 +259,22 @@
         },
         {
             "name": "cultuurnet/cdb",
-            "version": "v2.0.2",
+            "version": "2.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Cdb.git",
-                "reference": "1d0d67517444df548d8787835276b50a21c4eb34"
+                "reference": "b2caa30c85bf90e484998526c9f0d3bd28beecbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/1d0d67517444df548d8787835276b50a21c4eb34",
-                "reference": "1d0d67517444df548d8787835276b50a21c4eb34",
+                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/b2caa30c85bf90e484998526c9f0d3bd28beecbf",
+                "reference": "b2caa30c85bf90e484998526c9f0d3bd28beecbf",
                 "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.3"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-release/2.x": "2.x-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "CultureFeed_Cdb_": [
@@ -292,7 +287,7 @@
                 "Apache-2.0"
             ],
             "description": "PHP library for hydrating/manipulating CultuurNet's Cdb XML documents",
-            "time": "2015-01-16 15:17:03"
+            "time": "2015-01-28 12:47:45"
         },
         {
             "name": "cultuurnet/culturefeed-php",
@@ -363,12 +358,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Entry.git",
-                "reference": "ea3b75c4dfcb87bee0ad90b3fa438deea43de5fc"
+                "reference": "3d81ff4de48a59f5875a990165403582147de64d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Entry/zipball/ea3b75c4dfcb87bee0ad90b3fa438deea43de5fc",
-                "reference": "ea3b75c4dfcb87bee0ad90b3fa438deea43de5fc",
+                "url": "https://api.github.com/repos/cultuurnet/Entry/zipball/3d81ff4de48a59f5875a990165403582147de64d",
+                "reference": "3d81ff4de48a59f5875a990165403582147de64d",
                 "shasum": ""
             },
             "require": {
@@ -401,7 +396,7 @@
                 }
             ],
             "description": "PHP library to access CultuurNet's Entry API",
-            "time": "2014-12-14 09:34:32"
+            "time": "2015-01-27 17:26:02"
         },
         {
             "name": "cultuurnet/search",
@@ -2309,16 +2304,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.4.4",
+            "version": "4.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2047ae17f6e8cfd10fbde0b4535c97eb22d99cbe"
+                "reference": "2e8580deebb7d1ac92ac878595e6bffe01069c2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2047ae17f6e8cfd10fbde0b4535c97eb22d99cbe",
-                "reference": "2047ae17f6e8cfd10fbde0b4535c97eb22d99cbe",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2e8580deebb7d1ac92ac878595e6bffe01069c2a",
+                "reference": "2e8580deebb7d1ac92ac878595e6bffe01069c2a",
                 "shasum": ""
             },
             "require": {
@@ -2336,8 +2331,9 @@
                 "sebastian/comparator": "~1.0",
                 "sebastian/diff": "~1.1",
                 "sebastian/environment": "~1.1",
-                "sebastian/exporter": "~1.0",
+                "sebastian/exporter": "~1.1",
                 "sebastian/global-state": "~1.0",
+                "sebastian/recursion-context": "~1.0",
                 "sebastian/version": "~1.0",
                 "symfony/yaml": "~2.0"
             },
@@ -2376,7 +2372,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-01-24 14:23:56"
+            "time": "2015-01-27 16:06:15"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2949,7 +2945,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "cultuurnet/entry": 20
+        "cultuurnet/entry": 20,
+        "cultuurnet/cdb": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

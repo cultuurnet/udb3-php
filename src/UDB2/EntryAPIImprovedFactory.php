@@ -38,18 +38,19 @@ final class EntryAPIImprovedFactory
             $tokenCredentials
         );
 
-        // Print request and response for debugging purposes.
-        $adapter = new ClosureLogAdapter(
-            function ($message, $priority, $extras) {
-                // @todo handle $priority
-                print $message;
-            }
-        );
+        // Print request and response for debugging purposes. Only on CLI.
+        if (PHP_SAPI === 'cli') {
+            $adapter = new ClosureLogAdapter(
+                function ($message, $priority, $extras) {
+                    print $message;
+                }
+            );
 
-        $format = "\n\n# Request:\n{request}\n\n# Response:\n{response}\n\n# Errors: {curl_code} {curl_error}\n\n";
-        $log = new LogPlugin($adapter, $format);
+            $format = "\n\n# Request:\n{request}\n\n# Response:\n{response}\n\n# Errors: {curl_code} {curl_error}\n\n";
+            $log = new LogPlugin($adapter, $format);
 
-        $entryApi->getHttpClientFactory()->addSubscriber($log);
+            $entryApi->getHttpClientFactory()->addSubscriber($log);
+        }
 
         return $entryApi;
     }

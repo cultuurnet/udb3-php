@@ -7,6 +7,9 @@ namespace CultuurNet\UDB3\EventExport;
 
 
 use Broadway\CommandHandling\CommandBusInterface;
+use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
+use CultuurNet\UDB3\EventExport\FileFormat\FileFormatInterface;
+use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
 use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
 use CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface;
 use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
@@ -70,27 +73,8 @@ class EventExportService implements EventExportServiceInterface
         $this->mailer = $mailer;
     }
 
-    /**
-     * @param string $formatIdentifier
-     * @param string $filePath
-     * @return FileWriterInterface
-     */
-    protected function fileWriter($formatIdentifier, $filePath)
-    {
-        switch ($formatIdentifier) {
-            case 'jsonld':
-                return new JSONLDFileWriter($filePath);
-            case 'csv':
-                return new CSVFileWriter($filePath);
-            default:
-                throw new \RuntimeException(
-                    'Unexpected file format identifier ' . $formatIdentifier
-                );
-        }
-    }
-
     protected function exportEvents(
-        $formatIdentifier,
+        FileFormatInterface $fileFormat,
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null
@@ -141,7 +125,7 @@ class EventExportService implements EventExportServiceInterface
                 $this->uuidGenerator->generate()
             );
 
-            $tmpFile = $this->fileWriter($formatIdentifier, $tmpPath);
+            $tmpFile = $fileFormat->openWriter($tmpPath);
 
             foreach ($this->search(
                 $totalItemCount,
@@ -155,7 +139,7 @@ class EventExportService implements EventExportServiceInterface
 
             $finalPath = realpath($this->publicDirectory) . '/' . basename(
                     $tmpPath
-                ) . '.json';
+                ) . '.' . $fileFormat->getFileNameExtension();
 
             $moved = rename($tmpPath, $finalPath);
 
@@ -201,9 +185,8 @@ class EventExportService implements EventExportServiceInterface
         $address = null,
         LoggerInterface $logger = null
     ) {
-
         return $this->exportEvents(
-            'jsonld',
+            new JSONLDFileFormat(),
             $query,
             $address,
             $logger
@@ -296,7 +279,7 @@ class EventExportService implements EventExportServiceInterface
         LoggerInterface $logger = null
     ) {
         return $this->exportEvents(
-            'csv',
+            new CSVFileFormat(),
             $query,
             $address,
             $logger

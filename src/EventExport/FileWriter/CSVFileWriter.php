@@ -19,7 +19,21 @@ class CSVFileWriter implements FileWriterInterface
         $this->delimiter = ',';
 
         // Overwrite default Excel delimiter.
-        fwrite($this->f, "sep={$this->delimiter}\n");
+        // UTF-16LE BOM
+        fwrite($this->f, "\xFF\xFE");
+        fwrite($this->f, "sep={$this->delimiter}");
+        fwrite($this->f, PHP_EOL);
+
+        $this->writeCSV($this->columns());
+    }
+
+    protected function writeCSV($data)
+    {
+        foreach ($data as $key => $value) {
+            $data[$key] = iconv('UTF-8', 'UTF-16LE//IGNORE', $value);
+        }
+
+        fputcsv($this->f, $data, $this->delimiter);
     }
 
     /**
@@ -29,11 +43,30 @@ class CSVFileWriter implements FileWriterInterface
     {
         $event = json_decode($event);
 
-        $data[] = $event->{'@id'};
-        $data[] = reset($event->name);
-        $data[] = $event->creator;
+        $row = $this->emptyRow();
+        $row['id'] = $event->{'@id'};
+        $row['titel'] = reset($event->name);
+        $row['invoerder'] = $event->creator;
+        if (isset($event->price)) {
+            $row['prijs'] = $event->price;
+        }
+        $row['omschrijving'] = reset($event->description);
 
-        fputcsv($this->f, $data, $this->delimiter);
+        $this->writeCSV($row);
+    }
+
+    public function emptyRow() {
+        return array_fill_keys($this->columns(), '');
+    }
+
+    public function columns() {
+        return [
+            'id',
+            'titel',
+            'invoerder',
+            'prijs',
+            'omschrijving',
+        ];
     }
 
     public function close()

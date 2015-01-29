@@ -28,8 +28,9 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
     public function handleExportEventsAsJsonLD(
         ExportEventsAsJsonLD $exportCommand
     ) {
-        $path = $this->eventExportService->exportEventsAsJsonLD(
+        $this->eventExportService->exportEventsAsJsonLD(
             $exportCommand->getQuery(),
+            $exportCommand->getAddress(),
             $this->logger
         );
     }

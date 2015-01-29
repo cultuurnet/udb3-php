@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 class EventExportService implements EventExportServiceInterface
 {
@@ -38,25 +39,39 @@ class EventExportService implements EventExportServiceInterface
     protected $publicDirectory;
 
     /**
+     * @var \Swift_Mailer
+     */
+    protected $mailer;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param SearchServiceInterface $searchService
      * @param UuidGeneratorInterface $uuidGenerator
-     * @param $publicDirectory
+     * @param string $publicDirectory
+     * @param IriGeneratorInterface $iriGenerator
+     * @param \Swift_Mailer $mailer
      */
     public function __construct(
         EventServiceInterface $eventService,
         SearchServiceInterface $searchService,
         UuidGeneratorInterface $uuidGenerator,
-        $publicDirectory
+        $publicDirectory,
+        IriGeneratorInterface $iriGenerator,
+        \Swift_Mailer $mailer
     ) {
         $this->eventService = $eventService;
         $this->searchService = $searchService;
         $this->uuidGenerator = $uuidGenerator;
         $this->publicDirectory = $publicDirectory;
+        $this->iriGenerator = $iriGenerator;
+        $this->mailer = $mailer;
     }
 
-    public function exportEventsAsJsonLD(EventExportQuery $query, LoggerInterface $logger = null)
-    {
+    public function exportEventsAsJsonLD(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null
+    ) {
         // do a pre query to test if the query is valid and check the item count
         try {
             $preQueryResult = $this->searchService->search(
@@ -126,16 +141,24 @@ class EventExportService implements EventExportServiceInterface
 
             rename($tmpPath, $finalPath);
 
+            $finalUrl = $this->iriGenerator->iri(
+                basename($finalPath)
+            );
+
             if ($logger) {
                 $logger->info(
                     'exported',
                     [
-                        'location' => $finalPath,
+                        'location' => $finalUrl,
                     ]
                 );
             }
+
+            if ($address) {
+                $this->notifyByMail($address, $finalUrl);
+            }
         } catch (\Exception $e) {
-            if ($tmpFile) {
+            if (is_resource($tmpFile)) {
                 fclose($tmpFile);
             }
 
@@ -152,7 +175,7 @@ class EventExportService implements EventExportServiceInterface
      *
      * @param string $query
      */
-    private function search($totalItemCount, $query, $logger)
+    private function search($totalItemCount, $query, LoggerInterface $logger)
     {
         // change this pageSize value to increase or decrease the page size;
         $pageSize = 10;
@@ -198,5 +221,25 @@ class EventExportService implements EventExportServiceInterface
             }
             ++$pageCounter;
         };
+    }
+
+    /**
+     * @param string $address
+     * @param string $url
+     */
+    protected function notifyByMail($address, $url)
+    {
+        $message = new \Swift_Message('Uw export van evenementen');
+        $message->setBody('<a href="' . $url . '">' . $url . '</a>', 'text/html');
+        $message->addPart($url, 'text/plain');
+
+        $message->addTo($address);
+
+        // @todo Move this to config.yml.
+        $message->setSender('no-reply@uitdatabank.be', 'UiTdatabank BETA');
+
+        $sent = $this->mailer->send($message);
+
+        print 'sent ' . $sent . ' e-mails' . PHP_EOL;
     }
 }

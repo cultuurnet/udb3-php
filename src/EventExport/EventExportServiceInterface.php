@@ -16,5 +16,9 @@ interface EventExportServiceInterface
      * @return string
      *   Publicly accessible path of the file
      */
-    public function exportEventsAsJsonLD(EventExportQuery $query, LoggerInterface $logger = NULL);
+    public function exportEventsAsJsonLD(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null
+    );
 }

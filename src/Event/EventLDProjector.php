@@ -360,7 +360,7 @@ class EventLDProjector extends Projector
 
         $eventLd->calendarType = $calendarType;
 
-        $eventSlug = $this->slugger->slug($eventLd->name['nl']);
+        $eventSlug = $this->slugger->slug(reset($eventLd->name));
         $eventLd->sameAs = array(
             'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventImportedFromUDB2->getEventId(),
         );

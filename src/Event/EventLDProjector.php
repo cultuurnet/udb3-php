@@ -365,6 +365,11 @@ class EventLDProjector extends Projector
             'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventImportedFromUDB2->getEventId(),
         );
 
+        $ageFrom = $udb2Event->getAgeFrom();
+        if ($ageFrom) {
+            $eventLd->typicalAgeRange = "{$ageFrom}-";
+        }
+
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()
         );

@@ -7,6 +7,9 @@ namespace CultuurNet\UDB3\EventExport;
 
 
 use Broadway\CommandHandling\CommandBusInterface;
+use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
+use CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface;
+use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -67,11 +70,32 @@ class EventExportService implements EventExportServiceInterface
         $this->mailer = $mailer;
     }
 
-    public function exportEventsAsJsonLD(
+    /**
+     * @param string $formatIdentifier
+     * @param string $filePath
+     * @return FileWriterInterface
+     */
+    protected function fileWriter($formatIdentifier, $filePath)
+    {
+        switch ($formatIdentifier) {
+            case 'jsonld':
+                return new JSONLDFileWriter($filePath);
+            case 'csv':
+                return new CSVFileWriter($filePath);
+            default:
+                throw new \RuntimeException(
+                    'Unexpected file format identifier ' . $formatIdentifier
+                );
+        }
+    }
+
+    protected function exportEvents(
+        $formatIdentifier,
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null
     ) {
+
         // do a pre query to test if the query is valid and check the item count
         try {
             $preQueryResult = $this->searchService->search(
@@ -117,29 +141,31 @@ class EventExportService implements EventExportServiceInterface
                 $this->uuidGenerator->generate()
             );
 
-            $tmpFile = fopen($tmpPath, 'w');
-            fwrite($tmpFile, '[');
-            $previous = false;
+            $tmpFile = $this->fileWriter($formatIdentifier, $tmpPath);
+
             foreach ($this->search(
                 $totalItemCount,
                 $query,
                 $logger
             ) as $event) {
-                if ($previous) {
-                    fwrite($tmpFile, ',');
-                }
-                fwrite($tmpFile, $event);
-                $previous = true;
+                $tmpFile->exportEvent($event);
             }
-            fwrite($tmpFile, ']');
 
-            fclose($tmpFile);
+            $tmpFile->close();
 
             $finalPath = realpath($this->publicDirectory) . '/' . basename(
                     $tmpPath
                 ) . '.json';
 
-            rename($tmpPath, $finalPath);
+            $moved = rename($tmpPath, $finalPath);
+
+            if (!$moved) {
+                throw new \RuntimeException(
+                    'Unable to move export file to public directory ' . realpath(
+                        $this->publicDirectory
+                    )
+                );
+            }
 
             $finalUrl = $this->iriGenerator->iri(
                 basename($finalPath)
@@ -158,17 +184,32 @@ class EventExportService implements EventExportServiceInterface
                 $this->notifyByMail($address, $finalUrl);
             }
         } catch (\Exception $e) {
-            if (is_resource($tmpFile)) {
-                fclose($tmpFile);
+            if (isset($tmpFile)) {
+                $tmpFile->close();
             }
 
-            if ($tmpPath) {
+            if (isset($tmpPath) && $tmpPath) {
                 unlink($tmpPath);
             }
 
             throw $e;
         }
     }
+
+    public function exportEventsAsJsonLD(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null
+    ) {
+
+        return $this->exportEvents(
+            'jsonld',
+            $query,
+            $address,
+            $logger
+        );
+    }
+
 
     /**
      * Generator that yields each unique search result.
@@ -230,7 +271,10 @@ class EventExportService implements EventExportServiceInterface
     protected function notifyByMail($address, $url)
     {
         $message = new \Swift_Message('Uw export van evenementen');
-        $message->setBody('<a href="' . $url . '">' . $url . '</a>', 'text/html');
+        $message->setBody(
+            '<a href="' . $url . '">' . $url . '</a>',
+            'text/html'
+        );
         $message->addPart($url, 'text/plain');
 
         $message->addTo($address);
@@ -242,4 +286,21 @@ class EventExportService implements EventExportServiceInterface
 
         print 'sent ' . $sent . ' e-mails' . PHP_EOL;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function exportEventsAsCSV(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null
+    ) {
+        return $this->exportEvents(
+            'csv',
+            $query,
+            $address,
+            $logger
+        );
+    }
+
 }

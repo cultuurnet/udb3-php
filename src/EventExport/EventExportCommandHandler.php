@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\EventExport;
 
 
 use Broadway\CommandHandling\CommandHandler;
+use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -33,5 +34,16 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
             $exportCommand->getAddress(),
             $this->logger
         );
+    }
+
+    public function handleExportEventsAsCSV(
+        ExportEventsAsCSV $exportCommand
+    ) {
+        $this->eventExportService->exportEventsAsCSV(
+            $exportCommand->getQuery(),
+            $exportCommand->getAddress(),
+            $this->logger
+        );
+
     }
 }

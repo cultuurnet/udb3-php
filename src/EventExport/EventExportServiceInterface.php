@@ -21,4 +21,16 @@ interface EventExportServiceInterface
         $address = null,
         LoggerInterface $logger = null
     );
+
+    /**
+     * @param EventExportQuery $query
+     * @param LoggerInterface $logger
+     * @return string
+     *   Publicly accessible path of the file
+     */
+    public function exportEventsAsCSV(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null
+    );
 }

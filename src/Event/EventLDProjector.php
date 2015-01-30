@@ -187,6 +187,9 @@ class EventLDProjector extends Projector
                 return (strlen(trim($keyword)) > 0);
             }
         );
+        // Ensure keys are continuous after the filtering was applied, otherwise
+        // JSON-encoding the array will result in an object.
+        $keywords = array_values($keywords);
 
         $eventLd->keywords = $keywords;
         $eventLd->calendarSummary = $detail->getCalendarSummary();
@@ -369,6 +372,28 @@ class EventLDProjector extends Projector
         if ($ageFrom) {
             $eventLd->typicalAgeRange = "{$ageFrom}-";
         }
+
+        /** @var \CultureFeed_Cdb_Data_Performer $performer */
+        $performers = $detail->getPerformers();
+        if ($performers) {
+            foreach ($performers as $performer) {
+                if ($performer->getLabel()) {
+                    $performerData = new \stdClass();
+                    $performerData->name = $performer->getLabel();
+                    $eventLd->performer[] = $performerData;
+                }
+            }
+        }
+
+        $eventLd->language = [];
+        /** @var \CultureFeed_Cdb_Data_Language $udb2Language */
+        $languages = $udb2Event->getLanguages();
+        if ($languages) {
+            foreach ($languages as $udb2Language) {
+                $eventLd->language[] = $udb2Language->getLanguage();
+            }
+        }
+        $eventLd->language = array_unique($eventLd->language);
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

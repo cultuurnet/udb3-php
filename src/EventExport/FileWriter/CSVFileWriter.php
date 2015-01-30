@@ -13,7 +13,8 @@ class CSVFileWriter implements FileWriterInterface
 
     protected $delimiter;
 
-    public function __construct($filePath) {
+    public function __construct($filePath)
+    {
         $this->f = fopen($filePath, 'w');
 
         $this->delimiter = ',';
@@ -46,26 +47,110 @@ class CSVFileWriter implements FileWriterInterface
         $row = $this->emptyRow();
         $row['id'] = $event->{'@id'};
         $row['titel'] = reset($event->name);
-        $row['invoerder'] = $event->creator;
+        $row['auteur'] = $event->creator;
         if (isset($event->price)) {
             $row['prijs'] = $event->price;
         }
         $row['omschrijving'] = reset($event->description);
+        if (isset($event->organizer) && isset($event->organizer->name)) {
+            $row['organisatie'] = $event->organizer->name;
+        }
+
+        $row['tijdsinformatie'] = $event->calendarSummary;
+        if (isset($event->keywords)) {
+            if (!is_array($event->keywords)) {
+                var_dump($event->{'@id'});
+                var_dump($event->keywords);
+            }
+            $row['labels'] = implode(';', $event->keywords);
+        }
+
+        if (isset($event->typicalAgeRange)) {
+            $row['leeftijd'] = $event->typicalAgeRange;
+        }
+
+        if (isset($event->performer)) {
+            $performerNames = [];
+            foreach ($event->performer as $performer) {
+                $performerNames[] = $performer->name;
+            }
+            $row['uitvoerders'] = implode(';', $performerNames);
+        }
+
+        $row['taal van het aanbod'] = implode(';', $event->language);
+
+        if (isset($event->startDate)) {
+            $row['startdatum'] = $event->startDate;
+        }
+        if (isset($event->endDate)) {
+            $row['einddatum'] = $event->endDate;
+        }
+        $row['tijd type'] = $event->calendarType;
+
+        if (isset($event->location)) {
+            if (isset($event->location->name)) {
+                $row['locatie naam'] = $event->location->name;
+            }
+
+            if (isset($event->location->address)) {
+                $address = [];
+                if (isset($event->location->address->streetAddress)) {
+                    $address[] = $event->location->address->streetAddress;
+                }
+
+                $line2 = [];
+                if (isset($event->location->address->postalCode)) {
+                    $line2[] = $event->location->address->postalCode;
+                }
+
+                if (isset($event->location->address->addressLocality)) {
+                    $line2[] = $event->location->address->addressLocality;
+                }
+
+                if (!empty($line2)) {
+                    $address[] = implode(' ', $line2);
+                }
+
+                if (isset($event->location->address->addressCountry)) {
+                    $address[] = $event->location->address->addressCountry;
+                }
+
+                $row['adres'] = implode("\r\n", $address);
+            }
+        }
+
+        if ($event->image) {
+            $row['afbeelding'] = $event->image;
+        }
 
         $this->writeCSV($row);
     }
 
-    public function emptyRow() {
+    public function emptyRow()
+    {
         return array_fill_keys($this->columns(), '');
     }
 
-    public function columns() {
+    public function columns()
+    {
         return [
             'id',
             'titel',
-            'invoerder',
+            'auteur',
             'prijs',
             'omschrijving',
+            'organisatie',
+            'tijdsinformatie',
+            'labels',
+            'leeftijd',
+            'uitvoerders',
+            'taal van het aanbod',
+            'startdatum',
+            'einddatum',
+            'tijd type',
+            'locatie naam',
+            'adres',
+            'afbeelding',
         ];
     }
 

@@ -264,6 +264,7 @@ class EventExportService implements EventExportServiceInterface
 
         // @todo Move this to config.yml.
         $message->setSender('no-reply@uitdatabank.be', 'UiTdatabank BETA');
+        $message->setFrom('no-reply@uitdatabank.be', 'UiTdatabank BETA');
 
         $sent = $this->mailer->send($message);
 

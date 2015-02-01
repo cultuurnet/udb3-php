@@ -99,7 +99,12 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $eventId = $uuidGenerator->generate();
         $date = new \DateTime('2015-01-26T13:25:21+01:00');
 
-        $eventCreated = new EventCreated($eventId, new Title('some representative title'), 'LOCATION-ABC-123', $date);
+        $eventCreated = new EventCreated($eventId, new Title(
+            'some representative title'),
+            'LOCATION-ABC-123',
+            $date,
+            new EventType('0.50.4.0.0', 'concert')
+        );
 
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
@@ -108,6 +113,17 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->location = array('@type' => 'Place', '@id' => 'http://example.com/entity/LOCATION-ABC-123');
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->sameAs = [
+            'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
+        ];
+        $jsonLD->terms = [
+            [
+                'label' => 'concert',
+                'domain' => 'eventtype',
+                'id' => '0.50.4.0.0',
+            ]
+        ];
+        $jsonLD->created = '2015-01-20T13:25:21+01:00';
 
         $expectedDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);
@@ -130,7 +146,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($expectedDocument);
 
         $this->projector->handle(
-            new DomainMessage(1, 1, new Metadata(), $eventCreated, DateTime::now())
+            new DomainMessage(1, 1, new Metadata(), $eventCreated, DateTime::fromString('2015-01-20T13:25:21+01:00'))
         );
     }
 

@@ -12,10 +12,8 @@ use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\Entry\CreateEventErrorException;
 use CultuurNet\Entry\EntryAPI;
 use CultuurNet\Search\Parameter\Query;
-use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
@@ -365,7 +363,6 @@ class EventRepository implements RepositoryInterface
         $placeActorDetails->add($placeActorDetail);
 
         $placeActor->setDetails($placeActorDetails);
-        // @todo: Should we add at least the title of the actor as well here?
         $location->setActor($placeActor);
         $placeActorCategories = new \CultureFeed_Cdb_Data_CategoryList();
         // @todo This is not suitable for a place, check if there are more suitable types of categories.
@@ -376,7 +373,11 @@ class EventRepository implements RepositoryInterface
         $event->setLocation($location);
 
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
-        $concertCategory = new \CultureFeed_Cdb_Data_Category('eventtype', '0.50.4.0.0', 'Concert');
+        $concertCategory = new \CultureFeed_Cdb_Data_Category(
+          'eventtype',
+          $eventCreated->getType()->getId(),
+          $eventCreated->getType()->getLabel()
+        );
         $event->getCategories()->add($concertCategory);
 
         $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();

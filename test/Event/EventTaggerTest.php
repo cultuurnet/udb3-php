@@ -37,6 +37,16 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         return new EventCommandHandler($repository, $this->search);
     }
 
+    private function factorEventCreated($id) {
+        return new EventCreated(
+            $id,
+            new Title('some representative title'),
+            'LOCATION-ABC-123',
+            new \DateTime(),
+            new EventType('0.50.4.0.0', 'concert')
+        );
+    }
+
     /**
      * @test
      */
@@ -48,13 +58,13 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($ids[0])
             ->given(
                 [
-                    new EventCreated($ids[0], new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime())
+                    $this->factorEventCreated($ids[0])
                 ]
             )
             ->withAggregateId($ids[1])
             ->given(
                 [
-                    new EventCreated($ids[1], new Title('another representative title'), 'LOCATION-ABC-123', new \DateTime())
+                    $this->factorEventCreated($ids[1])
                 ]
             )
             ->when(new TagEvents($ids, new Keyword('awesome')))
@@ -86,7 +96,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                 ->withAggregateId($i)
                 ->given(
                     [
-                        new EventCreated($i, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime())
+                        $this->factorEventCreated($i)
                     ]
                 );
         }
@@ -147,7 +157,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    new EventCreated($id, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime())
+                    $this->factorEventCreated($id)
                 ]
             )
             ->when(new TranslateTitle($id, $language, $title))
@@ -169,7 +179,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [new EventCreated($id, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime())]
+                [$this->factorEventCreated($id)]
             )
             ->when(new TranslateDescription($id, $language, $description))
             ->then([new DescriptionTranslated($id, $language, $description)]);
@@ -184,7 +194,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [new EventCreated($id, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime())]
+                [$this->factorEventCreated($id)]
             )
             ->when(new Tag($id, new Keyword('foo')))
             ->then([new EventWasTagged($id, new Keyword('foo'))]);
@@ -200,7 +210,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    new EventCreated($id, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime()),
+                    $this->factorEventCreated($id),
                     new EventWasTagged($id, new Keyword('foo'))
                 ]
             )
@@ -217,7 +227,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [new EventCreated($id, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime())]
+                [$this->factorEventCreated($id)]
             )
             ->when(new EraseTag($id, new Keyword('foo')))
             ->then([]);
@@ -234,7 +244,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    new EventCreated($id, new Title('some representative title'), 'LOCATION-ABC-123', new \DateTime()),
+                    $this->factorEventCreated($id),
                     new EventWasTagged($id, new Keyword('foo')),
                     new TagErased($id, new Keyword('foo'))
                 ]

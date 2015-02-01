@@ -21,10 +21,10 @@ class Event extends EventSourcedAggregateRoot
      * @param \DateTime $date
      * @return Event
      */
-    public static function create($eventId, Title $title, $location, \DateTime $date)
+    public static function create($eventId, Title $title, $location, \DateTime $date, EventType $type)
     {
         $event = new self();
-        $event->apply(new EventCreated($eventId, $title, $location, $date));
+        $event->apply(new EventCreated($eventId, $title, $location, $date, $type));
 
         return $event;
     }

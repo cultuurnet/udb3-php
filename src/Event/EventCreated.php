@@ -10,17 +10,22 @@ class EventCreated extends EventEvent
     /**
      * @var Title
      */
-    protected $title;
+    private $title;
 
     /**
      * @var string
      */
-    protected $location;
+    private $location;
 
     /**
      * @var \DateTime
      */
-    protected $date;
+    private $date;
+
+    /**
+     * @var EventType
+     */
+    private $type;
 
     /**
      * @param string $eventId
@@ -28,13 +33,14 @@ class EventCreated extends EventEvent
      * @param string $location
      * @param \DateTime $date
      */
-    public function __construct($eventId, Title $title, $location, \DateTime $date)
+    public function __construct($eventId, Title $title, $location, \DateTime $date, EventType $type)
     {
         parent::__construct($eventId);
 
         $this->setTitle($title);
         $this->setLocation($location);
         $this->setDate($date);
+        $this->setType($type);
     }
 
     /**
@@ -86,6 +92,21 @@ class EventCreated extends EventEvent
     }
 
     /**
+     * @return EventType
+     */
+    public function getType() {
+        return $this->type;
+    }
+
+    /**
+     * @param EventType $type
+     */
+    private function setType($type) {
+        $this->type = $type;
+    }
+
+
+    /**
      * @return array
      */
     public function serialize()
@@ -94,6 +115,10 @@ class EventCreated extends EventEvent
             'location' => $this->getLocation(),
             'date' => $this->getDate()->format('c'),
             'title' => (string)$this->getTitle(),
+            'type' => array(
+              'id' => $this->type->getId(),
+              'label' => $this->type->getLabel()
+            )
         );
     }
 
@@ -106,7 +131,11 @@ class EventCreated extends EventEvent
             $data['event_id'],
             new Title($data['title']),
             $data['location'],
-            \DateTime::createFromFormat('c', $data['date'])
+            \DateTime::createFromFormat('c', $data['date']),
+            new EventType(
+              $data['type']['id'],
+              $data['type']['label']
+            )
         );
     }
 }

@@ -153,7 +153,8 @@ class DefaultEventEditingService implements EventEditingServiceInterface
         // not exist.
         $this->places->getEntity($location);
 
-        $event = Event::create($eventId, $title, $location, $date);
+        $type = new EventType('0.50.4.0.0', 'concert');
+        $event = Event::create($eventId, $title, $location, $date, $type);
 
         $this->eventRepository->add($event);
 

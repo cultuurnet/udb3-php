@@ -16,6 +16,9 @@ class CSVFileWriter implements FileWriterInterface
     public function __construct($filePath)
     {
         $this->f = fopen($filePath, 'w');
+        if (false === $this->f) {
+            throw new \RuntimeException('Unable to open file for writing: ' . $filePath);
+        }
 
         $this->delimiter = ',';
 
@@ -156,6 +159,8 @@ class CSVFileWriter implements FileWriterInterface
 
     public function close()
     {
-        fclose($this->f);
+        if (is_resource($this->f)) {
+            fclose($this->f);
+        }
     }
 }

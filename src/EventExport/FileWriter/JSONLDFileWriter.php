@@ -12,6 +12,9 @@ class JSONLDFileWriter implements FileWriterInterface
 
     public function __construct($filePath) {
         $this->f = fopen($filePath, 'w');
+        if (false === $this->f) {
+            throw new \RuntimeException('Unable to open file for writing: ' . $filePath);
+        }
         fwrite($this->f, '[');
 
         $this->first = true;
@@ -33,8 +36,10 @@ class JSONLDFileWriter implements FileWriterInterface
     }
 
     public function close() {
-        fwrite($this->f, ']');
+        if (is_resource($this->f)) {
+            fwrite($this->f, ']');
 
-        fclose($this->f);
+            fclose($this->f);
+        }
     }
 }

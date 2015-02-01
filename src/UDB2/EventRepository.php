@@ -12,10 +12,8 @@ use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\Entry\CreateEventErrorException;
 use CultuurNet\Entry\EntryAPI;
 use CultuurNet\Search\Parameter\Query;
-use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
@@ -339,22 +337,32 @@ class EventRepository implements RepositoryInterface
         $details = new \CultureFeed_Cdb_Data_EventDetailList();
         $details->add($nlDetail);
 
-        // @todo: Look up location address and replace placeholder address here.
-        $address = new \CultureFeed_Cdb_Data_Address();
-        $virtualAddress = new \CultureFeed_Cdb_Data_Address_VirtualAddress('test');
-        $address->setVirtualAddress($virtualAddress);
+        // We need to retrieve the real place in order to
+        // pass on its address to UDB2.
+        $place = $this->placeService->getEntity($eventCreated->getLocation());
+        $place = json_decode($place);
+
+        $physicalAddress = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
+        $physicalAddress->setCountry($place->address->addressCountry);
+        $physicalAddress->setCity($place->address->addressLocality);
+        $physicalAddress->setZip($place->address->postalCode);
+        // @todo This is not an exact mapping, because we do not have a separate
+        // house number in JSONLD, this should be fixed somehow.
+        $physicalAddress->setStreet($place->address->streetAddress);
+        $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
 
         $location = new \CultureFeed_Cdb_Data_Location($address);
         $placeActor = new \CultureFeed_Cdb_Item_Actor();
         $placeActor->setCdbId($eventCreated->getLocation());
+
         $placeActorDetails = new \CultureFeed_Cdb_Data_ActorDetailList();
-        $placeActorNlDetail = new \CultureFeed_Cdb_Data_ActorDetail();
-        $placeActorNlDetail->setLanguage('nl');
-        // @todo: replace with real title of the place
-        $placeActorNlDetail->setTitle('test');
-        $placeActorDetails->add($placeActorNlDetail);
+        $placeActorDetail = new \CultureFeed_Cdb_Data_ActorDetail();
+        $placeActorDetail->setLanguage('nl');
+        $placeActorDetail->setTitle($place->name);
+
+        $placeActorDetails->add($placeActorDetail);
+
         $placeActor->setDetails($placeActorDetails);
-        // @todo: Should we add at least the title of the actor as well here?
         $location->setActor($placeActor);
         $placeActorCategories = new \CultureFeed_Cdb_Data_CategoryList();
         // @todo This is not suitable for a place, check if there are more suitable types of categories.
@@ -365,7 +373,11 @@ class EventRepository implements RepositoryInterface
         $event->setLocation($location);
 
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
-        $concertCategory = new \CultureFeed_Cdb_Data_Category('eventtype', '0.50.4.0.0', 'Concert');
+        $concertCategory = new \CultureFeed_Cdb_Data_Category(
+          'eventtype',
+          $eventCreated->getType()->getId(),
+          $eventCreated->getType()->getLabel()
+        );
         $event->getCategories()->add($concertCategory);
 
         $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
@@ -385,15 +397,9 @@ class EventRepository implements RepositoryInterface
         $cdbXml = new \CultureFeed_Cdb_Default();
         $cdbXml->addItem($event);
 
-        try {
-            $cdbId = $this->createImprovedEntryAPIFromMetadata($metadata)
-                ->createEvent((string)$cdbXml);
-        }
-        catch (CreateEventErrorException $e) {
-            // Ignore a NotFound error response for now.
-            if ($e->getRsp()->getCode() !== EntryAPI::NOT_FOUND) {
-                throw $e;
-            }
-        }
+        $this->createImprovedEntryAPIFromMetadata($metadata)
+            ->createEvent((string)$cdbXml);
+
+        return $eventCreated->getEventId();
     }
 }

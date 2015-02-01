@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use Broadway\Domain\DateTime;
+use Broadway\Domain\DomainMessageInterface;
 use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -16,6 +18,7 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\SluggerInterface;
 
 class EventLDProjector extends Projector
 {
@@ -45,7 +48,7 @@ class EventLDProjector extends Projector
     protected $eventService;
 
     /**
-     * @var  SluggerInterface
+     * @var SluggerInterface
      */
     protected $slugger;
 
@@ -363,9 +366,9 @@ class EventLDProjector extends Projector
 
         $eventLd->calendarType = $calendarType;
 
-        $eventSlug = $this->slugger->slug(reset($eventLd->name));
-        $eventLd->sameAs = array(
-            'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventImportedFromUDB2->getEventId(),
+        $eventLd->sameAs = $this->generateSameAs(
+          $eventImportedFromUDB2->getEventId(),
+          reset($eventLd->name)
         );
 
         $ageFrom = $udb2Event->getAgeFrom();
@@ -402,10 +405,17 @@ class EventLDProjector extends Projector
         $this->repository->save($eventLdModel->withBody($eventLd));
     }
 
+    private function generateSameAs($eventId, $name) {
+        $eventSlug = $this->slugger->slug($name);
+        return array(
+          'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
+        );
+    }
+
     /**
      * @param EventCreated $eventCreated
      */
-    protected function applyEventCreated(EventCreated $eventCreated)
+    protected function applyEventCreated(EventCreated $eventCreated, DomainMessageInterface $domainMessage)
     {
         $document = $this->newDocument($eventCreated->getEventId());
 
@@ -420,6 +430,31 @@ class EventLDProjector extends Projector
 
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = $eventCreated->getDate()->format('c');
+
+        $jsonLD->sameAs = $this->generateSameAs(
+          $eventCreated->getEventId(),
+          reset($jsonLD->name)
+        );
+
+        $eventType = $eventCreated->getType();
+        $jsonLD->terms = array(
+            array(
+                'label' => $eventType->getLabel(),
+                'domain' => 'eventtype',
+                'id' => $eventType->getId()
+            )
+        );
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $jsonLD->created = \DateTime::createFromFormat(
+          DateTime::FORMAT_STRING,
+          $recordedOn
+        )->format('c');
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
+            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        }
 
         $this->repository->save($document->withBody($jsonLD));
     }

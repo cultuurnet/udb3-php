@@ -13,6 +13,7 @@ use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
 use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
 use CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface;
 use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
+use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -45,7 +46,7 @@ class EventExportService implements EventExportServiceInterface
     protected $publicDirectory;
 
     /**
-     * @var \Swift_Mailer
+     * @var NotificationMailerInterface
      */
     protected $mailer;
 
@@ -55,7 +56,7 @@ class EventExportService implements EventExportServiceInterface
      * @param UuidGeneratorInterface $uuidGenerator
      * @param string $publicDirectory
      * @param IriGeneratorInterface $iriGenerator
-     * @param \Swift_Mailer $mailer
+     * @param NotificationMailerInterface $mailer
      */
     public function __construct(
         EventServiceInterface $eventService,
@@ -63,7 +64,7 @@ class EventExportService implements EventExportServiceInterface
         UuidGeneratorInterface $uuidGenerator,
         $publicDirectory,
         IriGeneratorInterface $iriGenerator,
-        \Swift_Mailer $mailer
+        NotificationMailerInterface $mailer
     ) {
         $this->eventService = $eventService;
         $this->searchService = $searchService;
@@ -172,7 +173,7 @@ class EventExportService implements EventExportServiceInterface
                 $tmpFile->close();
             }
 
-            if (isset($tmpPath) && $tmpPath) {
+            if (isset($tmpPath) && $tmpPath && file_exists($tmpPath)) {
                 unlink($tmpPath);
             }
 
@@ -253,22 +254,10 @@ class EventExportService implements EventExportServiceInterface
      */
     protected function notifyByMail($address, $url)
     {
-        $message = new \Swift_Message('Uw export van evenementen');
-        $message->setBody(
-            '<a href="' . $url . '">' . $url . '</a>',
-            'text/html'
+        $this->mailer->sendNotificationMail(
+            $address,
+            new EventExportResult($url)
         );
-        $message->addPart($url, 'text/plain');
-
-        $message->addTo($address);
-
-        // @todo Move this to config.yml.
-        $message->setSender('no-reply@uitdatabank.be', 'UiTdatabank BETA');
-        $message->setFrom('no-reply@uitdatabank.be', 'UiTdatabank BETA');
-
-        $sent = $this->mailer->send($message);
-
-        print 'sent ' . $sent . ' e-mails' . PHP_EOL;
     }
 
     /**

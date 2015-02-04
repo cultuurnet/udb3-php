@@ -15,17 +15,17 @@ class DefaultMessageFactory implements MessageFactoryInterface
     /**
      * @var BodyFactoryInterface
      */
-    private $plainTextMailFormatter;
+    private $plainTextBodyFactory;
 
     /**
      * @var BodyFactoryInterface
      */
-    private $htmlMailFormatter;
+    private $htmlBodyFactory;
 
     /**
      * @var SubjectFactoryInterface
      */
-    private $subjectFormatter;
+    private $subjectFactory;
 
     /**
      * @var string
@@ -38,25 +38,25 @@ class DefaultMessageFactory implements MessageFactoryInterface
     private $senderName;
 
     /**
-     * @param BodyFactoryInterface $plainTextMailFormatter
-     * @param BodyFactoryInterface $htmlMailFormatter
-     * @param SubjectFactoryInterface $subjectFormatter
+     * @param BodyFactoryInterface $plainTextBodyFactory
+     * @param BodyFactoryInterface $htmlBodyFactory
+     * @param SubjectFactoryInterface $subjectFactory
      * @param string $senderAddress
      * @param string $senderName
      */
     public function __construct(
-        BodyFactoryInterface $plainTextMailFormatter,
-        BodyFactoryInterface $htmlMailFormatter,
-        SubjectFactoryInterface $subjectFormatter,
+        BodyFactoryInterface $plainTextBodyFactory,
+        BodyFactoryInterface $htmlBodyFactory,
+        SubjectFactoryInterface $subjectFactory,
         $senderAddress,
         $senderName
     )
     {
-        $this->plainTextMailFormatter = $plainTextMailFormatter;
-        $this->htmlMailFormatter = $htmlMailFormatter;
+        $this->plainTextBodyFactory = $plainTextBodyFactory;
+        $this->htmlBodyFactory = $htmlBodyFactory;
         $this->senderAddress = $senderAddress;
         $this->senderName = $senderName;
-        $this->subjectFormatter = $subjectFormatter;
+        $this->subjectFactory = $subjectFactory;
     }
 
     /**
@@ -65,15 +65,15 @@ class DefaultMessageFactory implements MessageFactoryInterface
      */
     public function createMessageFor($address, EventExportResult $eventExportResult)
     {
-        $message = new \Swift_Message($this->subjectFormatter->getSubjectFor($eventExportResult));
+        $message = new \Swift_Message($this->subjectFactory->getSubjectFor($eventExportResult));
         $message->setBody(
-            $this->htmlMailFormatter->getBodyFor(
+            $this->htmlBodyFactory->getBodyFor(
                 $eventExportResult
             ),
             'text/html'
         );
         $message->addPart(
-            $this->plainTextMailFormatter->getBodyFor(
+            $this->plainTextBodyFactory->getBodyFor(
                 $eventExportResult
             ),
             'text/plain'

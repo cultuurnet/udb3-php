@@ -16,5 +16,5 @@ use CultuurNet\UDB3\EventExport\EventExportResult;
  */
 interface BodyFactoryInterface {
 
-    public function getNotificationMailBody(EventExportResult $eventExportResult);
+    public function getBodyFor(EventExportResult $eventExportResult);
 }

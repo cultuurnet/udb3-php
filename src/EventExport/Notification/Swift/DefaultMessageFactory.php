@@ -67,13 +67,13 @@ class DefaultMessageFactory implements MessageFactoryInterface
     {
         $message = new \Swift_Message($this->subjectFormatter->getSubject($eventExportResult));
         $message->setBody(
-            $this->htmlMailFormatter->getNotificationMailBody(
+            $this->htmlMailFormatter->getBodyFor(
                 $eventExportResult
             ),
             'text/html'
         );
         $message->addPart(
-            $this->plainTextMailFormatter->getNotificationMailBody(
+            $this->plainTextMailFormatter->getBodyFor(
                 $eventExportResult
             ),
             'text/plain'

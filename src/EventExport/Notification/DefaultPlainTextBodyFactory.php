@@ -10,7 +10,7 @@ use CultuurNet\UDB3\EventExport\EventExportResult;
 
 class DefaultPlainTextBodyFactory implements BodyFactoryInterface
 {
-    public function getNotificationMailBody(
+    public function getBodyFor(
         EventExportResult $eventExportResult
     ) {
         // Only put the URL in the mail, for now.

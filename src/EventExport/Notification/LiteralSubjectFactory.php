@@ -23,7 +23,7 @@ class LiteralSubjectFactory implements SubjectFactoryInterface
         $this->subject = $subject;
     }
 
-    public function getSubject(EventExportResult $eventExportResult)
+    public function getSubjectFor(EventExportResult $eventExportResult)
     {
         return $this->subject;
     }

@@ -65,7 +65,7 @@ class DefaultMessageFactory implements MessageFactoryInterface
      */
     public function createMessageFor($address, EventExportResult $eventExportResult)
     {
-        $message = new \Swift_Message($this->subjectFormatter->getSubject($eventExportResult));
+        $message = new \Swift_Message($this->subjectFormatter->getSubjectFor($eventExportResult));
         $message->setBody(
             $this->htmlMailFormatter->getBodyFor(
                 $eventExportResult

@@ -10,5 +10,5 @@ use CultuurNet\UDB3\EventExport\EventExportResult;
 
 interface SubjectFactoryInterface
 {
-    public function getSubject(EventExportResult $eventExportResult);
+    public function getSubjectFor(EventExportResult $eventExportResult);
 }

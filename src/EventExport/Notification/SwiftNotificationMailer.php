@@ -16,73 +16,27 @@ class SwiftNotificationMailer implements NotificationMailerInterface
     private $mailer;
 
     /**
-     * @var NotificationMailFormatterInterface
+     * @var SwiftNotificationMailFactory
      */
-    private $plainTextMailFormatter;
-
-    /**
-     * @var NotificationMailFormatterInterface
-     */
-    private $htmlMailFormatter;
-
-    /**
-     * @var NotificationMailSubjectFormatterInterface
-     */
-    private $subjectFormatter;
-
-    /**
-     * @var string
-     */
-    private $senderAddress;
-
-    /**
-     * @var string
-     */
-    private $senderName;
+    private $messageFactory;
 
     /**
      * @param \Swift_Mailer $mailer
-     * @param NotificationMailFormatterInterface $plainTextMailFormatter
-     * @param NotificationMailFormatterInterface $htmlMailFormatter
+     * @param SwiftNotificationMailFactoryInterface $mailFactory
      */
     public function __construct(
         \Swift_Mailer $mailer,
-        NotificationMailFormatterInterface $plainTextMailFormatter,
-        NotificationMailFormatterInterface $htmlMailFormatter,
-        NotificationMailSubjectFormatterInterface $subjectFormatter,
-        $senderAddress,
-        $senderName
+        SwiftNotificationMailFactory $mailFactory
     ) {
         $this->mailer = $mailer;
-        $this->plainTextMailFormatter = $plainTextMailFormatter;
-        $this->htmlMailFormatter = $htmlMailFormatter;
-        $this->senderAddress = $senderAddress;
-        $this->senderName = $senderName;
-        $this->subjectFormatter = $subjectFormatter;
+
     }
 
     public function sendNotificationMail(
         $address,
         EventExportResult $eventExportResult
     ) {
-        $message = new \Swift_Message($this->subjectFormatter->getSubject($eventExportResult));
-        $message->setBody(
-            $this->htmlMailFormatter->getNotificationMailBody(
-                $eventExportResult
-            ),
-            'text/html'
-        );
-        $message->addPart(
-            $this->plainTextMailFormatter->getNotificationMailBody(
-                $eventExportResult
-            ),
-            'text/plain'
-        );
-
-        $message->addTo($address);
-
-        $message->setSender($this->senderAddress, $this->senderName);
-        $message->setFrom($this->senderAddress, $this->senderName);
+        $message = $this->messageFactory->createMessageFor($address, $eventExportResult);
 
         $sent = $this->mailer->send($message);
 

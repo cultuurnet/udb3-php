@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\EventExport\Notification\Swift;
 
 use CultuurNet\UDB3\EventExport\EventExportResult;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
+use ValueObjects\Web\EmailAddress;
 
 /**
  * Class NotificationMailer
@@ -41,7 +42,7 @@ class NotificationMailer implements NotificationMailerInterface
     }
 
     public function sendNotificationMail(
-        $address,
+        EmailAddress $address,
         EventExportResult $eventExportResult
     ) {
         $message = $this->messageFactory->createMessageFor($address, $eventExportResult);

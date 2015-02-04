@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3\EventExport\Notification\Swift;
 use CultuurNet\UDB3\EventExport\EventExportResult;
 use CultuurNet\UDB3\EventExport\Notification\BodyFactoryInterface;
 use CultuurNet\UDB3\EventExport\Notification\SubjectFactoryInterface;
+use ValueObjects\Web\EmailAddress;
 
 class DefaultMessageFactory implements MessageFactoryInterface
 {
@@ -60,10 +61,11 @@ class DefaultMessageFactory implements MessageFactoryInterface
     }
 
     /**
-     * @param string $address
+     * @param EmailAddress $address
+     * @param EventExportResult $eventExportResult
      * @return \Swift_Message
      */
-    public function createMessageFor($address, EventExportResult $eventExportResult)
+    public function createMessageFor(EmailAddress $address, EventExportResult $eventExportResult)
     {
         $message = new \Swift_Message($this->subjectFactory->getSubjectFor($eventExportResult));
         $message->setBody(
@@ -79,7 +81,7 @@ class DefaultMessageFactory implements MessageFactoryInterface
             'text/plain'
         );
 
-        $message->addTo($address);
+        $message->addTo((string)$address);
 
         $message->setSender($this->senderAddress, $this->senderName);
         $message->setFrom($this->senderAddress, $this->senderName);

@@ -8,13 +8,13 @@ namespace CultuurNet\UDB3\EventExport\Notification;
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
 /**
- * Interface NotificationMailFormatterInterface
+ * Interface BodyFactoryInterface
  * @package CultuurNet\UDB3\EventExport\Notification
  *
- * Implementations of NotificationMailFormatterInterface are responsible for generating
+ * Implementations of BodyFactoryInterface are responsible for generating
  * the message body of a notification e-mail.
  */
-interface NotificationMailFormatterInterface {
+interface BodyFactoryInterface {
 
     public function getNotificationMailBody(EventExportResult $eventExportResult);
 }

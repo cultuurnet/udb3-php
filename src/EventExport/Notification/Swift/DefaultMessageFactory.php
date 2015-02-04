@@ -3,25 +3,27 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Notification;
+namespace CultuurNet\UDB3\EventExport\Notification\Swift;
 
 
 use CultuurNet\UDB3\EventExport\EventExportResult;
+use CultuurNet\UDB3\EventExport\Notification\BodyFactoryInterface;
+use CultuurNet\UDB3\EventExport\Notification\SubjectFactoryInterface;
 
-class SwiftNotificationMailFactory implements SwiftNotificationMailFactoryInterface
+class DefaultMessageFactory implements MessageFactoryInterface
 {
     /**
-     * @var NotificationMailFormatterInterface
+     * @var BodyFactoryInterface
      */
     private $plainTextMailFormatter;
 
     /**
-     * @var NotificationMailFormatterInterface
+     * @var BodyFactoryInterface
      */
     private $htmlMailFormatter;
 
     /**
-     * @var NotificationMailSubjectFormatterInterface
+     * @var SubjectFactoryInterface
      */
     private $subjectFormatter;
 
@@ -36,16 +38,16 @@ class SwiftNotificationMailFactory implements SwiftNotificationMailFactoryInterf
     private $senderName;
 
     /**
-     * @param NotificationMailFormatterInterface $plainTextMailFormatter
-     * @param NotificationMailFormatterInterface $htmlMailFormatter
-     * @param NotificationMailSubjectFormatterInterface $subjectFormatter
+     * @param BodyFactoryInterface $plainTextMailFormatter
+     * @param BodyFactoryInterface $htmlMailFormatter
+     * @param SubjectFactoryInterface $subjectFormatter
      * @param string $senderAddress
      * @param string $senderName
      */
     public function __construct(
-        NotificationMailFormatterInterface $plainTextMailFormatter,
-        NotificationMailFormatterInterface $htmlMailFormatter,
-        NotificationMailSubjectFormatterInterface $subjectFormatter,
+        BodyFactoryInterface $plainTextMailFormatter,
+        BodyFactoryInterface $htmlMailFormatter,
+        SubjectFactoryInterface $subjectFormatter,
         $senderAddress,
         $senderName
     )

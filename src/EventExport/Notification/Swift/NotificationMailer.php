@@ -3,12 +3,19 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Notification;
+namespace CultuurNet\UDB3\EventExport\Notification\Swift;
 
 
 use CultuurNet\UDB3\EventExport\EventExportResult;
+use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 
-class SwiftNotificationMailer implements NotificationMailerInterface
+/**
+ * Class NotificationMailer
+ * @package CultuurNet\UDB3\EventExport\Notification\Swift
+ *
+ * Notification mailer implementation that uses Swift Mailer.
+ */
+class NotificationMailer implements NotificationMailerInterface
 {
     /**
      * @var \Swift_Mailer
@@ -16,19 +23,20 @@ class SwiftNotificationMailer implements NotificationMailerInterface
     private $mailer;
 
     /**
-     * @var SwiftNotificationMailFactory
+     * @var DefaultMessageFactory
      */
     private $messageFactory;
 
     /**
      * @param \Swift_Mailer $mailer
-     * @param SwiftNotificationMailFactoryInterface $mailFactory
+     * @param MessageFactoryInterface $mailFactory
      */
     public function __construct(
         \Swift_Mailer $mailer,
-        SwiftNotificationMailFactory $mailFactory
+        MessageFactoryInterface $mailFactory
     ) {
         $this->mailer = $mailer;
+        $this->messageFactory = $mailFactory;
 
     }
 

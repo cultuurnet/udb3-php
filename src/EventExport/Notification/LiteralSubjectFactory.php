@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\EventExport\Notification;
 
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
-class LiteralNotificationMailSubjectFormatter implements NotificationMailSubjectFormatterInterface
+class LiteralSubjectFactory implements SubjectFactoryInterface
 {
     /**
      * @var string

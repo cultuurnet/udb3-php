@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\EventExport\Notification;
 
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
-class DefaultPlainTextNotificationMailFormatter implements NotificationMailFormatterInterface
+class DefaultPlainTextBodyFactory implements BodyFactoryInterface
 {
     public function getNotificationMailBody(
         EventExportResult $eventExportResult

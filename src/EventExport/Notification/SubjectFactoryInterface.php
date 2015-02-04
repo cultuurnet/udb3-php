@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\EventExport\Notification;
 
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
-interface NotificationMailSubjectFormatterInterface
+interface SubjectFactoryInterface
 {
     public function getSubject(EventExportResult $eventExportResult);
 }

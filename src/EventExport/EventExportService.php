@@ -158,8 +158,9 @@ class EventExportService implements EventExportServiceInterface
 
             if ($logger) {
                 $logger->info(
-                    'exported',
+                    'task_completed',
                     [
+                        'type' => 'export',
                         'location' => $finalUrl,
                     ]
                 );

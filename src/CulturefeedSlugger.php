@@ -36,10 +36,10 @@ class CulturefeedSlugger implements SluggerInterface
         // lowercase
         $string = strtolower($string);
 
-        // replace non alphanumeric and non underscore charachters by separator
+        // replace non alphanumeric and non underscore characters by separator
         $string = preg_replace('/[^a-z0-9]/i', $separator, $string);
 
-        // replace multiple occurences of separator by one instance
+        // replace multiple occurrences of separator by one instance
         $string = preg_replace(
             '/' . preg_quote($separator) . '[' . preg_quote($separator) . ']*/',
             $separator,

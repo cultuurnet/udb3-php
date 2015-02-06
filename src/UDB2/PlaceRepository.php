@@ -7,9 +7,8 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\Place\Place;
 
 /**
  * Repository decorator that first updates UDB2.
@@ -24,7 +23,7 @@ class PlaceRepository extends ActorRepository
      */
     protected function getType()
     {
-        return '\\CultuurNet\\UDB3\\Place\\Place';
+        return Place::class;
     }
 
     /**

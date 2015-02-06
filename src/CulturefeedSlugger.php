@@ -31,7 +31,7 @@ class CulturefeedSlugger implements SluggerInterface
     private function culturefeed_search_slug($string, $length = 50, $separator = '-')
     {
         // transliterate
-        $string = $this->culturefeed_search_transliterate($string);
+        $string = $this->transliterate($string);
 
         // lowercase
         $string = strtolower($string);
@@ -74,11 +74,11 @@ class CulturefeedSlugger implements SluggerInterface
      * @return string
      *   A string representing the transliterated version of the input string.
      */
-    private function culturefeed_search_transliterate($string)
+    private function transliterate($string)
     {
-        static $charmap;
-        if (!$charmap) {
-            $charmap = array(
+        static $charMap;
+        if (!$charMap) {
+            $charMap = array(
                 // Decompositions for Latin-1 Supplement
                 chr(195) . chr(128) => 'A',
                 chr(195) . chr(129) => 'A',
@@ -270,6 +270,6 @@ class CulturefeedSlugger implements SluggerInterface
         }
 
         // transliterate
-        return strtr($string, $charmap);
+        return strtr($string, $charMap);
     }
 }

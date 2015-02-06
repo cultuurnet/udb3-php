@@ -44,10 +44,10 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
             throw new \InvalidArgumentException('no event Ids to tag');
         }
 
-        $events = [];
-
+        // By retrieving the events first by their ID, we ensure
+        // the IDs are actually valid.
         foreach ($eventIds as $eventId) {
-            $events[] = $this->eventService->getEvent($eventId);
+            $this->eventService->getEvent($eventId);
         }
 
         $command = new TagEvents($eventIds, $keyword);

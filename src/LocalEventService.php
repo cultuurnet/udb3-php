@@ -61,7 +61,7 @@ class LocalEventService implements EventServiceInterface
         // decorator, but this particular code should be moved over to an
         // EventService decorator
         try {
-            $event = $this->eventRepository->load($id);
+            $this->eventRepository->load($id);
         } catch (AggregateNotFoundException $e) {
             throw new EventNotFoundException(
                 sprintf('Event with id: %s not found.', $id)

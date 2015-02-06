@@ -22,10 +22,15 @@ class ExportEventsAsCSV
     private $address;
 
     /**
+     * @var string[]
+     */
+    private $selection;
+
+    /**
      * @param EventExportQuery $query
      * @param EmailAddress|null $address
      */
-    public function __construct(EventExportQuery $query, EmailAddress $address = null)
+    public function __construct(EventExportQuery $query, EmailAddress $address = null, $selection = null)
     {
         if ($query->isEmpty()) {
             throw new \RuntimeException('Query can not be empty');
@@ -33,6 +38,7 @@ class ExportEventsAsCSV
 
         $this->query = $query;
         $this->address = $address;
+        $this->selection = $selection;
     }
 
     /**
@@ -49,5 +55,13 @@ class ExportEventsAsCSV
     public function getAddress()
     {
         return $this->address;
+    }
+
+    /**
+     * @return null|\string[]
+     */
+    public function getSelection()
+    {
+        return $this->selection;
     }
 }

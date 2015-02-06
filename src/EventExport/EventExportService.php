@@ -78,7 +78,8 @@ class EventExportService implements EventExportServiceInterface
         FileFormatInterface $fileFormat,
         EventExportQuery $query,
         $address = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $selection = null
     ) {
 
         // do a pre query to test if the query is valid and check the item count
@@ -128,12 +129,19 @@ class EventExportService implements EventExportServiceInterface
 
             $tmpFile = $fileFormat->openWriter($tmpPath);
 
-            foreach ($this->search(
-                $totalItemCount,
-                $query,
-                $logger
-            ) as $event) {
-                $tmpFile->exportEvent($event);
+            if($selection) {
+                foreach($selection as $eventId) {
+                    $event = $this->eventService->getEvent($eventId);
+                    $tmpFile->exportEvent($event);
+                }
+            } else {
+                foreach ($this->search(
+                  $totalItemCount,
+                  $query,
+                  $logger
+                ) as $event) {
+                    $tmpFile->exportEvent($event);
+                }
             }
 
             $tmpFile->close();
@@ -185,13 +193,15 @@ class EventExportService implements EventExportServiceInterface
     public function exportEventsAsJsonLD(
         EventExportQuery $query,
         $address = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $selection = null
     ) {
         return $this->exportEvents(
             new JSONLDFileFormat(),
             $query,
             $address,
-            $logger
+            $logger,
+            $selection
         );
     }
 
@@ -267,13 +277,15 @@ class EventExportService implements EventExportServiceInterface
     public function exportEventsAsCSV(
         EventExportQuery $query,
         $address = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $selection = null
     ) {
         return $this->exportEvents(
             new CSVFileFormat(),
             $query,
             $address,
-            $logger
+            $logger,
+            $selection
         );
     }
 

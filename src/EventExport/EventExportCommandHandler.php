@@ -32,7 +32,8 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
         $this->eventExportService->exportEventsAsJsonLD(
             $exportCommand->getQuery(),
             $exportCommand->getAddress(),
-            $this->logger
+            $this->logger,
+            $exportCommand->getSelection()
         );
     }
 
@@ -42,7 +43,8 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
         $this->eventExportService->exportEventsAsCSV(
             $exportCommand->getQuery(),
             $exportCommand->getAddress(),
-            $this->logger
+            $this->logger,
+            $exportCommand->getSelection()
         );
 
     }

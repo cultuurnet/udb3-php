@@ -22,10 +22,16 @@ class ExportEventsAsJsonLD
     private $address;
 
     /**
+     * @var string[]
+     */
+    private $selection;
+
+    /**
      * @param EventExportQuery $query
      * @param EmailAddress|null $address
+     * @param string[] $selection
      */
-    public function __construct(EventExportQuery $query, EmailAddress $address = null)
+    public function __construct(EventExportQuery $query, EmailAddress $address = null, $selection = null)
     {
         if ($query->isEmpty()) {
             throw new \RuntimeException('Query can not be empty');
@@ -33,6 +39,7 @@ class ExportEventsAsJsonLD
 
         $this->query = $query;
         $this->address = $address;
+        $this->selection = $selection;
     }
 
     /**
@@ -49,5 +56,13 @@ class ExportEventsAsJsonLD
     public function getAddress()
     {
         return $this->address;
+    }
+
+    /**
+     * @return null|\string[]
+     */
+    public function getSelection()
+    {
+        return $this->selection;
     }
 }

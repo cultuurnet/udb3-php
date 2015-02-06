@@ -88,29 +88,6 @@ abstract class EntityRepository implements RepositoryInterface
     }
 
     /**
-     * Creates improved entry api from meta data.
-     *
-     * @param Metadata $metadata
-     *   The meta data.
-     *
-     * @return EntryAPI
-     *   The entry api.
-     */
-    private function createImprovedEntryAPIFromMetadata(Metadata $metadata)
-    {
-        $metadata = $metadata->serialize();
-        if (!isset($metadata['uitid_token_credentials'])) {
-            throw new \RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
-        }
-        $tokenCredentials = $metadata['uitid_token_credentials'];
-        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
-            $tokenCredentials
-        );
-
-        return $entryAPI;
-    }
-
-    /**
      * Decorates for write.
      *
      * @param AggregateRoot $aggregate

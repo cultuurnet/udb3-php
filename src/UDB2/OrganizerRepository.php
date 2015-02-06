@@ -7,10 +7,8 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\Search\Parameter\FilterQuery;
-use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\Organizer\Organizer;
 
 /**
  * Repository decorator that first updates UDB2.
@@ -25,7 +23,7 @@ class OrganizerRepository extends ActorRepository
      */
     protected function getType()
     {
-        return '\\CultuurNet\\UDB3\\Organizer\\Organizer';
+        return Organizer::class;
     }
 
     /**

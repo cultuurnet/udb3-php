@@ -307,19 +307,17 @@ class EventRepository implements RepositoryInterface
     private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event)
     {
         $location = $udb2Event->getLocation();
-        $placeId = null;
         if ($location && $location->getCdbid()) {
-            $placeId = $location->getCdbid();
-            // Loading the place will implictly import it, or throw an error
+            // Loading the place will implicitly import it, or throw an error
             // if the place is not known.
-            $place = $this->placeService->getEntity($placeId);
+            $this->placeService->getEntity($location->getCdbid());
         }
 
         $organizer = $udb2Event->getOrganiser();
-        $organizerId = null;
         if ($organizer && $organizer->getCdbid()) {
-            $organizerId = $organizer->getCdbid();
-            // @todo Import organizer.
+            // Loading the organizer will implicitly import it, or throw an error
+            // if the organizer is not known.
+            $this->organizerService->getEntity($organizer->getCdbid());
         }
     }
 

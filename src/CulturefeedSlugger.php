@@ -11,24 +11,36 @@ namespace CultuurNet\UDB3;
  */
 class CulturefeedSlugger implements SluggerInterface
 {
-    public function slug($string)
+    /**
+     * The maximum length the slug can have.
+     *
+     * @var int
+     */
+    protected $length;
+
+    /**
+     * The separator that will be used instead of whitespaces.
+     *
+     * @var string
+     */
+    protected $separator;
+
+    /**
+     * @param int $length
+     *   The maximum length the slug can have.
+     * @param string $separator
+     *   The separator that will be used instead of whitespaces.
+     */
+    public function __construct($length = 50, $separator = '-')
     {
-        return $this->culturefeed_search_slug($string);
+        $this->length = $length;
+        $this->separator = $separator;
     }
 
     /**
-     * Calculate a slug with a maximum length for a string.
-     *
-     * @param $string
-     *   The string you want to calculate a slug for.
-     * @param $length
-     *   The maximum length the slug can have.
-     * @param $separator
-     *  The separator that will be used instead of whitespaces
-     * @return string
-     *   A string representing the slug
+     * @inheritdoc
      */
-    private function culturefeed_search_slug($string, $length = 50, $separator = '-')
+    public function slug($string)
     {
         // transliterate
         $string = $this->transliterate($string);
@@ -37,28 +49,28 @@ class CulturefeedSlugger implements SluggerInterface
         $string = strtolower($string);
 
         // replace non alphanumeric and non underscore characters by separator
-        $string = preg_replace('/[^a-z0-9]/i', $separator, $string);
+        $string = preg_replace('/[^a-z0-9]/i', $this->separator, $string);
 
         // replace multiple occurrences of separator by one instance
         $string = preg_replace(
-            '/' . preg_quote($separator) . '[' . preg_quote($separator) . ']*/',
-            $separator,
+            '/' . preg_quote($this->separator) . '[' . preg_quote($this->separator) . ']*/',
+            $this->separator,
             $string
         );
 
         // cut off to maximum length
-        if ($length > -1 && strlen($string) > $length) {
-            $string = substr($string, 0, $length);
+        if ($this->length > -1 && strlen($string) > $this->length) {
+            $string = substr($string, 0, $this->length);
         }
 
         // remove separator from start and end of string
         $string = preg_replace(
-            '/' . preg_quote($separator) . '$/',
+            '/' . preg_quote($this->separator) . '$/',
             '',
             $string
         );
         $string = preg_replace(
-            '/^' . preg_quote($separator) . '/',
+            '/^' . preg_quote($this->separator) . '/',
             '',
             $string
         );

@@ -22,14 +22,27 @@ class JSONLDFileWriter implements FileWriterInterface
 
     /**
      * @param mixed $event
+     * @param string[] $include
      */
-    public function exportEvent($event)
+    public function exportEvent($event, $include)
     {
         if ($this->first) {
             $this->first = false;
         }
         else {
             fwrite($this->f, ',');
+        }
+
+        if($include) {
+            $include[] = '@id';
+            $eventObject = json_decode($event);
+            foreach($eventObject as $propertyName => $value) {
+                var_dump($propertyName);
+                if(!in_array($propertyName, $include)) {
+                    unset($eventObject->{$propertyName});
+                }
+            }
+            $event = json_encode($eventObject);
         }
 
         fwrite($this->f, $event);

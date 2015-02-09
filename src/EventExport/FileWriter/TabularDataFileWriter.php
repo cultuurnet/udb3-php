@@ -43,16 +43,15 @@ class TabularDataFileWriter implements FileWriterInterface
 
         foreach ($this->includedProperties as $property) {
 
-            $column = $this->columns()[$property];
-
             if(isset($event->{$property}) || isset($event->{'@' . $property})) {
+                $column = $this->columns()[$property];
 
                 $value = $column['include']($event);
 
-                if($value) {
-                    $row[$column['name']] = $value;
+                if ($value) {
+                    $row[$property] = $value;
                 } else {
-                    $row[$column['name']] = '';
+                    $row[$property] = '';
                 }
             }
         }
@@ -82,7 +81,7 @@ class TabularDataFileWriter implements FileWriterInterface
         $row = array();
 
         foreach($this->includedProperties as $property) {
-            $row[$this->columns()[$property]['name']] = '';
+            $row[$property] = '';
         }
 
         return $row;

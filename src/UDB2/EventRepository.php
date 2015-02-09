@@ -345,28 +345,14 @@ class EventRepository implements RepositoryInterface
         $physicalAddress->setCity($place->address->addressLocality);
         $physicalAddress->setZip($place->address->postalCode);
         // @todo This is not an exact mapping, because we do not have a separate
-        // house number in JSONLD, this should be fixed somehow.
+        // house number in JSONLD, this should be fixed somehow. Probably it's
+        // better to use another read model than JSON-LD for this purpose.
         $physicalAddress->setStreet($place->address->streetAddress);
         $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
 
         $location = new \CultureFeed_Cdb_Data_Location($address);
-        $placeActor = new \CultureFeed_Cdb_Item_Actor();
-        $placeActor->setCdbId($eventCreated->getLocation());
-
-        $placeActorDetails = new \CultureFeed_Cdb_Data_ActorDetailList();
-        $placeActorDetail = new \CultureFeed_Cdb_Data_ActorDetail();
-        $placeActorDetail->setLanguage('nl');
-        $placeActorDetail->setTitle($place->name);
-
-        $placeActorDetails->add($placeActorDetail);
-
-        $placeActor->setDetails($placeActorDetails);
-        $location->setActor($placeActor);
-        $placeActorCategories = new \CultureFeed_Cdb_Data_CategoryList();
-        // @todo This is not suitable for a place, check if there are more suitable types of categories.
-        $concertCategory = new \CultureFeed_Cdb_Data_Category('eventtype', '0.50.4.0.0', 'Concert');
-        $placeActorCategories->add($concertCategory);
-        $placeActor->setCategories($placeActorCategories);
+        $location->setLabel($place->name);
+        $location->setCdbid($eventCreated->getLocation());
 
         $event->setLocation($location);
 

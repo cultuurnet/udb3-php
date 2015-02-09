@@ -77,6 +77,8 @@ class CSVFileWriter implements FileWriterInterface
 
                 if($value) {
                     $row[$column['name']] = $value;
+                } else {
+                    $row[$column['name']] = '';
                 }
             }
         }
@@ -120,9 +122,11 @@ class CSVFileWriter implements FileWriterInterface
             'creator' => [ 'name' => 'auteur', 'include' => function ($event) {
                 return $event->creator;
             }, 'property' => 'creator' ],
-            'price' => [ 'name' => 'prijs', 'include' => function ($event) {
-                return $event->price;
-            }, 'property' => 'price' ],
+            'bookingInfo' => [ 'name' => 'prijs', 'include' => function ($event) {
+                if($event->bookingInfo && $event->bookingInfo->price) {
+                    return $event->bookingInfo->price;
+                }
+            }, 'property' => 'bookingInfo' ],
             'description' => [ 'name' => 'omschrijving', 'include' => function ($event) {
                 return reset($event->description);
             }, 'property' => 'description' ],
@@ -156,6 +160,25 @@ class CSVFileWriter implements FileWriterInterface
             'language' => [ 'name' => 'taal van het aanbod', 'include' => function ($event) {
                 return implode(';', $event->language);
             }, 'property' => 'language' ],
+          'terms' => [ 'name' => 'thema', 'include' => function ($event) {
+              $theme = NULL;
+
+              if($event->terms) {
+                foreach($event->terms as $term) {
+                    if($term->domain && $term->label && $term->domain == 'theme') {
+                        $theme = $term->label;
+                    }
+                }
+              }
+
+              return $theme;
+          }, 'property' => 'terms' ],
+          'created' => [ 'name' => 'datum aangemaakt', 'include' => function ($event) {
+              return $event->created;
+          }, 'property' => 'created' ],
+          'publisher' => [ 'name' => 'auteur', 'include' => function ($event) {
+              return $event->publisher;
+          }, 'property' => 'publisher' ],
             'startDate' => [ 'name' => 'startdatum', 'include' => function ($event) {
                 return $event->startDate;
             }, 'property' => 'startDate' ],
@@ -200,6 +223,18 @@ class CSVFileWriter implements FileWriterInterface
             'image' => [ 'name' => 'afbeelding', 'include' => function ($event) {
                 return $event->image;
             }, 'property' => 'image' ],
+          'sameAs' => [ 'name' => 'externe ids', 'include' => function ($event) {
+              if($event->sameAs) {
+                  $ids = array();
+
+                  foreach($event->sameAs as $externalId) {
+                      $ids[] = $externalId;
+                  }
+
+                  return implode("\r\n", $ids);
+              }
+
+          }, 'property' => 'sameAs' ],
         ];
     }
 

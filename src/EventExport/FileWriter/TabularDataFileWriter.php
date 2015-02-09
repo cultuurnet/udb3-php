@@ -156,9 +156,6 @@ class TabularDataFileWriter implements FileWriterInterface
             'created' => [ 'name' => 'datum aangemaakt', 'include' => function ($event) {
                 return $event->created;
             }, 'property' => 'created' ],
-            'publisher' => [ 'name' => 'auteur', 'include' => function ($event) {
-                return $event->publisher;
-            }, 'property' => 'publisher' ],
             'startDate' => [ 'name' => 'startdatum', 'include' => function ($event) {
                 return $event->startDate;
             }, 'property' => 'startDate' ],

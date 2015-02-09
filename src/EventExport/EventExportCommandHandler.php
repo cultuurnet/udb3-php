@@ -59,7 +59,8 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
             $exportCommand->getQuery(),
             $exportCommand->getAddress(),
             $this->logger,
-            $exportCommand->getSelection()
+            $exportCommand->getSelection(),
+            $exportCommand->getInclude()
         );
 
     }

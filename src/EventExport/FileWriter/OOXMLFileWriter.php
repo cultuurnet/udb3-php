@@ -41,7 +41,7 @@ class OOXMLFileWriter implements TabularDataFileWriterInterface
     {
         $this->spreadsheet->getActiveSheet()->fromArray(
             $row,
-            null,
+            '',
             'A' . $this->i
         );
 

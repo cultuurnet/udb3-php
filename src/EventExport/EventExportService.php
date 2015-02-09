@@ -80,8 +80,7 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
+        $selection = null
     ) {
 
         // do a pre query to test if the query is valid and check the item count
@@ -134,7 +133,7 @@ class EventExportService implements EventExportServiceInterface
             if($selection) {
                 foreach($selection as $eventId) {
                     $event = $this->eventService->getEvent($eventId);
-                    $tmpFile->exportEvent($event, $include);
+                    $tmpFile->exportEvent($event);
                 }
             } else {
                 foreach ($this->search(
@@ -142,7 +141,7 @@ class EventExportService implements EventExportServiceInterface
                   $query,
                   $logger
                 ) as $event) {
-                    $tmpFile->exportEvent($event, $include);
+                    $tmpFile->exportEvent($event);
                 }
             }
 
@@ -200,12 +199,11 @@ class EventExportService implements EventExportServiceInterface
         $include = null
     ) {
         return $this->exportEvents(
-            new JSONLDFileFormat(),
+            new JSONLDFileFormat($include),
             $query,
             $address,
             $logger,
-            $selection,
-          $include
+            $selection
         );
     }
 
@@ -285,13 +283,14 @@ class EventExportService implements EventExportServiceInterface
         $selection = null,
         $include = null
     ) {
+        var_dump(__METHOD__);
+        var_dump($include);
         return $this->exportEvents(
-            new CSVFileFormat(),
+            new CSVFileFormat($include),
             $query,
             $address,
             $logger,
-            $selection,
-            $include
+            $selection
         );
     }
 
@@ -302,10 +301,11 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null
+        $selection = null,
+        $include = null
     ) {
         return $this->exportEvents(
-            new OOXMLFileFormat(),
+            new OOXMLFileFormat($include),
             $query,
             $address,
             $logger,

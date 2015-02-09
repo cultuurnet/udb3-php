@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
 
-class OOXMLFileWriter implements FileWriterInterface
+class OOXMLFileWriter implements TabularDataFileWriterInterface
 {
     /**
      * @var string
@@ -35,12 +35,12 @@ class OOXMLFileWriter implements FileWriterInterface
     }
 
     /**
-     * @param mixed $event
+     * @param string[] $row
      */
-    public function exportEvent($event)
+    public function writeRow($row)
     {
         $this->spreadsheet->getActiveSheet()->fromArray(
-            $event,
+            $row,
             null,
             'A' . $this->i
         );

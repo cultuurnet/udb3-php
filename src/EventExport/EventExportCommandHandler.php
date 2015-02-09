@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3\EventExport;
 use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
+use CultuurNet\UDB3\EventExport\Command\ExportEventsAsOOXML;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -52,7 +53,7 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
     }
 
     public function handleExportEventsAsOOXML(
-        ExportEventsAsCSV $exportCommand
+        ExportEventsAsOOXML $exportCommand
     ) {
         $this->eventExportService->exportEventsAsOOXML(
             $exportCommand->getQuery(),

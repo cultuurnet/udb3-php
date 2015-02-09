@@ -24,7 +24,7 @@ class JSONLDFileWriter implements FileWriterInterface
      * @param mixed $event
      * @param string[] $include
      */
-    public function exportEvent($event, $include)
+    public function exportEvent($event)
     {
         if ($this->first) {
             $this->first = false;

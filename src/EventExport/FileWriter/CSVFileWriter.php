@@ -116,8 +116,9 @@ class CSVFileWriter implements FileWriterInterface
     {
         return [
             'id' => [ 'name' => 'id', 'include' => function ($event) {
-                $eventId = $event->{'@id'};
-                var_dump('id: ' . $eventId);
+                $eventUri = $event->{'@id'};
+                $uriParts = explode('/',$eventUri);
+                $eventId = array_pop($uriParts);
                 return $eventId;
             }, 'property' => 'id' ],
             'name' => [ 'name' => 'titel', 'include' => function ($event) {

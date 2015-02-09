@@ -42,10 +42,9 @@ class TabularDataFileWriter implements FileWriterInterface
         $row = $this->emptyRow();
 
         foreach ($this->includedProperties as $property) {
+            $column = $this->columns()[$property];
 
-            if(isset($event->{$property}) || isset($event->{'@' . $property})) {
-                $column = $this->columns()[$property];
-
+            if(isset($event->{$column['property']}) || isset($event->{'@' . $column['property']})) {
                 $value = $column['include']($event);
 
                 if ($value) {
@@ -196,7 +195,7 @@ class TabularDataFileWriter implements FileWriterInterface
 
                     return implode("\r\n", $address);
                 }
-            }, 'property' => 'address' ],
+            }, 'property' => 'location' ],
             'image' => [ 'name' => 'afbeelding', 'include' => function ($event) {
                 return $event->image;
             }, 'property' => 'image' ],

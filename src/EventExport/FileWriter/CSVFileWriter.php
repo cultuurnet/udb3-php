@@ -70,8 +70,10 @@ class CSVFileWriter implements FileWriterInterface
         $row = $this->emptyRow($include);
 
         foreach ($this->includedProperties as $property) {
-            if(isset($event->{$property})) {
-                $column = $this->columns()[$property];
+
+            $column = $this->columns()[$property];
+
+            if(isset($event->{$property}) || isset($event->{'@' . $property})) {
 
                 $value = $column['include']($event);
 
@@ -114,7 +116,9 @@ class CSVFileWriter implements FileWriterInterface
     {
         return [
             'id' => [ 'name' => 'id', 'include' => function ($event) {
-                return $event->{'@id'};
+                $eventId = $event->{'@id'};
+                var_dump('id: ' . $eventId);
+                return $eventId;
             }, 'property' => 'id' ],
             'name' => [ 'name' => 'titel', 'include' => function ($event) {
                 return reset($event->name);

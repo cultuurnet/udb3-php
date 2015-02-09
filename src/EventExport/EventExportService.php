@@ -10,6 +10,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
 use CultuurNet\UDB3\EventExport\FileFormat\FileFormatInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
+use CultuurNet\UDB3\EventExport\FileFormat\OOXMLFileFormat;
 use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
 use CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface;
 use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
@@ -282,6 +283,24 @@ class EventExportService implements EventExportServiceInterface
     ) {
         return $this->exportEvents(
             new CSVFileFormat(),
+            $query,
+            $address,
+            $logger,
+            $selection
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function exportEventsAsOOXML(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null,
+        $selection = null
+    ) {
+        return $this->exportEvents(
+            new OOXMLFileFormat(),
             $query,
             $address,
             $logger,

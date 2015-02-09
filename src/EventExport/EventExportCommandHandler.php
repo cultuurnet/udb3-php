@@ -48,4 +48,16 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
         );
 
     }
+
+    public function handleExportEventsAsOOXML(
+        ExportEventsAsCSV $exportCommand
+    ) {
+        $this->eventExportService->exportEventsAsOOXML(
+            $exportCommand->getQuery(),
+            $exportCommand->getAddress(),
+            $this->logger,
+            $exportCommand->getSelection()
+        );
+
+    }
 }

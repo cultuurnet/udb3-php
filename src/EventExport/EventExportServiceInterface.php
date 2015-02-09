@@ -33,4 +33,16 @@ interface EventExportServiceInterface
         $address = null,
         LoggerInterface $logger = null
     );
+
+    /**
+     * @param EventExportQuery $query
+     * @param LoggerInterface $logger
+     * @return string
+     *   Publicly accessible path of the file
+     */
+    public function exportEventsAsOOXML(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null
+    );
 }

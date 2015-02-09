@@ -10,9 +10,10 @@ interface FileWriterInterface {
 
     /**
      * @param mixed $event
+     * @param string[] $include
      * @return void
      */
-    public function exportEvent($event);
+    public function exportEvent($event, $include);
 
     /**
      * @return void

@@ -80,7 +80,8 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null
+        $selection = null,
+        $include = null
     ) {
 
         // do a pre query to test if the query is valid and check the item count
@@ -133,7 +134,7 @@ class EventExportService implements EventExportServiceInterface
             if($selection) {
                 foreach($selection as $eventId) {
                     $event = $this->eventService->getEvent($eventId);
-                    $tmpFile->exportEvent($event);
+                    $tmpFile->exportEvent($event, $include);
                 }
             } else {
                 foreach ($this->search(
@@ -141,7 +142,7 @@ class EventExportService implements EventExportServiceInterface
                   $query,
                   $logger
                 ) as $event) {
-                    $tmpFile->exportEvent($event);
+                    $tmpFile->exportEvent($event, $include);
                 }
             }
 
@@ -195,14 +196,16 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null
+        $selection = null,
+        $include = null
     ) {
         return $this->exportEvents(
             new JSONLDFileFormat(),
             $query,
             $address,
             $logger,
-            $selection
+            $selection,
+          $include
         );
     }
 
@@ -279,14 +282,16 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null
+        $selection = null,
+        $include = null
     ) {
         return $this->exportEvents(
             new CSVFileFormat(),
             $query,
             $address,
             $logger,
-            $selection
+            $selection,
+            $include
         );
     }
 

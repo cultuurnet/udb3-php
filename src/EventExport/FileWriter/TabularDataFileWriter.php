@@ -102,8 +102,11 @@ class TabularDataFileWriter implements FileWriterInterface
                 return $event->creator;
             }, 'property' => 'creator' ],
             'bookingInfo' => [ 'name' => 'prijs', 'include' => function ($event) {
-                if($event->bookingInfo && $event->bookingInfo->price) {
-                    return $event->bookingInfo->price;
+                if (is_array($event->bookingInfo)) {
+                    $firstPrice = reset($event->bookingInfo);
+                    if (is_object($firstPrice) && isset($firstPrice->price)) {
+                        return $firstPrice->price;
+                    }
                 }
             }, 'property' => 'bookingInfo' ],
             'description' => [ 'name' => 'omschrijving', 'include' => function ($event) {

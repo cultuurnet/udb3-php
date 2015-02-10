@@ -134,6 +134,16 @@ class EventExportService implements EventExportServiceInterface
                 foreach($selection as $eventId) {
                     $event = $this->eventService->getEvent($eventId);
                     $tmpFile->exportEvent($event);
+
+                    if ($logger) {
+                        $logger->info(
+                          'task_completed',
+                          array(
+                            'type' => 'event_was_exported',
+                            'event_id' => $eventId,
+                          )
+                        );
+                    }
                 }
             } else {
                 foreach ($this->search(
@@ -142,6 +152,15 @@ class EventExportService implements EventExportServiceInterface
                   $logger
                 ) as $event) {
                     $tmpFile->exportEvent($event);
+
+                    if ($logger) {
+                        $logger->info(
+                          'task_completed',
+                          array(
+                            'type' => 'event_was_exported'
+                          )
+                        );
+                    }
                 }
             }
 
@@ -167,9 +186,8 @@ class EventExportService implements EventExportServiceInterface
 
             if ($logger) {
                 $logger->info(
-                    'task_completed',
+                    'job_finished',
                     [
-                        'type' => 'export',
                         'location' => $finalUrl,
                     ]
                 );

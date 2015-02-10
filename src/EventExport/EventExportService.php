@@ -186,7 +186,7 @@ class EventExportService implements EventExportServiceInterface
 
             if ($logger) {
                 $logger->info(
-                    'job_finished',
+                    'job_info',
                     [
                         'location' => $finalUrl,
                     ]

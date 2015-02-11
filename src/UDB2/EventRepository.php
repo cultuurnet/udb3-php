@@ -15,6 +15,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Entry\EntryAPI;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventCreated;
@@ -24,14 +25,18 @@ use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Repository decorator that first updates UDB2.
  *
  * When a failure on UDB2 occurs, the whole transaction will fail.
  */
-class EventRepository implements RepositoryInterface
+class EventRepository implements RepositoryInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var RepositoryInterface
      */
@@ -306,18 +311,43 @@ class EventRepository implements RepositoryInterface
 
     private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event)
     {
-        $location = $udb2Event->getLocation();
-        if ($location && $location->getCdbid()) {
-            // Loading the place will implicitly import it, or throw an error
-            // if the place is not known.
-            $this->placeService->getEntity($location->getCdbid());
+        try {
+            $location = $udb2Event->getLocation();
+            if ($location && $location->getCdbid()) {
+                // Loading the place will implicitly import it, or throw an error
+                // if the place is not known.
+                $this->placeService->getEntity($location->getCdbid());
+            }
+        }
+        catch (EntityNotFoundException $e) {
+            if ($this->logger) {
+                $this->logger->error(
+                    "Unable to retrieve location with ID {$location->getCdbid(
+                    )}, of event {$udb2Event->getCdbId()}."
+                );
+            }
+            else {
+                throw $e;
+            }
         }
 
-        $organizer = $udb2Event->getOrganiser();
-        if ($organizer && $organizer->getCdbid()) {
-            // Loading the organizer will implicitly import it, or throw an error
-            // if the organizer is not known.
-            $this->organizerService->getEntity($organizer->getCdbid());
+        try {
+            $organizer = $udb2Event->getOrganiser();
+            if ($organizer && $organizer->getCdbid()) {
+                // Loading the organizer will implicitly import it, or throw an error
+                // if the organizer is not known.
+                $this->organizerService->getEntity($organizer->getCdbid());
+            }
+        } catch (EntityNotFoundException $e) {
+            if ($this->logger) {
+                $this->logger->error(
+                    "Unable to retrieve organizer with ID {$organizer->getCdbid(
+                    )}, of event {$udb2Event->getCdbId()}."
+                );
+            }
+            else {
+                throw $e;
+            }
         }
     }
 

@@ -7,20 +7,17 @@ namespace CultuurNet\UDB3\EventExport;
 
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
 use CultuurNet\UDB3\EventExport\FileFormat\FileFormatInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
 use CultuurNet\UDB3\EventExport\FileFormat\OOXMLFileFormat;
-use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
-use CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface;
-use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 class EventExportService implements EventExportServiceInterface
 {
@@ -130,35 +127,36 @@ class EventExportService implements EventExportServiceInterface
 
             $tmpFile = $fileFormat->openWriter($tmpPath);
 
-            if($selection) {
-                foreach($selection as $eventId) {
+            if ($selection) {
+                foreach ($selection as $eventId) {
+                    
                     $event = $this->eventService->getEvent($eventId);
                     $tmpFile->exportEvent($event);
 
                     if ($logger) {
                         $logger->info(
-                          'task_completed',
-                          array(
-                            'type' => 'event_was_exported',
-                            'event_id' => $eventId,
-                          )
+                            'task_completed',
+                            array(
+                                'type' => 'event_was_exported',
+                                'event_id' => $eventId,
+                            )
                         );
                     }
                 }
             } else {
                 foreach ($this->search(
-                  $totalItemCount,
-                  $query,
-                  $logger
+                    $totalItemCount,
+                    $query,
+                    $logger
                 ) as $event) {
                     $tmpFile->exportEvent($event);
 
                     if ($logger) {
                         $logger->info(
-                          'task_completed',
-                          array(
-                            'type' => 'event_was_exported'
-                          )
+                            'task_completed',
+                            array(
+                                'type' => 'event_was_exported'
+                            )
                         );
                     }
                 }

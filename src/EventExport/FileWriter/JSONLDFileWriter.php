@@ -10,7 +10,12 @@ class JSONLDFileWriter implements FileWriterInterface
 {
     protected $f;
 
-    public function __construct($filePath) {
+    /**
+     * @var string[]
+     */
+    protected $includedProperties;
+
+    public function __construct($filePath, $include = null) {
         $this->f = fopen($filePath, 'w');
         if (false === $this->f) {
             throw new \RuntimeException('Unable to open file for writing: ' . $filePath);
@@ -18,11 +23,22 @@ class JSONLDFileWriter implements FileWriterInterface
         fwrite($this->f, '[');
 
         $this->first = true;
+
+        if($include) {
+            $include[] = '@id';
+            // The address property is nested inside location.
+            // The whole location property gets included instead of pulling it
+            // out and placing it directly on the object.
+            if(in_array('address', $include) && !in_array('location', $include)) {
+                array_push($include, 'location');
+            }
+            $this->includedProperties = $include;
+        }
+
     }
 
     /**
      * @param mixed $event
-     * @param string[] $include
      */
     public function exportEvent($event)
     {
@@ -33,12 +49,11 @@ class JSONLDFileWriter implements FileWriterInterface
             fwrite($this->f, ',');
         }
 
-        if($include) {
-            $include[] = '@id';
+        if($this->includedProperties) {
             $eventObject = json_decode($event);
             foreach($eventObject as $propertyName => $value) {
                 var_dump($propertyName);
-                if(!in_array($propertyName, $include)) {
+                if(!in_array($propertyName, $this->includedProperties)) {
                     unset($eventObject->{$propertyName});
                 }
             }

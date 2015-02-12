@@ -46,19 +46,22 @@ class OrganizerLDProjector extends ActorLDProjector
 
         $actorLd->addresses = array();
         $contact_cdb = $udb2Actor->getContactInfo();
-        /** @var \CultureFeed_Cdb_Data_Address[] $addresses **/
-        $addresses = $contact_cdb->getAddresses();
+        if ($contact_cdb) {
+            /** @var \CultureFeed_Cdb_Data_Address[] $addresses * */
+            $addresses = $contact_cdb->getAddresses();
 
-        foreach ($addresses as $address) {
-            $address = $address->getPhysicalAddress();
+            foreach ($addresses as $address) {
+                $address = $address->getPhysicalAddress();
 
-            if ($address) {
-                $actorLd->addresses[] = array(
-              'addressCountry' => $address->getCountry(),
-              'addressLocality' => $address->getCity(),
-              'postalCode' => $address->getZip(),
-              'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
-            );
+                if ($address) {
+                    $actorLd->addresses[] = array(
+                        'addressCountry' => $address->getCountry(),
+                        'addressLocality' => $address->getCity(),
+                        'postalCode' => $address->getZip(),
+                        'streetAddress' => $address->getStreet(
+                            ) . ' ' . $address->getHouseNumber(),
+                    );
+                }
             }
         }
 

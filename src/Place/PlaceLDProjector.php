@@ -21,7 +21,7 @@ class PlaceLDProjector extends ActorLDProjector
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
-    public function applyActorImportedFromUDB2(
+    public function applyPlaceImportedFromUDB2(
         ActorImportedFromUDB2 $actorImportedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -96,7 +96,9 @@ class PlaceLDProjector extends ActorLDProjector
         );
         $images->rewind();
         $image = count($images) > 0 ? $images->current() : null;
-        $actorLd->image = $image ? $image->getHLink() : null;
+        if ($image) {
+            $actorLd->image = $image->getHLink();
+        }
 
         $actorLdModel = new JsonDocument(
             $actorImportedFromUDB2->getActorId()

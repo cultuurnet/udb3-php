@@ -155,14 +155,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_strips_empty_keywords_when_importing_from_udb2()
     {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/event_with_empty_keyword.cdbxml.xml'
-        );
-        $event = new EventImportedFromUDB2(
-            'someId',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-        );
+        $event = $this->eventImportedFromUDB2('event_with_empty_keyword.cdbxml.xml');
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -184,5 +177,41 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->applyEventImportedFromUDB2($event);
 
 
+    }
+
+    private function eventImportedFromUDB2($fileName) {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new EventImportedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
+    }
+
+    /**
+     * @test
+     */
+    function it_does_not_add_an_empty_keywords_property()
+    {
+        $event = $this->eventImportedFromUDB2('event_without_keywords.cdbxml.xml');
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return !isset($body->keywords);
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
     }
 }

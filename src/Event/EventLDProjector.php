@@ -194,9 +194,14 @@ class EventLDProjector extends Projector
         // JSON-encoding the array will result in an object.
         $keywords = array_values($keywords);
 
-        $eventLd->keywords = $keywords;
+        if ($keywords) {
+            $eventLd->keywords = $keywords;
+        }
         $eventLd->calendarSummary = $detail->getCalendarSummary();
-        $eventLd->image = $picture ? $picture->getHLink() : null;
+
+        if ($picture) {
+            $eventLd->image = $picture->getHLink();
+        }
 
         // Location.
         $location = array();

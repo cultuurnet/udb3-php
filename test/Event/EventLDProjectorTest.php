@@ -207,7 +207,30 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                     function (JsonDocument $jsonDocument) {
                         $body = $jsonDocument->getBody();
 
-                        return !isset($body->keywords);
+                        return !property_exists($body, 'keywords');
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_does_not_add_an_empty_image_property()
+    {
+        $event = $this->eventImportedFromUDB2('event_without_image.cdbxml.xml');
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return !property_exists($body, 'image');
                     }
                 )
             );

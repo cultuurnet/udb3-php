@@ -76,9 +76,11 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             false
         );
 
-        $this->iriGenerator = new CallableIriGenerator(function ($id) {
-            return 'http://example.com/entity/' . $id;
-        });
+        $this->iriGenerator = new CallableIriGenerator(
+            function ($id) {
+                return 'http://example.com/entity/' . $id;
+            }
+        );
 
         $this->projector = new EventLDProjector(
             $this->documentRepository,
@@ -99,8 +101,10 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $eventId = $uuidGenerator->generate();
         $date = new \DateTime('2015-01-26T13:25:21+01:00');
 
-        $eventCreated = new EventCreated($eventId, new Title(
-            'some representative title'),
+        $eventCreated = new EventCreated(
+            $eventId, new Title(
+            'some representative title'
+        ),
             'LOCATION-ABC-123',
             $date,
             new EventType('0.50.4.0.0', 'concert')
@@ -110,7 +114,10 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
         $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
         $jsonLD->name = array('nl' => 'some representative title');
-        $jsonLD->location = array('@type' => 'Place', '@id' => 'http://example.com/entity/LOCATION-ABC-123');
+        $jsonLD->location = array(
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-123'
+        );
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $jsonLD->sameAs = [
@@ -137,16 +144,24 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->willThrowException(new EntityNotFoundException());
         $this->placeService->expects($this->once())
             ->method('iri')
-            ->willReturnCallback(function ($argument) {
-                return 'http://example.com/entity/' . $argument;
-            });
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
 
         $this->documentRepository->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
 
         $this->projector->handle(
-            new DomainMessage(1, 1, new Metadata(), $eventCreated, DateTime::fromString('2015-01-20T13:25:21+01:00'))
+            new DomainMessage(
+                1,
+                1,
+                new Metadata(),
+                $eventCreated,
+                DateTime::fromString('2015-01-20T13:25:21+01:00')
+            )
         );
     }
 
@@ -155,7 +170,9 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_strips_empty_keywords_when_importing_from_udb2()
     {
-        $event = $this->eventImportedFromUDB2('event_with_empty_keyword.cdbxml.xml');
+        $event = $this->eventImportedFromUDB2(
+            'event_with_empty_keyword.cdbxml.xml'
+        );
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -179,7 +196,8 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    private function eventImportedFromUDB2($fileName) {
+    private function eventImportedFromUDB2($fileName)
+    {
         $cdbXml = file_get_contents(
             __DIR__ . '/' . $fileName
         );
@@ -197,7 +215,9 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     function it_does_not_add_an_empty_keywords_property()
     {
-        $event = $this->eventImportedFromUDB2('event_without_keywords.cdbxml.xml');
+        $event = $this->eventImportedFromUDB2(
+            'event_without_keywords.cdbxml.xml'
+        );
 
         $this->documentRepository
             ->expects($this->once())
@@ -254,6 +274,180 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                         $body = $jsonDocument->getBody();
 
                         return $body->image === '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg';
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_adds_a_bookingInfo_property_when_cdbxml_has_pricevalue()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_with_price_value.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+                        $bookingInfo = $body->bookingInfo;
+
+                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo->currency = 'EUR';
+                        $expectedBookingInfo->price = 0;
+
+                        return
+                            is_array($bookingInfo) &&
+                            count($bookingInfo) === 1 &&
+                            $bookingInfo[0] == $expectedBookingInfo;
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_adds_the_pricedescription_from_cdbxml_to_bookingInfo()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_with_price_value_and_description.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+                        $bookingInfo = $body->bookingInfo;
+
+                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo->currency = 'EUR';
+                        $expectedBookingInfo->price = 0;
+                        $expectedBookingInfo->description = 'Gratis voor iedereen!';
+
+                        return
+                            is_array($bookingInfo) &&
+                            count($bookingInfo) === 1 &&
+                            $bookingInfo[0] == $expectedBookingInfo;
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_does_not_add_a_missing_price_from_cdbxml_to_bookingInfo()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_with_only_price_description.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+                        $bookingInfo = $body->bookingInfo;
+
+                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo->description = 'Gratis voor iedereen!';
+
+                        return
+                            is_array($bookingInfo) &&
+                            count($bookingInfo) === 1 &&
+                            $bookingInfo[0] == $expectedBookingInfo;
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_does_not_add_booking_info_when_price_is_missing()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_without_price.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return !property_exists($body, 'bookingInfo');
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_does_not_add_typical_age_range_when_age_from_is_missing()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_without_age_from.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return !property_exists($body, 'typicalAgeRange');
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_adds_typical_age_range_when_age_from_is_present()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_with_age_from.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return $body->typicalAgeRange === '10-';
                     }
                 )
             );

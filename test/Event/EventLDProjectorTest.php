@@ -237,4 +237,27 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->projector->applyEventImportedFromUDB2($event);
     }
+
+    /**
+     * @test
+     */
+    public function it_adds_an_image_property_when_cdbxml_has_a_photo()
+    {
+        $event = $this->eventImportedFromUDB2('event_with_photo.cdbxml.xml');
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return $body->image === '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg';
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
 }

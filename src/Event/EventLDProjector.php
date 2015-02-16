@@ -398,15 +398,15 @@ class EventLDProjector extends Projector
             }
         }
 
-        $eventLd->language = [];
         /** @var \CultureFeed_Cdb_Data_Language $udb2Language */
         $languages = $udb2Event->getLanguages();
         if ($languages) {
+            $eventLd->language = [];
             foreach ($languages as $udb2Language) {
                 $eventLd->language[] = $udb2Language->getLanguage();
             }
+            $eventLd->language = array_unique($eventLd->language);
         }
-        $eventLd->language = array_unique($eventLd->language);
 
         $eventLdModel = new JsonDocument(
             $eventImportedFromUDB2->getEventId()

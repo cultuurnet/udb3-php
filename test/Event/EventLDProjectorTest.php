@@ -454,4 +454,62 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->projector->applyEventImportedFromUDB2($event);
     }
+
+    /**
+     * @test
+     */
+    function it_adds_a_language_property_when_cdbxml_has_languages()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_with_languages.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        $languages = $body->language;
+                        $expectedLanguages = [
+                            'Nederlands',
+                            'Frans',
+                            'Engels'
+                        ];
+
+                        return is_array($languages) &&
+                        $languages == $expectedLanguages;
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    function it_does_not_add_an_empty_language_property()
+    {
+        $event = $this->eventImportedFromUDB2(
+            'event_without_languages.cdbxml.xml'
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        $body = $jsonDocument->getBody();
+
+                        return !property_exists($body, 'language');
+                    }
+                )
+            );
+
+        $this->projector->applyEventImportedFromUDB2($event);
+    }
 }

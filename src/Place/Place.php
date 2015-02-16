@@ -8,7 +8,7 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Actor\Actor;
-use src\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 
 class Place extends Actor
 {

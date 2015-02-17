@@ -22,7 +22,7 @@ class DefaultSearchServiceSpec extends ObjectBehavior
 {
     const BASE_URL = 'http://acc.uitid.be/uitid/rest/searchv2';
 
-    function it_is_initializable_with_at_least_a_base_url_and_consumer_credentials(
+    public function it_is_initializable_with_at_least_a_base_url_and_consumer_credentials(
         ConsumerCredentials $consumerCredentials
     ) {
         $this->beConstructedWith(
@@ -34,7 +34,7 @@ class DefaultSearchServiceSpec extends ObjectBehavior
         );
     }
 
-    function it_is_initializable_with_additional_token_credentials(
+    public function it_is_initializable_with_additional_token_credentials(
         ConsumerCredentials $consumerCredentials,
         TokenCredentials $tokenCredentials
     ) {
@@ -48,7 +48,7 @@ class DefaultSearchServiceSpec extends ObjectBehavior
         );
     }
 
-    function it_searches_with_an_array_of_arbitrary_solr_parameters(
+    public function it_searches_with_an_array_of_arbitrary_solr_parameters(
         ConsumerCredentials $consumerCredentials,
         TokenCredentials $tokenCredentials,
         HttpClientFactory $clientFactory,
@@ -91,7 +91,7 @@ class DefaultSearchServiceSpec extends ObjectBehavior
         );
     }
 
-    function it_returns_the_raw_search_response(
+    public function it_returns_the_raw_search_response(
         ConsumerCredentials $consumerCredentials,
         TokenCredentials $tokenCredentials,
         HttpClientFactory $clientFactory,

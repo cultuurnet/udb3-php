@@ -6,13 +6,14 @@
 namespace CultuurNet\UDB3\Iri;
 
 /**
- * IRI generator implementation that delegates the actual task to a PHP
- * callable/closure.
+ * A IRI generator that delegates its duties to a PHP callable.
+ *
+ * @link http://php.net/manual/en/language.types.callable.php
  */
 class CallableIriGenerator implements IriGeneratorInterface
 {
     /**
-     * @var Callable
+     * @var callable
      */
     protected $callback;
 
@@ -20,7 +21,8 @@ class CallableIriGenerator implements IriGeneratorInterface
      * Constructs a new CallableIriGenerator.
      *
      * @param callable $callback
-     *   The callback to delegate the generation of IRIs to.
+     *   The callback to delegate the generation of IRIs to. The callable needs
+     *   to take one string argument, the item to generate the IRI for.
      */
     public function __construct(callable $callback)
     {

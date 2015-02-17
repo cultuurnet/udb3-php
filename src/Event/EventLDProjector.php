@@ -266,9 +266,9 @@ class EventLDProjector extends Projector
             if ($price->getTitle()) {
                 $bookingInfo['name'] = $price->getTitle();
             }
-            if ($price->getValue() !== NULL) {
-              $bookingInfo['currency'] = 'EUR';
-              $bookingInfo['price'] = floatval($price->getValue());
+            if ($price->getValue() !== null) {
+                $bookingInfo['currency'] = 'EUR';
+                $bookingInfo['price'] = floatval($price->getValue());
             }
             $eventLd->bookingInfo[] = $bookingInfo;
         }

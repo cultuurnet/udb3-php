@@ -211,7 +211,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_does_not_add_an_empty_keywords_property()
+    public function it_does_not_add_an_empty_keywords_property()
     {
         $event = $this->eventImportedFromUDB2(
             'event_without_keywords.cdbxml.xml'
@@ -236,7 +236,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_does_not_add_an_empty_image_property()
+    public function it_does_not_add_an_empty_image_property()
     {
         $event = $this->eventImportedFromUDB2('event_without_image.cdbxml.xml');
 
@@ -282,7 +282,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_adds_a_bookingInfo_property_when_cdbxml_has_pricevalue()
+    public function it_adds_a_bookingInfo_property_when_cdbxml_has_pricevalue()
     {
         $event = $this->eventImportedFromUDB2(
             'event_with_price_value.cdbxml.xml'
@@ -315,7 +315,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_adds_the_pricedescription_from_cdbxml_to_bookingInfo()
+    public function it_adds_the_pricedescription_from_cdbxml_to_bookingInfo()
     {
         $event = $this->eventImportedFromUDB2(
             'event_with_price_value_and_description.cdbxml.xml'
@@ -349,7 +349,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_does_not_add_a_missing_price_from_cdbxml_to_bookingInfo()
+    public function it_does_not_add_a_missing_price_from_cdbxml_to_bookingInfo()
     {
         $event = $this->eventImportedFromUDB2(
             'event_with_only_price_description.cdbxml.xml'
@@ -381,7 +381,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_does_not_add_booking_info_when_price_is_missing()
+    public function it_does_not_add_booking_info_when_price_is_missing()
     {
         $event = $this->eventImportedFromUDB2(
             'event_without_price.cdbxml.xml'
@@ -406,7 +406,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_does_not_add_typical_age_range_when_age_from_is_missing()
+    public function it_does_not_add_typical_age_range_when_age_from_is_missing()
     {
         $event = $this->eventImportedFromUDB2(
             'event_without_age_from.cdbxml.xml'
@@ -431,7 +431,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_adds_typical_age_range_when_age_from_is_present()
+    public function it_adds_typical_age_range_when_age_from_is_present()
     {
         $event = $this->eventImportedFromUDB2(
             'event_with_age_from.cdbxml.xml'
@@ -456,7 +456,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_adds_a_language_property_when_cdbxml_has_languages()
+    public function it_adds_a_language_property_when_cdbxml_has_languages()
     {
         $event = $this->eventImportedFromUDB2(
             'event_with_languages.cdbxml.xml'
@@ -489,7 +489,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function it_does_not_add_an_empty_language_property()
+    public function it_does_not_add_an_empty_language_property()
     {
         $event = $this->eventImportedFromUDB2(
             'event_without_languages.cdbxml.xml'

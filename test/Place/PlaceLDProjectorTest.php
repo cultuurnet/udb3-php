@@ -24,9 +24,9 @@ class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->projector = new PlaceLDProjector(
-          $this->documentRepository,
-          $this->getMock(IriGeneratorInterface::class),
-          $this->getMock(EventBusInterface::class)
+            $this->documentRepository,
+            $this->getMock(IriGeneratorInterface::class),
+            $this->getMock(EventBusInterface::class)
         );
     }
 
@@ -87,7 +87,7 @@ class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function descriptionSamplesProvider ()
+    public function descriptionSamplesProvider()
     {
         $samples = array(
             ['place_with_short_description.cdbxml.xml', 'Korte beschrijving.'],
@@ -111,10 +111,8 @@ class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('save')
             ->with(
                 $this->callback(
-                    function (JsonDocument $jsonDocument) use ($expectedDescription){
+                    function (JsonDocument $jsonDocument) use ($expectedDescription) {
                         $body = $jsonDocument->getBody();
-
-                        var_dump($body);
 
                         return $body->description === $expectedDescription;
                     }

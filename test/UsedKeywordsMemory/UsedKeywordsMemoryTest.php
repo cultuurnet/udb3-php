@@ -3,7 +3,6 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use CultuurNet\UDB3\Keyword;
 
 class UsedKeywordsMemoryTest extends \PHPUnit_Framework_TestCase
@@ -75,8 +74,7 @@ class UsedKeywordsMemoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_pushes_an_already_used_keyword_to_the_top_of_the_list_when_used_again(
-    )
+    public function it_pushes_an_already_used_keyword_to_the_top_of_the_list_when_used_again()
     {
         $keywords = [
             new Keyword('keyword-1'),
@@ -124,7 +122,8 @@ class UsedKeywordsMemoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_be_serialized_to_a_json_array() {
+    public function it_can_be_serialized_to_a_json_array()
+    {
         $this->memory->keywordUsed(new Keyword('keyword-1'));
         $this->memory->keywordUsed(new Keyword('keyword-2'));
 

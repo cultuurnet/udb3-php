@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 use ValueObjects\String\String;
 
 abstract class TrimmedString extends String
@@ -18,5 +17,4 @@ abstract class TrimmedString extends String
 
         parent::__construct($value);
     }
-
 }

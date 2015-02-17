@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
-
 use Psr\Log\LoggerInterface;
 
 interface EventExportServiceInterface

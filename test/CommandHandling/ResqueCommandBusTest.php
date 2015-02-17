@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\EventDispatcher\EventDispatcherInterface;
 use Broadway\Domain\Metadata;
@@ -50,8 +49,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_passes_its_context_to_the_decorated_context_aware_command_bus(
-    )
+    public function it_passes_its_context_to_the_decorated_context_aware_command_bus()
     {
         $context = new Metadata(
             [
@@ -70,8 +68,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function on_deferred_dispatch_it_dispatches_the_command_to_the_decorated_command_bus(
-    )
+    public function on_deferred_dispatch_it_dispatches_the_command_to_the_decorated_command_bus()
     {
         $command = new \stdClass();
         $command->foo = 'bar';
@@ -86,8 +83,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function after_deferred_dispatch_it_resets_the_context_of_the_decorated_context_aware_command_bus(
-    )
+    public function after_deferred_dispatch_it_resets_the_context_of_the_decorated_context_aware_command_bus()
     {
         $command = new \stdClass();
         $command->target = 'foo';
@@ -117,8 +113,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function after_deferred_dispatch_even_after_exceptions_it_resets_the_context_of_the_decorated_context_aware_command_bus(
-    )
+    public function after_deferred_dispatch_even_after_exceptions_it_resets_the_context_of_the_decorated_context_aware_command_bus()
     {
         $exception = new \Exception(
             'Something went wrong in the decorated command bus'

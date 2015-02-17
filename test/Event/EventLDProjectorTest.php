@@ -3,7 +3,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
@@ -99,8 +98,9 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $eventId = $uuidGenerator->generate();
         $date = new \DateTime('2015-01-26T13:25:21+01:00');
 
-        $eventCreated = new EventCreated($eventId, new Title(
-            'some representative title'),
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Title('some representative title'),
             'LOCATION-ABC-123',
             $date,
             new EventType('0.50.4.0.0', 'concert')

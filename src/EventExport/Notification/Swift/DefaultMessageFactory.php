@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Notification\Swift;
 
-
 use CultuurNet\UDB3\EventExport\EventExportResult;
 use CultuurNet\UDB3\EventExport\Notification\BodyFactoryInterface;
 use CultuurNet\UDB3\EventExport\Notification\SubjectFactoryInterface;
@@ -51,8 +50,7 @@ class DefaultMessageFactory implements MessageFactoryInterface
         SubjectFactoryInterface $subjectFactory,
         $senderAddress,
         $senderName
-    )
-    {
+    ) {
         $this->plainTextBodyFactory = $plainTextBodyFactory;
         $this->htmlBodyFactory = $htmlBodyFactory;
         $this->senderAddress = $senderAddress;

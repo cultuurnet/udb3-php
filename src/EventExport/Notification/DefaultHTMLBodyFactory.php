@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Notification;
 
-
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
 class DefaultHTMLBodyFactory implements BodyFactoryInterface
@@ -16,5 +15,4 @@ class DefaultHTMLBodyFactory implements BodyFactoryInterface
         $url = $eventExportResult->getUrl();
         return  '<a href="' . $url . '">' . $url . '</a>';
     }
-
 }

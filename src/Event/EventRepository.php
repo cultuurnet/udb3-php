@@ -38,9 +38,9 @@ class EventRepository implements RepositoryInterface
      * @param EventStreamDecoratorInterface[] $eventStreamDecorators
      */
     public function __construct(
-      EventStoreInterface $eventStore,
-      EventBusInterface $eventBus,
-      array $eventStreamDecorators = array()
+        EventStoreInterface $eventStore,
+        EventBusInterface $eventBus,
+        array $eventStreamDecorators = array()
     ) {
         $this->eventStore            = $eventStore;
         $this->eventBus              = $eventBus;

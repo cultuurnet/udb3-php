@@ -215,8 +215,8 @@ class EventLDProjector extends Projector
                     'addressCountry' => $address->getCountry(),
                     'addressLocality' => $address->getCity(),
                     'postalCode' => $address->getZip(),
-                    'streetAddress' => $address->getStreet(
-                        ) . ' ' . $address->getHouseNumber(),
+                    'streetAddress' =>
+                        $address->getStreet() . ' ' . $address->getHouseNumber(),
                 );
             }
         }
@@ -327,8 +327,8 @@ class EventLDProjector extends Projector
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
             if ($firstCalendarItem->getStartTime()) {
-                $dateString = $firstCalendarItem->getDate(
-                    ) . 'T' . $firstCalendarItem->getStartTime();
+                $dateString =
+                    $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
             } else {
                 $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
             }
@@ -344,8 +344,8 @@ class EventLDProjector extends Projector
 
             $endDateString = null;
             if ($lastCalendarItem->getEndTime()) {
-                $endDateString = $lastCalendarItem->getDate(
-                    ) . 'T' . $lastCalendarItem->getEndTime();
+                $endDateString =
+                    $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
             } else {
                 if (iterator_count($calendar) > 1) {
                     $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
@@ -367,8 +367,8 @@ class EventLDProjector extends Projector
         $eventLd->calendarType = $calendarType;
 
         $eventLd->sameAs = $this->generateSameAs(
-          $eventImportedFromUDB2->getEventId(),
-          reset($eventLd->name)
+            $eventImportedFromUDB2->getEventId(),
+            reset($eventLd->name)
         );
 
         $ageFrom = $udb2Event->getAgeFrom();
@@ -405,10 +405,11 @@ class EventLDProjector extends Projector
         $this->repository->save($eventLdModel->withBody($eventLd));
     }
 
-    private function generateSameAs($eventId, $name) {
+    private function generateSameAs($eventId, $name)
+    {
         $eventSlug = $this->slugger->slug($name);
         return array(
-          'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
+            'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
         );
     }
 
@@ -421,19 +422,21 @@ class EventLDProjector extends Projector
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->{'@id'} = $this->iriGenerator->iri($eventCreated->getEventId());
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $eventCreated->getEventId()
+        );
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
-            '@type' => 'Place',
-        ) + (array)$this->placeJSONLD($eventCreated->getLocation());
+                '@type' => 'Place',
+            ) + (array)$this->placeJSONLD($eventCreated->getLocation());
 
 
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = $eventCreated->getDate()->format('c');
 
         $jsonLD->sameAs = $this->generateSameAs(
-          $eventCreated->getEventId(),
-          reset($jsonLD->name)
+            $eventCreated->getEventId(),
+            reset($jsonLD->name)
         );
 
         $eventType = $eventCreated->getType();
@@ -447,8 +450,8 @@ class EventLDProjector extends Projector
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
-          DateTime::FORMAT_STRING,
-          $recordedOn
+            DateTime::FORMAT_STRING,
+            $recordedOn
         )->format('c');
 
         $metaData = $domainMessage->getMetadata()->serialize();

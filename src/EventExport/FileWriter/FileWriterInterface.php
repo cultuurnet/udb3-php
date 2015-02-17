@@ -5,8 +5,8 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
-interface FileWriterInterface {
+interface FileWriterInterface
+{
 
     /**
      * @param mixed $event

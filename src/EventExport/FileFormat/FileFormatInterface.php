@@ -5,7 +5,8 @@
 
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
-interface FileFormatInterface {
+interface FileFormatInterface
+{
 
     /**
      * @return

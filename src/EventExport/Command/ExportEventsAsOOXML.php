@@ -8,7 +8,8 @@ namespace CultuurNet\UDB3\EventExport\Command;
 use CultuurNet\UDB3\EventExport\EventExportQuery;
 use ValueObjects\Web\EmailAddress;
 
-class ExportEventsAsOOXML {
+class ExportEventsAsOOXML
+{
 
     /**
      * @var EventExportQuery

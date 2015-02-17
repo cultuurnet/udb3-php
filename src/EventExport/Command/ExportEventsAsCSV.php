@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Command;
 
-
 use CultuurNet\UDB3\EventExport\EventExportQuery;
 use ValueObjects\Web\EmailAddress;
 
@@ -37,9 +36,12 @@ class ExportEventsAsCSV
      * @param string[] $selection
      * @param string[] $include
      */
-    public function __construct(EventExportQuery $query, EmailAddress $address = null,
-      $selection = null, $include = null)
-    {
+    public function __construct(
+        EventExportQuery $query,
+        EmailAddress $address = null,
+        $selection = null,
+        $include = null
+    ) {
         if ($query->isEmpty()) {
             throw new \RuntimeException('Query can not be empty');
         }

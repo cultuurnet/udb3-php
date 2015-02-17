@@ -12,7 +12,8 @@
         <phpcodesniffer
                 standard="phpcs-ruleset.xml"
                 format="full"
-                allowedFileExtensions="php">
+                allowedFileExtensions="php"
+                haltonerror="true">
             <fileset refid="php"/>
         </phpcodesniffer>
     </target>

@@ -22,7 +22,7 @@ use Broadway\Repository\RepositoryInterface;
  * however we had to change it to publish the decorated event stream to the
  * event bus, instead of the non-decorated event stream. See the add() method.
  *
- * @see https://github.com/qandidate-labs/broadway/issues/61
+ * @link https://github.com/qandidate-labs/broadway/issues/61
  */
 class EventRepository implements RepositoryInterface
 {

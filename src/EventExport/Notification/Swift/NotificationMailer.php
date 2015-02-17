@@ -11,7 +11,6 @@ use ValueObjects\Web\EmailAddress;
 
 /**
  * Class NotificationMailer
- * @package CultuurNet\UDB3\EventExport\Notification\Swift
  *
  * Notification mailer implementation that uses Swift Mailer.
  */

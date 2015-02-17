@@ -17,7 +17,6 @@ use Broadway\Repository\RepositoryInterface;
 
 /**
  * Class EventRepository
- * @package CultuurNet\UDB3\Event
  *
  * This class used to extend EventSourcingRepository from the Broadway library,
  * however we had to change it to publish the decorated event stream to the

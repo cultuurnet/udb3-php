@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
@@ -129,7 +128,6 @@ class EventExportService implements EventExportServiceInterface
 
             if ($selection) {
                 foreach ($selection as $eventId) {
-                    
                     $event = $this->eventService->getEvent($eventId);
                     $tmpFile->exportEvent($event);
 
@@ -164,9 +162,10 @@ class EventExportService implements EventExportServiceInterface
 
             $tmpFile->close();
 
-            $finalPath = realpath($this->publicDirectory) . '/' . basename(
-                    $tmpPath
-                ) . '.' . $fileFormat->getFileNameExtension();
+            $finalPath =
+                realpath($this->publicDirectory) .
+                '/' . basename($tmpPath) .
+                '.' . $fileFormat->getFileNameExtension();
 
             $moved = rename($tmpPath, $finalPath);
 
@@ -328,5 +327,4 @@ class EventExportService implements EventExportServiceInterface
             $selection
         );
     }
-
 }

@@ -160,6 +160,4 @@ class DefaultEventEditingService implements EventEditingServiceInterface
 
         return $eventId;
     }
-
-
 }

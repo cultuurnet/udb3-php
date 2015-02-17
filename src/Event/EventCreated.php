@@ -94,14 +94,16 @@ class EventCreated extends EventEvent
     /**
      * @return EventType
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
     /**
      * @param EventType $type
      */
-    private function setType($type) {
+    private function setType($type)
+    {
         $this->type = $type;
     }
 
@@ -116,8 +118,8 @@ class EventCreated extends EventEvent
             'date' => $this->getDate()->format('c'),
             'title' => (string)$this->getTitle(),
             'type' => array(
-              'id' => $this->type->getId(),
-              'label' => $this->type->getLabel()
+                'id' => $this->type->getId(),
+                'label' => $this->type->getLabel()
             )
         );
     }
@@ -133,8 +135,8 @@ class EventCreated extends EventEvent
             $data['location'],
             \DateTime::createFromFormat('c', $data['date']),
             new EventType(
-              $data['type']['id'],
-              $data['type']['label']
+                $data['type']['id'],
+                $data['type']['label']
             )
         );
     }

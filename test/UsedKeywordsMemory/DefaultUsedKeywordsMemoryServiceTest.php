@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UsedKeywordsMemory;
 
-
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Keyword;
@@ -117,4 +116,4 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
             $usedKeywordsMemory
         );
     }
-} 
+}

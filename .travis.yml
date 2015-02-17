@@ -6,6 +6,7 @@ install: composer install
 script:
 - ./vendor/bin/phpunit
 - ./vendor/bin/phpspec run
+- ./vendor/bin/phing test
 notifications:
   email:
     recipients:

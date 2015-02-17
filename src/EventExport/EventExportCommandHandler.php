@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
-
 use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;

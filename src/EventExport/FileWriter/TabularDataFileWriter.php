@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
 class TabularDataFileWriter implements FileWriterInterface
 {
     /**
@@ -25,9 +24,10 @@ class TabularDataFileWriter implements FileWriterInterface
         $this->writeHeader();
     }
 
-    protected function writeHeader() {
+    protected function writeHeader()
+    {
         $columns = array();
-        foreach($this->includedProperties as $property) {
+        foreach ($this->includedProperties as $property) {
             $columns[] = $this->columns()[$property]['name'];
         }
         $this->tabularDataFileWriter->writeRow($columns);
@@ -44,7 +44,7 @@ class TabularDataFileWriter implements FileWriterInterface
         foreach ($this->includedProperties as $property) {
             $column = $this->columns()[$property];
 
-            if(isset($event->{$column['property']}) || isset($event->{'@' . $column['property']})) {
+            if (isset($event->{$column['property']}) || isset($event->{'@' . $column['property']})) {
                 $value = $column['include']($event);
 
                 if ($value) {
@@ -58,14 +58,16 @@ class TabularDataFileWriter implements FileWriterInterface
         $this->tabularDataFileWriter->writeRow($row);
     }
 
-    public function includeProperties($properties) {
+    public function includeProperties($properties)
+    {
         $this->includedProperties = $this->includedOrDefaultProperties($properties);
     }
 
-    protected function includedOrDefaultProperties($include) {
-        $properties = NULL;
+    protected function includedOrDefaultProperties($include)
+    {
+        $properties = null;
 
-        if($include) {
+        if ($include) {
             $properties = $include;
             array_unshift($properties, 'id');
         } else {
@@ -79,7 +81,7 @@ class TabularDataFileWriter implements FileWriterInterface
     {
         $row = array();
 
-        foreach($this->includedProperties as $property) {
+        foreach ($this->includedProperties as $property) {
             $row[$property] = '';
         }
 
@@ -91,7 +93,7 @@ class TabularDataFileWriter implements FileWriterInterface
         return [
             'id' => [ 'name' => 'id', 'include' => function ($event) {
                 $eventUri = $event->{'@id'};
-                $uriParts = explode('/',$eventUri);
+                $uriParts = explode('/', $eventUri);
                 $eventId = array_pop($uriParts);
                 return $eventId;
             }, 'property' => 'id' ],
@@ -143,11 +145,11 @@ class TabularDataFileWriter implements FileWriterInterface
                 return implode(';', $event->language);
             }, 'property' => 'language' ],
             'terms' => [ 'name' => 'thema', 'include' => function ($event) {
-                $theme = NULL;
+                $theme = null;
 
-                if($event->terms) {
-                    foreach($event->terms as $term) {
-                        if($term->domain && $term->label && $term->domain == 'theme') {
+                if ($event->terms) {
+                    foreach ($event->terms as $term) {
+                        if ($term->domain && $term->label && $term->domain == 'theme') {
                             $theme = $term->label;
                         }
                     }
@@ -203,10 +205,10 @@ class TabularDataFileWriter implements FileWriterInterface
                 return $event->image;
             }, 'property' => 'image' ],
             'sameAs' => [ 'name' => 'externe ids', 'include' => function ($event) {
-                if($event->sameAs) {
+                if ($event->sameAs) {
                     $ids = array();
 
-                    foreach($event->sameAs as $externalId) {
+                    foreach ($event->sameAs as $externalId) {
                         $ids[] = $externalId;
                     }
 

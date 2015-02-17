@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
 class JSONLDFileWriter implements FileWriterInterface
 {
     protected $f;
@@ -32,10 +31,8 @@ class JSONLDFileWriter implements FileWriterInterface
             // The address property is nested inside location.
             // The whole location property gets included instead of pulling it
             // out and placing it directly on the object.
-            if (in_array('address', $include) && !in_array(
-                    'location',
-                    $include
-                )
+            if (in_array('address', $include) &&
+                !in_array('location', $include)
             ) {
                 array_push($include, 'location');
             }

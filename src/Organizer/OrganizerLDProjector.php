@@ -35,11 +35,11 @@ class OrganizerLDProjector extends ActorLDProjector
 
         foreach ($details as $languageDetail) {
             // The first language detail found will be used to retrieve
-          // properties from which in UDB3 are not any longer considered
-          // to be language specific.
-          if (!$detail) {
-              $detail = $languageDetail;
-          }
+            // properties from which in UDB3 are not any longer considered
+            // to be language specific.
+            if (!$detail) {
+                $detail = $languageDetail;
+            }
         }
 
         $actorLd->name = $detail->getTitle();
@@ -58,8 +58,9 @@ class OrganizerLDProjector extends ActorLDProjector
                         'addressCountry' => $address->getCountry(),
                         'addressLocality' => $address->getCity(),
                         'postalCode' => $address->getZip(),
-                        'streetAddress' => $address->getStreet(
-                            ) . ' ' . $address->getHouseNumber(),
+                        'streetAddress' =>
+                            $address->getStreet() . ' ' .
+                            $address->getHouseNumber(),
                     );
                 }
             }

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -118,4 +117,4 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with($id)
             ->willThrowException(new EventNotFoundException());
     }
-} 
+}

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Notification;
 
-
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
 class DefaultPlainTextBodyFactory implements BodyFactoryInterface
@@ -16,5 +15,4 @@ class DefaultPlainTextBodyFactory implements BodyFactoryInterface
         // Only put the URL in the mail, for now.
         return $eventExportResult->getUrl();
     }
-
 }

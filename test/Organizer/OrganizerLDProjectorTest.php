@@ -138,8 +138,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers(
-    )
+    public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_phone_numbers.cdbxml.xml');
 

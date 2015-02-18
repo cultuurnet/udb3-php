@@ -64,21 +64,6 @@ class Category implements SerializableInterface
         return $this->domain;
     }
 
-    function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    function setLabel($label)
-    {
-        $this->label = $label;
-    }
-
-    function setDomain($domain)
-    {
-        $this->domain = $domain;
-    }
-
     /**
      * {@inheritdoc}
      */

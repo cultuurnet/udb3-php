@@ -85,36 +85,6 @@ class Location implements SerializableInterface
         return $this->street;
     }
 
-    function setCdbid($cdbid)
-    {
-        $this->cdbid = $cdbid;
-    }
-
-    function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    function setCountry($country)
-    {
-        $this->country = $country;
-    }
-
-    function setLocality($locality)
-    {
-        $this->locality = $locality;
-    }
-
-    function setPostalcode($postalcode)
-    {
-        $this->postalcode = $postalcode;
-    }
-
-    function setStreet($street)
-    {
-        $this->street = $street;
-    }
-
     /**
      * {@inheritdoc}
      */

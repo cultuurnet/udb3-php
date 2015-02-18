@@ -31,9 +31,15 @@ class Timestamp
     public function __construct($date, $timestart, $timeend)
     {
 
-        $this->setDate($date);
-        $this->setTimestart($timestart);
-        $this->setTimeend($timeend);
+        CalendarUtility::validateDate($date);
+        $this->date = $date;
+
+        CalendarUtility::validateTime($timestart);
+        $this->timestart = $timestart;
+
+        CalendarUtility::validateTime($timeend);
+        $this->timeend = $timeend;
+
     }
 
     function getDate()
@@ -49,28 +55,6 @@ class Timestamp
     function getTimeend()
     {
         return $this->timeend;
-    }
-
-    function setDate($date)
-    {
-
-        CalendarBase::validateDate($date);
-
-        $this->date = $date;
-    }
-
-    function setTimestart($timestart)
-    {
-
-        CalendarBase::validateTime($timestart);
-        $this->timestart = $timestart;
-    }
-
-    function setTimeend($timeend)
-    {
-
-        CalendarBase::validateTime($timeend);
-        $this->timeend = $timeend;
     }
 
 }

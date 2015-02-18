@@ -40,15 +40,6 @@ class Timestamps implements CalendarInterface
     }
 
     /**
-     * Add a timestamp to the calendar.
-     * @param \CultuurNet\UDB3\Timestamp $timestamp
-     */
-    public function addTimestamp(Timestamp $timestamp)
-    {
-        $this->timestamps[] = $timestamp;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function serialize()

@@ -8,9 +8,9 @@
 namespace CultuurNet\UDB3;
 
 /**
- * Base class for calendars.
+ * Utility class for calendars.
  */
-abstract class CalendarBase
+class CalendarUtility
 {
 
     /**

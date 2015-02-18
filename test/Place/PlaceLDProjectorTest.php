@@ -92,7 +92,7 @@ class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
         $samples = array(
             ['place_with_short_description.cdbxml.xml', 'Korte beschrijving.'],
             ['place_with_long_description.cdbxml.xml', 'Lange beschrijving.'],
-            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.<br/>Lange beschrijving"]
+            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.<br/>Lange beschrijving."]
         );
 
         return $samples;

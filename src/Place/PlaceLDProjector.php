@@ -47,8 +47,16 @@ class PlaceLDProjector extends ActorLDProjector
             }
         }
 
+        $descriptions = [
+            trim($detail->getShortDescription()),
+            trim($detail->getLongDescription())
+        ];
+        $descriptions = array_filter($descriptions);
+        if (count($descriptions) > 0) {
+            $actorLd->description = implode('<br/>', $descriptions);
+        }
+
         $actorLd->name = $detail->getTitle();
-        $actorLd->description = $detail->getLongDescription();
 
         // Address
         $contact_cdb = $udb2Actor->getContactInfo();

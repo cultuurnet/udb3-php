@@ -181,8 +181,11 @@ class CdbXMLImporter
      * @param OrganizerServiceInterface $organizerManager
      * @param \stdClass $jsonLD
      */
-    private function importOrganizer(\CultureFeed_Cdb_Item_Event $event, OrganizerServiceInterface $organizerManager, $jsonLD)
-    {
+    private function importOrganizer(
+        \CultureFeed_Cdb_Item_Event $event,
+        OrganizerServiceInterface $organizerManager,
+        $jsonLD
+    ) {
 // Organizer.
         $organizer_cdb = $event->getOrganiser();
         $contact_info_cdb = $event->getContactInfo();
@@ -196,7 +199,7 @@ class CdbXMLImporter
                 $organizer['name'] = $organizer_cdb->getLabel();
                 
                 $emails_cdb = $contact_info_cdb->getMails();
-                if(count($emails_cdb) > 0) {
+                if (count($emails_cdb) > 0) {
                     $organizer['email'] = array();
                     foreach ($emails_cdb as $email) {
                         $organizer['email'][] = $email->getMailAddress();
@@ -204,7 +207,7 @@ class CdbXMLImporter
                 }
 
                 $phones_cdb = $contact_info_cdb->getPhones();
-                if(count($phones_cdb) > 0) {
+                if (count($phones_cdb) > 0) {
                     $organizer['phone'] = array();
                     foreach ($phones_cdb as $phone) {
                         $organizer['phone'][] = $phone->getNumber();

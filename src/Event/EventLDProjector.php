@@ -432,6 +432,9 @@ class EventLDProjector extends Projector
         if ($eventCreated->getCalendar() == Timestamps::TYPE) {
           $timestamps = $eventCreated->getCalendar()->getTimestamps();
           if (count($timestamps) > 1) {
+            $jsonLD->calendarType = 'multiple';
+          }
+          else {
             $jsonLD->calendarType = 'single';
           }
         }

@@ -12,136 +12,133 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * Instantiates an UDB3 Location.
  */
-class Location implements SerializableInterface {
+class Location implements SerializableInterface
+{
 
-  /**
-   * Cdbid of the connected place.
-   * @var string
-   */
-  protected $cdbid;
+    /**
+     * Cdbid of the connected place.
+     * @var string
+     */
+    protected $cdbid;
 
-  /**
-   * @var string
-   */
-  protected $name;
+    /**
+     * @var string
+     */
+    protected $name;
 
-  /**
-   * @var string
-   */
-  protected $country;
+    /**
+     * @var string
+     */
+    protected $country;
 
-  /**
-   * @var string
-   */
-  protected $locality;
+    /**
+     * @var string
+     */
+    protected $locality;
 
-  /**
-   * @var string
-   */
-  protected $postalcode;
+    /**
+     * @var string
+     */
+    protected $postalcode;
 
-  /**
-   * @var string
-   */
-  protected $street;
+    /**
+     * @var string
+     */
+    protected $street;
 
+    public function __construct($name, $country, $locality, $postalcode, $street)
+    {
+        $this->name = $name;
+        $this->country = $country;
+        $this->locality = $locality;
+        $this->postalcode = $postalcode;
+        $this->street = $street;
+    }
 
-  public function __construct($name, $country, $locality, $postalcode, $street)
-  {
-    $this->name = $name;
-    $this->country = $country;
-    $this->locality = $locality;
-    $this->postalcode = $postalcode;
-    $this->street = $street;
-  }
+    function getCdbid()
+    {
+        return $this->cdbid;
+    }
 
-  function getCdbid()
-  {
-      return $this->cdbid;
-  }
+    function getName()
+    {
+        return $this->name;
+    }
 
-  function getName()
-  {
-      return $this->name;
-  }
+    function getCountry()
+    {
+        return $this->country;
+    }
 
-  function getCountry()
-  {
-      return $this->country;
-  }
+    function getLocality()
+    {
+        return $this->locality;
+    }
 
-  function getLocality()
-  {
-      return $this->locality;
-  }
+    function getPostalcode()
+    {
+        return $this->postalcode;
+    }
 
-  function getPostalcode()
-  {
-      return $this->postalcode;
-  }
+    function getStreet()
+    {
+        return $this->street;
+    }
 
-  function getStreet()
-  {
-      return $this->street;
-  }
+    function setCdbid($cdbid)
+    {
+        $this->cdbid = $cdbid;
+    }
 
-  function setCdbid($cdbid)
-  {
-      $this->cdbid = $cdbid;
-  }
+    function setName($name)
+    {
+        $this->name = $name;
+    }
 
-  function setName($name)
-  {
-      $this->name = $name;
-  }
+    function setCountry($country)
+    {
+        $this->country = $country;
+    }
 
-  function setCountry($country)
-  {
-      $this->country = $country;
-  }
+    function setLocality($locality)
+    {
+        $this->locality = $locality;
+    }
 
-  function setLocality($locality)
-  {
-      $this->locality = $locality;
-  }
+    function setPostalcode($postalcode)
+    {
+        $this->postalcode = $postalcode;
+    }
 
-  function setPostalcode($postalcode)
-  {
-      $this->postalcode = $postalcode;
-  }
+    function setStreet($street)
+    {
+        $this->street = $street;
+    }
 
-  function setStreet($street)
-  {
-      $this->street = $street;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function serialize() {
-      return [
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return [
           'name' => $this->name,
           'address' => [
-              'addressCountry' => $this->country,
-              'addressLocality' => $this->locality,
-              'postalCode' => $this->postalcode,
-              'streetAddress' => $this->street,
+            'addressCountry' => $this->country,
+            'addressLocality' => $this->locality,
+            'postalCode' => $this->postalcode,
+            'streetAddress' => $this->street,
           ]
-      ];
-  }
+        ];
+    }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function deserialize(array $data) {
-      return new static(
-          $data['name'],
-          $data['address']['addressCountry'],
-          $data['address']['addressLocality'],
-          $data['address']['postalCode'],
-          $data['address']['streetAddress']
-      );
-  }
-
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+                $data['name'], $data['address']['addressCountry'], $data['address']['addressLocality'], $data['address']['postalCode'], $data['address']['streetAddress']
+        );
+    }
 
 }

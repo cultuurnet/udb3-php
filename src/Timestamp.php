@@ -10,68 +10,67 @@ namespace CultuurNet\UDB3;
 /**
  * Provices a class for a timestamp.
  */
-class Timestamp {
+class Timestamp
+{
 
-  /**
-   * @var string
-   */
-  protected $date;
+    /**
+     * @var string
+     */
+    protected $date;
 
-  /**
-   * @var string
-   */
-  protected $timestart;
+    /**
+     * @var string
+     */
+    protected $timestart;
 
-  /**
-   * @var string
-   */
-  protected $timeend;
+    /**
+     * @var string
+     */
+    protected $timeend;
 
-  public function __construct($date, $timestart, $timeend) {
+    public function __construct($date, $timestart, $timeend)
+    {
 
-      $this->setDate($date);
-      $this->setTimestart($timestart);
-      $this->setTimeend($timeend);
+        $this->setDate($date);
+        $this->setTimestart($timestart);
+        $this->setTimeend($timeend);
+    }
 
-  }
+    function getDate()
+    {
+        return $this->date;
+    }
 
-  function getDate()
-  {
-      return $this->date;
-  }
+    function getTimestart()
+    {
+        return $this->timestart;
+    }
 
-  function getTimestart()
-  {
-      return $this->timestart;
-  }
+    function getTimeend()
+    {
+        return $this->timeend;
+    }
 
-  function getTimeend()
-  {
-      return $this->timeend;
-  }
+    function setDate($date)
+    {
 
-  function setDate($date)
-  {
+        CalendarBase::validateDate($date);
 
-      CalendarBase::validateDate($date);
+        $this->date = $date;
+    }
 
-      $this->date = $date;
-  }
+    function setTimestart($timestart)
+    {
 
-  function setTimestart($timestart)
-  {
+        CalendarBase::validateTime($timestart);
+        $this->timestart = $timestart;
+    }
 
-      CalendarBase::validateTime($timestart);
-      $this->timestart = $timestart;
-  }
+    function setTimeend($timeend)
+    {
 
-  function setTimeend($timeend)
-  {
-
-      CalendarBase::validateTime($timeend);
-      $this->timeend = $timeend;
-  }
-
-
+        CalendarBase::validateTime($timeend);
+        $this->timeend = $timeend;
+    }
 
 }

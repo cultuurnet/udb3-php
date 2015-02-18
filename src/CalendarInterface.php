@@ -12,8 +12,8 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * Abstract base class for calendars.
  */
-interface CalendarInterface extends SerializableInterface {
+interface CalendarInterface extends SerializableInterface
+{
 
-  public function getType();
-
+    public function getType();
 }

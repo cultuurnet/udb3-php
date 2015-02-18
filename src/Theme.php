@@ -13,11 +13,11 @@ namespace CultuurNet\UDB3;
 class Theme extends Category
 {
 
-  const DOMAIN = 'theme';
+    const DOMAIN = 'theme';
 
-  public function __construct($id, $label)
-  {
-    parent::__construct($id, $label, self::DOMAIN);
-  }
+    public function __construct($id, $label)
+    {
+        parent::__construct($id, $label, self::DOMAIN);
+    }
 
 }

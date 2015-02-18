@@ -8,7 +8,7 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use CultuurNet\UDB3\Actor\Actor;
-use CultuurNet\UDB3\Place\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 
 class Organizer extends Actor
 {

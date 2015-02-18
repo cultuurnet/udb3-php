@@ -5,6 +5,10 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Theme;
+use CultuurNet\UDB3\CalendarInterface;
+
 class EventCreated extends EventEvent
 {
     /**
@@ -13,19 +17,24 @@ class EventCreated extends EventEvent
     private $title;
 
     /**
-     * @var string
+     * @var EventType
+     */
+    private $eventType;
+
+    /**
+     * @var Theme
+     */
+    private $theme;
+
+    /**
+     * @var Location
      */
     private $location;
 
     /**
-     * @var \DateTime
+     * @var CalendarBase
      */
-    private $date;
-
-    /**
-     * @var EventType
-     */
-    private $type;
+    private $calendar;
 
     /**
      * @param string $eventId
@@ -33,14 +42,15 @@ class EventCreated extends EventEvent
      * @param string $location
      * @param \DateTime $date
      */
-    public function __construct($eventId, Title $title, $location, \DateTime $date, EventType $type)
+    public function __construct($eventId, Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar)
     {
         parent::__construct($eventId);
 
         $this->setTitle($title);
+        $this->setEventType($eventType);
+        $this->setTheme($theme);
         $this->setLocation($location);
-        $this->setDate($date);
-        $this->setType($type);
+        $this->setCalendar($calendar);
     }
 
     /**
@@ -52,35 +62,34 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @param \DateTime $date
+     * @param EventType $eventType
      */
-    private function setDate(\DateTime $date)
+    private function setEventType(EventType $eventType)
     {
-        $this->date = $date;
+        $this->eventType = $eventType;
     }
 
     /**
-     * @param string $location
+     * @param Theme $theme
      */
-    private function setLocation($location)
+    private function setTheme(Theme $theme) {
+        $this->theme = $theme;
+    }
+
+    /**
+     * @param CalendarBase $calendar
+     */
+    private function setCalendar(CalendarInterface $calendar)
+    {
+        $this->calendar = $calendar;
+    }
+
+    /**
+     * @param Location $location
+     */
+    private function setLocation(Location $location)
     {
         $this->location = $location;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocation()
-    {
-        return $this->location;
     }
 
     /**
@@ -94,15 +103,33 @@ class EventCreated extends EventEvent
     /**
      * @return EventType
      */
-    public function getType() {
-        return $this->type;
+    public function getEventType()
+    {
+        return $this->eventType;
     }
 
     /**
-     * @param EventType $type
+     * @return Theme
      */
-    private function setType($type) {
-        $this->type = $type;
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
+    /**
+     * @return CalendarBase
+     */
+    public function getCalendar()
+    {
+        return $this->calendar;
+    }
+
+    /**
+     * @return Location
+     */
+    public function getLocation()
+    {
+        return $this->location;
     }
 
 
@@ -112,13 +139,11 @@ class EventCreated extends EventEvent
     public function serialize()
     {
         return parent::serialize() + array(
-            'location' => $this->getLocation(),
-            'date' => $this->getDate()->format('c'),
             'title' => (string)$this->getTitle(),
-            'type' => array(
-              'id' => $this->type->getId(),
-              'label' => $this->type->getLabel()
-            )
+            'event_type' => $this->getEventType()->serialize(),
+            'theme' => $this->getTheme()->serialize(),
+            'location' => $this->getLocation()->serialize(),
+            'calendar' => $this->getCalendar()->serialize()
         );
     }
 
@@ -130,12 +155,10 @@ class EventCreated extends EventEvent
         return new static(
             $data['event_id'],
             new Title($data['title']),
-            $data['location'],
-            \DateTime::createFromFormat('c', $data['date']),
-            new EventType(
-              $data['type']['id'],
-              $data['type']['label']
-            )
+            EventType::deserialize($data['event_type']),
+            Theme::deserialize($data['theme']),
+            Location::deserialize($data['location']),
+            TimeStamps::deserialize($data['calendar'])
         );
     }
 }

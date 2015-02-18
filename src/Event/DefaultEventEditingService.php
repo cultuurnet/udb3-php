@@ -7,15 +7,17 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\EntityNotFoundException;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\Theme;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
 {
@@ -137,24 +139,17 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
-     * @param Title $title
-     * @param string $location
-     * @param mixed $date
-     *
-     * @return string $eventId
-     *
-     * @throws EntityNotFoundException If the location can not be found.
+     * {@inheritdoc}
      */
-    public function createEvent(Title $title, $location, $date)
+    public function createEvent(Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar)
     {
         $eventId = $this->uuidGenerator->generate();
 
         // This will throw an EntityNotFoundException if the place does
         // not exist.
-        $this->places->getEntity($location);
+        //$this->places->getEntity($location);
 
-        $type = new EventType('0.50.4.0.0', 'concert');
-        $event = Event::create($eventId, $title, $location, $date, $type);
+        $event = Event::create($eventId, $title, $eventType, $theme, $location, $calendar);
 
         $this->eventRepository->add($event);
 

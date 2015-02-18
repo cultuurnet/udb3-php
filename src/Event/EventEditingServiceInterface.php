@@ -5,9 +5,12 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Theme;
 
 interface EventEditingServiceInterface
 {
@@ -47,10 +50,12 @@ interface EventEditingServiceInterface
 
     /**
      * @param Title $title
-     * @param string $location
-     * @param mixed $date
+     * @param EventType $eventType
+     * @param Theme $theme
+     * @param Location $location
+     * @param CalendarBase $calendar
      *
      * @return string $eventId
      */
-    public function createEvent(Title $title, $location, $date);
+    public function createEvent(Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar);
 }

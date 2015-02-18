@@ -5,39 +5,16 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Category;
 
-class EventType
+
+class EventType extends Category
 {
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $label;
+    const DOMAIN = 'eventtype';
 
     public function __construct($id, $label)
     {
-        $this->id = $id;
-        $this->label = $label;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLabel()
-    {
-        return $this->label;
+        parent::__construct($id, $label, self::DOMAIN);
     }
 
 }

@@ -24,6 +24,8 @@ use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
+use CultuurNet\UDB3\Timestamps;
+use RuntimeException;
 
 /**
  * Repository decorator that first updates UDB2.
@@ -217,7 +219,7 @@ class EventRepository implements RepositoryInterface
     {
         $metadata = $metadata->serialize();
         if (!isset($metadata['uitid_token_credentials'])) {
-            throw new \RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
+            throw new RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
         }
         $tokenCredentials = $metadata['uitid_token_credentials'];
         $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
@@ -323,6 +325,10 @@ class EventRepository implements RepositoryInterface
 
     public function applyEventCreated(EventCreated $eventCreated, Metadata $metadata)
     {
+
+        // Don't send to UDB2 for now.
+        return $eventCreated->getEventId();
+
         $event = new \CultureFeed_Cdb_Item_Event();
 
         // This currently does not work when POSTed to the entry API
@@ -337,40 +343,51 @@ class EventRepository implements RepositoryInterface
 
         // We need to retrieve the real place in order to
         // pass on its address to UDB2.
-        $place = $this->placeService->getEntity($eventCreated->getLocation());
-        $place = json_decode($place);
+        //$place = $this->placeService->getEntity($eventCreated->getLocation());
+        //$place = json_decode($place);
+
+        $eventLocation = $eventCreated->getLocation();
 
         $physicalAddress = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
-        $physicalAddress->setCountry($place->address->addressCountry);
-        $physicalAddress->setCity($place->address->addressLocality);
-        $physicalAddress->setZip($place->address->postalCode);
+        $physicalAddress->setCountry($eventLocation->getCountry());
+        $physicalAddress->setCity($eventLocation->getLocality());
+        $physicalAddress->setZip($eventLocation->getPostalcode());
         // @todo This is not an exact mapping, because we do not have a separate
         // house number in JSONLD, this should be fixed somehow. Probably it's
         // better to use another read model than JSON-LD for this purpose.
-        $physicalAddress->setStreet($place->address->streetAddress);
+        $physicalAddress->setStreet($eventLocation->getStreet());
         $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
 
         $location = new \CultureFeed_Cdb_Data_Location($address);
-        $location->setLabel($place->name);
-        $location->setCdbid($eventCreated->getLocation());
+        $location->setLabel($eventLocation->getName());
+//        $location->setCdbid($eventCreated->getLocation());
 
         $event->setLocation($location);
 
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
-        $concertCategory = new \CultureFeed_Cdb_Data_Category(
+        $eventType = new \CultureFeed_Cdb_Data_Category(
           'eventtype',
-          $eventCreated->getType()->getId(),
-          $eventCreated->getType()->getLabel()
+          $eventCreated->getEventType()->getId(),
+          $eventCreated->getEventType()->getLabel()
         );
-        $event->getCategories()->add($concertCategory);
+        $event->getCategories()->add($eventType);
 
         $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
-        $calendar->add(
-            new \CultureFeed_Cdb_Data_Calendar_Timestamp(
-                $eventCreated->getDate()->format('Y-m-d'),
-                $eventCreated->getDate()->format('H:i:s.u')
-            )
-        );
+        $eventCalendar = $eventCreated->getCalendar();
+        if ($eventCalendar->getType() == Timestamps::TYPE) {
+
+          foreach ($eventCalendar->getTimestamps() as $timestamp) {
+            $calendar->add(
+                new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+                    $timestamp->getDate(),
+                    $timestamp->getTimestart(),
+                    $timestamp->getTimeend()
+                )
+            );
+          }
+
+        }
+
         $event->setCalendar($calendar);
 
         $event->setDetails($details);

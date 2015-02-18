@@ -19,6 +19,7 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\Timestamps;
 
 class EventLDProjector extends Projector
 {
@@ -424,26 +425,38 @@ class EventLDProjector extends Projector
         $jsonLD->{'@id'} = $this->iriGenerator->iri($eventCreated->getEventId());
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
-            '@type' => 'Place',
-        ) + (array)$this->placeJSONLD($eventCreated->getLocation());
+            //'@type' => 'Place',
+        ) + $eventCreated->getLocation()->serialize();
 
 
-        $jsonLD->calendarType = 'single';
-        $jsonLD->startDate = $eventCreated->getDate()->format('c');
+        if ($eventCreated->getCalendar() == Timestamps::TYPE) {
+          $timestamps = $eventCreated->getCalendar()->getTimestamps();
+          if (count($timestamps) > 1) {
+            $jsonLD->calendarType = 'single';
+          }
+        }
+
 
         $jsonLD->sameAs = $this->generateSameAs(
           $eventCreated->getEventId(),
           reset($jsonLD->name)
         );
 
-        $eventType = $eventCreated->getType();
+        $eventType = $eventCreated->getEventType();
         $jsonLD->terms = array(
             array(
                 'label' => $eventType->getLabel(),
-                'domain' => 'eventtype',
+                'domain' => $eventType->getDomain(),
                 'id' => $eventType->getId()
             )
         );
+
+        $theme = $eventCreated->getTheme();
+        $jsonLD->terms[] = [
+             'label' => $theme->getLabel(),
+             'domain' => $theme->getDomain(),
+             'id' => $theme->getId()
+        ];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(

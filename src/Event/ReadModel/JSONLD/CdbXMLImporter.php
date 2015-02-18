@@ -194,16 +194,21 @@ class CdbXMLImporter
             } else {
                 $organizer = array();
                 $organizer['name'] = $organizer_cdb->getLabel();
-                $organizer['email'] = array();
-                $mails = $contact_info_cdb->getMails();
-                foreach ($mails as $mail) {
-                    $organizer['email'][] = $mail->getMailAddress();
+                
+                $emails_cdb = $contact_info_cdb->getMails();
+                if(count($emails_cdb) > 0) {
+                    $organizer['email'] = array();
+                    foreach ($emails_cdb as $email) {
+                        $organizer['email'][] = $email->getMailAddress();
+                    }
                 }
-                $organizer['phone'] = array();
-                /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
-                $phones = $contact_info_cdb->getPhones();
-                foreach ($phones as $phone) {
-                    $organizer['phone'][] = $phone->getNumber();
+
+                $phones_cdb = $contact_info_cdb->getPhones();
+                if(count($phones_cdb) > 0) {
+                    $organizer['phone'] = array();
+                    foreach ($phones_cdb as $phone) {
+                        $organizer['phone'][] = $phone->getNumber();
+                    }
                 }
             }
             $jsonLD->organizer = $organizer;

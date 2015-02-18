@@ -17,4 +17,8 @@
             <fileset refid="php"/>
         </phpcodesniffer>
     </target>
+
+    <target name="docs">
+        <exec passthru="true" command="apigen generate --source src --destination docs/api --title='UDB3 PHP library'" />
+    </target>
 </project>

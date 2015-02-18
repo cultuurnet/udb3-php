@@ -58,7 +58,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
                 $emails = $body->email;
                 $expectedEmails = [
-                  'info@villanella.be'
+                    'info@villanella.be'
                 ];
 
                 return is_array($emails) &&
@@ -76,12 +76,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $event = $this->organizerImportedFromUDB2('organizer_without_email.cdbxml.xml');
 
         $this->documentRepository->expects($this->once())
-          ->method('save')
-          ->with($this->callback(function (JsonDocument $document) {
-              $body = $document->getBody();
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
 
-              return !property_exists($body, 'email');
-          }));
+                return !property_exists($body, 'email');
+            }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
     }
@@ -94,19 +94,19 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $event = $this->organizerImportedFromUDB2('organizer_with_emails.cdbxml.xml');
 
         $this->documentRepository->expects($this->once())
-          ->method('save')
-          ->with($this->callback(function (JsonDocument $document) {
-              $body = $document->getBody();
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
 
-              $emails = $body->email;
-              $expectedEmails = [
-                'info@villanella.be',
-                'dirk@dirkinc.be'
-              ];
+                $emails = $body->email;
+                $expectedEmails = [
+                    'info@villanella.be',
+                    'dirk@dirkinc.be'
+                ];
 
-              return is_array($emails) &&
-              $emails == $expectedEmails;
-          }));
+                return is_array($emails) &&
+                $emails == $expectedEmails;
+            }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
     }
@@ -119,18 +119,18 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $event = $this->organizerImportedFromUDB2('organizer_with_phone_number.cdbxml.xml');
 
         $this->documentRepository->expects($this->once())
-          ->method('save')
-          ->with($this->callback(function (JsonDocument $document) {
-              $body = $document->getBody();
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
 
-              $phones = $body->phone;
-              $expectedPhones = [
-                '+32 3 260 96 10'
-              ];
+                $phones = $body->phone;
+                $expectedPhones = [
+                    '+32 3 260 96 10'
+                ];
 
-              return is_array($phones) &&
-              $phones == $expectedPhones;
-          }));
+                return is_array($phones) &&
+                $phones == $expectedPhones;
+            }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
     }
@@ -138,24 +138,25 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers()
+    public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers(
+    )
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_phone_numbers.cdbxml.xml');
 
         $this->documentRepository->expects($this->once())
-          ->method('save')
-          ->with($this->callback(function (JsonDocument $document) {
-              $body = $document->getBody();
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
 
-              $phones = $body->phone;
-              $expectedPhones = [
-                '+32 3 260 96 10',
-                '+32 3 062 69 01'
-              ];
+                $phones = $body->phone;
+                $expectedPhones = [
+                    '+32 3 260 96 10',
+                    '+32 3 062 69 01'
+                ];
 
-              return is_array($phones) &&
-              $phones == $expectedPhones;
-          }));
+                return is_array($phones) &&
+                $phones == $expectedPhones;
+            }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
     }
@@ -168,12 +169,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $event = $this->organizerImportedFromUDB2('organizer_without_phone_number.cdbxml.xml');
 
         $this->documentRepository->expects($this->once())
-          ->method('save')
-          ->with($this->callback(function (JsonDocument $document) {
-              $body = $document->getBody();
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
 
-              return !property_exists($body, 'phone');
-          }));
+                return !property_exists($body, 'phone');
+            }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
     }

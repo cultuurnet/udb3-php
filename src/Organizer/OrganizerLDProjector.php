@@ -71,7 +71,7 @@ class OrganizerLDProjector extends ActorLDProjector
             }
 
             $emails_cdb = $contact_cdb->getMails();
-            if(count($emails_cdb) > 0) {
+            if (count($emails_cdb) > 0) {
                 $emails = array();
                 foreach ($emails_cdb as $mail) {
                     $emails[] = $mail->getMailAddress();
@@ -80,7 +80,7 @@ class OrganizerLDProjector extends ActorLDProjector
             }
 
             $phones_cdb = $contact_cdb->getPhones();
-            if(count($phones_cdb) > 0) {
+            if (count($phones_cdb) > 0) {
                 $phones = array();
                 foreach ($phones_cdb as $phone) {
                     $phones[] = $phone->getNumber();
@@ -97,7 +97,7 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->repository->save($actorLdModel->withBody($actorLd));
 
         $this->publishJSONLDUpdated(
-          $actorImportedFromUDB2->getActorId()
+            $actorImportedFromUDB2->getActorId()
         );
     }
 
@@ -105,14 +105,14 @@ class OrganizerLDProjector extends ActorLDProjector
     {
         $generator = new Version4Generator();
         $events[] = DomainMessage::recordNow(
-          $generator->generate(),
-          1,
-          new Metadata(),
-          new OrganizerProjectedToJSONLD($id)
+            $generator->generate(),
+            1,
+            new Metadata(),
+            new OrganizerProjectedToJSONLD($id)
         );
 
         $this->eventBus->publish(
-          new DomainEventStream($events)
+            new DomainEventStream($events)
         );
     }
 

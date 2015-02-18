@@ -26,24 +26,24 @@ class Organizer extends Actor
      *   The actor.
      */
     public static function importFromUDB2(
-      $actorId,
-      $cdbXml,
-      $cdbXmlNamespaceUri
+        $actorId,
+        $cdbXml,
+        $cdbXmlNamespaceUri
     ) {
         $organizer = new static();
         $organizer->apply(
-          new OrganizerImportedFromUDB2(
-            $actorId,
-            $cdbXml,
-            $cdbXmlNamespaceUri
-          )
+            new OrganizerImportedFromUDB2(
+                $actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
         );
 
         return $organizer;
     }
 
     public function applyOrganizerImportedFromUDB2(
-      OrganizerImportedFromUDB2 $organizerImported
+        OrganizerImportedFromUDB2 $organizerImported
     ) {
         $this->applyActorImportedFromUDB2($organizerImported);
     }

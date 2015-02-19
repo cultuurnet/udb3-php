@@ -15,12 +15,12 @@ class CdbXMLImporter
      * Imports a UDB2 organizer actor into a UDB3 JSON-LD document.
      *
      * @param \stdClass $base
-     *   The JSON-LD document to start from.
+     *   The JSON-LD document object to start from.
      * @param \CultureFeed_Cdb_Item_Actor $actor
      *   The actor data from UDB2 to import.
      *
      * @return \stdClass
-     *   The document with the UDB2 actor data merged in.
+     *   A new JSON-LD document object with the UDB2 actor data merged in.
      */
     public function documentWithCdbXML(
         $base,

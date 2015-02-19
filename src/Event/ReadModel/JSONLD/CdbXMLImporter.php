@@ -18,6 +18,10 @@ class CdbXMLImporter
      *   The JSON-LD document to start from.
      * @param \CultureFeed_Cdb_Item_Event $event
      *   The cultural event data from UDB2 to import.
+     * @param PlaceServiceInterface $placeManager
+     *   The manager from which to retrieve the JSON-LD of a place.
+     * @param OrganizerServiceInterface $organizerManager
+     *   The manager from which to retrieve the JSON-LD of an organizer.
      *
      * @return \stdClass
      *   The document with the UDB2 event data merged in.

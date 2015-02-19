@@ -7,17 +7,44 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
+use Broadway\Domain\DomainEventStream;
+use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
+use Broadway\EventHandling\EventBusInterface;
+use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 
 class OrganizerLDProjector extends ActorLDProjector
 {
     /**
+     * @var CdbXMLImporter
+     */
+    private $cdbXMLImporter;
+
+    public function __construct(
+        DocumentRepositoryInterface $repository,
+        IriGeneratorInterface $iriGenerator,
+        EventBusInterface $eventBus
+    ) {
+        parent::__construct(
+            $repository,
+            $iriGenerator,
+            $eventBus
+        );
+
+        $this->cdbXMLImporter = new CdbXMLImporter();
+    }
+
+    /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
-    public function applyActorImportedFromUDB2(
+    public function applyOrganizerImportedFromUDB2(
         ActorImportedFromUDB2 $actorImportedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -28,49 +55,31 @@ class OrganizerLDProjector extends ActorLDProjector
         $document = $this->newDocument($actorImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
 
-        $detail = null;
-
-        /** @var \CultureFeed_Cdb_Data_Detail[] $details */
-        $details = $udb2Actor->getDetails();
-
-        foreach ($details as $languageDetail) {
-            // The first language detail found will be used to retrieve
-            // properties from which in UDB3 are not any longer considered
-            // to be language specific.
-            if (!$detail) {
-                $detail = $languageDetail;
-            }
-        }
-
-        $actorLd->name = $detail->getTitle();
-
-        $actorLd->addresses = array();
-        $contact_cdb = $udb2Actor->getContactInfo();
-        if ($contact_cdb) {
-            /** @var \CultureFeed_Cdb_Data_Address[] $addresses * */
-            $addresses = $contact_cdb->getAddresses();
-
-            foreach ($addresses as $address) {
-                $address = $address->getPhysicalAddress();
-
-                if ($address) {
-                    $actorLd->addresses[] = array(
-                        'addressCountry' => $address->getCountry(),
-                        'addressLocality' => $address->getCity(),
-                        'postalCode' => $address->getZip(),
-                        'streetAddress' =>
-                            $address->getStreet() . ' ' .
-                            $address->getHouseNumber(),
-                    );
-                }
-            }
-        }
-
-        $actorLdModel = new JsonDocument(
-            $actorImportedFromUDB2->getActorId()
+        $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $actorLd,
+            $udb2Actor
         );
 
-        $this->repository->save($actorLdModel->withBody($actorLd));
+        $this->repository->save($document->withBody($actorLd));
+
+        $this->publishJSONLDUpdated(
+            $actorImportedFromUDB2->getActorId()
+        );
+    }
+
+    protected function publishJSONLDUpdated($id)
+    {
+        $generator = new Version4Generator();
+        $events[] = DomainMessage::recordNow(
+            $generator->generate(),
+            1,
+            new Metadata(),
+            new OrganizerProjectedToJSONLD($id)
+        );
+
+        $this->eventBus->publish(
+            new DomainEventStream($events)
+        );
     }
 
     /**
@@ -81,12 +90,12 @@ class OrganizerLDProjector extends ActorLDProjector
     {
         $document = new JsonDocument($id);
 
-        $eventLd = $document->getBody();
-        $eventLd->{'@id'} = $this->iriGenerator->iri($id);
+        $organizerLd = $document->getBody();
+        $organizerLd->{'@id'} = $this->iriGenerator->iri($id);
 
         // @todo provide Event-LD context here relative to the base URI
-        $eventLd->{'@context'} = '/api/1.0/organizer.jsonld';
+        $organizerLd->{'@context'} = '/api/1.0/organizer.jsonld';
 
-        return $document->withBody($eventLd);
+        return $document->withBody($organizerLd);
     }
 }

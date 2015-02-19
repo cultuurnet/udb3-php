@@ -79,6 +79,8 @@ class CdbXMLImporter
 
         $this->importLanguages($event, $jsonLD);
 
+        $this->importExternalId($event, $jsonLD);
+
         return $jsonLD;
     }
 
@@ -201,7 +203,7 @@ class CdbXMLImporter
             } else {
                 $organizer = array();
                 $organizer['name'] = $organizer_cdb->getLabel();
-                
+
                 $emails_cdb = $contact_info_cdb->getMails();
                 if (count($emails_cdb) > 0) {
                     $organizer['email'] = array();
@@ -331,8 +333,7 @@ class CdbXMLImporter
             $firstCalendarItem = $calendar->current();
             if ($firstCalendarItem->getStartTime()) {
                 $dateString =
-                    $firstCalendarItem->getDate(
-                    ) . 'T' . $firstCalendarItem->getStartTime();
+                    $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
             } else {
                 $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
             }
@@ -349,8 +350,7 @@ class CdbXMLImporter
             $endDateString = null;
             if ($lastCalendarItem->getEndTime()) {
                 $endDateString =
-                    $lastCalendarItem->getDate(
-                    ) . 'T' . $lastCalendarItem->getEndTime();
+                    $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
             } else {
                 if (iterator_count($calendar) > 1) {
                     $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
@@ -417,6 +417,26 @@ class CdbXMLImporter
                 $jsonLD->language[] = $udb2Language->getLanguage();
             }
             $jsonLD->language = array_unique($jsonLD->language);
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param $jsonLD
+     */
+    private function importExternalId(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
+    {
+        $externalId = $event->getExternalId();
+        $externalIdIsCDB = (strpos($externalId, 'CDB:') === 0);
+
+        if (!$externalIdIsCDB) {
+            if (!property_exists($jsonLD, 'sameAs')) {
+                $jsonLD->sameAs = [];
+            }
+
+            if (!in_array($externalId, $jsonLD->sameAs)) {
+                array_push($jsonLD->sameAs, $externalId);
+            }
         }
     }
 }

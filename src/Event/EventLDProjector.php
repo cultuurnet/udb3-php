@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
-    use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 
 class EventLDProjector extends Projector implements PlaceServiceInterface, OrganizerServiceInterface

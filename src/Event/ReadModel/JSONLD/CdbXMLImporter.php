@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\SluggerInterface;
+
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
  * into a UDB3 JSON-LD document.
@@ -22,6 +24,8 @@ class CdbXMLImporter
      *   The manager from which to retrieve the JSON-LD of a place.
      * @param OrganizerServiceInterface $organizerManager
      *   The manager from which to retrieve the JSON-LD of an organizer.
+     * @param SluggerInterface $slugger
+     *   The slugger that's used to generate a sameAs reference.
      *
      * @return \stdClass
      *   The document with the UDB2 event data merged in.
@@ -30,7 +34,8 @@ class CdbXMLImporter
         $base,
         \CultureFeed_Cdb_Item_Event $event,
         PlaceServiceInterface $placeManager,
-        OrganizerServiceInterface $organizerManager
+        OrganizerServiceInterface $organizerManager,
+        SluggerInterface $slugger
     ) {
         $jsonLD = clone $base;
 
@@ -78,6 +83,8 @@ class CdbXMLImporter
         $this->importPerformers($detail, $jsonLD);
 
         $this->importLanguages($event, $jsonLD);
+
+        $this->importUitInVlaanderenReference($event, $slugger, $jsonLD);
 
         $this->importExternalId($event, $jsonLD);
 
@@ -429,14 +436,36 @@ class CdbXMLImporter
         $externalId = $event->getExternalId();
         $externalIdIsCDB = (strpos($externalId, 'CDB:') === 0);
 
-        if (!$externalIdIsCDB) {
-            if (!property_exists($jsonLD, 'sameAs')) {
-                $jsonLD->sameAs = [];
-            }
+        if (!property_exists($jsonLD, 'sameAs')) {
+            $jsonLD->sameAs = [];
+        }
 
+        if (!$externalIdIsCDB) {
             if (!in_array($externalId, $jsonLD->sameAs)) {
                 array_push($jsonLD->sameAs, $externalId);
             }
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param $jsonLD
+     * @param SluggerInterface $slugger
+     */
+    private function importUitInVlaanderenReference(\CultureFeed_Cdb_Item_Event $event, $slugger, $jsonLD)
+    {
+
+        $name = $jsonLD->name['nl'];
+        $slug = $slugger->slug($name);
+        $reference = 'http://www.uitinvlaanderen.be/agenda/e/' . $slug . '/' . $event->getCdbId();
+
+
+        if (!property_exists($jsonLD, 'sameAs')) {
+            $jsonLD->sameAs = [];
+        }
+
+        if (!in_array($reference, $jsonLD->sameAs)) {
+            array_push($jsonLD->sameAs, $reference);
         }
     }
 }

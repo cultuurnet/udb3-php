@@ -22,6 +22,9 @@ use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\StripSourceDescriptionFilter;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\TidyDescriptionFilter;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\SillyDescriptionFilter;
 
 class EventLDProjector extends Projector implements PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -82,6 +85,8 @@ class EventLDProjector extends Projector implements PlaceServiceInterface, Organ
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter();
+        $this->cdbXMLImporter->addDescriptionFilter(new StripSourceDescriptionFilter());
+        $this->cdbXMLImporter->addDescriptionFilter(new TidyDescriptionFilter());
     }
 
     protected function applyOrganizerProjectedToJSONLD()

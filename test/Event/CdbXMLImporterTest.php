@@ -94,4 +94,25 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(array_key_exists('phone', $jsonEvent->organizer));
     }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_cdbxml_externalid_attribute_to_the_same_as_property_when_not_CDB()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_non_cdb_externalid.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('sameAs', $jsonEvent);
+        $this->assertContains('CC_De_Grote_Post:degrotepost_Evenement_453', $jsonEvent->sameAs);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_the_cdbxml_externalid_attribute_to_the_same_as_property_when_CDB()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_cdb_externalid.cdbxml.xml');
+
+        $this->assertObjectNotHasAttribute('sameAs', $jsonEvent);
+    }
 }

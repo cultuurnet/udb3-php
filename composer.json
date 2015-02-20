@@ -24,7 +24,7 @@
     "cultuurnet/culturefeed-php": "~1.0",
     "nicolopignatelli/valueobjects": "~2.0",
     "phpoffice/phpexcel": "~1.8",
-    "ext-tidy": "*",
+    "ext-tidy": "*"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

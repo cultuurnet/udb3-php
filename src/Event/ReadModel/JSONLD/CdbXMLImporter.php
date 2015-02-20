@@ -227,6 +227,7 @@ class CdbXMLImporter
                     }
                 }
             }
+            $organizer['@type'] = 'Organizer';
             $jsonLD->organizer = $organizer;
         }
     }
@@ -429,7 +430,7 @@ class CdbXMLImporter
 
     /**
      * @param \CultureFeed_Cdb_Item_Event $event
-     * @param $jsonLD
+     * @param \stdClass $jsonLD
      */
     private function importExternalId(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
@@ -449,11 +450,14 @@ class CdbXMLImporter
 
     /**
      * @param \CultureFeed_Cdb_Item_Event $event
-     * @param $jsonLD
      * @param SluggerInterface $slugger
+     * @param \stdClass $jsonLD
      */
-    private function importUitInVlaanderenReference(\CultureFeed_Cdb_Item_Event $event, $slugger, $jsonLD)
-    {
+    private function importUitInVlaanderenReference(
+        \CultureFeed_Cdb_Item_Event $event,
+        SluggerInterface $slugger,
+        $jsonLD
+    ) {
 
         $name = $jsonLD->name['nl'];
         $slug = $slugger->slug($name);

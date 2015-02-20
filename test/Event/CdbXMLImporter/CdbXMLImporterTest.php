@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 use CultuurNet\UDB3\SluggerInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase

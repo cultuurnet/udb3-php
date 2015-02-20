@@ -13,6 +13,7 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\DescriptionFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
@@ -22,9 +23,6 @@ use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\StripSourceDescriptionFilter;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\TidyDescriptionFilter;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\SillyDescriptionFilter;
 
 class EventLDProjector extends Projector implements PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -85,8 +83,6 @@ class EventLDProjector extends Projector implements PlaceServiceInterface, Organ
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter();
-        $this->cdbXMLImporter->addDescriptionFilter(new StripSourceDescriptionFilter());
-        $this->cdbXMLImporter->addDescriptionFilter(new TidyDescriptionFilter());
     }
 
     protected function applyOrganizerProjectedToJSONLD()
@@ -350,5 +346,10 @@ class EventLDProjector extends Projector implements PlaceServiceInterface, Organ
         return array(
             'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
         );
+    }
+
+    public function addDescriptionFilter(DescriptionFilterInterface $filter)
+    {
+        $this->cdbXMLImporter->addDescriptionFilter($filter);
     }
 }

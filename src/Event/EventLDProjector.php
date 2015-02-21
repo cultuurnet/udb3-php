@@ -151,12 +151,8 @@ class EventLDProjector extends Projector implements PlaceServiceInterface, Organ
             $eventLd,
             $udb2Event,
             $this,
-            $this
-        );
-
-        $eventLd->sameAs = $this->generateSameAs(
-            $eventImportedFromUDB2->getEventId(),
-            reset($eventLd->name)
+            $this,
+            $this->slugger
         );
 
         $this->repository->save($document->withBody($eventLd));

@@ -124,10 +124,6 @@ class TabularDataFileWriter implements FileWriterInterface
             }, 'property' => 'calendarSummary' ],
             'keywords' => [ 'name' => 'labels', 'include' => function ($event) {
                 if (isset($event->keywords)) {
-                    if (!is_array($event->keywords)) {
-                        var_dump($event->{'@id'});
-                        var_dump($event->keywords);
-                    }
                     return implode(';', $event->keywords);
                 }
             }, 'property' => 'keywords' ],

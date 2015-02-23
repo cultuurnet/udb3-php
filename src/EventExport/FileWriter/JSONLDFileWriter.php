@@ -24,7 +24,7 @@ class JSONLDFileWriter implements FileWriterInterface
         }
         fwrite($this->f, '[');
 
-        $this->eventFormatter = new JSONLDEventFormatter($inlcude);
+        $this->eventFormatter = new JSONLDEventFormatter($include);
 
         $this->first = true;
     }

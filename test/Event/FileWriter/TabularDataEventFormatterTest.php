@@ -1,7 +1,7 @@
 <?php
 
 
-namespace test\Event\FileWriter;
+namespace CultuurNet\UDB3\EventExport\FileWriter;
 
 use CultuurNet\UDB3\EventExport\FileWriter\TabularDataEventFormatter;
 use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;

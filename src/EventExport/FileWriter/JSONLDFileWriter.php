@@ -14,6 +14,11 @@ class JSONLDFileWriter implements FileWriterInterface
      */
     protected $includedProperties;
 
+    /**
+     * @var string[]
+     */
+    protected $includedTerms;
+
     public function __construct($filePath, $include = null)
     {
         $this->f = fopen($filePath, 'w');
@@ -36,9 +41,33 @@ class JSONLDFileWriter implements FileWriterInterface
             ) {
                 array_push($include, 'location');
             }
+
+            $terms = $this->filterTermsFromProperties($include);
+            if (count($terms) > 0) {
+                $this->includedTerms = $terms;
+                $include[] = 'terms';
+            }
+
             $this->includedProperties = $include;
         }
 
+    }
+
+    private function filterTermsFromProperties($properties)
+    {
+        $termPrefix = 'terms.';
+
+        $prefixedTerms = array_filter(
+            $properties,
+            function($property) use ($termPrefix) {
+                return strpos($property, $termPrefix) === 0;
+            }
+        );
+        $terms = array_map(function($term) use ($termPrefix){
+            return str_replace($termPrefix, "", $term);
+        }, $prefixedTerms);
+
+        return $terms;
     }
 
     /**
@@ -51,14 +80,35 @@ class JSONLDFileWriter implements FileWriterInterface
         } else {
             fwrite($this->f, ',');
         }
+        
+        $includedProperties = $this->includedProperties;
+        $includedTerms = $this->includedTerms;
 
-        if ($this->includedProperties) {
+        if ($includedProperties) {
             $eventObject = json_decode($event);
+
+            // filter out terms
+            if (property_exists($eventObject, 'terms') && $includedTerms) {
+
+                $filteredTerms = array_filter(
+                    $eventObject->terms,
+                    function ($term) use ($includedTerms) {
+                        return in_array($term->domain, $includedTerms);
+                    }
+                );
+
+                $eventObject->terms = array_values($filteredTerms);
+            }
+            
+            // filter out base propoerties
             foreach ($eventObject as $propertyName => $value) {
-                if (!in_array($propertyName, $this->includedProperties)) {
+                if (!in_array($propertyName, $includedProperties)) {
                     unset($eventObject->{$propertyName});
                 }
             }
+
+            
+
             $event = json_encode($eventObject);
         }
 

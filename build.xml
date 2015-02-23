@@ -6,6 +6,7 @@
     </fileset>
 
     <target name="test">
+        <exec command="composer validate" passthru="true" />
         <phplint>
             <fileset refid="php"/>
         </phplint>

@@ -298,8 +298,6 @@ class EventExportService implements EventExportServiceInterface
         $selection = null,
         $include = null
     ) {
-        var_dump(__METHOD__);
-        var_dump($include);
         return $this->exportEvents(
             new CSVFileFormat($include),
             $query,

@@ -84,7 +84,7 @@ class JSONLDEventFormatter
                 $eventObject->terms = array_values($filteredTerms);
             }
 
-            // filter out base propoerties
+            // filter out base properties
             foreach ($eventObject as $propertyName => $value) {
                 if (!in_array($propertyName, $includedProperties)) {
                     unset($eventObject->{$propertyName});

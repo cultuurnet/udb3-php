@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\Event\EventImportedFromUDB2;
+use CultuurNet\UDB3\SluggerInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,11 +27,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     protected $placeManager;
 
+    /**
+     * @var SluggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $slugger;
+
     public function setUp()
     {
         $this->importer = new CdbXMLImporter();
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
+        $this->slugger = $this->getMock(SluggerInterface::class);
     }
 
     private function createJsonEventFromCdbXml($fileName)
@@ -49,7 +55,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             new \stdClass(),
             $event,
             $this->placeManager,
-            $this->organizerManager
+            $this->organizerManager,
+            $this->slugger
         );
 
         return $jsonEvent;
@@ -93,5 +100,48 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
 
         $this->assertFalse(array_key_exists('phone', $jsonEvent->organizer));
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_cdbxml_externalid_attribute_to_the_same_as_property_when_not_CDB()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_non_cdb_externalid.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('sameAs', $jsonEvent);
+        $this->assertContains('CC_De_Grote_Post:degrotepost_Evenement_453', $jsonEvent->sameAs);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_the_cdbxml_externalid_attribute_to_the_same_as_property_when_CDB()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_cdb_externalid.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('sameAs', $jsonEvent);
+        $this->assertNotContains('CDB:95b30501-6a70-4cb3-a5c9-4a2eb7003214', $jsonEvent->sameAs);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_reference_to_uit_in_vlaanderen_to_the_same_as_property()
+    {
+        $slug = 'i_am_a_slug';
+        $eventId = '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11';
+
+        $this->slugger
+            ->expects($this->once())
+            ->method('slug')
+            ->willReturn($slug);
+
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_cdb_externalid.cdbxml.xml');
+
+        $originalReference = 'http://www.uitinvlaanderen.be/agenda/e/' . $slug . '/' . $eventId;
+
+        $this->assertObjectHasAttribute('sameAs', $jsonEvent);
+        $this->assertContains($originalReference, $jsonEvent->sameAs);
     }
 }

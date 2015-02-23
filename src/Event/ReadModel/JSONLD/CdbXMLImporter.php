@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\SluggerInterface;
+
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
  * into a UDB3 JSON-LD document.
@@ -22,6 +24,8 @@ class CdbXMLImporter
      *   The manager from which to retrieve the JSON-LD of a place.
      * @param OrganizerServiceInterface $organizerManager
      *   The manager from which to retrieve the JSON-LD of an organizer.
+     * @param SluggerInterface $slugger
+     *   The slugger that's used to generate a sameAs reference.
      *
      * @return \stdClass
      *   The document with the UDB2 event data merged in.
@@ -30,7 +34,8 @@ class CdbXMLImporter
         $base,
         \CultureFeed_Cdb_Item_Event $event,
         PlaceServiceInterface $placeManager,
-        OrganizerServiceInterface $organizerManager
+        OrganizerServiceInterface $organizerManager,
+        SluggerInterface $slugger
     ) {
         $jsonLD = clone $base;
 
@@ -78,6 +83,10 @@ class CdbXMLImporter
         $this->importPerformers($detail, $jsonLD);
 
         $this->importLanguages($event, $jsonLD);
+
+        $this->importUitInVlaanderenReference($event, $slugger, $jsonLD);
+
+        $this->importExternalId($event, $jsonLD);
 
         return $jsonLD;
     }
@@ -201,7 +210,7 @@ class CdbXMLImporter
             } else {
                 $organizer = array();
                 $organizer['name'] = $organizer_cdb->getLabel();
-                
+
                 $emails_cdb = $contact_info_cdb->getMails();
                 if (count($emails_cdb) > 0) {
                     $organizer['email'] = array();
@@ -218,6 +227,7 @@ class CdbXMLImporter
                     }
                 }
             }
+            $organizer['@type'] = 'Organizer';
             $jsonLD->organizer = $organizer;
         }
     }
@@ -331,8 +341,7 @@ class CdbXMLImporter
             $firstCalendarItem = $calendar->current();
             if ($firstCalendarItem->getStartTime()) {
                 $dateString =
-                    $firstCalendarItem->getDate(
-                    ) . 'T' . $firstCalendarItem->getStartTime();
+                    $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
             } else {
                 $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
             }
@@ -349,8 +358,7 @@ class CdbXMLImporter
             $endDateString = null;
             if ($lastCalendarItem->getEndTime()) {
                 $endDateString =
-                    $lastCalendarItem->getDate(
-                    ) . 'T' . $lastCalendarItem->getEndTime();
+                    $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
             } else {
                 if (iterator_count($calendar) > 1) {
                     $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
@@ -417,6 +425,51 @@ class CdbXMLImporter
                 $jsonLD->language[] = $udb2Language->getLanguage();
             }
             $jsonLD->language = array_unique($jsonLD->language);
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importExternalId(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
+    {
+        $externalId = $event->getExternalId();
+        $externalIdIsCDB = (strpos($externalId, 'CDB:') === 0);
+
+        if (!property_exists($jsonLD, 'sameAs')) {
+            $jsonLD->sameAs = [];
+        }
+
+        if (!$externalIdIsCDB) {
+            if (!in_array($externalId, $jsonLD->sameAs)) {
+                array_push($jsonLD->sameAs, $externalId);
+            }
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param SluggerInterface $slugger
+     * @param \stdClass $jsonLD
+     */
+    private function importUitInVlaanderenReference(
+        \CultureFeed_Cdb_Item_Event $event,
+        SluggerInterface $slugger,
+        $jsonLD
+    ) {
+
+        $name = $jsonLD->name['nl'];
+        $slug = $slugger->slug($name);
+        $reference = 'http://www.uitinvlaanderen.be/agenda/e/' . $slug . '/' . $event->getCdbId();
+
+
+        if (!property_exists($jsonLD, 'sameAs')) {
+            $jsonLD->sameAs = [];
+        }
+
+        if (!in_array($reference, $jsonLD->sameAs)) {
+            array_push($jsonLD->sameAs, $reference);
         }
     }
 }

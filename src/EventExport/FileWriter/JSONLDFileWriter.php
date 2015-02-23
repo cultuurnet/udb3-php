@@ -63,7 +63,7 @@ class JSONLDFileWriter implements FileWriterInterface
                 return strpos($property, $termPrefix) === 0;
             }
         );
-        $terms = array_map(function($term) use ($termPrefix){
+        $terms = array_map(function($term) use ($termPrefix) {
             return str_replace($termPrefix, "", $term);
         }, $prefixedTerms);
 
@@ -89,7 +89,6 @@ class JSONLDFileWriter implements FileWriterInterface
 
             // filter out terms
             if (property_exists($eventObject, 'terms') && $includedTerms) {
-
                 $filteredTerms = array_filter(
                     $eventObject->terms,
                     function ($term) use ($includedTerms) {

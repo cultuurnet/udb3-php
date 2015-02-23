@@ -17,9 +17,10 @@ class TabularDataFileWriter implements FileWriterInterface
      */
     protected $tabularDataFileWriter;
 
-    public function __construct(TabularDataFileWriterInterface $tabularDataFileWriter,
-        $include)
-    {
+    public function __construct(
+        TabularDataFileWriterInterface $tabularDataFileWriter,
+        $include
+    ) {
         $this->tabularDataFileWriter = $tabularDataFileWriter;
         $this->includeProperties($include);
         $this->writeHeader();

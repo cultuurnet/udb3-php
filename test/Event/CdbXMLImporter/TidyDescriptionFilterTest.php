@@ -25,8 +25,6 @@ class TidyDescriptionFilterTest extends \PHPUnit_Framework_TestCase
 
         $filteredDescription = $descriptionFilter->filter($description);
 
-        var_dump($filteredDescription);
-
         $expectedDescription = $element_with_valid_tag . PHP_EOL .
             "&lt;/..." . PHP_EOL .
             $element_with_valid_tag . PHP_EOL;

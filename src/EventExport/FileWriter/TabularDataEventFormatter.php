@@ -17,7 +17,7 @@ class TabularDataEventFormatter
     protected $columns;
 
     /**
-     * @param $columns A list of all columns with a callback to format them
+     * @param array $columns A list of all columns with a callback to format them
      * @param string[] $include A list of properties to include
      */
     public function __construct($columns, $include)

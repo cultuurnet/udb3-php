@@ -62,6 +62,16 @@ class TabularDataFileWriter implements FileWriterInterface
 
         if ($include) {
             $properties = $include;
+
+            // include the address as separate properties
+            if (($key = array_search("address", $properties)) !== false) {
+                unset($properties[$key]);
+                $properties[] = "address.streetAddress";
+                $properties[] = "address.postalCode";
+                $properties[] = "address.addressLocality";
+                $properties[] = "address.addressCountry";
+            }
+
             array_unshift($properties, 'id');
         } else {
             $properties = array_keys($this->columns());
@@ -273,6 +283,42 @@ class TabularDataFileWriter implements FileWriterInterface
                     }
                 },
                 'property' => 'location'
+            ],
+            'address.streetAddress' => [
+                'name' => 'straat',
+                'include' => function ($event) {
+                    if (isset($event->location->address->streetAddress)) {
+                        return $event->location->address->streetAddress;
+                    }
+                },
+                'property' => 'address.streetAddress'
+            ],
+            'address.postalCode' => [
+                'name' => 'postcode',
+                'include' => function ($event) {
+                    if (isset($event->location->address->postalCode)) {
+                        return $event->location->address->postalCode;
+                    }
+                },
+                'property' => 'address.postalCode'
+            ],
+            'address.addressLocality' => [
+                'name' => 'regio',
+                'include' => function ($event) {
+                    if (isset($event->location->address->addressLocality)) {
+                        return $event->location->address->addressLocality;
+                    }
+                },
+                'property' => 'address.addressLocality'
+            ],
+            'address.addressCountry' => [
+                'name' => 'land',
+                'include' => function ($event) {
+                    if (isset($event->location->address->addressCountry)) {
+                        return $event->location->address->addressCountry;
+                    }
+                },
+                'property' => 'address.addressCountry'
             ],
             'image' => [
                 'name' => 'afbeelding',

@@ -27,10 +27,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
             'id',
         ];
         $eventWithTerms = $this->getJSONEventFromFile('event_with_terms.json');
-        $formatter = new TabularDataEventFormatter(
-            TabularDataFileWriter::columns(),
-            $includedProperties
-        );
+        $formatter = new TabularDataEventFormatter($includedProperties);
 
         $formattedEvent = $formatter->formatEvent($eventWithTerms);
         $formattedProperties = array_keys($formattedEvent);
@@ -48,10 +45,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
             'terms.eventtype'
         ];
         $eventWithTerms = $this->getJSONEventFromFile('event_with_terms.json');
-        $formatter = new TabularDataEventFormatter(
-            TabularDataFileWriter::columns(),
-            $includedProperties
-        );
+        $formatter = new TabularDataEventFormatter($includedProperties);
 
         $formattedEvent = $formatter->formatEvent($eventWithTerms);
         $formattedProperties = array_keys($formattedEvent);
@@ -70,10 +64,8 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
             'terms.theme'
         ];
         $eventWithTerms = $this->getJSONEventFromFile('event_with_terms.json');
-        $formatter = new TabularDataEventFormatter(
-            TabularDataFileWriter::columns(),
-            $includedProperties
-        );
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
         $formattedEvent = $formatter->formatEvent($eventWithTerms);
         $expectedFormatting = array(
             "id" =>"d1f0e71d-a9a8-4069-81fb-530134502c58",
@@ -94,10 +86,8 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
             'address'
         ];
         $eventWithTerms = $this->getJSONEventFromFile('event_with_terms.json');
-        $formatter = new TabularDataEventFormatter(
-            TabularDataFileWriter::columns(),
-            $includedProperties
-        );
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
         $formattedEvent = $formatter->formatEvent($eventWithTerms);
         $expectedFormatting = array(
             "id" =>"d1f0e71d-a9a8-4069-81fb-530134502c58",

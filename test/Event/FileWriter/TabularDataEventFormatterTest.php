@@ -83,4 +83,30 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
     }
+
+    /**
+     * @test
+     */
+    public function it_formats_address_as_separate_columns()
+    {
+        $includedProperties = [
+            'id',
+            'address'
+        ];
+        $eventWithTerms = $this->getJSONEventFromFile('event_with_terms.json');
+        $formatter = new TabularDataEventFormatter(
+            TabularDataFileWriter::columns(),
+            $includedProperties
+        );
+        $formattedEvent = $formatter->formatEvent($eventWithTerms);
+        $expectedFormatting = array(
+            "id" =>"d1f0e71d-a9a8-4069-81fb-530134502c58",
+            "address.streetAddress" => "Sint-Jorisplein 20 ",
+            "address.postalCode" => "3300",
+            "address.addressLocality" => "Tienen",
+            "address.addressCountry" => "BE"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
 }

@@ -184,7 +184,7 @@ class TabularDataFileWriter implements FileWriterInterface
                     if (property_exists($event, 'terms')) {
                         foreach ($event->terms as $term) {
                             if ($term->domain && $term->label && $term->domain == 'theme') {
-                                return $theme = $term->label;
+                                return $term->label;
                             }
                         }
                     }
@@ -197,7 +197,7 @@ class TabularDataFileWriter implements FileWriterInterface
                     if (property_exists($event, 'terms')) {
                         foreach ($event->terms as $term) {
                             if ($term->domain && $term->label && $term->domain == 'eventtype') {
-                                return $eventtype = $term->label;
+                                return $term->label;
                             }
                         }
                     }

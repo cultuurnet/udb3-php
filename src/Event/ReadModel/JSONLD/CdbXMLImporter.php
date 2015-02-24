@@ -225,7 +225,7 @@ class CdbXMLImporter
         if ($organizer_cdb && $contact_info_cdb) {
             $organizer_id = $organizer_cdb->getCdbid();
             if ($organizer_id) {
-                $organizer = $organizerManager->organizerJSONLD($organizer_id);
+                $organizer = (array)$organizerManager->organizerJSONLD($organizer_id);
             } else {
                 $organizer = array();
                 $organizer['name'] = $organizer_cdb->getLabel();

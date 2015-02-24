@@ -19,6 +19,13 @@ class StripSourceDescriptionFilter implements DescriptionFilterInterface
             $e->parentNode->removeChild($e);
         }
 
-        return $descriptionDOM->saveHTML($descriptionDOM->documentElement);
+        $descriptionContent = "";
+
+        $bodyNode = $descriptionDOM->getElementsByTagName('body')->item(0);
+        foreach ($bodyNode->childNodes as $childNode) {
+            $descriptionContent .= $descriptionDOM->saveHTML($childNode);
+        }
+
+        return $descriptionContent;
     }
 }

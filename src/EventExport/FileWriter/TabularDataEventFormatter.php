@@ -11,7 +11,13 @@ class TabularDataEventFormatter
     protected $includedProperties;
 
     /**
-     * @param $columns A list of all columns with a callback to format them
+     * A list of all columns with a callback to format them
+     * @var object[]
+     */
+    protected $columns;
+
+    /**
+     * @param array $columns A list of all columns with a callback to format them
      * @param string[] $include A list of properties to include
      */
     public function __construct($include)
@@ -198,7 +204,7 @@ class TabularDataEventFormatter
                     if (property_exists($event, 'terms')) {
                         foreach ($event->terms as $term) {
                             if ($term->domain && $term->label && $term->domain == 'theme') {
-                                return $theme = $term->label;
+                                return $term->label;
                             }
                         }
                     }
@@ -211,7 +217,7 @@ class TabularDataEventFormatter
                     if (property_exists($event, 'terms')) {
                         foreach ($event->terms as $term) {
                             if ($term->domain && $term->label && $term->domain == 'eventtype') {
-                                return $eventtype = $term->label;
+                                return $term->label;
                             }
                         }
                     }

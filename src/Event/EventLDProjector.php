@@ -13,6 +13,7 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\DescriptionFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
@@ -341,5 +342,10 @@ class EventLDProjector extends Projector implements PlaceServiceInterface, Organ
         return array(
             'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
         );
+    }
+
+    public function addDescriptionFilter(DescriptionFilterInterface $filter)
+    {
+        $this->cdbXMLImporter->addDescriptionFilter($filter);
     }
 }

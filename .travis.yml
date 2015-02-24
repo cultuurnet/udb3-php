@@ -12,6 +12,3 @@ notifications:
     recipients:
     - kristof@2dotstwice.be
     - bram@2dotstwice.be
-  hipchat:
-    rooms:
-      secure: EjiBcQ6CWpG2KGfjRRQxcWRlPwFmQiesHG70j+qu9NcN72+Nbgs0syyucVs2tOvMTvq0T9RxKiN2mqc6MLu2ZFMzVNQMUtwnp750+l6HWUuxcQ5xI1y4mpmqpDdkZeL/K3UI95U4Km+zacEpCokwi1AZ2fnM+CsMCCFjn9ih9DU=

@@ -10,9 +10,9 @@ class JSONLDFileWriter implements FileWriterInterface
     protected $f;
 
     /**
-     * @var string[]
+     * @var JSONLDEventFormatter
      */
-    protected $includedProperties;
+    protected $eventFormatter;
 
     public function __construct($filePath, $include = null)
     {
@@ -24,21 +24,9 @@ class JSONLDFileWriter implements FileWriterInterface
         }
         fwrite($this->f, '[');
 
+        $this->eventFormatter = new JSONLDEventFormatter($include);
+
         $this->first = true;
-
-        if ($include) {
-            $include[] = '@id';
-            // The address property is nested inside location.
-            // The whole location property gets included instead of pulling it
-            // out and placing it directly on the object.
-            if (in_array('address', $include) &&
-                !in_array('location', $include)
-            ) {
-                array_push($include, 'location');
-            }
-            $this->includedProperties = $include;
-        }
-
     }
 
     /**
@@ -52,17 +40,9 @@ class JSONLDFileWriter implements FileWriterInterface
             fwrite($this->f, ',');
         }
 
-        if ($this->includedProperties) {
-            $eventObject = json_decode($event);
-            foreach ($eventObject as $propertyName => $value) {
-                if (!in_array($propertyName, $this->includedProperties)) {
-                    unset($eventObject->{$propertyName});
-                }
-            }
-            $event = json_encode($eventObject);
-        }
+        $formattedEvent = $this->eventFormatter->formatEvent($event);
 
-        fwrite($this->f, $event);
+        fwrite($this->f, $formattedEvent);
     }
 
     public function close()

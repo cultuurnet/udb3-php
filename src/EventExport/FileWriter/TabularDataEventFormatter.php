@@ -313,7 +313,7 @@ class TabularDataEventFormatter
                 'property' => 'address.postalCode'
             ],
             'address.addressLocality' => [
-                'name' => 'regio',
+                'name' => 'gemeente',
                 'include' => function ($event) {
                     if (isset($event->location->address->addressLocality)) {
                         return $event->location->address->addressLocality;

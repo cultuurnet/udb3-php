@@ -25,6 +25,12 @@ class TidyDescriptionFilterTest extends \PHPUnit_Framework_TestCase
 
         $filteredDescription = $descriptionFilter->filter($description);
 
-        $this->assertFalse(strpos($filteredDescription, $broken_html_end_tag));
+        var_dump($filteredDescription);
+
+        $expectedDescription = $element_with_valid_tag . PHP_EOL .
+            "&lt;/..." . PHP_EOL .
+            $element_with_valid_tag . PHP_EOL;
+
+        $this->assertEquals($expectedDescription, $filteredDescription);
     }
 }

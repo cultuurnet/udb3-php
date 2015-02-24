@@ -14,6 +14,11 @@ use CultuurNet\UDB3\SluggerInterface;
 class CdbXMLImporter
 {
     /**
+     * @var DescriptionFilterInterface[]
+     */
+    private $descriptionFilters = [];
+
+    /**
      * Imports a UDB2 event into a UDB3 JSON-LD document.
      *
      * @param \stdClass $base
@@ -92,6 +97,14 @@ class CdbXMLImporter
     }
 
     /**
+     * @param DescriptionFilterInterface $filter
+     */
+    public function addDescriptionFilter(DescriptionFilterInterface $filter)
+    {
+        $this->descriptionFilters[] = $filter;
+    }
+
+    /**
      * @param $dateString
      * @return \DateTime
      */
@@ -116,7 +129,13 @@ class CdbXMLImporter
             $languageDetail->getLongDescription()
         ];
         $descriptions = array_filter($descriptions);
-        $jsonLD->description[$language] = implode('<br/>', $descriptions);
+        $description = implode('<br/>', $descriptions);
+
+        foreach ($this->descriptionFilters as $descriptionFilter) {
+            $description = $descriptionFilter->filter($description);
+        };
+
+        $jsonLD->description[$language] = $description;
     }
 
     /**

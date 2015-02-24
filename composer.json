@@ -23,7 +23,8 @@
     "chrisboulton/php-resque": "~1.2",
     "cultuurnet/culturefeed-php": "~1.0",
     "nicolopignatelli/valueobjects": "~2.0",
-    "phpoffice/phpexcel": "~1.8"
+    "phpoffice/phpexcel": "~1.8",
+    "ext-tidy": "*"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

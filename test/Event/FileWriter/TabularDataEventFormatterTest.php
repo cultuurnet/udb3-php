@@ -3,9 +3,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-use CultuurNet\UDB3\EventExport\FileWriter\TabularDataEventFormatter;
-use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;
-
 class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 {
 

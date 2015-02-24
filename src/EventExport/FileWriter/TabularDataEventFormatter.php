@@ -261,39 +261,6 @@ class TabularDataEventFormatter
                 },
                 'property' => 'location'
             ],
-            'address' => [
-                'name' => 'adres',
-                'include' => function ($event) {
-                    if (property_exists($event, 'location') &&
-                        isset($event->location->address)
-                    ) {
-                        $address = [];
-                        if (isset($event->location->address->streetAddress)) {
-                            $address[] = $event->location->address->streetAddress;
-                        }
-
-                        $line2 = [];
-                        if (isset($event->location->address->postalCode)) {
-                            $line2[] = $event->location->address->postalCode;
-                        }
-
-                        if (isset($event->location->address->addressLocality)) {
-                            $line2[] = $event->location->address->addressLocality;
-                        }
-
-                        if (!empty($line2)) {
-                            $address[] = implode(' ', $line2);
-                        }
-
-                        if (isset($event->location->address->addressCountry)) {
-                            $address[] = $event->location->address->addressCountry;
-                        }
-
-                        return implode("\r\n", $address);
-                    }
-                },
-                'property' => 'location'
-            ],
             'address.streetAddress' => [
                 'name' => 'straat',
                 'include' => function ($event) {

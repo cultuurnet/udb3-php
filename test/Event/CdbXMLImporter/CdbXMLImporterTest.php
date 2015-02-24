@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\DescriptionFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
@@ -60,6 +61,21 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         );
 
         return $jsonEvent;
+    }
+
+    /**
+     * @test
+     */
+    public function it_filters_the_description_property_when_filters_are_added()
+    {
+        /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
+        $filter = $this->getMock(DescriptionFilterInterface::class);
+        $filter->expects($this->atLeastOnce())
+            ->method('filter');
+
+        $this->importer->addDescriptionFilter($filter);
+
+        $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
     }
 
     /**

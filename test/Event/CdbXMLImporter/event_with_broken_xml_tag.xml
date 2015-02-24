@@ -1,0 +1,253 @@
+<cdb:event xmlns:cdb="http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL"
+           availablefrom="2014-09-22T18:14:31" availableto="2015-04-23T00:00:00"
+           cdbid="0c8ce12f-a9e7-4d9f-9e53-7a3a21510a4a" createdby="lcpimport" creationdate="2014-08-26T18:24:56"
+           externalid="Geel Validatoren:502_ME" isparent="false" lastupdated="2014-09-22T18:14:46"
+           lastupdatedby="lcpimport" pctcomplete="75" published="true" owner="LCP Import" private="false"
+           validator="LCP Import" wfstatus="approved">
+    <cdb:activities>
+        <cdb:activity count="0" type="like"/>
+        <cdb:activity count="0" type="attend"/>
+        <cdb:activity count="0" type="comment"/>
+        <cdb:activity count="0" type="recommend"/>
+        <cdb:activity count="0" type="facebook_share"/>
+        <cdb:activity count="0" type="review"/>
+    </cdb:activities>
+    <cdb:calendar>
+        <cdb:timestamps>
+            <cdb:timestamp>
+                <cdb:date>2015-04-21</cdb:date>
+                <cdb:timestart>13:45:00</cdb:timestart>
+            </cdb:timestamp>
+            <cdb:timestamp>
+                <cdb:date>2015-04-22</cdb:date>
+                <cdb:timestart>10:00:00</cdb:timestart>
+            </cdb:timestamp>
+        </cdb:timestamps>
+    </cdb:calendar>
+    <cdb:categories>
+        <cdb:category catid="1.58.0.0.0" type="theme">Thema onbepaald</cdb:category>
+        <cdb:category catid="reg.354" type="flanderstouristregion">Antwerpse Kempen</cdb:category>
+        <cdb:category catid="0.55.0.0.0" type="eventtype">Theatervoorstelling</cdb:category>
+        <cdb:category catid="reg.558" type="flandersregion">2440 Geel</cdb:category>
+    </cdb:categories>
+    <cdb:comments/>
+    <cdb:contactinfo>
+        <cdb:address>
+            <cdb:physical>
+                <cdb:city>Geel</cdb:city>
+                <cdb:country>BE</cdb:country>
+                <cdb:gis>
+                    <cdb:xcoordinate>4.986127</cdb:xcoordinate>
+                    <cdb:ycoordinate>51.161895</cdb:ycoordinate>
+                </cdb:gis>
+                <cdb:housenr>32</cdb:housenr>
+                <cdb:street>Werft</cdb:street>
+                <cdb:zipcode>2440</cdb:zipcode>
+            </cdb:physical>
+        </cdb:address>
+        <cdb:mail>info.dewerft@geel.be</cdb:mail>
+        <cdb:phone type="phone">014 56 66 66</cdb:phone>
+        <cdb:url>http://www.dewerft.be</cdb:url>
+    </cdb:contactinfo>
+    <cdb:eventdetails>
+        <cdb:eventdetail lang="nl">
+            <cdb:calendarsummary>di 21/04/15 om 13:45 woe 22/04/15 om 10:00</cdb:calendarsummary>
+            <cdb:longdescription>
+                Mienherte<br/>Mienherte<br/>Hartezeer in mien herte<br/>Aaah mien hertehart<br/>Hertefrettenshart mien
+                hert<br/>Hartehartefrettensherte hartelijk hertelijk hart<br/>Mienherte
+                <br/>
+                <br/>Kapitein Hert woont op het prachtige kasteel 't Hert in Hertefretten, zijn bosrijk privéparadijs
+                aan de rand van een meer. In dat kasteel zit ook stilletjes te smachten: Hart, een werkloze gouvernante,
+                want de Kapitein is voorlopig kinderloos. Zo gulzig is ze naar zijn liefde. Zo graag zou ze met hem
+                kleine, koddige hertehartjes maken... maar of dat lukt?
+                <br/>
+                <br/>In Hertehart tillen bo Spaenc en Benjamin Van Tourhout het onweerstaanbare genre van de operette
+                naar een ander niveau. Zwaar aangezette emoties, groteske gestes en protserige kostuums: ze kiezen voor
+                ongeremde potsierlijkheid, maar steeds met veel gevoel voor stijl.
+                <br/>
+                <br/>Na het succes van ScattiWhatti en UMM slaan beide makers opnieuw de handen in elkaar. Ze zetten het
+                genre naar hun goesting, zonder er een parodie van te maken. Met veel liefde én een knipoog maken ze er
+                samen iets ongehoords en ongeziens van.
+                <br/>
+                <br/>regie en tekst: Benjamin Van Tourhout<br/>concept, compositie en muziektheatrale regie: Bo Spaenc
+                <br/>spel en zang: Leen De Veirman en Dimitri Duquennoy<br/>live accordeon en samples: Roel Van Camp
+                <br/>vormgeving en kostuums: Viola Vandomme
+                <br/>
+                <p class="uiv-source">Bron:
+                    <a href="http://www.uitinvlaanderen.be/agenda/e/hertehart/0c8ce12f-a9e7-4d9f-9e53-7a3a21510a4a">
+                        UiTinVlaanderen.be
+                    </a>
+                </p>
+            </cdb:longdescription>
+            <cdb:media>
+                <cdb:file>
+                    <cdb:hlink>http://www.dewerft.be</cdb:hlink>
+                    <cdb:mediatype>webresource</cdb:mediatype>
+                </cdb:file>
+                <cdb:file creationdate="26/08/2014 18:24:56" main="true">
+                    <cdb:copyright>CC deWerft - Geel</cdb:copyright>
+                    <cdb:filename>Geel_Validatoren_43059.jpg</cdb:filename>
+                    <cdb:filetype>jpeg</cdb:filetype>
+                    <cdb:hlink>
+                        //media.uitdatabank.be/20140826/Geel_Validatoren_43059.jpg
+                    </cdb:hlink>
+                    <cdb:mediatype>photo</cdb:mediatype>
+                </cdb:file>
+            </cdb:media>
+            <cdb:shortdescription>
+                Kapitein Hert woont op het prachtige kasteel 't Hert in Hertefretten, zijn bosrijk privéparadijs aan de
+                rand van een meer. In dat kasteel zit Hart stilletjes te smachten. Een werkloze gouvernante, want de
+                Kapitein is voorlopig kinderloos. Zo gulzig is ze naar zijn liefde. Zo graag zou ze met hem kleine,
+                koddige hertehartjes maken... maar of dat lukt? In Hertehart
+            </...
+        </cdb:shortdescription>
+        <cdb:title>Hertehart</cdb:title>
+    </cdb:eventdetail>
+</cdb:eventdetails>
+<cdb:location>
+<cdb:address>
+    <cdb:physical>
+        <cdb:city>Geel</cdb:city>
+        <cdb:country>BE</cdb:country>
+        <cdb:gis>
+            <cdb:xcoordinate>4.986127</cdb:xcoordinate>
+            <cdb:ycoordinate>51.161895</cdb:ycoordinate>
+        </cdb:gis>
+        <cdb:housenr>32</cdb:housenr>
+        <cdb:street>Werft</cdb:street>
+        <cdb:zipcode>2440</cdb:zipcode>
+    </cdb:physical>
+</cdb:address>
+<cdb:label>Spektakelzaal</cdb:label>
+</cdb:location>
+<cdb:organiser>
+<cdb:label>CC deWerft - Geel</cdb:label>
+</cdb:organiser>
+        </cdb:event>
+<cdb:event availablefrom="2014-09-22T18:14:31" availableto="2015-04-23T00:00:00"
+           cdbid="0c8ce12f-a9e7-4d9f-9e53-7a3a21510a4a" createdby="lcpimport" creationdate="2014-08-26T18:24:56"
+           externalid="Geel Validatoren:502_ME" isparent="false" lastupdated="2014-09-22T18:14:46"
+           lastupdatedby="lcpimport" pctcomplete="75" published="true" owner="LCP Import" private="false"
+           validator="LCP Import" wfstatus="approved">
+<cdb:activities>
+    <cdb:activity count="0" type="like"/>
+    <cdb:activity count="0" type="attend"/>
+    <cdb:activity count="0" type="comment"/>
+    <cdb:activity count="0" type="recommend"/>
+    <cdb:activity count="0" type="facebook_share"/>
+    <cdb:activity count="0" type="review"/>
+</cdb:activities>
+<cdb:calendar>
+    <cdb:timestamps>
+        <cdb:timestamp>
+            <cdb:date>2015-04-21</cdb:date>
+            <cdb:timestart>13:45:00</cdb:timestart>
+        </cdb:timestamp>
+        <cdb:timestamp>
+            <cdb:date>2015-04-22</cdb:date>
+            <cdb:timestart>10:00:00</cdb:timestart>
+        </cdb:timestamp>
+    </cdb:timestamps>
+</cdb:calendar>
+<cdb:categories>
+    <cdb:category catid="1.58.0.0.0" type="theme">Thema onbepaald</cdb:category>
+    <cdb:category catid="reg.354" type="flanderstouristregion">Antwerpse Kempen</cdb:category>
+    <cdb:category catid="0.55.0.0.0" type="eventtype">Theatervoorstelling</cdb:category>
+    <cdb:category catid="reg.558" type="flandersregion">2440 Geel</cdb:category>
+</cdb:categories>
+<cdb:comments/>
+<cdb:contactinfo>
+    <cdb:address>
+        <cdb:physical>
+            <cdb:city>Geel</cdb:city>
+            <cdb:country>BE</cdb:country>
+            <cdb:gis>
+                <cdb:xcoordinate>4.986127</cdb:xcoordinate>
+                <cdb:ycoordinate>51.161895</cdb:ycoordinate>
+            </cdb:gis>
+            <cdb:housenr>32</cdb:housenr>
+            <cdb:street>Werft</cdb:street>
+            <cdb:zipcode>2440</cdb:zipcode>
+        </cdb:physical>
+    </cdb:address>
+    <cdb:mail>info.dewerft@geel.be</cdb:mail>
+    <cdb:phone type="phone">014 56 66 66</cdb:phone>
+    <cdb:url>http://www.dewerft.be</cdb:url>
+</cdb:contactinfo>
+<cdb:eventdetails>
+    <cdb:eventdetail lang="nl">
+        <cdb:calendarsummary>di 21/04/15 om 13:45 woe 22/04/15 om 10:00</cdb:calendarsummary>
+        <cdb:longdescription>
+            Mienherte<br/>Mienherte<br/>Hartezeer in mien herte<br/>Aaah mien hertehart<br/>Hertefrettenshart mien hert
+            <br/>Hartehartefrettensherte hartelijk hertelijk hart<br/>Mienherte
+            <br/>
+            <br/>Kapitein Hert woont op het prachtige kasteel 't Hert in Hertefretten, zijn bosrijk privéparadijs aan de
+            rand van een meer. In dat kasteel zit ook stilletjes te smachten: Hart, een werkloze gouvernante, want de
+            Kapitein is voorlopig kinderloos. Zo gulzig is ze naar zijn liefde. Zo graag zou ze met hem kleine, koddige
+            hertehartjes maken... maar of dat lukt?
+            <br/>
+            <br/>In Hertehart tillen bo Spaenc en Benjamin Van Tourhout het onweerstaanbare genre van de operette naar
+            een ander niveau. Zwaar aangezette emoties, groteske gestes en protserige kostuums: ze kiezen voor ongeremde
+            potsierlijkheid, maar steeds met veel gevoel voor stijl.
+            <br/>
+            <br/>Na het succes van ScattiWhatti en UMM slaan beide makers opnieuw de handen in elkaar. Ze zetten het
+            genre naar hun goesting, zonder er een parodie van te maken. Met veel liefde én een knipoog maken ze er
+            samen iets ongehoords en ongeziens van.
+            <br/>
+            <br/>regie en tekst: Benjamin Van Tourhout<br/>concept, compositie en muziektheatrale regie: Bo Spaenc
+            <br/>
+            spel en zang: Leen De Veirman en Dimitri Duquennoy<br/>live accordeon en samples: Roel Van Camp
+            <br/>
+            vormgeving en kostuums: Viola Vandomme
+            <br/>
+            <p class="uiv-source">Bron:
+                <a href="http://www.uitinvlaanderen.be/agenda/e/hertehart/0c8ce12f-a9e7-4d9f-9e53-7a3a21510a4a">
+                    UiTinVlaanderen.be
+                </a>
+            </p>
+        </cdb:longdescription>
+        <cdb:media>
+            <cdb:file>
+                <cdb:hlink>http://www.dewerft.be</cdb:hlink>
+                <cdb:mediatype>webresource</cdb:mediatype>
+            </cdb:file>
+            <cdb:file creationdate="26/08/2014 18:24:56" main="true">
+                <cdb:copyright>CC deWerft - Geel</cdb:copyright>
+                <cdb:filename>Geel_Validatoren_43059.jpg</cdb:filename>
+                <cdb:filetype>jpeg</cdb:filetype>
+                <cdb:hlink>
+                    //media.uitdatabank.be/20140826/Geel_Validatoren_43059.jpg
+                </cdb:hlink>
+                <cdb:mediatype>photo</cdb:mediatype>
+            </cdb:file>
+        </cdb:media>
+        <cdb:shortdescription>
+            Kapitein Hert woont op het prachtige kasteel 't Hert in Hertefretten, zijn bosrijk privéparadijs aan de rand
+            van een meer. In dat kasteel zit Hart stilletjes te smachten. Een werkloze gouvernante, want de Kapitein is
+            voorlopig kinderloos. Zo gulzig is ze naar zijn liefde. Zo graag zou ze met hem kleine, koddige hertehartjes
+            maken... maar of dat lukt? In Hertehart
+        </...
+    </cdb:shortdescription>
+    <cdb:title>Hertehart</cdb:title>
+</cdb:eventdetail>
+</cdb:eventdetails>
+<cdb:location>
+<cdb:address>
+    <cdb:physical>
+        <cdb:city>Geel</cdb:city>
+        <cdb:country>BE</cdb:country>
+        <cdb:gis>
+            <cdb:xcoordinate>4.986127</cdb:xcoordinate>
+            <cdb:ycoordinate>51.161895</cdb:ycoordinate>
+        </cdb:gis>
+        <cdb:housenr>32</cdb:housenr>
+        <cdb:street>Werft</cdb:street>
+        <cdb:zipcode>2440</cdb:zipcode>
+    </cdb:physical>
+</cdb:address>
+<cdb:label>Spektakelzaal</cdb:label>
+</cdb:location>
+<cdb:organiser>
+<cdb:label>CC deWerft - Geel</cdb:label>
+</cdb:organiser>
+</cdb:event>

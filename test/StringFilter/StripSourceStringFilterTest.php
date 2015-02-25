@@ -1,10 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\StringFilter;
 
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\StripSourceDescriptionFilter;
-
-class StripSourceDescriptionFilterTest extends \PHPUnit_Framework_TestCase
+class StripSourceStringFilterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -21,7 +19,7 @@ class StripSourceDescriptionFilterTest extends \PHPUnit_Framework_TestCase
             $source_element .
             $another_element;
 
-        $descriptionFilter = new StripSourceDescriptionFilter();
+        $descriptionFilter = new StripSourceStringFilter();
         $filteredDescription = $descriptionFilter->filter($description);
         $expectedDescription = $some_element . PHP_EOL .
             $another_element;
@@ -44,7 +42,7 @@ class StripSourceDescriptionFilterTest extends \PHPUnit_Framework_TestCase
             $source_element .
             $some_element;
 
-        $descriptionFilter = new StripSourceDescriptionFilter();
+        $descriptionFilter = new StripSourceStringFilter();
         $filteredDescription = $descriptionFilter->filter($description);
         $expectedDescription = "<p>" . $without_element . "</p>" . PHP_EOL .
             $some_element;
@@ -67,7 +65,7 @@ class StripSourceDescriptionFilterTest extends \PHPUnit_Framework_TestCase
             $source_element .
             $without_element;
 
-        $descriptionFilter = new StripSourceDescriptionFilter();
+        $descriptionFilter = new StripSourceStringFilter();
         $filteredDescription = $descriptionFilter->filter($description);
         $expectedDescription = $some_element .
             $without_element;
@@ -89,7 +87,7 @@ class StripSourceDescriptionFilterTest extends \PHPUnit_Framework_TestCase
             $source_element .
             $without_element;
 
-        $descriptionFilter = new StripSourceDescriptionFilter();
+        $descriptionFilter = new StripSourceStringFilter();
         $filteredDescription = $descriptionFilter->filter($description);
         $expectedDescription = "<p>" . $without_element . "</p>" .
             $without_element;

@@ -1,11 +1,9 @@
 <?php
 
 
-namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
+namespace CultuurNet\UDB3\StringFilter;
 
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\DescriptionFilterInterface;
-
-class TidyDescriptionFilter implements DescriptionFilterInterface
+class TidyStringFilter implements StringFilterInterface
 {
     public function filter($description)
     {

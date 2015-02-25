@@ -1,12 +1,12 @@
 <?php
 
 
-namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
+namespace CultuurNet\UDB3\StringFilter;
 
 /**
  * Interface for filtering the description of a json-ld event.
  */
-interface DescriptionFilterInterface
+interface StringFilterInterface
 {
 
     /**

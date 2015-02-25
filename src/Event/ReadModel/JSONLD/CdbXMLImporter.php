@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -14,7 +15,7 @@ use CultuurNet\UDB3\SluggerInterface;
 class CdbXMLImporter
 {
     /**
-     * @var DescriptionFilterInterface[]
+     * @var StringFilterInterface[]
      */
     private $descriptionFilters = [];
 
@@ -97,9 +98,9 @@ class CdbXMLImporter
     }
 
     /**
-     * @param DescriptionFilterInterface $filter
+     * @param StringFilterInterface $filter
      */
-    public function addDescriptionFilter(DescriptionFilterInterface $filter)
+    public function addDescriptionFilter(StringFilterInterface $filter)
     {
         $this->descriptionFilters[] = $filter;
     }

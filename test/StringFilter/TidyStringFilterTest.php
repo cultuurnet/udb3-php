@@ -1,10 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\StringFilter;
 
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\TidyDescriptionFilter;
-
-class TidyDescriptionFilterTest extends \PHPUnit_Framework_TestCase
+class TidyStringFilterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -21,7 +19,7 @@ class TidyDescriptionFilterTest extends \PHPUnit_Framework_TestCase
             $broken_html_end_tag .
             $element_with_valid_tag;
 
-        $descriptionFilter = new TidyDescriptionFilter();
+        $descriptionFilter = new TidyStringFilter();
 
         $filteredDescription = $descriptionFilter->filter($description);
 

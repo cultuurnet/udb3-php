@@ -5,13 +5,13 @@ namespace CultuurNet\UDB3\StringFilter;
 
 class TidyStringFilter implements StringFilterInterface
 {
-    public function filter($description)
+    public function filter($string)
     {
         $config = array('show-body-only' => true);
 
         /** @var \tidy $tidy */
-        $tidy = tidy_parse_string($description, $config, 'UTF8');
-        $clean = $tidy->cleanRepair();
+        $tidy = tidy_parse_string($string, $config, 'UTF8');
+        $tidy->cleanRepair();
 
         return tidy_get_output($tidy);
     }

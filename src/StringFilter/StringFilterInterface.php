@@ -10,8 +10,8 @@ interface StringFilterInterface
 {
 
     /**
-     * @param string $description
+     * @param string $string
      * @return string
      */
-    public function filter($description);
+    public function filter($string);
 }

@@ -6,24 +6,24 @@ namespace CultuurNet\UDB3\StringFilter;
 class StripSourceStringFilter implements StringFilterInterface
 {
 
-    public function filter($description)
+    public function filter($string)
     {
-        $descriptionDOM = new \DOMDocument();
-        $description = mb_convert_encoding($description, 'HTML-ENTITIES', "UTF-8");
-        $descriptionDOM->loadHTML($description);
+        $stringDOM = new \DOMDocument();
+        $string = mb_convert_encoding($string, 'HTML-ENTITIES', "UTF-8");
+        $stringDOM->loadHTML($string);
 
-        $selector = new \DOMXPath($descriptionDOM);
+        $selector = new \DOMXPath($stringDOM);
         foreach ($selector->query('//p[contains(attribute::class, "uiv-source")]') as $e) {
             $e->parentNode->removeChild($e);
         }
 
-        $descriptionContent = "";
+        $stringContent = "";
 
-        $bodyNode = $descriptionDOM->getElementsByTagName('body')->item(0);
+        $bodyNode = $stringDOM->getElementsByTagName('body')->item(0);
         foreach ($bodyNode->childNodes as $childNode) {
-            $descriptionContent .= $descriptionDOM->saveHTML($childNode);
+            $stringContent .= $stringDOM->saveHTML($childNode);
         }
 
-        return $descriptionContent;
+        return $stringContent;
     }
 }

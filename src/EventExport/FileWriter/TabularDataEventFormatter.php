@@ -25,7 +25,7 @@ class TabularDataEventFormatter
         $this->includedProperties = $this->includedOrDefaultProperties($include);
     }
 
-    public function formatHeader($event)
+    public function formatHeader()
     {
         $columns = array();
         foreach ($this->includedProperties as $property) {

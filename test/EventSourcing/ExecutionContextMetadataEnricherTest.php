@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventSourcing;
 
-
 use Broadway\Domain\Metadata;
 
 class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
@@ -71,5 +70,4 @@ class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
             $enrichedMetadata->serialize()
         );
     }
-
-} 
+}

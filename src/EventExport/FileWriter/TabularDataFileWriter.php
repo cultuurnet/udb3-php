@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
 class TabularDataFileWriter implements FileWriterInterface
 {
     /**
@@ -14,20 +13,34 @@ class TabularDataFileWriter implements FileWriterInterface
     protected $includedProperties;
 
     /**
+     * @var TabularDataEventFormatter
+     */
+    protected $eventFormatter;
+
+    /**
      * @var TabularDataFileWriterInterface
      */
     protected $tabularDataFileWriter;
 
-    public function __construct(TabularDataFileWriterInterface $tabularDataFileWriter, $include)
-    {
+    public function __construct(
+        TabularDataFileWriterInterface $tabularDataFileWriter,
+        $include
+    ) {
+        $includedProperties = $this->includedOrDefaultProperties($include);
+
         $this->tabularDataFileWriter = $tabularDataFileWriter;
-        $this->includeProperties($include);
+        $this->eventFormatter = new TabularDataEventFormatter(
+            $this->columns(),
+            $includedProperties
+        );
+        $this->includedProperties = $includedProperties;
         $this->writeHeader();
     }
 
-    protected function writeHeader() {
+    protected function writeHeader()
+    {
         $columns = array();
-        foreach($this->includedProperties as $property) {
+        foreach ($this->includedProperties as $property) {
             $columns[] = $this->columns()[$property]['name'];
         }
         $this->tabularDataFileWriter->writeRow($columns);
@@ -38,34 +51,16 @@ class TabularDataFileWriter implements FileWriterInterface
      */
     public function exportEvent($event)
     {
-        $event = json_decode($event);
-        $row = $this->emptyRow();
+        $eventRow = $this->eventFormatter->formatEvent($event);
 
-        foreach ($this->includedProperties as $property) {
-            $column = $this->columns()[$property];
-
-            if(isset($event->{$column['property']}) || isset($event->{'@' . $column['property']})) {
-                $value = $column['include']($event);
-
-                if ($value) {
-                    $row[$property] = $value;
-                } else {
-                    $row[$property] = '';
-                }
-            }
-        }
-
-        $this->tabularDataFileWriter->writeRow($row);
+        $this->tabularDataFileWriter->writeRow($eventRow);
     }
 
-    public function includeProperties($properties) {
-        $this->includedProperties = $this->includedOrDefaultProperties($properties);
-    }
+    protected function includedOrDefaultProperties($include)
+    {
+        $properties = null;
 
-    protected function includedOrDefaultProperties($include) {
-        $properties = NULL;
-
-        if($include) {
+        if ($include) {
             $properties = $include;
             array_unshift($properties, 'id');
         } else {
@@ -75,145 +70,232 @@ class TabularDataFileWriter implements FileWriterInterface
         return $properties;
     }
 
-    public function emptyRow()
-    {
-        $row = array();
-
-        foreach($this->includedProperties as $property) {
-            $row[$property] = '';
-        }
-
-        return $row;
-    }
-
-    public function columns()
+    public static function columns()
     {
         return [
-            'id' => [ 'name' => 'id', 'include' => function ($event) {
-                $eventUri = $event->{'@id'};
-                $uriParts = explode('/',$eventUri);
-                $eventId = array_pop($uriParts);
-                return $eventId;
-            }, 'property' => 'id' ],
-            'name' => [ 'name' => 'titel', 'include' => function ($event) {
-                return reset($event->name);
-            }, 'property' => 'name' ],
-            'creator' => [ 'name' => 'auteur', 'include' => function ($event) {
-                return $event->creator;
-            }, 'property' => 'creator' ],
-            'bookingInfo' => [ 'name' => 'prijs', 'include' => function ($event) {
-                if (is_array($event->bookingInfo)) {
-                    $firstPrice = reset($event->bookingInfo);
-                    if (is_object($firstPrice) && isset($firstPrice->price)) {
-                        return $firstPrice->price;
-                    }
-                }
-            }, 'property' => 'bookingInfo' ],
-            'description' => [ 'name' => 'omschrijving', 'include' => function ($event) {
-                return reset($event->description);
-            }, 'property' => 'description' ],
-            'organizer' => [ 'name' => 'organisatie', 'include' => function ($event) {
-                if (isset($event->organizer->name)) {
-                    return $event->organizer->name;
-                }
-            }, 'property' => 'organizer' ],
-            'calendarSummary' => [ 'name' => 'tijdsinformatie', 'include' => function ($event) {
-                return $event->calendarSummary;
-            }, 'property' => 'calendarSummary' ],
-            'keywords' => [ 'name' => 'labels', 'include' => function ($event) {
-                if (isset($event->keywords)) {
-                    if (!is_array($event->keywords)) {
-                        var_dump($event->{'@id'});
-                        var_dump($event->keywords);
-                    }
-                    return implode(';', $event->keywords);
-                }
-            }, 'property' => 'keywords' ],
-            'typicalAgeRange' => [ 'name' => 'leeftijd', 'include' => function ($event) {
-                return $event->typicalAgeRange;
-            }, 'property' => 'typicalAgeRange' ],
-            'performer' => [ 'name' => 'uitvoerders', 'include' => function ($event) {
-                $performerNames = [];
-                foreach ($event->performer as $performer) {
-                    $performerNames[] = $performer->name;
-                }
-                return implode(';', $performerNames);
-            }, 'property' => 'performer' ],
-            'language' => [ 'name' => 'taal van het aanbod', 'include' => function ($event) {
-                return implode(';', $event->language);
-            }, 'property' => 'language' ],
-            'terms' => [ 'name' => 'thema', 'include' => function ($event) {
-                $theme = NULL;
+            'id' => [
+                'name' => 'id',
+                'include' => function ($event) {
+                    $eventUri = $event->{'@id'};
+                    $uriParts = explode('/', $eventUri);
+                    $eventId = array_pop($uriParts);
 
-                if($event->terms) {
-                    foreach($event->terms as $term) {
-                        if($term->domain && $term->label && $term->domain == 'theme') {
-                            $theme = $term->label;
+                    return $eventId;
+                },
+                'property' => 'id'
+            ],
+            'name' => [
+                'name' => 'titel',
+                'include' => function ($event) {
+                    if ($event->name) {
+                        return reset($event->name);
+                    }
+                },
+                'property' => 'name'
+            ],
+            'creator' => [
+                'name' => 'auteur',
+                'include' => function ($event) {
+                    return $event->creator;
+                },
+                'property' => 'creator'
+            ],
+            'bookingInfo' => [
+                'name' => 'prijs',
+                'include' => function ($event) {
+                    if (property_exists($event, 'bookingInfo')) {
+                        $firstPrice = reset($event->bookingInfo);
+                        if (is_object($firstPrice) && isset($firstPrice->price)) {
+                            return $firstPrice->price;
                         }
                     }
-                }
-
-                return $theme;
-            }, 'property' => 'terms' ],
-            'created' => [ 'name' => 'datum aangemaakt', 'include' => function ($event) {
-                return $event->created;
-            }, 'property' => 'created' ],
-            'startDate' => [ 'name' => 'startdatum', 'include' => function ($event) {
-                return $event->startDate;
-            }, 'property' => 'startDate' ],
-            'endDate' => [ 'name' => 'einddatum', 'include' => function ($event) {
-                return $event->endDate;
-            }, 'property' => 'endDate' ],
-            'calendarType' => [ 'name' => 'tijd type', 'include' => function ($event) {
-                return $event->calendarType;
-            }, 'property' => 'calendarType' ],
-            'location' => [ 'name' => 'locatie naam', 'include' => function ($event) {
-                if (isset($event->location->name)) {
-                    return $event->location->name;
-                }
-            }, 'property' => 'location' ],
-            'address' => [ 'name' => 'adres', 'include' => function ($event) {
-                if (isset($event->location->address)) {
-                    $address = [];
-                    if (isset($event->location->address->streetAddress)) {
-                        $address[] = $event->location->address->streetAddress;
+                },
+                'property' => 'bookingInfo'
+            ],
+            'description' => [
+                'name' => 'omschrijving',
+                'include' => function ($event) {
+                    if (property_exists($event, 'description')) {
+                        return reset($event->description);
                     }
-
-                    $line2 = [];
-                    if (isset($event->location->address->postalCode)) {
-                        $line2[] = $event->location->address->postalCode;
+                },
+                'property' => 'description'
+            ],
+            'organizer' => [
+                'name' => 'organisatie',
+                'include' => function ($event) {
+                    if (property_exists($event, 'organizer') &&
+                        isset($event->organizer->name)
+                    ) {
+                        return $event->organizer->name;
                     }
-
-                    if (isset($event->location->address->addressLocality)) {
-                        $line2[] = $event->location->address->addressLocality;
+                },
+                'property' => 'organizer'
+            ],
+            'calendarSummary' => [
+                'name' => 'tijdsinformatie',
+                'include' => function ($event) {
+                    return $event->calendarSummary;
+                },
+                'property' => 'calendarSummary'
+            ],
+            'keywords' => [
+                'name' => 'labels',
+                'include' => function ($event) {
+                    if (isset($event->keywords)) {
+                        return implode(';', $event->keywords);
                     }
+                },
+                'property' => 'keywords'
+            ],
+            'typicalAgeRange' => [
+                'name' => 'leeftijd',
+                'include' => function ($event) {
+                    return $event->typicalAgeRange;
+                },
+                'property' => 'typicalAgeRange'
+            ],
+            'performer' => [
+                'name' => 'uitvoerders',
+                'include' => function ($event) {
+                    if (property_exists($event, 'performer')) {
+                        $performerNames = [];
+                        foreach ($event->performer as $performer) {
+                            $performerNames[] = $performer->name;
+                        }
 
-                    if (!empty($line2)) {
-                        $address[] = implode(' ', $line2);
+                        return implode(';', $performerNames);
                     }
-
-                    if (isset($event->location->address->addressCountry)) {
-                        $address[] = $event->location->address->addressCountry;
+                },
+                'property' => 'performer'
+            ],
+            'language' => [
+                'name' => 'taal van het aanbod',
+                'include' => function ($event) {
+                    if (property_exists($event, 'language')) {
+                        return implode(';', $event->language);
                     }
-
-                    return implode("\r\n", $address);
-                }
-            }, 'property' => 'location' ],
-            'image' => [ 'name' => 'afbeelding', 'include' => function ($event) {
-                return $event->image;
-            }, 'property' => 'image' ],
-            'sameAs' => [ 'name' => 'externe ids', 'include' => function ($event) {
-                if($event->sameAs) {
-                    $ids = array();
-
-                    foreach($event->sameAs as $externalId) {
-                        $ids[] = $externalId;
+                },
+                'property' => 'language'
+            ],
+            'terms.theme' => [
+                'name' => 'thema',
+                'include' => function ($event) {
+                    if (property_exists($event, 'terms')) {
+                        foreach ($event->terms as $term) {
+                            if ($term->domain && $term->label && $term->domain == 'theme') {
+                                return $term->label;
+                            }
+                        }
                     }
+                },
+                'property' => 'terms.theme'
+            ],
+            'terms.eventtype' => [
+                'name' => 'soort aanbod',
+                'include' => function ($event) {
+                    if (property_exists($event, 'terms')) {
+                        foreach ($event->terms as $term) {
+                            if ($term->domain && $term->label && $term->domain == 'eventtype') {
+                                return $term->label;
+                            }
+                        }
+                    }
+                },
+                'property' => 'terms.eventtype'
+            ],
+            'created' => [
+                'name' => 'datum aangemaakt',
+                'include' => function ($event) {
+                    return $event->created;
+                },
+                'property' => 'created'
+            ],
+            'startDate' => [
+                'name' => 'startdatum',
+                'include' => function ($event) {
+                    return $event->startDate;
+                },
+                'property' => 'startDate'
+            ],
+            'endDate' => [
+                'name' => 'einddatum',
+                'include' => function ($event) {
+                    return $event->endDate;
+                },
+                'property' => 'endDate'
+            ],
+            'calendarType' => [
+                'name' => 'tijd type',
+                'include' => function ($event) {
+                    return $event->calendarType;
+                },
+                'property' => 'calendarType'
+            ],
+            'location' => [
+                'name' => 'locatie naam',
+                'include' => function ($event) {
+                    if (property_exists($event, 'location') && isset($event->location->name)) {
+                        return $event->location->name;
+                    }
+                },
+                'property' => 'location'
+            ],
+            'address' => [
+                'name' => 'adres',
+                'include' => function ($event) {
+                    if (property_exists($event, 'location') &&
+                        isset($event->location->address)
+                    ) {
+                        $address = [];
+                        if (isset($event->location->address->streetAddress)) {
+                            $address[] = $event->location->address->streetAddress;
+                        }
 
-                    return implode("\r\n", $ids);
-                }
+                        $line2 = [];
+                        if (isset($event->location->address->postalCode)) {
+                            $line2[] = $event->location->address->postalCode;
+                        }
 
-            }, 'property' => 'sameAs' ],
+                        if (isset($event->location->address->addressLocality)) {
+                            $line2[] = $event->location->address->addressLocality;
+                        }
+
+                        if (!empty($line2)) {
+                            $address[] = implode(' ', $line2);
+                        }
+
+                        if (isset($event->location->address->addressCountry)) {
+                            $address[] = $event->location->address->addressCountry;
+                        }
+
+                        return implode("\r\n", $address);
+                    }
+                },
+                'property' => 'location'
+            ],
+            'image' => [
+                'name' => 'afbeelding',
+                'include' => function ($event) {
+                    return $event->image;
+                },
+                'property' => 'image'
+            ],
+            'sameAs' => [
+                'name' => 'externe ids',
+                'include' => function ($event) {
+                    if (property_exists($event, 'sameAs')) {
+                        $ids = array();
+
+                        foreach ($event->sameAs as $externalId) {
+                            $ids[] = $externalId;
+                        }
+
+                        return implode("\r\n", $ids);
+                    }
+                },
+                'property' => 'sameAs'
+            ],
         ];
     }
 

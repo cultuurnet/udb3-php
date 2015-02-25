@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
 class CSVFileWriter implements TabularDataFileWriterInterface
 {
     protected $f;

@@ -6,20 +6,20 @@
 namespace CultuurNet\UDB3\Iri;
 
 /**
- * Generates dereferenceable IRIs for JSON-LD subjects.
+ * Interface for IRI generators.
  *
- * @see http://en.wikipedia.org/wiki/Dereferenceable_Uniform_Resource_Identifier
+ * @link http://en.wikipedia.org/wiki/Dereferenceable_Uniform_Resource_Identifier
  */
 interface IriGeneratorInterface
 {
     /**
-     * Generate a derefereneable IRI.
+     * Generates a IRI for a specific item.
      *
      * @param string $item
-     *  A string uniquely identifying the subject.
+     *  A string uniquely identifying an item.
      *
      * @return string
-     *   A dereferenceable IRI.
+     *   The IRI for the specified item.
      */
     public function iri($item);
 }

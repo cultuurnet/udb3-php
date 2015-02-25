@@ -45,7 +45,8 @@ class Projector extends \Broadway\ReadModel\Projector
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
 
-    protected function applyEventCreated(EventCreated $event) {
+    protected function applyEventCreated(EventCreated $event)
+    {
         $eventId = $event->getEventId();
 
         $location = $event->getLocation();

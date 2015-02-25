@@ -13,11 +13,11 @@ namespace CultuurNet\UDB3;
 interface SluggerInterface
 {
     /**
-   * Returns the slug for a given string
-   *
-   * @param string $string
-   *
-   * @return string
-   **/
-  public function slug($string);
+    * Returns the slug for a given string
+    *
+    * @param string $string
+    *
+    * @return string
+    **/
+    public function slug($string);
 }

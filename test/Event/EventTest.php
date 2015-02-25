@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Keyword;
 
 class EventTest extends \PHPUnit_Framework_TestCase

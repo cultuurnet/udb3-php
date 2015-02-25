@@ -37,7 +37,8 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         return new EventCommandHandler($repository, $this->search);
     }
 
-    private function factorEventCreated($id) {
+    private function factorEventCreated($id)
+    {
         return new EventCreated(
             $id,
             new Title('some representative title'),
@@ -236,8 +237,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_does_not_erase_a_tag_from_an_event_that_has_been_erased_already(
-    )
+    public function it_does_not_erase_a_tag_from_an_event_that_has_been_erased_already()
     {
         $id = '1';
         $this->scenario

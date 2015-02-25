@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Notification;
 
-
 use CultuurNet\UDB3\EventExport\EventExportResult;
 
 class LiteralSubjectFactory implements SubjectFactoryInterface
@@ -27,5 +26,4 @@ class LiteralSubjectFactory implements SubjectFactoryInterface
     {
         return $this->subject;
     }
-
 }

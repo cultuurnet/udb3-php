@@ -23,11 +23,14 @@
     "chrisboulton/php-resque": "~1.2",
     "cultuurnet/culturefeed-php": "~1.0",
     "nicolopignatelli/valueobjects": "~2.0",
-    "phpoffice/phpexcel": "~1.8"
+    "phpoffice/phpexcel": "~1.8",
+    "ext-tidy": "*"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",
-    "phpunit/phpunit": "~4.3"
+    "phpunit/phpunit": "~4.3",
+    "squizlabs/php_codesniffer": "~2.2",
+    "phing/phing": "~2.10"
   },
   "autoload": {
     "psr-4": {

@@ -11,7 +11,7 @@ use Prophecy\Argument;
  */
 class ResultSetPullParserSpec extends ObjectBehavior
 {
-    function it_is_initializable_with_a_XMLReader_and_a_IriGeneratorInterface(
+    public function it_is_initializable_with_a_XMLReader_and_a_IriGeneratorInterface(
         \XMLReader $xmlReader,
         IriGeneratorInterface $iriGenerator
     ) {
@@ -19,7 +19,7 @@ class ResultSetPullParserSpec extends ObjectBehavior
         $this->shouldHaveType('CultuurNet\UDB3\SearchAPI2\ResultSetPullParser');
     }
 
-    function it_extracts_totalItems_and_member_ids_from_a_cbxml_result_set(
+    public function it_extracts_totalItems_and_member_ids_from_a_cbxml_result_set(
         IriGeneratorInterface $iriGenerator
     ) {
         $iriGenerator->iri(

@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\DescriptionFilterInterface;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -518,7 +518,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_filters_the_description_property_when_filters_are_added()
     {
         /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(DescriptionFilterInterface::class);
+        $filter = $this->getMock(StringFilterInterface::class);
         $filter->expects($this->atLeastOnce())
             ->method('filter');
 

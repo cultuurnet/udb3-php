@@ -13,7 +13,7 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\DescriptionFilterInterface;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
@@ -344,7 +344,7 @@ class EventLDProjector extends Projector implements PlaceServiceInterface, Organ
         );
     }
 
-    public function addDescriptionFilter(DescriptionFilterInterface $filter)
+    public function addDescriptionFilter(StringFilterInterface $filter)
     {
         $this->cdbXMLImporter->addDescriptionFilter($filter);
     }

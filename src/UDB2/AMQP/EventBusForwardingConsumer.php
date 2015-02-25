@@ -76,11 +76,11 @@ class EventBusForwardingConsumer
 
         $events = [
             new DomainMessage(
-              'foo',
-              0,
-              new Metadata(),
-              $event,
-              DateTime::now()
+                'foo',
+                0,
+                new Metadata(),
+                $event,
+                DateTime::now()
             ),
         ];
 

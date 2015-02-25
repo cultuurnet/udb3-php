@@ -2,8 +2,16 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
+use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
+
 class TabularDataEventFormatter
 {
+    /**
+     * Class used to filter out HTML from strings.
+     * @var StripHtmlStringFilter
+     */
+    protected $htmlFilter;
+
     /**
      * A list of all included properties
      * @var string[]
@@ -22,6 +30,7 @@ class TabularDataEventFormatter
      */
     public function __construct($include)
     {
+        $this->htmlFilter = new StripHtmlStringFilter();
         $this->includedProperties = $this->includedOrDefaultProperties($include);
     }
 
@@ -136,7 +145,8 @@ class TabularDataEventFormatter
                 'name' => 'omschrijving',
                 'include' => function ($event) {
                     if (property_exists($event, 'description')) {
-                        return reset($event->description);
+                        $description = reset($event->description);
+                        return $this->htmlFilter->filter($description);
                     }
                 },
                 'property' => 'description'

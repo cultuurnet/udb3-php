@@ -205,23 +205,6 @@ class EventExportService implements EventExportServiceInterface
         }
     }
 
-    public function exportEventsAsJsonLD(
-        EventExportQuery $query,
-        $address = null,
-        LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
-    ) {
-        return $this->exportEvents(
-            new JSONLDFileFormat($include),
-            $query,
-            $address,
-            $logger,
-            $selection
-        );
-    }
-
-
     /**
      * Generator that yields each unique search result.
      *

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
-
 use CultuurNet\UDB3\EventExport\FileFormat\FileFormatInterface;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Web\EmailAddress;
@@ -15,7 +14,7 @@ interface EventExportServiceInterface
     /**
      * @param FileFormatInterface $fileFormat
      * @param EventExportQuery $query
-     * @param null|EmailAddress $email
+     * @param null|EmailAddress $address
      * @param null|LoggerInterface $logger
      * @param null|string[] $selection
      *

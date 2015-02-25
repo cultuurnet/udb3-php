@@ -26,7 +26,6 @@ class EventExportService implements EventExportServiceInterface
      * @var SearchServiceInterface
      */
     protected $searchService;
-
     /**
      * @var UuidGeneratorInterface
      */
@@ -203,10 +202,15 @@ class EventExportService implements EventExportServiceInterface
         }
     }
 
+
     /**
      * Generator that yields each unique search result.
      *
-     * @param string $query
+     * @param $totalItemCount
+     * @param $query
+     * @param LoggerInterface $logger
+     *
+     * @return \Generator
      */
     private function search($totalItemCount, $query, LoggerInterface $logger)
     {
@@ -257,55 +261,14 @@ class EventExportService implements EventExportServiceInterface
     }
 
     /**
-     * @param string $address
+     * @param EmailAddress $address
      * @param string $url
      */
-    protected function notifyByMail($address, $url)
+    protected function notifyByMail(EmailAddress $address, $url)
     {
         $this->mailer->sendNotificationMail(
             $address,
             new EventExportResult($url)
         );
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function exportEventsAsCSV(
-        EventExportQuery $query,
-        $address = null,
-        LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
-    ) {
-        var_dump(__METHOD__);
-        var_dump($include);
-        return $this->exportEvents(
-            new CSVFileFormat($include),
-            $query,
-            $address,
-            $logger,
-            $selection
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function exportEventsAsOOXML(
-        EventExportQuery $query,
-        $address = null,
-        LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
-    ) {
-        return $this->exportEvents(
-            new OOXMLFileFormat($include),
-            $query,
-            $address,
-            $logger,
-            $selection
-        );
-    }
-
 }

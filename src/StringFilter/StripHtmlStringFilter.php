@@ -48,8 +48,7 @@ class StripHtmlStringFilter implements StringFilterInterface
         if ($selfClosing) {
             // Find the self-closing tag, including its attributes and optionally a closing slash.
             $pattern .= '<' . $tag . '\\s*[\\/]?>';
-        }
-        else {
+        } else {
             // Find the closing tag.
             $pattern .= '<\\/' . $tag . '>';
         }

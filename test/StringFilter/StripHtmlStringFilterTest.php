@@ -6,24 +6,10 @@ class StripHtmlStringFilterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     */
-    public function it_strips_html_tags()
-    {
-        $original = '<span>Lorem ipsum</span> <strong>dolor</strong>';
-        $expected = 'Lorem ipsum dolor';
-
-        $filter = new StripHtmlStringFilter();
-        $actual = $filter->filter($original);
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    /**
-     * @test
      *
-     * @dataProvider newlineDataProvider
+     * @dataProvider htmlStringDataProvider
      */
-    public function it_converts_paragraphs_and_breaks_into_newlines($original, $expected)
+    public function it_converts_html_strings_to_plain_text($original, $expected)
     {
         $filter = new StripHtmlStringFilter();
         $actual = $filter->filter($original);
@@ -36,11 +22,14 @@ class StripHtmlStringFilterTest extends \PHPUnit_Framework_TestCase
      * @return array
      *   Array of arrays, each individual array contains all arguments for the test method.
      */
-    public function newlineDataProvider()
+    public function htmlStringDataProvider()
     {
         $single_newline = 'Line 1.' . PHP_EOL . 'Line 2.';
         $double_newline = 'Line 1.' . PHP_EOL . PHP_EOL . 'Line 2.';
         return array(
+            array('<span>Lorem ipsum</span> <strong>dolor</strong>.', 'Lorem ipsum dolor.'),
+            array('Lorem &amp; ipsum.', 'Lorem & ipsum.'),
+            array('Lorem & impsum.', 'Lorem & impsum.'),
             array('<p>Line 1.</p><p>Line 2.</p>', $single_newline),
             array('Line 1.<br />Line 2.<br />', $single_newline),
             array('<p>Line 1.</p><br /><p>Line 2.</p><br /><br />', $double_newline),

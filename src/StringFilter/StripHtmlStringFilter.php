@@ -15,6 +15,9 @@ class StripHtmlStringFilter implements StringFilterInterface
         // Add newlines after closing paragraph tags.
         $string = $this->addNewLinesAfterClosingTags($string, 'p');
 
+        // Decode all HTML entities, like &amp;, so they are human-readable.
+        $string = html_entity_decode($string);
+
         // Strip all HTML tags.
         $string = strip_tags($string);
 
@@ -37,7 +40,7 @@ class StripHtmlStringFilter implements StringFilterInterface
      * @return string
      *   Processed string.
      */
-    public function addNewLinesAfterClosingTags($string, $tag, $selfClosing = false)
+    protected function addNewLinesAfterClosingTags($string, $tag, $selfClosing = false)
     {
         // Start of the pattern.
         $pattern = '/';

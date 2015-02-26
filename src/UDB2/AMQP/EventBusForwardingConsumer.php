@@ -83,7 +83,11 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
     public function consume(AMQPMessage $message)
     {
         if ($this->logger) {
-            $this->logger->info('received message with content-type ' . $message->get('content_type'));
+            $this->logger->info(
+                'received message with content-type ' . $message->get(
+                    'content_type'
+                )
+            );
         }
 
         $contentType = new String($message->get('content_type'));
@@ -95,8 +99,7 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             $event = $deserializer->deserialize(
                 new String($message->body)
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             if ($this->logger) {
                 $this->logger->error($e->getMessage());
             }

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-
 use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Domain\Metadata;
 
@@ -58,8 +57,7 @@ class SimpleContextAwareCommandBusTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function on_dispatch_it_passes_its_context_to_context_aware_command_handlers(
-    )
+    public function on_dispatch_it_passes_its_context_to_context_aware_command_handlers()
     {
         $context = new Metadata(
             array(
@@ -86,8 +84,6 @@ class SimpleContextAwareCommandBusTest extends \PHPUnit_Framework_TestCase
 
         $this->commandBus->dispatch(new \stdClass());
     }
-
-
 }
 
 abstract class TestCommandHandler implements CommandHandlerInterface, ContextAwareInterface

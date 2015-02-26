@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\TrimmedString;
 
 class Title extends TrimmedString implements \JsonSerializable
@@ -22,7 +21,7 @@ class Title extends TrimmedString implements \JsonSerializable
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return (string)$this;
     }

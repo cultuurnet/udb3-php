@@ -1,0 +1,6 @@
+site_name: UDB3
+site_author: CultuurNet Vlaanderen vzw
+theme: readthedocs
+pages:
+  - ['index.md', 'Introduction']
+  - ['installation.md', 'Installation']

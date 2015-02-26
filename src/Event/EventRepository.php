@@ -17,13 +17,12 @@ use Broadway\Repository\RepositoryInterface;
 
 /**
  * Class EventRepository
- * @package CultuurNet\UDB3\Event
  *
  * This class used to extend EventSourcingRepository from the Broadway library,
  * however we had to change it to publish the decorated event stream to the
  * event bus, instead of the non-decorated event stream. See the add() method.
  *
- * @see https://github.com/qandidate-labs/broadway/issues/61
+ * @link https://github.com/qandidate-labs/broadway/issues/61
  */
 class EventRepository implements RepositoryInterface
 {
@@ -38,9 +37,9 @@ class EventRepository implements RepositoryInterface
      * @param EventStreamDecoratorInterface[] $eventStreamDecorators
      */
     public function __construct(
-      EventStoreInterface $eventStore,
-      EventBusInterface $eventBus,
-      array $eventStreamDecorators = array()
+        EventStoreInterface $eventStore,
+        EventBusInterface $eventBus,
+        array $eventStreamDecorators = array()
     ) {
         $this->eventStore            = $eventStore;
         $this->eventBus              = $eventBus;

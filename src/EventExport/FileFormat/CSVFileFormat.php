@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
-
 use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
 use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;
 
@@ -42,5 +41,4 @@ class CSVFileFormat implements FileFormatInterface
             $this->include
         );
     }
-
 }

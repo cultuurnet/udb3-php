@@ -5,19 +5,15 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
-
-use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
 use CultuurNet\UDB3\EventExport\FileFormat\FileFormatInterface;
-use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
-use CultuurNet\UDB3\EventExport\FileFormat\OOXMLFileFormat;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
+use ValueObjects\Web\EmailAddress;
 
 class EventExportService implements EventExportServiceInterface
 {
@@ -30,7 +26,6 @@ class EventExportService implements EventExportServiceInterface
      * @var SearchServiceInterface
      */
     protected $searchService;
-
     /**
      * @var UuidGeneratorInterface
      */
@@ -72,10 +67,10 @@ class EventExportService implements EventExportServiceInterface
         $this->mailer = $mailer;
     }
 
-    protected function exportEvents(
+    public function exportEvents(
         FileFormatInterface $fileFormat,
         EventExportQuery $query,
-        $address = null,
+        EmailAddress $address = null,
         LoggerInterface $logger = null,
         $selection = null
     ) {
@@ -129,7 +124,6 @@ class EventExportService implements EventExportServiceInterface
 
             if ($selection) {
                 foreach ($selection as $eventId) {
-                    
                     $event = $this->eventService->getEvent($eventId);
                     $tmpFile->exportEvent($event);
 
@@ -164,9 +158,10 @@ class EventExportService implements EventExportServiceInterface
 
             $tmpFile->close();
 
-            $finalPath = realpath($this->publicDirectory) . '/' . basename(
-                    $tmpPath
-                ) . '.' . $fileFormat->getFileNameExtension();
+            $finalPath =
+                realpath($this->publicDirectory) .
+                '/' . basename($tmpPath) .
+                '.' . $fileFormat->getFileNameExtension();
 
             $moved = rename($tmpPath, $finalPath);
 
@@ -207,27 +202,15 @@ class EventExportService implements EventExportServiceInterface
         }
     }
 
-    public function exportEventsAsJsonLD(
-        EventExportQuery $query,
-        $address = null,
-        LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
-    ) {
-        return $this->exportEvents(
-            new JSONLDFileFormat($include),
-            $query,
-            $address,
-            $logger,
-            $selection
-        );
-    }
-
 
     /**
      * Generator that yields each unique search result.
      *
-     * @param string $query
+     * @param $totalItemCount
+     * @param $query
+     * @param LoggerInterface $logger
+     *
+     * @return \Generator
      */
     private function search($totalItemCount, $query, LoggerInterface $logger)
     {
@@ -278,55 +261,14 @@ class EventExportService implements EventExportServiceInterface
     }
 
     /**
-     * @param string $address
+     * @param EmailAddress $address
      * @param string $url
      */
-    protected function notifyByMail($address, $url)
+    protected function notifyByMail(EmailAddress $address, $url)
     {
         $this->mailer->sendNotificationMail(
             $address,
             new EventExportResult($url)
         );
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function exportEventsAsCSV(
-        EventExportQuery $query,
-        $address = null,
-        LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
-    ) {
-        var_dump(__METHOD__);
-        var_dump($include);
-        return $this->exportEvents(
-            new CSVFileFormat($include),
-            $query,
-            $address,
-            $logger,
-            $selection
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function exportEventsAsOOXML(
-        EventExportQuery $query,
-        $address = null,
-        LoggerInterface $logger = null,
-        $selection = null,
-        $include = null
-    ) {
-        return $this->exportEvents(
-            new OOXMLFileFormat($include),
-            $query,
-            $address,
-            $logger,
-            $selection
-        );
-    }
-
 }

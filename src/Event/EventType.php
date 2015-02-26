@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 class EventType
 {
     /**
@@ -39,5 +38,4 @@ class EventType
     {
         return $this->label;
     }
-
 }

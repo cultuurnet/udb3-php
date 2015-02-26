@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
 class OOXMLFileWriter implements TabularDataFileWriterInterface
 {
     /**
@@ -56,5 +55,4 @@ class OOXMLFileWriter implements TabularDataFileWriterInterface
         $objWriter = new \PHPExcel_Writer_Excel2007($this->spreadsheet);
         $objWriter->save($this->filePath);
     }
-
 }

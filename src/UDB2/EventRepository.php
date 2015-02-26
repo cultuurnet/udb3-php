@@ -388,9 +388,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
         $concertCategory = new \CultureFeed_Cdb_Data_Category(
-          'eventtype',
-          $eventCreated->getType()->getId(),
-          $eventCreated->getType()->getLabel()
+            'eventtype',
+            $eventCreated->getType()->getId(),
+            $eventCreated->getType()->getLabel()
         );
         $event->getCategories()->add($concertCategory);
 

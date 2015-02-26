@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Iri;
 
-
 class CallableIriGeneratorTest extends \PHPUnit_Framework_TestCase
 {
     public function testUsesResultOfCallable()
@@ -26,4 +25,4 @@ class CallableIriGeneratorTest extends \PHPUnit_Framework_TestCase
             $iriGenerator->iri('bar')
         );
     }
-} 
+}

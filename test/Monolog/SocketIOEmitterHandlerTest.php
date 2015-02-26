@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Monolog;
 
-
 use Monolog\Logger;
 use SocketIO\Emitter;
 

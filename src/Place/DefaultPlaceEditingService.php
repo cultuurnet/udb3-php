@@ -23,11 +23,6 @@ class DefaultEventEditingService implements PlaceEditingServiceInterface
     use \CultuurNet\UDB3\OfferEditingTrait;
 
     /**
-     * @var PlaceServiceInterface
-     */
-    protected $placeService;
-
-    /**
      * @var CommandBusInterface
      */
     protected $commandBus;
@@ -48,12 +43,10 @@ class DefaultEventEditingService implements PlaceEditingServiceInterface
      * @param UuidGeneratorInterface $uuidGenerator
      */
     public function __construct(
-        PlaceServiceInterface $placeService,
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
         RepositoryInterface $placeRepository
     ) {
-        $this->placeService = $placeService;
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
         $this->placeRepository = $placeRepository;

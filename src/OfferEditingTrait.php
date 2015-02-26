@@ -45,10 +45,10 @@ trait OfferEditingTrait {
 
       $this->guardId($id);
 
-      $commandClass = $this->getCommandClass('UpdateDescription');
+      $commandClass = $this->getCommandClass('updateTypicalAgeRange');
 
       return $this->commandBus->dispatch(
-          new UpdateTypicalAgeRange($id, $ageRange)
+          new $commandClass($id, $ageRange)
       );
 
     }

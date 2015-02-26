@@ -20,4 +20,12 @@ class Place extends Actor
         $this->apply(new DescriptionUpdated($this->actorId, $description));
     }
 
+    /**
+     * @param string $typicalAgeRange
+     */
+    public function updateTypicalAgeRange($typicalAgeRange)
+    {
+        $this->apply(new TypicalAgeRangeUpdated($this->actorId, $typicalAgeRange));
+    }
+
 }

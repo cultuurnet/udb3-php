@@ -5,25 +5,15 @@ namespace CultuurNet\UDB3\StringFilter;
 class StripHtmlStringFilter implements StringFilterInterface
 {
     /**
-     * Flag to indicate that a tag is self-closing.
-     */
-    const TAG_SELF_CLOSING = 1;
-
-    /**
-     * Flag to indicate that 2 newlines should be appended after a tag.
-     */
-    const TAG_APPEND_DOUBLE_NEWLINE = 2;
-
-    /**
      * {@inheritdoc}
      */
     public function filter($string)
     {
-        // Add newlines after break tags.
-        $string = $this->addNewlinesAfterClosingTags($string, 'br', self::TAG_SELF_CLOSING);
+        // Add one newline after each break tag.
+        $string = $this->setNewlinesAfterClosingTags($string, 'br', 1, true);
 
-        // Add newlines after closing paragraph tags.
-        $string = $this->addNewlinesAfterClosingTags($string, 'p', self::TAG_APPEND_DOUBLE_NEWLINE);
+        // Add two newlines after each closing paragraph tag.
+        $string = $this->setNewlinesAfterClosingTags($string, 'p', 2);
 
         // Decode all HTML entities, like &amp;, so they are human-readable.
         $string = html_entity_decode($string);
@@ -41,25 +31,27 @@ class StripHtmlStringFilter implements StringFilterInterface
     }
 
     /**
-     * Adds newlines after each occurrence of a specific closing HTML tag, unless there's already one.
+     * Sets a specific amount of newlines after each occurrence of a specific closing HTML tag.
      *
      * @param string $string
-     *   String to add newlines to.
+     *   String to set newlines in.
      * @param string $tag
-     *   Tag name. For example "br" to add a newline after each "<br />" or "<br>" (if self-closing flag is set), or
-     *   "p" to add a newline after each "</p>" (if not self-closing).
-     * @param int $flags
-     *   Optional flags to set.
+     *   Tag name. For example "br" to set a newline after each "<br />" or "<br>" (if self-closing flag is set), or
+     *   "p" to set a newline after each "</p>" (if not self-closing).
+     * @param int $newlineCount
+     *   Amount of newlines to set after the closing tag. If any newlines are set already, they will be removed.
+     * @param bool $selfClosing
+     *   Indicates whether the tag is self-closing (<br />) or not (<p></p>).
      *
      * @return string
      *   Processed string.
      */
-    protected function addNewlinesAfterClosingTags($string, $tag, $flags = 0)
+    protected function setNewlinesAfterClosingTags($string, $tag, $newlineCount = 1, $selfClosing = false)
     {
         // Start of the pattern.
         $pattern = '/';
 
-        if ($flags & self::TAG_SELF_CLOSING) {
+        if ($selfClosing) {
             // Find the self-closing tag, including its attributes and optionally a closing slash.
             // .*? means: Get any characters, 0 or more, but non-greedy so stop when the first / or > is encountered.
             $pattern .= '(<' . $tag . '.*?[\\/]?>)';
@@ -75,7 +67,10 @@ class StripHtmlStringFilter implements StringFilterInterface
         $pattern .= '/i';
 
         // Append all pattern matches with a newline character (or 2 if specified).
-        $newlines = ($flags & self::TAG_APPEND_DOUBLE_NEWLINE) ? PHP_EOL . PHP_EOL : PHP_EOL;
+        $newlines = '';
+        for ($i = 0; $i < $newlineCount; $i++) {
+            $newlines .= PHP_EOL;
+        }
 
         // Loop over all matching tags from the string.
         return preg_replace_callback($pattern, function($match) use ($newlines) {

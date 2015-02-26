@@ -19,7 +19,9 @@ interface EventExportServiceInterface
     public function exportEventsAsJsonLD(
         EventExportQuery $query,
         $address = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $selection = null,
+        $include = null
     );
 
     /**
@@ -31,6 +33,22 @@ interface EventExportServiceInterface
     public function exportEventsAsCSV(
         EventExportQuery $query,
         $address = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $selection = null,
+        $include = null
+    );
+
+    /**
+     * @param EventExportQuery $query
+     * @param LoggerInterface $logger
+     * @return string
+     *   Publicly accessible path of the file
+     */
+    public function exportEventsAsOOXML(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null,
+        $selection = null,
+        $include = null
     );
 }

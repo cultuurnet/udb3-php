@@ -10,6 +10,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
 use CultuurNet\UDB3\EventExport\FileFormat\FileFormatInterface;
 use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
+use CultuurNet\UDB3\EventExport\FileFormat\OOXMLFileFormat;
 use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
 use CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface;
 use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
@@ -133,6 +134,16 @@ class EventExportService implements EventExportServiceInterface
                 foreach($selection as $eventId) {
                     $event = $this->eventService->getEvent($eventId);
                     $tmpFile->exportEvent($event);
+
+                    if ($logger) {
+                        $logger->info(
+                          'task_completed',
+                          array(
+                            'type' => 'event_was_exported',
+                            'event_id' => $eventId,
+                          )
+                        );
+                    }
                 }
             } else {
                 foreach ($this->search(
@@ -141,6 +152,15 @@ class EventExportService implements EventExportServiceInterface
                   $logger
                 ) as $event) {
                     $tmpFile->exportEvent($event);
+
+                    if ($logger) {
+                        $logger->info(
+                          'task_completed',
+                          array(
+                            'type' => 'event_was_exported'
+                          )
+                        );
+                    }
                 }
             }
 
@@ -166,9 +186,8 @@ class EventExportService implements EventExportServiceInterface
 
             if ($logger) {
                 $logger->info(
-                    'task_completed',
+                    'job_info',
                     [
-                        'type' => 'export',
                         'location' => $finalUrl,
                     ]
                 );
@@ -194,10 +213,11 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null
+        $selection = null,
+        $include = null
     ) {
         return $this->exportEvents(
-            new JSONLDFileFormat(),
+            new JSONLDFileFormat($include),
             $query,
             $address,
             $logger,
@@ -278,10 +298,32 @@ class EventExportService implements EventExportServiceInterface
         EventExportQuery $query,
         $address = null,
         LoggerInterface $logger = null,
-        $selection = null
+        $selection = null,
+        $include = null
+    ) {
+        var_dump(__METHOD__);
+        var_dump($include);
+        return $this->exportEvents(
+            new CSVFileFormat($include),
+            $query,
+            $address,
+            $logger,
+            $selection
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function exportEventsAsOOXML(
+        EventExportQuery $query,
+        $address = null,
+        LoggerInterface $logger = null,
+        $selection = null,
+        $include = null
     ) {
         return $this->exportEvents(
-            new CSVFileFormat(),
+            new OOXMLFileFormat($include),
             $query,
             $address,
             $logger,

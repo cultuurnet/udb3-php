@@ -5,12 +5,11 @@
 
 namespace CultuurNet\UDB3\EventExport\Command;
 
-
 use CultuurNet\UDB3\EventExport\EventExportQuery;
 use ValueObjects\Web\EmailAddress;
 
-class ExportEventsAsJsonLD
-{
+class ExportEventsAsOOXML {
+
     /**
      * @var EventExportQuery
      */
@@ -37,8 +36,7 @@ class ExportEventsAsJsonLD
      * @param string[] $selection
      * @param string[] $include
      */
-    public function __construct(EventExportQuery $query, EmailAddress $address = null,
-      $selection = null, $include = null)
+    public function __construct(EventExportQuery $query, EmailAddress $address = null, $selection = null, $include = null)
     {
         if ($query->isEmpty()) {
             throw new \RuntimeException('Query can not be empty');
@@ -47,6 +45,7 @@ class ExportEventsAsJsonLD
         $this->query = $query;
         $this->address = $address;
         $this->selection = $selection;
+
         $this->include = $include;
     }
 

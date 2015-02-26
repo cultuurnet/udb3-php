@@ -3,9 +3,12 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Theme;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -15,16 +18,18 @@ class Event extends EventSourcedAggregateRoot
     /**
      * Factory method to create a new event.
      *
-     * @param string $eventId
      * @param Title $title
-     * @param string $location
-     * @param \DateTime $date
+     * @param EventType $eventType
+     * @param Theme $theme
+     * @param Location $location
+     * @param CalendarBase $calendar
+     *
      * @return Event
      */
-    public static function create($eventId, Title $title, $location, \DateTime $date, EventType $type)
+    public static function create($eventId, Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar)
     {
         $event = new self();
-        $event->apply(new EventCreated($eventId, $title, $location, $date, $type));
+        $event->apply(new EventCreated($eventId, $title, $eventType, $theme, $location, $calendar));
 
         return $event;
     }

@@ -6,9 +6,10 @@
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
 
-use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
+use CultuurNet\UDB3\EventExport\FileWriter\OOXMLFileWriter;
+use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;
 
-class JSONLDFileFormat implements FileFormatInterface
+class OOXMLFileFormat implements FileFormatInterface
 {
     /**
      * @var string[]
@@ -22,13 +23,13 @@ class JSONLDFileFormat implements FileFormatInterface
     {
         $this->include = $include;
     }
-
+    
     /**
      * @inheritdoc
      */
     public function getFileNameExtension()
     {
-        return 'json';
+        return 'xlsx';
     }
 
     /**
@@ -36,7 +37,10 @@ class JSONLDFileFormat implements FileFormatInterface
      */
     public function openWriter($filePath)
     {
-        return new JSONLDFileWriter($filePath);
+        return new TabularDataFileWriter(
+            new OOXMLFileWriter($filePath),
+            $this->include
+        );
     }
 
 }

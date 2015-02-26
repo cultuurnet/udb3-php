@@ -138,4 +138,56 @@ class PlaceLDProjector extends ActorLDProjector
 
         return $document->withBody($placeLd);
     }
+
+    /**
+     * Apply the description updated event to the place repository.
+     * @param \CultuurNet\UDB3\Place\DescriptionUpdated $descriptionUpdated
+     */
+    protected function applyDescriptionUpdated(
+      DescriptionUpdated $descriptionUpdated
+    ) {
+
+        $document = $this->loadDocumentFromRepository($descriptionUpdated);
+
+        $placeLD = $document->getBody();
+        $placeLD->description->{'nl'} = $descriptionUpdated->getDescription();
+
+        $this->repository->save($document->withBody($placeLD));
+    }
+
+    /**
+     * Apply the typical age range updated event to the event repository.
+     * @param \CultuurNet\UDB3\Event\TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(
+        TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
+
+        $eventLd = $document->getBody();
+
+        if ($typicalAgeRangeUpdated->getTypicalAgeRange() === "-1") {
+          unset($eventLd->typicalAgeRange);
+        }
+        else {
+          $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+        }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * @param PlaceEvent $place
+     * @return JsonDocument
+     */
+    protected function loadDocumentFromRepository(PlaceEvent $place)
+    {
+        $document = $this->repository->get($place->getPlaceId());
+
+        if (!$document) {
+            return $this->newDocument($place->getPlaceId());
+        }
+
+        return $document;
+    }
 }

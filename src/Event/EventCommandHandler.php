@@ -3,15 +3,15 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\CommandHandling\CommandHandler;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
+use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
+class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -24,7 +24,6 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
      * @var SearchServiceInterface
      */
     protected $searchService;
-
 
     public function __construct(
         RepositoryInterface $eventRepository,

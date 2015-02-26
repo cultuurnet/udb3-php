@@ -6,15 +6,17 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\Title;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\Theme;
 
-class DefaultPlaceEditingService implements PlaceEditingServiceInterface
+class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
 {
 
     use \CultuurNet\UDB3\OfferEditingTrait;
@@ -56,5 +58,14 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface
     {
     }
 
+    /**
+     * @param string $id
+     * @throws AggregateNotFoundException
+     */
+    public function guardId($id)
+    {
+        // This validates if the id is valid.
+        return $this->placeRepository->load($id);
+    }
 
 }

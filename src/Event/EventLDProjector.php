@@ -7,21 +7,31 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessageInterface;
-use Broadway\ReadModel\Projector;
+use CultureFeed_Cdb_Data_Calendar_PeriodList;
+use CultureFeed_Cdb_Data_Calendar_Permanent;
+use CultureFeed_Cdb_Data_Calendar_TimestampList;
+use CultureFeed_Cdb_Data_EventDetail;
+use CultureFeed_Cdb_Data_File;
+use CultureFeed_Cdb_Data_Language;
+use CultureFeed_Cdb_Data_Performer;
+use CultureFeed_Cdb_Data_Phone;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\ReadModel\Udb3Projector;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Timestamps;
+use DateTimeZone;
+use stdClass;
 
-class EventLDProjector extends Projector
+class EventLDProjector extends Udb3Projector
 {
     /**
      * @var DocumentRepositoryInterface
@@ -86,7 +96,7 @@ class EventLDProjector extends Projector
         return \DateTime::createFromFormat(
             'Y-m-d?H:i:s',
             $dateString,
-            new \DateTimeZone('Europe/Brussels')
+            new DateTimeZone('Europe/Brussels')
         );
     }
 
@@ -152,10 +162,10 @@ class EventLDProjector extends Projector
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());
         $eventLd = $document->getBody();
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
+        /** @var CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail[] $details */
+        /** @var CultureFeed_Cdb_Data_EventDetail[] $details */
         $details = $udb2Event->getDetails();
 
         foreach ($details as $languageDetail) {
@@ -179,7 +189,7 @@ class EventLDProjector extends Projector
         }
 
         $pictures = $detail->getMedia()->byMediaType(
-            \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
+            CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
         );
 
         $pictures->rewind();
@@ -240,7 +250,7 @@ class EventLDProjector extends Projector
                     $organizer['email'][] = $mail->getMailAddress();
                 }
                 $organizer['phone'] = array();
-                /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+                /** @var CultureFeed_Cdb_Data_Phone[] $phones */
                 $phones = $contact_info_cdb->getPhones();
                 foreach ($phones as $phone) {
                     $organizer['phone'][] = $phone->getNumber();
@@ -302,9 +312,9 @@ class EventLDProjector extends Projector
         $calendarType = 'unknown';
         $calendar = $udb2Event->getCalendar();
 
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+        if ($calendar instanceof CultureFeed_Cdb_Data_Calendar_Permanent) {
             $calendarType = 'permanent';
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+        } elseif ($calendar instanceof CultureFeed_Cdb_Data_Calendar_PeriodList) {
             $calendarType = 'periodic';
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
@@ -323,7 +333,7 @@ class EventLDProjector extends Projector
 
             $eventLd->startDate = $startDate->format('c');
             $eventLd->endDate = $endDate->format('c');
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        } elseif ($calendar instanceof CultureFeed_Cdb_Data_Calendar_TimestampList) {
             $calendarType = 'single';
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
@@ -377,12 +387,12 @@ class EventLDProjector extends Projector
             $eventLd->typicalAgeRange = "{$ageFrom}-";
         }
 
-        /** @var \CultureFeed_Cdb_Data_Performer $performer */
+        /** @var CultureFeed_Cdb_Data_Performer $performer */
         $performers = $detail->getPerformers();
         if ($performers) {
             foreach ($performers as $performer) {
                 if ($performer->getLabel()) {
-                    $performerData = new \stdClass();
+                    $performerData = new stdClass();
                     $performerData->name = $performer->getLabel();
                     $eventLd->performer[] = $performerData;
                 }
@@ -390,7 +400,7 @@ class EventLDProjector extends Projector
         }
 
         $eventLd->language = [];
-        /** @var \CultureFeed_Cdb_Data_Language $udb2Language */
+        /** @var CultureFeed_Cdb_Data_Language $udb2Language */
         $languages = $udb2Event->getLanguages();
         if ($languages) {
             foreach ($languages as $udb2Language) {
@@ -549,7 +559,7 @@ class EventLDProjector extends Projector
 
     /**
      * Apply the description updated event to the event repository.
-     * @param \CultuurNet\UDB3\Event\DescriptionUpdated $descriptionUpdated
+     * @param DescriptionUpdated $descriptionUpdated
      */
     protected function applyDescriptionUpdated(
       DescriptionUpdated $descriptionUpdated
@@ -564,7 +574,7 @@ class EventLDProjector extends Projector
 
     /**
      * Apply the typical age range updated event to the event repository.
-     * @param \CultuurNet\UDB3\Event\TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
     protected function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated

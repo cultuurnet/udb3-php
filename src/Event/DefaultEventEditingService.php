@@ -16,10 +16,11 @@ use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Theme;
 
-class DefaultEventEditingService implements EventEditingServiceInterface
+class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
 {
 
     use \CultuurNet\UDB3\OfferEditingTrait;
@@ -73,7 +74,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function translateTitle($eventId, Language $language, $title)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
         $this->guardTranslationLanguage($language);
 
         return $this->commandBus->dispatch(
@@ -86,7 +87,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function translateDescription($eventId, Language $language, $description)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
         $this->guardTranslationLanguage($language);
 
         return $this->commandBus->dispatch(
@@ -95,39 +96,13 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function updateDescription($eventId, $description) {
-
-      $this->guardEventId($eventId);
-
-      return $this->commandBus->dispatch(
-          new UpdateDescription($eventId, $description)
-      );
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function updateTypicalAgeRange($eventId, $ageRange) {
-
-      $this->guardEventId($eventId);
-
-      return $this->commandBus->dispatch(
-          new UpdateTypicalAgeRange($eventId, $ageRange)
-      );
-
-    }
-
-    /**
-     * @param string $eventId
+     * @param string $id
      * @throws EventNotFoundException
      */
-    protected function guardEventId($eventId)
+    public function guardId($id)
     {
         // This validates if the eventId is valid.
-        $this->eventService->getEvent($eventId);
+        $this->eventService->getEvent($id);
     }
 
     protected function guardTranslationLanguage(Language $language)
@@ -145,7 +120,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function tag($eventId, Keyword $keyword)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
             new Tag($eventId, $keyword)
@@ -160,7 +135,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function eraseTag($eventId, Keyword $keyword)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
             new EraseTag($eventId, $keyword)

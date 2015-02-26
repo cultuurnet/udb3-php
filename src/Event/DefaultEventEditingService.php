@@ -21,6 +21,9 @@ use CultuurNet\UDB3\Theme;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
 {
+
+    use \CultuurNet\UDB3\OfferEditingTrait;
+
     /**
      * @var EventServiceInterface
      */

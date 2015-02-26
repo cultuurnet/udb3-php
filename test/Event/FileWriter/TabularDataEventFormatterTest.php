@@ -96,4 +96,45 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
     }
+
+    /**
+     * @test
+     * @dataProvider eventDateProvider
+     */
+    public function it_formats_dates($eventFile, $created, $startDate, $endDate)
+    {
+        $expectedFormatting = [
+            'created' => $created,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ];
+
+        $includedProperties = [
+            'created',
+            'startDate',
+            'endDate'
+        ];
+        $event = $this->getJSONEventFromFile($eventFile);
+        $formatter = new TabularDataEventFormatter($includedProperties);
+        $formattedEvent = $formatter->formatEvent($event);
+
+        // For some reason the ID is always included in the formatted event, even if we don't want it to be.
+        unset($formattedEvent['id']);
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * Test data provider for it_formats_dates().
+     *
+     * @return array
+     *   Array of individual arrays, each containing the arguments for the test method.
+     */
+    public function eventDateProvider()
+    {
+        return array(
+            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30'),
+            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', ''),
+        );
+    }
 }

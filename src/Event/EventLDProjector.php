@@ -572,7 +572,13 @@ class EventLDProjector extends Projector
         $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
 
         $eventLd = $document->getBody();
-        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+
+        if ($typicalAgeRangeUpdated->getTypicalAgeRange() === "-1") {
+          unset($eventLd->typicalAgeRange);
+        }
+        else {
+          $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+        }
 
         $this->repository->save($document->withBody($eventLd));
     }

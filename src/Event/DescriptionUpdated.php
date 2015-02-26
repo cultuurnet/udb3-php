@@ -12,12 +12,7 @@ namespace CultuurNet\UDB3\Event;
  */
 class DescriptionUpdated  extends EventEvent
 {
-
-    /**
-     * The new description.
-     * @var string
-     */
-    protected $description;
+    use \CultuurNet\UDB3\DescriptionUpdatedTrait;
 
     /**
      * @param string $id
@@ -28,23 +23,5 @@ class DescriptionUpdated  extends EventEvent
         parent::__construct($id);
         $this->description = $description;
     }
-
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
-    {
-        return parent::serialize() + array(
-            'description' => $this->description,
-        );
-    }
-
+    
 }

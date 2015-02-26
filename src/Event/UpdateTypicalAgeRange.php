@@ -12,34 +12,11 @@ namespace CultuurNet\UDB3\Event;
  */
 class UpdateTypicalAgeRange {
 
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * The new typical age range.
-     * @var string
-     */
-    protected $typicalAgeRange;
+    use \CultuurNet\UDB3\UpdateTypicalAgeRangeTrait;
 
     public function __construct($id, $typicalAgeRange) {
       $this->id = $id;
       $this->typicalAgeRange = $typicalAgeRange;
-    }
-
-    /**
-     * @return string
-     */
-    function getId() {
-      return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    function getTypicalAgeRange() {
-      return $this->typicalAgeRange;
     }
 
 }

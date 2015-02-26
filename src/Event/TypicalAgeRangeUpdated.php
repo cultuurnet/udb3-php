@@ -10,14 +10,10 @@ namespace CultuurNet\UDB3\Event;
 /**
  * Description of TypicalAgeRangeUpdated
  */
-class TypicalAgeRangeUpdated  extends EventEvent
+class TypicalAgeRangeUpdated extends EventEvent
 {
 
-    /**
-     * The new typical age range.
-     * @var string
-     */
-    protected $typicalAgeRange;
+    use \CultuurNet\UDB3\TypicalAgeRangeUpdatedTrait;
 
     /**
      * @param string $id
@@ -27,24 +23,6 @@ class TypicalAgeRangeUpdated  extends EventEvent
     {
         parent::__construct($id);
         $this->typicalAgeRange = $typicalAgeRange;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTypicalAgeRange()
-    {
-        return $this->typicalAgeRange;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
-    {
-        return parent::serialize() + array(
-            'typicalAgeRange' => $this->typicalAgeRange,
-        );
     }
 
 }

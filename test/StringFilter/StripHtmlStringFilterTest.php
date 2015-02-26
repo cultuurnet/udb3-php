@@ -33,6 +33,7 @@ class StripHtmlStringFilterTest extends \PHPUnit_Framework_TestCase
             array('Line 1.<br />Line 2.<br />', $single_newline),
             array('Line 1.<br />' . PHP_EOL . 'Line 2.', $single_newline),
             array('<br />Line 1.<br /><br />Line 2.<br />', $double_newline),
+            array('<br />Line 1.<br /><br /><br />Line 2.<br />', $double_newline),
             array('<p>Line 1.</p><p>Line 2.</p>', $double_newline),
             array('<p>Line 1.</p>' . PHP_EOL . '<p>Line 2.</p>', $double_newline),
             array('<p>Line 1.</p><p>Line 2.</p><br /><br />', $double_newline),

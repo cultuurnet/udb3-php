@@ -10,14 +10,11 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\PlaceEditingServiceInterface;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\Title;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\PlaceServiceInterface;
 use CultuurNet\UDB3\Theme;
-use Drupal\views\Plugin\views\area\Title;
 
-class DefaultEventEditingService implements PlaceEditingServiceInterface
+class DefaultPlaceEditingService implements PlaceEditingServiceInterface
 {
 
     use \CultuurNet\UDB3\OfferEditingTrait;
@@ -38,9 +35,9 @@ class DefaultEventEditingService implements PlaceEditingServiceInterface
     protected $placeRepository;
 
     /**
-     * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
+     * @param RepositoryInterface $placeRepository
      */
     public function __construct(
         CommandBusInterface $commandBus,

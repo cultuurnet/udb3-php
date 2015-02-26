@@ -3,11 +3,13 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\Title;
 use CultuurNet\UDB3\Location;
-use Drupal\Core\Updater\Theme;
+use CultuurNet\UDB3\Theme;
 
 interface PlaceEditingServiceInterface
 {

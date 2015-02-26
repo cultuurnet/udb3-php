@@ -318,15 +318,13 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                 // if the place is not known.
                 $this->placeService->getEntity($location->getCdbid());
             }
-        }
-        catch (EntityNotFoundException $e) {
+        } catch (EntityNotFoundException $e) {
             if ($this->logger) {
                 $this->logger->error(
                     "Unable to retrieve location with ID {$location->getCdbid(
                     )}, of event {$udb2Event->getCdbId()}."
                 );
-            }
-            else {
+            } else {
                 throw $e;
             }
         }
@@ -344,8 +342,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                     "Unable to retrieve organizer with ID {$organizer->getCdbid(
                     )}, of event {$udb2Event->getCdbId()}."
                 );
-            }
-            else {
+            } else {
                 throw $e;
             }
         }

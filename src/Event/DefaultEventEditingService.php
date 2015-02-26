@@ -92,6 +92,32 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function updateDescription($eventId, $description) {
+
+      $this->guardEventId($eventId);
+
+      return $this->commandBus->dispatch(
+          new UpdateDescription($eventId, $description)
+      );
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateTypicalAgeRange($eventId, $ageRange) {
+
+      $this->guardEventId($eventId);
+
+      return $this->commandBus->dispatch(
+          new UpdateTypicalAgeRange($eventId, $ageRange)
+      );
+
+    }
+
+    /**
      * @param string $eventId
      * @throws EventNotFoundException
      */

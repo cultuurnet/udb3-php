@@ -548,6 +548,36 @@ class EventLDProjector extends Projector
     }
 
     /**
+     * Apply the description updated event to the event repository.
+     * @param \CultuurNet\UDB3\Event\DescriptionUpdated $descriptionUpdated
+     */
+    protected function applyDescriptionUpdated(
+      DescriptionUpdated $descriptionUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->description->{'nl'} = $descriptionUpdated->getDescription();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the typical age range updated event to the event repository.
+     * @param \CultuurNet\UDB3\Event\TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(
+        TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
      * @param string $id
      * @return JsonDocument
      */

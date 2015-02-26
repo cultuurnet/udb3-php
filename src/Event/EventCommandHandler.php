@@ -171,6 +171,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
     public function handleTranslateDescription(
         TranslateDescription $translateDescription
     ) {
+
         /** @var Event $event */
         $event = $this->eventRepository->load($translateDescription->getId());
 
@@ -180,6 +181,34 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         );
 
         $this->eventRepository->add($event);
+    }
+
+    public function handleUpdateDescription(UpdateDescription $updateDescription)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateDescription->getId());
+
+        $event->updateDescription(
+            $updateDescription->getDescription()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $typicalAgeRange)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($typicalAgeRange->getId());
+
+        $event->updateTypicalAgeRange(
+            $typicalAgeRange->getTypicalAgeRange()
+        );
+
+        $this->eventRepository->add($event);
+
     }
 
     public function handleTag(Tag $tag)

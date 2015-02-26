@@ -15,6 +15,8 @@ class Event extends EventSourcedAggregateRoot
     protected $eventId;
     protected $keywords = array();
 
+    const MAIN_LANGUAGE_CODE = 'nl';
+
     /**
      * Factory method to create a new event.
      *
@@ -140,6 +142,22 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(
             new DescriptionTranslated($this->eventId, $language, $description)
         );
+    }
+
+    /**
+     * @param string $description
+     */
+    public function updateDescription($description)
+    {
+        $this->apply(new DescriptionUpdated($this->eventId, $description));
+    }
+
+    /**
+     * @param string $typicalAgeRange
+     */
+    public function updateTypicalAgeRange($typicalAgeRange)
+    {
+        $this->apply(new TypicalAgeRangeUpdated($this->eventId, $typicalAgeRange));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

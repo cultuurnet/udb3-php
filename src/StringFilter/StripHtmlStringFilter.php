@@ -66,7 +66,7 @@ class StripHtmlStringFilter implements StringFilterInterface
         // End of the pattern. Use i to make it case-insensitive, as HTML tags can be both uppercase and lowercase.
         $pattern .= '/i';
 
-        // Append all pattern matches with a newline character (or 2 if specified).
+        // Append all pattern matches with a newline character (or more if specified).
         $newlines = '';
         for ($i = 0; $i < $newlineCount; $i++) {
             $newlines .= PHP_EOL;

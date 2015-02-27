@@ -261,7 +261,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         try {
             $event = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
-            // @todo Use Entry API instead of search service.
             $results = $this->search->search(
                 [new Query('cdbid:' . $id)]
             );

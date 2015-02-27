@@ -14,6 +14,7 @@ use CultuurNet\UDB2DomainEvents\EventUpdated;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Event;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use Psr\Log\LoggerAwareInterface;
@@ -27,6 +28,7 @@ use Psr\Log\LoggerTrait;
 class EventImporter implements EventListenerInterface, EventImporterInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
+    use DelegateEventHandlingToSpecificMethodTrait;
 
     /**
      * @var EventCdbXmlServiceInterface
@@ -64,26 +66,18 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     }
 
     /**
-     * @param DomainMessageInterface $domainMessage
+     * @param EventCreated $eventCreated
      */
-    public function handle(DomainMessageInterface $domainMessage)
-    {
-        $event = $domainMessage->getPayload();
-
-        if ($event instanceof EventCreated) {
-            $this->handleEventCreated($event);
-        } elseif ($event instanceof EventUpdated) {
-            $this->handleEventUpdated($event);
-        }
-    }
-
-    private function handleEventCreated(EventCreated $eventCreated)
+    private function applyEventCreated(EventCreated $eventCreated)
     {
         // @todo Should we add additional layer to check for author and timestamp?
         $this->createEventFromUDB2($eventCreated->getEventId());
     }
 
-    private function handleEventUpdated(EventUpdated $eventUpdated)
+    /**
+     * @param EventUpdated $eventUpdated
+     */
+    private function applyEventUpdated(EventUpdated $eventUpdated)
     {
         // @todo Should we add additional layer to check for author and timestamp?
         $this->updateEventFromUDB2($eventUpdated->getEventId());

@@ -99,6 +99,27 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             $event = $deserializer->deserialize(
                 new String($message->body)
             );
+
+            $events = [
+                new DomainMessage(
+                    'foo',
+                    0,
+                    new Metadata(),
+                    $event,
+                    DateTime::now()
+                ),
+            ];
+
+            $stream = new DomainEventStream($events);
+
+            if ($this->logger) {
+                $this->logger->info('passing on message to event bus');
+            }
+
+            $this->eventBus->publish(
+                $stream
+            );
+
         } catch (\Exception $e) {
             if ($this->logger) {
                 $this->logger->error($e->getMessage());
@@ -115,26 +136,6 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
             return;
         }
-
-        $events = [
-            new DomainMessage(
-                'foo',
-                0,
-                new Metadata(),
-                $event,
-                DateTime::now()
-            ),
-        ];
-
-        $stream = new DomainEventStream($events);
-
-        if ($this->logger) {
-            $this->logger->info('passing on message to event bus');
-        }
-
-        $this->eventBus->publish(
-            $stream
-        );
 
         $message->delivery_info['channel']->basic_ack(
             $message->delivery_info['delivery_tag']

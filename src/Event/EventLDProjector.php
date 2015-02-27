@@ -7,12 +7,14 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessageInterface;
+use Broadway\EventHandling\EventListenerInterface;
 use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -24,8 +26,10 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 
-class EventLDProjector extends Projector implements PlaceServiceInterface, OrganizerServiceInterface
+class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
+    use DelegateEventHandlingToSpecificMethodTrait;
+
     /**
      * @var DocumentRepositoryInterface
      */

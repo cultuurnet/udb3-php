@@ -16,4 +16,6 @@ interface CalendarInterface extends SerializableInterface
 {
 
     public function getType();
+    
+    public function isValid();
 }

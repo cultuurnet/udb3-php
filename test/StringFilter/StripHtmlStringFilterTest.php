@@ -7,10 +7,7 @@ class StripHtmlStringFilterTest extends StringFilterTest
     /**
      * {@inheritdoc}
      */
-    protected function getFilter()
-    {
-        return new StripHtmlStringFilter();
-    }
+    protected $filterClass = StripHtmlStringFilter::class;
 
     /**
      * @test

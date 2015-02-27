@@ -5,6 +5,19 @@ namespace CultuurNet\UDB3\StringFilter;
 abstract class StringFilterTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * Name of the filter class to instantiate.
+     *
+     * Use the class constant to set this property, eg. StringFilter::class.
+     *
+     * If you want to pass arguments to the filter's constructor, you should override getFilter() and construct the
+     * object yourself instead of setting this property.
+     *
+     * @var string
+     */
+    protected $filterClass;
+
+    /**
+     * Filter object.
      * @var StringFilterInterface
      */
     protected $filter;
@@ -22,7 +35,10 @@ abstract class StringFilterTest extends \PHPUnit_Framework_TestCase
      * Returns the filter to be used in all the test methods of the test.
      * @return StringFilterInterface
      */
-    abstract protected function getFilter();
+    protected function getFilter()
+    {
+        return new $this->filterClass();
+    }
 
     /**
      * Uses the $filter property to filter a string.

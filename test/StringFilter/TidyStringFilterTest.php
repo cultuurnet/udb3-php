@@ -7,10 +7,7 @@ class TidyStringFilterTest extends StringFilterTest
     /**
      * {@inheritdoc}
      */
-    protected function getFilter()
-    {
-        return new TidyStringFilter();
-    }
+    protected $filterClass = TidyStringFilter::class;
 
     /**
      * @test

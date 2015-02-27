@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\EventSourcing;
 
 use Broadway\Domain\Metadata;
+use Broadway\EventSourcing\MetadataEnrichment\MetadataEnricherInterface;
+use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
 
 class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,10 +26,7 @@ class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_a_metadata_enricher()
     {
-        $this->assertInstanceOf(
-            'Broadway\\EventSourcing\\MetadataEnrichment\\MetadataEnricherInterface',
-            $this->enricher
-        );
+        $this->assertInstanceOf(MetadataEnricherInterface::class, $this->enricher);
     }
 
     /**
@@ -35,10 +34,7 @@ class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_context_aware()
     {
-        $this->assertInstanceOf(
-            'CultuurNet\\UDB3\\CommandHandling\\ContextAwareInterface',
-            $this->enricher
-        );
+        $this->assertInstanceOf(ContextAwareInterface::class, $this->enricher);
     }
 
     /**

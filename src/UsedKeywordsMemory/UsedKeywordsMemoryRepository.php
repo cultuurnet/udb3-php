@@ -16,11 +16,6 @@ class UsedKeywordsMemoryRepository extends EventSourcingRepository
         EventBusInterface $eventBus,
         array $eventStreamDecorators = array()
     ) {
-        parent::__construct(
-            $eventStore,
-            $eventBus,
-            '\\CultuurNet\UDB3\\UsedKeywordsMemory\\UsedKeywordsMemory',
-            $eventStreamDecorators
-        );
+        parent::__construct($eventStore, $eventBus, UsedKeywordsMemory::class, $eventStreamDecorators);
     }
 }

@@ -33,8 +33,8 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->documentRepository = $this->getMock('\\CultuurNet\\UDB3\\Event\\ReadModel\\DocumentRepositoryInterface');
-        $this->eventRepository = $this->getMock('Broadway\\Repository\\RepositoryInterface');
+        $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->eventRepository = $this->getMock(RepositoryInterface::class);
         $this->eventRelationsRepository = $this->getMock(Event\ReadModel\Relations\RepositoryInterface::class);
         $this->eventService = new LocalEventService(
             $this->documentRepository,
@@ -54,7 +54,7 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
             ->with($id)
             ->willThrowException(new AggregateNotFoundException());
 
-        $this->setExpectedException('\\CultuurNet\\UDB3\\EventNotFoundException', 'Event with id: ' . $id . ' not found');
+        $this->setExpectedException(EventNotFoundException::class, 'Event with id: ' . $id . ' not found');
 
         $this->eventService->getEvent($id);
     }

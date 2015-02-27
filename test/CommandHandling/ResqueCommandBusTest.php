@@ -31,13 +31,8 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
     {
         $queueName = 'test';
 
-        $this->decoratedCommandBus = $this->getMock(
-            '\\CultuurNet\\UDB3\\CommandHandling\\TestContextAwareCommandBus'
-        );
-
-        $this->dispatcher = $this->getMock(
-            '\\Broadway\\EventDispatcher\\EventDispatcherInterface'
-        );
+        $this->decoratedCommandBus = $this->getMock(TestContextAwareCommandBus::class);
+        $this->dispatcher = $this->getMock(EventDispatcherInterface::class);
 
         $this->commandBus = new ResqueCommandBus(
             $this->decoratedCommandBus,

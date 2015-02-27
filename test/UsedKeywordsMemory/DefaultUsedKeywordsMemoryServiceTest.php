@@ -26,9 +26,7 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->repository = $this->getMock(
-            'Broadway\\Repository\\RepositoryInterface'
-        );
+        $this->repository = $this->getMock(RepositoryInterface::class);
         $this->service = new DefaultUsedKeywordsMemoryService(
             $this->repository
         );
@@ -42,9 +40,7 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
         $userId = 1;
         $keyword = new Keyword('classical rock');
 
-        $usedKeywordsMemory = $this->getMock(
-            'CultuurNet\\UDB3\\UsedKeywordsMemory\\UsedKeywordsMemory'
-        );
+        $usedKeywordsMemory = $this->getMock(UsedKeywordsMemory::class);
 
         $this->repository->expects($this->once())
             ->method('load')

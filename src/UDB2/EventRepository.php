@@ -25,6 +25,7 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use CultuurNet\UDB3\Timestamps;
+use CultuurNet\UDB3\Event\DescriptionUpdated;
 use RuntimeException;
 
 /**
@@ -152,6 +153,14 @@ class EventRepository implements RepositoryInterface
                         );
                         break;
 
+                    case 'CultuurNet\\UDB3\\Event\\DescriptionUpdated':
+                        /** @var DescriptionUpdated $domainEvent */
+                        $this->applyDescriptionUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                      break;
+
                     case EventCreated::class:
                         $this->applyEventCreated($domainEvent, $domainMessage->getMetadata());
                         break;
@@ -209,6 +218,26 @@ class EventRepository implements RepositoryInterface
                 $domainEvent->getLanguage(),
                 $domainEvent->getDescription()
             );
+    }
+
+    /**
+     * Send the updated description also to CDB2.
+     *
+     * @param \CultuurNet\UDB3\UDB2\DescriptionUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyDescriptionUpdated(
+        DescriptionUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($domainEven>getDescription());
+
+        $entryApi->updateEvent($event->getCdbId(), $event);
+
     }
 
     /**

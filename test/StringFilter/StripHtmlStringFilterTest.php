@@ -2,8 +2,16 @@
 
 namespace CultuurNet\UDB3\StringFilter;
 
-class StripHtmlStringFilterTest extends \PHPUnit_Framework_TestCase
+class StripHtmlStringFilterTest extends StringFilterTest
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getFilter()
+    {
+        return new StripHtmlStringFilter();
+    }
+
     /**
      * @test
      *
@@ -11,9 +19,7 @@ class StripHtmlStringFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_converts_html_strings_to_plain_text($original, $expected)
     {
-        $filter = new StripHtmlStringFilter();
-        $actual = $filter->filter($original);
-        $this->assertEquals($expected, $actual);
+        $this->assertFilterValue($expected, $original);
     }
 
     /**

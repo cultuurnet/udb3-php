@@ -222,9 +222,6 @@ class EventRepository implements RepositoryInterface
 
     /**
      * Send the updated description also to CDB2.
-     *
-     * @param \CultuurNet\UDB3\UDB2\DescriptionUpdated $domainEvent
-     * @param Metadata $metadata
      */
     private function applyDescriptionUpdated(
         DescriptionUpdated $domainEvent,
@@ -235,6 +232,24 @@ class EventRepository implements RepositoryInterface
         $event = $entryApi->getEvent($domainEvent->getEventId());
 
         $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($domainEven>getDescription());
+
+        $entryApi->updateEvent($event->getCdbId(), $event);
+
+    }
+
+    /**
+     * Send the updated description also to CDB2.
+     */
+    private function applyTypicalAgeRangeUpdated(
+      \CultuurNet\UDB3\Event\TypicalAgeRangeUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $ages = explode('-', $domainEvent->getTypicalAgeRange());
+        $event->setAgeFrom($ages[0]);
 
         $entryApi->updateEvent($event->getCdbId(), $event);
 

@@ -26,6 +26,12 @@ abstract class StringFilterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Uses the $filter property to filter a string.
+     *
+     * @param string $string
+     *   String to filter.
+     *
+     * @return string
+     *   Filtered string.
      */
     protected function filter($string)
     {

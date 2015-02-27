@@ -53,7 +53,9 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
         }
 
         if (!isset($eventXml)) {
-            // @todo Throw an exception.
+            throw new EventNotFoundException(
+                "Event with cdbid '{$eventId}' could not be found via Search API v2."
+            );
         } else {
             return $eventXml;
         }

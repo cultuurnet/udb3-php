@@ -118,7 +118,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         $formatter = new TabularDataEventFormatter($includedProperties);
         $formattedEvent = $formatter->formatEvent($event);
 
-        // For some reason the ID is always included in the formatted event, even if we don't want it to be.
+        // We do not care about the event 'id' here, which is always included.
         unset($formattedEvent['id']);
 
         $this->assertEquals($expectedFormatting, $formattedEvent);

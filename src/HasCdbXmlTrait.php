@@ -5,8 +5,8 @@
 
 namespace CultuurNet\UDB3;
 
-
-trait HasCdbXmlTrait {
+trait HasCdbXmlTrait
+{
 
     /**
      * @var string

@@ -54,8 +54,7 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
 
         if (!isset($eventXml)) {
             // @todo Throw an exception.
-        }
-        else {
+        } else {
             return $eventXml;
         }
     }

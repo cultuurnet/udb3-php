@@ -100,7 +100,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
     private function getType()
     {
-        return '\\CultuurNet\\UDB3\\Event\\Event';
+        return Event::class;
     }
 
     /**

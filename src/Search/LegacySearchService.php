@@ -50,10 +50,12 @@ class LegacySearchService implements SearchServiceInterface
      *   Offset to start from.
      * @param string $sort
      *   Sorting to use.
+     * @param array $conditions
+     *   Conditional parameters to extend the filter query
      *
      * @return \Guzzle\Http\Message\Response
      */
-    protected function _search($query, $limit, $start, $sort = null)
+    protected function _search($query, $limit, $start, $sort = null, $conditions = array())
     {
         $qParam = new Parameter\Query($query);
         $groupParam = new Parameter\Group();
@@ -70,7 +72,18 @@ class LegacySearchService implements SearchServiceInterface
         );
 
         if ($sort) {
-            $params[] = new Parameter\Parameter('sort', $sort);
+           $params[] = new Parameter\Parameter('sort', $sort);
+        }
+
+        if (!empty($conditions)) {
+
+          if (!empty($conditions['locationCdbId'])) {
+            $params[] = new Parameter\FilterQuery('"' . $conditions['locationCdbId'] . '"');
+          }
+          if (!empty($conditions['locationZip'])) {
+            $params[] = new Parameter\FilterQuery('zipcode' . ':' . $conditions['locationZip']);
+          }
+
         }
 
         $response = $this->searchAPI2->search($params);
@@ -81,9 +94,9 @@ class LegacySearchService implements SearchServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function search($query, $limit = 30, $start = 0, $sort = null)
+    public function search($query, $limit = 30, $start = 0, $sort = null, $conditions = array())
     {
-        $response = $this->_search($query, $limit, $start, $sort);
+        $response = $this->_search($query, $limit, $start, $sort, $conditions);
 
         $result = SearchResult::fromXml(
             new \SimpleXMLElement(
@@ -93,7 +106,7 @@ class LegacySearchService implements SearchServiceInterface
                 \CultureFeed_Cdb_Default::CDB_SCHEME_URL
             )
         );
-        
+
         // @todo split this off to another class
         // @todo context and type should probably be injected at a higher level.
         $return = array(

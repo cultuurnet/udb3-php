@@ -21,9 +21,9 @@ class PullParsingSearchService extends LegacySearchService
     /**
      * {@inheritdoc}
      */
-    public function search($query, $limit = 30, $start = 0, $sort = null)
+    public function search($query, $limit = 30, $start = 0, $sort = null, $conditions = array())
     {
-        $response = $this->_search($query, $limit, $start, $sort);
+        $response = $this->_search($query, $limit, $start, $sort, $conditions);
 
         $parser = $this->getPullParser();
 

@@ -31,15 +31,16 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $commandBus;
 
+    /**
+     * @var UuidGeneratorInterface
+     */
+    protected $uuidGenerator;
+
     public function setUp()
     {
-        $this->eventService = $this->getMock(
-            'CultuurNet\\UDB3\\EventServiceInterface'
-        );
+        $this->eventService = $this->getMock(EventServiceInterface::class);
 
-        $this->commandBus = $this->getMock(
-            'Broadway\\CommandHandling\\CommandBusInterface'
-        );
+        $this->commandBus = $this->getMock(CommandBusInterface::class);
 
         $this->uuidGenerator = $this->getMock(
             UuidGeneratorInterface::class
@@ -61,11 +62,15 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
+        $this->setExpectedException(EventNotFoundException::class);
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateTitle($id, new Language('nl'), 'new title');
+        $this->eventEditingService->translateTitle(
+            $id,
+            new Language('nl'),
+            'new title'
+        );
     }
 
     /**
@@ -75,11 +80,15 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
+        $this->setExpectedException(EventNotFoundException::class);
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateDescription($id, new Language('nl'), 'new description');
+        $this->eventEditingService->translateDescription(
+            $id,
+            new Language('nl'),
+            'new description'
+        );
     }
 
     /**
@@ -89,7 +98,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
+        $this->setExpectedException(EventNotFoundException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -103,7 +112,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
+        $this->setExpectedException(EventNotFoundException::class);
 
         $this->setUpEventNotFound($id);
 

@@ -103,7 +103,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             foreach ($eventStream as $domainMessage) {
                 $domainEvent = $domainMessage->getPayload();
                 switch (get_class($domainEvent)) {
-                    case 'CultuurNet\\UDB3\\Event\\EventWasTagged':
+                    case EventWasTagged::class:
                         /** @var EventWasTagged $domainEvent */
                         $this->applyEventWasTagged(
                             $domainEvent,
@@ -111,7 +111,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         );
                         break;
 
-                    case 'CultuurNet\\UDB3\\Event\\TagErased':
+                    case TagErased::class:
                         /** @var TagErased $domainEvent */
                         $this->applyTagErased(
                             $domainEvent,
@@ -120,7 +120,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
                         break;
 
-                    case 'CultuurNet\\UDB3\\Event\\TitleTranslated':
+                    case TitleTranslated::class:
                         /** @var TitleTranslated $domainEvent */
                         $this->applyTitleTranslated(
                             $domainEvent,
@@ -128,7 +128,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         );
                         break;
 
-                    case 'CultuurNet\\UDB3\\Event\\DescriptionTranslated':
+                    case DescriptionTranslated::class:
                         /** @var DescriptionTranslated $domainEvent */
                         $this->applyDescriptionTranslated(
                             $domainEvent,

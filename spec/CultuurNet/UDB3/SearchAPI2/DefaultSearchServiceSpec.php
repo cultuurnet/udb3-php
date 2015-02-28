@@ -8,6 +8,7 @@ use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\Search\Parameter\FilterQuery;
 use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\SearchAPI2\DefaultSearchService;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
@@ -30,7 +31,7 @@ class DefaultSearchServiceSpec extends ObjectBehavior
             $consumerCredentials
         );
         $this->shouldHaveType(
-            'CultuurNet\UDB3\SearchAPI2\DefaultSearchService'
+            DefaultSearchService::class
         );
     }
 
@@ -44,7 +45,7 @@ class DefaultSearchServiceSpec extends ObjectBehavior
             $tokenCredentials
         );
         $this->shouldHaveType(
-            'CultuurNet\UDB3\SearchAPI2\DefaultSearchService'
+            DefaultSearchService::class
         );
     }
 
@@ -105,8 +106,6 @@ class DefaultSearchServiceSpec extends ObjectBehavior
             $consumerCredentials,
             $tokenCredentials
         );
-
-        $body = '<?xml><cdbxml></cdbxml>';
 
         $this->setHttpClientFactory($clientFactory);
         $clientFactory

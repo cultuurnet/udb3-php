@@ -3,6 +3,7 @@
 namespace spec\CultuurNet\UDB3\SearchAPI2;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -16,7 +17,7 @@ class ResultSetPullParserSpec extends ObjectBehavior
         IriGeneratorInterface $iriGenerator
     ) {
         $this->beConstructedWith($xmlReader, $iriGenerator);
-        $this->shouldHaveType('CultuurNet\UDB3\SearchAPI2\ResultSetPullParser');
+        $this->shouldHaveType(ResultSetPullParser::class);
     }
 
     public function it_extracts_totalItems_and_member_ids_from_a_cbxml_result_set(

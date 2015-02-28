@@ -18,9 +18,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
 
     public function setUp()
     {
-        $this->search = $this->getMock(
-            'CultuurNet\\UDB3\\Search\\SearchServiceInterface'
-        );
+        $this->search = $this->getMock(SearchServiceInterface::class);
 
         parent::setUp();
     }

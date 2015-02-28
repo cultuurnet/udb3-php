@@ -333,7 +333,7 @@ class TabularDataEventFormatter
             'image' => [
                 'name' => 'afbeelding',
                 'include' => function ($event) {
-                    return $event->image;
+                    return !empty($event->image) ? $event->image : '';
                 },
                 'property' => 'image'
             ],

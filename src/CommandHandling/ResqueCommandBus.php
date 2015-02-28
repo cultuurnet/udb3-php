@@ -97,12 +97,7 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
         $args = array();
         $args['command'] = base64_encode(serialize($command));
         $args['context'] = base64_encode(serialize($this->context));
-        $id = \Resque::enqueue(
-            $this->queueName,
-            '\\CultuurNet\\UDB3\\CommandHandling\\QueueJob',
-            $args,
-            true
-        );
+        $id = \Resque::enqueue($this->queueName, QueueJob::class, $args, true);
 
         return $id;
     }

@@ -26,7 +26,7 @@ class SocketIOEmitterHandlerTest extends \PHPUnit_Framework_TestCase
         // we need to use the implementation and ensure all required
         // constructor arguments are provided.
         $this->emitter = $this->getMock(
-            '\\SocketIO\\Emitter',
+            Emitter::class,
             [],
             [new TestRedisClientDouble()]
         );

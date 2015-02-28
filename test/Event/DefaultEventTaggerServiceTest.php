@@ -62,7 +62,10 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 
     /**
@@ -93,7 +96,10 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 
     /**
@@ -114,7 +120,10 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(EventNotFoundException::class);
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 
     /**
@@ -124,11 +133,17 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $eventIds = [];
 
-        $this->setExpectedException('InvalidArgumentException', 'no event Ids to tag');
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'no event Ids to tag'
+        );
 
         $this->commandBus->expects($this->never())
             ->method('dispatch');
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 }

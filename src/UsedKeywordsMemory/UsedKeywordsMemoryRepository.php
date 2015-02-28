@@ -16,6 +16,11 @@ class UsedKeywordsMemoryRepository extends EventSourcingRepository
         EventBusInterface $eventBus,
         array $eventStreamDecorators = array()
     ) {
-        parent::__construct($eventStore, $eventBus, UsedKeywordsMemory::class, $eventStreamDecorators);
+        parent::__construct(
+            $eventStore,
+            $eventBus,
+            UsedKeywordsMemory::class,
+            $eventStreamDecorators
+        );
     }
 }

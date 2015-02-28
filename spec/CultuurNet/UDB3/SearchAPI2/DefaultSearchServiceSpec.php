@@ -107,8 +107,6 @@ class DefaultSearchServiceSpec extends ObjectBehavior
             $tokenCredentials
         );
 
-        $body = '<?xml><cdbxml></cdbxml>';
-
         $this->setHttpClientFactory($clientFactory);
         $clientFactory
             ->createClient(

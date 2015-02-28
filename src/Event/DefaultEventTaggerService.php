@@ -8,7 +8,8 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Keyword;
 
 /**
- * The default event tagger service that uses an event service to validate ids and a command bus to do the actual tagging.
+ * The default event tagger service that uses an event service to validate ids
+ * and a command bus to do the actual tagging.
  */
 class DefaultEventTaggerService implements EventTaggerServiceInterface
 {

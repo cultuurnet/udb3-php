@@ -7,7 +7,6 @@ use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Keyword;
-use Symfony\Component\Finder\Shell\Command;
 
 class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 {

@@ -66,7 +66,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateTitle($id, new Language('nl'), 'new title');
+        $this->eventEditingService->translateTitle(
+            $id,
+            new Language('nl'),
+            'new title'
+        );
     }
 
     /**
@@ -80,7 +84,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateDescription($id, new Language('nl'), 'new description');
+        $this->eventEditingService->translateDescription(
+            $id,
+            new Language('nl'),
+            'new description'
+        );
     }
 
     /**

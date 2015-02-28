@@ -97,8 +97,9 @@ class StripSourceStringFilterTest extends StringFilterTest
      */
     public function it_ignores_empty_strings()
     {
-        // In the past passing an empty string to StripSourceStringFilter would cause a notice. If the test doesn't
-        // fail on this notice, it does not occur anymore.
+        // In the past passing an empty string to StripSourceStringFilter
+        // would cause a notice. If the test doesn't fail on this notice,
+        // it does not occur anymore.
         $this->filter('');
     }
 }

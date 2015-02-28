@@ -125,6 +125,19 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_can_format_an_empty_image()
+    {
+        $event = $this->getJSONEventFromFile('event_without_image.json');
+        $formatter = new TabularDataEventFormatter(array('image'));
+        $formattedEvent = $formatter->formatEvent($event);
+
+        $this->assertTrue(isset($formattedEvent['image']));
+        $this->assertEmpty($formattedEvent['image']);
+    }
+
+    /**
      * Test data provider for it_formats_dates().
      *
      * @return array

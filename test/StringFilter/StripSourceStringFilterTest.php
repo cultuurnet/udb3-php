@@ -2,8 +2,13 @@
 
 namespace CultuurNet\UDB3\StringFilter;
 
-class StripSourceStringFilterTest extends \PHPUnit_Framework_TestCase
+class StripSourceStringFilterTest extends StringFilterTest
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected $filterClass = StripSourceStringFilter::class;
+
     /**
      * @test
      */
@@ -15,16 +20,14 @@ class StripSourceStringFilterTest extends \PHPUnit_Framework_TestCase
         $some_element = '<p>Some Element</p>';
         $another_element = '<p>Another Element</p>';
 
-        $description = $some_element .
+        $original = $some_element .
             $source_element .
             $another_element;
 
-        $descriptionFilter = new StripSourceStringFilter();
-        $filteredDescription = $descriptionFilter->filter($description);
-        $expectedDescription = $some_element . PHP_EOL .
+        $expected = $some_element . PHP_EOL .
             $another_element;
 
-        $this->assertEquals($expectedDescription, $filteredDescription);
+        $this->assertFilterValue($expected, $original);
     }
 
     /**
@@ -38,16 +41,14 @@ class StripSourceStringFilterTest extends \PHPUnit_Framework_TestCase
         $some_element = '<p>Some Element</p>';
         $without_element = "I'm some text without an element";
 
-        $description = $without_element .
+        $original = $without_element .
             $source_element .
             $some_element;
 
-        $descriptionFilter = new StripSourceStringFilter();
-        $filteredDescription = $descriptionFilter->filter($description);
-        $expectedDescription = "<p>" . $without_element . "</p>" . PHP_EOL .
+        $expected = "<p>" . $without_element . "</p>" . PHP_EOL .
             $some_element;
 
-        $this->assertEquals($expectedDescription, $filteredDescription);
+        $this->assertFilterValue($expected, $original);
     }
 
     /**
@@ -61,16 +62,14 @@ class StripSourceStringFilterTest extends \PHPUnit_Framework_TestCase
         $some_element = '<p>Some Element</p>';
         $without_element = "I'm some text without an element";
 
-        $description = $some_element .
+        $original = $some_element .
             $source_element .
             $without_element;
 
-        $descriptionFilter = new StripSourceStringFilter();
-        $filteredDescription = $descriptionFilter->filter($description);
-        $expectedDescription = $some_element .
+        $expected = $some_element .
             $without_element;
 
-        $this->assertEquals($expectedDescription, $filteredDescription);
+        $this->assertFilterValue($expected, $original);
     }
 
     /**
@@ -83,15 +82,24 @@ class StripSourceStringFilterTest extends \PHPUnit_Framework_TestCase
         // @codingStandardsIgnoreEnd
         $without_element = "I'm some text without an element";
 
-        $description = $without_element .
+        $original = $without_element .
             $source_element .
             $without_element;
 
-        $descriptionFilter = new StripSourceStringFilter();
-        $filteredDescription = $descriptionFilter->filter($description);
-        $expectedDescription = "<p>" . $without_element . "</p>" .
+        $expected = "<p>" . $without_element . "</p>" .
             $without_element;
 
-        $this->assertEquals($expectedDescription, $filteredDescription);
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_ignores_empty_strings()
+    {
+        // In the past passing an empty string to StripSourceStringFilter
+        // would cause a notice. If the test doesn't fail on this notice,
+        // it does not occur anymore.
+        $this->filter('');
     }
 }

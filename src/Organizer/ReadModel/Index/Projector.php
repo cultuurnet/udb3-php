@@ -5,7 +5,7 @@
  * Contains CultuurNet\UDB3\Organizer\ReadModel\Index\Projector.
  */
 
-namespace CultuurNet\UDB3\Organizer;
+namespace CultuurNet\UDB3\Organizer\ReadModel\Index;
 
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
@@ -22,7 +22,7 @@ class Projector extends Udb3Projector {
 
     protected function applyActorImportedFromUDB2(ActorImportedFromUDB2 $organizer)
     {
-      
+
         $organizerId = $organizer->getActorId();
         $userId = ''; // imported = no uid.
 

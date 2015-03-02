@@ -7,7 +7,8 @@
 
 namespace CultuurNet\UDB3\Organizer\ReadModel\Index;
 
-use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
 /**
@@ -20,7 +21,7 @@ class Projector extends Udb3Projector {
         $this->repository = $repository;
     }
 
-    protected function applyActorImportedFromUDB2(ActorImportedFromUDB2 $organizer)
+    protected function applyOrganizerImportedFromUDB2(OrganizerImportedFromUDB2 $organizer)
     {
 
         $organizerId = $organizer->getActorId();
@@ -36,7 +37,7 @@ class Projector extends Udb3Projector {
           // The first language detail found will be used to retrieve
           // properties from which in UDB3 are not any longer considered
           // to be language specific.
-          if (!$detail) {
+          if (empty($detail)) {
               $detail = $languageDetail;
           }
         }
@@ -72,9 +73,9 @@ class Projector extends Udb3Projector {
     /**
      * Update the index
      */
-    protected function updateIndex($organizerId, $userId, $title, $zip)
+    protected function updateIndex($organizerId, $userId, $name, $zip)
     {
-        $this->repository->updateIndex($organizerId, 'organizer', $userId, $title, $zip);
+        $this->repository->updateIndex($organizerId, 'organizer', $userId, $name, $zip);
     }
 
 }

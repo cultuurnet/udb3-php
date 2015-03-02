@@ -7,7 +7,6 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Category;
 
-
 class EventType extends Category
 {
     const DOMAIN = 'eventtype';
@@ -16,5 +15,4 @@ class EventType extends Category
     {
         parent::__construct($id, $label, self::DOMAIN);
     }
-
 }

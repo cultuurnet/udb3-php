@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 class CulturefeedSluggerTest extends \PHPUnit_Framework_TestCase
 {
     /**

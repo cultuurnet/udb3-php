@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
-
 use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
 
 class JSONLDFileFormat implements FileFormatInterface
@@ -36,7 +35,6 @@ class JSONLDFileFormat implements FileFormatInterface
      */
     public function openWriter($filePath)
     {
-        return new JSONLDFileWriter($filePath);
+        return new JSONLDFileWriter($filePath, $this->include);
     }
-
 }

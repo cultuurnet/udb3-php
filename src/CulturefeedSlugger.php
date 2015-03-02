@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3;
 
 /**
  * Class CulturefeedSlugger
- * @package CultuurNet\UDB3
  *
  * Taken from the culturefeed Drupal module.
  */

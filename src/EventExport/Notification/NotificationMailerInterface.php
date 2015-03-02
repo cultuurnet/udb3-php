@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Notification;
 
-
 use CultuurNet\UDB3\EventExport\EventExportResult;
 use ValueObjects\Web\EmailAddress;
 

@@ -19,7 +19,9 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
@@ -27,11 +29,15 @@ use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 use CultuurNet\UDB3\SluggerInterface;
+
 use CultuurNet\UDB3\Timestamps;
 use DateTimeZone;
 use stdClass;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 
-class EventLDProjector extends Udb3Projector
+class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, OrganizerServiceInterface
 {
     /**
      * @var DocumentRepositoryInterface
@@ -63,6 +69,10 @@ class EventLDProjector extends Udb3Projector
      */
     protected $slugger;
 
+    /**
+     * @var CdbXMLImporter
+     */
+    protected $cdbXMLImporter;
 
     /**
      * @param DocumentRepositoryInterface $repository
@@ -85,19 +95,7 @@ class EventLDProjector extends Udb3Projector
         $this->eventService = $eventService;
 
         $this->slugger = new CulturefeedSlugger();
-    }
-
-    /**
-     * @param $dateString
-     * @return \DateTime
-     */
-    public function dateFromUdb2DateString($dateString)
-    {
-        return \DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $dateString,
-            new DateTimeZone('Europe/Brussels')
-        );
+        $this->cdbXMLImporter = new CdbXMLImporter();
     }
 
     protected function applyOrganizerProjectedToJSONLD()
@@ -162,265 +160,15 @@ class EventLDProjector extends Udb3Projector
         $document = $this->newDocument($eventImportedFromUDB2->getEventId());
         $eventLd = $document->getBody();
 
-        /** @var CultureFeed_Cdb_Data_EventDetail $detail */
-        $detail = null;
-
-        /** @var CultureFeed_Cdb_Data_EventDetail[] $details */
-        $details = $udb2Event->getDetails();
-
-        foreach ($details as $languageDetail) {
-            $language = $languageDetail->getLanguage();
-
-            // The first language detail found will be used to retrieve
-            // properties from which in UDB3 are not any longer considered
-            // to be language specific.
-            if (!$detail) {
-                $detail = $languageDetail;
-            }
-
-            $eventLd->name[$language] = $languageDetail->getTitle();
-
-            $descriptions = [
-                $languageDetail->getShortDescription(),
-                $languageDetail->getLongDescription()
-            ];
-            $descriptions = array_filter($descriptions);
-            $eventLd->description[$language] = implode('<br/>', $descriptions);
-        }
-
-        $pictures = $detail->getMedia()->byMediaType(
-            CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
+        $eventLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $eventLd,
+            $udb2Event,
+            $this,
+            $this,
+            $this->slugger
         );
 
-        $pictures->rewind();
-        $picture = count($pictures) > 0 ? $pictures->current() : null;
-
-        $keywords = array_filter(
-            array_values($udb2Event->getKeywords()),
-            function ($keyword) {
-                return (strlen(trim($keyword)) > 0);
-            }
-        );
-        // Ensure keys are continuous after the filtering was applied, otherwise
-        // JSON-encoding the array will result in an object.
-        $keywords = array_values($keywords);
-
-        $eventLd->keywords = $keywords;
-        $eventLd->calendarSummary = $detail->getCalendarSummary();
-        $eventLd->image = $picture ? $picture->getHLink() : null;
-
-        // Location.
-        $location = array();
-        $location['@type'] = 'Place';
-
-        $location_cdb = $udb2Event->getLocation();
-        $location_id = $location_cdb->getCdbid();
-
-        if ($location_id) {
-            $location += (array)$this->placeJSONLD($location_id);
-        } else {
-            $location['name'] = $location_cdb->getLabel();
-            $address = $location_cdb->getAddress()->getPhysicalAddress();
-            if ($address) {
-                $location['address'] = array(
-                    'addressCountry' => $address->getCountry(),
-                    'addressLocality' => $address->getCity(),
-                    'postalCode' => $address->getZip(),
-                    'streetAddress' => $address->getStreet(
-                        ) . ' ' . $address->getHouseNumber(),
-                );
-            }
-        }
-        $eventLd->location = $location;
-
-        // Organizer.
-        $organizer_cdb = $udb2Event->getOrganiser();
-        $contact_info_cdb = $udb2Event->getContactInfo();
-
-        if ($organizer_cdb && $contact_info_cdb) {
-            $organizer_id = $organizer_cdb->getCdbid();
-            if ($organizer_id) {
-                $organizer['@id'] = $this->organizerService->iri($organizer_id);
-            } else {
-                $organizer = array();
-                $organizer['name'] = $organizer_cdb->getLabel();
-                $organizer['email'] = array();
-                $mails = $contact_info_cdb->getMails();
-                foreach ($mails as $mail) {
-                    $organizer['email'][] = $mail->getMailAddress();
-                }
-                $organizer['phone'] = array();
-                /** @var CultureFeed_Cdb_Data_Phone[] $phones */
-                $phones = $contact_info_cdb->getPhones();
-                foreach ($phones as $phone) {
-                    $organizer['phone'][] = $phone->getNumber();
-                }
-            }
-            $eventLd->organizer = $organizer;
-        }
-
-
-        $price = $detail->getPrice();
-
-        if ($price) {
-            $eventLd->bookingInfo = array();
-            // Booking info.
-            $bookingInfo = array(
-                'priceCurrency' => 'EUR',
-            );
-            $bookingInfo['description'] = $price->getDescription();
-            $bookingInfo['name'] = $price->getTitle();
-            $bookingInfo['price'] = floatval($price->getValue());
-            $eventLd->bookingInfo[] = $bookingInfo;
-        }
-
-        // Input info.
-        $eventLd->creator = $udb2Event->getCreatedBy();
-
-        // Terms.
-        $themeBlacklist = [
-            'Thema onbepaald',
-            'Meerder kunstvormen',
-            'Meerdere filmgenres'
-        ];
-        $categories = array();
-        foreach ($udb2Event->getCategories() as $category) {
-            /* @var \Culturefeed_Cdb_Data_Category $category */
-            if ($category && !in_array($category->getName(), $themeBlacklist)) {
-                $categories[] = array(
-                    'label' => $category->getName(),
-                    'domain' => $category->getType(),
-                    'id' => $category->getId(),
-                );
-            }
-        }
-        $eventLd->terms = $categories;
-
-        // format using ISO-8601 with time zone designator
-        $creationDate = $this->dateFromUdb2DateString(
-            $udb2Event->getCreationDate()
-        );
-        $eventLd->created = $creationDate->format('c');
-
-        $eventLd->publisher = $udb2Event->getOwner();
-
-
-        // Calendar info
-        // To render the front-end we make a distinction between 4 calendar types
-        // Permanent and Periodic map directly to the Cdb calendar classes
-        // Simple timestamps are divided into single and multiple
-        $calendarType = 'unknown';
-        $calendar = $udb2Event->getCalendar();
-
-        if ($calendar instanceof CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $calendarType = 'permanent';
-        } elseif ($calendar instanceof CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $calendarType = 'periodic';
-            $calendar->rewind();
-            $firstCalendarItem = $calendar->current();
-            $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
-            $startDate = $this->dateFromUdb2DateString($startDateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
-            $endDate = $this->dateFromUdb2DateString($endDateString);
-
-            $eventLd->startDate = $startDate->format('c');
-            $eventLd->endDate = $endDate->format('c');
-        } elseif ($calendar instanceof CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $calendarType = 'single';
-            $calendar->rewind();
-            $firstCalendarItem = $calendar->current();
-            if ($firstCalendarItem->getStartTime()) {
-                $dateString = $firstCalendarItem->getDate(
-                    ) . 'T' . $firstCalendarItem->getStartTime();
-            } else {
-                $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
-            }
-
-            $startDate = $this->dateFromUdb2DateString($dateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = null;
-            if ($lastCalendarItem->getEndTime()) {
-                $endDateString = $lastCalendarItem->getDate(
-                    ) . 'T' . $lastCalendarItem->getEndTime();
-            } else {
-                if (iterator_count($calendar) > 1) {
-                    $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
-                }
-            }
-
-            if ($endDateString) {
-                $endDate = $this->dateFromUdb2DateString($endDateString);
-                $eventLd->endDate = $endDate->format('c');
-
-                if ($startDate->format('Ymd') != $endDate->format('Ymd')) {
-                    $calendarType = 'multiple';
-                }
-            }
-
-            $eventLd->startDate = $startDate->format('c');
-        }
-
-        $eventLd->calendarType = $calendarType;
-
-        $eventLd->sameAs = $this->generateSameAs(
-          $eventImportedFromUDB2->getEventId(),
-          reset($eventLd->name)
-        );
-
-        $ageFrom = $udb2Event->getAgeFrom();
-        if ($ageFrom) {
-            $eventLd->typicalAgeRange = "{$ageFrom}-";
-        }
-
-        /** @var CultureFeed_Cdb_Data_Performer $performer */
-        $performers = $detail->getPerformers();
-        if ($performers) {
-            foreach ($performers as $performer) {
-                if ($performer->getLabel()) {
-                    $performerData = new stdClass();
-                    $performerData->name = $performer->getLabel();
-                    $eventLd->performer[] = $performerData;
-                }
-            }
-        }
-
-        $eventLd->language = [];
-        /** @var CultureFeed_Cdb_Data_Language $udb2Language */
-        $languages = $udb2Event->getLanguages();
-        if ($languages) {
-            foreach ($languages as $udb2Language) {
-                $eventLd->language[] = $udb2Language->getLanguage();
-            }
-        }
-        $eventLd->language = array_unique($eventLd->language);
-
-        $eventLdModel = new JsonDocument(
-            $eventImportedFromUDB2->getEventId()
-        );
-
-        $this->repository->save($eventLdModel->withBody($eventLd));
-    }
-
-    private function generateSameAs($eventId, $name) {
-        $eventSlug = $this->slugger->slug($name);
-        return array(
-          'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
-        );
+        $this->repository->save($document->withBody($eventLd));
     }
 
     /**
@@ -432,12 +180,13 @@ class EventLDProjector extends Udb3Projector
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->{'@id'} = $this->iriGenerator->iri($eventCreated->getEventId());
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $eventCreated->getEventId()
+        );
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
-            //'@type' => 'Place',
-        ) + $eventCreated->getLocation()->serialize();
-
+          '@type' => 'Place',
+        ) + (array)$this->placeJSONLD($eventCreated->getLocation());
 
         if ($eventCreated->getCalendar() == Timestamps::TYPE) {
           $timestamps = $eventCreated->getCalendar()->getTimestamps();
@@ -449,10 +198,9 @@ class EventLDProjector extends Udb3Projector
           }
         }
 
-
         $jsonLD->sameAs = $this->generateSameAs(
-          $eventCreated->getEventId(),
-          reset($jsonLD->name)
+            $eventCreated->getEventId(),
+            reset($jsonLD->name)
         );
 
         $eventType = $eventCreated->getEventType();
@@ -473,8 +221,8 @@ class EventLDProjector extends Udb3Projector
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
-          DateTime::FORMAT_STRING,
-          $recordedOn
+            DateTime::FORMAT_STRING,
+            $recordedOn
         )->format('c');
 
         $metaData = $domainMessage->getMetadata()->serialize();
@@ -485,7 +233,7 @@ class EventLDProjector extends Udb3Projector
         $this->repository->save($document->withBody($jsonLD));
     }
 
-    protected function placeJSONLD($placeId)
+    public function placeJSONLD($placeId)
     {
         try {
             $placeJSONLD = $this->placeService->getEntity(
@@ -497,6 +245,22 @@ class EventLDProjector extends Udb3Projector
             // In case the place can not be found at the moment, just add its ID
             return array(
                 '@id' => $this->placeService->iri($placeId)
+            );
+        }
+    }
+
+    public function organizerJSONLD($organizerId)
+    {
+        try {
+            $organizerJSONLD = $this->organizerService->getEntity(
+                $organizerId
+            );
+
+            return json_decode($organizerJSONLD);
+        } catch (EntityNotFoundException $e) {
+            // In case the place can not be found at the moment, just add its ID
+            return array(
+                '@id' => $this->organizerService->iri($organizerId)
             );
         }
     }
@@ -632,5 +396,18 @@ class EventLDProjector extends Udb3Projector
         }
 
         return $document;
+    }
+
+    private function generateSameAs($eventId, $name)
+    {
+        $eventSlug = $this->slugger->slug($name);
+        return array(
+            'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
+        );
+    }
+
+    public function addDescriptionFilter(StringFilterInterface $filter)
+    {
+        $this->cdbXMLImporter->addDescriptionFilter($filter);
     }
 }

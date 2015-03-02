@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
-
 use CultuurNet\UDB3\EventExport\FileWriter\OOXMLFileWriter;
 use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;
 
@@ -42,5 +41,4 @@ class OOXMLFileFormat implements FileFormatInterface
             $this->include
         );
     }
-
 }

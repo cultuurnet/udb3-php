@@ -124,12 +124,22 @@ class EventCreated extends EventEvent
         return $this->calendar;
     }
 
+    public function getType()
+    {
+        return $this->type;
+    }
+
     /**
      * @return Location
      */
     public function getLocation()
     {
         return $this->location;
+    }
+
+    private function setType($type)
+    {
+        $this->type = $type;
     }
 
 
@@ -143,7 +153,11 @@ class EventCreated extends EventEvent
             'event_type' => $this->getEventType()->serialize(),
             'theme' => $this->getTheme()->serialize(),
             'location' => $this->getLocation()->serialize(),
-            'calendar' => $this->getCalendar()->serialize()
+            'calendar' => $this->getCalendar()->serialize(),
+            'type' => array(
+                'id' => $this->type->getId(),
+                'label' => $this->type->getLabel()
+            ),
         );
     }
 
@@ -158,7 +172,13 @@ class EventCreated extends EventEvent
             EventType::deserialize($data['event_type']),
             Theme::deserialize($data['theme']),
             Location::deserialize($data['location']),
-            TimeStamps::deserialize($data['calendar'])
+            TimeStamps::deserialize($data['calendar']),
+            $data['location'],
+            \DateTime::createFromFormat('c', $data['date']),
+            new EventType(
+                $data['type']['id'],
+                $data['type']['label']
+            )
         );
     }
 }

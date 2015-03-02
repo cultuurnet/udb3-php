@@ -9,7 +9,6 @@ use Broadway\Domain\DomainEventStream;
 
 /**
  * Class SimpleEventBus
- * @package CultuurNet\UDB3
  *
  * Extension of Broadway's SimpleEventBus with a configurable callback to be
  * executed before the first message is published. This callback can be used to

@@ -5,50 +5,48 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-
 class JSONLDFileWriter implements FileWriterInterface
 {
     protected $f;
 
-    public function __construct($filePath) {
+    /**
+     * @var JSONLDEventFormatter
+     */
+    protected $eventFormatter;
+
+    public function __construct($filePath, $include = null)
+    {
         $this->f = fopen($filePath, 'w');
         if (false === $this->f) {
-            throw new \RuntimeException('Unable to open file for writing: ' . $filePath);
+            throw new \RuntimeException(
+                'Unable to open file for writing: ' . $filePath
+            );
         }
         fwrite($this->f, '[');
+
+        $this->eventFormatter = new JSONLDEventFormatter($include);
 
         $this->first = true;
     }
 
     /**
      * @param mixed $event
-     * @param string[] $include
      */
     public function exportEvent($event)
     {
         if ($this->first) {
             $this->first = false;
-        }
-        else {
+        } else {
             fwrite($this->f, ',');
         }
 
-        if($include) {
-            $include[] = '@id';
-            $eventObject = json_decode($event);
-            foreach($eventObject as $propertyName => $value) {
-                var_dump($propertyName);
-                if(!in_array($propertyName, $include)) {
-                    unset($eventObject->{$propertyName});
-                }
-            }
-            $event = json_encode($eventObject);
-        }
+        $formattedEvent = $this->eventFormatter->formatEvent($event);
 
-        fwrite($this->f, $event);
+        fwrite($this->f, $formattedEvent);
     }
 
-    public function close() {
+    public function close()
+    {
         if (is_resource($this->f)) {
             fwrite($this->f, ']');
 

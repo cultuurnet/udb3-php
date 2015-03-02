@@ -47,7 +47,8 @@ class Projector extends Udb3Projector
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
 
-    protected function applyEventCreated(EventCreated $event) {
+    protected function applyEventCreated(EventCreated $event)
+    {
         $eventId = $event->getEventId();
 
         // Store relation if the event is connected with a place.

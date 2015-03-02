@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -58,7 +57,5 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\\CultuurNet\\UDB3\\EventNotFoundException', 'Event with id: ' . $id . ' not found');
 
         $this->eventService->getEvent($id);
-
-
     }
-} 
+}

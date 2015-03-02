@@ -159,6 +159,4 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
 
         return $eventId;
     }
-
-
 }

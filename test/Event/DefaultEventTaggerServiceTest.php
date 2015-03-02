@@ -3,7 +3,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -64,7 +63,8 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                         array('event1'),
                         new Keyword('some-keyword')
                     )
-                ));
+                )
+            );
 
         $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
     }

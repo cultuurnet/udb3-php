@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -90,7 +91,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->cdbXMLImporter = new CdbXMLImporter();
     }
 
-    protected function applyOrganizerProjectedToJSONLD()
+    protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
     {
         // @todo get events linked to this organizer, and update their JSON-LD
         // representation

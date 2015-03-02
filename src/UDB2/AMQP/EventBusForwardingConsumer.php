@@ -165,7 +165,6 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
     protected function registerConsumeCallback()
     {
-        $handler = $this;
         $this->channel->basic_consume(
             $this->queueName,
             $consumerTag = $this->consumerTag,

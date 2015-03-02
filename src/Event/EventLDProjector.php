@@ -12,6 +12,7 @@ use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -143,12 +144,42 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     public function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
+        $this->applyEventCdbXml(
+            $eventImportedFromUDB2->getEventId(),
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
             $eventImportedFromUDB2->getCdbXml()
         );
+    }
 
-        $document = $this->newDocument($eventImportedFromUDB2->getEventId());
+    /**
+     * @param EventUpdatedFromUDB2 $eventUpdatedFromUDB2
+     */
+    public function applyEventUpdatedFromUDB2(
+        EventUpdatedFromUDB2 $eventUpdatedFromUDB2
+    ) {
+        $this->applyEventCdbXml(
+            $eventUpdatedFromUDB2->getEventId(),
+            $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $eventUpdatedFromUDB2->getCdbXml()
+        );
+    }
+
+    /**
+     * @param string $eventId
+     * @param string $cdbXmlNamespareUri
+     * @param string $cdbXml
+     */
+    protected function applyEventCdbXml(
+        $eventId,
+        $cdbXmlNamespareUri,
+        $cdbXml
+    ) {
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $cdbXmlNamespareUri,
+            $cdbXml
+        );
+
+        $document = $this->newDocument($eventId);
         $eventLd = $document->getBody();
 
         $eventLd = $this->cdbXMLImporter->documentWithCdbXML(

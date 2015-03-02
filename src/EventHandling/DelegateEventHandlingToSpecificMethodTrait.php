@@ -22,7 +22,13 @@ trait DelegateEventHandlingToSpecificMethodTrait
             return;
         }
 
-        $parameter = new \ReflectionParameter(array($this, $method), 0);
+        try {
+            $parameter = new \ReflectionParameter(array($this, $method), 0);
+        }
+        catch (\ReflectionException $e) {
+            // No parameter for the method, so we ignore it.
+            return;
+        }
         $expectedClass = $parameter->getClass();
 
         if ($expectedClass->getName() == get_class($event)) {

@@ -25,6 +25,7 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use CultuurNet\UDB3\Timestamps;
+use CultuurNet\UDB3\Event\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\DescriptionUpdated;
 use RuntimeException;
 
@@ -241,7 +242,7 @@ class EventRepository implements RepositoryInterface
      * Send the updated description also to CDB2.
      */
     private function applyTypicalAgeRangeUpdated(
-      \CultuurNet\UDB3\Event\TypicalAgeRangeUpdated $domainEvent,
+        TypicalAgeRangeUpdated $domainEvent,
         Metadata $metadata
     ) {
 

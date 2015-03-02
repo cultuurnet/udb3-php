@@ -147,7 +147,7 @@ class PlaceLDProjector extends ActorLDProjector
       DescriptionUpdated $descriptionUpdated
     ) {
 
-        $document = $this->loadDocumentFromRepository($descriptionUpdated);
+        $document = $this->loadPlaceDocumentFromRepository($descriptionUpdated);
 
         $placeLD = $document->getBody();
         $placeLD->description->{'nl'} = $descriptionUpdated->getDescription();
@@ -162,7 +162,7 @@ class PlaceLDProjector extends ActorLDProjector
     protected function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated
     ) {
-        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
+        $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeUpdated);
 
         $eventLd = $document->getBody();
 
@@ -180,7 +180,7 @@ class PlaceLDProjector extends ActorLDProjector
      * @param PlaceEvent $place
      * @return JsonDocument
      */
-    protected function loadDocumentFromRepository(PlaceEvent $place)
+    protected function loadPlaceDocumentFromRepository(PlaceEvent $place)
     {
         $document = $this->repository->get($place->getPlaceId());
 

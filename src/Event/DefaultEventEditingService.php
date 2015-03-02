@@ -18,7 +18,6 @@ use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
-use CultuurNet\UDB3\Theme;
 
 class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
 {
@@ -145,7 +144,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function createEvent(Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar)
+    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
     {
         $eventId = $this->uuidGenerator->generate();
 
@@ -153,7 +152,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
         // not exist.
         //$this->places->getEntity($location);
 
-        $event = Event::create($eventId, $title, $eventType, $theme, $location, $calendar);
+        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
 
         $this->eventRepository->add($event);
 

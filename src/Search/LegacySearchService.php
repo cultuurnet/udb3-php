@@ -57,7 +57,8 @@ class LegacySearchService implements SearchServiceInterface
      */
     protected function _search($query, $limit, $start, $sort = null, $conditions = array())
     {
-        $qParam = new Parameter\Query($query);
+        $new_query = '"' . $query . '"';
+        $qParam = new Parameter\Query($new_query);
         $groupParam = new Parameter\Group();
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);

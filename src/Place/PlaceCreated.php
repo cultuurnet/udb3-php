@@ -3,12 +3,14 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Place;
 
-use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\Title;
+use CultuurNet\UDB3\Location;
 
-class EventCreated extends EventEvent
+class PlaceCreated extends PlaceEvent
 {
  
     use \CultuurNet\UDB3\EventCreatedTrait;

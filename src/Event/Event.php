@@ -8,7 +8,6 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\Theme;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -22,16 +21,16 @@ class Event extends EventSourcedAggregateRoot
      *
      * @param Title $title
      * @param EventType $eventType
-     * @param Theme $theme
      * @param Location $location
      * @param CalendarBase $calendar
+     * @param Theme/null $theme
      *
      * @return Event
      */
-    public static function create($eventId, Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar)
+    public static function create($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
     {
         $event = new self();
-        $event->apply(new EventCreated($eventId, $title, $eventType, $theme, $location, $calendar));
+        $event->apply(new EventCreated($eventId, $title, $eventType, $location, $calendar, $theme));
 
         return $event;
     }

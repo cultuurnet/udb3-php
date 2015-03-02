@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\Title;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OfferEditingInterface;
-use CultuurNet\UDB3\Theme;
 
 class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
 {
@@ -54,8 +53,15 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function createPlace(Title $title, EventType $eventType, Theme $theme, Location $location, CalendarInterface $calendar)
+    public function createPlace(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
     {
+        $id = $this->uuidGenerator->generate();
+
+        $place = Place::createPlace($id, $title, $eventType, $location, $calendar, $theme);
+
+        $this->placeRepository->add($place);
+
+        return $id;
     }
 
     /**

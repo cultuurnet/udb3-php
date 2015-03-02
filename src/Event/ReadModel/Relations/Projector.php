@@ -55,7 +55,7 @@ class Projector extends Udb3Projector
         $cdbid = $event->getLocation()->getCdbid();
         if (!empty($cdbid)) {
           $organizer = null;
-          $this->storeRelations($eventId, $location, $organizer);
+          $this->storeRelations($eventId, $cdbid, $organizer);
         }
 
     }

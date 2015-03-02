@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
-use Broadway\Domain\DomainMessageInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\EventCreated;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;

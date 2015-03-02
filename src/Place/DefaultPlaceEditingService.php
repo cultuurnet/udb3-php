@@ -11,7 +11,7 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\Title;
+use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OfferEditingInterface;
 

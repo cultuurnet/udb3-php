@@ -7,14 +7,14 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\Title;
+use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Location;
 
 class PlaceCreated extends PlaceEvent
 {
- 
+
     use \CultuurNet\UDB3\EventCreatedTrait;
-    
+
     /**
      * @param string $eventId
      * @param Title $title
@@ -29,10 +29,10 @@ class PlaceCreated extends PlaceEvent
         $this->setEventType($eventType);
         $this->setLocation($location);
         $this->setCalendar($calendar);
-        
+
         if(!isset($theme)) {
           $this->setTheme($theme);
         }
     }
-    
+
 }

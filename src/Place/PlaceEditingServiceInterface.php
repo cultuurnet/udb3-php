@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\Title;
+use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Location;
 
 interface PlaceEditingServiceInterface

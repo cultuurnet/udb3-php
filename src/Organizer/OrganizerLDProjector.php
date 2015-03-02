@@ -7,8 +7,10 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
+use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
@@ -17,6 +19,7 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 
@@ -65,6 +68,51 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->publishJSONLDUpdated(
             $organizerImportedFromUDB2->getActorId()
         );
+    }
+
+    /**
+     * @param OrganizerCreated $organizerCreated
+     */
+    protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessageInterface $domainMessage)
+    {
+        $document = $this->newDocument($organizerCreated->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $organizerCreated->getOrganizerId()
+        );
+
+        $jsonLD->name = $organizerCreated->getTitle();
+
+        $addresses = $organizerCreated->getAddresses();
+        $jsonLD->addresses = array();
+        foreach ($addresses as $address) {
+           $jsonLD->addresses[] = array(
+             'addressCountry' => $address->getCountry(),
+             'addressLocality' => $address->getLocality(),
+             'postalCode' => $address->getPostalCode(),
+             'streetAddress' => $address->getStreetAddress(),
+           );
+        }
+
+        $jsonLD->phone = $organizerCreated->getPhones();
+        $jsonLD->email = $organizerCreated->getEmails();
+        $jsonLD->url = $organizerCreated->getUrls();
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $jsonLD->created = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
+            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+
     }
 
     protected function publishJSONLDUpdated($id)

@@ -7,7 +7,9 @@
 
 namespace CultuurNet\UDB3\Organizer\ReadModel\Index;
 
+use Broadway\Domain\DomainMessageInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
@@ -63,19 +65,26 @@ class Projector extends Udb3Projector {
     /**
      * Listener for organizer created commands.
      */
-    protected function applyOrganizerCreated(OrganizerCreated $organizer) {
+    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessageInterface $domainMessage) {
 
         $organizerId = $organizer->getOrganizerId();
-        $this->updateIndex($organizerId, $userId, $name, $zip);
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
+
+        $addresses = $organizer->getAddresses();
+        if (isset($addresses[0])) {
+          $this->updateIndex($organizerId, $userId, $organizer->getTitle(), $addresses[0]->getPostalCode());
+        }
 
     }
 
     /**
      * Update the index
      */
-    protected function updateIndex($organizerId, $userId, $name, $zip)
+    protected function updateIndex($organizerId, $userId, $name, $postalCode)
     {
-        $this->repository->updateIndex($organizerId, 'organizer', $userId, $name, $zip);
+        $this->repository->updateIndex($organizerId, 'organizer', $userId, $name, $postalCode);
     }
 
 }

@@ -61,10 +61,6 @@ class Calendar implements CalendarInterface
         throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $calendarType . '.');
       }
       
-      if (($calendarType == self::PERIODIC || $calendarType == self::SINGLE) && empty($timestamps)) {
-        throw new \UnexpectedValueException('No timestamps given for calendar type: ' . $calendarType . '.');
-      }
-      
       $this->type = $calendarType;
       $this->startDate = $startDate;
       $this->endDate = $endDate;

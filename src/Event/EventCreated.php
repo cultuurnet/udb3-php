@@ -32,7 +32,7 @@ class EventCreated extends EventEvent
     private $location;
 
     /**
-     * @var CalendarBase
+     * @var \CultuurNet\UDB3\CalendarInterface
      */
     private $calendar;
 

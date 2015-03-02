@@ -25,12 +25,13 @@ use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\DescriptionUpdated;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 use CultuurNet\UDB3\SluggerInterface;
-
-use CultuurNet\UDB3\Timestamps;
+use CultuurNet\UDB3\Calendar;
 use DateTimeZone;
 use stdClass;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
@@ -188,16 +189,56 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
           '@type' => 'Place',
         ) + (array)$this->placeJSONLD($eventCreated->getLocation());
 
-        if ($eventCreated->getCalendar() == Timestamps::TYPE) {
-          $timestamps = $eventCreated->getCalendar()->getTimestamps();
-          if (count($timestamps) > 1) {
-            $jsonLD->calendarType = 'multiple';
+        $calendar = $eventCreated->getCalendar();
+        $startDate = $calendar->getStartDate();
+        $endDate = $calendar->getEndDate();
+        
+        // All calendar types allow startDate (and endDate).
+        // One timestamp - full day.
+        // One timestamp - start hour.
+        // One timestamp - start and end hour.
+        $jsonLD->startDate = $startDate;
+        if (!empty($endDate)) {
+          $jsonLD->endDate = $endDate;
+        }
+        
+        $jsonLD->subEvent = array();
+        foreach ($calendar->getTimestamps() as $timestamp) {
+
+          $startDate = $timestamp->getDate();
+          if ($timestamp->showStartHour()) {
+             $startDate .= $timestamp->getTimestart();
           }
-          else {
-            $jsonLD->calendarType = 'single';
+          $endDate = $timestamp->getDate();
+          if ($timestamp->showEndHour()) {
+             $endDate .= $timestamp->getTimeend();
           }
+
+          $jsonLD->subEvent[] = array(
+            '@type' => 'Event',
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+          );
+        }
+         
+        // Period.
+        // Period with openingtimes.
+        // Permanent - "altijd open".
+        // Permanent - with openingtimes.
+        $jsonLD->openingHours = array();
+        foreach ($calendar->getOpeningHours() as $openingHour) {
+          $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
+          if (!empty($openingHour->opens)) {
+            $schedule['opens'] = $openingHour->opens;
+          }
+          if (!empty($openingHour->closes)) {
+            $schedule['closes'] = $openingHour->closes;
+          }
+          $jsonLD->openingHours[] = $schedule;
+
         }
 
+        // Same as.
         $jsonLD->sameAs = $this->generateSameAs(
             $eventCreated->getEventId(),
             reset($jsonLD->name)

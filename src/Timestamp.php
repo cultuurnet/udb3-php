@@ -21,24 +21,46 @@ class Timestamp
     /**
      * @var string
      */
-    protected $timestart;
+    protected $startHour;
+
+    /**
+     * @var boolean
+     */
+    protected $showStartHour;
 
     /**
      * @var string
      */
-    protected $timeend;
+    protected $endHour;
 
-    public function __construct($date, $timestart, $timeend)
+    /**
+     * @var boolean
+     */
+    protected $showEndHour;
+
+    /**
+     * Constructor
+     * 
+     * @param type $date
+     * @param type $startHour
+     * @param type $endHour
+     * @param type $showStartHour
+     * @param type $showEndHour
+     */
+    public function __construct($date, $startHour, $endHour, $showStartHour = TRUE, $showEndHour = TRUE)
     {
 
-        CalendarUtility::validateDate($date);
+        //CalendarUtility::validateDate($date);
         $this->date = $date;
 
-        CalendarUtility::validateTime($timestart);
-        $this->timestart = $timestart;
+        //CalendarUtility::validateTime($startHour);
+        $this->timestart = $startHour;
 
-        CalendarUtility::validateTime($timeend);
-        $this->timeend = $timeend;
+        //CalendarUtility::validateTime($endHour);
+        $this->timeend = $endHour;
+        
+        $this->showStartHour = $showStartHour;
+        $this->showEndHour = $showEndHour;
 
     }
 
@@ -55,6 +77,16 @@ class Timestamp
     function getTimeend()
     {
         return $this->timeend;
+    }
+
+    function showStartHour()
+    {
+        return $this->showStartHour;
+    }
+
+    function showEndHour()
+    {
+        return $this->showEndHour;
     }
 
 }

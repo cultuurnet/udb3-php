@@ -37,7 +37,7 @@ class Category implements SerializableInterface
     {
 
         if (empty($id)) {
-            throw new \InvalidArgumentException('ID can not be empty.');
+            throw new \InvalidArgumentException('Category ID can not be empty.');
         }
 
         if (!is_string($domain)) {

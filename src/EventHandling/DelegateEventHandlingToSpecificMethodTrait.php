@@ -24,8 +24,7 @@ trait DelegateEventHandlingToSpecificMethodTrait
 
         try {
             $parameter = new \ReflectionParameter(array($this, $method), 0);
-        }
-        catch (\ReflectionException $e) {
+        } catch (\ReflectionException $e) {
             // No parameter for the method, so we ignore it.
             return;
         }

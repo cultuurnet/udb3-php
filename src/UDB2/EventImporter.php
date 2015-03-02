@@ -88,6 +88,12 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
         try {
             $event = $this->loadEvent($eventId);
         } catch (AggregateNotFoundException $e) {
+            $this->logger->notice(
+                "Could not update event because it does not exist yet on UDB3, will attempt to create the event instead",
+                [
+                    'eventId' => $eventId
+                ]
+            );
             return $this->createEventFromUDB2($eventId);
         }
 
@@ -129,13 +135,27 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
 
         $this->importDependencies($eventXml);
 
-        $event = Event::importFromUDB2(
-            $eventId,
-            $eventXml,
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
-        );
+        try {
+            $event = Event::importFromUDB2(
+                $eventId,
+                $eventXml,
+                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            );
 
-        $this->repository->add($event);
+            $this->repository->add($event);
+        } catch (\Exception $e) {
+            $this->logger->notice(
+                "Event creation in UDB3 failed with an exception, will attempt to update the event instead",
+                [
+                    'exception' => $e,
+                    'eventId' => $eventId
+                ]
+            );
+            // @todo Differentiate between event exists locally already
+            // (same event arriving twice, event created on UDB3 first)
+            // and a real error while saving.
+            return $this->updateEventFromUDB2($eventId);
+        }
 
         return $event;
     }

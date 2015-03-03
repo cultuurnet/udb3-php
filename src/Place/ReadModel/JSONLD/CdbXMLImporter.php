@@ -102,6 +102,29 @@ class CdbXMLImporter
             $jsonLD->image = $image->getHLink();
         }
 
+        $this->importTerms($actor, $jsonLD);
+
         return $jsonLD;
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Actor $actor
+     * @param \stdClass $jsonLD
+     */
+    private function importTerms(\CultureFeed_Cdb_Item_Actor $actor, $jsonLD)
+    {
+        $themeBlacklist = [];
+        $categories = array();
+        foreach ($actor->getCategories() as $category) {
+            /* @var \Culturefeed_Cdb_Data_Category $category */
+            if ($category && !in_array($category->getName(), $themeBlacklist)) {
+                $categories[] = array(
+                    'label' => $category->getName(),
+                    'domain' => $category->getType(),
+                    'id' => $category->getId(),
+                );
+            }
+        }
+        $jsonLD->terms = $categories;
     }
 }

@@ -214,18 +214,21 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         // Period.
         // Period with openingtimes.
         // Permanent - "altijd open".
-        // Permanent - with openingtimes.
-        $jsonLD->openingHours = array();
-        foreach ($calendar->getOpeningHours() as $openingHour) {
-          $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
-          if (!empty($openingHour->opens)) {
-            $schedule['opens'] = $openingHour->opens;
-          }
-          if (!empty($openingHour->closes)) {
-            $schedule['closes'] = $openingHour->closes;
-          }
-          $jsonLD->openingHours[] = $schedule;
+        // Permanent - with openingtimes
+        $openingHours = $calendar->getOpeningHours();
+        if (!empty($openingHours)) {
+          $jsonLD->openingHours = array();
+          foreach ($openingHours as $openingHour) {
+            $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
+            if (!empty($openingHour->opens)) {
+              $schedule['opens'] = $openingHour->opens;
+            }
+            if (!empty($openingHour->closes)) {
+              $schedule['closes'] = $openingHour->closes;
+            }
+            $jsonLD->openingHours[] = $schedule;
 
+          }
         }
 
         // Same as.

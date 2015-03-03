@@ -69,7 +69,7 @@ class Projector extends Udb3Projector {
 
         }
 
-        $this->updateIndex($eventId, 'event', $userId, $name, $postalCode);
+        $this->updateIndex($placeId, 'place', $userId, $name, $postalCode);
     }
 
     /**

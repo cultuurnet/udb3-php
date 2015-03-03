@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 
 class EventTest extends \PHPUnit_Framework_TestCase
@@ -20,9 +22,9 @@ class EventTest extends \PHPUnit_Framework_TestCase
         $this->event = Event::create(
             'foo',
             new Title('some representative title'),
-            'LOCATION-ABC-123',
-            new \DateTime(),
-            new EventType('0.50.4.0.0', 'concert')
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('permanent', '', '')
         );
     }
 

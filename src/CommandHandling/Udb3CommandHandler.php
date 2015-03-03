@@ -7,12 +7,12 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-use Broadway\CommandHandling\CommandHandlerInterface;
+use Broadway\CommandHandling\CommandHandler;
 
 /**
  * Abstract Command handler for Udb3.
  */
-abstract class Udb3CommandHandler implements CommandHandlerInterface
+abstract class Udb3CommandHandler extends CommandHandler
 {
 
     /**

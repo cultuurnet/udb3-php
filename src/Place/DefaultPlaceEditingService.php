@@ -53,7 +53,7 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = NULL)
+    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
     {
         $id = $this->uuidGenerator->generate();
 
@@ -73,5 +73,4 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
         // This validates if the id is valid.
         return $this->placeRepository->load($id);
     }
-
 }

@@ -33,8 +33,7 @@ trait TypicalAgeRangeUpdatedTrait
     public function serialize()
     {
         return parent::serialize() + array(
-            'typicalAgeRange' => $this->typicalAgeRange,
+          'typicalAgeRange' => $this->typicalAgeRange,
         );
     }
-
 }

@@ -56,32 +56,32 @@ class Location implements SerializableInterface
         $this->street = $street;
     }
 
-    function getCdbid()
+    public function getCdbid()
     {
         return $this->cdbid;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function getCountry()
+    public function getCountry()
     {
         return $this->country;
     }
 
-    function getLocality()
+    public function getLocality()
     {
         return $this->locality;
     }
 
-    function getPostalcode()
+    public function getPostalcode()
     {
         return $this->postalcode;
     }
 
-    function getStreet()
+    public function getStreet()
     {
         return $this->street;
     }
@@ -111,5 +111,4 @@ class Location implements SerializableInterface
                 $data['name'], $data['address']['addressCountry'], $data['address']['addressLocality'], $data['address']['postalCode'], $data['address']['streetAddress']
         );
     }
-
 }

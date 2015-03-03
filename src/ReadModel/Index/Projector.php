@@ -18,7 +18,8 @@ use CultuurNet\UDB3\ReadModel\Udb3Projector;
 /**
  * Logs new events / updates to an index for querying.
  */
-class Projector extends Udb3Projector {
+class Projector extends Udb3Projector
+{
 
     public function __construct($repository)
     {
@@ -61,12 +62,11 @@ class Projector extends Udb3Projector {
             $addresses = $contact_cdb->getAddresses();
 
             foreach ($addresses as $address) {
-              $address = $address->getPhysicalAddress();
-              if ($address) {
-                $postalCode = $address->getZip();
-              }
+                $address = $address->getPhysicalAddress();
+                if ($address) {
+                    $postalCode = $address->getZip();
+                }
             }
-
         }
 
         $this->updateIndex($placeId, 'place', $userId, $name, $postalCode);
@@ -75,7 +75,8 @@ class Projector extends Udb3Projector {
     /**
      * Listener for event created commands.
      */
-    protected function applyEventCreated(EventCreated $eventCreated, DomainMessageInterface $domainMessage) {
+    protected function applyEventCreated(EventCreated $eventCreated, DomainMessageInterface $domainMessage)
+    {
 
         $eventId = $eventCreated->getEventId();
 
@@ -84,13 +85,13 @@ class Projector extends Udb3Projector {
 
         $location = $eventCreated->getLocation();
         $this->updateIndex($eventId, 'event', $userId, $eventCreated->getTitle(), $location->getPostalcode());
-
     }
 
     /**
      * Listener for place created commands.
      */
-    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage) {
+    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage)
+    {
 
         $placeId = $placeCreated->getPlaceId();
 
@@ -99,13 +100,13 @@ class Projector extends Udb3Projector {
 
         $address = $placeCreated->getAddress();
         $this->updateIndex($placeId, 'place', $userId, $placeCreated->getTitle(), $address->getPostalcode());
-
     }
 
     /**
      * Listener for organizer created commands.
      */
-    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessageInterface $domainMessage) {
+    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessageInterface $domainMessage)
+    {
 
         $organizerId = $organizer->getOrganizerId();
 
@@ -114,9 +115,8 @@ class Projector extends Udb3Projector {
 
         $addresses = $organizer->getAddresses();
         if (isset($addresses[0])) {
-          $this->updateIndex($organizerId, 'organizer', $userId, $organizer->getTitle(), $addresses[0]->getPostalCode());
+            $this->updateIndex($organizerId, 'organizer', $userId, $organizer->getTitle(), $addresses[0]->getPostalCode());
         }
-
     }
 
     /**
@@ -126,5 +126,4 @@ class Projector extends Udb3Projector {
     {
         $this->repository->updateIndex($id, $type, $userId, $name, $postalCode);
     }
-
 }

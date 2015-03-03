@@ -22,5 +22,5 @@ interface PlaceEditingServiceInterface
      *
      * @return string $eventId
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = NULL);
+    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null);
 }

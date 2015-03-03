@@ -12,7 +12,8 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * Value object for address information.
  */
-class Address implements SerializableInterface {
+class Address implements SerializableInterface
+{
 
     /**
      * @var string
@@ -47,20 +48,24 @@ class Address implements SerializableInterface {
         $this->country = $country;
     }
 
-    public function getCountry() {
-      return $this->country;
+    public function getCountry()
+    {
+        return $this->country;
     }
 
-    public function getLocality() {
-      return $this->locality;
+    public function getLocality()
+    {
+        return $this->locality;
     }
 
-    public function getPostalCode() {
-      return $this->postalCode;
+    public function getPostalCode()
+    {
+        return $this->postalCode;
     }
 
-    public function getStreetAddress() {
-      return $this->streetAddress;
+    public function getStreetAddress()
+    {
+        return $this->streetAddress;
     }
 
     /**
@@ -85,5 +90,4 @@ class Address implements SerializableInterface {
                 $data['streetAddress'], $data['postalCode'], $data['locality'], $data['country']
         );
     }
-
 }

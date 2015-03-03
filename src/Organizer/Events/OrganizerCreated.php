@@ -13,62 +13,68 @@ use CultuurNet\UDB3\Title;
 /**
  * Instantiates an OrganizerCreated event
  */
-class OrganizerCreated extends OrganizerEvent {
+class OrganizerCreated extends OrganizerEvent
+{
 
-  /**
-   * @var Title
-   */
-  public $title;
+    /**
+     * @var Title
+     */
+    public $title;
 
-  /**
-   * @var array
-   */
-  public $addresses;
+    /**
+     * @var array
+     */
+    public $addresses;
 
-  /**
-   * @var array
-   */
-  public $phones;
+    /**
+     * @var array
+     */
+    public $phones;
 
-  /**
-   * @var array
-   */
-  public $emails;
+    /**
+     * @var array
+     */
+    public $emails;
 
-  /**
-   * @var array
-   */
-  public $urls;
+    /**
+     * @var array
+     */
+    public $urls;
 
+    public function __construct($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    {
+        parent::__construct($id);
+        $this->title = $title;
+        $this->addresses = $addresses;
+        $this->phones = $phones;
+        $this->emails = $emails;
+        $this->urls = $urls;
+    }
 
-  public function __construct($id, Title $title, array $addresses, array $phones, array $emails, array $urls) {
-    parent::__construct($id);
-    $this->title = $title;
-    $this->addresses = $addresses;
-    $this->phones = $phones;
-    $this->emails = $emails;
-    $this->urls = $urls;
-  }
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-  public function getTitle() {
-    return $this->title;
-  }
+    public function getAddresses()
+    {
+        return $this->addresses;
+    }
 
-  public function getAddresses() {
-    return $this->addresses;
-  }
+    public function getPhones()
+    {
+        return $this->phones;
+    }
 
-  public function getPhones() {
-    return $this->phones;
-  }
+    public function getEmails()
+    {
+        return $this->emails;
+    }
 
-  public function getEmails() {
-    return $this->emails;
-  }
-
-  public function getUrls() {
-    return $this->urls;
-  }
+    public function getUrls()
+    {
+        return $this->urls;
+    }
 
     /**
      * @return array
@@ -76,17 +82,17 @@ class OrganizerCreated extends OrganizerEvent {
     public function serialize()
     {
 
-      $addresses = array();
-      foreach ($this->getAddresses() as $address) {
-        $addresses[] = $address->serialize();
-      }
+        $addresses = array();
+        foreach ($this->getAddresses() as $address) {
+            $addresses[] = $address->serialize();
+        }
 
         return parent::serialize() + array(
-            'title' => (string)$this->getTitle(),
-            'addresses' => $addresses,
-            'phones' => $this->getPhones(),
-            'emails' => $this->getEmails(),
-            'urls' => $this->getUrls(),
+          'title' => (string) $this->getTitle(),
+          'addresses' => $addresses,
+          'phones' => $this->getPhones(),
+          'emails' => $this->getEmails(),
+          'urls' => $this->getUrls(),
         );
     }
 
@@ -96,19 +102,13 @@ class OrganizerCreated extends OrganizerEvent {
     public static function deserialize(array $data)
     {
 
-      $addresses = array();
-      foreach ($data['addresses'] as $address) {
-        $addresses[] = Address::deserialize($address);
-      }
+        $addresses = array();
+        foreach ($data['addresses'] as $address) {
+            $addresses[] = Address::deserialize($address);
+        }
 
         return new static(
-            $data['organizer_id'],
-            new Title($data['title']),
-            $addresses,
-            $data['phones'],
-            $data['emails'],
-            $data['urls']
+            $data['organizer_id'], new Title($data['title']), $addresses, $data['phones'], $data['emails'], $data['urls']
         );
     }
-
 }

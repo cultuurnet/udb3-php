@@ -16,13 +16,12 @@ interface CalendarInterface extends SerializableInterface
 {
 
     public function getType();
-    
-    public function getStartDate() ;
-    
+
+    public function getStartDate();
+
     public function getEndDate();
-    
+
     public function getOpeningHours();
-    
+
     public function getTimestamps();
-    
 }

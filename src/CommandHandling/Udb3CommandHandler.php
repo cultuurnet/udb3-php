@@ -12,7 +12,8 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 /**
  * Abstract Command handler for Udb3.
  */
-abstract class Udb3CommandHandler implements CommandHandlerInterface {
+abstract class Udb3CommandHandler implements CommandHandlerInterface
+{
 
     /**
      * {@inheritDoc}
@@ -29,7 +30,7 @@ abstract class Udb3CommandHandler implements CommandHandlerInterface {
         $expectedClass = $parameter->getClass();
 
         if ($expectedClass->getName() == get_class($command)) {
-          $this->$method($command);
+            $this->$method($command);
         }
 
     }
@@ -40,5 +41,4 @@ abstract class Udb3CommandHandler implements CommandHandlerInterface {
 
         return 'handle' . end($classParts);
     }
-
 }

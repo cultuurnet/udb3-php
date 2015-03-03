@@ -29,7 +29,7 @@ class Event extends EventSourcedAggregateRoot
      *
      * @return Event
      */
-    public static function create($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
+    public static function create($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
         $event = new self();
         $event->apply(new EventCreated($eventId, $title, $eventType, $location, $calendar, $theme));

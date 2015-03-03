@@ -10,32 +10,34 @@ namespace CultuurNet\UDB3;
 /**
  * Provides a trait for organizer update commands.
  */
-trait UpdateOrganizerTrait {
+trait UpdateOrganizerTrait
+{
 
-  /**
-   * Id that gets updated.
-   * @var string
-   */
-  protected $id;
+    /**
+     * Id that gets updated.
+     * @var string
+     */
+    protected $id;
 
-  /**
-   * OrganizerId to be set
-   * @var string
-   */
-  protected $organizerId;
+    /**
+     * OrganizerId to be set
+     * @var string
+     */
+    protected $organizerId;
 
-  /**
-   * @return string
-   */
-  function getId() {
-    return $this->id;
-  }
+    /**
+     * @return string
+     */
+    function getId()
+    {
+        return $this->id;
+    }
 
-  /**
-   * @return string
-   */
-  function getOrganizerId() {
-    return $this->organizerId;
-  }
-
+    /**
+     * @return string
+     */
+    function getOrganizerId()
+    {
+        return $this->organizerId;
+    }
 }

@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3;
 /**
  * Trait that contains all major editing methods for Offers.
  */
-trait OfferEditingTrait {
+trait OfferEditingTrait
+{
 
     /**
      * Get the namespaced classname of the command to create.
@@ -18,54 +19,54 @@ trait OfferEditingTrait {
      *   Name of the class
      * @return string
      */
-    private function getCommandClass($className) {
-      $reflection = new \ReflectionObject($this);
-      return $reflection->getNamespaceName() . '\\' . $className;
+    private function getCommandClass($className)
+    {
+        $reflection = new \ReflectionObject($this);
+        return $reflection->getNamespaceName() . '\\' . $className;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateDescription($id, $description) {
+    public function updateDescription($id, $description)
+    {
 
-      $this->guardId($id);
+        $this->guardId($id);
 
-      $commandClass = $this->getCommandClass('UpdateDescription');
+        $commandClass = $this->getCommandClass('UpdateDescription');
 
-      return $this->commandBus->dispatch(
-          new $commandClass($id, $description)
-      );
-
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $description)
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateTypicalAgeRange($id, $ageRange) {
+    public function updateTypicalAgeRange($id, $ageRange)
+    {
 
-      $this->guardId($id);
+        $this->guardId($id);
 
-      $commandClass = $this->getCommandClass('updateTypicalAgeRange');
+        $commandClass = $this->getCommandClass('updateTypicalAgeRange');
 
-      return $this->commandBus->dispatch(
-          new $commandClass($id, $ageRange)
-      );
-
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $ageRange)
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateOrganizer($id, $organizerId) {
+    public function updateOrganizer($id, $organizerId)
+    {
 
-      $this->guardId($id);
+        $this->guardId($id);
 
-      $commandClass = $this->getCommandClass('updateOrganizer');
+        $commandClass = $this->getCommandClass('updateOrganizer');
 
-      return $this->commandBus->dispatch(
-          new $commandClass($id, $organizerId)
-      );
-
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $organizerId)
+        );
     }
-
 }

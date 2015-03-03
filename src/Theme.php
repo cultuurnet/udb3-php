@@ -19,5 +19,4 @@ class Theme extends Category
     {
         parent::__construct($id, $label, self::DOMAIN);
     }
-
 }

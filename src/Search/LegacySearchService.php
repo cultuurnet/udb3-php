@@ -73,17 +73,16 @@ class LegacySearchService implements SearchServiceInterface
         );
 
         if ($sort) {
-           $params[] = new Parameter\Parameter('sort', $sort);
+            $params[] = new Parameter\Parameter('sort', $sort);
         }
 
         if (!empty($conditions)) {
-
-          if (!empty($conditions['locationCdbId'])) {
-            $params[] = new Parameter\FilterQuery('"' . $conditions['locationCdbId'] . '"');
-          }
-          if (!empty($conditions['locationZip'])) {
-            $params[] = new Parameter\FilterQuery('zipcode' . ':' . $conditions['locationZip']);
-          }
+            if (!empty($conditions['locationCdbId'])) {
+                $params[] = new Parameter\FilterQuery('"' . $conditions['locationCdbId'] . '"');
+            }
+            if (!empty($conditions['locationZip'])) {
+                $params[] = new Parameter\FilterQuery('zipcode' . ':' . $conditions['locationZip']);
+            }
 
         }
 

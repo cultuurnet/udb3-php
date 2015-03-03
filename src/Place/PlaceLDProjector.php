@@ -97,53 +97,48 @@ class PlaceLDProjector extends ActorLDProjector
 
         $address = $placeCreated->getAddress();
         $jsonLD->address = array(
-          'addressCountry' => $address->getCountry(),
-          'addressLocality' => $address->getLocality(),
-          'postalCode' => $address->getPostalCode(),
-          'streetAddress' => $address->getStreetAddress(),
+            'addressCountry' => $address->getCountry(),
+            'addressLocality' => $address->getLocality(),
+            'postalCode' => $address->getPostalCode(),
+            'streetAddress' => $address->getStreetAddress(),
         );
 
         $calendar = $placeCreated->getCalendar();
         if (!empty($calendar)) {
+            $startDate = $calendar->getStartDate();
+            $endDate = $calendar->getEndDate();
 
-          $startDate = $calendar->getStartDate();
-          $endDate = $calendar->getEndDate();
-
-          // All calendar types allow startDate (and endDate).
-          // One timestamp - full day.
-          // One timestamp - start hour.
-          // One timestamp - start and end hour.
-          if (!empty($startDate)) {
-            $jsonLD->startDate = $startDate;
-          }
-          if (!empty($endDate)) {
-            $jsonLD->endDate = $endDate;
-          }
-
-          // Timestamps should be subEvents in jsonLD.
-          if ($calendar->getType() == 'timestamps') {
-
-            $jsonLD->subEvent = array();
-            foreach ($calendar->getTimestamps() as $timestamp) {
-
-              $startDate = $timestamp->getDate();
-              if ($timestamp->showStartHour()) {
-                 $startDate .= $timestamp->getTimestart();
-              }
-              $endDate = $timestamp->getDate();
-              if ($timestamp->showEndHour()) {
-                 $endDate .= $timestamp->getTimeend();
-              }
-
-              $jsonLD->subEvent[] = array(
-                '@type' => 'Event',
-                'startDate' => $startDate,
-                'endDate' => $endDate,
-              );
+            // All calendar types allow startDate (and endDate).
+            // One timestamp - full day.
+            // One timestamp - start hour.
+            // One timestamp - start and end hour.
+            if (!empty($startDate)) {
+                $jsonLD->startDate = $startDate;
+            }
+            if (!empty($endDate)) {
+                $jsonLD->endDate = $endDate;
             }
 
-          }
+            // Timestamps should be subEvents in jsonLD.
+            if ($calendar->getType() == 'timestamps') {
+                $jsonLD->subEvent = array();
+                foreach ($calendar->getTimestamps() as $timestamp) {
+                    $startDate = $timestamp->getDate();
+                    if ($timestamp->showStartHour()) {
+                        $startDate .= $timestamp->getTimestart();
+                    }
+                    $endDate = $timestamp->getDate();
+                    if ($timestamp->showEndHour()) {
+                        $endDate .= $timestamp->getTimeend();
+                    }
 
+                    $jsonLD->subEvent[] = array(
+                      '@type' => 'Event',
+                      'startDate' => $startDate,
+                      'endDate' => $endDate,
+                    );
+                }
+            }
         }
 
         // Period.
@@ -152,36 +147,35 @@ class PlaceLDProjector extends ActorLDProjector
         // Permanent - with openingtimes.
         $openingHours = $calendar->getOpeningHours();
         if (!empty($openingHours)) {
-          $jsonLD->openingHours = array();
-          foreach ($calendar->getOpeningHours() as $openingHour) {
-            $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
-            if (!empty($openingHour->opens)) {
-              $schedule['opens'] = $openingHour->opens;
+            $jsonLD->openingHours = array();
+            foreach ($calendar->getOpeningHours() as $openingHour) {
+                $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
+                if (!empty($openingHour->opens)) {
+                    $schedule['opens'] = $openingHour->opens;
+                }
+                if (!empty($openingHour->closes)) {
+                    $schedule['closes'] = $openingHour->closes;
+                }
+                $jsonLD->openingHours[] = $schedule;
             }
-            if (!empty($openingHour->closes)) {
-              $schedule['closes'] = $openingHour->closes;
-            }
-            $jsonLD->openingHours[] = $schedule;
-
-          }
         }
 
         $eventType = $placeCreated->getEventType();
         $jsonLD->terms = array(
-            array(
-                'label' => $eventType->getLabel(),
-                'domain' => $eventType->getDomain(),
-                'id' => $eventType->getId()
-            )
+          array(
+            'label' => $eventType->getLabel(),
+            'domain' => $eventType->getDomain(),
+            'id' => $eventType->getId()
+          )
         );
 
         $theme = $placeCreated->getTheme();
         if (!empty($theme)) {
-          $jsonLD->terms[] = [
-               'label' => $theme->getLabel(),
-               'domain' => $theme->getDomain(),
-               'id' => $theme->getId()
-          ];
+            $jsonLD->terms[] = [
+              'label' => $theme->getLabel(),
+              'domain' => $theme->getDomain(),
+              'id' => $theme->getId()
+            ];
         }
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
@@ -203,7 +197,7 @@ class PlaceLDProjector extends ActorLDProjector
      * @param DescriptionUpdated $descriptionUpdated
      */
     protected function applyDescriptionUpdated(
-      DescriptionUpdated $descriptionUpdated
+        DescriptionUpdated $descriptionUpdated
     ) {
 
         $document = $this->loadPlaceDocumentFromRepository($descriptionUpdated);
@@ -226,10 +220,9 @@ class PlaceLDProjector extends ActorLDProjector
         $eventLd = $document->getBody();
 
         if ($typicalAgeRangeUpdated->getTypicalAgeRange() === "-1") {
-          unset($eventLd->typicalAgeRange);
-        }
-        else {
-          $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+            unset($eventLd->typicalAgeRange);
+        } else {
+            $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
         }
 
         $this->repository->save($document->withBody($eventLd));

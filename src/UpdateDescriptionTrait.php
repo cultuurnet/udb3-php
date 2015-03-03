@@ -10,32 +10,34 @@ namespace CultuurNet\UDB3;
 /**
  * Provides a trait for description update commands.
  */
-trait UpdateDescriptionTrait {
+trait UpdateDescriptionTrait
+{
 
-  /**
-   * Id that gets updated.
-   * @var string
-   */
-  protected $id;
+    /**
+     * Id that gets updated.
+     * @var string
+     */
+    protected $id;
 
-  /**
-   * Description to be added.
-   * @var string
-   */
-  protected $description;
+    /**
+     * Description to be added.
+     * @var string
+     */
+    protected $description;
 
-  /**
-   * @return string
-   */
-  function getId() {
-    return $this->id;
-  }
+    /**
+     * @return string
+     */
+    function getId()
+    {
+        return $this->id;
+    }
 
-  /**
-   * @return string
-   */
-  function getDescription() {
-    return $this->description;
-  }
-
+    /**
+     * @return string
+     */
+    function getDescription()
+    {
+        return $this->description;
+    }
 }

@@ -24,5 +24,4 @@ class TypicalAgeRangeUpdated extends EventEvent
         parent::__construct($id);
         $this->typicalAgeRange = $typicalAgeRange;
     }
-
 }

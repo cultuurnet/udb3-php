@@ -10,7 +10,7 @@ namespace CultuurNet\UDB3\Event;
 /**
  * Description of DescriptionUpdated
  */
-class DescriptionUpdated  extends EventEvent
+class DescriptionUpdated extends EventEvent
 {
     use \CultuurNet\UDB3\DescriptionUpdatedTrait;
 
@@ -23,5 +23,4 @@ class DescriptionUpdated  extends EventEvent
         parent::__construct($id);
         $this->description = $description;
     }
-    
 }

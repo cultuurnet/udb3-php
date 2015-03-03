@@ -40,14 +40,14 @@ class Timestamp
 
     /**
      * Constructor
-     * 
+     *
      * @param type $date
      * @param type $startHour
      * @param type $endHour
      * @param type $showStartHour
      * @param type $showEndHour
      */
-    public function __construct($date, $startHour, $endHour, $showStartHour = TRUE, $showEndHour = TRUE)
+    public function __construct($date, $startHour, $endHour, $showStartHour = true, $showEndHour = true)
     {
 
         //CalendarUtility::validateDate($date);
@@ -58,35 +58,34 @@ class Timestamp
 
         //CalendarUtility::validateTime($endHour);
         $this->timeend = $endHour;
-        
+
         $this->showStartHour = $showStartHour;
         $this->showEndHour = $showEndHour;
 
     }
 
-    function getDate()
+    public function getDate()
     {
         return $this->date;
     }
 
-    function getTimestart()
+    public function getTimestart()
     {
         return $this->timestart;
     }
 
-    function getTimeend()
+    public function getTimeend()
     {
         return $this->timeend;
     }
 
-    function showStartHour()
+    public function showStartHour()
     {
         return $this->showStartHour;
     }
 
-    function showEndHour()
+    public function showEndHour()
     {
         return $this->showEndHour;
     }
-
 }

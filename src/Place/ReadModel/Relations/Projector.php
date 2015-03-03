@@ -29,7 +29,7 @@ class Projector extends Udb3Projector
 
         // No relation exists in UDB2.
         $placeId = $place->getPlaceId();
-        $this->storeRelations($placeId, NULL);
+        $this->storeRelations($placeId, null);
     }
 
     /**

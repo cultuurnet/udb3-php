@@ -165,7 +165,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
-                      break;
+                        break;
 
                     case EventCreated::class:
                         $this->applyEventCreated($domainEvent, $domainMessage->getMetadata());
@@ -233,7 +233,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         DescriptionUpdated $domainEvent,
         Metadata $metadata
     ) {
-return;
+
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
 
@@ -439,25 +439,24 @@ return;
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
 
         $eventType = new \CultureFeed_Cdb_Data_Category(
-          'eventtype',
-          $eventCreated->getEventType()->getId(),
-          $eventCreated->getEventType()->getLabel()
+            'eventtype',
+            $eventCreated->getEventType()->getId(),
+            $eventCreated->getEventType()->getLabel()
         );
         $event->getCategories()->add($eventType);
 
         $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $eventCalendar = $eventCreated->getCalendar();
         if ($eventCalendar->getType() == Timestamps::TYPE) {
-
-          foreach ($eventCalendar->getTimestamps() as $timestamp) {
-            $calendar->add(
-                new \CultureFeed_Cdb_Data_Calendar_Timestamp(
-                    $timestamp->getDate(),
-                    $timestamp->getTimestart(),
-                    $timestamp->getTimeend()
-                )
-            );
-          }
+            foreach ($eventCalendar->getTimestamps() as $timestamp) {
+                $calendar->add(
+                    new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+                        $timestamp->getDate(),
+                        $timestamp->getTimestart(),
+                        $timestamp->getTimeend()
+                    )
+                );
+            }
 
         }
 

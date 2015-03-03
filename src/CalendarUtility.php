@@ -51,5 +51,4 @@ class CalendarUtility
             throw new \UnexpectedValueException('Invalid time: ' . $value . '. The format should be h:i:s');
         }
     }
-
 }

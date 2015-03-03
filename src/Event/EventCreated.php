@@ -23,12 +23,12 @@ class EventCreated extends EventEvent
     /**
      * @var EventType
      */
-    private $eventType = NULL;
+    private $eventType = null;
 
     /**
      * @var Theme
      */
-    private $theme = NULL;
+    private $theme = null;
 
     /**
      * @var Location
@@ -103,9 +103,9 @@ class EventCreated extends EventEvent
      */
     public function serialize()
     {
-        $theme = NULL;
-        if ($this->getTheme() !== NULL) {
-          $theme = $this->getTheme()->serialize();
+        $theme = null;
+        if ($this->getTheme() !== null) {
+            $theme = $this->getTheme()->serialize();
         }
         return parent::serialize() + array(
             'title' => (string)$this->getTitle(),
@@ -121,9 +121,9 @@ class EventCreated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        $theme = NULL;
+        $theme = null;
         if (!empty($data['theme'])) {
-          $theme = Theme::deserialize($data['theme']);
+            $theme = Theme::deserialize($data['theme']);
         }
         return new static(
             $data['event_id'],
@@ -134,5 +134,4 @@ class EventCreated extends EventEvent
             $theme
         );
     }
-
 }

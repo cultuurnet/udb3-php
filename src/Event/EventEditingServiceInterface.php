@@ -76,5 +76,5 @@ interface EventEditingServiceInterface
      *
      * @return string $eventId
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL);
+    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
 }

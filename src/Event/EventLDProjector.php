@@ -189,26 +189,25 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         // One timestamp - start and end hour.
         $jsonLD->startDate = $startDate;
         if (!empty($endDate)) {
-          $jsonLD->endDate = $endDate;
+            $jsonLD->endDate = $endDate;
         }
 
         $jsonLD->subEvent = array();
         foreach ($calendar->getTimestamps() as $timestamp) {
+            $startDate = $timestamp->getDate();
+            if ($timestamp->showStartHour()) {
+                $startDate .= $timestamp->getTimestart();
+            }
+            $endDate = $timestamp->getDate();
+            if ($timestamp->showEndHour()) {
+                $endDate .= $timestamp->getTimeend();
+            }
 
-          $startDate = $timestamp->getDate();
-          if ($timestamp->showStartHour()) {
-             $startDate .= $timestamp->getTimestart();
-          }
-          $endDate = $timestamp->getDate();
-          if ($timestamp->showEndHour()) {
-             $endDate .= $timestamp->getTimeend();
-          }
-
-          $jsonLD->subEvent[] = array(
-            '@type' => 'Event',
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-          );
+            $jsonLD->subEvent[] = array(
+              '@type' => 'Event',
+              'startDate' => $startDate,
+              'endDate' => $endDate,
+            );
         }
 
         // Period.
@@ -217,18 +216,17 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         // Permanent - with openingtimes
         $openingHours = $calendar->getOpeningHours();
         if (!empty($openingHours)) {
-          $jsonLD->openingHours = array();
-          foreach ($openingHours as $openingHour) {
-            $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
-            if (!empty($openingHour->opens)) {
-              $schedule['opens'] = $openingHour->opens;
+            $jsonLD->openingHours = array();
+            foreach ($openingHours as $openingHour) {
+                $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
+                if (!empty($openingHour->opens)) {
+                    $schedule['opens'] = $openingHour->opens;
+                }
+                if (!empty($openingHour->closes)) {
+                    $schedule['closes'] = $openingHour->closes;
+                }
+                $jsonLD->openingHours[] = $schedule;
             }
-            if (!empty($openingHour->closes)) {
-              $schedule['closes'] = $openingHour->closes;
-            }
-            $jsonLD->openingHours[] = $schedule;
-
-          }
         }
 
         // Same as.
@@ -361,7 +359,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
      * @param DescriptionUpdated $descriptionUpdated
      */
     protected function applyDescriptionUpdated(
-      DescriptionUpdated $descriptionUpdated
+        DescriptionUpdated $descriptionUpdated
     ) {
         $document = $this->loadDocumentFromRepository($descriptionUpdated);
 
@@ -383,10 +381,9 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         $eventLd = $document->getBody();
 
         if ($typicalAgeRangeUpdated->getTypicalAgeRange() === "-1") {
-          unset($eventLd->typicalAgeRange);
-        }
-        else {
-          $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+            unset($eventLd->typicalAgeRange);
+        } else {
+            $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
         }
 
         $this->repository->save($document->withBody($eventLd));

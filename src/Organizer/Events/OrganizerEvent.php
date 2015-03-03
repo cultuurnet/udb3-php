@@ -12,7 +12,8 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * Abstract class for events on organizers.
  */
-abstract class OrganizerEvent implements SerializableInterface {
+abstract class OrganizerEvent implements SerializableInterface
+{
 
     protected $organizerId;
 
@@ -32,7 +33,7 @@ abstract class OrganizerEvent implements SerializableInterface {
     public function serialize()
     {
         return array(
-            'organizer_id' => $this->organizerId,
+          'organizer_id' => $this->organizerId,
         );
     }
 
@@ -43,5 +44,4 @@ abstract class OrganizerEvent implements SerializableInterface {
     {
         return new static($data['organizer_id']);
     }
-
 }

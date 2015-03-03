@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  */
@@ -27,7 +28,7 @@ class PlaceCreated extends PlaceEvent
     /**
      * @var Theme
      */
-    private $theme = NULL;
+    private $theme = null;
 
     /**
      * @var Address
@@ -38,7 +39,6 @@ class PlaceCreated extends PlaceEvent
      * @var CalendarInterface
      */
     private $calendar;
-
 
     /**
      * @param string $eventId
@@ -56,7 +56,6 @@ class PlaceCreated extends PlaceEvent
         $this->address = $address;
         $this->calendar = $calendar;
         $this->theme = $theme;
-
     }
 
     /**
@@ -104,16 +103,16 @@ class PlaceCreated extends PlaceEvent
      */
     public function serialize()
     {
-        $theme = NULL;
-        if ($this->getTheme() !== NULL) {
-          $theme = $this->getTheme()->serialize();
+        $theme = null;
+        if ($this->getTheme() !== null) {
+            $theme = $this->getTheme()->serialize();
         }
         return parent::serialize() + array(
-            'title' => (string)$this->getTitle(),
-            'event_type' => $this->getEventType()->serialize(),
-            'theme' => $theme,
-            'address' => $this->getAddress()->serialize(),
-            'calendar' => $this->getCalendar()->serialize(),
+          'title' => (string) $this->getTitle(),
+          'event_type' => $this->getEventType()->serialize(),
+          'theme' => $theme,
+          'address' => $this->getAddress()->serialize(),
+          'calendar' => $this->getCalendar()->serialize(),
         );
     }
 
@@ -122,17 +121,12 @@ class PlaceCreated extends PlaceEvent
      */
     public static function deserialize(array $data)
     {
-        $theme = NULL;
+        $theme = null;
         if (!empty($data['theme'])) {
-          $theme = Theme::deserialize($data['theme']);
+            $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-            $data['event_id'],
-            new Title($data['title']),
-            EventType::deserialize($data['event_type']),
-            Address::deserialize($data['address']),
-            \CultuurNet\UDB3\Calendar::deserialize($data['calendar'])
+             $data['event_id'], new Title($data['title']), EventType::deserialize($data['event_type']), Address::deserialize($data['address']), \CultuurNet\UDB3\Calendar::deserialize($data['calendar'])
         );
     }
-
 }

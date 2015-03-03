@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3;
 /**
  * Provides a trait for typicalAgeRange updates.
  */
-trait UpdateTypicalAgeRangeTrait {
+trait UpdateTypicalAgeRangeTrait
+{
 
     /**
      * @var string
@@ -26,15 +27,16 @@ trait UpdateTypicalAgeRangeTrait {
     /**
      * @return string
      */
-    function getId() {
-      return $this->id;
+    function getId()
+    {
+        return $this->id;
     }
 
     /**
      * @return string
      */
-    function getTypicalAgeRange() {
-      return $this->typicalAgeRange;
+    function getTypicalAgeRange()
+    {
+        return $this->typicalAgeRange;
     }
-
 }

@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3\Place;
 /**
  * Provides a command to update the event description for the main language.
  */
-class UpdateDescription {
+class UpdateDescription
+{
 
     use \CultuurNet\UDB3\UpdateDescriptionTrait;
 

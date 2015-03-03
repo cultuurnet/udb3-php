@@ -32,7 +32,7 @@ abstract class Udb3Projector implements EventListenerInterface
         $expectedClass = $parameter->getClass();
 
         if ($expectedClass->getName() == get_class($event)) {
-          $this->$method($event, $domainMessage);
+            $this->$method($event, $domainMessage);
         }
 
     }

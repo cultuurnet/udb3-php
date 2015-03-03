@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3\Event;
 /**
  * Provides a command to update the event description for the main language.
  */
-class UpdateOrganizer {
+class UpdateOrganizer
+{
 
     use \CultuurNet\UDB3\UpdateOrganizerTrait;
 

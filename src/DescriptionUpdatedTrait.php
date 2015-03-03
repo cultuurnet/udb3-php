@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3;
 /**
  * Trait for the DescriptionUpdated events.
  */
-trait DescriptionUpdatedTrait {
+trait DescriptionUpdatedTrait
+{
 
     /**
      * The new description.
@@ -35,5 +36,4 @@ trait DescriptionUpdatedTrait {
             'description' => $this->description,
         );
     }
-
 }

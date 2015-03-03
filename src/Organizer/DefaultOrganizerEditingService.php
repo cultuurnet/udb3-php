@@ -58,5 +58,4 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
 
         return $id;
     }
-
 }

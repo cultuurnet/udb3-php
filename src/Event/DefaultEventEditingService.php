@@ -145,7 +145,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
+    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
         $eventId = $this->uuidGenerator->generate();
 

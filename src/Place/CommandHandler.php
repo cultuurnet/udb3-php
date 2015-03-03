@@ -74,5 +74,4 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
         $this->placeRepository->add($place);
 
     }
-
 }

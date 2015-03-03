@@ -49,17 +49,17 @@ class Category implements SerializableInterface
         $this->domain = $domain;
     }
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getLabel()
+    public function getLabel()
     {
         return $this->label;
     }
 
-    function getDomain()
+    public function getDomain()
     {
         return $this->domain;
     }
@@ -85,5 +85,4 @@ class Category implements SerializableInterface
                 $data['id'], $data['label'], $data['domain']
         );
     }
-
 }

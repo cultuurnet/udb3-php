@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Event\EventEvent;
 /**
  * Description of DescriptionUpdated
  */
-class OrganizerUpdated  extends EventEvent
+class OrganizerUpdated extends EventEvent
 {
     use \CultuurNet\UDB3\OrganizerUpdatedTrait;
 
@@ -25,5 +25,4 @@ class OrganizerUpdated  extends EventEvent
         parent::__construct($id);
         $this->organizerId = $organizerId;
     }
-
 }

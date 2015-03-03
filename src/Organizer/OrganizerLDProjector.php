@@ -88,12 +88,12 @@ class OrganizerLDProjector extends ActorLDProjector
         $addresses = $organizerCreated->getAddresses();
         $jsonLD->addresses = array();
         foreach ($addresses as $address) {
-           $jsonLD->addresses[] = array(
-             'addressCountry' => $address->getCountry(),
-             'addressLocality' => $address->getLocality(),
-             'postalCode' => $address->getPostalCode(),
-             'streetAddress' => $address->getStreetAddress(),
-           );
+            $jsonLD->addresses[] = array(
+              'addressCountry' => $address->getCountry(),
+              'addressLocality' => $address->getLocality(),
+              'postalCode' => $address->getPostalCode(),
+              'streetAddress' => $address->getStreetAddress(),
+            );
         }
 
         $jsonLD->phone = $organizerCreated->getPhones();

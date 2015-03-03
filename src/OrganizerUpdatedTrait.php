@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3;
 /**
  * Trait for the OrganizerUpdatedTrait events.
  */
-trait OrganizerUpdatedTrait {
+trait OrganizerUpdatedTrait
+{
 
     /**
      * The new organizer id
@@ -32,8 +33,7 @@ trait OrganizerUpdatedTrait {
     public function serialize()
     {
         return parent::serialize() + array(
-            'organizerId' => $this->organizerId,
+          'organizerId' => $this->organizerId,
         );
     }
-
 }

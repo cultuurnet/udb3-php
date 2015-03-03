@@ -53,8 +53,8 @@ class Projector extends Udb3Projector
         // Store relation if the event is connected with a place.
         $cdbid = $event->getLocation()->getCdbid();
         if (!empty($cdbid)) {
-          $organizer = null;
-          $this->storeRelations($eventId, $cdbid, $organizer);
+            $organizer = null;
+            $this->storeRelations($eventId, $cdbid, $organizer);
         }
 
     }

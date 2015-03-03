@@ -61,7 +61,8 @@ class Organizer extends Actor
      *
      * @return Place
      */
-    public static function createOrganizer($id, Title $title, array $addresses, array $phones, array $emails, array $urls) {
+    public static function createOrganizer($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    {
         $organizer = new self();
         $organizer->apply(new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls));
 
@@ -82,6 +83,4 @@ class Organizer extends Actor
     ) {
         $this->applyActorImportedFromUDB2($organizerImported);
     }
-
-
 }

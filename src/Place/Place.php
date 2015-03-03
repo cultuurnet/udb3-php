@@ -37,7 +37,7 @@ class Place extends Actor
      *
      * @return Event
      */
-    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = NULL)
+    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
     {
         $place = new self();
         $place->apply(new PlaceCreated($id, $title, $eventType, $address, $calendar, $theme));
@@ -113,5 +113,4 @@ class Place extends Actor
     ) {
         $this->applyActorImportedFromUDB2($placeImported);
     }
-
 }

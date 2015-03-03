@@ -7,7 +7,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\CalendarInterface;
 
@@ -16,21 +15,21 @@ use CultuurNet\UDB3\CalendarInterface;
  */
 class Calendar implements CalendarInterface
 {
-  
+
     /**
      * @var string
      */
-    protected $type = NULL;
-    
+    protected $type = null;
+
     /**
      * @var string
      */
-    protected $startDate = NULL;
-    
+    protected $startDate = null;
+
     /**
      * @var string
      */
-    protected $endDate = NULL;
+    protected $endDate = null;
 
     /**
      * @var \CultuurNet\UDB3\Timestamp[]
@@ -41,8 +40,7 @@ class Calendar implements CalendarInterface
      * @var Array
      */
     protected $openingHours = array();
-    
-    
+
     const SINGLE = "single";
     const TIMESTAMPS = "timestamps";
     const PERIODIC = "periodic";
@@ -51,30 +49,25 @@ class Calendar implements CalendarInterface
     /**
      * Constructor.
      */
-    public function __construct($calendarType, $startDate, $endDate, $timestamps = array(), $openingHours= array())
+    public function __construct($calendarType, $startDate, $endDate, $timestamps = array(), $openingHours = array())
     {
-      if ($calendarType != self::PERMANENT && $calendarType != self::TIMESTAMPS && $calendarType != self::PERIODIC && $calendarType != self::SINGLE)  {
-        throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
-      }
-      
-      if ($calendarType == self::TIMESTAMPS && empty($startDate)) {
-        throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $calendarType . '.');
-      }
-      
-      $this->type = $calendarType;
-      $this->startDate = $startDate;
-      $this->endDate = $endDate;
-      
-      foreach ($timestamps as $timestamp) {
-        $this->timestamps[] = new Timestamp($timestamp->date, 
-                                            $timestamp->startHour, 
-                                            $timestamp->endHour, 
-                                            $timestamp->showStartHour, 
-                                            $timestamp->showEndHour);
-      }
-      
-      $this->openingHours[] = $openingHours;
-      
+        if ($calendarType != self::PERMANENT && $calendarType != self::TIMESTAMPS && $calendarType != self::PERIODIC && $calendarType != self::SINGLE) {
+            throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
+        }
+
+        if ($calendarType == self::TIMESTAMPS && empty($startDate)) {
+            throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $calendarType . '.');
+        }
+
+        $this->type = $calendarType;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+
+        foreach ($timestamps as $timestamp) {
+            $this->timestamps[] = new Timestamp($timestamp->date, $timestamp->startHour, $timestamp->endHour, $timestamp->showStartHour, $timestamp->showEndHour);
+        }
+
+        $this->openingHours[] = $openingHours;
     }
 
     /**
@@ -106,28 +99,31 @@ class Calendar implements CalendarInterface
     public static function deserialize(array $data)
     {
         return new static(
-          $data['timestamps']
+                $data['timestamps']
         );
     }
-    
+
     /**
      * Get the start date
      */
-    public function getStartDate() {
+    public function getStartDate()
+    {
         return $this->startDate;
     }
-    
+
     /**
      * Get the end date
      */
-    public function getEndDate() {
+    public function getEndDate()
+    {
         return $this->endDate;
     }
-    
+
     /**
      * Get the opening hours
      */
-    public function getOpeningHours() {
+    public function getOpeningHours()
+    {
         return $this->openingHours;
     }
 
@@ -139,5 +135,4 @@ class Calendar implements CalendarInterface
     {
         return $this->timestamps;
     }
-
 }

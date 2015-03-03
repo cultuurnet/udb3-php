@@ -7,16 +7,19 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Title;
+use stdClass;
 
 class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -104,12 +107,12 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $eventCreated = new EventCreated(
             $eventId,
             new Title('some representative title'),
-            'LOCATION-ABC-123',
-            $date,
-            new EventType('0.50.4.0.0', 'concert')
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('permanent', '', '')
         );
 
-        $jsonLD = new \stdClass();
+        $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
         $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
         $jsonLD->name = array('nl' => 'some representative title');
@@ -298,7 +301,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                         $body = $jsonDocument->getBody();
                         $bookingInfo = $body->bookingInfo;
 
-                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo = new stdClass();
                         $expectedBookingInfo->currency = 'EUR';
                         $expectedBookingInfo->price = 0;
 
@@ -331,7 +334,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                         $body = $jsonDocument->getBody();
                         $bookingInfo = $body->bookingInfo;
 
-                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo = new stdClass();
                         $expectedBookingInfo->currency = 'EUR';
                         $expectedBookingInfo->price = 0;
                         $expectedBookingInfo->description = 'Gratis voor iedereen!';
@@ -365,7 +368,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                         $body = $jsonDocument->getBody();
                         $bookingInfo = $body->bookingInfo;
 
-                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo = new stdClass();
                         $expectedBookingInfo->description = 'Gratis voor iedereen!';
 
                         return

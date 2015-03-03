@@ -7,7 +7,6 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
-use Broadway\UuidGenerator\Testing\MockUuidGenerator;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
@@ -17,6 +16,7 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\Title;
 
 class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 {

@@ -2,8 +2,13 @@
 
 namespace CultuurNet\UDB3\StringFilter;
 
-class TidyStringFilterTest extends \PHPUnit_Framework_TestCase
+class TidyStringFilterTest extends StringFilterTest
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected $filterClass = TidyStringFilter::class;
+
     /**
      * @test
      * Original event with this kind of broken tag
@@ -15,18 +20,14 @@ class TidyStringFilterTest extends \PHPUnit_Framework_TestCase
         $element_with_valid_tag = "<p>Valid Element</p>";
         $broken_html_end_tag = "</...";
 
-        $description = $element_with_valid_tag .
+        $original = $element_with_valid_tag .
             $broken_html_end_tag .
             $element_with_valid_tag;
 
-        $descriptionFilter = new TidyStringFilter();
-
-        $filteredDescription = $descriptionFilter->filter($description);
-
-        $expectedDescription = $element_with_valid_tag . PHP_EOL .
+        $expected = $element_with_valid_tag . PHP_EOL .
             "&lt;/..." . PHP_EOL .
             $element_with_valid_tag . PHP_EOL;
 
-        $this->assertEquals($expectedDescription, $filteredDescription);
+        $this->assertFilterValue($expected, $original);
     }
 }

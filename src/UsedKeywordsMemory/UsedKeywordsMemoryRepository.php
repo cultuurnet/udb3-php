@@ -19,7 +19,7 @@ class UsedKeywordsMemoryRepository extends EventSourcingRepository
         parent::__construct(
             $eventStore,
             $eventBus,
-            '\\CultuurNet\UDB3\\UsedKeywordsMemory\\UsedKeywordsMemory',
+            UsedKeywordsMemory::class,
             $eventStreamDecorators
         );
     }

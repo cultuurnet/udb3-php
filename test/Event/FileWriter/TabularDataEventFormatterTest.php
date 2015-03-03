@@ -96,4 +96,58 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
     }
+
+    /**
+     * @test
+     * @dataProvider eventDateProvider
+     */
+    public function it_formats_dates($eventFile, $created, $startDate, $endDate)
+    {
+        $expectedFormatting = [
+            'created' => $created,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ];
+
+        $includedProperties = [
+            'created',
+            'startDate',
+            'endDate'
+        ];
+        $event = $this->getJSONEventFromFile($eventFile);
+        $formatter = new TabularDataEventFormatter($includedProperties);
+        $formattedEvent = $formatter->formatEvent($event);
+
+        // We do not care about the event 'id' here, which is always included.
+        unset($formattedEvent['id']);
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_an_empty_image()
+    {
+        $event = $this->getJSONEventFromFile('event_without_image.json');
+        $formatter = new TabularDataEventFormatter(array('image'));
+        $formattedEvent = $formatter->formatEvent($event);
+
+        $this->assertTrue(isset($formattedEvent['image']));
+        $this->assertEmpty($formattedEvent['image']);
+    }
+
+    /**
+     * Test data provider for it_formats_dates().
+     *
+     * @return array
+     *   Array of individual arrays, each containing the arguments for the test method.
+     */
+    public function eventDateProvider()
+    {
+        return array(
+            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30'),
+            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', ''),
+        );
+    }
 }

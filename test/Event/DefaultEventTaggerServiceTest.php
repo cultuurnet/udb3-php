@@ -28,13 +28,9 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->eventService = $this->getMock(
-            'CultuurNet\\UDB3\\EventServiceInterface'
-        );
+        $this->eventService = $this->getMock(EventServiceInterface::class);
 
-        $this->commandBus = $this->getMock(
-            'Broadway\\CommandHandling\\CommandBusInterface'
-        );
+        $this->commandBus = $this->getMock(CommandBusInterface::class);
 
         $this->eventTagger = new DefaultEventTaggerService(
             $this->eventService,
@@ -66,7 +62,10 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 
     /**
@@ -97,7 +96,10 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 
     /**
@@ -116,9 +118,12 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
         $this->commandBus->expects($this->never())
             ->method('dispatch');
 
-        $this->setExpectedException('CultuurNet\\UDB3\\EventNotFoundException');
+        $this->setExpectedException(EventNotFoundException::class);
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 
     /**
@@ -128,11 +133,17 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $eventIds = [];
 
-        $this->setExpectedException('InvalidArgumentException', 'no event Ids to tag');
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'no event Ids to tag'
+        );
 
         $this->commandBus->expects($this->never())
             ->method('dispatch');
 
-        $this->eventTagger->tagEventsById($eventIds, new Keyword('some-keyword'));
+        $this->eventTagger->tagEventsById(
+            $eventIds,
+            new Keyword('some-keyword')
+        );
     }
 }

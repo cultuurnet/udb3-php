@@ -64,6 +64,17 @@ class TabularDataEventFormatter
         return $row;
     }
 
+    /**
+     * @param string $date Date in ISO 8601 format.
+     * @return string Date formatted for tabular data export.
+     */
+    protected function formatDate($date)
+    {
+        $timezone = new \DateTimeZone('Europe/Brussels');
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, $date, $timezone);
+        return $datetime->format('Y-m-d H:i');
+    }
+
     public function emptyRow()
     {
         $row = array();
@@ -237,21 +248,33 @@ class TabularDataEventFormatter
             'created' => [
                 'name' => 'datum aangemaakt',
                 'include' => function ($event) {
-                    return $event->created;
+                    if (!empty($event->created)) {
+                        return $this->formatDate($event->created);
+                    } else {
+                        return '';
+                    }
                 },
                 'property' => 'created'
             ],
             'startDate' => [
                 'name' => 'startdatum',
                 'include' => function ($event) {
-                    return $event->startDate;
+                    if (!empty($event->startDate)) {
+                        return $this->formatDate($event->startDate);
+                    } else {
+                        return '';
+                    }
                 },
                 'property' => 'startDate'
             ],
             'endDate' => [
                 'name' => 'einddatum',
                 'include' => function ($event) {
-                    return $event->endDate;
+                    if (!empty($event->endDate)) {
+                        return $this->formatDate($event->endDate);
+                    } else {
+                        return '';
+                    }
                 },
                 'property' => 'endDate'
             ],
@@ -310,7 +333,7 @@ class TabularDataEventFormatter
             'image' => [
                 'name' => 'afbeelding',
                 'include' => function ($event) {
-                    return $event->image;
+                    return !empty($event->image) ? $event->image : '';
                 },
                 'property' => 'image'
             ],

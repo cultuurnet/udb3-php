@@ -66,6 +66,8 @@ class CdbXMLImporter
             $this->importDescription($languageDetail, $jsonLD, $language);
         }
 
+        $this->importAvailable($event, $jsonLD);
+
         $this->importPicture($detail, $jsonLD);
 
         $this->importKeywords($event, $jsonLD);
@@ -490,6 +492,22 @@ class CdbXMLImporter
 
         if (!in_array($reference, $jsonLD->sameAs)) {
             array_push($jsonLD->sameAs, $reference);
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importAvailable(
+        \CultureFeed_Cdb_Item_Event $event,
+        \stdClass $jsonLD
+    ) {
+        $availableString = $event->getAvailableFrom();
+        if ($availableString) {
+            $available = $this->dateFromUdb2DateString($availableString);
+
+            $jsonLD->available = $available->format('c');
         }
     }
 }

@@ -70,7 +70,7 @@ class EventCreated extends EventEvent
      */
     public function getEventType()
     {
-        return $this->type;
+        return $this->eventType;
     }
 
     /**

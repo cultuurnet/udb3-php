@@ -18,6 +18,7 @@ use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
 {

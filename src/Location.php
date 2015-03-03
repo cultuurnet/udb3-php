@@ -46,8 +46,9 @@ class Location implements SerializableInterface
      */
     protected $street;
 
-    public function __construct($name, $country, $locality, $postalcode, $street)
+    public function __construct($cdbid, $name, $country, $locality, $postalcode, $street)
     {
+        $this->cdbid = $cdbid;
         $this->name = $name;
         $this->country = $country;
         $this->locality = $locality;

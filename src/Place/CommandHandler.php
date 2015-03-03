@@ -24,6 +24,9 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
         $this->placeRepository = $placeRepository;
     }
 
+    /**
+     * Handle the update of description on a place.
+     */
     public function handleUpdateDescription(UpdateDescription $updateDescription)
     {
 
@@ -38,6 +41,9 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 
     }
 
+    /**
+     * Handle the update of typical age range on a place.
+     */
     public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $typicalAgeRange)
     {
 
@@ -46,6 +52,23 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 
         $place->updateTypicalAgeRange(
             $typicalAgeRange->getTypicalAgeRange()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
+    /**
+     * Handle an update command to update organizer.
+     */
+    public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($updateOrganizer->getId());
+
+        $place->updateOrganizer(
+            $updateOrganizer->getOrganizerId()
         );
 
         $this->placeRepository->add($place);

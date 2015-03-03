@@ -7,8 +7,10 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
+use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
@@ -16,6 +18,7 @@ use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
+use CultuurNet\UDB3\Place\TypicalAgeRangeUpdated;
 
 class PlaceLDProjector extends ActorLDProjector
 {
@@ -79,8 +82,125 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
+     * @param PlaceCreated $placeCreated
+     */
+    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage)
+    {
+        $document = $this->newDocument($placeCreated->getPlaceId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $placeCreated->getPlaceId()
+        );
+        $jsonLD->name = $placeCreated->getTitle();
+
+        $address = $placeCreated->getAddress();
+        $jsonLD->address = array(
+          'addressCountry' => $address->getCountry(),
+          'addressLocality' => $address->getLocality(),
+          'postalCode' => $address->getPostalCode(),
+          'streetAddress' => $address->getStreetAddress(),
+        );
+
+        $calendar = $placeCreated->getCalendar();
+        if (!empty($calendar)) {
+
+          $startDate = $calendar->getStartDate();
+          $endDate = $calendar->getEndDate();
+
+          // All calendar types allow startDate (and endDate).
+          // One timestamp - full day.
+          // One timestamp - start hour.
+          // One timestamp - start and end hour.
+          if (!empty($startDate)) {
+            $jsonLD->startDate = $startDate;
+          }
+          if (!empty($endDate)) {
+            $jsonLD->endDate = $endDate;
+          }
+
+          // Timestamps should be subEvents in jsonLD.
+          if ($calendar->getType() == 'timestamps') {
+
+            $jsonLD->subEvent = array();
+            foreach ($calendar->getTimestamps() as $timestamp) {
+
+              $startDate = $timestamp->getDate();
+              if ($timestamp->showStartHour()) {
+                 $startDate .= $timestamp->getTimestart();
+              }
+              $endDate = $timestamp->getDate();
+              if ($timestamp->showEndHour()) {
+                 $endDate .= $timestamp->getTimeend();
+              }
+
+              $jsonLD->subEvent[] = array(
+                '@type' => 'Event',
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+              );
+            }
+
+          }
+
+        }
+
+        // Period.
+        // Period with openingtimes.
+        // Permanent - "altijd open".
+        // Permanent - with openingtimes.
+        $openingHours = $calendar->getOpeningHours();
+        if (!empty($openingHours)) {
+          $jsonLD->openingHours = array();
+          foreach ($calendar->getOpeningHours() as $openingHour) {
+            $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
+            if (!empty($openingHour->opens)) {
+              $schedule['opens'] = $openingHour->opens;
+            }
+            if (!empty($openingHour->closes)) {
+              $schedule['closes'] = $openingHour->closes;
+            }
+            $jsonLD->openingHours[] = $schedule;
+
+          }
+        }
+
+        $eventType = $placeCreated->getEventType();
+        $jsonLD->terms = array(
+            array(
+                'label' => $eventType->getLabel(),
+                'domain' => $eventType->getDomain(),
+                'id' => $eventType->getId()
+            )
+        );
+
+        $theme = $placeCreated->getTheme();
+        if (!empty($theme)) {
+          $jsonLD->terms[] = [
+               'label' => $theme->getLabel(),
+               'domain' => $theme->getDomain(),
+               'id' => $theme->getId()
+          ];
+        }
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $jsonLD->created = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
+            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
      * Apply the description updated event to the place repository.
-     * @param \CultuurNet\UDB3\Place\DescriptionUpdated $descriptionUpdated
+     * @param DescriptionUpdated $descriptionUpdated
      */
     protected function applyDescriptionUpdated(
       DescriptionUpdated $descriptionUpdated
@@ -96,7 +216,7 @@ class PlaceLDProjector extends ActorLDProjector
 
     /**
      * Apply the typical age range updated event to the event repository.
-     * @param \CultuurNet\UDB3\Event\TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
     protected function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated

@@ -53,4 +53,19 @@ trait OfferEditingTrait {
 
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function updateOrganizer($id, $organizerId) {
+
+      $this->guardId($id);
+
+      $commandClass = $this->getCommandClass('updateOrganizer');
+
+      return $this->commandBus->dispatch(
+          new $commandClass($id, $organizerId)
+      );
+
+    }
+
 }

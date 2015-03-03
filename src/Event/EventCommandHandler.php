@@ -4,9 +4,10 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Keyword;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Event\UpdateOrganizer;
+use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -182,6 +183,9 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         $this->eventRepository->add($event);
     }
 
+    /**
+     * Handle an update command to update the main description.
+     */
     public function handleUpdateDescription(UpdateDescription $updateDescription)
     {
 
@@ -196,6 +200,9 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
     }
 
+    /**
+     * Handle an update command to update the typical age range.
+     */
     public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $typicalAgeRange)
     {
 
@@ -204,6 +211,23 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
         $event->updateTypicalAgeRange(
             $typicalAgeRange->getTypicalAgeRange()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update command to update organizer.
+     */
+    public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateOrganizer->getId());
+
+        $event->updateOrganizer(
+            $updateOrganizer->getOrganizerId()
         );
 
         $this->eventRepository->add($event);

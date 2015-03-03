@@ -8,11 +8,13 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Actor\Actor;
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Event\UpdateOrganizer;
+use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use Drupal\views\Plugin\views\area\Title;
+use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
 
@@ -21,28 +23,37 @@ class Place extends Actor
 
     /**
      * Factory method to create a new Place.
-     * 
-     * @todo Refactor this method so it can be called create. Currently the 
+     *
+     * @todo Refactor this method so it can be called create. Currently the
      * normal behavior for create is taken by the legacy udb2 logic.
      * The PlaceImportedFromUDB2 could be a superclass of Place.
      *
      * @param String $id
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param Address $address
      * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
      * @return Event
      */
-    public static function createPlace($id, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
+    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = NULL)
     {
         $place = new self();
-        $place->apply(new PlaceCreated($id, $title, $eventType, $location, $calendar, $theme));
+        $place->apply(new PlaceCreated($id, $title, $eventType, $address, $calendar, $theme));
 
         return $place;
     }
-    
+
+    /**
+     * Apply the place created event.
+     * @param PlaceCreate $placeCreated
+     */
+    protected function applyPlaceCreated(PlaceCreated $placeCreated)
+    {
+        $this->actorId = $placeCreated->getPlaceId();
+    }
+
     /**
      * @param string $description
      */
@@ -57,6 +68,14 @@ class Place extends Actor
     public function updateTypicalAgeRange($typicalAgeRange)
     {
         $this->apply(new TypicalAgeRangeUpdated($this->actorId, $typicalAgeRange));
+    }
+
+    /**
+     * Handle an update command to update organizer.
+     */
+    public function updateOrganizer(UpdateOrganizer $updateOrganizer)
+    {
+        $this->apply(new OrganizerUpdated($this->actorId, $updateOrganizer->getOrganizerId()));
     }
 
     /**

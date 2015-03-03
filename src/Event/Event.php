@@ -5,9 +5,11 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Title;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -157,6 +159,14 @@ class Event extends EventSourcedAggregateRoot
     public function updateTypicalAgeRange($typicalAgeRange)
     {
         $this->apply(new TypicalAgeRangeUpdated($this->eventId, $typicalAgeRange));
+    }
+
+    /**
+     * @param string $organizerId
+     */
+    public function updateOrganizer($organizerId)
+    {
+        $this->apply(new OrganizerUpdated($this->eventId, $organizerId));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

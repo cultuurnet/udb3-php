@@ -9,11 +9,11 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OfferEditingInterface;
+use CultuurNet\UDB3\Title;
 
 class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
 {
@@ -53,11 +53,11 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function createPlace(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = NULL)
+    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = NULL)
     {
         $id = $this->uuidGenerator->generate();
 
-        $place = Place::createPlace($id, $title, $eventType, $location, $calendar, $theme);
+        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
 
         $this->placeRepository->add($place);
 

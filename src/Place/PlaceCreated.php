@@ -5,34 +5,134 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Location;
 
 class PlaceCreated extends PlaceEvent
 {
 
-    use \CultuurNet\UDB3\EventCreatedTrait;
+    /**
+     * @var Title
+     */
+    private $title;
+
+    /**
+     * @var EventType
+     */
+    private $eventType;
+
+    /**
+     * @var Theme
+     */
+    private $theme = NULL;
+
+    /**
+     * @var Address
+     */
+    private $address;
+
+    /**
+     * @var CalendarInterface
+     */
+    private $calendar;
+
 
     /**
      * @param string $eventId
      * @param Title $title
-     * @param string $location
-     * @param \DateTime $date
+     * @param Address $address
+     * @param EventType $eventType
+     * @param CalendarInterface $calendar
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
+    public function __construct($eventId, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
     {
         parent::__construct($eventId);
 
-        $this->setTitle($title);
-        $this->setEventType($eventType);
-        $this->setLocation($location);
-        $this->setCalendar($calendar);
+        $this->title = $title;
+        $this->eventType = $eventType;
+        $this->address = $address;
+        $this->calendar = $calendar;
+        $this->theme = $theme;
 
-        if(!isset($theme)) {
-          $this->setTheme($theme);
+    }
+
+    /**
+     * @return Title
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return EventType
+     */
+    public function getEventType()
+    {
+        return $this->eventType;
+    }
+
+    /**
+     * @return Theme
+     */
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
+    /**
+     * @return CalendarBase
+     */
+    public function getCalendar()
+    {
+        return $this->calendar;
+    }
+
+    /**
+     * @return Address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        $theme = NULL;
+        if ($this->getTheme() !== NULL) {
+          $theme = $this->getTheme()->serialize();
         }
+        return parent::serialize() + array(
+            'title' => (string)$this->getTitle(),
+            'event_type' => $this->getEventType()->serialize(),
+            'theme' => $theme,
+            'address' => $this->getAddress()->serialize(),
+            'calendar' => $this->getCalendar()->serialize(),
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
+    {
+        $theme = NULL;
+        if (!empty($data['theme'])) {
+          $theme = Theme::deserialize($data['theme']);
+        }
+        return new static(
+            $data['event_id'],
+            new Title($data['title']),
+            EventType::deserialize($data['event_type']),
+            Address::deserialize($data['address']),
+            \CultuurNet\UDB3\Calendar::deserialize($data['calendar'])
+        );
     }
 
 }

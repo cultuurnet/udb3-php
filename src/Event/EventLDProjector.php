@@ -10,6 +10,8 @@ use Broadway\Domain\DomainMessageInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
@@ -17,8 +19,8 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
-use CultuurNet\UDB3\Place\DescriptionUpdated;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\Place\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\PlaceService;
@@ -87,7 +89,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         $this->cdbXMLImporter = new CdbXMLImporter();
     }
 
-    protected function applyOrganizerProjectedToJSONLD()
+    protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
     {
         // @todo get events linked to this organizer, and update their JSON-LD
         // representation
@@ -175,12 +177,12 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
           '@type' => 'Place',
-        ) + (array)$this->placeJSONLD($eventCreated->getLocation());
+        ) + (array)$this->placeJSONLD($eventCreated->getLocation()->getCdbid());
 
         $calendar = $eventCreated->getCalendar();
         $startDate = $calendar->getStartDate();
         $endDate = $calendar->getEndDate();
-        
+
         // All calendar types allow startDate (and endDate).
         // One timestamp - full day.
         // One timestamp - start hour.
@@ -189,7 +191,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         if (!empty($endDate)) {
           $jsonLD->endDate = $endDate;
         }
-        
+
         $jsonLD->subEvent = array();
         foreach ($calendar->getTimestamps() as $timestamp) {
 
@@ -208,7 +210,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
             'endDate' => $endDate,
           );
         }
-         
+
         // Period.
         // Period with openingtimes.
         // Permanent - "altijd open".
@@ -280,6 +282,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
 
     public function organizerJSONLD($organizerId)
     {
+
         try {
             $organizerJSONLD = $this->organizerService->getEntity(
                 $organizerId
@@ -382,6 +385,23 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         else {
           $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
         }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the organizer updated event to the event repository.
+     * @param OrganizerUpdated $organizerUpdated
+     */
+    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($organizerUpdated);
+
+        $eventLd = $document->getBody();
+
+        $eventLd->location = array(
+          '@type' => 'Organizer',
+        ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
 
         $this->repository->save($document->withBody($eventLd));
     }

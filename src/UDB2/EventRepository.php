@@ -233,7 +233,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         DescriptionUpdated $domainEvent,
         Metadata $metadata
     ) {
-
+return;
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
 

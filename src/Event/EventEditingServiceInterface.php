@@ -10,6 +10,7 @@ use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Title;
 
 interface EventEditingServiceInterface
 {

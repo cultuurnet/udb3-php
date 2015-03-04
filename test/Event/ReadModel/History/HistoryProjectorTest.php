@@ -39,22 +39,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $this->historyProjector = new HistoryProjector(
             $this->documentRepository
         );
-    }
 
-    /**
-     * @param string $eventId
-     * @return string
-     */
-    protected function getEventCdbXml($eventId)
-    {
-        return file_get_contents(__DIR__ . '/event-' . $eventId . '.xml');
-    }
-
-    /**
-     * @test
-     */
-    public function it_logs_EventImportedFromUDB2()
-    {
         $eventImported = new EventImportedFromUDB2(
             self::EVENT_ID_1,
             $this->getEventCdbXml(self::EVENT_ID_1),
@@ -72,7 +57,22 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->historyProjector->handle($domainMessage);
+    }
 
+    /**
+     * @param string $eventId
+     * @return string
+     */
+    protected function getEventCdbXml($eventId)
+    {
+        return file_get_contents(__DIR__ . '/event-' . $eventId . '.xml');
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_EventImportedFromUDB2()
+    {
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
@@ -127,24 +127,6 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_EventUpdatedFromUDB2()
     {
-        $eventImported = new EventImportedFromUDB2(
-            self::EVENT_ID_1,
-            $this->getEventCdbXml(self::EVENT_ID_1),
-            self::CDBXML_NAMESPACE
-        );
-
-        $importedDate = '2015-03-04T10:17:19.176169+02:00';
-
-        $domainMessage = new DomainMessage(
-            $eventImported->getEventId(),
-            1,
-            new Metadata(),
-            $eventImported,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->historyProjector->handle($domainMessage);
-
         $eventUpdated = new EventUpdatedFromUDB2(
             self::EVENT_ID_1,
             $this->getEventCdbXml(self::EVENT_ID_1),

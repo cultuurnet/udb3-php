@@ -42,20 +42,20 @@ class Calendar implements CalendarInterface
     protected $openingHours = array();
 
     const SINGLE = "single";
-    const TIMESTAMPS = "timestamps";
+    const MULTIPLE = "multiple";
     const PERIODIC = "periodic";
     const PERMANENT = "permanent";
 
     /**
      * Constructor.
      */
-    public function __construct($calendarType, $startDate, $endDate, $timestamps = array(), $openingHours = array())
+    public function __construct($calendarType, $startDate = '', $endDate = '', $timestamps = array(), $openingHours = array())
     {
-        if ($calendarType != self::PERMANENT && $calendarType != self::TIMESTAMPS && $calendarType != self::PERIODIC && $calendarType != self::SINGLE) {
+        if ($calendarType != self::PERMANENT && $calendarType != self::MULTIPLE && $calendarType != self::PERIODIC && $calendarType != self::SINGLE) {
             throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
         }
 
-        if ($calendarType == self::TIMESTAMPS && empty($startDate)) {
+        if ($calendarType == self::MULTIPLE && empty($startDate)) {
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $calendarType . '.');
         }
 

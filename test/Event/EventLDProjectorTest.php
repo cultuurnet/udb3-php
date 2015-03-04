@@ -109,7 +109,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
-            new Calendar('permanent', '', '')
+            new Calendar('single', '2015-01-26T13:25:21+01:00')
         );
 
         $jsonLD = new stdClass();

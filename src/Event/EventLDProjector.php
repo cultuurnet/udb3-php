@@ -183,6 +183,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         $startDate = $calendar->getStartDate();
         $endDate = $calendar->getEndDate();
 
+        $jsonLD->calendarType = $calendar->getType();
         // All calendar types allow startDate (and endDate).
         // One timestamp - full day.
         // One timestamp - start hour.

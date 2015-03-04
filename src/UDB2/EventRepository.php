@@ -25,7 +25,7 @@ use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
-use CultuurNet\UDB3\Timestamps;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\DescriptionUpdated;
 use RuntimeException;
@@ -398,9 +398,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     public function applyEventCreated(EventCreated $eventCreated, Metadata $metadata)
     {
 
-        // Don't send to UDB2 for now.
-        return $eventCreated->getEventId();
-
         $event = new \CultureFeed_Cdb_Item_Event();
 
         // This currently does not work when POSTed to the entry API
@@ -412,32 +409,14 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $details = new \CultureFeed_Cdb_Data_EventDetailList();
         $details->add($nlDetail);
+        $event->setDetails($details);
 
-        // We need to retrieve the real place in order to
-        // pass on its address to UDB2.
-        //$place = $this->placeService->getEntity($eventCreated->getLocation());
-        //$place = json_decode($place);
+        // Set location and calendar info.
+        $this->setLocationForEventCreated($eventCreated, $event);
+        $this->setCalendarForEventCreated($eventCreated, $event);
 
-        $eventLocation = $eventCreated->getLocation();
-
-        $physicalAddress = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
-        $physicalAddress->setCountry($eventLocation->getCountry());
-        $physicalAddress->setCity($eventLocation->getLocality());
-        $physicalAddress->setZip($eventLocation->getPostalcode());
-        // @todo This is not an exact mapping, because we do not have a separate
-        // house number in JSONLD, this should be fixed somehow. Probably it's
-        // better to use another read model than JSON-LD for this purpose.
-        $physicalAddress->setStreet($eventLocation->getStreet());
-        $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
-
-        $location = new \CultureFeed_Cdb_Data_Location($address);
-        $location->setLabel($eventLocation->getName());
-//        $location->setCdbid($eventCreated->getLocation());
-
-        $event->setLocation($location);
-
+        // Set event type and theme.
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
-
         $eventType = new \CultureFeed_Cdb_Data_Category(
             'eventtype',
             $eventCreated->getEventType()->getId(),
@@ -445,25 +424,16 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         );
         $event->getCategories()->add($eventType);
 
-        $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
-        $eventCalendar = $eventCreated->getCalendar();
-        if ($eventCalendar->getType() == Timestamps::TYPE) {
-            foreach ($eventCalendar->getTimestamps() as $timestamp) {
-                $calendar->add(
-                    new \CultureFeed_Cdb_Data_Calendar_Timestamp(
-                        $timestamp->getDate(),
-                        $timestamp->getTimestart(),
-                        $timestamp->getTimeend()
-                    )
-                );
-            }
-
+        if ($eventCreated->getTheme() !== null) {
+            $theme = new \CultureFeed_Cdb_Data_Category(
+                'theme',
+                $eventCreated->getTheme()->getId(),
+                $eventCreated->getTheme()->getLabel()
+            );
+            $event->getCategories()->add($theme);
         }
 
-        $event->setCalendar($calendar);
-
-        $event->setDetails($details);
-
+        // Empty contact info.
         $contactInfo = new \CultureFeed_Cdb_Data_ContactInfo();
         $event->setContactInfo($contactInfo);
 
@@ -474,5 +444,161 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             ->createEvent((string)$cdbXml);
 
         return $eventCreated->getEventId();
+    }
+
+    /**
+     * Set the location on the cdb event based on an eventCreated event.
+     *
+     * @param EventCreated $eventCreated
+     * @param \CultureFeed_Cdb_Item_Event $cdbEvent
+     */
+    private function setLocationForEventCreated(EventCreated $eventCreated, \CultureFeed_Cdb_Item_Event $cdbEvent) {
+
+        $placeEntity = $this->placeService->getEntity($eventCreated->getLocation()->getCdbid());
+        $place = json_decode($placeEntity);
+
+        $eventLocation = $eventCreated->getLocation();
+
+        $physicalAddress = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
+        $physicalAddress->setCountry($place->address->addressCountry);
+        $physicalAddress->setCity($place->address->addressLocality);
+        $physicalAddress->setZip($place->address->postalCode);
+
+
+        // @todo This is not an exact mapping, because we do not have a separate
+        // house number in JSONLD, this should be fixed somehow. Probably it's
+        // better to use another read model than JSON-LD for this purpose.
+        $streetParts = explode(' ', $place->address->streetAddress);
+
+        if (count($streetParts) > 1) {
+          $number = array_pop($streetParts);
+          $physicalAddress->setStreet(implode(' ', $streetParts));
+          $physicalAddress->setHouseNumber($number);
+        }
+        else {
+          $physicalAddress->setStreet($eventLocation->getStreet());
+        }
+
+        $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
+
+        $location = new \CultureFeed_Cdb_Data_Location($address);
+        $location->setLabel($eventLocation->getName());
+        $cdbEvent->setLocation($location);
+
+    }
+
+    /**
+     * Set the calendar on the cdb event based on an eventCreated event.
+     *
+     * @param EventCreated $eventCreated
+     * @param \CultureFeed_Cdb_Item_Event $cdbEvent
+     */
+    private function setCalendarForEventCreated(EventCreated $eventCreated, \CultureFeed_Cdb_Item_Event $cdbEvent) {
+
+        $eventCalendar = $eventCreated->getCalendar();
+        if ($eventCalendar->getType() == Calendar::MULTIPLE) {
+            $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+            foreach ($eventCalendar->getTimestamps() as $timestamp) {
+                $startdate = strtotime($timestamp->getStartDate());
+                $enddate = strtotime($timestamp->getEndDate());
+                $calendar->add(
+                    new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+                        date('d-m-Y', $startdate),
+                        date('H:i', $startdate),
+                        date('H:i', $enddate)
+                    )
+                );
+            }
+
+        }
+        elseif ($eventCalendar->getType() == Calendar::MULTIPLE) {
+            $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+            $startdate = strtotime($eventCalendar->getStartDate());
+            $enddate = strtotime($eventCalendar->getEndDate());
+            $startHour = date('H:i', $startdate);
+            if ($startHour == '00:00') {
+              $startHour = null;
+            }
+            $endHour = date('H:i', $enddate);
+            if ($endHour == '00:00') {
+              $endHour = null;
+            }
+            $calendar->add(
+                new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+                    date('d-m-Y', $startdate),
+                    $startHour,
+                    $endHour
+                )
+            );
+        }
+        elseif ($eventCalendar->getType() == Calendar::PERIODIC) {
+            $calendar = new \CultureFeed_Cdb_Data_Calendar_PeriodList();
+            $startdate = strtotime($eventCalendar->getStartDate());
+            $enddate = strtotime($eventCalendar->getEndDate());
+            $calendar->add(new CultureFeed_Cdb_Data_Calendar_Period($startdate, $enddate));
+        }
+        elseif ($eventCalendar->getType() == Calendar::PERMANENT) {
+            $calendar = new \CultureFeed_Cdb_Data_Calendar_Permanent();
+        }
+
+        // Store opening hours.
+        $openingHours = $eventCalendar->getOpeningHours();
+        if (!empty($openingHours)) {
+
+            // CDB2 requires an entry for every day.
+            $requiredDays = array(
+                'monday',
+                'tuesday',
+                'wednesday',
+                'thursday',
+                'friday',
+                'saturday',
+                'sunday',
+            );
+            $weekscheme = new \CultureFeed_Cdb_Data_Calendar_Weekscheme();
+
+            // Multiple opening times can happen on same day. Store them in array.
+            $openingTimesPerDay = array(
+                'monday' => array(),
+                'tuesday' => array(),
+                'wednesday' => array(),
+                'thursday' => array(),
+                'friday' => array(),
+                'saturday' => array(),
+                'sunday' => array(),
+            );
+
+            foreach ($openingHours as $openingHour) {
+              // In CDB2 every day needs to be a seperate entry.
+              foreach ($openingHour->daysOfWeek as $day) {
+                  $openingTimesPerDay[$day][] = new \CultureFeed_Cdb_Data_Calendar_OpeningTime($openingHour->opens . ':00', $openingHour->closes . ':00');
+              }
+
+
+            }
+
+            // Create the opening times correctly
+            foreach ($openingTimesPerDay as $day => $openingTimes) {
+
+              // Empty == closed.
+              if (empty($openingTimes)) {
+                  $openingInfo = new \CultureFeed_Cdb_Data_Calendar_SchemeDay($day, \CultureFeed_Cdb_Data_Calendar_SchemeDay::SCHEMEDAY_OPEN_TYPE_CLOSED);
+              }
+              // Add all opening times.
+              else {
+                  $openingInfo = new \CultureFeed_Cdb_Data_Calendar_SchemeDay($day, \CultureFeed_Cdb_Data_Calendar_SchemeDay::SCHEMEDAY_OPEN_TYPE_OPEN);
+                  foreach ($openingTimes as $openingTime) {
+                      $openingInfo->addOpeningTime($openingTime);
+                  }
+              }
+
+              $weekscheme->setDay($day, $openingInfo);
+            }
+
+            $calendar->setWeekScheme($weekscheme);
+        }
+
+        $cdbEvent->setCalendar($calendar);
+
     }
 }

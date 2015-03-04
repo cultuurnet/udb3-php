@@ -235,6 +235,41 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
     }
 
+    /**
+     * Send the updated description also to CDB2.
+     */
+    private function applyDescriptionUpdated(
+        DescriptionUpdated $descriptionUpdated,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
+
+        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($domainEven>getDescription());
+
+        $entryApi->updateEvent($event->getCdbId(), $event);
+
+    }
+
+    /**
+     * Send the updated age range also to CDB2.
+     */
+    private function applyTypicalAgeRangeUpdated(
+        TypicalAgeRangeUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $ages = explode('-', $domainEvent->getTypicalAgeRange());
+        $event->setAgeFrom($ages[0]);
+
+        $entryApi->updateEvent($event->getCdbId(), $event);
+
+    }
+
     private function decorateForWrite(
         AggregateRoot $aggregate,
         DomainEventStream $eventStream

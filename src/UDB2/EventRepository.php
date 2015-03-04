@@ -231,12 +231,12 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      * Send the updated description also to CDB2.
      */
     private function applyDescriptionUpdated(
-        DescriptionUpdated $domainEvent,
+        DescriptionUpdated $descriptionUpdated,
         Metadata $metadata
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
 
         $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($domainEven>getDescription());
 
@@ -245,17 +245,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     }
 
     /**
-     * Send the updated description also to CDB2.
+     * Send the updated age range also to CDB2.
      */
     private function applyTypicalAgeRangeUpdated(
-        TypicalAgeRangeUpdated $domainEvent,
+        TypicalAgeRangeUpdated $ageRangeUpdated,
         Metadata $metadata
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event = $entryApi->getEvent($ageRangeUpdated->getEventId());
 
-        $ages = explode('-', $domainEvent->getTypicalAgeRange());
+        $ages = explode('-', $ageRangeUpdated->getTypicalAgeRange());
         $event->setAgeFrom($ages[0]);
 
         $entryApi->updateEvent($event->getCdbId(), $event);

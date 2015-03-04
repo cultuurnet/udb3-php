@@ -35,10 +35,6 @@ class Address implements SerializableInterface
      */
     protected $streetAddress;
 
-    /**
-     * @var string
-     */
-    protected $number;
 
     public function __construct($streetAddress, $postalCode, $locality, $country)
     {

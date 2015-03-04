@@ -22,12 +22,11 @@ use CultuurNet\UDB3\Event\EventCreated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\Event\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Event\DescriptionUpdated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
-use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Event\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\DescriptionUpdated;
 use RuntimeException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -40,6 +39,7 @@ use Psr\Log\LoggerAwareTrait;
 class EventRepository implements RepositoryInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
+    use Udb2UtilityTrait;
 
     /**
      * @var RepositoryInterface
@@ -112,6 +112,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      */
     public function add(AggregateRoot $aggregate)
     {
+
         if ($this->syncBack) {
             // We can not directly act on the aggregate, as the uncommitted events will
             // be reset once we retrieve them, therefore we clone the object.
@@ -261,24 +262,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
     }
 
-    /**
-     * @param Metadata $metadata
-     * @return EntryAPI
-     */
-    private function createImprovedEntryAPIFromMetadata(Metadata $metadata)
-    {
-        $metadata = $metadata->serialize();
-        if (!isset($metadata['uitid_token_credentials'])) {
-            throw new RuntimeException('No token credentials found. They are needed to access the entry API, so aborting request.');
-        }
-        $tokenCredentials = $metadata['uitid_token_credentials'];
-        $entryAPI = $this->entryAPIImprovedFactory->withTokenCredentials(
-            $tokenCredentials
-        );
-
-        return $entryAPI;
-    }
-
     private function decorateForWrite(
         AggregateRoot $aggregate,
         DomainEventStream $eventStream
@@ -395,6 +378,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         }
     }
 
+    /**
+     * Listener on the eventCreated event. Send a new event also to UDB2.
+     */
     public function applyEventCreated(EventCreated $eventCreated, Metadata $metadata)
     {
 
@@ -413,7 +399,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         // Set location and calendar info.
         $this->setLocationForEventCreated($eventCreated, $event);
-        $this->setCalendarForEventCreated($eventCreated, $event);
+        $this->setCalendarForItemCreated($eventCreated, $event);
 
         // Set event type and theme.
         $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
@@ -452,7 +438,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      * @param EventCreated $eventCreated
      * @param \CultureFeed_Cdb_Item_Event $cdbEvent
      */
-    private function setLocationForEventCreated(EventCreated $eventCreated, \CultureFeed_Cdb_Item_Event $cdbEvent) {
+    private function setLocationForEventCreated(EventCreated $eventCreated, \CultureFeed_Cdb_Item_Event $cdbEvent)
+    {
 
         $placeEntity = $this->placeService->getEntity($eventCreated->getLocation()->getCdbid());
         $place = json_decode($placeEntity);
@@ -471,12 +458,11 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $streetParts = explode(' ', $place->address->streetAddress);
 
         if (count($streetParts) > 1) {
-          $number = array_pop($streetParts);
-          $physicalAddress->setStreet(implode(' ', $streetParts));
-          $physicalAddress->setHouseNumber($number);
-        }
-        else {
-          $physicalAddress->setStreet($eventLocation->getStreet());
+            $number = array_pop($streetParts);
+            $physicalAddress->setStreet(implode(' ', $streetParts));
+            $physicalAddress->setHouseNumber($number);
+        } else {
+            $physicalAddress->setStreet($eventLocation->getStreet());
         }
 
         $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
@@ -484,121 +470,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $location = new \CultureFeed_Cdb_Data_Location($address);
         $location->setLabel($eventLocation->getName());
         $cdbEvent->setLocation($location);
-
-    }
-
-    /**
-     * Set the calendar on the cdb event based on an eventCreated event.
-     *
-     * @param EventCreated $eventCreated
-     * @param \CultureFeed_Cdb_Item_Event $cdbEvent
-     */
-    private function setCalendarForEventCreated(EventCreated $eventCreated, \CultureFeed_Cdb_Item_Event $cdbEvent) {
-
-        $eventCalendar = $eventCreated->getCalendar();
-        if ($eventCalendar->getType() == Calendar::MULTIPLE) {
-            $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
-            foreach ($eventCalendar->getTimestamps() as $timestamp) {
-                $startdate = strtotime($timestamp->getStartDate());
-                $enddate = strtotime($timestamp->getEndDate());
-                $calendar->add(
-                    new \CultureFeed_Cdb_Data_Calendar_Timestamp(
-                        date('d-m-Y', $startdate),
-                        date('H:i', $startdate),
-                        date('H:i', $enddate)
-                    )
-                );
-            }
-
-        }
-        elseif ($eventCalendar->getType() == Calendar::MULTIPLE) {
-            $calendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
-            $startdate = strtotime($eventCalendar->getStartDate());
-            $enddate = strtotime($eventCalendar->getEndDate());
-            $startHour = date('H:i', $startdate);
-            if ($startHour == '00:00') {
-              $startHour = null;
-            }
-            $endHour = date('H:i', $enddate);
-            if ($endHour == '00:00') {
-              $endHour = null;
-            }
-            $calendar->add(
-                new \CultureFeed_Cdb_Data_Calendar_Timestamp(
-                    date('d-m-Y', $startdate),
-                    $startHour,
-                    $endHour
-                )
-            );
-        }
-        elseif ($eventCalendar->getType() == Calendar::PERIODIC) {
-            $calendar = new \CultureFeed_Cdb_Data_Calendar_PeriodList();
-            $startdate = strtotime($eventCalendar->getStartDate());
-            $enddate = strtotime($eventCalendar->getEndDate());
-            $calendar->add(new CultureFeed_Cdb_Data_Calendar_Period($startdate, $enddate));
-        }
-        elseif ($eventCalendar->getType() == Calendar::PERMANENT) {
-            $calendar = new \CultureFeed_Cdb_Data_Calendar_Permanent();
-        }
-
-        // Store opening hours.
-        $openingHours = $eventCalendar->getOpeningHours();
-        if (!empty($openingHours)) {
-
-            // CDB2 requires an entry for every day.
-            $requiredDays = array(
-                'monday',
-                'tuesday',
-                'wednesday',
-                'thursday',
-                'friday',
-                'saturday',
-                'sunday',
-            );
-            $weekscheme = new \CultureFeed_Cdb_Data_Calendar_Weekscheme();
-
-            // Multiple opening times can happen on same day. Store them in array.
-            $openingTimesPerDay = array(
-                'monday' => array(),
-                'tuesday' => array(),
-                'wednesday' => array(),
-                'thursday' => array(),
-                'friday' => array(),
-                'saturday' => array(),
-                'sunday' => array(),
-            );
-
-            foreach ($openingHours as $openingHour) {
-              // In CDB2 every day needs to be a seperate entry.
-              foreach ($openingHour->daysOfWeek as $day) {
-                  $openingTimesPerDay[$day][] = new \CultureFeed_Cdb_Data_Calendar_OpeningTime($openingHour->opens . ':00', $openingHour->closes . ':00');
-              }
-
-
-            }
-
-            // Create the opening times correctly
-            foreach ($openingTimesPerDay as $day => $openingTimes) {
-
-              // Empty == closed.
-              if (empty($openingTimes)) {
-                  $openingInfo = new \CultureFeed_Cdb_Data_Calendar_SchemeDay($day, \CultureFeed_Cdb_Data_Calendar_SchemeDay::SCHEMEDAY_OPEN_TYPE_CLOSED);
-              }
-              // Add all opening times.
-              else {
-                  $openingInfo = new \CultureFeed_Cdb_Data_Calendar_SchemeDay($day, \CultureFeed_Cdb_Data_Calendar_SchemeDay::SCHEMEDAY_OPEN_TYPE_OPEN);
-                  foreach ($openingTimes as $openingTime) {
-                      $openingInfo->addOpeningTime($openingTime);
-                  }
-              }
-
-              $weekscheme->setDay($day, $openingInfo);
-            }
-
-            $calendar->setWeekScheme($weekscheme);
-        }
-
-        $cdbEvent->setCalendar($calendar);
 
     }
 }

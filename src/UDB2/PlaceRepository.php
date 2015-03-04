@@ -27,6 +27,7 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Place\PlaceCreated;
+use CultuurNet\UDB3\Place\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -100,6 +101,13 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
                         $this->applyDescriptionUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case TypicalAgeRangeUpdated::class:
+                        $this->applyTypicalAgeRangeUpdated(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -244,11 +252,11 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
+        $event = $entryApi->getEvent($descriptionUpdated->getPlaceId());
 
-        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($domainEven>getDescription());
+        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($descriptionUpdated->getDescription());
 
-        $entryApi->updateEvent($event->getCdbId(), $event);
+        $entryApi->updateEvent($event);
 
     }
 
@@ -261,12 +269,12 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
 
         $ages = explode('-', $domainEvent->getTypicalAgeRange());
         $event->setAgeFrom($ages[0]);
 
-        $entryApi->updateEvent($event->getCdbId(), $event);
+        $entryApi->updateEvent($event);
 
     }
 

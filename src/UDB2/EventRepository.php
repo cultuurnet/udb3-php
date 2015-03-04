@@ -12,7 +12,6 @@ use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\Entry\EntryAPI;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
@@ -27,7 +26,6 @@ use CultuurNet\UDB3\Event\DescriptionUpdated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
-use RuntimeException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -160,9 +158,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         );
                         break;
 
-                    case 'CultuurNet\\UDB3\\Event\\DescriptionUpdated':
+                    case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
                         $this->applyDescriptionUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case TypicalAgeRangeUpdated::class:
+                        /** @var TypicalAgeRangeUpdated $domainEvent */
+                        $this->applyTypicalAgeRangeUpdated(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -238,9 +244,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($descriptionUpdated->getEventId());
 
-        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($domainEven>getDescription());
+        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($descriptionUpdated->getDescription());
 
-        $entryApi->updateEvent($event->getCdbId(), $event);
+        $entryApi->updateEvent($event);
 
     }
 
@@ -258,7 +264,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $ages = explode('-', $ageRangeUpdated->getTypicalAgeRange());
         $event->setAgeFrom($ages[0]);
 
-        $entryApi->updateEvent($event->getCdbId(), $event);
+        $entryApi->updateEvent($event);
 
     }
 

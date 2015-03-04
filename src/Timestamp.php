@@ -16,76 +16,32 @@ class Timestamp
     /**
      * @var string
      */
-    protected $date;
+    protected $startDate;
 
     /**
      * @var string
      */
-    protected $startHour;
-
-    /**
-     * @var boolean
-     */
-    protected $showStartHour;
-
-    /**
-     * @var string
-     */
-    protected $endHour;
-
-    /**
-     * @var boolean
-     */
-    protected $showEndHour;
+    protected $endDate;
 
     /**
      * Constructor
      *
-     * @param type $date
-     * @param type $startHour
-     * @param type $endHour
-     * @param type $showStartHour
-     * @param type $showEndHour
+     * @param type $startDate
+     * @param type $endDate
      */
-    public function __construct($date, $startHour, $endHour, $showStartHour = true, $showEndHour = true)
+    public function __construct($startDate, $endDate)
     {
-
-        //CalendarUtility::validateDate($date);
-        $this->date = $date;
-
-        //CalendarUtility::validateTime($startHour);
-        $this->timestart = $startHour;
-
-        //CalendarUtility::validateTime($endHour);
-        $this->timeend = $endHour;
-
-        $this->showStartHour = $showStartHour;
-        $this->showEndHour = $showEndHour;
-
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
     }
 
-    public function getDate()
+    public function getStartDate()
     {
-        return $this->date;
+        return $this->startDate;
     }
 
-    public function getTimestart()
+    public function getEndDate()
     {
-        return $this->timestart;
-    }
-
-    public function getTimeend()
-    {
-        return $this->timeend;
-    }
-
-    public function showStartHour()
-    {
-        return $this->showStartHour;
-    }
-
-    public function showEndHour()
-    {
-        return $this->showEndHour;
+        return $this->endDate;
     }
 }

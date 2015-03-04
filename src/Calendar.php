@@ -55,18 +55,14 @@ class Calendar implements CalendarInterface
             throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
         }
 
-        if ($calendarType == self::MULTIPLE && empty($startDate)) {
+        if (($calendarType == self::MULTIPLE || $calendarType == self::SINGLE) && empty($startDate)) {
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $calendarType . '.');
         }
 
         $this->type = $calendarType;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-
-        foreach ($timestamps as $timestamp) {
-            $this->timestamps[] = new Timestamp($timestamp->date, $timestamp->startHour, $timestamp->endHour, $timestamp->showStartHour, $timestamp->showEndHour);
-        }
-
+        $this->timestamps = $timestamps;
         $this->openingHours = $openingHours;
     }
 

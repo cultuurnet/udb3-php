@@ -200,19 +200,10 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         if (!empty($timestamps)) {
             $jsonLD->subEvent = array();
             foreach ($calendar->getTimestamps() as $timestamp) {
-                $startDate = $timestamp->getDate();
-                if ($timestamp->showStartHour()) {
-                    $startDate .= $timestamp->getTimestart();
-                }
-                $endDate = $timestamp->getDate();
-                if ($timestamp->showEndHour()) {
-                    $endDate .= $timestamp->getTimeend();
-                }
-
                 $jsonLD->subEvent[] = array(
                   '@type' => 'Event',
-                  'startDate' => $startDate,
-                  'endDate' => $endDate,
+                  'startDate' => $timestamp->getStartDate(),
+                  'endDate' => $timestamp->getEndDate(),
                 );
             }
         }

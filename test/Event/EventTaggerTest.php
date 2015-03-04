@@ -5,11 +5,12 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
-use DateTime;
 
 class EventTaggerTest extends CommandHandlerScenarioTestCase
 {
@@ -42,9 +43,9 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
         return new EventCreated(
             $id,
             new Title('some representative title'),
-            'LOCATION-ABC-123',
-            new DateTime(),
-            new EventType('0.50.4.0.0', 'concert')
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('permanent', '', '')
         );
     }
 

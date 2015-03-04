@@ -67,7 +67,7 @@ class Calendar implements CalendarInterface
             $this->timestamps[] = new Timestamp($timestamp->date, $timestamp->startHour, $timestamp->endHour, $timestamp->showStartHour, $timestamp->showEndHour);
         }
 
-        $this->openingHours[] = $openingHours;
+        $this->openingHours = $openingHours;
     }
 
     /**

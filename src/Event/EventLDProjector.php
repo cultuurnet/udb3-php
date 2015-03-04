@@ -245,11 +245,13 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         );
 
         $theme = $eventCreated->getTheme();
-        $jsonLD->terms[] = [
-             'label' => $theme->getLabel(),
-             'domain' => $theme->getDomain(),
-             'id' => $theme->getId()
-        ];
+        if (!empty($theme)) {
+            $jsonLD->terms[] = [
+                 'label' => $theme->getLabel(),
+                 'domain' => $theme->getDomain(),
+                 'id' => $theme->getId()
+            ];
+        }
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(

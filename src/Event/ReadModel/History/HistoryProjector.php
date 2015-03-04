@@ -109,7 +109,9 @@ class HistoryProjector implements EventListenerInterface
     {
         $properties = $metadata->serialize();
 
-        return new String($properties['uitid_nick']);
+        if (isset($properties['user_nick'])) {
+            return new String($properties['user_nick']);
+        }
     }
 
     private function applyEventWasTagged(
@@ -147,8 +149,8 @@ class HistoryProjector implements EventListenerInterface
         $this->writeHistory(
             $titleTranslated->getEventId(),
             new Log(
-                $domainMessage->getRecordedOn(),
-                new String("Titel vertaald in taal {$titleTranslated->getLanguage()}"),
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
+                new String("Titel vertaald ({$titleTranslated->getLanguage()})"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
@@ -161,8 +163,10 @@ class HistoryProjector implements EventListenerInterface
         $this->writeHistory(
             $descriptionTranslated->getEventId(),
             new Log(
-                $domainMessage->getRecordedOn(),
-                new String("Beschrijving vertaald in taal {$descriptionTranslated->getLanguage()}"),
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

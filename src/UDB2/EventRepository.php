@@ -358,8 +358,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
     private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event)
     {
+        $location = $udb2Event->getLocation();
         try {
-            $location = $udb2Event->getLocation();
             if ($location && $location->getCdbid()) {
                 // Loading the place will implicitly import it, or throw an error
                 // if the place is not known.
@@ -376,8 +376,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             }
         }
 
+        $organizer = $udb2Event->getOrganiser();
         try {
-            $organizer = $udb2Event->getOrganiser();
             if ($organizer && $organizer->getCdbid()) {
                 // Loading the organizer will implicitly import it, or throw an error
                 // if the organizer is not known.

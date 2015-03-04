@@ -95,7 +95,7 @@ class Calendar implements CalendarInterface
     public static function deserialize(array $data)
     {
         return new static(
-                $data['timestamps']
+            $data['type'], $data['startDate'], $data['endDate'], $data['timestamps'], $data['openingHours']
         );
     }
 

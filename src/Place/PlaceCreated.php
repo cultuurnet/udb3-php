@@ -126,7 +126,7 @@ class PlaceCreated extends PlaceEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-             $data['event_id'], new Title($data['title']), EventType::deserialize($data['event_type']), Address::deserialize($data['address']), \CultuurNet\UDB3\Calendar::deserialize($data['calendar'])
+             $data['place_id'], new Title($data['title']), EventType::deserialize($data['event_type']), Address::deserialize($data['address']), \CultuurNet\UDB3\Calendar::deserialize($data['calendar'])
         );
     }
 }

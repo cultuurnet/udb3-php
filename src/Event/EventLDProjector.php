@@ -187,27 +187,33 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         // One timestamp - full day.
         // One timestamp - start hour.
         // One timestamp - start and end hour.
-        $jsonLD->startDate = $startDate;
+        if (!empty($startDate)) {
+            $jsonLD->startDate = $startDate;
+        }
+
         if (!empty($endDate)) {
             $jsonLD->endDate = $endDate;
         }
 
-        $jsonLD->subEvent = array();
-        foreach ($calendar->getTimestamps() as $timestamp) {
-            $startDate = $timestamp->getDate();
-            if ($timestamp->showStartHour()) {
-                $startDate .= $timestamp->getTimestart();
-            }
-            $endDate = $timestamp->getDate();
-            if ($timestamp->showEndHour()) {
-                $endDate .= $timestamp->getTimeend();
-            }
+        $timestamps = $calendar->getTimestamps();
+        if (!empty($timestamps)) {
+            $jsonLD->subEvent = array();
+            foreach ($calendar->getTimestamps() as $timestamp) {
+                $startDate = $timestamp->getDate();
+                if ($timestamp->showStartHour()) {
+                    $startDate .= $timestamp->getTimestart();
+                }
+                $endDate = $timestamp->getDate();
+                if ($timestamp->showEndHour()) {
+                    $endDate .= $timestamp->getTimeend();
+                }
 
-            $jsonLD->subEvent[] = array(
-              '@type' => 'Event',
-              'startDate' => $startDate,
-              'endDate' => $endDate,
-            );
+                $jsonLD->subEvent[] = array(
+                  '@type' => 'Event',
+                  'startDate' => $startDate,
+                  'endDate' => $endDate,
+                );
+            }
         }
 
         // Period.

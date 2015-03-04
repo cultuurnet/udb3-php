@@ -11,10 +11,13 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use DateTime as BaseDateTime;
 
@@ -242,6 +245,92 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2015-03-27T10:17:19+02:00',
                     'author' => 'JaneDoe',
                     'description' => 'Beschrijving vertaald (fr)',
+                ],
+                (object)[
+                    'date' => '2015-03-04T10:17:19+02:00',
+                    'description' => 'Geïmporteerd vanuit UDB2',
+                ],
+                (object)[
+                    'date' => '2014-04-28T11:30:28+02:00',
+                    'description' => 'Aangemaakt in UDB2',
+                    'author' => 'kris.classen@overpelt.be',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_eventWasTagged()
+    {
+        $eventWasTagged = new EventWasTagged(
+            self::EVENT_ID_1,
+            new Keyword('foo')
+        );
+
+        $taggedDate = '2015-03-27T10:17:19.176169+02:00';
+
+        $domainMessage = new DomainMessage(
+            $eventWasTagged->getEventId(),
+            2,
+            new Metadata(['user_nick' => 'Jan Janssen']),
+            $eventWasTagged,
+            DateTime::fromString($taggedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_1,
+            [
+                (object)[
+                    'date' => '2015-03-27T10:17:19+02:00',
+                    'author' => 'Jan Janssen',
+                    'description' => "Label 'foo' toegepast",
+                ],
+                (object)[
+                    'date' => '2015-03-04T10:17:19+02:00',
+                    'description' => 'Geïmporteerd vanuit UDB2',
+                ],
+                (object)[
+                    'date' => '2014-04-28T11:30:28+02:00',
+                    'description' => 'Aangemaakt in UDB2',
+                    'author' => 'kris.classen@overpelt.be',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_tagErased()
+    {
+        $tagErased = new TagErased(
+            self::EVENT_ID_1,
+            new Keyword('foo')
+        );
+
+        $tagErasedDate = '2015-03-27T10:17:19.176169+02:00';
+
+        $domainMessage = new DomainMessage(
+            $tagErased->getEventId(),
+            2,
+            new Metadata(['user_nick' => 'Jan Janssen']),
+            $tagErased,
+            DateTime::fromString($tagErasedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_1,
+            [
+                (object)[
+                    'date' => '2015-03-27T10:17:19+02:00',
+                    'author' => 'Jan Janssen',
+                    'description' => "Label 'foo' verwijderd",
                 ],
                 (object)[
                     'date' => '2015-03-04T10:17:19+02:00',

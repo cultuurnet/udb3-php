@@ -121,7 +121,7 @@ class HistoryProjector implements EventListenerInterface
         $this->writeHistory(
             $eventWasTagged->getEventId(),
             new Log(
-                $domainMessage->getRecordedOn(),
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new String("Label '{$eventWasTagged->getKeyword()}' toegepast"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
@@ -135,7 +135,7 @@ class HistoryProjector implements EventListenerInterface
         $this->writeHistory(
             $tagErased->getEventId(),
             new Log(
-                $domainMessage->getRecordedOn(),
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new String("Label '{$tagErased->getKeyword()}' verwijderd"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )

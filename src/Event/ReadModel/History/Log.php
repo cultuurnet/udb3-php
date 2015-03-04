@@ -24,8 +24,11 @@ class Log implements \JsonSerializable
      */
     private $description;
 
-    public function __construct(\DateTime $date, String $description, String $author = NULL)
-    {
+    public function __construct(
+        \DateTime $date,
+        String $description,
+        String $author = null
+    ) {
         $this->date = clone $date;
         $this->description = $description;
         $this->author = $author;
@@ -34,7 +37,7 @@ class Log implements \JsonSerializable
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $log = [
             'date' => $this->date->format('c'),

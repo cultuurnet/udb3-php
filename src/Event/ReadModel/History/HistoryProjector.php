@@ -66,7 +66,12 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function domainMessageDateToNativeDate(DateTime $date) {
+    /**
+     * @param DateTime $date
+     * @return \DateTime
+     */
+    private function domainMessageDateToNativeDate(DateTime $date)
+    {
         $dateString = $date->toString();
         return \DateTime::createFromFormat(
             DateTime::FORMAT_STRING,

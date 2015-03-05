@@ -13,7 +13,6 @@ use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Entry\EntryAPI;
-use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventCreated;
@@ -243,6 +242,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $event = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
             $event = $this->eventImporter->createEventFromUDB2($id);
+
+            if (!$event) {
+                throw new AggregateNotFoundException($id);
+            }
         }
 
         return $event;

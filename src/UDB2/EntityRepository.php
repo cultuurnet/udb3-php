@@ -26,11 +26,6 @@ abstract class EntityRepository implements RepositoryInterface
     protected $decoratee;
 
     /**
-     * @var SearchServiceInterface
-     */
-    protected $search;
-
-    /**
      * @var EntryAPIImprovedFactory
      */
     protected $entryAPIImprovedFactory;
@@ -47,12 +42,10 @@ abstract class EntityRepository implements RepositoryInterface
 
     public function __construct(
         RepositoryInterface $decoratee,
-        SearchServiceInterface $search,
         EntryAPIImprovedFactory $entryAPIImprovedFactory,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;
-        $this->search = $search;
         $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
     }
@@ -119,13 +112,7 @@ abstract class EntityRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function load($id)
-    {
-    }
-
-    abstract protected function getParams($id);
+    abstract public function load($id);
 
     abstract protected function getType();
-
-    abstract protected function importFromUDB2($id, $xml, $xmlNamespaceUrl);
 }

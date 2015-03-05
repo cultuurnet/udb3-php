@@ -7,7 +7,8 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use Broadway\Repository\AggregateNotFoundException;
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Organizer\Organizer;
 
 /**
@@ -18,31 +19,80 @@ use CultuurNet\UDB3\Organizer\Organizer;
 class OrganizerRepository extends ActorRepository
 {
     /**
+     * @var OrganizerImporterInterface
+     */
+    protected $organizerImporter;
+
+    public function __construct(
+        RepositoryInterface $decoratee,
+        EntryAPIImprovedFactory $entryAPIImprovedFactory,
+        OrganizerImporterInterface $organizerImporter,
+        array $eventStreamDecorators = array()
+    ) {
+        parent::__construct(
+            $decoratee,
+            $entryAPIImprovedFactory,
+            $eventStreamDecorators
+        );
+        $this->organizerImporter = $organizerImporter;
+    }
+
+    public function load($id)
+    {
+        $organizer = $this->tryMultipleTimes(
+            2,
+            function() use ($id) {
+                try {
+                    $organizer = $this->decoratee->load($id);
+                    return $organizer;
+                } catch (AggregateNotFoundException $e) {
+                    $organizer = $this->organizerImporter->createOrganizerFromUDB2(
+                        $id
+                    );
+
+                    if ($organizer) {
+                        return $organizer;
+                    } else {
+                        throw $e;
+                    }
+                }
+            }
+        );
+
+        return $organizer;
+    }
+
+    private function tryMultipleTimes($times, callable $callable) {
+        $result = NULL;
+
+        while ($times > 0) {
+            $times--;
+
+            try {
+                $result = $callable($times);
+
+                if (NULL !== $result) {
+                    break;
+                }
+            }
+            catch (\Exception $e) {
+                if ($times == 0) {
+                    throw $e;
+                }
+            }
+
+            sleep(1);
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns the type.
      * @return string
      */
     protected function getType()
     {
         return Organizer::class;
-    }
-
-    /**
-     * Imports from UDB2.
-     *
-     * @param string $id
-     *   The id.
-     * @param string $actorXml
-     *   The actor xml.
-     * @param string $cdbSchemeUrl
-     *
-     * @return ActorImportedFromUDB2
-     */
-    protected function importFromUDB2($id, $actorXml, $cdbSchemeUrl)
-    {
-        return Organizer::importFromUDB2(
-            $id,
-            $actorXml,
-            $cdbSchemeUrl
-        );
     }
 }

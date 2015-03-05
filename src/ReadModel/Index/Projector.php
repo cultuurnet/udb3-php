@@ -99,6 +99,7 @@ class Projector extends Udb3Projector
         $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
 
         $address = $placeCreated->getAddress();
+
         $this->updateIndex($placeId, 'place', $userId, $placeCreated->getTitle(), $address->getPostalcode());
     }
 

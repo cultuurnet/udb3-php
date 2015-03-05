@@ -4,8 +4,11 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Place\Commands\UpdateDescription;
+use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
+use CultuurNet\UDB3\Place\Place;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

@@ -26,6 +26,8 @@ use Broadway\Repository\RepositoryInterface;
  */
 class EventRepository implements RepositoryInterface
 {
+    use \CultuurNet\UDB3\Udb3RepositoryTrait;
+
     private $eventStore;
     private $eventBus;
     private $aggregateClass;
@@ -63,36 +65,5 @@ class EventRepository implements RepositoryInterface
             throw AggregateNotFoundException::create($id, $e);
         }
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Overwritten
-     */
-    public function add(AggregateRoot $aggregate)
-    {
-        Assertion::isInstanceOf($aggregate, $this->getType());
-
-        $domainEventStream = $aggregate->getUncommittedEvents();
-        $eventStream       = $this->decorateForWrite($aggregate, $domainEventStream);
-        $this->eventStore->append($aggregate->getAggregateRootId(), $eventStream);
-        $this->eventBus->publish($eventStream);
-    }
-
-    private function decorateForWrite(AggregateRoot $aggregate, DomainEventStream $eventStream)
-    {
-        $aggregateType       = $this->getType();
-        $aggregateIdentifier = $aggregate->getAggregateRootId();
-
-        foreach ($this->eventStreamDecorators as $eventStreamDecorator) {
-            $eventStream = $eventStreamDecorator->decorateForWrite($aggregateType, $aggregateIdentifier, $eventStream);
-        }
-
-        return $eventStream;
-    }
-
-    private function getType()
-    {
-        return $this->aggregateClass;
-    }
+    
 }

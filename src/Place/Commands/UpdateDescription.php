@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains CultuurNet\UDB3\Place\UpdateDescription.
+ * Contains CultuurNet\UDB3\Place\Commands\UpdateDescription.
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Place\Commands;
 
 /**
  * Provides a command to update the event description for the main language.

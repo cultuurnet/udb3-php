@@ -22,7 +22,7 @@ trait OfferEditingTrait
     private function getCommandClass($className)
     {
         $reflection = new \ReflectionObject($this);
-        return $reflection->getNamespaceName() . '\\' . $className;
+        return $reflection->getNamespaceName() . '\\Commands\\' . $className;
     }
 
     /**
@@ -69,4 +69,20 @@ trait OfferEditingTrait
             new $commandClass($id, $organizerId)
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteOrganizer($id, $organizerId)
+    {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('deleteOrganizer');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $organizerId)
+        );
+    }
+
 }

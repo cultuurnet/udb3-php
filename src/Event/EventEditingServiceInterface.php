@@ -35,21 +35,36 @@ interface EventEditingServiceInterface
     public function translateDescription($eventId, Language $language, $description);
 
     /**
-     * Update the main language description.
-     * @param string $eventId
+     * Update the description of an event.
+     *
+     * @param string $id
      * @param string $description
      */
-    public function updateDescription($eventId, $description);
+    public function updateDescription($id, $description);
 
     /**
-     * Update the age range.
+     * Update the typical age range of an event.
      *
-     * @param string $eventId
+     * @param string $id
      * @param string $ageRange
-     * @return string command id
-     * @throws EventNotFoundException
      */
-    public function updateTypicalAgeRange($eventId, $ageRange);
+    public function updateTypicalAgeRange($id, $ageRange);
+
+    /**
+     * Update the organizer of an event.
+     *
+     * @param string $id
+     * @param string $organizerId
+     */
+    public function updateOrganizer($id, $organizerId);
+
+    /**
+     * Update the organizer of an event.
+     *
+     * @param string $id
+     * @param string $organizerId
+     */
+    public function deleteOrganizer($id, $organizerId);
 
     /**
      * @param string $eventId

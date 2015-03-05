@@ -14,6 +14,13 @@ use Broadway\EventStore\EventStoreInterface;
 
 class OrganizerRepository extends EventSourcingRepository
 {
+    use \CultuurNet\UDB3\Udb3RepositoryTrait;
+
+    private $eventStore;
+    private $eventBus;
+    private $aggregateClass;
+    private $eventStreamDecorators = array();
+
     /**
      * @param EventStoreInterface $eventStore
      * @param EventBusInterface $eventBus
@@ -24,11 +31,10 @@ class OrganizerRepository extends EventSourcingRepository
         EventBusInterface $eventBus,
         array $eventStreamDecorators = array()
     ) {
-        parent::__construct(
-            $eventStore,
-            $eventBus,
-            '\CultuurNet\UDB3\Organizer\Organizer',
-            $eventStreamDecorators
-        );
+        $this->eventStore            = $eventStore;
+        $this->eventBus              = $eventBus;
+        $this->aggregateClass        = Organizer::class;
+        $this->eventStreamDecorators = $eventStreamDecorators;
+
     }
 }

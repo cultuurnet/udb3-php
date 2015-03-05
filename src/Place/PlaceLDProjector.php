@@ -12,16 +12,72 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
+use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\CulturefeedSlugger;
+use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
-use CultuurNet\UDB3\Place\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\SluggerInterface;
 
 class PlaceLDProjector extends ActorLDProjector
 {
+
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $repository;
+
+    /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
+     * @var OrganizerService
+     */
+    protected $organizerService;
+
+    /**
+     * @var SluggerInterface
+     */
+    protected $slugger;
+
+    /**
+     * @var CdbXMLImporter
+     */
+    protected $cdbXMLImporter;
+
+    /**
+     * @param DocumentRepositoryInterface $repository
+     * @param IriGeneratorInterface $iriGenerator
+     * @param OrganizerService $organiserService
+     */
+    public function __construct(
+        DocumentRepositoryInterface $repository,
+        IriGeneratorInterface $iriGenerator,
+        OrganizerService $organizerService,
+        EventBusInterface $eventBus
+    ) {
+        $this->repository = $repository;
+        $this->iriGenerator = $iriGenerator;
+        $this->organizerService = $organizerService;
+        $this->eventBus = $eventBus;
+        $this->slugger = new CulturefeedSlugger();
+        $this->cdbXMLImporter = new CdbXMLImporter();
+    }
+
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
@@ -229,6 +285,40 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
+     * Apply the organizer updated event to the event repository.
+     * @param OrganizerUpdated $organizerUpdated
+     */
+    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($organizerUpdated);
+
+        $eventLd = $document->getBody();
+
+        $eventLd->location = array(
+          '@type' => 'Organizer',
+        ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the organizer delete event to the event repository.
+     * @param OrganizerDeleted $organizerDeleted
+     */
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    {
+
+        $document = $this->loadDocumentFromRepository($organizerDeleted);
+
+        $placeLd = $document->getBody();
+
+        unset($placeLd->location);
+
+        $this->repository->save($document->withBody($placeLd));
+    }
+
+    /**
      * @param PlaceEvent $place
      * @return JsonDocument
      */
@@ -241,5 +331,25 @@ class PlaceLDProjector extends ActorLDProjector
         }
 
         return $document;
+    }
+
+    /**
+     * Get the organizer jsonLD.
+     */
+    public function organizerJSONLD($organizerId)
+    {
+
+        try {
+            $organizerJSONLD = $this->organizerService->getEntity(
+                $organizerId
+            );
+
+            return json_decode($organizerJSONLD);
+        } catch (EntityNotFoundException $e) {
+            // In case the place can not be found at the moment, just add its ID
+            return array(
+                '@id' => $this->organizerService->iri($organizerId)
+            );
+        }
     }
 }

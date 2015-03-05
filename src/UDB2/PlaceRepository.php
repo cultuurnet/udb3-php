@@ -8,26 +8,28 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\AggregateRoot;
-use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
+use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultureFeed_Cdb_Data_Address;
-use CultureFeed_Cdb_Data_Address_PhysicalAddress;
 use CultureFeed_Cdb_Data_Category;
 use CultureFeed_Cdb_Data_CategoryList;
 use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
+use CultureFeed_Cdb_Data_Organiser;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\OrganizerService;
-use CultuurNet\UDB3\Place\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\Place;
-use CultuurNet\UDB3\Place\PlaceCreated;
-use CultuurNet\UDB3\Place\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -42,6 +44,22 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
     use LoggerAwareTrait;
     use Udb2UtilityTrait;
+    use \CultuurNet\UDB3\Udb3RepositoryTrait;
+
+    /**
+     * @var RepositoryInterface
+     */
+    protected $decoratee;
+
+    /**
+     * @var SearchServiceInterface
+     */
+    protected $search;
+
+    /**
+     * @var EntryAPIImprovedFactory
+     */
+    protected $entryAPIImprovedFactory;
 
     /**
      * @var boolean
@@ -49,9 +67,16 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     protected $syncBack = false;
 
     /**
-     * @var EntryAPIImprovedFactory
+     * @var OrganizerService
      */
-    protected $entryAPIImprovedFactory;
+    protected $organizerService;
+
+    /**
+     * @var EventStreamDecoratorInterface[]
+     */
+    private $eventStreamDecorators = array();
+
+    private $aggregateClass;
 
     public function __construct(
         RepositoryInterface $decoratee,
@@ -65,6 +90,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
         $this->organizerService = $organizerService;
+        $this->aggregateClass = Place::class;
     }
 
     public function syncBackOn()
@@ -98,6 +124,11 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
                 $domainEvent = $domainMessage->getPayload();
                 switch (get_class($domainEvent)) {
 
+                    case PlaceCreated::class:
+                        $this->applyPlaceCreated($domainEvent, $domainMessage->getMetadata());
+                        break;
+
+
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
                         $this->applyDescriptionUpdated(
@@ -113,8 +144,18 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
                         );
                         break;
 
-                    case PlaceCreated::class:
-                        $this->applyPlaceCreated($domainEvent, $domainMessage->getMetadata());
+                    case OrganizerUpdated::class:
+                        $this->applyOrganizerUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case OrganizerDeleted::class:
+                        $this->applyOrganizerDeleted(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
                         break;
 
                     default:
@@ -124,15 +165,6 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         }
 
         $this->decoratee->add($aggregate);
-    }
-
-    /**
-     * Returns the type.
-     * @return string
-     */
-    protected function getType()
-    {
-        return Place::class;
     }
 
     /**
@@ -162,8 +194,6 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     {
 
         $event = new CultureFeed_Cdb_Item_Event();
-
-        // This currently does not work when POSTed to the entry API
         $event->setCdbId($placeCreated->getPlaceId());
 
         $nlDetail = new CultureFeed_Cdb_Data_EventDetail();
@@ -216,26 +246,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     {
 
         $address = $placeCreated->getAddress();
-
-        $physicalAddress = new CultureFeed_Cdb_Data_Address_PhysicalAddress();
-        $physicalAddress->setCountry($address->getCountry());
-        $physicalAddress->setCity($address->getLocality());
-        $physicalAddress->setZip($address->getPostalCode());
-
-        // @todo This is not an exact mapping, because we do not have a separate
-        // house number in JSONLD, this should be fixed somehow. Probably it's
-        // better to use another read model than JSON-LD for this purpose.
-        $streetParts = explode(' ', $address->getStreetAddress());
-
-        if (count($streetParts) > 1) {
-            $number = array_pop($streetParts);
-            $physicalAddress->setStreet(implode(' ', $streetParts));
-            $physicalAddress->setHouseNumber($number);
-        } else {
-            $physicalAddress->setStreet($address->getStreetAddress());
-        }
-
-        $cdbAddress = new CultureFeed_Cdb_Data_Address($physicalAddress);
+        $cdbAddress = new CultureFeed_Cdb_Data_Address($this->getPhysicalAddressForUdb3Address($address));
 
         $location = new CultureFeed_Cdb_Data_Location($cdbAddress);
         $location->setLabel($placeCreated->getTitle());
@@ -278,21 +289,50 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
     }
 
-    private function decorateForWrite(
-        AggregateRoot $aggregate,
-        DomainEventStream $eventStream
+    /**
+     * Apply the organizer updated event to the event repository.
+     * @param OrganizerUpdated $organizerUpdated
+     */
+    private function applyOrganizerUpdated(
+        OrganizerUpdated $domainEvent,
+        Metadata $metadata
     ) {
-        $aggregateType = $this->getType();
-        $aggregateIdentifier = $aggregate->getAggregateRootId();
 
-        foreach ($this->eventStreamDecorators as $eventStreamDecorator) {
-            $eventStream = $eventStreamDecorator->decorateForWrite(
-                $aggregateType,
-                $aggregateIdentifier,
-                $eventStream
-            );
-        }
+        $organizerJSONLD = $this->organizerService->getEntity(
+            $domainEvent->getOrganizerId()
+        );
 
-        return $eventStream;
+        $organizer = json_decode($organizerJSONLD);
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+
+        $cdbOrganizer = new \CultureFeed_Cdb_Data_Organiser();
+        $cdbOrganizer->setLabel($organizer->name);
+        $event->setOrganiser($cdbOrganizer);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Delete the organizer also in cdb.
+     *
+     * @param OrganizerDeleted $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyOrganizerDeleted(
+        OrganizerDeleted $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $cdbOrganizer = new CultureFeed_Cdb_Data_Organiser();
+        $event->setOrganiser($cdbOrganizer);
+
+        $entryApi->updateEvent($event);
+
     }
 }

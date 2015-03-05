@@ -8,6 +8,7 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\Metadata;
+use CultureFeed_Cdb_Data_Address_PhysicalAddress;
 use CultureFeed_Cdb_Data_Calendar_OpeningTime;
 use CultureFeed_Cdb_Data_Calendar_Period;
 use CultureFeed_Cdb_Data_Calendar_PeriodList;
@@ -18,6 +19,7 @@ use CultureFeed_Cdb_Data_Calendar_TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\Entry\EntryAPI;
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventCreated;
 use CultuurNet\UDB3\Place\PlaceCreated;
@@ -153,6 +155,34 @@ trait Udb2UtilityTrait
         }
 
         $cdbEvent->setCalendar($calendar);
+
+    }
+
+    /**
+     * Create a physical addres based on a given udb3 address.
+     * @param Address $address
+     */
+    protected function getPhysicalAddressForUdb3Address(Address $address) {
+
+        $physicalAddress = new CultureFeed_Cdb_Data_Address_PhysicalAddress();
+        $physicalAddress->setCountry($address->getCountry());
+        $physicalAddress->setCity($address->getLocality());
+        $physicalAddress->setZip($address->getPostalCode());
+
+        // @todo This is not an exact mapping, because we do not have a separate
+        // house number in JSONLD, this should be fixed somehow. Probably it's
+        // better to use another read model than JSON-LD for this purpose.
+        $streetParts = explode(' ', $address->getStreetAddress());
+
+        if (count($streetParts) > 1) {
+            $number = array_pop($streetParts);
+            $physicalAddress->setStreet(implode(' ', $streetParts));
+            $physicalAddress->setHouseNumber($number);
+        } else {
+            $physicalAddress->setStreet($address->getStreetAddress());
+        }
+
+        return $physicalAddress;
 
     }
 }

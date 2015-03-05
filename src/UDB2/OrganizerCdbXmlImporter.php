@@ -73,5 +73,4 @@ class OrganizerCdbXmlImporter implements OrganizerImporterInterface, LoggerAware
             );
         }
     }
-
 }

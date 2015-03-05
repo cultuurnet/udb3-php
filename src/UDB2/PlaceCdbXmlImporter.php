@@ -73,5 +73,4 @@ class PlaceCdbXmlImporter implements PlaceImporterInterface, LoggerAwareInterfac
             );
         }
     }
-
 }

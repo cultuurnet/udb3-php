@@ -62,8 +62,14 @@ class OrganizerRepository extends ActorRepository
         return $organizer;
     }
 
-    private function tryMultipleTimes($times, callable $callable) {
-        $result = NULL;
+    /**
+     * @param int $times
+     * @param callable $callable
+     * @return mixed
+     */
+    private function tryMultipleTimes($times, callable $callable)
+    {
+        $result = null;
 
         while ($times > 0) {
             $times--;
@@ -71,11 +77,10 @@ class OrganizerRepository extends ActorRepository
             try {
                 $result = $callable($times);
 
-                if (NULL !== $result) {
+                if (null !== $result) {
                     break;
                 }
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 if ($times == 0) {
                     throw $e;
                 }

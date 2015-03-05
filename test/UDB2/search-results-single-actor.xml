@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cdb:actor xmlns:cdb="http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL" asset="true" availablefrom="2012-12-03T12:09:28" availableto="2100-01-01T00:00:00" createdby="sarahducha" creationdate="2010-01-06T13:11:46" cdbid="061C13AC-A15F-F419-D8993D68C9E94548" externalid="061C13AC-A15F-F419-D8993D68C9E94548" lastupdated="2012-12-03T12:09:28" lastupdatedby="bart.luyckx@cultuurnet.be" owner="Invoerders Algemeen ">
+    <cdb:actordetails>
+        <cdb:actordetail lang="nl">
+            <cdb:calendarsummary>ma tot zo</cdb:calendarsummary>
+            <cdb:shortdescription>Muziekcentrum Het Depot is dé plek in Leuven waar muzikanten en muziekliefhebbers zich helemaal kunnen uitleven! Het Depot is niet alleen een concertzaal, waar het goed toeven is, maar het is ook gangmaker voor talrijke muzikale initiatieven in de regio. Daarnaast biedt Het Depot een eigenzinnig spectrum van instrumentlessen, softwarelessen, PA-cursussen, workshops en masterclasses aan</cdb:shortdescription>
+            <cdb:title>Muziekcentrum Het Depot</cdb:title>
+        </cdb:actordetail>
+    </cdb:actordetails>
+    <cdb:categories>
+        <cdb:category catid="8.15.0.0.0" type="actortype">Locatie</cdb:category>
+        <cdb:category catid="8.11.0.0.0" type="actortype">Organisator(en)</cdb:category>
+        <cdb:category catid="6.3.0.0.0" type="publicscope">Nationaal</cdb:category>
+        <cdb:category catid="8.48.0.0.0" type="actortype">Concertzaal</cdb:category>
+    </cdb:categories>
+    <cdb:contactinfo>
+        <cdb:address>
+            <cdb:physical>
+                <cdb:city>Leuven</cdb:city>
+                <cdb:country>BE</cdb:country>
+                <cdb:gis>
+                    <cdb:xcoordinate>4.714561</cdb:xcoordinate>
+                    <cdb:ycoordinate>50.881350</cdb:ycoordinate>
+                </cdb:gis>
+                <cdb:housenr>12</cdb:housenr>
+                <cdb:street>Martelarenplein</cdb:street>
+                <cdb:zipcode>3000</cdb:zipcode>
+            </cdb:physical>
+        </cdb:address>
+        <cdb:mail>info@hetdepot.be</cdb:mail>
+        <cdb:phone type="phone">+32 16 220603</cdb:phone>
+    </cdb:contactinfo>
+</cdb:actor>

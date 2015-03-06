@@ -6,8 +6,11 @@
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\EventCreated;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
 class Projector extends Udb3Projector
@@ -17,9 +20,15 @@ class Projector extends Udb3Projector
      */
     protected $repository;
 
-    public function __construct($repository)
+    /**
+     * @var EventServiceInterface
+     */
+    protected $eventService;
+
+    public function __construct($repository, EventServiceInterface $eventService)
     {
         $this->repository = $repository;
+        $this->eventService = $eventService;
     }
 
     protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $event)
@@ -57,6 +66,37 @@ class Projector extends Udb3Projector
             $this->storeRelations($eventId, $cdbid, $organizer);
         }
 
+    }
+
+    /**
+     * Store the relation when the organizer was changed
+     */
+    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    {
+        $eventEntity = $this->eventService->getEvent($organizerUpdated->getEventId());
+        $event = json_decode($eventEntity);
+
+        $placeId = !empty($event->location) ? $event->location->{'@id'}: null;
+
+        $this->storeRelations($organizerUpdated->getEventId(), $placeId, $organizerUpdated->getOrganizerId());
+    }
+
+    /**
+     * Remove the relation.
+     */
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    {
+
+        $eventEntity = $this->eventService->getEvent($organizerDeleted->getEventId());
+        $event = json_decode($eventEntity);
+
+        $placeId = null;
+        if (!empty($event->location)) {
+            $idParts = explode('/', $event->location->{'@id'});
+            $placeId = array_pop($idParts);
+        }
+
+        $this->storeRelations($organizerDeleted->getEventId(), $placeId, null);
     }
 
     protected function storeRelations($eventId, $placeId, $organizerId)

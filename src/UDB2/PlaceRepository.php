@@ -19,7 +19,6 @@ use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
-use CultureFeed_Cdb_Data_Organiser;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
@@ -327,10 +326,8 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
-
-        $cdbOrganizer = new CultureFeed_Cdb_Data_Organiser();
-        $event->setOrganiser($cdbOrganizer);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+        $event->deleteOrganiser();
 
         $entryApi->updateEvent($event);
 

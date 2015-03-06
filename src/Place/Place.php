@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -78,6 +79,16 @@ class Place extends Actor
     public function updateOrganizer($organizerId)
     {
         $this->apply(new OrganizerUpdated($this->actorId, $organizerId));
+    }
+
+    /**
+     * Delete the given organizer.
+     *
+     * @param string $organizerId
+     */
+    public function deleteOrganizer($organizerId)
+    {
+        $this->apply(new OrganizerDeleted($this->actorId, $organizerId));
     }
 
     /**

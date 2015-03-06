@@ -37,4 +37,21 @@ class OrganizerRepository extends EventSourcingRepository
         $this->eventStreamDecorators = $eventStreamDecorators;
 
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function load($id)
+    {
+        try {
+            $domainEventStream = $this->eventStore->load($id);
+
+            $aggregate = new $this->aggregateClass();
+            $aggregate->initializeState($domainEventStream);
+
+            return $aggregate;
+        } catch (EventStreamNotFoundException $e) {
+            throw AggregateNotFoundException::create($id, $e);
+        }
+    }
 }

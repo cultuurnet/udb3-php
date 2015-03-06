@@ -168,8 +168,8 @@ class OrganizerRepository extends ActorRepository
 
         $addresses = $organizerCreated->getAddresses();
         foreach ($addresses as $address) {
-          $cdbAddress = new CultureFeed_Cdb_Data_Address($this->getPhysicalAddressForUdb3Address($address));
-          $contactInfo->addAddress($cdbAddress);
+            $cdbAddress = new CultureFeed_Cdb_Data_Address($this->getPhysicalAddressForUdb3Address($address));
+            $contactInfo->addAddress($cdbAddress);
         }
 
         $phones = $organizerCreated->getPhones();

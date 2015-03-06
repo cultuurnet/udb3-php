@@ -3,9 +3,11 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event\ReadModel\Relations;
+namespace CultuurNet\UDB3\Place\ReadModel\Relations;
 
-use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use Broadway\ReadModel\RepositoryInterface;
+use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
@@ -38,6 +40,14 @@ class Projector extends Udb3Projector
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
         $this->storeRelations($organizerUpdated->getPlaceId(), $organizerUpdated->getOrganizerId());
+    }
+
+    /**
+     * Remove the relation.
+     */
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    {
+        $this->storeRelations($organizerDeleted->getPlaceId(), null);
     }
 
     /**

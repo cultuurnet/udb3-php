@@ -309,11 +309,11 @@ class PlaceLDProjector extends ActorLDProjector
     protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
 
-        $document = $this->loadDocumentFromRepository($organizerDeleted);
+        $document = $this->loadPlaceDocumentFromRepository($organizerDeleted);
 
         $placeLd = $document->getBody();
 
-        unset($placeLd->location);
+        unset($placeLd->organizer);
 
         $this->repository->save($document->withBody($placeLd));
     }

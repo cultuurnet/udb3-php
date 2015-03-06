@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
-use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -230,6 +231,23 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
         $event->updateOrganizer(
             $updateOrganizer->getOrganizerId()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update command to delete the organizer.
+     */
+    public function handleDeleteOrganizer(DeleteOrganizer $deleteOrganizer)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteOrganizer->getId());
+
+        $event->deleteOrganizer(
+            $deleteOrganizer->getOrganizerId()
         );
 
         $this->eventRepository->add($event);

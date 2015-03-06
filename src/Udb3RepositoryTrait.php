@@ -50,5 +50,4 @@ trait Udb3RepositoryTrait
     {
         return $this->aggregateClass;
     }
-
 }

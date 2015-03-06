@@ -31,10 +31,10 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
@@ -136,6 +136,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             /** @var DomainMessageInterface $domainMessage */
             foreach ($eventStream as $domainMessage) {
                 $domainEvent = $domainMessage->getPayload();
+
                 switch (get_class($domainEvent)) {
                     case EventWasTagged::class:
                         /** @var EventWasTagged $domainEvent */
@@ -483,9 +484,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
-
-        $cdbOrganizer = new CultureFeed_Cdb_Data_Organiser();
-        $event->setOrganiser($cdbOrganizer);
+        $event->deleteOrganiser();
 
         $entryApi->updateEvent($event);
 

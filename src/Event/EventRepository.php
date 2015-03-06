@@ -65,5 +65,4 @@ class EventRepository implements RepositoryInterface
             throw AggregateNotFoundException::create($id, $e);
         }
     }
-    
 }

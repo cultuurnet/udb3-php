@@ -420,7 +420,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
 
         $eventLd = $document->getBody();
 
-        unset($eventLd->location);
+        unset($eventLd->organizer);
 
         $this->repository->save($document->withBody($eventLd));
     }

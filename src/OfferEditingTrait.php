@@ -84,5 +84,4 @@ trait OfferEditingTrait
             new $commandClass($id, $organizerId)
         );
     }
-
 }

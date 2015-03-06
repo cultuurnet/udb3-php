@@ -5,9 +5,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Assert\Assertion;
-use Broadway\Domain\AggregateRoot;
-use Broadway\Domain\DomainEventStream;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\EventStoreInterface;

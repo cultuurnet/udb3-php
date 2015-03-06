@@ -92,6 +92,7 @@ class Location implements SerializableInterface
     public function serialize()
     {
         return [
+          'cdbid' => $this->cdbid,
           'name' => $this->name,
           'address' => [
             'addressCountry' => $this->country,
@@ -108,7 +109,7 @@ class Location implements SerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-                $data['name'], $data['address']['addressCountry'], $data['address']['addressLocality'], $data['address']['postalCode'], $data['address']['streetAddress']
+                $data['cdbid'], $data['name'], $data['address']['addressCountry'], $data['address']['addressLocality'], $data['address']['postalCode'], $data['address']['streetAddress']
         );
     }
 }

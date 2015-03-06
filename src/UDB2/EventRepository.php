@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\AggregateRoot;
+use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
@@ -35,8 +36,6 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
-use CultuurNet\UDB3\Event\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\DescriptionUpdated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;

@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains CultuurNet\UDB3\Event\UpdateDescription.
+ * Contains CultuurNet\UDB3\Event\Commands\DeleteOrganizer.
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Commands;
 
 /**
- * Provides a command to update the event description for the main language.
+ * Provides a command to delete the organizer of an event.
  */
-class UpdateDescription
+class DeleteOrganizer
 {
 
-    use \CultuurNet\UDB3\UpdateDescriptionTrait;
+    use \CultuurNet\UDB3\DeleteOrganizerTrait;
 
     /**
      * @param string $id

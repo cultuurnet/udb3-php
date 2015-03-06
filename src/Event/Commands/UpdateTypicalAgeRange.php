@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains CultuurNet\UDB3\Place\UpdateTypicalAgeRange.
+ * Contains CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange.
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Event\Commands;
 
 /**
  * Provides a command to update the typicalAgeRange property.

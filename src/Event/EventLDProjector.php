@@ -10,9 +10,11 @@ use Broadway\Domain\DomainMessageInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\Event\DescriptionUpdated;
-use CultuurNet\UDB3\Event\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
@@ -70,18 +72,18 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
      * @param PlaceService $placeService
-     * @param OrganizerService $organiserService
+     * @param OrganizerService $organizerService
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EventServiceInterface $eventService,
         PlaceService $placeService,
-        OrganizerService $organiserService
+        OrganizerService $organizerService
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
-        $this->organizerService = $organiserService;
+        $this->organizerService = $organizerService;
         $this->placeService = $placeService;
         $this->eventService = $eventService;
 
@@ -395,6 +397,7 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
      */
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
+
         $document = $this->loadDocumentFromRepository($organizerUpdated);
 
         $eventLd = $document->getBody();
@@ -402,6 +405,22 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
         $eventLd->location = array(
           '@type' => 'Organizer',
         ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the organizer delete event to the event repository.
+     * @param OrganizerDeleted $organizerDeleted
+     */
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    {
+
+        $document = $this->loadDocumentFromRepository($organizerDeleted);
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->organizer);
 
         $this->repository->save($document->withBody($eventLd));
     }

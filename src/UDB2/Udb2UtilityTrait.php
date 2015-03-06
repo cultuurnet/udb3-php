@@ -8,6 +8,7 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\Metadata;
+use CultureFeed_Cdb_Data_Address_PhysicalAddress;
 use CultureFeed_Cdb_Data_Calendar_OpeningTime;
 use CultureFeed_Cdb_Data_Calendar_Period;
 use CultureFeed_Cdb_Data_Calendar_PeriodList;
@@ -18,9 +19,10 @@ use CultureFeed_Cdb_Data_Calendar_TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\Entry\EntryAPI;
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Event\EventCreated;
-use CultuurNet\UDB3\Place\PlaceCreated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use Zend\Validator\Exception\RuntimeException;
 
 /**
@@ -57,50 +59,11 @@ trait Udb2UtilityTrait
     {
 
         $eventCalendar = $createdEvent->getCalendar();
-        if ($eventCalendar->getType() == Calendar::MULTIPLE) {
-            $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
-            foreach ($eventCalendar->getTimestamps() as $timestamp) {
-                $startdate = strtotime($timestamp->getStartDate());
-                $enddate = strtotime($timestamp->getEndDate());
-                $calendar->add(
-                    new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                        date('d-m-Y', $startdate),
-                        date('H:i', $startdate),
-                        date('H:i', $enddate)
-                    )
-                );
-            }
-
-        } elseif ($eventCalendar->getType() == Calendar::MULTIPLE) {
-            $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
-            $startdate = strtotime($eventCalendar->getStartDate());
-            $enddate = strtotime($eventCalendar->getEndDate());
-            $startHour = date('H:i', $startdate);
-            if ($startHour == '00:00') {
-                $startHour = null;
-            }
-            $endHour = date('H:i', $enddate);
-            if ($endHour == '00:00') {
-                $endHour = null;
-            }
-            $calendar->add(
-                new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                    date('d-m-Y', $startdate),
-                    $startHour,
-                    $endHour
-                )
-            );
-        } elseif ($eventCalendar->getType() == Calendar::PERIODIC) {
-            $calendar = new CultureFeed_Cdb_Data_Calendar_PeriodList();
-            $startdate = strtotime($eventCalendar->getStartDate());
-            $enddate = strtotime($eventCalendar->getEndDate());
-            $calendar->add(new CultureFeed_Cdb_Data_Calendar_Period($startdate, $enddate));
-        } elseif ($eventCalendar->getType() == Calendar::PERMANENT) {
-            $calendar = new CultureFeed_Cdb_Data_Calendar_Permanent();
-        }
 
         // Store opening hours.
         $openingHours = $eventCalendar->getOpeningHours();
+        $weekScheme = null;
+
         if (!empty($openingHours)) {
             // CDB2 requires an entry for every day.
             $requiredDays = array(
@@ -149,10 +112,103 @@ trait Udb2UtilityTrait
                 $weekscheme->setDay($day, $openingInfo);
             }
 
-            $calendar->setWeekScheme($weekscheme);
+        }
+
+        // Multiple days.
+        if ($eventCalendar->getType() == Calendar::MULTIPLE) {
+            $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+            foreach ($eventCalendar->getTimestamps() as $timestamp) {
+                $startdate = strtotime($timestamp->getStartDate());
+                $enddate = strtotime($timestamp->getEndDate());
+                $startHour = date('H:i:s', $startdate);
+                if ($startHour == '00:00:00') {
+                    $startHour = null;
+                }
+                $endHour = date('H:i:s', $enddate);
+                if ($endHour == '00:00:00') {
+                    $endHour = null;
+                }
+                $calendar->add(
+                    new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                        date('Y-m-d', $startdate),
+                        $startHour,
+                        $endHour
+                    )
+                );
+            }
+
+        // Single day
+        } elseif ($eventCalendar->getType() == Calendar::SINGLE) {
+            $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+            $startdate = strtotime($eventCalendar->getStartDate());
+            $enddate = strtotime($eventCalendar->getEndDate());
+            $startHour = date('H:i', $startdate);
+            if ($startHour == '00:00') {
+                $startHour = null;
+            }
+            $endHour = date('H:i', $enddate);
+            if ($endHour == '00:00') {
+                $endHour = null;
+            }
+            $calendar->add(
+                new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                    date('Y-m-d', $startdate),
+                    $startHour,
+                    $endHour
+                )
+            );
+        // Period.
+        } elseif ($eventCalendar->getType() == Calendar::PERIODIC) {
+            $calendar = new CultureFeed_Cdb_Data_Calendar_PeriodList();
+            $startdate = date('Y-m-d', strtotime($eventCalendar->getStartDate()));
+            $enddate = date('Y-m-d', strtotime($eventCalendar->getEndDate()));
+
+            $period = new CultureFeed_Cdb_Data_Calendar_Period($startdate, $enddate);
+            if (!empty($weekScheme)) {
+                $calendar->setWeekScheme($weekscheme);
+            }
+            $calendar->add($period);
+
+        // Permanent
+        } elseif ($eventCalendar->getType() == Calendar::PERMANENT) {
+            $calendar = new CultureFeed_Cdb_Data_Calendar_Permanent();
+            if (!empty($weekScheme)) {
+                $calendar->setWeekScheme($weekscheme);
+            }
+
         }
 
         $cdbEvent->setCalendar($calendar);
 
     }
+
+    /**
+     * Create a physical addres based on a given udb3 address.
+     * @param Address $address
+     */
+    protected function getPhysicalAddressForUdb3Address(Address $address)
+    {
+
+        $physicalAddress = new CultureFeed_Cdb_Data_Address_PhysicalAddress();
+        $physicalAddress->setCountry($address->getCountry());
+        $physicalAddress->setCity($address->getLocality());
+        $physicalAddress->setZip($address->getPostalCode());
+
+        // @todo This is not an exact mapping, because we do not have a separate
+        // house number in JSONLD, this should be fixed somehow. Probably it's
+        // better to use another read model than JSON-LD for this purpose.
+        $streetParts = explode(' ', $address->getStreetAddress());
+
+        if (count($streetParts) > 1) {
+            $number = array_pop($streetParts);
+            $physicalAddress->setStreet(implode(' ', $streetParts));
+            $physicalAddress->setHouseNumber($number);
+        } else {
+            $physicalAddress->setStreet($address->getStreetAddress());
+        }
+
+        return $physicalAddress;
+
+    }
+
 }

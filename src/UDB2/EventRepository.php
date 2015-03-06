@@ -6,18 +6,32 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\AggregateRoot;
-use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultureFeed_Cdb_Data_Address;
+use CultureFeed_Cdb_Data_Address_PhysicalAddress;
+use CultureFeed_Cdb_Data_Category;
+use CultureFeed_Cdb_Data_CategoryList;
+use CultureFeed_Cdb_Data_ContactInfo;
+use CultureFeed_Cdb_Data_EventDetail;
+use CultureFeed_Cdb_Data_EventDetailList;
+use CultureFeed_Cdb_Data_Location;
+use CultureFeed_Cdb_Data_Organiser;
+use CultureFeed_Cdb_Default;
+use CultureFeed_Cdb_Item_Event;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
-use CultuurNet\UDB3\Event\EventCreated;
+use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -28,6 +42,7 @@ use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use XMLReader;
 
 /**
  * Repository decorator that first updates UDB2.
@@ -38,6 +53,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use Udb2UtilityTrait;
+    use \CultuurNet\UDB3\Udb3RepositoryTrait;
 
     /**
      * @var RepositoryInterface
@@ -74,6 +90,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      */
     private $eventStreamDecorators = array();
 
+    private $aggregateClass;
+
     public function __construct(
         RepositoryInterface $decoratee,
         SearchServiceInterface $search,
@@ -88,6 +106,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $this->eventStreamDecorators = $eventStreamDecorators;
         $this->organizerService = $organizerService;
         $this->placeService = $placeService;
+        $this->aggregateClass = Event::class;
     }
 
     public function syncBackOn()
@@ -98,11 +117,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     public function syncBackOff()
     {
         $this->syncBack = false;
-    }
-
-    private function getType()
-    {
-        return Event::class;
     }
 
     /**
@@ -124,6 +138,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             /** @var DomainMessageInterface $domainMessage */
             foreach ($eventStream as $domainMessage) {
                 $domainEvent = $domainMessage->getPayload();
+
                 switch (get_class($domainEvent)) {
                     case EventWasTagged::class:
                         /** @var EventWasTagged $domainEvent */
@@ -158,6 +173,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         );
                         break;
 
+                    case EventCreated::class:
+                        $this->applyEventCreated($domainEvent, $domainMessage->getMetadata());
+                        break;
+
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
                         $this->applyDescriptionUpdated(
@@ -174,8 +193,19 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         );
                         break;
 
-                    case EventCreated::class:
-                        $this->applyEventCreated($domainEvent, $domainMessage->getMetadata());
+                    case OrganizerUpdated::class:
+                        $this->applyOrganizerUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case OrganizerDeleted::class:
+                        $this->applyOrganizerDeleted(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+
                         break;
 
                     default:
@@ -233,41 +263,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             );
     }
 
-    /**
-     * Send the updated description also to CDB2.
-     */
-    private function applyDescriptionUpdated(
-        DescriptionUpdated $descriptionUpdated,
-        Metadata $metadata
-    ) {
-
-        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
-
-        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($descriptionUpdated->getDescription());
-
-        $entryApi->updateEvent($event);
-
-    }
-
-    /**
-     * Send the updated age range also to CDB2.
-     */
-    private function applyTypicalAgeRangeUpdated(
-        TypicalAgeRangeUpdated $ageRangeUpdated,
-        Metadata $metadata
-    ) {
-
-        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($ageRangeUpdated->getEventId());
-
-        $ages = explode('-', $ageRangeUpdated->getTypicalAgeRange());
-        $event->setAgeFrom($ages[0]);
-
-        $entryApi->updateEvent($event);
-
-    }
-
     private function decorateForWrite(
         AggregateRoot $aggregate,
         DomainEventStream $eventStream
@@ -304,7 +299,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
             $cdbXml = $results->getBody(true);
 
-            $reader = new \XMLReader();
+            $reader = new XMLReader();
 
             $reader->xml($cdbXml);
 
@@ -328,7 +323,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             }
 
             $udb2Event = EventItemFactory::createEventFromCdbXml(
-                \CultureFeed_Cdb_Default::CDB_SCHEME_URL,
+                CultureFeed_Cdb_Default::CDB_SCHEME_URL,
                 $eventXml
             );
             $this->importDependencies($udb2Event);
@@ -336,7 +331,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $event = Event::importFromUDB2(
                 $id,
                 $eventXml,
-                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+                CultureFeed_Cdb_Default::CDB_SCHEME_URL
             );
 
             $this->add($event);
@@ -345,10 +340,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         return $event;
     }
 
-    private function importDependencies(\CultureFeed_Cdb_Item_Event $udb2Event)
+    private function importDependencies(CultureFeed_Cdb_Item_Event $udb2Event)
     {
+        $location = $udb2Event->getLocation();
         try {
-            $location = $udb2Event->getLocation();
             if ($location && $location->getCdbid()) {
                 // Loading the place will implicitly import it, or throw an error
                 // if the place is not known.
@@ -365,8 +360,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             }
         }
 
+        $organizer = $udb2Event->getOrganiser();
         try {
-            $organizer = $udb2Event->getOrganiser();
             if ($organizer && $organizer->getCdbid()) {
                 // Loading the organizer will implicitly import it, or throw an error
                 // if the organizer is not known.
@@ -390,16 +385,14 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     public function applyEventCreated(EventCreated $eventCreated, Metadata $metadata)
     {
 
-        $event = new \CultureFeed_Cdb_Item_Event();
-
-        // This currently does not work when POSTed to the entry API
+        $event = new CultureFeed_Cdb_Item_Event();
         $event->setCdbId($eventCreated->getEventId());
 
-        $nlDetail = new \CultureFeed_Cdb_Data_EventDetail();
+        $nlDetail = new CultureFeed_Cdb_Data_EventDetail();
         $nlDetail->setLanguage('nl');
         $nlDetail->setTitle($eventCreated->getTitle());
 
-        $details = new \CultureFeed_Cdb_Data_EventDetailList();
+        $details = new CultureFeed_Cdb_Data_EventDetailList();
         $details->add($nlDetail);
         $event->setDetails($details);
 
@@ -408,8 +401,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $this->setCalendarForItemCreated($eventCreated, $event);
 
         // Set event type and theme.
-        $event->setCategories(new \CultureFeed_Cdb_Data_CategoryList());
-        $eventType = new \CultureFeed_Cdb_Data_Category(
+        $event->setCategories(new CultureFeed_Cdb_Data_CategoryList());
+        $eventType = new CultureFeed_Cdb_Data_Category(
             'eventtype',
             $eventCreated->getEventType()->getId(),
             $eventCreated->getEventType()->getLabel()
@@ -417,7 +410,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $event->getCategories()->add($eventType);
 
         if ($eventCreated->getTheme() !== null) {
-            $theme = new \CultureFeed_Cdb_Data_Category(
+            $theme = new CultureFeed_Cdb_Data_Category(
                 'theme',
                 $eventCreated->getTheme()->getId(),
                 $eventCreated->getTheme()->getLabel()
@@ -426,10 +419,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         }
 
         // Empty contact info.
-        $contactInfo = new \CultureFeed_Cdb_Data_ContactInfo();
+        $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
         $event->setContactInfo($contactInfo);
 
-        $cdbXml = new \CultureFeed_Cdb_Default();
+        $cdbXml = new CultureFeed_Cdb_Default();
         $cdbXml->addItem($event);
 
         $this->createImprovedEntryAPIFromMetadata($metadata)
@@ -439,12 +432,92 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     }
 
     /**
+     * Send the updated description also to CDB2.
+     */
+    private function applyDescriptionUpdated(
+        DescriptionUpdated $descriptionUpdated,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
+
+        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($descriptionUpdated->getDescription());
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Send the updated age range also to CDB2.
+     */
+    private function applyTypicalAgeRangeUpdated(
+        TypicalAgeRangeUpdated $ageRangeUpdated,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($ageRangeUpdated->getEventId());
+
+        $ages = explode('-', $ageRangeUpdated->getTypicalAgeRange());
+        $event->setAgeFrom($ages[0]);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the organizer updated event to the event repository.
+     * @param OrganizerUpdated $organizerUpdated
+     */
+    private function applyOrganizerUpdated(
+        OrganizerUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $organizerJSONLD = $this->organizerService->getEntity(
+            $domainEvent->getOrganizerId()
+        );
+
+        $organizer = json_decode($organizerJSONLD);
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $cdbOrganizer = new CultureFeed_Cdb_Data_Organiser();
+        $cdbOrganizer->setLabel($organizer->name);
+        $event->setOrganiser($cdbOrganizer);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Delete the organizer also in cdb.
+     *
+     * @param OrganizerDeleted $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyOrganizerDeleted(
+        OrganizerDeleted $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event->deleteOrganiser();
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
      * Set the location on the cdb event based on an eventCreated event.
      *
      * @param EventCreated $eventCreated
-     * @param \CultureFeed_Cdb_Item_Event $cdbEvent
+     * @param CultureFeed_Cdb_Item_Event $cdbEvent
      */
-    private function setLocationForEventCreated(EventCreated $eventCreated, \CultureFeed_Cdb_Item_Event $cdbEvent)
+    private function setLocationForEventCreated(EventCreated $eventCreated, CultureFeed_Cdb_Item_Event $cdbEvent)
     {
 
         $placeEntity = $this->placeService->getEntity($eventCreated->getLocation()->getCdbid());
@@ -452,7 +525,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $eventLocation = $eventCreated->getLocation();
 
-        $physicalAddress = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
+        $physicalAddress = new CultureFeed_Cdb_Data_Address_PhysicalAddress();
         $physicalAddress->setCountry($place->address->addressCountry);
         $physicalAddress->setCity($place->address->addressLocality);
         $physicalAddress->setZip($place->address->postalCode);
@@ -471,9 +544,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $physicalAddress->setStreet($eventLocation->getStreet());
         }
 
-        $address = new \CultureFeed_Cdb_Data_Address($physicalAddress);
+        $address = new CultureFeed_Cdb_Data_Address($physicalAddress);
 
-        $location = new \CultureFeed_Cdb_Data_Location($address);
+        $location = new CultureFeed_Cdb_Data_Location($address);
         $location->setLabel($eventLocation->getName());
         $cdbEvent->setLocation($location);
 

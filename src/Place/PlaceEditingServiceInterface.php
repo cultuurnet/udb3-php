@@ -14,6 +14,8 @@ interface PlaceEditingServiceInterface
 {
 
     /**
+     * Create a new place.
+     *
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
@@ -23,4 +25,36 @@ interface PlaceEditingServiceInterface
      * @return string $eventId
      */
     public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null);
+
+    /**
+     * Update the description of a place.
+     *
+     * @param string $id
+     * @param string $description
+     */
+    public function updateDescription($id, $description);
+
+    /**
+     * Update the typical age range of a place.
+     *
+     * @param string $id
+     * @param string $ageRange
+     */
+    public function updateTypicalAgeRange($id, $ageRange);
+
+    /**
+     * Update the organizer of a place.
+     *
+     * @param string $id
+     * @param string $organizerId
+     */
+    public function updateOrganizer($id, $organizerId);
+
+    /**
+     * Update the organizer of a place.
+     *
+     * @param string $id
+     * @param string $organizerId
+     */
+    public function deleteOrganizer($id, $organizerId);
 }

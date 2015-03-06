@@ -11,9 +11,12 @@ use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\UpdateOrganizer;
+use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
@@ -73,9 +76,19 @@ class Place extends Actor
     /**
      * Handle an update command to update organizer.
      */
-    public function updateOrganizer(UpdateOrganizer $updateOrganizer)
+    public function updateOrganizer($organizerId)
     {
-        $this->apply(new OrganizerUpdated($this->actorId, $updateOrganizer->getOrganizerId()));
+        $this->apply(new OrganizerUpdated($this->actorId, $organizerId));
+    }
+
+    /**
+     * Delete the given organizer.
+     *
+     * @param string $organizerId
+     */
+    public function deleteOrganizer($organizerId)
+    {
+        $this->apply(new OrganizerDeleted($this->actorId, $organizerId));
     }
 
     /**

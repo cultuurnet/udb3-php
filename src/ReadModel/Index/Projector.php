@@ -8,11 +8,11 @@
 namespace CultuurNet\UDB3\ReadModel\Index;
 
 use Broadway\Domain\DomainMessageInterface;
-use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\EventCreated;
-use CultuurNet\UDB3\Event\EventImportedFromUDB2;
+use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
-use CultuurNet\UDB3\Place\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
 /**
@@ -99,6 +99,7 @@ class Projector extends Udb3Projector
         $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
 
         $address = $placeCreated->getAddress();
+
         $this->updateIndex($placeId, 'place', $userId, $placeCreated->getTitle(), $address->getPostalcode());
     }
 

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains CultuurNet\UDB3\Event\DescriptionUpdated.
+ * Contains CultuurNet\UDB3\Event\Events\OrganizerUpdated.
  */
 
 namespace CultuurNet\UDB3\Event\Events;
@@ -24,5 +24,13 @@ class OrganizerUpdated extends EventEvent
     {
         parent::__construct($id);
         $this->organizerId = $organizerId;
+    }
+
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['place_id'], $data['organizerId']);
     }
 }

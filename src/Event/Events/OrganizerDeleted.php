@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains CultuurNet\UDB3\Event\Events\OrganizerUpdated.
+ * Contains CultuurNet\UDB3\Event\Events\OrganizerDeleted.
  */
 
-namespace CultuurNet\UDB3\Place\Events;
+namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Event\EventEvent;
 
 /**
- * Description of DescriptionUpdated
+ * Organizer deleted event
  */
-class OrganizerUpdated extends PlaceEvent
+class OrganizerDeleted extends EventEvent
 {
-    use \CultuurNet\UDB3\OrganizerUpdatedTrait;
+    use \CultuurNet\UDB3\OrganizerDeletedTrait;
 
     /**
      * @param string $id

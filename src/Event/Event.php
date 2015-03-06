@@ -5,7 +5,11 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
@@ -167,6 +171,16 @@ class Event extends EventSourcedAggregateRoot
     public function updateOrganizer($organizerId)
     {
         $this->apply(new OrganizerUpdated($this->eventId, $organizerId));
+    }
+
+    /**
+     * Delete the given organizer.
+     *
+     * @param string $organizerId
+     */
+    public function deleteOrganizer($organizerId)
+    {
+        $this->apply(new OrganizerDeleted($this->eventId, $organizerId));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

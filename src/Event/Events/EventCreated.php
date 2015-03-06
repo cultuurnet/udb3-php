@@ -1,18 +1,23 @@
 <?php
-
 /**
  * @file
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use DateTime;
 
-class PlaceCreated extends PlaceEvent
+/**
+ * Event when an event is created.
+ */
+class EventCreated extends EventEvent
 {
 
     /**
@@ -23,7 +28,7 @@ class PlaceCreated extends PlaceEvent
     /**
      * @var EventType
      */
-    private $eventType;
+    private $eventType = null;
 
     /**
      * @var Theme
@@ -31,9 +36,9 @@ class PlaceCreated extends PlaceEvent
     private $theme = null;
 
     /**
-     * @var Address
+     * @var Location
      */
-    private $address;
+    private $location;
 
     /**
      * @var CalendarInterface
@@ -43,17 +48,16 @@ class PlaceCreated extends PlaceEvent
     /**
      * @param string $eventId
      * @param Title $title
-     * @param Address $address
-     * @param EventType $eventType
-     * @param CalendarInterface $calendar
+     * @param string $location
+     * @param DateTime $date
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
         parent::__construct($eventId);
 
         $this->title = $title;
         $this->eventType = $eventType;
-        $this->address = $address;
+        $this->location = $location;
         $this->calendar = $calendar;
         $this->theme = $theme;
     }
@@ -91,12 +95,13 @@ class PlaceCreated extends PlaceEvent
     }
 
     /**
-     * @return Address
+     * @return Location
      */
-    public function getAddress()
+    public function getLocation()
     {
-        return $this->address;
+        return $this->location;
     }
+
 
     /**
      * @return array
@@ -108,11 +113,11 @@ class PlaceCreated extends PlaceEvent
             $theme = $this->getTheme()->serialize();
         }
         return parent::serialize() + array(
-          'title' => (string) $this->getTitle(),
-          'event_type' => $this->getEventType()->serialize(),
-          'theme' => $theme,
-          'address' => $this->getAddress()->serialize(),
-          'calendar' => $this->getCalendar()->serialize(),
+            'title' => (string)$this->getTitle(),
+            'event_type' => $this->getEventType()->serialize(),
+            'theme' => $theme,
+            'location' => $this->getLocation()->serialize(),
+            'calendar' => $this->getCalendar()->serialize(),
         );
     }
 
@@ -126,7 +131,12 @@ class PlaceCreated extends PlaceEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-             $data['place_id'], new Title($data['title']), EventType::deserialize($data['event_type']), Address::deserialize($data['address']), \CultuurNet\UDB3\Calendar::deserialize($data['calendar'])
+            $data['event_id'],
+            new Title($data['title']),
+            EventType::deserialize($data['event_type']),
+            Location::deserialize($data['location']),
+            Calendar::deserialize($data['calendar']),
+            $theme
         );
     }
 }

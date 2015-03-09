@@ -24,8 +24,6 @@ use CultureFeed_Cdb_Data_Organiser;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\Search\Parameter\Query;
-use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -36,9 +34,6 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
-use CultuurNet\UDB3\OrganizerService;
-use CultuurNet\UDB3\PlaceService;
-use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use XMLReader;
@@ -60,11 +55,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     protected $decoratee;
 
     /**
-     * @var SearchServiceInterface
-     */
-    protected $search;
-
-    /**
      * @var EntryAPIImprovedFactory
      */
     protected $entryAPIImprovedFactory;
@@ -78,7 +68,6 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      * @var OrganizerService
      */
     protected $organizerService;
-
     /**
      * @var PlaceService
      */
@@ -89,23 +78,28 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      */
     private $eventStreamDecorators = array();
 
+    /**
+     * @var EventImporterInterface
+     */
+    protected $eventImporter;
+
     private $aggregateClass;
 
     public function __construct(
         RepositoryInterface $decoratee,
-        SearchServiceInterface $search,
         EntryAPIImprovedFactory $entryAPIImprovedFactory,
+        EventImporterInterface $eventImporter,
         PlaceService $placeService,
         OrganizerService $organizerService,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;
-        $this->search = $search;
         $this->entryAPIImprovedFactory = $entryAPIImprovedFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
         $this->organizerService = $organizerService;
         $this->placeService = $placeService;
         $this->aggregateClass = Event::class;
+        $this->eventImporter = $eventImporter;
     }
 
     public function syncBackOn()
@@ -291,91 +285,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         try {
             $event = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
-            // @todo Use Entry API instead of search service.
-            $results = $this->search->search(
-                [new Query('cdbid:' . $id)]
-            );
-
-            $cdbXml = $results->getBody(true);
-
-            $reader = new XMLReader();
-
-            $reader->xml($cdbXml);
-
-            while ($reader->read()) {
-                switch ($reader->nodeType) {
-                    case ($reader::ELEMENT):
-                        if ($reader->localName == "event" &&
-                            $reader->getAttribute('cdbid') == $id
-                        ) {
-                            $node = $reader->expand();
-                            $dom = new \DomDocument('1.0');
-                            $n = $dom->importNode($node, true);
-                            $dom->appendChild($n);
-                            $eventXml = $dom->saveXML();
-                        }
-                }
-            }
-
-            if (!isset($eventXml)) {
-                throw AggregateNotFoundException::create($id);
-            }
-
-            $udb2Event = EventItemFactory::createEventFromCdbXml(
-                CultureFeed_Cdb_Default::CDB_SCHEME_URL,
-                $eventXml
-            );
-            $this->importDependencies($udb2Event);
-
-            $event = Event::importFromUDB2(
-                $id,
-                $eventXml,
-                CultureFeed_Cdb_Default::CDB_SCHEME_URL
-            );
-
-            $this->add($event);
+            $event = $this->eventImporter->createEventFromUDB2($id);
         }
 
         return $event;
-    }
-
-    private function importDependencies(CultureFeed_Cdb_Item_Event $udb2Event)
-    {
-        $location = $udb2Event->getLocation();
-        try {
-            if ($location && $location->getCdbid()) {
-                // Loading the place will implicitly import it, or throw an error
-                // if the place is not known.
-                $this->placeService->getEntity($location->getCdbid());
-            }
-        } catch (EntityNotFoundException $e) {
-            if ($this->logger) {
-                $this->logger->error(
-                    "Unable to retrieve location with ID {$location->getCdbid(
-                    )}, of event {$udb2Event->getCdbId()}."
-                );
-            } else {
-                throw $e;
-            }
-        }
-
-        $organizer = $udb2Event->getOrganiser();
-        try {
-            if ($organizer && $organizer->getCdbid()) {
-                // Loading the organizer will implicitly import it, or throw an error
-                // if the organizer is not known.
-                $this->organizerService->getEntity($organizer->getCdbid());
-            }
-        } catch (EntityNotFoundException $e) {
-            if ($this->logger) {
-                $this->logger->error(
-                    "Unable to retrieve organizer with ID {$organizer->getCdbid(
-                    )}, of event {$udb2Event->getCdbId()}."
-                );
-            } else {
-                throw $e;
-            }
-        }
     }
 
     /**

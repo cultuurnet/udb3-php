@@ -5,16 +5,20 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
+use Broadway\EventHandling\EventListenerInterface;
+use Broadway\ReadModel\RepositoryInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
-class Projector extends Udb3Projector
+class Projector implements EventListenerInterface
 {
+    use DelegateEventHandlingToSpecificMethodTrait;
+
     /**
      * @var RepositoryInterface
      */

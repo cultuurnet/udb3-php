@@ -3,22 +3,19 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Events;
 
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 
-class EventImportedFromUDB2 extends EventEvent
+class EventUpdatedFromUDB2 extends EventEvent
 {
     use HasCdbXmlTrait;
 
-    /**
-     * @param string $eventId
-     * @param string $cdbXml
-     * @param string $cdbXmlNamespaceUri
-     */
     public function __construct($eventId, $cdbXml, $cdbXmlNamespaceUri)
     {
         parent::__construct($eventId);
+
         $this->setCdbXml($cdbXml);
         $this->setCdbXmlNamespaceUri($cdbXmlNamespaceUri);
     }

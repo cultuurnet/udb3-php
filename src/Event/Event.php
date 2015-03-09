@@ -3,7 +3,10 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -185,5 +188,16 @@ class Event extends EventSourcedAggregateRoot
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)
     {
+    }
+
+    public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
+    {
+        $this->apply(
+            new EventUpdatedFromUDB2(
+                $this->eventId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
     }
 }

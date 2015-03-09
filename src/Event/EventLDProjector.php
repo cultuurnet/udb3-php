@@ -7,11 +7,13 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessageInterface;
+use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
@@ -20,18 +22,22 @@ use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
-use CultuurNet\UDB3\ReadModel\Udb3Projector;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
-class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, OrganizerServiceInterface
+class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
+    use DelegateEventHandlingToSpecificMethodTrait;
+
     /**
      * @var DocumentRepositoryInterface
      */
@@ -145,12 +151,42 @@ class EventLDProjector extends Udb3Projector implements PlaceServiceInterface, O
     public function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
+        $this->applyEventCdbXml(
+            $eventImportedFromUDB2->getEventId(),
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
             $eventImportedFromUDB2->getCdbXml()
         );
+    }
 
-        $document = $this->newDocument($eventImportedFromUDB2->getEventId());
+    /**
+     * @param EventUpdatedFromUDB2 $eventUpdatedFromUDB2
+     */
+    public function applyEventUpdatedFromUDB2(
+        EventUpdatedFromUDB2 $eventUpdatedFromUDB2
+    ) {
+        $this->applyEventCdbXml(
+            $eventUpdatedFromUDB2->getEventId(),
+            $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $eventUpdatedFromUDB2->getCdbXml()
+        );
+    }
+
+    /**
+     * @param string $eventId
+     * @param string $cdbXmlNamespareUri
+     * @param string $cdbXml
+     */
+    protected function applyEventCdbXml(
+        $eventId,
+        $cdbXmlNamespareUri,
+        $cdbXml
+    ) {
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $cdbXmlNamespareUri,
+            $cdbXml
+        );
+
+        $document = $this->newDocument($eventId);
         $eventLd = $document->getBody();
 
         $eventLd = $this->cdbXMLImporter->documentWithCdbXML(

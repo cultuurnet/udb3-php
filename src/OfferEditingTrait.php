@@ -84,4 +84,19 @@ trait OfferEditingTrait
             new $commandClass($id, $organizerId)
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateContactPoint($id, ContactPoint $contactPoint) {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('updateContactPoint');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $contactPoint)
+        );
+
+    }
 }

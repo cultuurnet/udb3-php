@@ -5,6 +5,8 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -182,6 +184,18 @@ class Event extends EventSourcedAggregateRoot
     public function deleteOrganizer($organizerId)
     {
         $this->apply(new OrganizerDeleted($this->eventId, $organizerId));
+    }
+
+    /**
+     * Updated the contact info.
+     *
+     * @param array $phones
+     * @param array $emails
+     * @param array $urls
+     */
+    public function updateContactPoint(ContactPoint $contactPoint)
+    {
+        $this->apply(new ContactPointUpdated($this->eventId, $contactPoint));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

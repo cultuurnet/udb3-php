@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
@@ -65,6 +66,14 @@ interface EventEditingServiceInterface
      * @param string $organizerId
      */
     public function deleteOrganizer($id, $organizerId);
+
+    /**
+     * Update the contact point of an event.
+     *
+     * @param string $id
+     * @param ContactPoint $contactPoint
+     */
+    public function updateContactPoint($id, ContactPoint $contactPoint);
 
     /**
      * @param string $eventId

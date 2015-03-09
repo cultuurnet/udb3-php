@@ -6,6 +6,7 @@ namespace CultuurNet\UDB3\Place;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
@@ -90,6 +91,23 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 
         $place->deleteOrganizer(
             $deleteOrganizer->getOrganizerId()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
+    /**
+     * Handle an update command to updated the contact point.
+     */
+    public function handleUpdateContactPoint(UpdateContactPoint $updateContactPoint)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($updateContactPoint->getId());
+
+        $place->updateContactPoint(
+            $updateContactPoint->getContactPoint()
         );
 
         $this->placeRepository->add($place);

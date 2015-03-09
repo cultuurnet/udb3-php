@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Title;
 
@@ -57,4 +58,13 @@ interface PlaceEditingServiceInterface
      * @param string $organizerId
      */
     public function deleteOrganizer($id, $organizerId);
+
+    /**
+     * Update the contact info of a place.
+     *
+     * @param string $id
+     * @param ContactPoint $contactPoint
+     */
+    public function updateContactPoint($id, ContactPoint $contactPoint);
+
 }

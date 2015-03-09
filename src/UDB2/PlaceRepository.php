@@ -19,11 +19,15 @@ use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
+use CultureFeed_Cdb_Data_Mail;
 use CultureFeed_Cdb_Data_Organiser;
+use CultureFeed_Cdb_Data_Phone;
+use CultureFeed_Cdb_Data_Url;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -153,6 +157,13 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case OrganizerDeleted::class:
                         $this->applyOrganizerDeleted(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ContactPointUpdated::class:
+                        $this->applyContactPointUpdated(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -329,6 +340,44 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getPlaceId());
         $event->deleteOrganiser();
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Updated the contact info in udb2.
+     *
+     * @param ContactPointUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyContactPointUpdated(
+        ContactPointUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+        $contactPoint = $domainEvent->getContactPoint();
+
+        $contactInfo = $event->getContactInfo();
+        $phones = $contactPoint->getPhones();
+        foreach ($phones as $phone) {
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
+        }
+
+        $contactInfo->deleteUrls();
+        $urls = $contactPoint->getUrls();
+        foreach ($urls as $url) {
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
+        }
+
+        $contactInfo->deleteMails();
+        $emails = $contactPoint->getEmails();
+        foreach ($emails as $email) {
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
+        }
+        $event->setContactInfo($contactInfo);
 
         $entryApi->updateEvent($event);
 

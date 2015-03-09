@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -314,6 +315,27 @@ class PlaceLDProjector extends ActorLDProjector
         $placeLd = $document->getBody();
 
         unset($placeLd->organizer);
+
+        $this->repository->save($document->withBody($placeLd));
+    }
+
+    /**
+     * Apply the contact point updated event to the event repository.
+     * @param ContactInfoUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($contactPointUpdated);
+
+        $placeLd = $document->getBody();
+
+        $contactPoint = isset($placeLd->contactPoint) ? $placeLd->contactPoint : new \stdClass();
+        $contactPoint->phone = $contactPointUpdated->getContactPoint()->getPhones();
+        $contactPoint->email = $contactPointUpdated->getContactPoint()->getEmails();
+        $contactPoint->url = $contactPointUpdated->getContactPoint()->getUrls();
+
+        $placeLd->contactPoint = $contactPoint;
 
         $this->repository->save($document->withBody($placeLd));
     }

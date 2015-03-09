@@ -23,7 +23,6 @@ use CultureFeed_Cdb_Data_Location;
 use CultureFeed_Cdb_Data_Organiser;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
-use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -34,9 +33,10 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventWasTagged;
 use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\PlaceService;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use XMLReader;
 
 /**
  * Repository decorator that first updates UDB2.

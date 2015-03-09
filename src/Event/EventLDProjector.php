@@ -26,12 +26,10 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface

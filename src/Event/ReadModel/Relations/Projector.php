@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
-use Broadway\ReadModel\RepositoryInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;

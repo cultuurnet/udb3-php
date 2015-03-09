@@ -142,12 +142,12 @@ trait Udb2UtilityTrait
             $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
             $startdate = strtotime($eventCalendar->getStartDate());
             $enddate = strtotime($eventCalendar->getEndDate());
-            $startHour = date('H:i', $startdate);
-            if ($startHour == '00:00') {
+            $startHour = date('H:i:s', $startdate);
+            if ($startHour == '00:00:00') {
                 $startHour = null;
             }
-            $endHour = date('H:i', $enddate);
-            if ($endHour == '00:00') {
+            $endHour = date('H:i:s', $enddate);
+            if ($endHour == '00:00:00') {
                 $endHour = null;
             }
             $calendar->add(

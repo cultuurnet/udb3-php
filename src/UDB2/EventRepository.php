@@ -14,17 +14,23 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultureFeed_Cdb_Data_Address;
 use CultureFeed_Cdb_Data_Address_PhysicalAddress;
+use CultureFeed_Cdb_Data_Calendar_BookingPeriod;
 use CultureFeed_Cdb_Data_Category;
 use CultureFeed_Cdb_Data_CategoryList;
 use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
+use CultureFeed_Cdb_Data_Mail;
 use CultureFeed_Cdb_Data_Organiser;
+use CultureFeed_Cdb_Data_Phone;
+use CultureFeed_Cdb_Data_Url;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
@@ -201,6 +207,20 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
                         break;
 
+                    case ContactPointUpdated::class:
+                        $this->applyContactPointUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case BookingInfoUpdated::class:
+                        $this->applyBookingInfoUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
                     default:
                         // Ignore any other actions
                 }
@@ -286,6 +306,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $event = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
             $event = $this->eventImporter->createEventFromUDB2($id);
+
+            if (!$event) {
+                throw new AggregateNotFoundException($id);
+            }
         }
 
         return $event;
@@ -418,6 +442,78 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
         $event->deleteOrganiser();
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Updated the contact info in udb2.
+     *
+     * @param ContactPointUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyContactPointUpdated(
+        ContactPointUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $contactPoint = $domainEvent->getContactPoint();
+
+        $contactInfo = $event->getContactInfo();
+        $contactInfo->deletePhones();
+
+        $phones = $contactPoint->getPhones();
+        foreach ($phones as $phone) {
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
+        }
+
+        $contactInfo->deleteUrls();
+        $urls = $contactPoint->getUrls();
+        foreach ($urls as $url) {
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
+        }
+
+        $contactInfo->deleteMails();
+        $emails = $contactPoint->getEmails();
+        foreach ($emails as $email) {
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
+        }
+        $event->setContactInfo($contactInfo);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Updated the booking info in udb2.
+     *
+     * @param BookingInfoUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyBookingInfoUpdated(
+        BookingInfoUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $bookingInfo = $domainEvent->getBookingInfo();
+
+        $bookingPeriod = $event->getBookingPeriod();
+        if (empty($bookingPeriod)) {
+            $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
+        }
+
+        if (!empty($bookingInfo->availabilityStarts)) {
+            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
+        }
+        if (!empty($bookingInfo->availabilityEnds)) {
+            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
+        }
+        $event->setBookingPeriod($bookingPeriod);
 
         $entryApi->updateEvent($event);
 

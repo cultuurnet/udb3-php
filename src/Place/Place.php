@@ -9,9 +9,14 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -89,6 +94,36 @@ class Place extends Actor
     public function deleteOrganizer($organizerId)
     {
         $this->apply(new OrganizerDeleted($this->actorId, $organizerId));
+    }
+
+    /**
+     * Updated the contact point.
+     *
+     * @param ContactPoint $contactPoint
+     */
+    public function updateContactPoint(ContactPoint $contactPoint)
+    {
+        $this->apply(new ContactPointUpdated($this->actorId, $contactPoint));
+    }
+    
+    /**
+     * Updated the booking info.
+     *
+     * @param BookingInfo $bookingInfo
+     */
+    public function updateBookingInfo(BookingInfo $bookingInfo)
+    {
+        $this->apply(new BookingInfoUpdated($this->actorId, $bookingInfo));
+    }
+
+    /**
+     * Update the facilities.
+     *
+     * @param array $facilities
+     */
+    public function updateFacilities(array $facilities)
+    {
+        $this->apply(new FacilitiesUpdated($this->actorId, $facilities));
     }
 
     /**

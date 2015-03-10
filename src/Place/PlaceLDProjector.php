@@ -21,15 +21,21 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use stdClass;
 
 class PlaceLDProjector extends ActorLDProjector
 {
@@ -62,12 +68,12 @@ class PlaceLDProjector extends ActorLDProjector
     /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
-     * @param OrganizerService $organiserService
+     * @param OrganizerServiceInterface $organiserService
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        OrganizerService $organizerService,
+        OrganizerServiceInterface $organizerService,
         EventBusInterface $eventBus
     ) {
         $this->repository = $repository;
@@ -265,6 +271,22 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
+     * Apply the booking info updated event to the event repository.
+     * @param BookingInfoUpdated $bookingInfoUpdated
+     */
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
+
+        $placeLD = $document->getBody();
+        $placeLD->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
+
+        $this->repository->save($document->withBody($placeLD));
+
+    }
+
+    /**
      * Apply the typical age range updated event to the event repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
@@ -316,6 +338,62 @@ class PlaceLDProjector extends ActorLDProjector
         unset($placeLd->organizer);
 
         $this->repository->save($document->withBody($placeLd));
+    }
+
+    /**
+     * Apply the contact point updated event to the event repository.
+     * @param ContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($contactPointUpdated);
+
+        $placeLd = $document->getBody();
+
+        $contactPoint = isset($placeLd->contactPoint) ? $placeLd->contactPoint : new stdClass();
+        $contactPoint->phone = $contactPointUpdated->getContactPoint()->getPhones();
+        $contactPoint->email = $contactPointUpdated->getContactPoint()->getEmails();
+        $contactPoint->url = $contactPointUpdated->getContactPoint()->getUrls();
+
+        $placeLd->contactPoint = $contactPoint;
+
+        $this->repository->save($document->withBody($placeLd));
+    }
+
+    /**
+     * Apply the facilitiesupdated event to the event repository.
+     * @param FacilitiesUpdated $facilitiesUpdated
+     */
+    protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
+
+        $placeLd = $document->getBody();
+
+        $terms = isset($placeLd->terms) ? $placeLd->terms : array();
+
+        // Remove all old facilities.
+        foreach ($terms as $key => $term) {
+            if ($term->domain === Facility::DOMAIN) {
+                unset($terms[$key]);
+            }
+        }
+
+        // Add the new facilities.
+        foreach ($facilitiesUpdated->getFacilities() as $facility) {
+            $terms[] = [
+                'label' => $facility->getLabel(),
+                'domain' => $facility->getDomain(),
+                'id' => $facility->getId()
+            ];
+        }
+
+        $placeLd->terms = $terms;
+
+        $this->repository->save($document->withBody($placeLd));
+
     }
 
     /**

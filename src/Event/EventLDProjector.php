@@ -11,6 +11,8 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -31,6 +33,7 @@ use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use stdClass;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -457,6 +460,44 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         unset($eventLd->organizer);
 
         $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the contact info updated event to the event repository.
+     * @param ContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($contactPointUpdated);
+
+        $eventLd = $document->getBody();
+
+        $contactPoint = isset($eventLd->contactPoint) ? $eventLd->contactPoint : new stdClass();
+
+        $contactPoint->phone = $contactPointUpdated->getContactPoint()->getPhones();
+        $contactPoint->email = $contactPointUpdated->getContactPoint()->getEmails();
+        $contactPoint->url = $contactPointUpdated->getContactPoint()->getUrls();
+
+        $eventLd->contactPoint = $contactPoint;
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the booking info updated event to the event repository.
+     * @param BookingInfoUpdated $bookingInfoUpdated
+     */
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
+
+        $this->repository->save($document->withBody($eventLd));
+
     }
 
     /**

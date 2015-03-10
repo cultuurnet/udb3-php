@@ -19,12 +19,19 @@ use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
+use CultureFeed_Cdb_Data_Mail;
 use CultureFeed_Cdb_Data_Organiser;
+use CultureFeed_Cdb_Data_Phone;
+use CultureFeed_Cdb_Data_Url;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -153,6 +160,27 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case OrganizerDeleted::class:
                         $this->applyOrganizerDeleted(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ContactPointUpdated::class:
+                        $this->applyContactPointUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case BookingInfoUpdated::class:
+                        $this->applyBookingInfoUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case FacilitiesUpdated::class:
+                        $this->applyFacilitiesUpdated(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -329,6 +357,106 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getPlaceId());
         $event->deleteOrganiser();
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Updated the contact info in udb2.
+     *
+     * @param ContactPointUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyContactPointUpdated(
+        ContactPointUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+        $contactPoint = $domainEvent->getContactPoint();
+
+        $contactInfo = $event->getContactInfo();
+        $phones = $contactPoint->getPhones();
+        foreach ($phones as $phone) {
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
+        }
+
+        $contactInfo->deleteUrls();
+        $urls = $contactPoint->getUrls();
+        foreach ($urls as $url) {
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
+        }
+
+        $contactInfo->deleteMails();
+        $emails = $contactPoint->getEmails();
+        foreach ($emails as $email) {
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
+        }
+        $event->setContactInfo($contactInfo);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Updated the booking info in udb2.
+     *
+     * @param BookingInfoUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyBookingInfoUpdated(
+        BookingInfoUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $bookingInfo = $domainEvent->getBookingInfo();
+
+        $bookingPeriod = $event->getBookingPeriod();
+        if (empty($bookingPeriod)) {
+            $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
+        }
+
+        if (!empty($bookingInfo->availabilityStarts)) {
+            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
+        }
+        if (!empty($bookingInfo->availabilityEnds)) {
+            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
+        }
+        $event->setBookingPeriod($bookingPeriod);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the facilitiesupdated event to udb2.
+     * @param FacilitiesUpdated $facilitiesUpdated
+     */
+    private function applyFacilitiesUpdated(
+        FacilitiesUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+
+        $cdbCategories = $event->getCategories();
+
+        // Remove all old facilities.
+        foreach ($cdbCategories as $key => $category) {
+            if ($category->getType() == Facility::DOMAIN) {
+                unset($cdbCategories[$key]);
+            }
+        }
+
+        // Add the new facilities.
+        foreach ($domainEvent->getFacilities() as $facility) {
+            $cdbCategories->add(new \CultureFeed_Cdb_Data_Category(Facility::DOMAIN, $facility->getId(), $facility->getLabel()));
+        }
 
         $entryApi->updateEvent($event);
 

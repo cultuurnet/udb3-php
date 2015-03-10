@@ -8,16 +8,17 @@ namespace CultuurNet\UDB3\UDB2;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use Broadway\ReadModel\InMemory\InMemoryRepository;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventRepository;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\Event\Title;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\Title;
 
 class EventImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -106,13 +107,11 @@ class EventImporterTest extends \PHPUnit_Framework_TestCase
         $event = Event::create(
             $cdbId,
             new Title('Infodag Sint-Lukas Brussel'),
-            '7914ed2d-9f28-4946-b9bd-ae8f7a4aea22',
-            new \DateTime(),
-            new EventType(
-                '0.12.0.0.0',
-                'Opendeurdag'
-            )
+            new EventType('0.12.0.0.0', 'Opendeurdag'),
+            new Location('7914ed2d-9f28-4946-b9bd-ae8f7a4aea22', 'LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('single', '2015-01-26T13:25:21+01:00')
         );
+
         $this->repository->add($event);
 
         $eventXml = file_get_contents(

@@ -483,6 +483,22 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
+     * Apply the booking info updated event to the event repository.
+     * @param BookingInfoUpdated $bookingInfoUpdated
+     */
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated) 
+    {
+      
+        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
+
+        $this->repository->save($document->withBody($eventLd));
+        
+    }
+
+    /**
      * @param string $id
      * @return JsonDocument
      */

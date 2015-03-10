@@ -266,6 +266,22 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
+     * Apply the booking info updated event to the event repository.
+     * @param BookingInfoUpdated $bookingInfoUpdated
+     */
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated) 
+    {
+      
+        $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
+
+        $placeLD = $document->getBody();
+        $placeLD->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
+
+        $this->repository->save($document->withBody($placeLD));
+        
+    }
+
+    /**
      * Apply the typical age range updated event to the event repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */

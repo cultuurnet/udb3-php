@@ -9,9 +9,11 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
@@ -102,6 +104,16 @@ class Place extends Actor
     public function updateContactPoint(ContactPoint $contactPoint)
     {
         $this->apply(new ContactPointUpdated($this->actorId, $contactPoint));
+    }
+    
+    /**
+     * Updated the booking info.
+     *
+     * @param BookingInfo $bookingInfo
+     */
+    public function updateBookingInfo(BookingInfo $bookingInfo)
+    {
+        $this->apply(new BookingInfoUpdated($this->actorId, $bookingInfo));
     }
 
     /**

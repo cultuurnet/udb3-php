@@ -99,4 +99,19 @@ trait OfferEditingTrait
         );
 
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateBookingInfo($id, BookingInfo $bookingInfo) {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('UpdateBookingInfo');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $bookingInfo)
+        );
+
+    }
 }

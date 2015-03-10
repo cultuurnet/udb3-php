@@ -24,6 +24,7 @@ use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
@@ -33,6 +34,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use stdClass;
 
 class PlaceLDProjector extends ActorLDProjector
 {
@@ -348,7 +350,7 @@ class PlaceLDProjector extends ActorLDProjector
 
         $placeLd = $document->getBody();
 
-        $contactPoint = isset($placeLd->contactPoint) ? $placeLd->contactPoint : new \stdClass();
+        $contactPoint = isset($placeLd->contactPoint) ? $placeLd->contactPoint : new stdClass();
         $contactPoint->phone = $contactPointUpdated->getContactPoint()->getPhones();
         $contactPoint->email = $contactPointUpdated->getContactPoint()->getEmails();
         $contactPoint->url = $contactPointUpdated->getContactPoint()->getUrls();

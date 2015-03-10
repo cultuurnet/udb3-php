@@ -6,6 +6,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
@@ -266,6 +267,23 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
         $event->updateContactPoint(
             $updateContactPoint->getContactPoint()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update command to updated the booking info.
+     */
+    public function handleUpdateBookingInfo(UpdateBookingInfo $updateBookingInfo)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateBookingInfo->getId());
+
+        $event->updateBookingInfo(
+            $updateBookingInfo->getBookingInfo()
         );
 
         $this->eventRepository->add($event);

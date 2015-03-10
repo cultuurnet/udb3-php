@@ -297,6 +297,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $event = $this->decoratee->load($id);
         } catch (AggregateNotFoundException $e) {
             $event = $this->eventImporter->createEventFromUDB2($id);
+
+            if (!$event) {
+                throw new AggregateNotFoundException($id);
+            }
         }
 
         return $event;

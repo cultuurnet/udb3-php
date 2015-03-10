@@ -48,7 +48,7 @@ trait OfferEditingTrait
 
         $this->guardId($id);
 
-        $commandClass = $this->getCommandClass('updateTypicalAgeRange');
+        $commandClass = $this->getCommandClass('UpdateTypicalAgeRange');
 
         return $this->commandBus->dispatch(
             new $commandClass($id, $ageRange)
@@ -63,7 +63,7 @@ trait OfferEditingTrait
 
         $this->guardId($id);
 
-        $commandClass = $this->getCommandClass('updateOrganizer');
+        $commandClass = $this->getCommandClass('UpdateOrganizer');
 
         return $this->commandBus->dispatch(
             new $commandClass($id, $organizerId)
@@ -78,7 +78,7 @@ trait OfferEditingTrait
 
         $this->guardId($id);
 
-        $commandClass = $this->getCommandClass('deleteOrganizer');
+        $commandClass = $this->getCommandClass('DeleteOrganizer');
 
         return $this->commandBus->dispatch(
             new $commandClass($id, $organizerId)

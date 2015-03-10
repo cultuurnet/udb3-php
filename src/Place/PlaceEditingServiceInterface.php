@@ -67,4 +67,12 @@ interface PlaceEditingServiceInterface
      */
     public function updateContactPoint($id, ContactPoint $contactPoint);
 
+    /**
+     * Update the facilities for a place.
+     * 
+     * @param string $id
+     * @param array $facilities
+     */
+    public function updateFacilities($id, array $facilities);
+
 }

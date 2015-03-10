@@ -26,9 +26,11 @@ use CultureFeed_Cdb_Data_Url;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -164,6 +166,13 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case ContactPointUpdated::class:
                         $this->applyContactPointUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case FacilitiesUpdated::class:
+                        $this->applyFacilitiesUpdated(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -378,6 +387,37 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
             $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
         }
         $event->setContactInfo($contactInfo);
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the facilitiesupdated event to udb2.
+     * @param FacilitiesUpdated $facilitiesUpdated
+     */
+    private function applyFacilitiesUpdated(
+        FacilitiesUpdated $domainEvent,
+        Metadata $metadata
+    )
+    {
+return;
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+
+        $cdbCategories = $event->getCategories();
+
+        // Remove all old facilities.
+        foreach ($cdbCategories as $key => $category) {
+            if ($category->getType() == Facility::DOMAIN) {
+                unset($cdbCategories[$key]);
+            }
+        }
+
+        // Add the new facilities.
+        foreach ($domainEvent->getFacilities() as $facility) {
+          $cdbCategories->add(new \CultureFeed_Cdb_Data_Category(Facility::DOMAIN, $facility->getId(), $facility->getLabel()));
+        }
 
         $entryApi->updateEvent($event);
 

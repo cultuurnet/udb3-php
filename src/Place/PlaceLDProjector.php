@@ -21,10 +21,12 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -337,7 +339,7 @@ class PlaceLDProjector extends ActorLDProjector
 
     /**
      * Apply the contact point updated event to the event repository.
-     * @param ContactInfoUpdated $contactPointUpdated
+     * @param ContactPointUpdated $contactPointUpdated
      */
     protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
@@ -354,6 +356,41 @@ class PlaceLDProjector extends ActorLDProjector
         $placeLd->contactPoint = $contactPoint;
 
         $this->repository->save($document->withBody($placeLd));
+    }
+
+    /**
+     * Apply the facilitiesupdated event to the event repository.
+     * @param FacilitiesUpdated $facilitiesUpdated
+     */
+    protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
+
+        $placeLd = $document->getBody();
+
+        $terms = isset($placeLd->terms) ? $placeLd->terms : array();
+
+        // Remove all old facilities.
+        foreach ($terms as $key => $term) {
+            if ($term->domain === Facility::DOMAIN) {
+                unset($terms[$key]);
+            }
+        }
+
+        // Add the new facilities.
+        foreach ($facilitiesUpdated->getFacilities() as $facility) {
+          $terms[] = [
+              'label' => $facility->getLabel(),
+              'domain' => $facility->getDomain(),
+              'id' => $facility->getId()
+          ];
+        }
+
+        $placeLd->terms = $terms;
+
+        $this->repository->save($document->withBody($placeLd));
+
     }
 
     /**

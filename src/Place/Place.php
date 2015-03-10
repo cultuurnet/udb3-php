@@ -14,6 +14,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -101,6 +102,16 @@ class Place extends Actor
     public function updateContactPoint(ContactPoint $contactPoint)
     {
         $this->apply(new ContactPointUpdated($this->actorId, $contactPoint));
+    }
+
+    /**
+     * Update the facilities.
+     *
+     * @param array $facilities
+     */
+    public function updateFacilities(array $facilities)
+    {
+        $this->apply(new FacilitiesUpdated($this->actorId, $facilities));
     }
 
     /**

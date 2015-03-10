@@ -16,8 +16,8 @@ use CultuurNet\Entry\EntryAPI;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventCreated;
-use CultuurNet\UDB3\Event\EventWasTagged;
-use CultuurNet\UDB3\Event\TagErased;
+use CultuurNet\UDB3\Event\EventWasLabelled;
+use CultuurNet\UDB3\Event\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -102,17 +102,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             foreach ($eventStream as $domainMessage) {
                 $domainEvent = $domainMessage->getPayload();
                 switch (get_class($domainEvent)) {
-                    case EventWasTagged::class:
-                        /** @var EventWasTagged $domainEvent */
-                        $this->applyEventWasTagged(
+                    case EventWasLabelled::class:
+                        /** @var EventWasLabelled $domainEvent */
+                        $this->applyEventWasLabelled(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
                         break;
 
-                    case TagErased::class:
-                        /** @var TagErased $domainEvent */
-                        $this->applyTagErased(
+                    case Unlabelled::class:
+                        /** @var Unlabelled $domainEvent */
+                        $this->applyUnlabelled(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -148,25 +148,25 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $this->decoratee->add($aggregate);
     }
 
-    private function applyEventWasTagged(
-        EventWasTagged $tagged,
+    private function applyEventWasLabelled(
+        EventWasLabelled $labelled,
         Metadata $metadata
     ) {
         $this->createImprovedEntryAPIFromMetadata($metadata)
             ->addKeyword(
-                $tagged->getEventId(),
-                $tagged->getKeyword()
+                $labelled->getEventId(),
+                $labelled->getLabel()
             );
     }
 
-    private function applyTagErased(
-        TagErased $tagErased,
+    private function applyUnlabelled(
+        Unlabelled $unlabelled,
         Metadata $metadata
     ) {
         $this->createImprovedEntryAPIFromMetadata($metadata)
             ->deleteKeyword(
-                $tagErased->getEventId(),
-                $tagErased->getKeyword()
+                $unlabelled->getEventId(),
+                $unlabelled->getLabel()
             );
     }
 

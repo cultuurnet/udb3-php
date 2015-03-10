@@ -5,6 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-class Keyword extends \CultuurNet\Entry\Keyword
+class Label extends \CultuurNet\Entry\Label
 {
 }

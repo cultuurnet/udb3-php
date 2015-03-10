@@ -276,29 +276,29 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * @param EventWasTagged $eventTagged
+     * @param EventWasLabelled $eventLabeller
      */
-    protected function applyEventWasTagged(EventWasTagged $eventTagged)
+    protected function applyEventWasLabelled(EventWasLabelled $eventLabeller)
     {
-        $document = $this->loadDocumentFromRepository($eventTagged);
+        $document = $this->loadDocumentFromRepository($eventLabeller);
 
         $eventLd = $document->getBody();
-        // TODO: Check if the event is already tagged with the keyword?
-        $eventLd->concept[] = (string)$eventTagged->getKeyword();
+        // TODO: Check if the event is already has this label?
+        $eventLd->concept[] = (string)$eventLabeller->getLabel();
 
         $this->repository->save($document->withBody($eventLd));
     }
 
-    public function applyTagErased(TagErased $tagErased)
+    public function applyUnlabelled(Unlabelled $unlabelled)
     {
-        $document = $this->loadDocumentFromRepository($tagErased);
+        $document = $this->loadDocumentFromRepository($unlabelled);
 
         $eventLd = $document->getBody();
 
         $eventLd->concept = array_filter(
             $eventLd->concept,
-            function ($keyword) use ($tagErased) {
-                return $keyword !== (string)$tagErased->getKeyword();
+            function ($label) use ($unlabelled) {
+                return $label !== (string)$unlabelled->getLabel();
             }
         );
         // Ensure array keys start with 0 so json_encode() does encode it

@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
-class Tag
+class Unlabel
 {
     /**
      * @var string
@@ -15,13 +15,13 @@ class Tag
     protected $eventId;
 
     /**
-     * @var Keyword
+     * @var Label
      */
-    protected $keyword;
+    protected $label;
 
-    public function __construct($eventId, Keyword $keyword)
+    public function __construct($eventId, Label $label)
     {
-        $this->keyword = $keyword;
+        $this->label = $label;
         $this->eventId = $eventId;
     }
 
@@ -34,10 +34,10 @@ class Tag
     }
 
     /**
-     * @return Keyword
+     * @return Label
      */
-    public function getKeyword()
+    public function getLabel()
     {
-        return $this->keyword;
+        return $this->label;
     }
 }

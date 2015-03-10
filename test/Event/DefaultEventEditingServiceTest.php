@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
@@ -102,7 +102,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->tag($id, new Keyword('foo'));
+        $this->eventEditingService->label($id, new Label('foo'));
     }
 
     /**
@@ -116,7 +116,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->eraseTag($id, new Keyword('foo'));
+        $this->eventEditingService->unlabel($id, new Label('foo'));
     }
 
     private function setUpEventNotFound($id)

@@ -3,16 +3,16 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\UsedKeywordsMemory;
+namespace CultuurNet\UDB3\UsedLabelsMemory;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
-class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultUsedLabelsMemoryServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var DefaultUsedKeywordsMemoryService
+     * @var DefaultUsedLabelsMemoryService
      */
     protected $service;
 
@@ -27,7 +27,7 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->repository = $this->getMock(RepositoryInterface::class);
-        $this->service = new DefaultUsedKeywordsMemoryService(
+        $this->service = new DefaultUsedLabelsMemoryService(
             $this->repository
         );
     }
@@ -35,27 +35,27 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_remembers_keywords_per_user_in_a_repository()
+    public function it_remembers_labels_per_user_in_a_repository()
     {
         $userId = 1;
-        $keyword = new Keyword('classical rock');
+        $label = new Label('classical rock');
 
-        $usedKeywordsMemory = $this->getMock(UsedKeywordsMemory::class);
+        $usedLabelsMemory = $this->getMock(UsedLabelsMemory::class);
 
         $this->repository->expects($this->once())
             ->method('load')
             ->with($userId)
-            ->will($this->returnValue($usedKeywordsMemory));
+            ->will($this->returnValue($usedLabelsMemory));
 
-        $usedKeywordsMemory->expects($this->once())
-            ->method('keywordUsed')
-            ->with($keyword);
+        $usedLabelsMemory->expects($this->once())
+            ->method('labelUsed')
+            ->with($label);
 
         $this->repository->expects(($this->once()))
             ->method('add')
-            ->with($usedKeywordsMemory);
+            ->with($usedLabelsMemory);
 
-        $this->service->rememberKeywordUsed($userId, $keyword);
+        $this->service->rememberLabelUsed($userId, $label);
     }
 
     /**
@@ -64,7 +64,7 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     public function it_initiates_an_empty_memory_for_new_users()
     {
         $userId = 2;
-        $keyword = new Keyword('jazz');
+        $label = new Label('jazz');
 
         $this->repository->expects($this->once())
             ->method('load')
@@ -75,14 +75,14 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $expectedUsedKeywordsMemory = UsedKeywordsMemory::create($userId);
-        $expectedUsedKeywordsMemory->keywordUsed($keyword);
+        $expectedUsedLabelsMemory = UsedLabelsMemory::create($userId);
+        $expectedUsedLabelsMemory->labelUsed($label);
 
         $this->repository->expects($this->once())
             ->method('add')
-            ->with($expectedUsedKeywordsMemory);
+            ->with($expectedUsedLabelsMemory);
 
-        $this->service->rememberKeywordUsed($userId, $keyword);
+        $this->service->rememberLabelUsed($userId, $label);
     }
 
     /**
@@ -92,24 +92,24 @@ class DefaultUsedKeywordsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     {
         $userId = 3;
 
-        $expectedUsedKeywordsMemory = new UsedKeywordsMemory();
-        $expectedUsedKeywordsMemory->keywordUsed(new Keyword('foo'));
-        $expectedUsedKeywordsMemory->keywordUsed(new Keyword('bar'));
+        $expectedUsedLabelsMemory = new UsedLabelsMemory();
+        $expectedUsedLabelsMemory->labelUsed(new Label('foo'));
+        $expectedUsedLabelsMemory->labelUsed(new Label('bar'));
 
         $this->repository->expects($this->once())
             ->method('load')
             ->with($userId)
             ->will(
                 $this->returnValue(
-                    $expectedUsedKeywordsMemory
+                    $expectedUsedLabelsMemory
                 )
             );
 
-        $usedKeywordsMemory = $this->service->getMemory($userId);
+        $usedLabelsMemory = $this->service->getMemory($userId);
 
         $this->assertEquals(
-            $expectedUsedKeywordsMemory,
-            $usedKeywordsMemory
+            $expectedUsedLabelsMemory,
+            $usedLabelsMemory
         );
     }
 }

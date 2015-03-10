@@ -36,7 +36,7 @@ class StripHtmlStringFilter implements StringFilterInterface
      * @param string $string
      *   String to set newlines in.
      * @param string $tag
-     *   Tag name. For example "br" to set a newline after each "<br />" or "<br>" (if self-closing flag is set), or
+     *   Label name. For example "br" to set a newline after each "<br />" or "<br>" (if self-closing flag is set), or
      *   "p" to set a newline after each "</p>" (if not self-closing).
      * @param int $newlineCount
      *   Amount of newlines to set after the closing tag. If any newlines are set already, they will be removed.

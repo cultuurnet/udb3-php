@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\UsedKeywordsMemory;
+namespace CultuurNet\UDB3\UsedLabelsMemory;
 
 use Broadway\Serializer\SerializableInterface;
 

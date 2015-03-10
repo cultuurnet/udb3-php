@@ -178,12 +178,12 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->callback(
                     function ($jsonDocument) {
-                        $expectedKeywords = ['gent', 'Quiz', 'Gent on Files'];
+                        $expectedLabels = ['gent', 'Quiz', 'Gent on Files'];
                         $body = $jsonDocument->getBody();
                         return count(
                             array_diff(
-                                $expectedKeywords,
-                                (array)$body->keywords
+                                $expectedLabels,
+                                (array)$body->labels
                             )
                         ) == 0;
                     }
@@ -212,7 +212,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_does_not_add_an_empty_keywords_property()
+    public function it_does_not_add_an_empty_labels_property()
     {
         $event = $this->eventImportedFromUDB2(
             'event_without_keywords.cdbxml.xml'
@@ -226,7 +226,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                     function (JsonDocument $jsonDocument) {
                         $body = $jsonDocument->getBody();
 
-                        return !property_exists($body, 'keywords');
+                        return !property_exists($body, 'labels');
                     }
                 )
             );

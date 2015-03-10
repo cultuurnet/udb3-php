@@ -70,7 +70,7 @@ class CdbXMLImporter
 
         $this->importPicture($detail, $jsonLD);
 
-        $this->importKeywords($event, $jsonLD);
+        $this->importLabels($event, $jsonLD);
 
         $jsonLD->calendarSummary = $detail->getCalendarSummary();
 
@@ -78,7 +78,7 @@ class CdbXMLImporter
 
         $this->importOrganizer($event, $organizerManager, $jsonLD);
 
-        $this->importBookingInfo($detail, $jsonLD);
+        $this->importBookingInfo($event, $detail, $jsonLD);
 
         $this->importTerms($event, $jsonLD);
 
@@ -121,6 +121,19 @@ class CdbXMLImporter
     }
 
     /**
+     * @param $unixTime
+     * @return \DateTime
+     */
+    private function dateFromUdb2UnixTime($unixTime)
+    {
+        return \DateTime::createFromFormat(
+            'U',
+            $unixTime,
+            new \DateTimeZone('Europe/Brussels')
+        );
+    }
+
+    /**
      * @param \CultureFeed_Cdb_Data_EventDetail $languageDetail
      * @param \stdClass $jsonLD
      * @param string $language
@@ -145,9 +158,9 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Item_Event $event
      * @param $jsonLD
      */
-    private function importKeywords(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
+    private function importLabels(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
-        $keywords = array_filter(
+        $labels = array_filter(
             array_values($event->getKeywords()),
             function ($keyword) {
                 return (strlen(trim($keyword)) > 0);
@@ -155,10 +168,10 @@ class CdbXMLImporter
         );
         // Ensure keys are continuous after the filtering was applied, otherwise
         // JSON-encoding the array will result in an object.
-        $keywords = array_values($keywords);
+        $labels = array_values($labels);
 
-        if ($keywords) {
-            $jsonLD->keywords = $keywords;
+        if ($labels) {
+            $jsonLD->labels = $labels;
         }
     }
 
@@ -258,8 +271,11 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Data_EventDetail $detail
      * @param \stdClass $jsonLD
      */
-    private function importBookingInfo(\CultureFeed_Cdb_Data_EventDetail $detail, $jsonLD)
-    {
+    private function importBookingInfo(
+        \CultureFeed_Cdb_Item_Event $event,
+        \CultureFeed_Cdb_Data_EventDetail $detail,
+        $jsonLD
+    ) {
         $price = $detail->getPrice();
 
         if ($price) {
@@ -275,6 +291,13 @@ class CdbXMLImporter
             if ($price->getValue() !== null) {
                 $bookingInfo['currency'] = 'EUR';
                 $bookingInfo['price'] = floatval($price->getValue());
+            }
+            if ($bookingPeriod = $event->getBookingPeriod()) {
+                $startDate = $this->dateFromUdb2UnixTime($bookingPeriod->getDateFrom());
+                $endDate = $this->dateFromUdb2UnixTime($bookingPeriod->getDateTill());
+
+                $bookingInfo['availabilityStarts'] = $startDate->format('c');
+                $bookingInfo['availabilityEnds'] = $endDate->format('c');
             }
             $jsonLD->bookingInfo[] = $bookingInfo;
         }

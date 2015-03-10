@@ -11,13 +11,13 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\EventWasTagged;
+use CultuurNet\UDB3\Event\EventWasLabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Event\TagErased;
+use CultuurNet\UDB3\Event\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use DateTime as BaseDateTime;
 
@@ -264,9 +264,9 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_eventWasTagged()
     {
-        $eventWasTagged = new EventWasTagged(
+        $eventWasTagged = new EventWasLabelled(
             self::EVENT_ID_1,
-            new Keyword('foo')
+            new Label('foo')
         );
 
         $taggedDate = '2015-03-27T10:17:19.176169+02:00';
@@ -307,9 +307,9 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_tagErased()
     {
-        $tagErased = new TagErased(
+        $tagErased = new Unlabelled(
             self::EVENT_ID_1,
-            new Keyword('foo')
+            new Label('foo')
         );
 
         $tagErasedDate = '2015-03-27T10:17:19.176169+02:00';

@@ -3,9 +3,9 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\Entry\Label;
 
-class TagEvents
+class LabelEvents
 {
     /**
      * @var array
@@ -13,14 +13,14 @@ class TagEvents
     protected $eventIds;
 
     /**
-     * @var Keyword
+     * @var Label
      */
-    protected $keyword;
+    protected $label;
 
-    public function __construct($eventIds, Keyword $keyword)
+    public function __construct($eventIds, Label $label)
     {
         $this->eventIds = $eventIds;
-        $this->keyword = $keyword;
+        $this->label = $label;
     }
 
     public function getEventIds()
@@ -29,10 +29,10 @@ class TagEvents
     }
 
     /**
-     * @return Keyword
+     * @return Label
      */
-    public function getKeyword()
+    public function getLabel()
     {
-        return $this->keyword;
+        return $this->label;
     }
 }

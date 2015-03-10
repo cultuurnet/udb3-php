@@ -5,13 +5,13 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
 /**
- * The default event tagger service that uses an event service to validate ids
- * and a command bus to do the actual tagging.
+ * The default event labeller service that uses an event service to validate ids
+ * and a command bus to do the actual labelling.
  */
-class DefaultEventTaggerService implements EventTaggerServiceInterface
+class DefaultEventLabellerService implements EventLabellerServiceInterface
 {
     /**
      * @var EventServiceInterface
@@ -37,12 +37,12 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
 
     /**
      * {@inheritdoc}
-     * @return string The id of the command that's doing the tagging.
+     * @return string The id of the command that's doing the labelling.
      */
-    public function tagEventsById($eventIds, Keyword $keyword)
+    public function labelEventsById($eventIds, Label $label)
     {
         if (!isset($eventIds) || count($eventIds) == 0) {
-            throw new \InvalidArgumentException('no event Ids to tag');
+            throw new \InvalidArgumentException('no event Ids to label');
         }
 
         // By retrieving the events first by their ID, we ensure
@@ -51,7 +51,7 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
             $this->eventService->getEvent($eventId);
         }
 
-        $command = new TagEvents($eventIds, $keyword);
+        $command = new LabelEvents($eventIds, $label);
         $commandId = $this->commandBus->dispatch($command);
 
         return $commandId;
@@ -60,13 +60,13 @@ class DefaultEventTaggerService implements EventTaggerServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function tagQuery($query, Keyword $keyword)
+    public function labelQuery($query, Label $label)
     {
         if (!isset($query) || strlen($query) == 0) {
             throw new \InvalidArgumentException('query should not be empty');
         }
 
-        $command = new TagQuery($query, $keyword);
+        $command = new LabelQuery($query, $label);
         $commandId = $this->commandBus->dispatch($command);
 
         return $commandId;

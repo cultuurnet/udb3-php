@@ -6,15 +6,15 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
-class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultEventLabellerServiceTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var DefaultEventTaggerService
+     * @var DefaultEventLabellerService
      */
-    protected $eventTagger;
+    protected $eventLabeller;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|EventServiceInterface
@@ -32,7 +32,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->commandBus = $this->getMock(CommandBusInterface::class);
 
-        $this->eventTagger = new DefaultEventTaggerService(
+        $this->eventLabeller = new DefaultEventLabellerService(
             $this->eventService,
             $this->commandBus
         );
@@ -41,7 +41,7 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_dispatches_a_tag_command_for_a_single_id()
+    public function it_dispatches_a_label_command_for_a_single_id()
     {
         $eventIds = [
             'event1'
@@ -55,23 +55,23 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->equalTo(
-                    new TagEvents(
+                    new LabelEvents(
                         array('event1'),
-                        new Keyword('some-keyword')
+                        new Label('some-label')
                     )
                 )
             );
 
-        $this->eventTagger->tagEventsById(
+        $this->eventLabeller->labelEventsById(
             $eventIds,
-            new Keyword('some-keyword')
+            new Label('some-label')
         );
     }
 
     /**
      * @test
      */
-    public function it_dispatches_a_tag_command_for_multiple_ids()
+    public function it_dispatches_a_label_command_for_multiple_ids()
     {
         $eventIds = [
             'event1',
@@ -89,16 +89,16 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->equalTo(
-                    new TagEvents(
+                    new LabelEvents(
                         array('event1', 'event2'),
-                        new Keyword('some-keyword')
+                        new Label('some-label')
                     )
                 )
             );
 
-        $this->eventTagger->tagEventsById(
+        $this->eventLabeller->labelEventsById(
             $eventIds,
-            new Keyword('some-keyword')
+            new Label('some-label')
         );
     }
 
@@ -120,9 +120,9 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(EventNotFoundException::class);
 
-        $this->eventTagger->tagEventsById(
+        $this->eventLabeller->labelEventsById(
             $eventIds,
-            new Keyword('some-keyword')
+            new Label('some-label')
         );
     }
 
@@ -135,15 +135,15 @@ class DefaultEventTaggerServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(
             'InvalidArgumentException',
-            'no event Ids to tag'
+            'no event Ids to label'
         );
 
         $this->commandBus->expects($this->never())
             ->method('dispatch');
 
-        $this->eventTagger->tagEventsById(
+        $this->eventLabeller->labelEventsById(
             $eventIds,
-            new Keyword('some-keyword')
+            new Label('some-label')
         );
     }
 }

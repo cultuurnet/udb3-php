@@ -5,11 +5,11 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 
-class EventTaggerTest extends CommandHandlerScenarioTestCase
+class EventLabellerTest extends CommandHandlerScenarioTestCase
 {
     /**
      * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -49,7 +49,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_tag_a_list_of_events_with_a_keyword()
+    public function it_can_label_a_list_of_events_with_a_label()
     {
         $ids = ['eventId1', 'eventId2'];
 
@@ -66,11 +66,11 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                     $this->factorEventCreated($ids[1])
                 ]
             )
-            ->when(new TagEvents($ids, new Keyword('awesome')))
+            ->when(new LabelEvents($ids, new Label('awesome')))
             ->then(
                 [
-                    new EventWasTagged($ids[0], new Keyword('awesome')),
-                    new EventWasTagged($ids[1], new Keyword('awesome'))
+                    new EventWasLabelled($ids[0], new Label('awesome')),
+                    new EventWasLabelled($ids[1], new Label('awesome'))
                 ]
             );
     }
@@ -78,7 +78,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_tag_all_results_of_a_search_query()
+    public function it_can_label_all_results_of_a_search_query()
     {
         $events = [];
         $expectedSourcedEvents = [];
@@ -89,7 +89,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
                 '@id' => 'http://example.com/event/' . $i,
             );
 
-            $expectedSourcedEvents[] = new EventWasTagged($i, new Keyword('foo'));
+            $expectedSourcedEvents[] = new EventWasLabelled($i, new Label('foo'));
 
             $this->scenario
                 ->withAggregateId($i)
@@ -118,7 +118,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             );
 
         $this->scenario
-            ->when(new TagQuery('*.*', new Keyword('foo')))
+            ->when(new LabelQuery('*.*', new Label('foo')))
             ->then(
                 $expectedSourcedEvents
             );
@@ -127,7 +127,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_does_not_tag_events_when_a_search_error_occurs()
+    public function it_does_not_label_events_when_a_search_error_occurs()
     {
         $this->search->expects($this->once())
             ->method('search')
@@ -138,7 +138,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             );
 
         $this->scenario
-            ->when(new TagQuery('---fsdfs', new Keyword('foo')))
+            ->when(new LabelQuery('---fsdfs', new Label('foo')))
             ->then(
                 []
             );
@@ -187,7 +187,7 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_tag_an_event()
+    public function it_can_label_an_event()
     {
         $id = '1';
         $this->scenario
@@ -195,14 +195,14 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorEventCreated($id)]
             )
-            ->when(new Tag($id, new Keyword('foo')))
-            ->then([new EventWasTagged($id, new Keyword('foo'))]);
+            ->when(new LabelCommand($id, new Label('foo')))
+            ->then([new EventWasLabelled($id, new Label('foo'))]);
     }
 
     /**
      * @test
      */
-    public function it_can_erase_a_tag_from_an_event()
+    public function it_can_unlabel_an_event()
     {
         $id = '1';
         $this->scenario
@@ -210,17 +210,17 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorEventCreated($id),
-                    new EventWasTagged($id, new Keyword('foo'))
+                    new EventWasLabelled($id, new Label('foo'))
                 ]
             )
-            ->when(new EraseTag($id, new Keyword('foo')))
-            ->then([new TagErased($id, new Keyword('foo'))]);
+            ->when(new Unlabel($id, new Label('foo')))
+            ->then([new Unlabelled($id, new Label('foo'))]);
     }
 
     /**
      * @test
      */
-    public function it_does_not_erase_a_tag_that_is_not_present_on_an_event()
+    public function it_does_not_remove_a_label_that_is_not_present_on_an_event()
     {
         $id = '1';
         $this->scenario
@@ -228,14 +228,14 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorEventCreated($id)]
             )
-            ->when(new EraseTag($id, new Keyword('foo')))
+            ->when(new Unlabel($id, new Label('foo')))
             ->then([]);
     }
 
     /**
      * @test
      */
-    public function it_does_not_erase_a_tag_from_an_event_that_has_been_erased_already()
+    public function it_does_not_remove_a_label_from_an_event_that_has_been_unlabelled_already()
     {
         $id = '1';
         $this->scenario
@@ -243,11 +243,11 @@ class EventTaggerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorEventCreated($id),
-                    new EventWasTagged($id, new Keyword('foo')),
-                    new TagErased($id, new Keyword('foo'))
+                    new EventWasLabelled($id, new Label('foo')),
+                    new Unlabelled($id, new Label('foo'))
                 ]
             )
-            ->when(new EraseTag($id, new Keyword('foo')))
+            ->when(new Unlabel($id, new Label('foo')))
             ->then([]);
     }
 }

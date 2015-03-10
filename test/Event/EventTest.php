@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
 class EventTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,20 +28,20 @@ class EventTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_be_tagged_with_multiple_keywords()
+    public function it_can_be_tagged_with_multiple_labels()
     {
-        $this->event->tag(new Keyword('foo'));
+        $this->event->label(new Label('foo'));
 
         $this->assertEquals(
-            array(new Keyword('foo')),
-            $this->event->getKeywords()
+            array(new Label('foo')),
+            $this->event->getLabels()
         );
 
-        $this->event->tag(new Keyword('bar'));
+        $this->event->label(new Label('bar'));
 
         $this->assertEquals(
-            array(new Keyword('foo'), new Keyword('bar')),
-            $this->event->getKeywords()
+            array(new Label('foo'), new Label('bar')),
+            $this->event->getLabels()
         );
     }
 
@@ -50,12 +50,12 @@ class EventTest extends \PHPUnit_Framework_TestCase
      */
     public function it_only_applies_the_same_tag_once()
     {
-        $this->event->tag(new Keyword('foo'));
-        $this->event->tag(new Keyword('foo'));
+        $this->event->label(new Label('foo'));
+        $this->event->label(new Label('foo'));
 
         $this->assertEquals(
-            array(new Keyword('foo')),
-            $this->event->getKeywords()
+            array(new Label('foo')),
+            $this->event->getLabels()
         );
     }
 
@@ -73,16 +73,16 @@ class EventTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                new Keyword('kunst'),
-                new Keyword('tentoonstelling'),
-                new Keyword('brugge'),
-                new Keyword('grafiek'),
-                new Keyword('oud sint jan'),
-                new Keyword('TRAEGHE GENUINE ARTS'),
-                new Keyword('janine de conink'),
-                new Keyword('brugge oktober')
+                new Label('kunst'),
+                new Label('tentoonstelling'),
+                new Label('brugge'),
+                new Label('grafiek'),
+                new Label('oud sint jan'),
+                new Label('TRAEGHE GENUINE ARTS'),
+                new Label('janine de conink'),
+                new Label('brugge oktober')
             ),
-            $event->getKeywords()
+            $event->getLabels()
         );
     }
 }

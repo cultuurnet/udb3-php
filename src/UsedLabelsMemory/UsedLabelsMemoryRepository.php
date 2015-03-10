@@ -3,13 +3,13 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\UsedKeywordsMemory;
+namespace CultuurNet\UDB3\UsedLabelsMemory;
 
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\EventStoreInterface;
 
-class UsedKeywordsMemoryRepository extends EventSourcingRepository
+class UsedLabelsMemoryRepository extends EventSourcingRepository
 {
     public function __construct(
         EventStoreInterface $eventStore,
@@ -19,7 +19,7 @@ class UsedKeywordsMemoryRepository extends EventSourcingRepository
         parent::__construct(
             $eventStore,
             $eventBus,
-            UsedKeywordsMemory::class,
+            UsedLabelsMemory::class,
             $eventStreamDecorators
         );
     }

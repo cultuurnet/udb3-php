@@ -3,9 +3,9 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
-class TagQuery
+class LabelQuery
 {
     /**
      * @var string
@@ -13,14 +13,14 @@ class TagQuery
     protected $query;
 
     /**
-     * @var Keyword
+     * @var Label
      */
-    protected $keyword;
+    protected $label;
 
-    public function __construct($query, Keyword $keyword)
+    public function __construct($query, Label $label)
     {
         $this->query = $query;
-        $this->keyword = $keyword;
+        $this->label = $label;
     }
 
     /**
@@ -32,10 +32,10 @@ class TagQuery
     }
 
     /**
-     * @return Keyword
+     * @return Label
      */
-    public function getKeyword()
+    public function getLabel()
     {
-        return $this->keyword;
+        return $this->label;
     }
 }

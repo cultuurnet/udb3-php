@@ -180,14 +180,14 @@ class TabularDataEventFormatter
                 },
                 'property' => 'calendarSummary'
             ],
-            'keywords' => [
+            'labels' => [
                 'name' => 'labels',
                 'include' => function ($event) {
-                    if (isset($event->keywords)) {
-                        return implode(';', $event->keywords);
+                    if (isset($event->labels)) {
+                        return implode(';', $event->labels);
                     }
                 },
-                'property' => 'keywords'
+                'property' => 'labels'
             ],
             'typicalAgeRange' => [
                 'name' => 'leeftijd',

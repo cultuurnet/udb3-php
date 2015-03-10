@@ -401,7 +401,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         Metadata $metadata
     )
     {
-return;
+
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getPlaceId());
 

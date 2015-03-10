@@ -501,20 +501,20 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
         $bookingInfo = $domainEvent->getBookingInfo();
-        
+
         $bookingPeriod = $event->getBookingPeriod();
         if (empty($bookingPeriod)) {
-          $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
+            $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
         }
-        
+
         if (!empty($bookingInfo->availabilityStarts)) {
-          $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
+            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
         }
         if (!empty($bookingInfo->availabilityEnds)) {
-          $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
+            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
         }
         $event->setBookingPeriod($bookingPeriod);
-          
+
         $entryApi->updateEvent($event);
 
     }

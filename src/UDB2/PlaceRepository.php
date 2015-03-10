@@ -28,6 +28,7 @@ use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
@@ -166,6 +167,13 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case ContactPointUpdated::class:
                         $this->applyContactPointUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case BookingInfoUpdated::class:
+                        $this->applyBookingInfoUpdated(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -388,6 +396,38 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         }
         $event->setContactInfo($contactInfo);
 
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Updated the booking info in udb2.
+     *
+     * @param BookingInfoUpdated $domainEvent
+     * @param Metadata $metadata
+     */
+    private function applyBookingInfoUpdated(
+        BookingInfoUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+        
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $bookingInfo = $domainEvent->getBookingInfo();
+        
+        $bookingPeriod = $event->getBookingPeriod();
+        if (empty($bookingPeriod)) {
+          $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
+        }
+        
+        if (!empty($bookingInfo->availabilityStarts)) {
+          $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
+        }
+        if (!empty($bookingInfo->availabilityEnds)) {
+          $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
+        }
+        $event->setBookingPeriod($bookingPeriod);
+          
         $entryApi->updateEvent($event);
 
     }

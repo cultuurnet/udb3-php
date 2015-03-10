@@ -3,7 +3,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\Entry\Label;
+use CultuurNet\Entry\Keyword;
 
 class LabelEvents
 {
@@ -13,11 +13,11 @@ class LabelEvents
     protected $eventIds;
 
     /**
-     * @var Label
+     * @var Keyword
      */
     protected $label;
 
-    public function __construct($eventIds, Label $label)
+    public function __construct($eventIds, Keyword $label)
     {
         $this->eventIds = $eventIds;
         $this->label = $label;
@@ -29,7 +29,7 @@ class LabelEvents
     }
 
     /**
-     * @return Label
+     * @return Keyword
      */
     public function getLabel()
     {

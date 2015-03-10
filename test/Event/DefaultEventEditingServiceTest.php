@@ -94,7 +94,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_tag_an_unknown_event()
+    public function it_refuses_to_label_an_unknown_event()
     {
         $id = 'some-unknown-id';
 
@@ -108,7 +108,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_erase_a_tag_from_an_unknown_event()
+    public function it_refuses_to_remove_a_label_from_an_unknown_event()
     {
         $id = 'some-unknown-id';
 

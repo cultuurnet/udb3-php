@@ -12,17 +12,17 @@ namespace CultuurNet\UDB3;
  */
 class BookingInfo
 {
-    
+
     /**
      * @var string
      */
     protected $price = '';
-      
+
     /**
      * @var string
      */
     protected $currency = 'EUR';
-      
+
     /**
      * @var string
      */
@@ -52,12 +52,12 @@ class BookingInfo
      * @var string
      */
     protected $availabilityEnds = '';
-    
+
     /**
      * @var string
      */
     protected $name = '';
-      
+
     /**
      * @var string
      */
@@ -66,9 +66,16 @@ class BookingInfo
     /**
      * Constructor.
      */
-    public function __construct($url = '', $urlLabel = '', $phone = '', $email = '', 
-      $availabilityStarts = '', $availabilityEnds = '', $name = '', $description = '')
-    {
+    public function __construct(
+        $url = '',
+        $urlLabel = '',
+        $phone = '',
+        $email = '',
+        $availabilityStarts = '',
+        $availabilityEnds = '',
+        $name = '',
+        $description = ''
+    ) {
         $this->url = $url;
         $this->urlLabel = $urlLabel;
         $this->phone = $phone;
@@ -142,7 +149,7 @@ class BookingInfo
     public static function deserialize(array $data)
     {
         return new static(
-            $data['url'], $data['urlLabel'], $data['phone'], $data['email'], 
+            $data['url'], $data['urlLabel'], $data['phone'], $data['email'],
             $data['availabilityStarts'], $data['availabilityEnds'], $data['name'], $data['description']
         );
     }

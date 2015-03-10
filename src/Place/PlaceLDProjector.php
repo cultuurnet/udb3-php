@@ -21,6 +21,7 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
@@ -67,12 +68,12 @@ class PlaceLDProjector extends ActorLDProjector
     /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
-     * @param OrganizerService $organiserService
+     * @param OrganizerServiceInterface $organiserService
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        OrganizerService $organizerService,
+        OrganizerServiceInterface $organizerService,
         EventBusInterface $eventBus
     ) {
         $this->repository = $repository;
@@ -273,16 +274,16 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the booking info updated event to the event repository.
      * @param BookingInfoUpdated $bookingInfoUpdated
      */
-    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated) 
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
     {
-      
+
         $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
 
         $placeLD = $document->getBody();
         $placeLD->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
 
         $this->repository->save($document->withBody($placeLD));
-        
+
     }
 
     /**
@@ -382,11 +383,11 @@ class PlaceLDProjector extends ActorLDProjector
 
         // Add the new facilities.
         foreach ($facilitiesUpdated->getFacilities() as $facility) {
-          $terms[] = [
-              'label' => $facility->getLabel(),
-              'domain' => $facility->getDomain(),
-              'id' => $facility->getId()
-          ];
+            $terms[] = [
+                'label' => $facility->getLabel(),
+                'domain' => $facility->getDomain(),
+                'id' => $facility->getId()
+            ];
         }
 
         $placeLd->terms = $terms;

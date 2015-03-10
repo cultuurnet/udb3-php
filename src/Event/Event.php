@@ -20,7 +20,6 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 
-
 class Event extends EventSourcedAggregateRoot
 {
     protected $eventId;

@@ -41,4 +41,3 @@ trait UpdateBookingInfoTrait
         return $this->bookingInfo;
     }
 }
-

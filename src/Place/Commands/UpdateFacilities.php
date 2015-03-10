@@ -38,7 +38,7 @@ class UpdateFacilities
     /**
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -46,9 +46,8 @@ class UpdateFacilities
     /**
      * @return array
      */
-    function getFacilities()
+    public function getFacilities()
     {
         return $this->facilities;
     }
-
 }

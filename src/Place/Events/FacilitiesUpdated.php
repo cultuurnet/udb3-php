@@ -60,7 +60,7 @@ class FacilitiesUpdated extends PlaceEvent
 
         $facilities = array();
         foreach ($this->facilities as $facility) {
-          $facilities[] = $facility->serialize();
+            $facilities[] = $facility->serialize();
         }
 
         return parent::serialize() + array(

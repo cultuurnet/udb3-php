@@ -88,7 +88,8 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
-    public function updateContactPoint($id, ContactPoint $contactPoint) {
+    public function updateContactPoint($id, ContactPoint $contactPoint)
+    {
 
         $this->guardId($id);
 
@@ -103,7 +104,8 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
-    public function updateBookingInfo($id, BookingInfo $bookingInfo) {
+    public function updateBookingInfo($id, BookingInfo $bookingInfo)
+    {
 
         $this->guardId($id);
 

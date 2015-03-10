@@ -439,8 +439,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     private function applyFacilitiesUpdated(
         FacilitiesUpdated $domainEvent,
         Metadata $metadata
-    )
-    {
+    ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getPlaceId());
@@ -456,7 +455,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
         // Add the new facilities.
         foreach ($domainEvent->getFacilities() as $facility) {
-          $cdbCategories->add(new \CultureFeed_Cdb_Data_Category(Facility::DOMAIN, $facility->getId(), $facility->getLabel()));
+            $cdbCategories->add(new \CultureFeed_Cdb_Data_Category(Facility::DOMAIN, $facility->getId(), $facility->getLabel()));
         }
 
         $entryApi->updateEvent($event);

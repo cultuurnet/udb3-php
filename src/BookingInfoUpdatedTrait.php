@@ -10,7 +10,8 @@ namespace CultuurNet\UDB3;
 /**
  * Trait for the DescriptionUpdated events.
  */
-trait BookingInfoUpdatedTrait {
+trait BookingInfoUpdatedTrait
+{
     /**
      * The new booking Info.
      * @var string

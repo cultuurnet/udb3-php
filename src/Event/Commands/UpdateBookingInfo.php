@@ -9,8 +9,9 @@ namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 
-class UpdateBookingInfo {
-  
+class UpdateBookingInfo
+{
+
     use \CultuurNet\UDB3\UpdateBookingInfoTrait;
 
     /**
@@ -22,5 +23,4 @@ class UpdateBookingInfo {
         $this->id = $id;
         $this->bookingInfo = $bookingInfo;
     }
-    
 }

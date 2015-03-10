@@ -69,10 +69,9 @@ interface PlaceEditingServiceInterface
 
     /**
      * Update the facilities for a place.
-     * 
+     *
      * @param string $id
      * @param array $facilities
      */
     public function updateFacilities($id, array $facilities);
-
 }

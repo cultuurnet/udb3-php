@@ -378,18 +378,35 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $contactPoint = $domainEvent->getContactPoint();
 
         $contactInfo = $event->getContactInfo();
+
+        // Remove non-reservation phones and add new ones.
+        foreach ($contactInfo->getPhones() as $phoneIndex => $phone) {
+            if (!$phone->isForReservations()) {
+                $contactInfo->removePhone($phoneIndex);
+            }
+        }
         $phones = $contactPoint->getPhones();
         foreach ($phones as $phone) {
             $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
         }
 
-        $contactInfo->deleteUrls();
+        // Remove non-reservation urls and add new ones.
+        foreach ($contactInfo->getUrls() as $urlIndex => $url) {
+            if (!$url->isForReservations()) {
+                $contactInfo->removeUrl($urlIndex);
+            }
+        }
         $urls = $contactPoint->getUrls();
         foreach ($urls as $url) {
             $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
         }
 
-        $contactInfo->deleteMails();
+        // Remove non-reservation emails and add new ones.
+        foreach ($contactInfo->getMails() as $mailIndex => $mail) {
+            if (!$mail->isForReservations()) {
+                $contactInfo->removeUrl($mailIndex);
+            }
+        }
         $emails = $contactPoint->getEmails();
         foreach ($emails as $email) {
             $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
@@ -435,18 +452,30 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
           $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
         }
         if (!empty($bookingInfo->phone)) {
-          //$contactInfo->deletePhones();
-          $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->phone));
+            foreach ($contactInfo->getPhones() as $phoneIndex => $phone) {
+                if ($phone->isForReservations()) {
+                    $contactInfo->removePhone($phoneIndex);
+                }
+            }
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->phone));
         }
         
         if (!empty($bookingInfo->url)) {
-          //$contactInfo->deleteUrls();
-          $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->url));
+            foreach ($contactInfo->getUrls() as $urlIndex => $url) {
+                if ($url->isForReservations()) {
+                    $contactInfo->removeUrl($urlIndex);
+                }
+            }
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->url));
         }
         
         if (!empty($bookingInfo->email)) {
-          //$contactInfo->deleteMails();
-          $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));
+            foreach ($contactInfo->getMails() as $mailIndex => $mail) {
+                if ($mail->isForReservations()) {
+                    $contactInfo->removeUrl($mailIndex);
+                }
+            }
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));
         }
         $event->setContactInfo($contactInfo);
           

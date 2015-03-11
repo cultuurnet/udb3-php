@@ -413,8 +413,9 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
+        
+        // Add the booking Period.
         $bookingInfo = $domainEvent->getBookingInfo();
-
         $bookingPeriod = $event->getBookingPeriod();
         if (empty($bookingPeriod)) {
             $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
@@ -427,7 +428,28 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
             $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
         }
         $event->setBookingPeriod($bookingPeriod);
-
+        
+        // Add the contact info.
+        $contactInfo = $event->getContactInfo();
+        if (empty($contactInfo)) {
+          $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
+        }
+        if (!empty($bookingInfo->phone)) {
+          //$contactInfo->deletePhones();
+          $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->phone));
+        }
+        
+        if (!empty($bookingInfo->url)) {
+          //$contactInfo->deleteUrls();
+          $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->url));
+        }
+        
+        if (!empty($bookingInfo->email)) {
+          //$contactInfo->deleteMails();
+          $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));
+        }
+        $event->setContactInfo($contactInfo);
+          
         $entryApi->updateEvent($event);
 
     }

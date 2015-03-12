@@ -8,6 +8,7 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\MediaObject;
 
 /**
  * Provides an ImageDeleted event.
@@ -31,6 +32,6 @@ class ImageDeleted extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], MediaObject::deserialize($data['index_to_delete']));
+        return new static($data['event_id'], $data['index_to_delete']);
     }
 }

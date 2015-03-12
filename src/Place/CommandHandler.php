@@ -161,13 +161,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $event = $this->placeRepository->load($addImage->getId());
+        $place = $this->placeRepository->load($addImage->getId());
 
-        $event->addImage(
+        $place->addImage(
             $addImage->getMediaObject()
         );
 
-        $this->placeRepository->add($event);
+        $this->placeRepository->add($place);
 
     }
 

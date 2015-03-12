@@ -7,13 +7,13 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\MediaObject;
-use CultuurNet\UDB3\Place\PlaceEvent;
 
 /**
  * Provides an ImageUpdated event.
  */
-class ImageUpdated extends PlaceEvent
+class ImageUpdated extends EventEvent
 {
     use \CultuurNet\UDB3\ImageUpdatedTrait;
 

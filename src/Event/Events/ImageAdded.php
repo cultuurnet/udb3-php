@@ -32,6 +32,6 @@ class ImageAdded extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], MediaObject::deserialize($data['mediaObject']));
+        return new static($data['event_id'], MediaObject::deserialize($data['media_object']));
     }
 }

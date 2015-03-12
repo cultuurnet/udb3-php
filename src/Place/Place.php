@@ -133,11 +133,11 @@ class Place extends Actor
     /**
      * Add a new image.
      *
-     * @param MediaObject $mediaobject
+     * @param MediaObject $mediaObject
      */
-    public function addImage(MediaObject $mediaobject)
+    public function addImage(MediaObject $mediaObject)
     {
-        $this->apply(new ImageAdded($this->actorId, $mediaobject));
+        $this->apply(new ImageAdded($this->actorId, $mediaObject));
     }
 
     /**

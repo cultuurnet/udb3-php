@@ -21,9 +21,10 @@ class UpdateImage
      * @param string $id
      * @param MediaObject $mediaObject
      */
-    public function __construct($id, MediaObject $mediaObject)
+    public function __construct($id, $indexToUpdate, MediaObject $mediaObject)
     {
         $this->id = $id;
+        $this->indexToUpdate = $indexToUpdate;
         $this->mediaObject = $mediaObject;
     }
 }

@@ -17,6 +17,8 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
@@ -34,7 +36,6 @@ use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use stdClass;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -274,21 +275,13 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         );
 
         $eventType = $eventCreated->getEventType();
-        $jsonLD->terms = array(
-            array(
-                'label' => $eventType->getLabel(),
-                'domain' => $eventType->getDomain(),
-                'id' => $eventType->getId()
-            )
-        );
+        $jsonLD->terms = [
+            $eventType->toJsonLd()
+        ];
 
         $theme = $eventCreated->getTheme();
         if (!empty($theme)) {
-            $jsonLD->terms[] = [
-                 'label' => $theme->getLabel(),
-                 'domain' => $theme->getDomain(),
-                 'id' => $theme->getId()
-            ];
+            $jsonLD->terms[] = $theme->toJsonLd();
         }
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
@@ -473,14 +466,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $document = $this->loadDocumentFromRepository($contactPointUpdated);
 
         $eventLd = $document->getBody();
-
-        $contactPoint = isset($eventLd->contactPoint) ? $eventLd->contactPoint : new stdClass();
-
-        $contactPoint->phone = $contactPointUpdated->getContactPoint()->getPhones();
-        $contactPoint->email = $contactPointUpdated->getContactPoint()->getEmails();
-        $contactPoint->url = $contactPointUpdated->getContactPoint()->getUrls();
-
-        $eventLd->contactPoint = $contactPoint;
+        $eventLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
 
         $this->repository->save($document->withBody($eventLd));
     }
@@ -509,13 +495,51 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
 
-      $document = $this->loadDocumentFromRepository($imageAdded);
+        $document = $this->loadDocumentFromRepository($imageAdded);
 
-      $eventLd = $document->getBody();
-      $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-      $eventLd->mediaObject[] = $imageAdded->getMediaObject->toJsonLd();
+        $eventLd = $document->getBody();
+        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
+        $eventLd->mediaObject[] = $imageAdded->getMediaObject()->toJsonLd();
 
-      $this->repository->save($document->withBody($eventLd));
+        $this->repository->save($document->withBody($eventLd));
+
+    }
+
+    /**
+     * Apply the ImageUpdated event to the event repository.
+     *
+     * @param ImageUpdated $imageUpdated
+     */
+    protected function applyImageUpdated(ImageUpdated $imageUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($imageUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
+        $eventLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
+
+        $this->repository->save($document->withBody($eventLd));
+
+    }
+
+    /**
+     * Apply the imageDeleted event to the event repository.
+     *
+     * @param ImageDeleted $imageDeleted
+     */
+    protected function applyImageDeleted(ImageDeleted $imageDeleted)
+    {
+
+        $document = $this->loadDocumentFromRepository($imageDeleted);
+
+        $eventLd = $document->getBody();
+        unset($eventLd->mediaObject[$imageDeleted->getIndexToDelete()]);
+
+        // Generate new numeric keys.
+        $eventLd->mediaObject = array_values($eventLd->mediaObject);
+
+        $this->repository->save($document->withBody($eventLd));
 
     }
 

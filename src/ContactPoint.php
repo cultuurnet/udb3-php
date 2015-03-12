@@ -7,10 +7,12 @@
 
 namespace CultuurNet\UDB3;
 
+use Broadway\Serializer\SerializableInterface;
+
 /**
  * ContactPoint info.
  */
-class ContactPoint
+class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
@@ -29,13 +31,19 @@ class ContactPoint
     protected $urls = array();
 
     /**
+     * @var string
+     */
+    protected $type = '';
+
+    /**
      * Constructor.
      */
-    public function __construct(array $phones = array(), array $emails = array(), array $urls = array())
+    public function __construct(array $phones = array(), array $emails = array(), array $urls = array(), $type = '')
     {
         $this->phones = $phones;
         $this->emails = $emails;
         $this->urls = $urls;
+        $this->type = $type;
     }
 
     public function getPhones()
@@ -53,15 +61,21 @@ class ContactPoint
         return $this->urls;
     }
 
+    public function getType()
+    {
+        return $this->type;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function serialize()
     {
         return [
-          'phones' => $this->phones,
-          'emails' => $this->emails,
-          'urls' => $this->urls,
+          'phone' => $this->phones,
+          'email' => $this->emails,
+          'url' => $this->urls,
+          'type' => $this->type,
         ];
     }
 
@@ -71,7 +85,16 @@ class ContactPoint
     public static function deserialize(array $data)
     {
         return new static(
-            $data['phones'], $data['emails'], $data['urls']
+            $data['phone'], $data['email'], $data['url'], $data['type']
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toJsonLd()
+    {
+        // Serialized version is the same.
+        return $this->serialize();
     }
 }

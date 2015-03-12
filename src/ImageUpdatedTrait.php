@@ -17,7 +17,7 @@ trait ImageUpdatedTrait
      * The index to update.
      * @var int
      */
-    protected $indexToUpdated;
+    protected $indexToUpdate;
 
     /**
      * The updated media object.
@@ -28,9 +28,9 @@ trait ImageUpdatedTrait
     /**
      * @return int
      */
-    public function getIndexToUpdated()
+    public function getIndexToUpdate()
     {
-        return $this->indexToUpdated;
+        return $this->indexToUpdate;
     }
 
     /**
@@ -47,7 +47,7 @@ trait ImageUpdatedTrait
     public function serialize()
     {
         return parent::serialize() + array(
-            'index_to_update' => $this->indexToUpdated,
+            'index_to_update' => $this->indexToUpdate,
             'media_object' => $this->mediaObject->serialize(),
         );
     }

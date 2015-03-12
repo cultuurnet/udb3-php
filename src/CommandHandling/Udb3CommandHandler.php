@@ -20,6 +20,7 @@ abstract class Udb3CommandHandler extends CommandHandler
      */
     public function handle($command)
     {
+
         $method = $this->getHandleMethod($command);
 
         if (! method_exists($this, $method)) {

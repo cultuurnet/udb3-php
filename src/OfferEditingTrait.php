@@ -151,7 +151,8 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
-    public function deleteImage($id, $indexToDelete) {
+    public function deleteImage($id, $indexToDelete)
+    {
 
         $this->guardId($id);
 

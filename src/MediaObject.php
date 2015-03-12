@@ -12,7 +12,7 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * MediaObjects for UDB3.
  */
-class MediaObject implements SerializableInterface, JsonLdSerializable
+class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
@@ -87,14 +87,16 @@ class MediaObject implements SerializableInterface, JsonLdSerializable
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data) {
+    public static function deserialize(array $data)
+    {
         return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder']);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function serialize() {
+    public function serialize()
+    {
         return [
             'url' => $this->url,
             'thumbnail_url' => $this->thumbnailUrl,
@@ -106,10 +108,9 @@ class MediaObject implements SerializableInterface, JsonLdSerializable
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd() {
-      // Matches the serialized array.
-      return $this->serialize();
+    public function toJsonLd()
+    {
+        // Matches the serialized array.
+        return $this->serialize();
     }
-
-
 }

@@ -31,13 +31,14 @@ use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
+use CultuurNet\UDB3\Place\Events\ImageDeleted;
+use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use stdClass;
 
 class PlaceLDProjector extends ActorLDProjector
 {
@@ -225,21 +226,13 @@ class PlaceLDProjector extends ActorLDProjector
         }
 
         $eventType = $placeCreated->getEventType();
-        $jsonLD->terms = array(
-          array(
-            'label' => $eventType->getLabel(),
-            'domain' => $eventType->getDomain(),
-            'id' => $eventType->getId()
-          )
-        );
+        $jsonLD->terms = [
+            $eventType->toJsonLd()
+        ];
 
         $theme = $placeCreated->getTheme();
         if (!empty($theme)) {
-            $jsonLD->terms[] = [
-              'label' => $theme->getLabel(),
-              'domain' => $theme->getDomain(),
-              'id' => $theme->getId()
-            ];
+            $jsonLD->terms[] = $theme->toJsonLd();
         }
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
@@ -352,13 +345,7 @@ class PlaceLDProjector extends ActorLDProjector
         $document = $this->loadPlaceDocumentFromRepository($contactPointUpdated);
 
         $placeLd = $document->getBody();
-
-        $contactPoint = isset($placeLd->contactPoint) ? $placeLd->contactPoint : new stdClass();
-        $contactPoint->phone = $contactPointUpdated->getContactPoint()->getPhones();
-        $contactPoint->email = $contactPointUpdated->getContactPoint()->getEmails();
-        $contactPoint->url = $contactPointUpdated->getContactPoint()->getUrls();
-
-        $placeLd->contactPoint = $contactPoint;
+        $placeLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
 
         $this->repository->save($document->withBody($placeLd));
     }
@@ -396,20 +383,58 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
-     * Apply the imageAdded event to the event repository.
+     * Apply the imageAdded event to the place repository.
      *
      * @param ImageAdded $imageAdded
      */
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
 
-      $document = $this->loadPlaceDocumentFromRepository($imageAdded);
+        $document = $this->loadPlaceDocumentFromRepository($imageAdded);
 
-      $placeLd = $document->getBody();
-      $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
-      $placeLd->mediaObject[] = $imageAdded->getMediaObject->toJsonLd();
+        $placeLd = $document->getBody();
+        $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
+        $placeLd->mediaObject[] = $imageAdded->getMediaObject()->toJsonLd();
 
-      $this->repository->save($document->withBody($placeLd));
+        $this->repository->save($document->withBody($placeLd));
+
+    }
+
+    /**
+     * Apply the ImageUpdated event to the place repository.
+     *
+     * @param ImageUpdated $imageUpdated
+     */
+    protected function applyImageUpdated(ImageUpdated $imageUpdated)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($imageUpdated);
+
+        $placeLd = $document->getBody();
+        $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
+        $placeLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
+
+        $this->repository->save($document->withBody($placeLd));
+
+    }
+
+    /**
+     * Apply the imageDeleted event to the place repository.
+     *
+     * @param ImageDeleted $imageDeleted
+     */
+    protected function applyImageDeleted(ImageDeleted $imageDeleted)
+    {
+
+        $document = $this->loadPlaceDocumentFromRepository($imageDeleted);
+
+        $placeLd = $document->getBody();
+        unset($placeLd->mediaObject[$imageDeleted->getIndexToDelete()]);
+
+        // Generate new numeric keys.
+        $placeLd->mediaObject = array_values($placeLd->mediaObject);
+
+        $this->repository->save($document->withBody($placeLd));
 
     }
 

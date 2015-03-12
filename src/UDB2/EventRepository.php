@@ -515,7 +515,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($domainEvent->getEventId());
-        
+
         // Add the booking Period.
         $bookingInfo = $domainEvent->getBookingInfo();
         $bookingPeriod = $event->getBookingPeriod();
@@ -530,11 +530,11 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
         }
         $event->setBookingPeriod($bookingPeriod);
-        
+
         // Add the contact info.
         $contactInfo = $event->getContactInfo();
         if (empty($contactInfo)) {
-          $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
+            $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
         }
         if (!empty($bookingInfo->phone)) {
             foreach ($contactInfo->getPhones() as $phoneIndex => $phone) {
@@ -544,7 +544,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             }
             $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->phone));
         }
-        
+
         if (!empty($bookingInfo->url)) {
             foreach ($contactInfo->getUrls() as $urlIndex => $url) {
                 if ($url->isForReservations()) {
@@ -553,7 +553,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             }
             $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->url));
         }
-        
+
         if (!empty($bookingInfo->email)) {
             foreach ($contactInfo->getMails() as $mailIndex => $mail) {
                 if ($mail->isForReservations()) {
@@ -563,7 +563,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));
         }
         $event->setContactInfo($contactInfo);
-          
+
         $entryApi->updateEvent($event);
 
     }

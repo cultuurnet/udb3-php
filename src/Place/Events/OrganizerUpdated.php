@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains CultuurNet\UDB3\Event\Events\OrganizerUpdated.
+ * Contains CultuurNet\UDB3\Place\Events\OrganizerUpdated.
  */
 
 namespace CultuurNet\UDB3\Place\Events;

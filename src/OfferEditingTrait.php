@@ -116,4 +116,50 @@ trait OfferEditingTrait
         );
 
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addImage($id, MediaObject $mediaObject)
+    {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('AddImage');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $mediaObject)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateImage($id, $indexToEdit, MediaObject $mediaObject)
+    {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('UpdateImage');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $indexToEdit, $mediaObject)
+        );
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteImage($id, $indexToDelete) {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('DeleteImage');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $indexToDelete)
+        );
+
+    }
 }

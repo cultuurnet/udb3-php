@@ -12,12 +12,16 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
 
 class Event extends EventSourcedAggregateRoot
@@ -208,6 +212,37 @@ class Event extends EventSourcedAggregateRoot
     public function updateBookingInfo(BookingInfo $bookingInfo)
     {
         $this->apply(new BookingInfoUpdated($this->eventId, $bookingInfo));
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param MediaObject $mediaobject
+     */
+    public function addImage(MediaObject $mediaobject)
+    {
+        $this->apply(new ImageAdded($this->eventId, $mediaobject));
+    }
+
+    /**
+     * Update an image.
+     *
+     * @param int $indexToUpdate
+     * @param MediaObject $mediaObject
+     */
+    public function updateImage($indexToUpdate, MediaObject $mediaObject)
+    {
+        $this->apply(new ImageUpdated($this->eventId, $indexToUpdate, $mediaObject));
+    }
+
+    /**
+     * Delet an image.
+     *
+     * @param int $indexToDelete
+     */
+    public function deleteImage($indexToDelete)
+    {
+        $this->apply(new ImageDeleted($this->eventId, $indexToDelete));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

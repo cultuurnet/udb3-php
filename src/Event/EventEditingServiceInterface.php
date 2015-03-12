@@ -76,6 +76,31 @@ interface EventEditingServiceInterface
     public function updateContactPoint($id, ContactPoint $contactPoint);
 
     /**
+     * Add an image to the event.
+     *
+     * @param string $id
+     * @param MediaObject $mediaObject
+     */
+    public function addImage($id, MediaObject $mediaObject);
+
+    /**
+     * Update an image of the event.
+     *
+     * @param string $id
+     * @parma int $indexToEdit
+     * @param MediaObject $mediaObject
+     */
+    public function updateImage($id, $indexToEdit, MediaObject $mediaObject);
+
+    /**
+     * Delete an image of the event.
+     *
+     * @param string $id
+     * @parma int $indexToDelete
+     */
+    public function deleteImage($id, $indexToDelete);
+
+    /**
      * @param string $eventId
      * @param Keyword $keyword
      * @return string command id

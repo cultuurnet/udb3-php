@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
@@ -29,6 +30,7 @@ use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -73,7 +75,7 @@ class PlaceLDProjector extends ActorLDProjector
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        OrganizerServiceInterface $organizerService,
+        EntityServiceInterface $organizerService,
         EventBusInterface $eventBus
     ) {
         $this->repository = $repository;
@@ -374,25 +376,40 @@ class PlaceLDProjector extends ActorLDProjector
 
         $terms = isset($placeLd->terms) ? $placeLd->terms : array();
 
-        // Remove all old facilities.
-        foreach ($terms as $key => $term) {
-            if ($term->domain === Facility::DOMAIN) {
-                unset($terms[$key]);
+        // Remove all old facilities + get numeric keys.
+        $terms = array_values(array_filter(
+            $terms,
+            function ($term) {
+                $term->domain !== Facility::DOMAIN;
             }
-        }
+        ));
 
         // Add the new facilities.
         foreach ($facilitiesUpdated->getFacilities() as $facility) {
-            $terms[] = [
-                'label' => $facility->getLabel(),
-                'domain' => $facility->getDomain(),
-                'id' => $facility->getId()
-            ];
+            $terms[] = $facility->toJsonLd();
         }
 
         $placeLd->terms = $terms;
 
         $this->repository->save($document->withBody($placeLd));
+
+    }
+
+    /**
+     * Apply the imageAdded event to the event repository.
+     *
+     * @param ImageAdded $imageAdded
+     */
+    protected function applyImageAdded(ImageAdded $imageAdded)
+    {
+
+      $document = $this->loadPlaceDocumentFromRepository($imageAdded);
+
+      $placeLd = $document->getBody();
+      $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
+      $placeLd->mediaObject[] = $imageAdded->getMediaObject->toJsonLd();
+
+      $this->repository->save($document->withBody($placeLd));
 
     }
 

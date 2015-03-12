@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\Place;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\DeleteImage;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
@@ -131,7 +134,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 
         $this->placeRepository->add($place);
     }
-    
+
     /**
      * Handle an update command to updated the booking info.
      */
@@ -146,6 +149,62 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
         );
 
         $this->placeRepository->add($place);
+
+    }
+
+
+    /**
+     * Handle an add image command.
+     * @param AddImage $addImage
+     */
+    public function handleAddImage(AddImage $addImage)
+    {
+
+        /** @var Place $place */
+        $event = $this->placeRepository->load($addImage->getId());
+
+        $event->addImage(
+            $addImage->getMediaObject()
+        );
+
+        $this->placeRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update image command.
+     * @param UpdateImage $updateImage
+     */
+    public function handleUpdateImage(UpdateImage $updateImage)
+    {
+
+        /** @var Place $place */
+        $event = $this->placeRepository->load($updateImage->getId());
+
+        $event->updateImage(
+            $updateImage->getIndexToUpdate(),
+            $updateImage->getMediaObject()
+        );
+
+        $this->placeRepository->add($event);
+
+    }
+
+    /**
+     * Handle a delete image command.
+     * @param DeleteImage $deleteImage
+     */
+    public function handleDeleteImage(DeleteImage $deleteImage)
+    {
+
+        /** @var Place $place */
+        $event = $this->placeRepository->load($deleteImage->getId());
+
+        $event->deleteImage(
+            $deleteImage->getIndexToDelete()
+        );
+
+        $this->placeRepository->add($event);
 
     }
 }

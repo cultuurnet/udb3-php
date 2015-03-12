@@ -500,7 +500,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         // Remove all old facilities.
         foreach ($cdbCategories as $key => $category) {
             if ($category->getType() == Facility::DOMAIN) {
-                unset($cdbCategories[$key]);
+                $cdbCategories->delete($key);
             }
         }
 

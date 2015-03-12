@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
@@ -497,6 +498,24 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $eventLd->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
 
         $this->repository->save($document->withBody($eventLd));
+
+    }
+
+    /**
+     * Apply the imageAdded event to the event repository.
+     *
+     * @param ImageAdded $imageAdded
+     */
+    protected function applyImageAdded(ImageAdded $imageAdded)
+    {
+
+      $document = $this->loadDocumentFromRepository($imageAdded);
+
+      $eventLd = $document->getBody();
+      $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
+      $eventLd->mediaObject[] = $imageAdded->getMediaObject->toJsonLd();
+
+      $this->repository->save($document->withBody($eventLd));
 
     }
 

@@ -13,10 +13,14 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\ImageAdded;
+use CultuurNet\UDB3\Place\Events\ImageDeleted;
+use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -105,7 +109,7 @@ class Place extends Actor
     {
         $this->apply(new ContactPointUpdated($this->actorId, $contactPoint));
     }
-    
+
     /**
      * Updated the booking info.
      *
@@ -124,6 +128,37 @@ class Place extends Actor
     public function updateFacilities(array $facilities)
     {
         $this->apply(new FacilitiesUpdated($this->actorId, $facilities));
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param MediaObject $mediaobject
+     */
+    public function addImage(MediaObject $mediaobject)
+    {
+        $this->apply(new ImageAdded($this->actorId, $mediaobject));
+    }
+
+    /**
+     * Update an image.
+     *
+     * @param int $indexToUpdate
+     * @param MediaObject $mediaObject
+     */
+    public function updateImage($indexToUpdate, MediaObject $mediaObject)
+    {
+        $this->apply(new ImageUpdated($this->actorId, $indexToUpdate, $mediaObject));
+    }
+
+    /**
+     * Delet an image.
+     *
+     * @param int $indexToDelete
+     */
+    public function deleteImage($indexToDelete)
+    {
+        $this->apply(new ImageDeleted($this->actorId, $indexToDelete));
     }
 
     /**

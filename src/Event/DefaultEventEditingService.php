@@ -119,7 +119,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
         $this->guardEventId($eventId);
 
         return $this->commandBus->dispatch(
-            new Label($eventId, $label)
+            new ApplyLabel($eventId, $label)
         );
     }
 

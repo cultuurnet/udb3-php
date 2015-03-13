@@ -20,11 +20,25 @@ trait ImageDeletedTrait
     protected $indexToDelete;
 
     /**
+     * The internal file id.
+     * @var mixed int|string
+     */
+    protected $internalId;
+
+    /**
      * @return int
      */
     public function getIndexToDelete()
     {
         return $this->indexToDelete;
+    }
+
+    /**
+     * @return mixed int|string
+     */
+    public function getInternalId()
+    {
+        return $this->internalId;
     }
 
     /**
@@ -34,6 +48,7 @@ trait ImageDeletedTrait
     {
         return parent::serialize() + array(
             'index_to_delete' => $this->indexToDelete,
+            'internal_id' => $this->internalId
         );
     }
 }

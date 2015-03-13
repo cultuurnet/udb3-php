@@ -499,9 +499,9 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
 
-        $this->deleteImageOnCdbItem($event, $domainEvent->getIndexToDelete(), $domainEvent->getMediaObject());
+        $this->deleteImageOnCdbItem($event, $domainEvent->getIndexToDelete());
         $entryApi->updateEvent($event);
 
     }

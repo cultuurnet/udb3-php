@@ -239,10 +239,11 @@ class Event extends EventSourcedAggregateRoot
      * Delet an image.
      *
      * @param int $indexToDelete
+     * @param mixed int|string $internalId
      */
-    public function deleteImage($indexToDelete)
+    public function deleteImage($indexToDelete, $internalId)
     {
-        $this->apply(new ImageDeleted($this->eventId, $indexToDelete));
+        $this->apply(new ImageDeleted($this->eventId, $indexToDelete, $internalId));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

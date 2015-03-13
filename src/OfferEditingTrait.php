@@ -151,7 +151,7 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
-    public function deleteImage($id, $indexToDelete)
+    public function deleteImage($id, $indexToDelete, $internalId = '')
     {
 
         $this->guardId($id);
@@ -159,7 +159,7 @@ trait OfferEditingTrait
         $commandClass = $this->getCommandClass('DeleteImage');
 
         return $this->commandBus->dispatch(
-            new $commandClass($id, $indexToDelete)
+            new $commandClass($id, $indexToDelete, $internalId)
         );
 
     }

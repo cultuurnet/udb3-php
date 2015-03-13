@@ -201,7 +201,8 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
         $event = $this->placeRepository->load($deleteImage->getId());
 
         $event->deleteImage(
-            $deleteImage->getIndexToDelete()
+            $deleteImage->getIndexToDelete(),
+            $deleteImage->getInternalId()
         );
 
         $this->placeRepository->add($event);

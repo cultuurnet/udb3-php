@@ -415,7 +415,6 @@ class PlaceLDProjector extends ActorLDProjector
         $placeLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
 
         $this->repository->save($document->withBody($placeLd));
-
     }
 
     /**

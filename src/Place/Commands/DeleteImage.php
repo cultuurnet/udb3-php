@@ -18,10 +18,12 @@ class DeleteImage
     /**
      * @param string $id
      * @param int $indexToDelete
+     * @param mixed int|string $internalId
      */
-    public function __construct($id, $indexToDelete)
+    public function __construct($id, $indexToDelete, $internalId)
     {
         $this->id = $id;
         $this->indexToDelete = $indexToDelete;
+        $this->internalId = $internalId;
     }
 }

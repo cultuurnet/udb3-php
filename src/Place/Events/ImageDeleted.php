@@ -19,11 +19,13 @@ class ImageDeleted extends PlaceEvent
     /**
      * @param string $id
      * @param int $indexToDelete
+     * @param mixed int|string $internalId
      */
-    public function __construct($id, $indexToDelete)
+    public function __construct($id, $indexToDelete, $internalId)
     {
         parent::__construct($id);
         $this->indexToDelete = $indexToDelete;
+        $this->internalId = $internalId;
     }
 
     /**
@@ -31,6 +33,6 @@ class ImageDeleted extends PlaceEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['place_id'], MediaObject::deserialize($data['index_to_delete']));
+        return new static($data['place_id'], $data['index_to_delete'], $data['internal_id']);
     }
 }

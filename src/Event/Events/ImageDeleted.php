@@ -20,11 +20,13 @@ class ImageDeleted extends EventEvent
     /**
      * @param string $id
      * @param int $indexToDelete
+     * @parma mixed int|string $internalId
      */
-    public function __construct($id, $indexToDelete)
+    public function __construct($id, $indexToDelete, $internalId)
     {
         parent::__construct($id);
         $this->indexToDelete = $indexToDelete;
+        $this->internalId = $internalId;
     }
 
     /**
@@ -32,6 +34,6 @@ class ImageDeleted extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['index_to_delete']);
+        return new static($data['event_id'], $data['index_to_delete'], $data['internal_id']);
     }
 }

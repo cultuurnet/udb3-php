@@ -99,5 +99,5 @@ interface PlaceEditingServiceInterface
      * @param string $id
      * @parma int $indexToDelete
      */
-    public function deleteImage($id, $indexToDelete);
+    public function deleteImage($id, $indexToDelete, $internalId = '');
 }

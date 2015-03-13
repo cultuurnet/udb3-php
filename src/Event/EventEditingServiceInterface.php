@@ -97,9 +97,10 @@ interface EventEditingServiceInterface
      * Delete an image of the event.
      *
      * @param string $id
-     * @parma int $indexToDelete
+     * @param int $indexToDelete
+     * @param mixed int|string $interalId
      */
-    public function deleteImage($id, $indexToDelete);
+    public function deleteImage($id, $indexToDelete, $internalId = '');
 
     /**
      * @param string $eventId

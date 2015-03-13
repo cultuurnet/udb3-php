@@ -16,6 +16,11 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
+     * Internal file id.
+     */
+     protected $internalId;
+
+    /**
      * Url to the media object.
      *
      * @var string
@@ -44,12 +49,13 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
      */
     protected $copyrightHolder;
 
-    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder)
+    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '')
     {
         $this->url = $url;
         $this->thumbnailUrl = $thumbnailUrl;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
+        $this->internalId = $internalId;
     }
 
     /**
@@ -85,11 +91,19 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
+     * @return string
+     */
+    public function getInternalId()
+    {
+        return $this->internalId;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function deserialize(array $data)
     {
-        return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder']);
+        return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id']);
     }
 
     /**
@@ -101,7 +115,8 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
             'url' => $this->url,
             'thumbnail_url' => $this->thumbnailUrl,
             'description' => $this->description,
-            'copyright_holder' => $this->copyrightHolder
+            'copyright_holder' => $this->copyrightHolder,
+            'internal_id' => $this->internalId
         ];
     }
 

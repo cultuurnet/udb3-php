@@ -1,34 +1,36 @@
 <?php
+/**
+ * @file
+ */
 
-
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\Label;
 
-class LabelQuery
+class ApplyLabel
 {
     /**
      * @var string
      */
-    protected $query;
+    protected $eventId;
 
     /**
      * @var Label
      */
     protected $label;
 
-    public function __construct($query, Label $label)
+    public function __construct($eventId, Label $label)
     {
-        $this->query = $query;
         $this->label = $label;
+        $this->eventId = $eventId;
     }
 
     /**
      * @return string
      */
-    public function getQuery()
+    public function getEventId()
     {
-        return $this->query;
+        return $this->eventId;
     }
 
     /**

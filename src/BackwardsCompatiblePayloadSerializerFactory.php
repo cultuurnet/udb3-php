@@ -1,0 +1,82 @@
+<?php
+/**
+ * @file
+ */
+
+namespace CultuurNet\UDB3;
+
+use Broadway\Serializer\SerializerInterface;
+
+/**
+ * Factory chaining together the logic to manipulate the payload of old events
+ * in order to make it usable by new events.
+ *
+ * Some cases:
+ * - changing the class name / namespace after class renames
+ * - changing the names of properties
+ */
+class BackwardsCompatiblePayloadSerializerFactory
+{
+
+    private function __construct()
+    {
+
+    }
+
+    /**
+     * @return SerializerInterface
+     */
+    public static function createSerializer()
+    {
+        $payloadManipulatingSerializer = new \CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer(
+            new \Broadway\Serializer\SimpleInterfaceSerializer()
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\UsedKeywordsMemory\Created',
+            function (array $serializedObject) {
+                $serializedObject['class'] = \CultuurNet\UDB3\UsedLabelsMemory\Created::class;
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
+            function (array $serializedObject) {
+                $serializedObject['class'] = \CultuurNet\UDB3\UsedLabelsMemory\LabelUsed::class;
+
+                $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
+                unset($serializedObject['payload']['keyword']);
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\EventWasTagged',
+            function (array $serializedObject) {
+                $serializedObject['class'] = Event\Events\EventWasLabelled::class;
+
+                $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
+                unset($serializedObject['payload']['keyword']);
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\TagErased',
+            function (array $serializedObject) {
+                $serializedObject['class'] = Event\Events\Unlabelled::class;
+
+                $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
+                unset($serializedObject['payload']['keyword']);
+
+                return $serializedObject;
+            }
+        );
+
+        return $payloadManipulatingSerializer;
+    }
+}

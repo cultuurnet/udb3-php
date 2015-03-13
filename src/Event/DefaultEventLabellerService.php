@@ -4,6 +4,8 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use CultuurNet\UDB3\Event\Commands\LabelEvents;
+use CultuurNet\UDB3\Event\Commands\LabelQuery;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Label;
 

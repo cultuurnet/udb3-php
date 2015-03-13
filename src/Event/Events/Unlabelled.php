@@ -1,11 +1,14 @@
 <?php
+/**
+ * @file
+ */
 
+namespace CultuurNet\UDB3\Event\Events;
 
-namespace CultuurNet\UDB3\Event;
-
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Label;
 
-class EventWasLabelled extends EventEvent
+final class Unlabelled extends EventEvent
 {
     /**
      * @var Label

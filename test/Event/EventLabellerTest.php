@@ -5,6 +5,12 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
+use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\LabelEvents;
+use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
@@ -195,7 +201,7 @@ class EventLabellerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorEventCreated($id)]
             )
-            ->when(new LabelCommand($id, new Label('foo')))
+            ->when(new ApplyLabel($id, new Label('foo')))
             ->then([new EventWasLabelled($id, new Label('foo'))]);
     }
 

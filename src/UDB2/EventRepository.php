@@ -16,8 +16,8 @@ use CultuurNet\Entry\EntryAPI;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\EventCreated;
-use CultuurNet\UDB3\Event\EventWasLabelled;
-use CultuurNet\UDB3\Event\Unlabelled;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -111,7 +111,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         break;
 
                     case Unlabelled::class:
-                        /** @var Unlabelled $domainEvent */
+                        /** @var \CultuurNet\UDB3\Event\Events\Unlabelled $domainEvent */
                         $this->applyUnlabelled(
                             $domainEvent,
                             $domainMessage->getMetadata()

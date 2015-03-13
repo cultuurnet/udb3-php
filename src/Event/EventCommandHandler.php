@@ -5,12 +5,15 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandHandler;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\LabelEvents;
+use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Label as Label;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use CultuurNet\UDB3\Event\LabelCommand as LabelCommand;
 
 class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
 {
@@ -183,7 +186,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         $this->eventRepository->add($event);
     }
 
-    public function handleLabelCommand(LabelCommand $label)
+    public function handleApplyLabel(ApplyLabel $label)
     {
         /** @var Event $event */
         $event = $this->eventRepository->load($label->getEventId());

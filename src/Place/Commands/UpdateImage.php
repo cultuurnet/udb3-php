@@ -5,7 +5,7 @@
  * Contains CultuurNet\UDB3\Place\Commands\UpdateImage.
  */
 
-namespace CultuurNet\UDB3\Event\Commands;
+namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\MediaObject;
 

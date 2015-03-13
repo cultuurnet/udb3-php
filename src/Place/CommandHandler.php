@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\Place;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
-use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\DeleteImage;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
@@ -13,6 +12,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Place\Place;

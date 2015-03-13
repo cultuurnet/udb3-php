@@ -111,6 +111,11 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     public function toJsonLd()
     {
         // Matches the serialized array.
-        return $this->serialize();
+        return [
+            'url' => $this->url,
+            'thumbnailUrl' => $this->thumbnailUrl,
+            'description' => $this->description,
+            'copyrightHolder' => $this->copyrightHolder
+        ];
     }
 }

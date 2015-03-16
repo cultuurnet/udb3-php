@@ -10,7 +10,7 @@ namespace CultuurNet\UDB3;
 /**
  * BookingInfo info.
  */
-class BookingInfo
+class BookingInfo implements JsonLdSerializableInterface
 {
 
     /**
@@ -153,4 +153,12 @@ class BookingInfo
             $data['availabilityStarts'], $data['availabilityEnds'], $data['name'], $data['description']
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toJsonLd() {
+        return $this->serialize();
+    }
+
 }

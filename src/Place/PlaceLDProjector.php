@@ -275,7 +275,7 @@ class PlaceLDProjector extends ActorLDProjector
         $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
 
         $placeLD = $document->getBody();
-        $placeLD->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
+        $placeLD->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
 
         $this->repository->save($document->withBody($placeLD));
 

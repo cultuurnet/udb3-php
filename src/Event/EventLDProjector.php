@@ -433,7 +433,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         $eventLd = $document->getBody();
 
-        $eventLd->location = array(
+        $eventLd->organizer = array(
           '@type' => 'Organizer',
         ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
 
@@ -481,7 +481,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
 
         $eventLd = $document->getBody();
-        $eventLd->bookingInfo[] = $bookingInfoUpdated->getBookingInfo();
+        $eventLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
 
         $this->repository->save($document->withBody($eventLd));
 

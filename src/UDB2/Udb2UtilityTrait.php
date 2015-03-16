@@ -293,7 +293,7 @@ trait Udb2UtilityTrait
         $cdbItem->setBookingPeriod($bookingPeriod);
 
         // Add the contact info.
-        $contactInfo = $event->getContactInfo();
+        $contactInfo = $cdbItem->getContactInfo();
         if (empty($contactInfo)) {
             $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
         }

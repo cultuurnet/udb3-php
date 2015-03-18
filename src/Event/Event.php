@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
@@ -236,7 +237,7 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * Delet an image.
+     * Delete an image.
      *
      * @param int $indexToDelete
      * @param mixed int|string $internalId
@@ -244,6 +245,20 @@ class Event extends EventSourcedAggregateRoot
     public function deleteImage($indexToDelete, $internalId)
     {
         $this->apply(new ImageDeleted($this->eventId, $indexToDelete, $internalId));
+    }
+
+    /**
+     * Update the major info.
+     *
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarInterface $calendar
+     * @param type $theme
+     */
+    public function updateMajorInfo(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
+    {
+        $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

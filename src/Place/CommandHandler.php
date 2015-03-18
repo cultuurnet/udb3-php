@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateImage;
+use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Place\Place;
@@ -179,14 +180,14 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $event = $this->placeRepository->load($updateImage->getId());
+        $place = $this->placeRepository->load($updateImage->getId());
 
-        $event->updateImage(
+        $place->updateImage(
             $updateImage->getIndexToUpdate(),
             $updateImage->getMediaObject()
         );
 
-        $this->placeRepository->add($event);
+        $this->placeRepository->add($place);
 
     }
 
@@ -198,14 +199,36 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $event = $this->placeRepository->load($deleteImage->getId());
+        $place = $this->placeRepository->load($deleteImage->getId());
 
-        $event->deleteImage(
+        $place->deleteImage(
             $deleteImage->getIndexToDelete(),
             $deleteImage->getInternalId()
         );
 
-        $this->placeRepository->add($event);
+        $this->placeRepository->add($place);
 
     }
+
+    /**
+     * Handle an update the major info command.
+     */
+    public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($updateMajorInfo->getId());
+
+        $place->updateMajorInfo(
+            $updateMajorInfo->getTitle(),
+            $updateMajorInfo->getEventType(),
+            $updateMajorInfo->getAddress(),
+            $updateMajorInfo->getCalendar(),
+            $updateMajorInfo->getTheme()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
 }

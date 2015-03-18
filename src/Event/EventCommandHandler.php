@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Keyword;
@@ -343,6 +344,27 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         $event->deleteImage(
             $deleteImage->getIndexToDelete(),
             $deleteImage->getInteralId()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update the major info command.
+     */
+    public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateMajorInfo->getId());
+
+        $event->updateMajorInfo(
+            $updateMajorInfo->getTitle(),
+            $updateMajorInfo->getEventType(),
+            $updateMajorInfo->getLocation(),
+            $updateMajorInfo->getCalendar(),
+            $updateMajorInfo->getTheme()
         );
 
         $this->eventRepository->add($event);

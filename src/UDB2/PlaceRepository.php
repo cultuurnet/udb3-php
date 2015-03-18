@@ -416,7 +416,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
         $bookingInfo = $domainEvent->getBookingInfo();
 
         $this->updateCdbItemByBookingInfo($event, $bookingInfo);

@@ -12,7 +12,7 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * Value object for address information.
  */
-class Address implements SerializableInterface
+class Address implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
@@ -86,4 +86,17 @@ class Address implements SerializableInterface
                 $data['streetAddress'], $data['postalCode'], $data['locality'], $data['country']
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toJsonLd() {
+        return [
+            'addressCountry' => $this->country,
+            'addressLocality' => $this->locality,
+            'postalCode' => $this->postalCode,
+            'streetAddress' => $this->streetAddress
+        ];
+    }
+
 }

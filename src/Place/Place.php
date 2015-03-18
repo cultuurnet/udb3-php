@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageDeleted;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
+use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -160,6 +161,20 @@ class Place extends Actor
     public function deleteImage($indexToDelete, $internalId)
     {
         $this->apply(new ImageDeleted($this->actorId, $indexToDelete, $internalId));
+    }
+
+    /**
+     * Update the major info.
+     *
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Address $address
+     * @param CalendarInterface $calendar
+     * @param type $theme
+     */
+    public function updateMajorInfo(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    {
+        $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
     }
 
     /**

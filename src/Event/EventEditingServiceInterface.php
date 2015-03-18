@@ -128,4 +128,16 @@ interface EventEditingServiceInterface
      * @return string $eventId
      */
     public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+
+    /**
+     * @param string $eventId
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarBase $calendar
+     * @param Theme/null $theme
+     *
+     * @return string $eventId
+     */
+    public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
 }

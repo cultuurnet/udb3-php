@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
@@ -36,6 +37,7 @@ use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\Theme;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -220,53 +222,8 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
           '@type' => 'Place',
         ) + (array)$this->placeJSONLD($eventCreated->getLocation()->getCdbid());
 
-        $calendar = $eventCreated->getCalendar();
-        $startDate = $calendar->getStartDate();
-        $endDate = $calendar->getEndDate();
-
-        $jsonLD->calendarType = $calendar->getType();
-        // All calendar types allow startDate (and endDate).
-        // One timestamp - full day.
-        // One timestamp - start hour.
-        // One timestamp - start and end hour.
-        if (!empty($startDate)) {
-            $jsonLD->startDate = $startDate;
-        }
-
-        if (!empty($endDate)) {
-            $jsonLD->endDate = $endDate;
-        }
-
-        $timestamps = $calendar->getTimestamps();
-        if (!empty($timestamps)) {
-            $jsonLD->subEvent = array();
-            foreach ($calendar->getTimestamps() as $timestamp) {
-                $jsonLD->subEvent[] = array(
-                  '@type' => 'Event',
-                  'startDate' => $timestamp->getStartDate(),
-                  'endDate' => $timestamp->getEndDate(),
-                );
-            }
-        }
-
-        // Period.
-        // Period with openingtimes.
-        // Permanent - "altijd open".
-        // Permanent - with openingtimes
-        $openingHours = $calendar->getOpeningHours();
-        if (!empty($openingHours)) {
-            $jsonLD->openingHours = array();
-            foreach ($openingHours as $openingHour) {
-                $schedule = array('dayOfWeek' => $openingHour->daysOfWeek);
-                if (!empty($openingHour->opens)) {
-                    $schedule['opens'] = $openingHour->opens;
-                }
-                if (!empty($openingHour->closes)) {
-                    $schedule['closes'] = $openingHour->closes;
-                }
-                $jsonLD->openingHours[] = $schedule;
-            }
-        }
+        $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
+        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
         // Same as.
         $jsonLD->sameAs = $this->generateSameAs(
@@ -296,6 +253,42 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         }
 
         $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * Apply the major info updated command to the projector.
+     */
+    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($majorInfoUpdated);
+        $jsonLD = $document->getBody();
+
+        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
+        $jsonLD->location = array(
+          '@type' => 'Place',
+        ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
+
+        $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
+        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
+
+        // Remove old theme and event type.
+        $jsonLD->terms = array_filter($jsonLD->terms, function($term) {
+          return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
+        });
+
+        $eventType = $majorInfoUpdated->getEventType();
+        $jsonLD->terms = [
+            $eventType->toJsonLd()
+        ];
+
+        $theme = $majorInfoUpdated->getTheme();
+        if (!empty($theme)) {
+            $jsonLD->terms[] = $theme->toJsonLd();
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+
     }
 
     public function placeJSONLD($placeId)

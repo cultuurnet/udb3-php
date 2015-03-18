@@ -17,8 +17,6 @@ trait DelegateEventHandlingToSpecificMethodTrait
     {
         $event  = $domainMessage->getPayload();
         $method = $this->getHandleMethod($event);
-print get_class($this);
-print $method;
         if (!method_exists($this, $method)) {
             return;
         }

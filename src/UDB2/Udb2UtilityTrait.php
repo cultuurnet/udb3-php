@@ -259,7 +259,7 @@ trait Udb2UtilityTrait
         // Remove non-reservation emails and add new ones.
         foreach ($contactInfo->getMails() as $mailIndex => $mail) {
             if (!$mail->isForReservations()) {
-                $contactInfo->removeUrl($mailIndex);
+                $contactInfo->removeMail($mailIndex);
             }
         }
         $emails = $contactPoint->getEmails();
@@ -318,7 +318,7 @@ trait Udb2UtilityTrait
         if (!empty($bookingInfo->email)) {
             foreach ($contactInfo->getMails() as $mailIndex => $mail) {
                 if ($mail->isForReservations()) {
-                    $contactInfo->removeUrl($mailIndex);
+                    $contactInfo->removeMail($mailIndex);
                 }
             }
             $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));

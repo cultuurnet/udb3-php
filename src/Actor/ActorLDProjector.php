@@ -8,13 +8,17 @@
 namespace CultuurNet\UDB3\Actor;
 
 use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\ReadModel\Udb3Projector;
 
-abstract class ActorLDProjector extends Udb3Projector
+abstract class ActorLDProjector implements EventListenerInterface
 {
+
+    use DelegateEventHandlingToSpecificMethodTrait;
+
     /**
      * @var DocumentRepositoryInterface
      */

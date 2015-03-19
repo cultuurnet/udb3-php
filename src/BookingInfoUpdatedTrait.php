@@ -19,7 +19,7 @@ trait BookingInfoUpdatedTrait
     protected $bookingInfo;
 
     /**
-     * @return string
+     * @return BookingInfo
      */
     public function getBookingInfo()
     {
@@ -32,7 +32,7 @@ trait BookingInfoUpdatedTrait
     public function serialize()
     {
         return parent::serialize() + array(
-            'bookingInfo' => $this->bookingInfo,
+            'bookingInfo' => $this->bookingInfo->serialize(),
         );
     }
 }

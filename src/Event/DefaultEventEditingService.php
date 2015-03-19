@@ -9,6 +9,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -159,4 +160,18 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
 
         return $eventId;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
+    {
+
+        $this->guardId($eventId);
+
+        return $this->commandBus->dispatch(
+            new UpdateMajorInfo($eventId, $title, $eventType, $location, $calendar, $theme)
+        );
+    }
+
 }

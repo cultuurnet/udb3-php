@@ -19,10 +19,7 @@ use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
-use CultureFeed_Cdb_Data_Mail;
 use CultureFeed_Cdb_Data_Organiser;
-use CultureFeed_Cdb_Data_Phone;
-use CultureFeed_Cdb_Data_Url;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
@@ -32,12 +29,16 @@ use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\ImageAdded;
+use CultuurNet\UDB3\Place\Events\ImageDeleted;
+use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
+use CultuurNet\UDB3\Udb3RepositoryTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -51,7 +52,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
     use LoggerAwareTrait;
     use Udb2UtilityTrait;
-    use \CultuurNet\UDB3\Udb3RepositoryTrait;
+    use Udb3RepositoryTrait;
 
     /**
      * @var RepositoryInterface
@@ -181,6 +182,27 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case FacilitiesUpdated::class:
                         $this->applyFacilitiesUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ImageAdded::class:
+                        $this->applyImageAdded(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ImageUpdated::class:
+                        $this->applyImageUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ImageDeleted::class:
+                        $this->applyImageDeleted(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -377,25 +399,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $event = $entryApi->getEvent($domainEvent->getPlaceId());
         $contactPoint = $domainEvent->getContactPoint();
 
-        $contactInfo = $event->getContactInfo();
-        $phones = $contactPoint->getPhones();
-        foreach ($phones as $phone) {
-            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
-        }
-
-        $contactInfo->deleteUrls();
-        $urls = $contactPoint->getUrls();
-        foreach ($urls as $url) {
-            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
-        }
-
-        $contactInfo->deleteMails();
-        $emails = $contactPoint->getEmails();
-        foreach ($emails as $email) {
-            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
-        }
-        $event->setContactInfo($contactInfo);
-
+        $this->updateCdbItemByContactPoint($event, $contactPoint);
         $entryApi->updateEvent($event);
 
     }
@@ -412,21 +416,10 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
         $bookingInfo = $domainEvent->getBookingInfo();
 
-        $bookingPeriod = $event->getBookingPeriod();
-        if (empty($bookingPeriod)) {
-            $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
-        }
-
-        if (!empty($bookingInfo->availabilityStarts)) {
-            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
-        }
-        if (!empty($bookingInfo->availabilityEnds)) {
-            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
-        }
-        $event->setBookingPeriod($bookingPeriod);
+        $this->updateCdbItemByBookingInfo($event, $bookingInfo);
 
         $entryApi->updateEvent($event);
 
@@ -449,7 +442,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         // Remove all old facilities.
         foreach ($cdbCategories as $key => $category) {
             if ($category->getType() == Facility::DOMAIN) {
-                unset($cdbCategories[$key]);
+                $cdbCategories->delete($key);
             }
         }
 
@@ -458,6 +451,57 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
             $cdbCategories->add(new \CultureFeed_Cdb_Data_Category(Facility::DOMAIN, $facility->getId(), $facility->getLabel()));
         }
 
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the imageAdded event to udb2.
+     * @param ImageAdded $domainEvent
+     */
+    private function applyImageAdded(
+        ImageAdded $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+
+        $this->addImageToCdbItem($event, $domainEvent->getMediaObject());
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the imageUpdated event to udb2.
+     * @param ImageAdded $domainEvent
+     */
+    private function applyImageUpdated(
+        ImageUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+
+        $this->updateImageOnCdbItem($event, $domainEvent->getIndexToUpdate(), $domainEvent->getMediaObject());
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the imageDeleted event to udb2.
+     * @param ImageDeleted $domainEvent
+     */
+    private function applyImageDeleted(
+        ImageDeleted $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getPlaceId());
+
+        $this->deleteImageOnCdbItem($event, $domainEvent->getIndexToDelete());
         $entryApi->updateEvent($event);
 
     }

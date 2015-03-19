@@ -12,12 +12,17 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
 
 class Event extends EventSourcedAggregateRoot
@@ -208,6 +213,52 @@ class Event extends EventSourcedAggregateRoot
     public function updateBookingInfo(BookingInfo $bookingInfo)
     {
         $this->apply(new BookingInfoUpdated($this->eventId, $bookingInfo));
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param MediaObject $mediaObject
+     */
+    public function addImage(MediaObject $mediaObject)
+    {
+        $this->apply(new ImageAdded($this->eventId, $mediaObject));
+    }
+
+    /**
+     * Update an image.
+     *
+     * @param int $indexToUpdate
+     * @param MediaObject $mediaObject
+     */
+    public function updateImage($indexToUpdate, MediaObject $mediaObject)
+    {
+        $this->apply(new ImageUpdated($this->eventId, $indexToUpdate, $mediaObject));
+    }
+
+    /**
+     * Delete an image.
+     *
+     * @param int $indexToDelete
+     * @param mixed int|string $internalId
+     */
+    public function deleteImage($indexToDelete, $internalId)
+    {
+        $this->apply(new ImageDeleted($this->eventId, $indexToDelete, $internalId));
+    }
+
+    /**
+     * Update the major info.
+     *
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarInterface $calendar
+     * @param type $theme
+     */
+    public function updateMajorInfo(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
+    {
+        $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
     }
 
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)

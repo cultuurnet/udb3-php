@@ -13,7 +13,7 @@ use CultuurNet\UDB3\CalendarInterface;
 /**
  * a Calendar for events and places.
  */
-class Calendar implements CalendarInterface
+class Calendar implements CalendarInterface, JsonLdSerializableInterface
 {
 
     /**
@@ -131,4 +131,63 @@ class Calendar implements CalendarInterface
     {
         return $this->timestamps;
     }
+
+    /**
+     * Return the jsonLD version of a calendar.
+     */
+    public function toJsonLd() {
+
+        $jsonLd = [];
+
+        $startDate = $this->getStartDate();
+        $endDate = $this->getEndDate();
+
+        $jsonLD['calendarType'] = $this->getType();
+        // All calendar types allow startDate (and endDate).
+        // One timestamp - full day.
+        // One timestamp - start hour.
+        // One timestamp - start and end hour.
+        if (!empty($startDate)) {
+            $jsonLd['startDate'] = $startDate;
+        }
+
+        if (!empty($endDate)) {
+            $jsonLd['endDate'] = $endDate;
+        }
+
+        $timestamps = $this->getTimestamps();
+        if (!empty($timestamps)) {
+            $jsonLd['subEvent'] = array();
+            foreach ($timestamps as $timestamp) {
+                $jsonLd['subEvent'][] = array(
+                  '@type' => 'Event',
+                  'startDate' => $timestamp->getStartDate(),
+                  'endDate' => $timestamp->getEndDate(),
+                );
+            }
+        }
+
+        // Period.
+        // Period with openingtimes.
+        // Permanent - "altijd open".
+        // Permanent - with openingtimes
+        $openingHours = $this->getOpeningHours();
+        if (!empty($openingHours)) {
+            $jsonLD['openingHours'] = array();
+            foreach ($openingHours as $openingHour) {
+                $schedule = array('dayOfWeek' => $openingHour->dayOfWeek);
+                if (!empty($openingHour->opens)) {
+                    $schedule['opens'] = $openingHour->opens;
+                }
+                if (!empty($openingHour->closes)) {
+                    $schedule['closes'] = $openingHour->closes;
+                }
+                $jsonLD['openingHours'][] = $schedule;
+            }
+        }
+
+        return $jsonLD;
+
+    }
+
 }

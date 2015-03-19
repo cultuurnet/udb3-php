@@ -5,11 +5,15 @@ namespace CultuurNet\UDB3\Place;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\DeleteImage;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Place\Commands\UpdateImage;
+use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Place\Place;
@@ -131,7 +135,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 
         $this->placeRepository->add($place);
     }
-    
+
     /**
      * Handle an update command to updated the booking info.
      */
@@ -148,4 +152,83 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
         $this->placeRepository->add($place);
 
     }
+
+
+    /**
+     * Handle an add image command.
+     * @param AddImage $addImage
+     */
+    public function handleAddImage(AddImage $addImage)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($addImage->getId());
+
+        $place->addImage(
+            $addImage->getMediaObject()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
+    /**
+     * Handle an update image command.
+     * @param UpdateImage $updateImage
+     */
+    public function handleUpdateImage(UpdateImage $updateImage)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($updateImage->getId());
+
+        $place->updateImage(
+            $updateImage->getIndexToUpdate(),
+            $updateImage->getMediaObject()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
+    /**
+     * Handle a delete image command.
+     * @param DeleteImage $deleteImage
+     */
+    public function handleDeleteImage(DeleteImage $deleteImage)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($deleteImage->getId());
+
+        $place->deleteImage(
+            $deleteImage->getIndexToDelete(),
+            $deleteImage->getInternalId()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
+    /**
+     * Handle an update the major info command.
+     */
+    public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($updateMajorInfo->getId());
+
+        $place->updateMajorInfo(
+            $updateMajorInfo->getTitle(),
+            $updateMajorInfo->getEventType(),
+            $updateMajorInfo->getAddress(),
+            $updateMajorInfo->getCalendar(),
+            $updateMajorInfo->getTheme()
+        );
+
+        $this->placeRepository->add($place);
+
+    }
+
 }

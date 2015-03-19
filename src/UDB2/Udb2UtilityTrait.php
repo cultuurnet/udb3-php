@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\Metadata;
 use CultureFeed_Cdb_Data_Address_PhysicalAddress;
+use CultureFeed_Cdb_Data_Calendar_BookingPeriod;
 use CultureFeed_Cdb_Data_Calendar_OpeningTime;
 use CultureFeed_Cdb_Data_Calendar_Period;
 use CultureFeed_Cdb_Data_Calendar_PeriodList;
@@ -17,11 +18,21 @@ use CultureFeed_Cdb_Data_Calendar_SchemeDay;
 use CultureFeed_Cdb_Data_Calendar_Timestamp;
 use CultureFeed_Cdb_Data_Calendar_TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme;
+use CultureFeed_Cdb_Data_ContactInfo;
+use CultureFeed_Cdb_Data_EventDetail;
+use CultureFeed_Cdb_Data_File;
+use CultureFeed_Cdb_Data_Mail;
+use CultureFeed_Cdb_Data_Phone;
+use CultureFeed_Cdb_Data_Url;
+use CultureFeed_Cdb_Item_Base;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\Entry\EntryAPI;
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use Zend\Validator\Exception\RuntimeException;
 
@@ -90,7 +101,7 @@ trait Udb2UtilityTrait
 
             foreach ($openingHours as $openingHour) {
               // In CDB2 every day needs to be a seperate entry.
-                foreach ($openingHour->daysOfWeek as $day) {
+                foreach ($openingHour->dayOfWeek as $day) {
                     $openingTimesPerDay[$day][] = new CultureFeed_Cdb_Data_Calendar_OpeningTime($openingHour->opens . ':00', $openingHour->closes . ':00');
                 }
 
@@ -208,6 +219,242 @@ trait Udb2UtilityTrait
         }
 
         return $physicalAddress;
+
+    }
+
+    /**
+     * Update a cdb item based on a contact point.
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     * @param \CultuurNet\UDB3\UDB2\ContactPoint $contactPoint
+     */
+    private function updateCdbItemByContactPoint(
+        CultureFeed_Cdb_Item_Base $cdbItem,
+        ContactPoint $contactPoint
+    ) {
+
+        $contactInfo = $cdbItem->getContactInfo();
+
+        // Remove non-reservation phones and add new ones.
+        foreach ($contactInfo->getPhones() as $phoneIndex => $phone) {
+            if (!$phone->isForReservations()) {
+                $contactInfo->removePhone($phoneIndex);
+            }
+        }
+        $phones = $contactPoint->getPhones();
+        foreach ($phones as $phone) {
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
+        }
+
+        // Remove non-reservation urls and add new ones.
+        foreach ($contactInfo->getUrls() as $urlIndex => $url) {
+            if (!$url->isForReservations()) {
+                $contactInfo->removeUrl($urlIndex);
+            }
+        }
+        $urls = $contactPoint->getUrls();
+        foreach ($urls as $url) {
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
+        }
+
+        // Remove non-reservation emails and add new ones.
+        foreach ($contactInfo->getMails() as $mailIndex => $mail) {
+            if (!$mail->isForReservations()) {
+                $contactInfo->removeMail($mailIndex);
+            }
+        }
+        $emails = $contactPoint->getEmails();
+        foreach ($emails as $email) {
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
+        }
+        $cdbItem->setContactInfo($contactInfo);
+
+    }
+
+    /**
+     * Update the cdb item based on a bookingInfo object.
+     */
+    private function updateCdbItemByBookingInfo(
+        CultureFeed_Cdb_Item_Base $cdbItem,
+        BookingInfo $bookingInfo
+    ) {
+
+        // Add the booking Period.
+        $bookingPeriod = $cdbItem->getBookingPeriod();
+        if (empty($bookingPeriod)) {
+            $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
+        }
+
+        if (!empty($bookingInfo->availabilityStarts)) {
+            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
+        }
+        if (!empty($bookingInfo->availabilityEnds)) {
+            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
+        }
+        $cdbItem->setBookingPeriod($bookingPeriod);
+
+        // Add the contact info.
+        $contactInfo = $cdbItem->getContactInfo();
+        if (empty($contactInfo)) {
+            $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
+        }
+        if (!empty($bookingInfo->phone)) {
+            foreach ($contactInfo->getPhones() as $phoneIndex => $phone) {
+                if ($phone->isForReservations()) {
+                    $contactInfo->removePhone($phoneIndex);
+                }
+            }
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->phone));
+        }
+
+        if (!empty($bookingInfo->url)) {
+            foreach ($contactInfo->getUrls() as $urlIndex => $url) {
+                if ($url->isForReservations()) {
+                    $contactInfo->removeUrl($urlIndex);
+                }
+            }
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->url));
+        }
+
+        if (!empty($bookingInfo->email)) {
+            foreach ($contactInfo->getMails() as $mailIndex => $mail) {
+                if ($mail->isForReservations()) {
+                    $contactInfo->removeMail($mailIndex);
+                }
+            }
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));
+        }
+        $cdbItem->setContactInfo($contactInfo);
+
+    }
+
+    /**
+     * Add an image to the cdb item.
+     */
+    private function addImageToCdbItem(
+        CultureFeed_Cdb_Item_Base $cdbItem,
+        MediaObject $mediaObject
+    ) {
+
+        $details = $cdbItem->getDetails();
+
+        // Get the first detail.
+        $detail = null;
+        foreach ($details as $languageDetail) {
+            if (!$detail) {
+                $detail = $languageDetail;
+            }
+        }
+
+        // Make sure a detail exists.
+        if (empty($detail)) {
+          $detail = new CultureFeed_Cdb_Data_EventDetail();
+          $details->add($detail);
+        }
+
+        $uriParts = explode('/', $mediaObject->getUrl());
+
+        $file = new CultureFeed_Cdb_Data_File();
+        $file->setMediaType(CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO);
+        $file->setHLink($mediaObject->getUrl());
+        $file->setFileName(end($uriParts));
+        $file->setCopyright($mediaObject->getCopyrightHolder());
+        $file->setTitle($mediaObject->getDescription());
+        $detail->getMedia()->add($file);
+
+    }
+
+    /**
+     * Update an existing image on the cdb item.
+     *
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     * @param int $indexToUpdate
+     * @param MediaObject $mediaObject
+     */
+    private function updateImageOnCdbItem(
+        CultureFeed_Cdb_Item_Base $cdbItem,
+        $indexToUpdate,
+        MediaObject $mediaObject
+    ) {
+
+        $details = $cdbItem->getDetails();
+
+        // Get the first detail.
+        $detail = null;
+        foreach ($details as $languageDetail) {
+            if (!$detail) {
+                $detail = $languageDetail;
+            }
+        }
+
+        // Make sure a detail exists.
+        if (empty($detail)) {
+          $detail = new CultureFeed_Cdb_Data_EventDetail();
+          $details->add($detail);
+        }
+
+        $media = $detail->getMedia();
+        $index = 0;
+        // Loop over all files and count own index.
+        foreach ($media as $file) {
+            if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO) {
+                // If the index matches, delete the file.
+                if ($index === $indexToUpdate) {
+
+                    $uriParts = explode('/', $mediaObject->getUrl());
+
+                    $file->setHLink($mediaObject->getUrl());
+                    $file->setFileName(end($uriParts));
+                    $file->setCopyright($mediaObject->getCopyrightHolder());
+                    $file->setTitle($mediaObject->getDescription());
+
+                    break;
+                }
+                $index++;
+            }
+        }
+
+    }
+
+    /**
+     * Delete a given index on the cdb item.
+     *
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     * @param int $indexToDelete
+     * @param MediaObject $mediaObject
+     */
+    private function deleteImageOnCdbItem(
+        CultureFeed_Cdb_Item_Base $cdbItem,
+        $indexToDelete
+    ) {
+
+        $details = $cdbItem->getDetails();
+
+        // Get the first detail.
+        $detail = null;
+        foreach ($details as $languageDetail) {
+            if (!$detail) {
+                $detail = $languageDetail;
+            }
+        }
+
+        // No detail = nothing to delete.
+        if (empty($detail)) {
+          return;
+        }
+
+        $media = $detail->getMedia();
+        $index = 0;
+        // Loop over all files and count own index.
+        foreach ($media as $key => $file) {
+            if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO) {
+                // If the index matches, delete the file.
+                if ($index === $indexToDelete) {
+                    $media->remove($key);
+                    break;
+                }
+                $index++;
+            }
+        }
 
     }
 }

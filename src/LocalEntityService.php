@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
-abstract class LocalEntityService implements EntityServiceInterface
+class LocalEntityService implements EntityServiceInterface
 {
     /**
      * @var DocumentRepositoryInterface

@@ -10,7 +10,7 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Event\EventEvent;
 
 /**
- * Description of DescriptionUpdated
+ * Provides a DescriptionUpdated event.
  */
 class DescriptionUpdated extends EventEvent
 {

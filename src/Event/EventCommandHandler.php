@@ -5,10 +5,14 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Event\Commands\AddImage;
+use CultuurNet\UDB3\Event\Commands\DeleteImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
+use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Keyword;
@@ -284,6 +288,83 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
         $event->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an add image command.
+     * @param AddImage $addImage
+     */
+    public function handleAddImage(AddImage $addImage)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($addImage->getId());
+
+        $event->addImage(
+            $addImage->getMediaObject()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update image command.
+     * @param UpdateImage $updateImage
+     */
+    public function handleUpdateImage(UpdateImage $updateImage)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateImage->getId());
+
+        $event->updateImage(
+            $updateImage->getIndexToUpdate(),
+            $updateImage->getMediaObject()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle a delete image command.
+     * @param DeleteImage $deleteImage
+     */
+    public function handleDeleteImage(DeleteImage $deleteImage)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteImage->getId());
+
+        $event->deleteImage(
+            $deleteImage->getIndexToDelete(),
+            $deleteImage->getInteralId()
+        );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle an update the major info command.
+     */
+    public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateMajorInfo->getId());
+
+        $event->updateMajorInfo(
+            $updateMajorInfo->getTitle(),
+            $updateMajorInfo->getEventType(),
+            $updateMajorInfo->getLocation(),
+            $updateMajorInfo->getCalendar(),
+            $updateMajorInfo->getTheme()
         );
 
         $this->eventRepository->add($event);

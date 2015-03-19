@@ -14,6 +14,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Title;
 
 class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
@@ -63,6 +64,18 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
         $this->placeRepository->add($place);
 
         return $id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            new UpdateMajorInfo($id, $title, $eventType, $address, $calendar, $theme)
+        );
     }
 
     /**

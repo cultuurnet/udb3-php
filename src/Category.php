@@ -12,7 +12,7 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * Instantiates an UDB3 category.
  */
-class Category implements SerializableInterface
+class Category implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
@@ -84,5 +84,14 @@ class Category implements SerializableInterface
         return new static(
                 $data['id'], $data['label'], $data['domain']
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toJsonLd()
+    {
+        // Matches the serialized array.
+        return $this->serialize();
     }
 }

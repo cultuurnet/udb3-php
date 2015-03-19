@@ -14,17 +14,13 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultureFeed_Cdb_Data_Address;
 use CultureFeed_Cdb_Data_Address_PhysicalAddress;
-use CultureFeed_Cdb_Data_Calendar_BookingPeriod;
 use CultureFeed_Cdb_Data_Category;
 use CultureFeed_Cdb_Data_CategoryList;
 use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
-use CultureFeed_Cdb_Data_Mail;
 use CultureFeed_Cdb_Data_Organiser;
-use CultureFeed_Cdb_Data_Phone;
-use CultureFeed_Cdb_Data_Url;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
@@ -33,6 +29,9 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
@@ -41,6 +40,7 @@ use CultuurNet\UDB3\Event\TagErased;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
+use \CultuurNet\UDB3\Udb3RepositoryTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -53,7 +53,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use Udb2UtilityTrait;
-    use \CultuurNet\UDB3\Udb3RepositoryTrait;
+    use Udb3RepositoryTrait;
 
     /**
      * @var RepositoryInterface
@@ -216,6 +216,27 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
                     case BookingInfoUpdated::class:
                         $this->applyBookingInfoUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ImageAdded::class:
+                        $this->applyImageAdded(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ImageUpdated::class:
+                        $this->applyImageUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case ImageDeleted::class:
+                        $this->applyImageDeleted(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -462,27 +483,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $event = $entryApi->getEvent($domainEvent->getEventId());
         $contactPoint = $domainEvent->getContactPoint();
 
-        $contactInfo = $event->getContactInfo();
-        $contactInfo->deletePhones();
-
-        $phones = $contactPoint->getPhones();
-        foreach ($phones as $phone) {
-            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($phone));
-        }
-
-        $contactInfo->deleteUrls();
-        $urls = $contactPoint->getUrls();
-        foreach ($urls as $url) {
-            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($url));
-        }
-
-        $contactInfo->deleteMails();
-        $emails = $contactPoint->getEmails();
-        foreach ($emails as $email) {
-            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($email));
-        }
-        $event->setContactInfo($contactInfo);
-
+        $this->updateCdbItemByContactPoint($event, $contactPoint);
         $entryApi->updateEvent($event);
 
     }
@@ -502,19 +503,58 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $event = $entryApi->getEvent($domainEvent->getEventId());
         $bookingInfo = $domainEvent->getBookingInfo();
 
-        $bookingPeriod = $event->getBookingPeriod();
-        if (empty($bookingPeriod)) {
-            $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
-        }
+        $this->updateCdbItemByBookingInfo($event, $bookingInfo);
+        $entryApi->updateEvent($event);
 
-        if (!empty($bookingInfo->availabilityStarts)) {
-            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
-        }
-        if (!empty($bookingInfo->availabilityEnds)) {
-            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
-        }
-        $event->setBookingPeriod($bookingPeriod);
+    }
 
+    /**
+     * Apply the imageAdded event to udb2.
+     * @param ImageAdded $domainEvent
+     */
+    private function applyImageAdded(
+        ImageAdded $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $this->addImageToCdbItem($event, $domainEvent->getMediaObject());
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the imageUpdated event to udb2.
+     * @param ImageAdded $domainEvent
+     */
+    private function applyImageUpdated(
+        ImageUpdated $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $this->updateImageOnCdbItem($event, $domainEvent->getIndexToUpdate(), $domainEvent->getMediaObject());
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
+     * Apply the imageDeleted event to udb2.
+     * @param ImageDeleted $domainEvent
+     */
+    private function applyImageDeleted(
+        ImageDeleted $domainEvent,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($domainEvent->getEventId());
+
+        $this->deleteImageOnCdbItem($event, $domainEvent->getIndexToDelete());
         $entryApi->updateEvent($event);
 
     }

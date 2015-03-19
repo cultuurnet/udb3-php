@@ -31,6 +31,6 @@ class BookingInfoUpdated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['bookingInfo']);
+        return new static($data['event_id'], \CultuurNet\UDB3\BookingInfo::deserialize($data['bookingInfo']));
     }
 }

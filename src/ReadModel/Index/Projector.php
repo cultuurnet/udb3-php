@@ -8,18 +8,21 @@
 namespace CultuurNet\UDB3\ReadModel\Index;
 
 use Broadway\Domain\DomainMessageInterface;
+use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
-use CultuurNet\UDB3\ReadModel\Udb3Projector;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 
 /**
  * Logs new events / updates to an index for querying.
  */
-class Projector extends Udb3Projector
+class Projector implements EventListenerInterface
 {
+
+    use DelegateEventHandlingToSpecificMethodTrait;
 
     public function __construct($repository)
     {

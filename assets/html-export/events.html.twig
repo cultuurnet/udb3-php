@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="nl">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width initial-scale=1" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <title>{{ title }}</title>
+
+        <link href="css/export.css" type="text/css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <div class="footer">
+            <p class="footer__pagenumber"></p>
+
+            {%  if footer %}
+                <p class="footer__description">{{ footer }}</p>
+            {%  endif %}
+
+            {% if publisher %}
+                <p class="footer__publisher">{{ publisher }}</p>
+            {% endif %}
+        </div>
+
+        <div class="page page--{{ brand }}">
+            <div class="header">
+                <h1 class="header__title">{{ title }}</h1>
+
+                {% if subtitle %}
+                    <p class="header__baseline">{{ subtitle }}</p>
+                {% endif %}
+
+                <img class="header__image" src="img/{{ brand }}.svg">
+            </div>
+
+            <div class="columns">
+            </div>
+        </div>
+    </body>
+</html>

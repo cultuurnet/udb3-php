@@ -142,7 +142,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
         $startDate = $this->getStartDate();
         $endDate = $this->getEndDate();
 
-        $jsonLD['calendarType'] = $this->getType();
+        $jsonLd['calendarType'] = $this->getType();
         // All calendar types allow startDate (and endDate).
         // One timestamp - full day.
         // One timestamp - start hour.
@@ -173,7 +173,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
         // Permanent - with openingtimes
         $openingHours = $this->getOpeningHours();
         if (!empty($openingHours)) {
-            $jsonLD['openingHours'] = array();
+            $jsonLd['openingHours'] = array();
             foreach ($openingHours as $openingHour) {
                 $schedule = array('dayOfWeek' => $openingHour->dayOfWeek);
                 if (!empty($openingHour->opens)) {
@@ -182,11 +182,11 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
                 if (!empty($openingHour->closes)) {
                     $schedule['closes'] = $openingHour->closes;
                 }
-                $jsonLD['openingHours'][] = $schedule;
+                $jsonLd['openingHours'][] = $schedule;
             }
         }
 
-        return $jsonLD;
+        return $jsonLd;
 
     }
 

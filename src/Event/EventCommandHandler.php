@@ -343,7 +343,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
         $event->deleteImage(
             $deleteImage->getIndexToDelete(),
-            $deleteImage->getInteralId()
+            $deleteImage->getInternalId()
         );
 
         $this->eventRepository->add($event);

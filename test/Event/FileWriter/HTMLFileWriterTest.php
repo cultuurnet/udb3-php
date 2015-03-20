@@ -59,7 +59,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'image' => '//media.uitdatabank.be/20140715/p18qn74oth1uvnnpidhj1i6t1f9p1.png',
                 'type' => 'Cursus of workshop',
                 'title' => 'De muziek van de middeleeuwen // Een middeleeuwse muziekgeschiedenis in veertig toppers',
-                'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de overgeleverde muziek te situeren in de periode tussen de jaren 1000 en pakweg 1450. In deze tiendelige cursus wordt veertigvoudig stilgestaan bij de grote muzikale topmomenten. Van de ontwikkeling van het gregoriaa...',
+                'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de ...',
                 'dates' => 'ma 22/09/14 van 10:00 tot 12:30  ma 2...',
                 'address' => array(
                     'name' => 'CC De Werf',
@@ -74,7 +74,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'image' => '//media.uitdatabank.be/20130805/8d455579-2207-4643-bdaf-a514da64697b.JPG',
                 'type' => 'Spel of quiz',
                 'title' => 'Speurtocht Kapitein Massimiliaan en de vliegende Hollander',
-                'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de VLIEGende Hollander? Kom in het MAS testen hoe zeewaardig je bent. Kapitein Massimiliaan heeft een kaart vol opdrachten en weetjes die jullie helpt echte piraten te worden! Kom de schat van het MAS bekijken, leer...',
+                'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de ...',
                 'dates' => 'elke zo, di, woe, do, vrij, za van 10...',
                 'address' => array(
                     'name' => 'Museum aan de Stroom (MAS)',

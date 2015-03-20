@@ -125,7 +125,7 @@ class EventExportService implements EventExportServiceInterface
             if ($selection) {
                 foreach ($selection as $eventId) {
                     $event = $this->eventService->getEvent($eventId);
-                    $tmpFile->exportEvent($event);
+                    $tmpFile->setEvents($event);
 
                     if ($logger) {
                         $logger->info(
@@ -143,7 +143,7 @@ class EventExportService implements EventExportServiceInterface
                     $query,
                     $logger
                 ) as $event) {
-                    $tmpFile->exportEvent($event);
+                    $tmpFile->setEvents($event);
 
                     if ($logger) {
                         $logger->info(

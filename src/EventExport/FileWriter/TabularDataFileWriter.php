@@ -28,7 +28,6 @@ class TabularDataFileWriter implements FileWriterInterface
     ) {
         $this->tabularDataFileWriter = $tabularDataFileWriter;
         $this->eventFormatter = new TabularDataEventFormatter($include);
-        $this->writeHeader();
     }
 
     protected function writeHeader()
@@ -39,20 +38,17 @@ class TabularDataFileWriter implements FileWriterInterface
     }
 
     /**
-     * @param mixed $event
+     * {@inheritdoc}
      */
-    public function exportEvent($event)
+    public function write($events)
     {
-        $eventRow = $this->eventFormatter->formatEvent($event);
+        $this->writeHeader();
 
-        $this->tabularDataFileWriter->writeRow($eventRow);
-    }
+        foreach ($events as $event) {
+            $eventRow = $this->eventFormatter->formatEvent($event);
+            $this->tabularDataFileWriter->writeRow($eventRow);
+        }
 
-    /**
-     * @return void
-     */
-    public function close()
-    {
         $this->tabularDataFileWriter->close();
     }
 }

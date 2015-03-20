@@ -7,7 +7,10 @@ namespace CultuurNet\UDB3\EventExport\FileWriter;
 
 class JSONLDFileWriter implements FileWriterInterface
 {
-    protected $f;
+    /**
+     * @var string
+     */
+    protected $filePath;
 
     /**
      * @var JSONLDEventFormatter
@@ -16,41 +19,37 @@ class JSONLDFileWriter implements FileWriterInterface
 
     public function __construct($filePath, $include = null)
     {
-        $this->f = fopen($filePath, 'w');
-        if (false === $this->f) {
-            throw new \RuntimeException(
-                'Unable to open file for writing: ' . $filePath
-            );
-        }
-        fwrite($this->f, '[');
-
+        $this->filePath = $filePath;
         $this->eventFormatter = new JSONLDEventFormatter($include);
-
-        $this->first = true;
     }
 
     /**
-     * @param mixed $event
+     * {@inheritdoc}
      */
-    public function exportEvent($event)
+    public function write($events)
     {
-        if ($this->first) {
-            $this->first = false;
-        } else {
-            fwrite($this->f, ',');
+        $file = fopen($this->filePath, 'w');
+        if (false === $file) {
+            throw new \RuntimeException(
+                'Unable to open file for writing: ' . $this->filePath
+            );
+        }
+        fwrite($file, '[');
+
+        $first = true;
+        foreach ($events as $event) {
+            if ($first) {
+                $first = false;
+            } else {
+                fwrite($file, ',');
+            }
+
+            $formattedEvent = $this->eventFormatter->formatEvent($event);
+
+            fwrite($file, $formattedEvent);
         }
 
-        $formattedEvent = $this->eventFormatter->formatEvent($event);
-
-        fwrite($this->f, $formattedEvent);
-    }
-
-    public function close()
-    {
-        if (is_resource($this->f)) {
-            fwrite($this->f, ']');
-
-            fclose($this->f);
-        }
+        fwrite($file, ']');
+        fclose($file);
     }
 }

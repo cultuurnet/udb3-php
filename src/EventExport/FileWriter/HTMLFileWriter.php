@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\EventExport\FileWriter;
 
-class HTMLFileWriter
+class HTMLFileWriter implements FileWriterInterface
 {
     /**
      * @var string
@@ -32,25 +32,27 @@ class HTMLFileWriter
     }
 
     /**
-     * @param mixed $events
+     * {@inheritdoc}
      */
-    public function exportEvents($events)
+    public function write($events)
     {
-        $this->variables['events'] = $events;
+        file_put_contents($this->filePath, $this->getHTML($events));
     }
 
     /**
+     * @param \Traversable $events
      * @return string
      */
-    public function getHTML()
+    public function getHTML($events)
     {
         $loader = new \Twig_Loader_Filesystem(__DIR__ . '/../../../templates');
         $twig = new \Twig_Environment($loader);
-        return $twig->render($this->template, $this->variables);
-    }
 
-    public function close()
-    {
-        file_put_contents($this->filePath, $this->getHTML());
+        $variables = $this->variables;
+
+
+        $variables['events'] = $events;
+
+        return $twig->render($this->template, $variables);
     }
 }

@@ -7,19 +7,28 @@ use CultuurNet\UDB3\EventExport\FileWriter\HTMLFileWriter;
 class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var string
+     */
+    protected $filePath;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->filePath = $this->getFilePath();
+    }
+
+    /**
      * @test
      */
     public function it_writes_html_to_a_file()
     {
-        $filePath = $this->getFilePath();
-
-        $fileWriter = new HTMLFileWriter($filePath, 'export.html.twig', array(
+        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
             'brand' => 'uit',
             'title' => 'Lorem Ipsum.',
         ));
         $fileWriter->close();
 
-        $this->assertHTMLFileContents($fileWriter->getHTML(), $filePath);
+        $this->assertHTMLFileContents($fileWriter->getHTML(), $this->filePath);
     }
 
     /**
@@ -27,9 +36,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_inserts_variables()
     {
-        $filePath = $this->getFilePath();
-
-        $fileWriter = new HTMLFileWriter($filePath, 'export.html.twig', array(
+        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
             'brand' => 'vlieg',
             'title' => 'Lorem Ipsum.',
             'subtitle' => 'Dolor sit amet.',
@@ -39,7 +46,56 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         $fileWriter->close();
 
         $expected = file_get_contents(__DIR__ . '/export_without_events.html');
-        $this->assertHTMLFileContents($expected, $filePath);
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
+     * @test
+     */
+    public function it_inserts_events()
+    {
+        $events = array(
+            array(
+                'image' => '//media.uitdatabank.be/20140715/p18qn74oth1uvnnpidhj1i6t1f9p1.png',
+                'type' => 'Cursus of workshop',
+                'title' => 'De muziek van de middeleeuwen // Een middeleeuwse muziekgeschiedenis in veertig toppers',
+                'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de overgeleverde muziek te situeren in de periode tussen de jaren 1000 en pakweg 1450. In deze tiendelige cursus wordt veertigvoudig stilgestaan bij de grote muzikale topmomenten. Van de ontwikkeling van het gregoriaa...',
+                'dates' => 'ma 22/09/14 van 10:00 tot 12:30  ma 2...',
+                'address' => array(
+                    'name' => 'CC De Werf',
+                    'street' => 'Molenstraat',
+                    'number' => '51',
+                    'postcode' => '9300',
+                    'municipality' => 'Aalst',
+                ),
+                'price' => '119,0',
+            ),
+            array(
+                'image' => '//media.uitdatabank.be/20130805/8d455579-2207-4643-bdaf-a514da64697b.JPG',
+                'type' => 'Spel of quiz',
+                'title' => 'Speurtocht Kapitein Massimiliaan en de vliegende Hollander',
+                'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de VLIEGende Hollander? Kom in het MAS testen hoe zeewaardig je bent. Kapitein Massimiliaan heeft een kaart vol opdrachten en weetjes die jullie helpt echte piraten te worden! Kom de schat van het MAS bekijken, leer...',
+                'dates' => 'elke zo, di, woe, do, vrij, za van 10...',
+                'address' => array(
+                    'name' => 'Museum aan de Stroom (MAS)',
+                    'street' => 'Hanzestedenplaats',
+                    'number' => '1',
+                    'postcode' => '2000',
+                    'municipality' => 'Antwerpen',
+                ),
+                'price' => 'Gratis',
+            ),
+        );
+
+        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
+            'brand' => 'uit',
+            'title' => 'Lorem Ipsum.',
+        ));
+        $fileWriter->exportEvents($events);
+        $fileWriter->close();
+
+        $expected = file_get_contents(__DIR__ . '/export.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
     }
 
     /**

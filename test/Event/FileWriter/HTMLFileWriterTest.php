@@ -60,7 +60,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     {
         $events = array(
             array(
-                'image' => '//media.uitdatabank.be/20140715/p18qn74oth1uvnnpidhj1i6t1f9p1.png',
+                'image' => 'http://media.uitdatabank.be/20140715/p18qn74oth1uvnnpidhj1i6t1f9p1.png',
                 'type' => 'Cursus of workshop',
                 'title' => 'De muziek van de middeleeuwen // Een middeleeuwse muziekgeschiedenis in veertig toppers',
                 'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de ...',
@@ -75,7 +75,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'price' => '119,0',
             ),
             array(
-                'image' => '//media.uitdatabank.be/20130805/8d455579-2207-4643-bdaf-a514da64697b.JPG',
+                'image' => 'http://media.uitdatabank.be/20130805/8d455579-2207-4643-bdaf-a514da64697b.JPG',
                 'type' => 'Spel of quiz',
                 'title' => 'Speurtocht Kapitein Massimiliaan en de vliegende Hollander',
                 'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de ...',

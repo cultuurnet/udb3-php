@@ -108,7 +108,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
      * @param array $variables
      * @return HTMLFileWriter
      */
-    protected function createHTMLFileWriter($variables) {
+    protected function createHTMLFileWriter($variables)
+    {
         return new HTMLFileWriter(
             $this->filePath,
             'export.html.twig',

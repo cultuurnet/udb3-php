@@ -114,4 +114,14 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($html, file_get_contents($filePath));
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function tearDown()
+    {
+        if ($this->filePath && file_exists($this->filePath)) {
+            unlink($this->filePath);
+        }
+    }
 }

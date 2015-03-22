@@ -22,10 +22,12 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_writes_html_to_a_file()
     {
-        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
-            'brand' => 'uit',
-            'title' => 'Lorem Ipsum.',
-        ));
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'Lorem Ipsum.',
+            )
+        );
         $fileWriter->close();
 
         $this->assertHTMLFileContents($fileWriter->getHTML(), $this->filePath);
@@ -36,13 +38,15 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_inserts_variables()
     {
-        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
-            'brand' => 'vlieg',
-            'title' => 'Lorem Ipsum.',
-            'subtitle' => 'Dolor sit amet.',
-            'footer' => 'Cursus mattis lorem ipsum.',
-            'publisher' => 'Tellus quam porta nibh mattis.',
-        ));
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'vlieg',
+                'title' => 'Lorem Ipsum.',
+                'subtitle' => 'Dolor sit amet.',
+                'footer' => 'Cursus mattis lorem ipsum.',
+                'publisher' => 'Tellus quam porta nibh mattis.',
+            )
+        );
         $fileWriter->close();
 
         $expected = file_get_contents(__DIR__ . '/export_without_events.html');
@@ -87,15 +91,29 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
             ),
         );
 
-        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
-            'brand' => 'uit',
-            'title' => 'Lorem Ipsum.',
-        ));
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'Lorem Ipsum.',
+            )
+        );
         $fileWriter->exportEvents($events);
         $fileWriter->close();
 
         $expected = file_get_contents(__DIR__ . '/export.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
+     * @param array $variables
+     * @return HTMLFileWriter
+     */
+    protected function createHTMLFileWriter($variables) {
+        return new HTMLFileWriter(
+            $this->filePath,
+            'export.html.twig',
+            $variables
+        );
     }
 
     /**

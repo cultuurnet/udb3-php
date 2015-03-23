@@ -1,8 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\FileWriter;
-
-use CultuurNet\UDB3\EventExport\FileWriter\HTMLFileWriter;
+namespace CultuurNet\UDB3\EventExport\FileWriter;
 
 class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
 {

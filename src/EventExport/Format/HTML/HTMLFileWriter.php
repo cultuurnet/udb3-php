@@ -1,7 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\EventExport\FileWriterInterface;
 use \Twig_Environment;
 
 class HTMLFileWriter implements FileWriterInterface
@@ -45,7 +46,7 @@ class HTMLFileWriter implements FileWriterInterface
     ) {
         if (!$twig) {
             $loader = new \Twig_Loader_Filesystem(
-                __DIR__ . '/../../../templates'
+                __DIR__ . '/templates'
             );
             $twig = new Twig_Environment($loader);
         }

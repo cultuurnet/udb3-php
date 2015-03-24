@@ -3,7 +3,9 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\TabularData;
+
+use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriterInterface;
 
 interface TabularDataFileWriterFactoryInterface
 {

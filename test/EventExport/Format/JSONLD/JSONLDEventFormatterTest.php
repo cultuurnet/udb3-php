@@ -3,14 +3,14 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\JSONLD;
 
 class JSONLDEventFormatterTest extends \PHPUnit_Framework_TestCase
 {
     private function getJSONEventFromFile($fileName)
     {
         $jsonEvent = file_get_contents(
-            __DIR__ . '/' . $fileName
+            __DIR__ . '/../../samples/' . $fileName
         );
 
         return $jsonEvent;

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\FileFormat;
+namespace CultuurNet\UDB3\EventExport;
 
 interface FileFormatInterface
 {
@@ -21,7 +21,7 @@ interface FileFormatInterface
     /**
      * Opens a file for exporting data to it.
      *
-     * @return \CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface
+     * @return \CultuurNet\UDB3\EventExport\FileWriterInterface
      *   A file writer implementation, suitable for the file format.
      */
     public function getWriter();

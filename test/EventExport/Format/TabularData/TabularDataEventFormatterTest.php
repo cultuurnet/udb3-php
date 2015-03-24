@@ -1,7 +1,7 @@
 <?php
 
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\TabularData;
 
 class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 {
@@ -9,7 +9,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     private function getJSONEventFromFile($fileName)
     {
         $jsonEvent = file_get_contents(
-            __DIR__ . '/' . $fileName
+            __DIR__ . '/../../samples/' . $fileName
         );
 
         return $jsonEvent;

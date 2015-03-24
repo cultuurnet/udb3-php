@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
 {
@@ -112,7 +112,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         );
         $fileWriter->write($this->filePath, array());
 
-        $expected = file_get_contents(__DIR__ . '/export_without_events.html');
+        $expected = file_get_contents(__DIR__ . '/results/export_without_events.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
     }
 
@@ -162,7 +162,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         );
         $fileWriter->write($this->filePath, $events);
 
-        $expected = file_get_contents(__DIR__ . '/export.html');
+        $expected = file_get_contents(__DIR__ . '/results/export.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
     }
 

@@ -3,9 +3,10 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\FileFormat;
+namespace CultuurNet\UDB3\EventExport\Format\JSONLD;
 
-use CultuurNet\UDB3\EventExport\FileWriter\JSONLDFileWriter;
+use CultuurNet\UDB3\EventExport\FileFormatInterface;
+use CultuurNet\UDB3\EventExport\Format\JSONLD\JSONLDFileWriter;
 
 class JSONLDFileFormat implements FileFormatInterface
 {

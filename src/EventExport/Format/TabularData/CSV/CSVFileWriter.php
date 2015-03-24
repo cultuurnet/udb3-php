@@ -3,7 +3,9 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\TabularData\CSV;
+
+use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriterInterface;
 
 class CSVFileWriter implements TabularDataFileWriterInterface
 {

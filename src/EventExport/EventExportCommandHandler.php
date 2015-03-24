@@ -9,9 +9,9 @@ use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsOOXML;
-use CultuurNet\UDB3\EventExport\FileFormat\CSVFileFormat;
-use CultuurNet\UDB3\EventExport\FileFormat\JSONLDFileFormat;
-use CultuurNet\UDB3\EventExport\FileFormat\OOXMLFileFormat;
+use CultuurNet\UDB3\EventExport\Format\TabularData\CSV\CSVFileFormat;
+use CultuurNet\UDB3\EventExport\Format\JSONLD\JSONLDFileFormat;
+use CultuurNet\UDB3\EventExport\Format\TabularData\OOXML\OOXMLFileFormat;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

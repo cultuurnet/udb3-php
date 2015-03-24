@@ -3,7 +3,12 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\TabularData;
+
+use CultuurNet\UDB3\EventExport\FileWriterInterface;
+use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriterFactoryInterface;
+use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriterInterface;
+use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataEventFormatter;
 
 class TabularDataFileWriter implements FileWriterInterface
 {

@@ -1,6 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\FileFormat;
+namespace CultuurNet\UDB3\EventExport\Format\HTML;
+
+use CultuurNet\UDB3\EventExport\FileFormatInterface;
 
 class ZippedWebArchiveFileFormat implements FileFormatInterface
 {

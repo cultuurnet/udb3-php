@@ -1,6 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\FileWriter;
+namespace CultuurNet\UDB3\EventExport\Format\HTML;
+
+use CultuurNet\UDB3\EventExport\FileWriterInterface;
 
 abstract class WebArchiveFileWriter implements FileWriterInterface
 {

@@ -54,7 +54,8 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
         return $tmpDir;
     }
 
-    protected function copyAssets($tmpDir) {
+    protected function copyAssets($tmpDir)
+    {
         $assets = $this->mountManager->listContents('assets:///', true);
 
         foreach ($assets as $asset) {
@@ -73,7 +74,8 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
      * @param string $tmpDir
      * @return MountManager
      */
-    protected function initMountManager($tmpDir) {
+    protected function initMountManager($tmpDir)
+    {
         return new MountManager(
             [
                 'tmp' => new Filesystem(
@@ -97,7 +99,8 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
      *   The path of the temporary directory, relative to the 'tmp://' mounted
      *   filesystem.
      */
-    protected function createTemporaryArchiveDirectory() {
+    protected function createTemporaryArchiveDirectory()
+    {
         $exportDir = uniqid('html-export');
         $path = 'tmp://' . $exportDir;
         $this->mountManager->createDir($path);
@@ -111,7 +114,8 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
      * @param string $dir
      * @return string
      */
-    protected function expandTmpPath($tmpPath) {
+    protected function expandTmpPath($tmpPath)
+    {
         return $this->tmpDir . '/' . $tmpPath;
     }
 
@@ -119,7 +123,8 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
      * @param string $dir
      * @param \Traversable $events
      */
-    protected function writeHtml($dir, $events) {
+    protected function writeHtml($dir, $events)
+    {
         $filePath = $dir . '/index.html';
         $this->htmlFileWriter->write(
             $this->expandTmpPath($filePath),

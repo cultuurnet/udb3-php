@@ -4,9 +4,9 @@ namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
 use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
 use League\Flysystem\ZipArchive;
-use League\Flysystem\Filesystem;
 
 abstract class WebArchiveFileWriter implements FileWriterInterface
 {
@@ -121,14 +121,31 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
 
     /**
      * @param string $dir
-     * @param \Traversable $events
+     * @param \Traversable|array $events
      */
     protected function writeHtml($dir, $events)
     {
         $filePath = $dir . '/index.html';
+
+        // TransformingIteratorIterator requires a Traversable,
+        // so if $events is a regular array we need to wrap it
+        // inside an ArrayIterator.
+        if (is_array($events)) {
+            $events = new \ArrayIterator($events);
+        }
+
+        $formatter = new EventFormatter();
+
+        $formattedEvents = new TransformingIteratorIterator(
+            $events,
+            function ($event) use ($formatter) {
+                return $formatter->formatEvent($event);
+            }
+        );
+
         $this->htmlFileWriter->write(
             $this->expandTmpPath($filePath),
-            $events
+            $formattedEvents
         );
     }
 

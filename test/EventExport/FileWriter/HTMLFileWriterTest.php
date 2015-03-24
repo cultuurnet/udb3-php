@@ -18,9 +18,11 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_writes_html_to_a_file()
+    public function it_writes_a_file()
     {
         $events = array();
+
+        $this->assertFileNotExists($this->filePath);
 
         $fileWriter = $this->createHTMLFileWriter(
             array(
@@ -30,7 +32,69 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         );
         $fileWriter->write($events);
 
-        $this->assertHTMLFileContents($fileWriter->getHTML($events), $this->filePath);
+        $this->assertFileExists($this->filePath);
+    }
+
+    /**
+     * @test
+     * @dataProvider twigCustomTemplateProvider
+     */
+    public function it_can_use_a_customized_twig_environment_and_template(
+        $template,
+        $variables,
+        $fileWithExpectedContent
+    ) {
+        $events = [];
+
+        $twig = new \Twig_Environment(
+            new \Twig_Loader_Filesystem(__DIR__ . '/templates')
+        );
+
+        $fileWriter = new HTMLFileWriter(
+            $this->filePath,
+            $template,
+            $variables,
+            $twig
+        );
+
+        $fileWriter->write($events);
+
+        $expected = file_get_contents($fileWithExpectedContent);
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    public function twigCustomTemplateProvider()
+    {
+        return [
+            [
+                'hello.html.twig',
+                [
+                    'name' => 'world'
+                ],
+                __DIR__ . '/results/hello-world.html',
+            ],
+            [
+                'hello.html.twig',
+                [
+                    'name' => 'Belgium'
+                ],
+                __DIR__ . '/results/hello-belgium.html',
+            ],
+            [
+                'goodbye.html.twig',
+                [
+                    'name' => 'world'
+                ],
+                __DIR__ . '/results/goodbye-world.html',
+            ],
+            [
+                'goodbye.html.twig',
+                [
+                    'name' => 'Belgium'
+                ],
+                __DIR__ . '/results/goodbye-belgium.html',
+            ],
+        ];
     }
 
     /**

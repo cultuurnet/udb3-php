@@ -1,8 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\FileWriter;
-
-use CultuurNet\UDB3\EventExport\FileWriter\HTMLFileWriter;
+namespace CultuurNet\UDB3\EventExport\FileWriter;
 
 class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
 {
@@ -58,7 +56,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     {
         $events = array(
             array(
-                'image' => '//media.uitdatabank.be/20140715/p18qn74oth1uvnnpidhj1i6t1f9p1.png',
+                'image' => 'http://media.uitdatabank.be/20140715/p18qn74oth1uvnnpidhj1i6t1f9p1.png',
                 'type' => 'Cursus of workshop',
                 'title' => 'De muziek van de middeleeuwen // Een middeleeuwse muziekgeschiedenis in veertig toppers',
                 'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de ...',
@@ -73,7 +71,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'price' => '119,0',
             ),
             array(
-                'image' => '//media.uitdatabank.be/20130805/8d455579-2207-4643-bdaf-a514da64697b.JPG',
+                'image' => 'http://media.uitdatabank.be/20130805/8d455579-2207-4643-bdaf-a514da64697b.JPG',
                 'type' => 'Spel of quiz',
                 'title' => 'Speurtocht Kapitein Massimiliaan en de vliegende Hollander',
                 'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de ...',
@@ -100,6 +98,19 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param array $variables
+     * @return HTMLFileWriter
+     */
+    protected function createHTMLFileWriter($variables)
+    {
+        return new HTMLFileWriter(
+            $this->filePath,
+            'export.html.twig',
+            $variables
+        );
+    }
+
+    /**
      * @return string
      */
     protected function getFilePath()
@@ -114,5 +125,15 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     protected function assertHTMLFileContents($html, $filePath)
     {
         $this->assertEquals($html, file_get_contents($filePath));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function tearDown()
+    {
+        if ($this->filePath && file_exists($this->filePath)) {
+            unlink($this->filePath);
+        }
     }
 }

@@ -120,16 +120,14 @@ class EventExportService implements EventExportServiceInterface
             );
 
             if ($selection) {
-                $eventIDs = $selection;
+                $events = $this->getEventsAsJSONLD($selection);
             } else {
-                $eventIDs = $this->search(
+                $events = $this->search(
                     $totalItemCount,
                     $query,
                     $logger
                 );
             }
-
-            $events = $this->getEventsAsJSONLD($eventIDs);
 
             $fileWriter = $fileFormat->getWriter();
             $fileWriter->write($tmpPath, $events);
@@ -208,11 +206,11 @@ class EventExportService implements EventExportServiceInterface
      *
      * @param $totalItemCount
      * @param $query
-     * @param LoggerInterface $logger
+     * @param LoggerInterface|null $logger
      *
      * @return \Generator
      */
-    private function search($totalItemCount, $query, LoggerInterface $logger)
+    private function search($totalItemCount, $query, LoggerInterface $logger = null)
     {
         // change this pageSize value to increase or decrease the page size;
         $pageSize = 10;

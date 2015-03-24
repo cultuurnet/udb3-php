@@ -40,11 +40,11 @@ class ExportEventsAsPDF extends ExportEvents
      * @param string[] $customizations
      */
     public function __construct(
-      EventExportQuery $query,
-      EmailAddress $address = null,
-      $selection = null,
-      $include = null,
-      $customizations = []
+        EventExportQuery $query,
+        EmailAddress $address = null,
+        $selection = null,
+        $include = null,
+        $customizations = []
     ) {
         parent::__construct($query, $address, $selection, $include);
 
@@ -57,17 +57,17 @@ class ExportEventsAsPDF extends ExportEvents
     private function setCustomizations($customizations)
     {
         $propertyNames = [
-          'brand',
-          'title',
-          'subtitle',
-          'footer',
-          'publisher'
+            'brand',
+            'title',
+            'subtitle',
+            'footer',
+            'publisher'
         ];
         foreach ($propertyNames as $propertyName) {
             if (isset($customizations[$propertyName])) {
-                $this[$propertyName] = $customizations[$propertyName];
+                $this->$propertyName = $customizations[$propertyName];
             } else {
-                $this[$propertyName] = '';
+                $this->$propertyName = '';
             }
         }
     }

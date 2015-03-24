@@ -30,7 +30,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'title' => 'Lorem Ipsum.',
             )
         );
-        $fileWriter->write($events);
+        $fileWriter->write($this->filePath, $events);
 
         $this->assertFileExists($this->filePath);
     }
@@ -51,13 +51,12 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         );
 
         $fileWriter = new HTMLFileWriter(
-            $this->filePath,
             $template,
             $variables,
             $twig
         );
 
-        $fileWriter->write($events);
+        $fileWriter->write($this->filePath, $events);
 
         $expected = file_get_contents($fileWithExpectedContent);
         $this->assertHTMLFileContents($expected, $this->filePath);
@@ -111,7 +110,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'publisher' => 'Tellus quam porta nibh mattis.',
             )
         );
-        $fileWriter->write(array());
+        $fileWriter->write($this->filePath, array());
 
         $expected = file_get_contents(__DIR__ . '/export_without_events.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
@@ -161,7 +160,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'title' => 'Lorem Ipsum.',
             )
         );
-        $fileWriter->write($events);
+        $fileWriter->write($this->filePath, $events);
 
         $expected = file_get_contents(__DIR__ . '/export.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
@@ -174,7 +173,6 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     protected function createHTMLFileWriter($variables)
     {
         return new HTMLFileWriter(
-            $this->filePath,
             'export.html.twig',
             $variables
         );

@@ -8,35 +8,55 @@ namespace CultuurNet\UDB3\EventExport\FileWriter;
 class JSONLDFileWriter implements FileWriterInterface
 {
     /**
-     * @var string
-     */
-    protected $filePath;
-
-    /**
      * @var JSONLDEventFormatter
      */
     protected $eventFormatter;
 
-    public function __construct($filePath, $include = null)
+    public function __construct($include = null)
     {
-        $this->filePath = $filePath;
         $this->eventFormatter = new JSONLDEventFormatter($include);
+    }
+
+    /**
+     * @param string $filePath
+     * @return Resource
+     */
+    protected function openFile($filePath)
+    {
+        $file = fopen($filePath, 'w');
+        if (false === $file) {
+            throw new \RuntimeException(
+                'Unable to open file for writing: ' . $filePath
+            );
+        }
+
+        return $file;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function write($events)
+    public function write($filePath, $events)
     {
-        $file = fopen($this->filePath, 'w');
-        if (false === $file) {
-            throw new \RuntimeException(
-                'Unable to open file for writing: ' . $this->filePath
-            );
-        }
+        $file = $this->openFile($filePath);
+
         fwrite($file, '[');
 
+        $this->writeEvents($file, $events);
+
+        fwrite($file, ']');
+
+        fclose($file);
+    }
+
+    /**
+     * @param Resource $file
+     * @param \Traversable $events
+     */
+    protected function writeEvents($file, $events)
+    {
         $first = true;
+
         foreach ($events as $event) {
             if ($first) {
                 $first = false;
@@ -48,8 +68,5 @@ class JSONLDFileWriter implements FileWriterInterface
 
             fwrite($file, $formattedEvent);
         }
-
-        fwrite($file, ']');
-        fclose($file);
     }
 }

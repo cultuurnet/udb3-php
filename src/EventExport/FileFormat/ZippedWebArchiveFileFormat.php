@@ -15,7 +15,7 @@ class ZippedWebArchiveFileFormat implements FileFormatInterface
     /**
      * @inheritdoc
      */
-    public function openWriter($filePath)
+    public function getWriter()
     {
 
     }

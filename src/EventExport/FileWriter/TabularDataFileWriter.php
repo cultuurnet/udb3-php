@@ -18,37 +18,63 @@ class TabularDataFileWriter implements FileWriterInterface
     protected $eventFormatter;
 
     /**
-     * @var TabularDataFileWriterInterface
+     * @var TabularDataFileWriterFactoryInterface
      */
-    protected $tabularDataFileWriter;
+    protected $tabularDataFileWriterFactory;
 
     public function __construct(
-        TabularDataFileWriterInterface $tabularDataFileWriter,
+        TabularDataFileWriterFactoryInterface $tabularDataFileWriterFactory,
         $include
     ) {
-        $this->tabularDataFileWriter = $tabularDataFileWriter;
+        $this->tabularDataFileWriterFactory = $tabularDataFileWriterFactory;
         $this->eventFormatter = new TabularDataEventFormatter($include);
     }
 
-    protected function writeHeader()
+    /**
+     * @param TabularDataFileWriterInterface $tabularDataFileWriter
+     */
+    protected function writeHeader(TabularDataFileWriterInterface $tabularDataFileWriter)
     {
         $headerRow = $this->eventFormatter->formatHeader();
 
-        $this->tabularDataFileWriter->writeRow($headerRow);
+        $tabularDataFileWriter->writeRow($headerRow);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function write($events)
+    public function write($filePath, $events)
     {
-        $this->writeHeader();
+        $tabularDataFileWriter = $this->openFileWriter($filePath);
 
+        $this->writeHeader($tabularDataFileWriter);
+        $this->writeEvents($tabularDataFileWriter, $events);
+
+        $tabularDataFileWriter->close();
+    }
+
+    /**
+     * @param TabularDataFileWriterInterface $tabularDataFileWriter
+     * @param \Traversable $events
+     */
+    protected function writeEvents(
+        TabularDataFileWriterInterface $tabularDataFileWriter,
+        $events
+    ) {
         foreach ($events as $event) {
             $eventRow = $this->eventFormatter->formatEvent($event);
-            $this->tabularDataFileWriter->writeRow($eventRow);
+            $tabularDataFileWriter->writeRow($eventRow);
         }
+    }
 
-        $this->tabularDataFileWriter->close();
+    /**
+     * @param string $filePath
+     * @return TabularDataFileWriterInterface
+     */
+    protected function openFileWriter($filePath)
+    {
+        return $this->tabularDataFileWriterFactory->openTabularDataFileWriter(
+            $filePath
+        );
     }
 }

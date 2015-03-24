@@ -33,8 +33,8 @@ class JSONLDFileFormat implements FileFormatInterface
     /**
      * @inheritdoc
      */
-    public function openWriter($filePath)
+    public function getWriter()
     {
-        return new JSONLDFileWriter($filePath, $this->include);
+        return new JSONLDFileWriter($this->include);
     }
 }

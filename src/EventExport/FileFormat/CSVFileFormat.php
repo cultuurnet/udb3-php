@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
 use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriter;
+use CultuurNet\UDB3\EventExport\FileWriter\CSVFileWriterFactory;
 use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;
 
 class CSVFileFormat implements FileFormatInterface
@@ -34,10 +35,10 @@ class CSVFileFormat implements FileFormatInterface
     /**
      * @inheritdoc
      */
-    public function openWriter($filePath)
+    public function getWriter()
     {
         return new TabularDataFileWriter(
-            new CSVFileWriter($filePath),
+            new CSVFileWriterFactory,
             $this->include
         );
     }

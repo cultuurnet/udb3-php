@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\EventExport\FileFormat;
 
-use CultuurNet\UDB3\EventExport\FileWriter\OOXMLFileWriter;
+use CultuurNet\UDB3\EventExport\FileWriter\OOXMLFileWriterFactory;
 use CultuurNet\UDB3\EventExport\FileWriter\TabularDataFileWriter;
 
 class OOXMLFileFormat implements FileFormatInterface
@@ -34,10 +34,10 @@ class OOXMLFileFormat implements FileFormatInterface
     /**
      * @inheritdoc
      */
-    public function openWriter($filePath)
+    public function getWriter()
     {
         return new TabularDataFileWriter(
-            new OOXMLFileWriter($filePath),
+            new OOXMLFileWriterFactory(),
             $this->include
         );
     }

@@ -9,11 +9,6 @@ class HTMLFileWriter implements FileWriterInterface
     /**
      * @var string
      */
-    protected $filePath;
-
-    /**
-     * @var string
-     */
     protected $template;
 
     /**
@@ -27,18 +22,15 @@ class HTMLFileWriter implements FileWriterInterface
     protected $twig;
 
     /**
-     * @param string $filePath
      * @param string $template
      * @param array $variables
      * @param Twig_Environment $twig
      */
     public function __construct(
-        $filePath,
         $template,
         $variables,
         Twig_Environment $twig = null
     ) {
-        $this->filePath = $filePath;
         $this->template = $template;
         $this->variables = $variables;
 
@@ -72,9 +64,9 @@ class HTMLFileWriter implements FileWriterInterface
     /**
      * {@inheritdoc}
      */
-    public function write($events)
+    public function write($filePath, $events)
     {
-        file_put_contents($this->filePath, $this->getHTML($events));
+        file_put_contents($filePath, $this->getHTML($events));
     }
 
     /**

@@ -62,7 +62,7 @@ class EventExportService implements EventExportServiceInterface
         $this->eventService = $eventService;
         $this->searchService = $searchService;
         $this->uuidGenerator = $uuidGenerator;
-        $this->publicDirectory = $publicDirectory;
+        $this->publicDirectory = realpath($publicDirectory);
         $this->iriGenerator = $iriGenerator;
         $this->mailer = $mailer;
     }
@@ -120,48 +120,22 @@ class EventExportService implements EventExportServiceInterface
                 $this->uuidGenerator->generate()
             );
 
-            $tmpFile = $fileFormat->openWriter($tmpPath);
-
             if ($selection) {
-                foreach ($selection as $eventId) {
-                    $event = $this->eventService->getEvent($eventId);
-                    $tmpFile->exportEvent($event);
-
-                    if ($logger) {
-                        $logger->info(
-                            'task_completed',
-                            array(
-                                'type' => 'event_was_exported',
-                                'event_id' => $eventId,
-                            )
-                        );
-                    }
-                }
+                $eventIDs = $selection;
             } else {
-                foreach ($this->search(
+                $eventIDs = $this->search(
                     $totalItemCount,
                     $query,
                     $logger
-                ) as $event) {
-                    $tmpFile->exportEvent($event);
-
-                    if ($logger) {
-                        $logger->info(
-                            'task_completed',
-                            array(
-                                'type' => 'event_was_exported'
-                            )
-                        );
-                    }
-                }
+                );
             }
 
-            $tmpFile->close();
+            $events = $this->getEventsAsJSONLD($eventIDs);
 
-            $finalPath =
-                realpath($this->publicDirectory) .
-                '/' . basename($tmpPath) .
-                '.' . $fileFormat->getFileNameExtension();
+            $fileWriter = $fileFormat->getWriter();
+            $fileWriter->write($tmpPath, $events);
+
+            $finalPath = $this->getFinalFilePath($fileFormat, $tmpPath);
 
             $moved = rename($tmpPath, $finalPath);
 
@@ -190,10 +164,6 @@ class EventExportService implements EventExportServiceInterface
                 $this->notifyByMail($address, $finalUrl);
             }
         } catch (\Exception $e) {
-            if (isset($tmpFile)) {
-                $tmpFile->close();
-            }
-
             if (isset($tmpPath) && $tmpPath && file_exists($tmpPath)) {
                 unlink($tmpPath);
             }
@@ -202,6 +172,35 @@ class EventExportService implements EventExportServiceInterface
         }
     }
 
+    /**
+     * Get all events formatted as JSON-LD.
+     *
+     * @param \Traversable $events
+     * @return \Generator
+     */
+    private function getEventsAsJSONLD($events)
+    {
+        foreach ($events as $eventId) {
+            yield $this->eventService->getEvent($eventId);
+        }
+    }
+
+    /**
+     * @param FileFormatInterface $fileFormat
+     * @param string $tmpPath
+     * @return string
+     */
+    private function getFinalFilePath(
+        FileFormatInterface $fileFormat,
+        $tmpPath
+    ) {
+        $fileUniqueId = basename($tmpPath);
+        $extension = $fileFormat->getFileNameExtension();
+        $finalFileName = $fileUniqueId . '.' . $extension;
+        $finalPath = $this->publicDirectory . '/' . $finalFileName;
+
+        return $finalPath;
+    }
 
     /**
      * Generator that yields each unique search result.

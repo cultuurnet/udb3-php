@@ -23,9 +23,6 @@ interface FileFormatInterface
      *
      * @return \CultuurNet\UDB3\EventExport\FileWriter\FileWriterInterface
      *   A file writer implementation, suitable for the file format.
-     *
-     * @param string $filePath
-     *  The path of the file to export data to.
      */
-    public function openWriter($filePath);
+    public function getWriter();
 }

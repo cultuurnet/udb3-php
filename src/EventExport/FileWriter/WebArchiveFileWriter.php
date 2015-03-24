@@ -7,7 +7,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     /**
      * {@inheritdoc}
      */
-    public function write($events)
+    public function write($filePath, $events)
     {
     }
 }

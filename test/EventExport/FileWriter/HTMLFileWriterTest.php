@@ -22,10 +22,12 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     {
         $events = array();
 
-        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
-            'brand' => 'uit',
-            'title' => 'Lorem Ipsum.',
-        ));
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'Lorem Ipsum.',
+            )
+        );
         $fileWriter->write($events);
 
         $this->assertHTMLFileContents($fileWriter->getHTML($events), $this->filePath);
@@ -36,13 +38,15 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_inserts_variables()
     {
-        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
-            'brand' => 'vlieg',
-            'title' => 'Lorem Ipsum.',
-            'subtitle' => 'Dolor sit amet.',
-            'footer' => 'Cursus mattis lorem ipsum.',
-            'publisher' => 'Tellus quam porta nibh mattis.',
-        ));
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'vlieg',
+                'title' => 'Lorem Ipsum.',
+                'subtitle' => 'Dolor sit amet.',
+                'footer' => 'Cursus mattis lorem ipsum.',
+                'publisher' => 'Tellus quam porta nibh mattis.',
+            )
+        );
         $fileWriter->write(array());
 
         $expected = file_get_contents(__DIR__ . '/export_without_events.html');
@@ -87,10 +91,12 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
             ),
         );
 
-        $fileWriter = new HTMLFileWriter($this->filePath, 'export.html.twig', array(
-            'brand' => 'uit',
-            'title' => 'Lorem Ipsum.',
-        ));
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'Lorem Ipsum.',
+            )
+        );
         $fileWriter->write($events);
 
         $expected = file_get_contents(__DIR__ . '/export.html');

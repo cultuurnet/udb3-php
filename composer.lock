@@ -263,12 +263,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Cdb.git",
-                "reference": "ad3060e83e132a7ab9f2849d3f2501bfce643975"
+                "reference": "14d14e22a1bdeffdc0aea084a161c84fb2b7f8ae"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/ad3060e83e132a7ab9f2849d3f2501bfce643975",
-                "reference": "ad3060e83e132a7ab9f2849d3f2501bfce643975",
+                "reference": "14d14e22a1bdeffdc0aea084a161c84fb2b7f8ae",
                 "shasum": ""
             },
             "require-dev": {

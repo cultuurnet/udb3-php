@@ -93,7 +93,7 @@ trait OfferEditingTrait
 
         $this->guardId($id);
 
-        $commandClass = $this->getCommandClass('updateContactPoint');
+        $commandClass = $this->getCommandClass('UpdateContactPoint');
 
         return $this->commandBus->dispatch(
             new $commandClass($id, $contactPoint)

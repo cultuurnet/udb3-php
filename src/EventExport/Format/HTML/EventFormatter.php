@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
+use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 
 class EventFormatter
 {
@@ -62,8 +64,21 @@ class EventFormatter
     {
         // @todo Inject the necessary filters.
         // @todo Add filter to limit amount of characters and add ...
-        $filter = new StripHtmlStringFilter();
 
-        return $filter->filter($description);
+        $truncateFilter = new TruncateStringFilter(300);
+        $truncateFilter->addEllipsis();
+        $truncateFilter->turnOnWordSafe(1);
+
+        /** @var StringFilterInterface[] $filters */
+        $filters = [
+            new StripHtmlStringFilter(),
+            $truncateFilter
+        ];
+
+        foreach ($filters as $filter) {
+            $description = $filter->filter($description);
+        }
+
+        return $description;
     }
 }

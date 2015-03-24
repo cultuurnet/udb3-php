@@ -162,6 +162,8 @@ class EventExportService implements EventExportServiceInterface
             if ($address) {
                 $this->notifyByMail($address, $finalUrl);
             }
+
+            return $finalUrl;
         } catch (\Exception $e) {
             if (isset($tmpPath) && $tmpPath && file_exists($tmpPath)) {
                 unlink($tmpPath);

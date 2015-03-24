@@ -176,4 +176,100 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('available', $anotherJsonEvent);
         $this->assertEquals('2014-10-22T00:00:00+02:00', $anotherJsonEvent->available);
     }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_telephone_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertEquals('0475 82 21 36', $jsonEvent->contactPoint['telephone'][0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_an_empty_telephone_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
+
+        $this->assertFalse(array_key_exists('telephone', $jsonEvent->contactPoint));
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_an_email_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertEquals('kgielens@stichtingtegenkanker.be', $jsonEvent->contactPoint['email'][0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_an_empty_email_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
+
+        $this->assertFalse(array_key_exists('email', $jsonEvent->contactPoint));
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_contact_point_property_contact_type_to_reservations()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertEquals('Reservations', $jsonEvent->contactPoint['contactType']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_set_the_contact_point_property_contactType_to_reservation()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
+
+        $this->assertFalse(array_key_exists('contactType', $jsonEvent->contactPoint));
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_contact_info_urls_to_seeAlso_property()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('seeAlso', $jsonEvent);
+        $this->assertContains('http://www.rekanto.be', $jsonEvent->seeAlso);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_reservation_url_to_bookingInfo_property()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_reservation_url.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
+        $this->assertEquals('http://brugge.iticketsro.com/ccmechelen/', $jsonEvent->bookingInfo[0]['url']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_a_non_reservation_url_to_bookingInfo_property()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
+        $this->assertFalse(array_key_exists('url', $jsonEvent->bookingInfo[0]));
+    }
 }

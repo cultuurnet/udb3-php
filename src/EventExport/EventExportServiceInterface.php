@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
-use CultuurNet\UDB3\EventExport\FileFormatInterface;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Web\EmailAddress;
 

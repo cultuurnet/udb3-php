@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\EventExport\Format\TabularData\OOXML;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
-use CultuurNet\UDB3\EventExport\Format\TabularData\OOXML\OOXMLFileWriterFactory;
 use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriter;
 
 class OOXMLFileFormat implements FileFormatInterface

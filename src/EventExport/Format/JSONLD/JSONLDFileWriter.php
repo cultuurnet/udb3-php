@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\EventExport\Format\JSONLD;
 
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
-use CultuurNet\UDB3\EventExport\Format\JSONLD\JSONLDEventFormatter;
 
 class JSONLDFileWriter implements FileWriterInterface
 {

@@ -6,8 +6,6 @@
 namespace CultuurNet\UDB3\EventExport\Format\TabularData\CSV;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
-use CultuurNet\UDB3\EventExport\Format\TabularData\CSV\CSVFileWriter;
-use CultuurNet\UDB3\EventExport\Format\TabularData\CSV\CSVFileWriterFactory;
 use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriter;
 
 class CSVFileFormat implements FileFormatInterface

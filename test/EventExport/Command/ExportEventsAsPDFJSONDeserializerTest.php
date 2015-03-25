@@ -2,11 +2,15 @@
 
 namespace CultuurNet\UDB3\EventExport\Command;
 
+use CultuurNet\Deserializer\MissingValueException;
+use CultuurNet\UDB3\EventExport\EventExportQuery;
+use CultuurNet\UDB3\EventExport\Format\HTML\Brand;
 use CultuurNet\UDB3\EventExport\Format\HTML\Footer;
 use CultuurNet\UDB3\EventExport\Format\HTML\Publisher;
 use CultuurNet\UDB3\EventExport\Format\HTML\Subtitle;
+use CultuurNet\UDB3\EventExport\Format\HTML\Title;
 use ValueObjects\String\String;
-use CultuurNet\Deserializer\MissingValueException;
+use ValueObjects\Web\EmailAddress;
 
 class ExportEventsAsPDFJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,10 +30,19 @@ class ExportEventsAsPDFJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_a_PDF_export_command()
     {
-        $exportData = $this->getJSONStringFromFile('export_data.json');
+        $exportData = $this->getJSONStringFromFile('minimum_export_data.json');
         $command = $this->deserializer->deserialize($exportData);
 
         $this->assertInstanceOf(ExportEventsAsPDF::class, $command);
+
+        $this->assertEquals(
+            new ExportEventsAsPDF(
+                new EventExportQuery('city:doetown'),
+                new Brand('vlieg'),
+                new Title('a title')
+            ),
+            $command
+        );
 
     }
 
@@ -92,6 +105,7 @@ class ExportEventsAsPDFJSONDeserializerTest extends \PHPUnit_Framework_TestCase
             array('subtitle', new Subtitle('a subtitle'), 'getSubtitle'),
             array('publisher', new Publisher('a publisher'), 'getPublisher'),
             array('footer', new Footer('a footer'), 'getFooter'),
+            array('email', new EmailAddress('john@doe.com'), 'getAddress'),
         );
     }
 

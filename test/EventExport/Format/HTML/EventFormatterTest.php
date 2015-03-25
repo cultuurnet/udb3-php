@@ -26,15 +26,13 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
         return $jsonEvent;
     }
 
-
     /**
      * @test
      */
     public function it_distills_event_info_to_what_is_needed_for_html_export()
     {
-        $event = $this->getJSONEventFromFile('event_with_terms.json');
-
-        $expectedFormattedEvent = [
+        $freeEvent = $this->getJSONEventFromFile('event_with_terms.json');
+        $expectedFormattedFreeEvent = [
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
             'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
             'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische…',
@@ -45,11 +43,12 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
                 'postcode' => '3300',
                 'municipality' => 'Tienen',
             ],
+            'price' => 'Gratis',
         ];
 
         $this->assertEquals(
-            $expectedFormattedEvent,
-            $this->eventFormatter->formatEvent($event)
+            $expectedFormattedFreeEvent,
+            $this->eventFormatter->formatEvent($freeEvent)
         );
     }
 }

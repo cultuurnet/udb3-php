@@ -57,7 +57,11 @@ class EventFormatter
             'municipality' => $event->location->address->addressLocality,
         ];
 
-        //$formattedEvent['price'] =
+        $formattedEvent['price'] = $event->location->bookingInfo->price;
+
+        if (empty($formattedEvent['price'])) {
+            $formattedEvent['price'] = 'Gratis';
+        }
 
         $formattedEvent['dates'] = $event->calendarSummary;
 

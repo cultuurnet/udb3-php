@@ -73,7 +73,7 @@ class StripHtmlStringFilter implements StringFilterInterface
         }
 
         // Loop over all matching tags from the string.
-        return preg_replace_callback($pattern, function($match) use ($newlines) {
+        return preg_replace_callback($pattern, function ($match) use ($newlines) {
             // Return the tag appended by the specified amount of newlines. Note that $match[0] is the full captured
             // match, so it also includes the newlines after the tag. $match[1] is just the tag itself, and $match[2]
             // are the newlines following it (if any).

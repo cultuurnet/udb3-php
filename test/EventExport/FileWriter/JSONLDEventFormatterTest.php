@@ -3,9 +3,7 @@
  * @file
  */
 
-namespace test\Event\FileWriter;
-
-use CultuurNet\UDB3\EventExport\FileWriter\JSONLDEventFormatter;
+namespace CultuurNet\UDB3\EventExport\FileWriter;
 
 class JSONLDEventFormatterTest extends \PHPUnit_Framework_TestCase
 {

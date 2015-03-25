@@ -26,7 +26,8 @@
     "nicolopignatelli/valueobjects": "~2.0",
     "php": ">=5.5.0",
     "phpoffice/phpexcel": "~1.8",
-    "ext-tidy": "*"
+    "ext-tidy": "*",
+    "twig/twig": "~1.0"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

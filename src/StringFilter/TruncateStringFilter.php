@@ -103,7 +103,7 @@ EOD;
 
         if ($this->addEllipsis) {
             // Truncate ellipsis in case $max_length is small.
-            $ellipsis = mb_substr('...', 0, $maxLength);
+            $ellipsis = mb_substr('…', 0, $maxLength);
             $maxLength -= mb_strlen($ellipsis);
             $maxLength = max($maxLength, 0);
         }

@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 class EventType
 {
-    const domain = 'eventtype';
+    const DOMAIN = 'eventtype';
 
     /**
      * @var string
@@ -53,7 +53,7 @@ class EventType
     {
         $event = json_decode($eventString);
         foreach ($event->terms as $term) {
-            if ($term->domain == self::domain) {
+            if ($term->domain == self::DOMAIN) {
                 return new self($term->id, $term->label);
             }
         }

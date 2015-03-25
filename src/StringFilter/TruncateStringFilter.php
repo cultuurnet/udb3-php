@@ -70,16 +70,33 @@ EOD;
      */
     protected $maxLength;
 
+    /**
+     * @param int $maxLength
+     */
     public function __construct($maxLength)
+    {
+        $this->setMaxLength($maxLength);
+    }
+
+    /**
+     * @param int $maxLength
+     */
+    public function setMaxLength($maxLength)
     {
         $this->maxLength = $maxLength;
     }
 
+    /**
+     * @param bool $toggle
+     */
     public function addEllipsis($toggle = true)
     {
         $this->addEllipsis = $toggle;
     }
 
+    /**
+     * @param int $minWordSafeLength
+     */
     public function turnOnWordSafe($minWordSafeLength = 1)
     {
         $this->wordSafe = true;
@@ -103,7 +120,7 @@ EOD;
 
         if ($this->addEllipsis) {
             // Truncate ellipsis in case $max_length is small.
-            $ellipsis = mb_substr('…', 0, $maxLength);
+            $ellipsis = mb_substr('...', 0, $maxLength);
             $maxLength -= mb_strlen($ellipsis);
             $maxLength = max($maxLength, 0);
         }
@@ -133,8 +150,8 @@ EOD;
         }
 
         if ($this->addEllipsis) {
-            // If we're adding an ellipsis, remove any trailing periods.
-            $string = rtrim($string, '.');
+            // If we're adding an ellipsis, remove any trailing periods or spaces.
+            $string = rtrim($string, '. ');
 
             $string .= $ellipsis;
         }

@@ -130,8 +130,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'dates' => 'ma 22/09/14 van 10:00 tot 12:30  ma 2...',
                 'address' => array(
                     'name' => 'CC De Werf',
-                    'street' => 'Molenstraat',
-                    'number' => '51',
+                    'street' => 'Molenstraat 51',
                     'postcode' => '9300',
                     'municipality' => 'Aalst',
                 ),
@@ -145,8 +144,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'dates' => 'elke zo, di, woe, do, vrij, za van 10...',
                 'address' => array(
                     'name' => 'Museum aan de Stroom (MAS)',
-                    'street' => 'Hanzestedenplaats',
-                    'number' => '1',
+                    'street' => 'Hanzestedenplaats 1',
                     'postcode' => '2000',
                     'municipality' => 'Antwerpen',
                 ),

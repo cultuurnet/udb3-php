@@ -132,4 +132,23 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             $this->eventFormatter->formatEvent($eventWithoutImage)
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_strips_html_and_truncates_the_description()
+    {
+        $eventWithHTMLDescription = $this->getJSONEventFromFile(
+            'event_with_html_description.json'
+        );
+
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            $eventWithHTMLDescription
+        );
+
+        $this->assertEquals(
+            'Opnieuw twee dagen na elkaar en ook ditmaal brengen ze drie...',
+            $formattedEvent['description']
+        );
+    }
 }

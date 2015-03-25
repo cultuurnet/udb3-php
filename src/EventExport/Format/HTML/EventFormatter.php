@@ -21,12 +21,12 @@ class EventFormatter
     {
         $this->filters = new CombinedStringFilter();
 
+        $this->filters->addFilter(new StripHtmlStringFilter());
+
         $truncateFilter = new TruncateStringFilter(300);
         $truncateFilter->addEllipsis();
         $truncateFilter->turnOnWordSafe(1);
         $this->filters->addFilter($truncateFilter);
-
-        $this->filters->addFilter(new StripHtmlStringFilter());
     }
 
     /**

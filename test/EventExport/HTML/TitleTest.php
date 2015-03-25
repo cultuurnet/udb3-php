@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\EventExport\HTML;
 
+use \InvalidArgumentException;
+
 class TitleTest extends \PHPUnit_Framework_TestCase
 {
     /**

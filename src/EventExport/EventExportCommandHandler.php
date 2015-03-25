@@ -9,6 +9,8 @@ use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsOOXML;
+use CultuurNet\UDB3\EventExport\Command\ExportEventsAsPDF;
+use CultuurNet\UDB3\EventExport\Format\HTML\ZippedWebArchiveFileFormat;
 use CultuurNet\UDB3\EventExport\Format\TabularData\CSV\CSVFileFormat;
 use CultuurNet\UDB3\EventExport\Format\JSONLD\JSONLDFileFormat;
 use CultuurNet\UDB3\EventExport\Format\TabularData\OOXML\OOXMLFileFormat;
@@ -63,6 +65,25 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
             $this->logger,
             $exportCommand->getSelection()
         );
+    }
 
+    public function handleExportEventsAsPDF(
+        ExportEventsAsPDF $exportEvents
+    ) {
+        $fileFormat = new ZippedWebArchiveFileFormat(
+            $exportEvents->getBrand(),
+            $exportEvents->getTitle(),
+            $exportEvents->getSubtitle(),
+            $exportEvents->getFooter(),
+            $exportEvents->getPublisher()
+        );
+
+        $this->eventExportService->exportEvents(
+            $fileFormat,
+            $exportEvents->getQuery(),
+            $exportEvents->getAddress(),
+            $this->logger,
+            $exportEvents->getSelection()
+        );
     }
 }

@@ -10,7 +10,7 @@ class BrandTest extends \PHPUnit_Framework_TestCase
      * @dataProvider brandNameDataProvider
      * @param string $brandName
      */
-    public function it_can_have_an_known_brand_name($brandName)
+    public function it_can_have_a_known_brand_name($brandName)
     {
         $brand = new Brand($brandName);
         $this->assertEquals($brandName, $brand);

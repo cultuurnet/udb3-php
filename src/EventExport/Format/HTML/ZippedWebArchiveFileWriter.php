@@ -68,6 +68,8 @@ class ZippedWebArchiveFileWriter extends WebArchiveFileWriter
 
         if (false !== $pos) {
             return substr($file, $pos);
+        } else {
+            return $file;
         }
     }
 }

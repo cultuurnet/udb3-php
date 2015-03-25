@@ -41,7 +41,10 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
             'address' => [
                 'name' => 'Cultuurcentrum De Kruisboog',
-            ]
+                'street' => 'Sint-Jorisplein 20 ',
+                'postcode' => '3300',
+                'municipality' => 'Tienen',
+            ],
         ];
 
         $this->assertEquals(

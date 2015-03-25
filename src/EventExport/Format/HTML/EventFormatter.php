@@ -52,6 +52,9 @@ class EventFormatter
 
         $formattedEvent['address'] = [
             'name' => $event->location->name,
+            'street' => $event->location->address->streetAddress,
+            'postcode' => $event->location->address->postalCode,
+            'municipality' => $event->location->address->addressLocality,
         ];
 
         //$formattedEvent['price'] =

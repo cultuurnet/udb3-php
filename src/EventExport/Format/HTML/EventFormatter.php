@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
@@ -44,6 +45,9 @@ class EventFormatter
         if ($event->image) {
             $formattedEvent['image'] = 'http:' . $event->image;
         }
+
+        $type = EventType::fromJSONLDEvent($eventString);
+        $formattedEvent['type'] = $type->getLabel();
 
         $formattedEvent['title'] = reset($event->name);
         $formattedEvent['description'] = $this->filters->filter(

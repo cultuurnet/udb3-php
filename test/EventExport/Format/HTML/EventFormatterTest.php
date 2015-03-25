@@ -43,6 +43,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
                 'postcode' => '3300',
                 'municipality' => 'Tienen',
             ],
+            'type' => 'Cursus of workshop',
             'price' => 'Gratis',
         ];
 

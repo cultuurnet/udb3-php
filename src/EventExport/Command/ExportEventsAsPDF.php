@@ -54,19 +54,14 @@ class ExportEventsAsPDF
 
     /**
      * @param EventExportQuery $query
-     * @param string $title
-     * @param EmailAddress|null $address
-     * @param string[] $selection
+     * @param Brand $brand
+     * @param Title $title
      */
     public function __construct(
         EventExportQuery $query,
         Brand $brand,
         Title $title
     ) {
-        if ($query->isEmpty()) {
-            throw new \RuntimeException('Query can not be empty');
-        }
-
         $this->brand = $brand;
         $this->query = $query;
         $this->title = $title;

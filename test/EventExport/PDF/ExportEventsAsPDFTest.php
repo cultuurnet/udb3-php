@@ -76,6 +76,9 @@ class ExportEventsAsPDFTest extends \PHPUnit_Framework_TestCase
         $this->assertNotModified($newExport);
     }
 
+    /**
+     * @test
+     */
     public function it_allows_to_specify_a_subtitle()
     {
         $subtitle = new Subtitle('Some subtitle');
@@ -86,6 +89,9 @@ class ExportEventsAsPDFTest extends \PHPUnit_Framework_TestCase
         $this->assertNotModified($newExport);
     }
 
+    /**
+     * @test
+     */
     public function it_allows_to_specify_a_footer()
     {
         $footer = new Footer('footer text');
@@ -96,16 +102,22 @@ class ExportEventsAsPDFTest extends \PHPUnit_Framework_TestCase
         $this->assertNotModified($newExport);
     }
 
+    /**
+     * @test
+     */
     public function it_allows_to_specify_a_publisher()
     {
-        $publisher = new Publisher('footer text');
+        $publisher = new Publisher('publisher text');
         $newExport = $this->export->withPublisher($publisher);
 
-        $this->assertEquals($publisher, $newExport->getFooter());
+        $this->assertEquals($publisher, $newExport->getPublisher());
 
         $this->assertNotModified($newExport);
     }
 
+    /**
+     * @test
+     */
     public function it_allows_to_specify_a_selection_of_events_to_include()
     {
         $selection = [

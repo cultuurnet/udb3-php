@@ -74,11 +74,6 @@ class TruncateStringFilterTest extends StringFilterTest
         $expected = 'Sem Dolor I...';
         $this->assertFilterValue($expected, $original);
 
-        // Trim extra dots when adding one.
-        $original = 'Sem Dolor I. Tristique Mollis Fusce Mollis Nibh Aenean Tortor Consectetur.';
-        $expected = 'Sem Dolor I...';
-        $this->assertFilterValue($expected, $original);
-
         // Word-safe truncating doesn't break using an ellipsis.
         $this->filter->turnOnWordSafe();
         $original = 'Sem Dolor Tristique Mollis Fusce Mollis Nibh Aenean Tortor Consectetur.';

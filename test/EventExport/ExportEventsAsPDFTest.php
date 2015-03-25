@@ -36,6 +36,36 @@ class ExportEventsAsPDFTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_includes_a_query()
+    {
+        $query = new EventExportQuery('*.*');
+        $this->assertEquals($query, $this->export->getQuery());
+        $this->assertEquals($this->clonedExport, $this->export);
+    }
+
+    /**
+     * @test
+     */
+    public function it_includes_a_brand()
+    {
+        $query = new Brand('vlieg');
+        $this->assertEquals($query, $this->export->getBrand());
+        $this->assertEquals($this->clonedExport, $this->export);
+    }
+
+    /**
+     * @test
+     */
+    public function it_includes_a_title()
+    {
+        $query = new Title('title');
+        $this->assertEquals($query, $this->export->getTitle());
+        $this->assertEquals($this->clonedExport, $this->export);
+    }
+
+    /**
+     * @test
+     */
     public function it_allows_to_specify_a_notification_email_address()
     {
         $email = new EmailAddress('john@doe.com');
@@ -77,7 +107,8 @@ class ExportEventsAsPDFTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    private function assertNotModified($newExport) {
+    private function assertNotModified($newExport)
+    {
         $this->assertNotSame($newExport, $this->export);
         $this->assertEquals($this->clonedExport, $this->export);
     }

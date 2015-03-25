@@ -5,12 +5,29 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 
 class EventFormatter
 {
+    /**
+     * @var CombinedStringFilter
+     */
+    protected $filters;
+
+    public function __construct()
+    {
+        $this->filters = new CombinedStringFilter();
+
+        $truncateFilter = new TruncateStringFilter(300);
+        $truncateFilter->addEllipsis();
+        $truncateFilter->turnOnWordSafe(1);
+        $this->filters->addFilter($truncateFilter);
+
+        $this->filters->addFilter(new StripHtmlStringFilter());
+    }
+
     /**
      * @param string $eventString
      *   The cultural event encoded as JSON-LD
@@ -29,7 +46,7 @@ class EventFormatter
         }
 
         $formattedEvent['title'] = reset($event->name);
-        $formattedEvent['description'] = $this->formatDescription(
+        $formattedEvent['description'] = $this->filters->filter(
             reset($event->description)
         );
 
@@ -58,27 +75,5 @@ class EventFormatter
         */
 
         return $formattedEvent;
-    }
-
-    private function formatDescription($description)
-    {
-        // @todo Inject the necessary filters.
-        // @todo Add filter to limit amount of characters and add ...
-
-        $truncateFilter = new TruncateStringFilter(300);
-        $truncateFilter->addEllipsis();
-        $truncateFilter->turnOnWordSafe(1);
-
-        /** @var StringFilterInterface[] $filters */
-        $filters = [
-            new StripHtmlStringFilter(),
-            $truncateFilter
-        ];
-
-        foreach ($filters as $filter) {
-            $description = $filter->filter($description);
-        }
-
-        return $description;
     }
 }

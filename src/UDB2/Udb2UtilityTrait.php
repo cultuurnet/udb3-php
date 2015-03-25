@@ -354,7 +354,8 @@ trait Udb2UtilityTrait
         $uriParts = explode('/', $mediaObject->getUrl());
 
         $file = new CultureFeed_Cdb_Data_File();
-        $file->setMediaType(CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO);
+        $file->setMediaType(CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB);
+        $file->setMain();
         $file->setHLink($mediaObject->getUrl());
         $file->setFileName(end($uriParts));
         $file->setCopyright($mediaObject->getCopyrightHolder());
@@ -396,7 +397,7 @@ trait Udb2UtilityTrait
         $index = 0;
         // Loop over all files and count own index.
         foreach ($media as $file) {
-            if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO) {
+            if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB && $file->isMain()) {
                 // If the index matches, delete the file.
                 if ($index === $indexToUpdate) {
 
@@ -446,7 +447,7 @@ trait Udb2UtilityTrait
         $index = 0;
         // Loop over all files and count own index.
         foreach ($media as $key => $file) {
-            if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO) {
+            if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB && $file->isMain()) {
                 // If the index matches, delete the file.
                 if ($index === $indexToDelete) {
                     $media->remove($key);

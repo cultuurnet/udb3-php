@@ -106,6 +106,18 @@ class ExportEventsAsPDFTest extends \PHPUnit_Framework_TestCase
         $this->assertNotModified($newExport);
     }
 
+    public function it_allows_to_specify_a_selection_of_events_to_include()
+    {
+        $selection = [
+            'some-id',
+            'another-id'
+        ];
+        $newExport = $this->export->withSelection($selection);
+
+        $this->assertEquals($selection, $newExport->getSelection());
+
+        $this->assertNotModified($newExport);
+    }
 
     private function assertNotModified($newExport)
     {

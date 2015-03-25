@@ -16,14 +16,16 @@
       "addressLocality": "Tienen",
       "postalCode": "3300",
       "streetAddress": "Sint-Jorisplein 20 "
-    },
-    "bookingInfo": {
+    }
+  },
+  "bookingInfo": [
+    {
       "description": "",
       "name": "standard price",
       "price": 0,
       "priceCurrency": "EUR"
     }
-  },
+  ],
   "organizer": {
     "@id": "http:\/\/culudb-silex.dev:8080\/organizer\/7481A1F9-D5CB-3BC9-D3C308240015B44D",
     "@context": "\/api\/1.0\/organizer.jsonld",

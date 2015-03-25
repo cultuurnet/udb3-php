@@ -42,7 +42,7 @@ class EventFormatter
 
         $formattedEvent = [];
 
-        if ($event->image) {
+        if (isset($event->image)) {
             $formattedEvent['image'] = 'http:' . $event->image;
         }
 
@@ -61,7 +61,12 @@ class EventFormatter
             'municipality' => $event->location->address->addressLocality,
         ];
 
-        $formattedEvent['price'] = $event->location->bookingInfo->price;
+        if (isset($event->bookingInfo)) {
+            $firstPrice = reset($event->bookingInfo);
+            $formattedEvent['price'] = $firstPrice->price;
+        } else {
+            $formattedEvent['price'] = 'Niet ingevoerd';
+        }
 
         if (empty($formattedEvent['price'])) {
             $formattedEvent['price'] = 'Gratis';

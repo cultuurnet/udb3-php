@@ -73,4 +73,63 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             $this->eventFormatter->formatEvent($pricedEvent)
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_indicates_if_price_is_unknown()
+    {
+        $eventWithoutBookingInfo = $this->getJSONEventFromFile(
+            'event_without_bookinginfo.json'
+        );
+
+        $expectedFormattedEvent = [
+            'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
+            'type' => 'Cursus of workshop',
+            'title' => 'Lessenreeks MURGA',
+            'description' => 'Wij zijn Murga çava, een vrolijke groep van 20 percussionisten,...',
+            'address' => [
+                'name' => 'GC De Wildeman',
+                'street' => 'Schoolstraat 15',
+                'postcode' => '3020',
+                'municipality' => 'Herent',
+            ],
+            'price' => 'Niet ingevoerd',
+            'dates' => "van 01/09/14 tot 29/06/15",
+        ];
+
+        $this->assertEquals(
+            $expectedFormattedEvent,
+            $this->eventFormatter->formatEvent($eventWithoutBookingInfo)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_gracefully_handles_events_without_image()
+    {
+        $eventWithoutImage = $this->getJSONEventFromFile(
+            'event_without_image.json'
+        );
+
+        $expectedFormattedEvent = [
+            'type' => 'Cursus of workshop',
+            'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
+            'address' => [
+                'name' => 'Cultuurcentrum De Kruisboog',
+                'street' => 'Sint-Jorisplein 20 ',
+                'postcode' => '3300',
+                'municipality' => 'Tienen',
+            ],
+            'price' => 'Niet ingevoerd',
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+        ];
+
+        $this->assertEquals(
+            $expectedFormattedEvent,
+            $this->eventFormatter->formatEvent($eventWithoutImage)
+        );
+    }
 }

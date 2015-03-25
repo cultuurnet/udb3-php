@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Command;
 
-use CultuurNet\UDB3\EventExport\HTML\Footer;
-use CultuurNet\UDB3\EventExport\HTML\Publisher;
-use CultuurNet\UDB3\EventExport\HTML\Subtitle;
+use CultuurNet\UDB3\EventExport\Format\HTML\Footer;
+use CultuurNet\UDB3\EventExport\Format\HTML\Publisher;
+use CultuurNet\UDB3\EventExport\Format\HTML\Subtitle;
 use ValueObjects\String\String;
 use CultuurNet\Deserializer\MissingValueException;
 

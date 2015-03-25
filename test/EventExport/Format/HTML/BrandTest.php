@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 class BrandTest extends \PHPUnit_Framework_TestCase
 {

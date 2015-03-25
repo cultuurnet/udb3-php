@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use ValueObjects\String\String;
 

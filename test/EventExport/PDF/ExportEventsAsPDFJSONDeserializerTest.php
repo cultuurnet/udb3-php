@@ -2,6 +2,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Command;
 
+use CultuurNet\UDB3\EventExport\HTML\Footer;
+use CultuurNet\UDB3\EventExport\HTML\Publisher;
+use CultuurNet\UDB3\EventExport\HTML\Subtitle;
 use ValueObjects\String\String;
 use CultuurNet\Deserializer\MissingValueException;
 
@@ -61,6 +64,35 @@ class ExportEventsAsPDFJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(MissingValueException::class, 'title is missing');
         $this->deserializer->deserialize($exportData);
+    }
+
+    /**
+     * @test
+     * @dataProvider exportPropertyDataProvider
+     */
+    public function it_includes_optional_properties(
+        $propertyName,
+        $expectedValue,
+        $getter
+    ) {
+        $exportData = $this->getJSONStringFromFile('export_data.json');
+        $command = $this->deserializer->deserialize($exportData);
+
+        $this->assertEquals($expectedValue, $command->{$getter}());
+
+    }
+
+    /**
+     * Test property provider
+     * property, value, getter
+     */
+    public function exportPropertyDataProvider()
+    {
+        return array(
+            array('subtitle', new Subtitle('a subtitle'), 'getSubtitle'),
+            array('publisher', new Publisher('a publisher'), 'getPublisher'),
+            array('footer', new Footer('a footer'), 'getFooter'),
+        );
     }
 
     private function getJSONStringFromFile($fileName)

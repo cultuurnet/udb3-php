@@ -185,7 +185,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
 
         $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
-        $this->assertEquals('0475 82 21 36', $jsonEvent->contactPoint['telephone'][0]);
+        $this->assertEquals('0475 82 21 36', $jsonEvent->contactPoint[0]['telephone'][0]);
     }
 
     /**
@@ -193,9 +193,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_add_an_empty_telephone_property_to_contact_point()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_just_an_email.cdbxml.xml');
 
-        $this->assertFalse(array_key_exists('telephone', $jsonEvent->contactPoint));
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertTrue(is_array($jsonEvent->contactPoint));
+        $this->assertArrayNotHasKey('telephone', $jsonEvent->contactPoint[0]);
     }
 
     /**
@@ -203,10 +205,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_adds_an_email_property_to_contact_point()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_just_an_email.cdbxml.xml');
 
         $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
-        $this->assertEquals('kgielens@stichtingtegenkanker.be', $jsonEvent->contactPoint['email'][0]);
+        $this->assertTrue(is_array($jsonEvent->contactPoint));
+        $this->assertEquals('kgielens@stichtingtegenkanker.be', $jsonEvent->contactPoint[0]['email'][0]);
     }
 
     /**
@@ -214,30 +217,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_add_an_empty_email_property_to_contact_point()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
-
-        $this->assertFalse(array_key_exists('email', $jsonEvent->contactPoint));
-    }
-
-    /**
-     * @test
-     */
-    public function it_sets_the_contact_point_property_contact_type_to_reservations()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_just_a_phone_number.cdbxml.xml');
 
         $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
-        $this->assertEquals('Reservations', $jsonEvent->contactPoint['contactType']);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_set_the_contact_point_property_contactType_to_reservation()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
-
-        $this->assertFalse(array_key_exists('contactType', $jsonEvent->contactPoint));
+        $this->assertTrue(is_array($jsonEvent->contactPoint));
+        $this->assertArrayNotHasKey('email', $jsonEvent->contactPoint[0]);
     }
 
     /**
@@ -270,6 +254,28 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
 
         $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
-        $this->assertFalse(array_key_exists('url', $jsonEvent->bookingInfo[0]));
+        $this->assertArrayNotHasKey('url', $jsonEvent->bookingInfo[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_a_separate_contact_point_for_reservation_info()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
+        $expectedContactPoints = array(
+            array(
+                'email' => array('kgielens@stichtingtegenkanker.be'),
+                'telephone' => array('0475 82 21 36'),
+                'contactType' => 'Reservations'
+            ),
+            array(
+                'email' => array('john@doe.be'),
+                'telephone' => array('1234 82 21 36')
+            )
+        );
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertEquals($expectedContactPoints, $jsonEvent->contactPoint);
     }
 }

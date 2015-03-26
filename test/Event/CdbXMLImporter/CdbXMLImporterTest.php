@@ -244,6 +244,10 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
         $this->assertEquals('http://brugge.iticketsro.com/ccmechelen/', $jsonEvent->bookingInfo[0]['url']);
+
+        // Reservation url should not have been added to seeAlso.
+        $this->assertObjectHasAttribute('seeAlso', $jsonEvent);
+        $this->assertNotContains('http://brugge.iticketsro.com/ccmechelen/', $jsonEvent->seeAlso);
     }
 
     /**

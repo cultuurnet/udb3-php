@@ -566,12 +566,15 @@ class CdbXMLImporter
             $jsonLD->seeAlso = [];
         }
 
-        // Add contact info url
+        // Add contact info url, if it's not for reservations.
         if ($contactInfo = $event->getContactInfo()) {
+            /** @var \CultureFeed_Cdb_Data_Url[] $contactUrls */
             $contactUrls = $contactInfo->getUrls();
             if (is_array($contactUrls) && count($contactUrls) > 0) {
                 foreach ($contactUrls as $contactUrl) {
-                    $jsonLD->seeAlso[] = $contactUrl->getUrl();
+                    if (!$contactUrl->isForReservations()) {
+                        $jsonLD->seeAlso[] = $contactUrl->getUrl();
+                    }
                 }
             }
         }

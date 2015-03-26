@@ -26,12 +26,12 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     protected $tmpDir;
 
     /**
-     * @param HTMLFileWriter $HTMLFileWriter
+     * @param HTMLFileWriter $htmlFileWriter
      */
     public function __construct(
-        HTMLFileWriter $HTMLFileWriter
+        HTMLFileWriter $htmlFileWriter
     ) {
-        $this->htmlFileWriter = $HTMLFileWriter;
+        $this->htmlFileWriter = $htmlFileWriter;
 
         $this->tmpDir = sys_get_temp_dir();
 

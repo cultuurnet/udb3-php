@@ -96,6 +96,10 @@ class CdbXMLImporter
 
         $this->importExternalId($event, $jsonLD);
 
+        $this->importSeeAlso($event, $jsonLD);
+
+        $this->importContactPoint($event, $jsonLD);
+
         return $jsonLD;
     }
 
@@ -299,7 +303,64 @@ class CdbXMLImporter
                 $bookingInfo['availabilityStarts'] = $startDate->format('c');
                 $bookingInfo['availabilityEnds'] = $endDate->format('c');
             }
+
+            // Add reservation URL
+            if ($contactInfo = $event->getContactInfo()) {
+                if ($bookingUrl = $contactInfo->getReservationUrl()) {
+                    $bookingInfo['url'] = $bookingUrl;
+                }
+            }
+
             $jsonLD->bookingInfo[] = $bookingInfo;
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importContactPoint(
+        \CultureFeed_Cdb_Item_Event $event,
+        \stdClass $jsonLD
+    ) {
+        $contactInfo = $event->getContactInfo();
+
+        if ($contactInfo) {
+            $reservationContactPoint = array();
+            $leftoverContactPoint = array();
+
+            foreach ($contactInfo->getMails() as $email) {
+                /** @var \CultureFeed_Cdb_Data_Mail $email */
+                $emailAddress = $email->getMailAddress();
+
+                if ($email->isForReservations()) {
+                    $reservationContactPoint['email'][] = $emailAddress;
+                } else {
+                    $leftoverContactPoint['email'][] = $emailAddress;
+                }
+            }
+
+            foreach ($contactInfo->getPhones() as $phone) {
+                /** @var \CultureFeed_Cdb_Data_Phone $phone */
+                $phoneNumber = $phone->getNumber();
+
+                if ($phone->isForReservations()) {
+                    $reservationContactPoint['telephone'][] = $phoneNumber;
+                } else {
+                    $leftoverContactPoint['telephone'][] = $phoneNumber;
+                }
+            }
+
+            array_filter($reservationContactPoint);
+            if (count($reservationContactPoint) > 0) {
+                $reservationContactPoint['contactType'] = "Reservations";
+                $jsonLD->contactPoint[] = $reservationContactPoint;
+            }
+
+            array_filter($leftoverContactPoint);
+            if (count($leftoverContactPoint) > 0) {
+                $jsonLD->contactPoint[] = $leftoverContactPoint;
+            }
         }
     }
 
@@ -489,6 +550,32 @@ class CdbXMLImporter
         if (!$externalIdIsCDB) {
             if (!in_array($externalId, $jsonLD->sameAs)) {
                 array_push($jsonLD->sameAs, $externalId);
+            }
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importSeeAlso(
+        \CultureFeed_Cdb_Item_Event $event,
+        \stdClass $jsonLD
+    ) {
+        if (!property_exists($jsonLD, 'seeAlso')) {
+            $jsonLD->seeAlso = [];
+        }
+
+        // Add contact info url, if it's not for reservations.
+        if ($contactInfo = $event->getContactInfo()) {
+            /** @var \CultureFeed_Cdb_Data_Url[] $contactUrls */
+            $contactUrls = $contactInfo->getUrls();
+            if (is_array($contactUrls) && count($contactUrls) > 0) {
+                foreach ($contactUrls as $contactUrl) {
+                    if (!$contactUrl->isForReservations()) {
+                        $jsonLD->seeAlso[] = $contactUrl->getUrl();
+                    }
+                }
             }
         }
     }

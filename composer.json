@@ -19,6 +19,7 @@
     "cultuurnet/search": "~1.1",
     "cultuurnet/entry": "~0.0@dev",
     "cultuurnet/cdb": "~2.0.3@dev",
+    "cultuurnet/deserializer": "~0.1",
     "broadway/broadway": "~0.2.0",
     "chrisboulton/php-resque": "~1.2",
     "cultuurnet/culturefeed-php": "~1.0",
@@ -26,13 +27,16 @@
     "php": ">=5.5.0",
     "phpoffice/phpexcel": "~1.8",
     "ext-tidy": "*",
-    "twig/twig": "~1.0"
+    "twig/twig": "~1.0",
+    "league/flysystem": "~1.0",
+    "league/flysystem-ziparchive": "~1.0"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",
     "phpunit/phpunit": "~4.3",
     "squizlabs/php_codesniffer": "~2.2",
-    "phing/phing": "~2.10"
+    "phing/phing": "~2.10",
+    "alchemy/zippy": "~0.2"
   },
   "autoload": {
     "psr-4": {

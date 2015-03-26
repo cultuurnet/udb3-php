@@ -39,7 +39,10 @@
 
                 <section class="activity">
                     <div class="activity__image-container">
-                        <img src="{{ event.image }}?width=150&height=150&maxheight=150&crop=auto" class="activity__image" />
+                        {%  if event.image -%}
+                            <img src="{{ event.image }}?width=150&height=150&maxheight=150&crop=auto" class="activity__image" />
+                        {%- endif %}
+
                     </div>
                     <p class="activity__type">{{ event.type }}</p>
                     <p class="activity__title">{{ event.title }}</p>
@@ -55,6 +58,8 @@
                                 <td>
                                     {{ event.dates }}
                                 </td>
+                            </tr>
+                            <tr>
                                 <td>
                                     <i class="fa fa-map-marker"></i>&nbsp;
                                 </td>
@@ -63,6 +68,8 @@
                                     {{ event.address.street }}<br />
                                     {{ event.address.postcode }} {{ event.address.municipality }}
                                 </td>
+                            </tr>
+                            <tr>
                                 <td>
                                     <i class="fa fa-eur"></i>&nbsp;
                                 </td>

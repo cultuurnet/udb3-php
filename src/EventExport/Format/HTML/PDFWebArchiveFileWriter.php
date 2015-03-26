@@ -32,7 +32,7 @@ class PDFWebArchiveFileWriter extends WebArchiveFileWriter
     public function write($filePath, $events)
     {
         $originDirectory = $this->createWebArchiveDirectory($events);
-        $originFile = $originDirectory . '/index.html';
+        $originFile = $this->expandTmpPath($originDirectory) . '/index.html';
 
         $this->prince->convert_file_to_file($originFile, $filePath);
 

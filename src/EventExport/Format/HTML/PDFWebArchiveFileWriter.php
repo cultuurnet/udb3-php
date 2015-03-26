@@ -34,7 +34,13 @@ class PDFWebArchiveFileWriter extends WebArchiveFileWriter
         $originDirectory = $this->createWebArchiveDirectory($events);
         $originFile = $this->expandTmpPath($originDirectory) . '/index.html';
 
-        $this->prince->convert_file_to_file($originFile, $filePath);
+        $messages = array();
+        $result = $this->prince->convert_file_to_file($originFile, $filePath, $messages);
+
+        if (!$result) {
+            $message = implode(PHP_EOL, $messages);
+            throw new \RuntimeException($message);
+        }
 
         $this->removeTemporaryArchiveDirectory($originDirectory);
     }

@@ -38,9 +38,12 @@
                 {%- for event in events %}
 
                 <section class="activity">
+                    {% if event.image -%}
                     <div class="activity__image-container">
                         <img src="{{ event.image }}?width=150&height=150&maxheight=150&crop=auto" class="activity__image" />
                     </div>
+                    {%- endif %}
+
                     <p class="activity__type">{{ event.type }}</p>
                     <p class="activity__title">{{ event.title }}</p>
                     <div class="activity__description">

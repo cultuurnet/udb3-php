@@ -86,4 +86,15 @@ class TruncateStringFilterTest extends StringFilterTest
         $expected = '..';
         $this->assertFilterValue($expected, $original);
     }
+
+    /**
+     * @test
+     */
+    public function it_does_not_truncate_new_lines_when_word_safe_is_on()
+    {
+        $this->filter->turnOnWordSafe(0);
+        $expected = "Wij\n zijn";
+        $original = "Wij\n zijn Murgawawa çava, een vrolijke groep";
+        $this->assertFilterValue($expected, $original);
+    }
 }

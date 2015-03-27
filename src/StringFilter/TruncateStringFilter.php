@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\StringFilter;
 
+use Stringy\Stringy as Stringy;
+
 /**
  * Based on Drupal 8 Unicode class.
  *
@@ -68,13 +70,12 @@ class TruncateStringFilter implements StringFilterInterface
     /**
      * @inheritdoc
      */
-    public function filter($utfEncodedString)
+    public function filter($string)
     {
         $wordSafe = $this->wordSafe;
         $ellipsis = '';
         $maxLength = max($this->maxLength, 0);
         $minWordSafeLength = max($this->minWordSafeLength, 0);
-        $string = utf8_decode($utfEncodedString);
 
         if (mb_strlen($string) <= $maxLength) {
             // No truncation needed, so don't add ellipsis, just return.
@@ -94,20 +95,10 @@ class TruncateStringFilter implements StringFilterInterface
         }
 
         if ($wordSafe) {
-            $encoding = "UTF-8";
-            $substringLength = mb_strlen($ellipsis, $encoding);
-            $length = $maxLength - $substringLength;
-
-            $truncated = mb_substr($string, 0, $length, $encoding);
-
-            // If the last word was truncated
-            if (mb_strpos($string, ' ', $length - 1, $encoding) != $length) {
-                // Find pos of the last occurrence of a space, get up to that
-                $lastPos = mb_strrpos($truncated, ' ', 0, $encoding);
-                $truncated = mb_substr($truncated, 0, $lastPos, $encoding);
-            }
-
-            $string = $truncated;
+             return (string) Stringy::create($string, 'UTF-8')->safeTruncate(
+                 $maxLength,
+                 $ellipsis
+             );
         } else {
             $string = mb_substr($string, 0, $maxLength);
         }
@@ -119,6 +110,6 @@ class TruncateStringFilter implements StringFilterInterface
             $string .= $ellipsis;
         }
 
-        return utf8_encode($string);
+        return $string;
     }
 }

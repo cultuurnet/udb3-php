@@ -87,7 +87,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
             'type' => 'Cursus of workshop',
             'title' => 'Lessenreeks MURGA',
-            'description' => "Wij zijn Murga çava, een vrolijke groep van 20 percussionisten,\njong en oud, uit Herent en omgeving. Bij ons is iedereen welkom!\nMuzikale voorkennis is geen vereiste. Behalve percussie staan we\nook open voor blazers, dansers of ander talent. Kom gratis met ons\nkennismaken op maandag 1 september...",
+            'description' => "Wij zijn Murga çava, een vrolijke groep van 20 percussionisten,\njong en oud, uit Herent en omgeving. Bij ons is iedereen welkom!\nMuzikale voorkennis is geen vereiste. Behalve percussie staan we\nook open voor blazers, dansers of ander talent. Kom gratis met ons\nkennismaken op maandag 1...",
             'address' => [
                 'name' => 'GC De Wildeman',
                 'street' => 'Schoolstraat 15',

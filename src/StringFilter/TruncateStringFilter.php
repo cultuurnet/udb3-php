@@ -67,44 +67,41 @@ class TruncateStringFilter implements StringFilterInterface
      */
     public function filter($string)
     {
-        $wordSafe = $this->wordSafe;
-        $ellipsis = '';
+        // Maximum length and minimum length to enable word-safe truncating should always be greater than zero.
         $maxLength = max($this->maxLength, 0);
         $minWordSafeLength = max($this->minWordSafeLength, 0);
 
-        if (mb_strlen($string) <= $maxLength) {
-            // No truncation needed, so don't add ellipsis, just return.
-            return $string;
-        }
+        // Do not attempt word-safe truncating if the maximum length is smaller than the minimum length to do
+        // word-safe truncating.
+        $wordSafe = $this->wordSafe && $maxLength >= $minWordSafeLength;
 
+        // Define the suffix of the truncated string.
+        $suffix = '';
         if ($this->addEllipsis) {
-            // Truncate ellipsis in case $max_length is small.
-            $ellipsis = mb_substr('...', 0, $maxLength);
-            $maxLength -= mb_strlen($ellipsis);
-            $maxLength = max($maxLength, 0);
+            $suffix = Stringy::create('...', 'UTF-8');
+
+            // If the ellipsis is longer or equal to the maximum length, simply truncate the ellipsis so it fits in
+            // the maximum length and return it.
+            if ($suffix->length() >= $maxLength) {
+                return (string) $suffix->truncate($maxLength);
+            }
         }
 
-        if ($maxLength <= $minWordSafeLength) {
-            // Do not attempt word-safe if lengths are bad.
-            $wordSafe = false;
-        }
+        $stringy = Stringy::create($string, 'UTF-8');
 
         if ($wordSafe) {
-             return (string) Stringy::create($string, 'UTF-8')->safeTruncate(
-                 $maxLength,
-                 $ellipsis
-             );
+            $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {
-            $string = mb_substr($string, 0, $maxLength);
+            $truncated = $stringy->truncate($maxLength, $suffix);
         }
 
         if ($this->addEllipsis) {
-            // If we're adding an ellipsis, remove any trailing periods or spaces.
-            $string = rtrim($string, '. ');
-
-            $string .= $ellipsis;
+            // Make sure the string does not end in more than 3 dots. The pattern looks for a sequence of
+            // 4 or more ("{4,}") dots ("(\\.)") at the end of the string ("$").
+            $pattern = '(\\.){4,}$';
+            $truncated = $truncated->regexReplace($pattern, $suffix);
         }
 
-        return $string;
+        return (string) $truncated;
     }
 }

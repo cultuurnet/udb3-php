@@ -83,7 +83,7 @@ class TruncateStringFilter implements StringFilterInterface
             // If the ellipsis is longer or equal to the maximum length, simply truncate the ellipsis so it fits in
             // the maximum length and return it.
             if ($suffix->length() >= $maxLength) {
-                return $suffix->truncate($maxLength);
+                return (string) $suffix->truncate($maxLength);
             }
         }
 

@@ -7,11 +7,6 @@ namespace CultuurNet\UDB3\StringFilter;
 
 use Stringy\Stringy as Stringy;
 
-/**
- * Based on Drupal 8 Unicode class.
- *
- * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Component%21Utility%21Unicode.php/class/Unicode/8
- */
 class TruncateStringFilter implements StringFilterInterface
 {
     /**

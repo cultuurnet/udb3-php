@@ -82,11 +82,18 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
     public function consume(AMQPMessage $message)
     {
+        $context = [];
+
+        if ($message->has('correlation_id')) {
+            $context['correlation_id'] = $message->get('correlation_id');
+        }
+
         if ($this->logger) {
             $this->logger->info(
                 'received message with content-type ' . $message->get(
                     'content_type'
-                )
+                ),
+                $context
             );
         }
 
@@ -113,7 +120,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             $stream = new DomainEventStream($events);
 
             if ($this->logger) {
-                $this->logger->info('passing on message to event bus');
+                $this->logger->info(
+                    'passing on message to event bus',
+                    $context
+                );
             }
 
             $this->eventBus->publish(
@@ -122,7 +132,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
         } catch (\Exception $e) {
             if ($this->logger) {
-                $this->logger->error($e->getMessage());
+                $this->logger->error(
+                    $e->getMessage(),
+                    $context
+                );
             }
 
             $message->delivery_info['channel']->basic_reject(
@@ -131,7 +144,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             );
 
             if ($this->logger) {
-                $this->logger->info('message rejected');
+                $this->logger->info(
+                    'message rejected',
+                    $context
+                );
             }
 
             return;
@@ -142,7 +158,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
         );
 
         if ($this->logger) {
-            $this->logger->info('message acknowledged');
+            $this->logger->info(
+                'message acknowledged',
+                $context
+            );
         }
     }
 

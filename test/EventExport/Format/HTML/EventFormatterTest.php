@@ -5,6 +5,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
+use ValueObjects\String\String;
+
 class EventFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -45,7 +48,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => 'Gratis',
-            'icons' => [],
+            'taalicoonCount' => 0,
+            'brands' => array()
         ];
 
         $this->assertEquals(
@@ -67,7 +71,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => '10',
-            'icons' => [],
+            'taalicoonCount' => 0,
+            'brands' => array()
         ];
 
         $this->assertEquals(
@@ -98,7 +103,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => "van 01/09/14 tot 29/06/15",
-            'icons' => [],
+            'taalicoonCount' => 0,
+            'brands' => array()
         ];
 
         $this->assertEquals(
@@ -128,7 +134,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
-            'icons' => [],
+            'taalicoonCount' => 0,
+            'brands' => array()
         ];
 
         $this->assertEquals(
@@ -156,26 +163,39 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function it_adds_all_the_icons()
+    /**
+     * @test
+     */
+    public function it_correctly_sets_the_taalicoon_count()
     {
-        $eventWithHTMLDescription = $this->getJSONEventFromFile(
+        $eventWithAllTaaliconen = $this->getJSONEventFromFile(
             'event_with_all_icon_labels.json'
         );
 
         $formattedEvent = $this->eventFormatter->formatEvent(
-            $eventWithHTMLDescription
+            $eventWithAllTaaliconen
         );
 
-        $this->assertEquals(
-            array(
-                'UiTPAS',
-                'Vlieg',
-                '1taalicoon',
-                '2taaliconen',
-                '3taaliconen',
-                '4taaliconen',
-            ),
-            $formattedEvent['icons']
+        $this->assertEquals(4, $formattedEvent['taalicoonCount']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_show_a_brand_when_it_passes_a_spec()
+    {
+        $event = $this->getJSONEventFromFile(
+            'event_with_all_icon_labels.json'
         );
+
+        /** @var EventSpecificationInterface $brandSpec */
+        $brandSpec = $this->getMock(EventSpecificationInterface::class);
+        $brandSpec->expects($this->once())
+            ->method('isSatisfiedBy')
+            ->willReturn(true);
+
+        $this->eventFormatter->showBrand(new String('acme'), $brandSpec);
+        $formattedEvent = $this->eventFormatter->formatEvent($event);
+        $this->assertContains('acme', $formattedEvent['brands']);
     }
 }

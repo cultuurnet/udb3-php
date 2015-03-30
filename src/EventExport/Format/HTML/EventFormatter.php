@@ -11,11 +11,10 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
+use ValueObjects\String\String;
 
 class EventFormatter
 {
@@ -27,7 +26,12 @@ class EventFormatter
     /**
      * @var EventSpecification[]
      */
-    protected $iconsSpecifications;
+    protected $taalicoonSpecs;
+
+    /**
+     * @var EventSpecification[]
+     */
+    protected $brandSpecs;
 
     public function __construct()
     {
@@ -40,16 +44,31 @@ class EventFormatter
         $truncateFilter->turnOnWordSafe(1);
         $this->filters->addFilter($truncateFilter);
 
-        $iconSpecs = array(
-            'UiTPAS'        => new HasUiTPASBrand(),
-            'vlieg'         => new HasVliegBrand(),
-            '1taalicoon'    => new Has1Taalicoon(),
-            '2taaliconen'   => new Has2Taaliconen(),
-            '3taaliconen'   => new Has3Taaliconen(),
-            '4taaliconen'   => new Has4Taaliconen()
+        $this->taalicoonSpecs = array(
+            new Has1Taalicoon(),
+            new Has2Taaliconen(),
+            new Has3Taaliconen(),
+            new Has4Taaliconen()
         );
 
-        $this->iconsSpecifications = $iconSpecs;
+        $this->brandSpecs = array();
+    }
+
+    /**
+     * @param \ValueObjects\String\String $brandName
+     * @param EventSpecificationInterface $brandSpec
+     */
+    public function showBrand(
+        String $brandName,
+        EventSpecificationInterface $brandSpec
+    ) {
+        $brand = (string) $brandName;
+
+        if (array_key_exists($brand, $this->brandSpecs)) {
+            throw new \InvalidArgumentException('Brand name is already in use');
+        }
+
+        $this->brandSpecs[$brand] = $brandSpec;
     }
 
     /**
@@ -97,18 +116,34 @@ class EventFormatter
 
         $formattedEvent['dates'] = $event->calendarSummary;
 
-        $formattedEvent['icons'] = $this->generateIcons($event);
+        $formattedEvent['taalicoonCount'] = $this->countTaaliconen($event);
+
+        $formattedEvent['brands'] = $this->brand($event);
 
         return $formattedEvent;
     }
 
-    private function generateIcons($event)
+    private function countTaaliconen($event)
+    {
+        $taalicoonCount = 0;
+
+        foreach ($this->taalicoonSpecs as $index => $spec) {
+            /** @var EventSpecificationInterface $spec */
+            if ($spec->isSatisfiedBy($event)) {
+                $taalicoonCount = $index + 1;
+            }
+        }
+
+        return $taalicoonCount;
+    }
+
+    private function brand($event)
     {
         return array_keys(array_filter(
-            $this->iconsSpecifications,
-            function ($eventSpec) use ($event) {
+            $this->brandSpecs,
+            function ($brandSpec) use ($event) {
                 /** @var EventSpecificationInterface $eventSpec */
-                return $eventSpec->isSatisfiedBy($event);
+                return $brandSpec->isSatisfiedBy($event);
             }
         ));
     }

@@ -82,4 +82,17 @@ class HTMLFileWriter implements FileWriterInterface
 
         return $this->twig->render($this->template, $variables);
     }
+
+    /**
+     * @return string
+     */
+    public function getBrand()
+    {
+        $brand = '';
+        if (isset($this->variables) && isset($this->variables['brand'])) {
+            $brand = $this->variables['brand'];
+        }
+
+        return $brand;
+    }
 }

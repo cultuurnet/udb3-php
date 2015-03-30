@@ -110,7 +110,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'publisher' => 'Tellus quam porta nibh mattis.',
             )
         );
-        $fileWriter->write($this->filePath, array());
+        $fileWriter->write($this->filePath, new \ArrayIterator(array()));
 
         $expected = file_get_contents(__DIR__ . '/results/export_without_events.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
@@ -194,6 +194,77 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         $fileWriter->write($this->filePath, $events);
 
         $expected = file_get_contents(__DIR__ . '/results/export_event_without_image.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
+     * @test
+     */
+    public function it_shows_taaliconen()
+    {
+        $events = [
+            [
+                'type' => 'Cursus of workshop',
+                'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+                'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de...',
+                'address' => [
+                    'name' => 'Cultuurcentrum De Kruisboog',
+                    'street' => 'Sint-Jorisplein 20',
+                    'postcode' => '3300',
+                    'municipality' => 'Tienen',
+                ],
+                'price' => 'Niet ingevoerd',
+                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'taalicoonCount' => 1
+            ]
+        ];
+
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'UiT',
+            )
+        );
+        $fileWriter->write($this->filePath, $events);
+
+        $expected = file_get_contents(__DIR__ . '/results/export_event_with_taaliconen.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_event_brands_to_activities()
+    {
+        $events = [
+            [
+                'type' => 'Cursus of workshop',
+                'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+                'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de...',
+                'address' => [
+                    'name' => 'Cultuurcentrum De Kruisboog',
+                    'street' => 'Sint-Jorisplein 20',
+                    'postcode' => '3300',
+                    'municipality' => 'Tienen',
+                ],
+                'price' => 'Niet ingevoerd',
+                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'taalicoonCount' => 1,
+                'brands' => [
+                    'uitpas'
+                ]
+            ]
+        ];
+
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'UiT',
+            )
+        );
+        $fileWriter->write($this->filePath, $events);
+
+        $expected = file_get_contents(__DIR__ . '/results/export_event_with_uitpas_brand.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
     }
 

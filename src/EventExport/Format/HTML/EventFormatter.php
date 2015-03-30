@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
+use stdClass;
 
 class EventFormatter
 {
@@ -17,8 +18,18 @@ class EventFormatter
      */
     protected $filters;
 
-    public function __construct()
+    /**
+     * @var UitpasEventInfoServiceInterface|null
+     */
+    protected $uitpas;
+
+    /**
+     * @param UitpasEventInfoServiceInterface|null $uitpas
+     */
+    public function __construct(UitpasEventInfoServiceInterface $uitpas = null)
     {
+        $this->uitpas = $uitpas;
+
         $this->filters = new CombinedStringFilter();
 
         $this->filters->addFilter(new StripHtmlStringFilter());
@@ -74,6 +85,27 @@ class EventFormatter
 
         $formattedEvent['dates'] = $event->calendarSummary;
 
+        $this->addUitpasInfo($event, $formattedEvent);
+
         return $formattedEvent;
+    }
+
+    /**
+     * @param stdClass $event
+     * @param stdClass $formattedEvent
+     */
+    private function addUitpasInfo($event, &$formattedEvent)
+    {
+        if ($this->uitpas) {
+            $urlParts = explode('/', $event->{'@id'});
+            $eventId = end($urlParts);
+            $uitpasInfo = $this->uitpas->getEventInfo($eventId);
+            if ($uitpasInfo) {
+                $formattedEvent['uitpas'] = [
+                    'prices' => $uitpasInfo->getPrices(),
+                    'advantages' => $uitpasInfo->getAdvantages()
+                ];
+            }
+        }
     }
 }

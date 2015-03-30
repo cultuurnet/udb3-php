@@ -79,6 +79,18 @@
                                     {{ event.price }}
                                 </td>
                             </tr>
+                        {%  if event.price != 'Gratis' and event.uitpas -%}
+                            {% for tariff in event.uitpas.prices -%}
+                            <tr>
+                                <td>
+                                    <i class="fa fa-eur"></i>&nbsp;
+                                </td>
+                                <td>
+                                    {{ tariff.price }} {{ tariff.label }}
+                                </td>
+                            </tr>
+                            {%- endfor %}
+                        {%- endif -%}
                         </table>
                     </div>
                 </section>

@@ -18,11 +18,15 @@ class PDFWebArchiveFileWriter extends WebArchiveFileWriter
 
     /**
      * @param string $princeXMLBinaryPath
-     * {@inheritdoc}
+     * @param HTMLFileWriter $htmlFileWriter
+     * @param UitpasEventInfoServiceInterface|null $uitpas
      */
-    public function __construct($princeXMLBinaryPath, HTMLFileWriter $htmlFileWriter)
-    {
-        parent::__construct($htmlFileWriter);
+    public function __construct(
+        $princeXMLBinaryPath,
+        HTMLFileWriter $htmlFileWriter,
+        UitpasEventInfoServiceInterface $uitpas = null
+    ) {
+        parent::__construct($htmlFileWriter, $uitpas);
         $this->prince = new PrinceWrapper($princeXMLBinaryPath);
     }
 

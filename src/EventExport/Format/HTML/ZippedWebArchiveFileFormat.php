@@ -7,6 +7,30 @@ use CultuurNet\UDB3\EventExport\FileFormatInterface;
 class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
 {
     /**
+     * @var UitpasEventInfoServiceInterface|null
+     */
+    protected $uitpas;
+
+    /**
+     * @param string $brand
+     * @param string $title
+     * @param string|null $subtitle
+     * @param string|null $footer
+     * @param string|null $publisher
+     * @param UitpasEventInfoServiceInterface|null $uitpas
+     */
+    public function __construct(
+        $brand,
+        $title,
+        $subTitle = null,
+        $footer = null,
+        $publisher = null,
+        UitpasEventInfoServiceInterface $uitpas = null
+    ) {
+        parent::__construct($brand, $title, $subTitle, $footer, $publisher);
+        $this->uitpas = $uitpas;
+    }
+    /**
      * {@inheritdoc}
      */
     public function getFileNameExtension()
@@ -19,6 +43,9 @@ class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFor
      */
     public function getWriter()
     {
-        return new ZippedWebArchiveFileWriter($this->getHTMLFileWriter());
+        return new ZippedWebArchiveFileWriter(
+            $this->getHTMLFileWriter(),
+            $this->uitpas
+        );
     }
 }

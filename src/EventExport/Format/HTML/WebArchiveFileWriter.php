@@ -26,12 +26,19 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     protected $tmpDir;
 
     /**
+     * @var UitpasEventInfoServiceInterface
+     */
+    protected $uitpas;
+
+    /**
      * @param HTMLFileWriter $htmlFileWriter
      */
     public function __construct(
-        HTMLFileWriter $htmlFileWriter
+        HTMLFileWriter $htmlFileWriter,
+        UitpasEventInfoServiceInterface $uitpas = null
     ) {
         $this->htmlFileWriter = $htmlFileWriter;
+        $this->uitpas = $uitpas;
 
         $this->tmpDir = sys_get_temp_dir();
 
@@ -134,7 +141,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
             $events = new \ArrayIterator($events);
         }
 
-        $formatter = new EventFormatter();
+        $formatter = new EventFormatter($this->uitpas);
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,

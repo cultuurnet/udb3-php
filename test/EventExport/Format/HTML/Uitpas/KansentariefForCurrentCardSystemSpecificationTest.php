@@ -11,9 +11,9 @@ use CultureFeed_Uitpas_DistributionKey_Condition as Condition;
 class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var KansentariefForCurrentCardSystemSpecification
+     * @var DistributionKeyFactory
      */
-    protected $specification;
+    protected $keyFactory;
 
     public function setUp()
     {
@@ -23,17 +23,15 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
 
     public function satisfyingDistributionKeysProvider()
     {
-        $key = new CultureFeed_Uitpas_DistributionKey();
-        $key->tariff = '1.0';
-        $key->conditions[] = new Condition();
-
+        $conditionFactory = new DistributionKeyConditionFactory();
+        $keyFactory = new DistributionKeyFactory();
 
         $data = [
             [
-                $this->buildKey(
+                $keyFactory->buildKey(
                     '1.0',
                     [
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_KANSARM,
                             Condition::OPERATOR_IN,
                             Condition::VALUE_MY_CARDSYSTEM
@@ -42,10 +40,10 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
                 )
             ],
             [
-                $this->buildKey(
+                $keyFactory->buildKey(
                     '0.0',
                     [
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_KANSARM,
                             Condition::OPERATOR_IN,
                             Condition::VALUE_MY_CARDSYSTEM
@@ -54,15 +52,15 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
                 )
             ],
             [
-                $this->buildKey(
+                $keyFactory->buildKey(
                     '1.0',
                     [
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_KANSARM,
                             Condition::OPERATOR_IN,
                             Condition::VALUE_MY_CARDSYSTEM
                         ),
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_PRICE,
                             Condition::OPERATOR_LESS_THAN,
                             7
@@ -76,41 +74,11 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
     }
 
     /**
-     * @param string $tariff
-     * @param Condition[] $conditions
-     * @return CultureFeed_Uitpas_DistributionKey
-     */
-    private function buildKey($tariff, $conditions)
-    {
-        $key = new CultureFeed_Uitpas_DistributionKey();
-        $key->tariff = $tariff;
-        $key->conditions = $conditions;
-
-        return $key;
-    }
-
-    /**
-     * @param string $definition
-     * @param string $operator
-     * @param string $value
-     * @return Condition
-     */
-    private function buildCondition($definition, $operator, $value)
-    {
-        $condition = new Condition();
-        $condition->definition = $definition;
-        $condition->operator = $operator;
-        $condition->value = $value;
-
-        return $condition;
-    }
-
-    /**
      * @test
      * @dataProvider satisfyingDistributionKeysProvider
      * @param CultureFeed_Uitpas_DistributionKey $key
      */
-    public function it_is_satisfied_by_one_kansarm_distribution_key_condition(
+    public function it_is_satisfied_by_a_kansarm_in_my_cardsystem_condition(
         CultureFeed_Uitpas_DistributionKey $key
     ) {
         $this->assertTrue(
@@ -120,12 +88,15 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
 
     public function nonSatisfyingDistributionKeysProvider()
     {
+        $conditionFactory = new DistributionKeyConditionFactory();
+        $keyFactory = new DistributionKeyFactory();
+
         $data = [
             [
-                $this->buildKey(
+                $keyFactory->buildKey(
                     '1.0',
                     [
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_KANSARM,
                             Condition::OPERATOR_IN,
                             Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
@@ -134,10 +105,10 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
                 )
             ],
             [
-                $this->buildKey(
+                $keyFactory->buildKey(
                     '0.0',
                     [
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_KANSARM,
                             Condition::OPERATOR_IN,
                             Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
@@ -146,15 +117,15 @@ class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framewo
                 )
             ],
             [
-                $this->buildKey(
+                $keyFactory->buildKey(
                     '0.0',
                     [
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_KANSARM,
                             Condition::OPERATOR_IN,
                             Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
                         ),
-                        $this->buildCondition(
+                        $conditionFactory->buildCondition(
                             Condition::DEFINITION_PRICE,
                             Condition::OPERATOR_LESS_THAN,
                             '7'

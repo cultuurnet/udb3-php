@@ -12,7 +12,7 @@ use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Event_Query_SearchEventsOptions;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKeySpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\KansentariefForCurrentCardSystemSpecification;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\KansenTariefForOtherCardSystemsSpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\KansentariefForOtherCardSystemsSpecification;
 
 class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterface
 {
@@ -42,7 +42,7 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
             new KansentariefForCurrentCardSystemSpecification();
 
         $this->kansenTariefForOtherCardSystems =
-            new KansenTariefForOtherCardSystemsSpecification();
+            new KansentariefForOtherCardSystemsSpecification();
     }
 
     /**

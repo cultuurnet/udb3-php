@@ -62,8 +62,6 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
             $searchEvents
         );
 
-        var_dump($resultSet);
-
         /** @var CultureFeed_Uitpas_Event_CultureEvent $uitpasEvent */
         $uitpasEvent = reset($resultSet->objects);
 

@@ -135,4 +135,61 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             $eventWithHTMLDescription['description']
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_optionally_enriches_events_with_uitpas_info()
+    {
+        $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
+
+        $uitpas = $this->getMock(UitpasEventInfoServiceInterface::class);
+
+        $prices = [
+            [
+               'price' => '1.5',
+               'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '3.0',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+        ];
+
+        $advantages = [];
+
+        $eventInfo = new UitpasEventInfo($prices, $advantages);
+
+        $uitpas->expects($this->once())
+            ->method('getEventInfo')
+            ->with('d1f0e71d-a9a8-4069-81fb-530134502c58')
+            ->willReturn($eventInfo);
+
+        $eventFormatter = new EventFormatter($uitpas);
+
+        $formattedEvent = $eventFormatter->formatEvent($eventWithoutImage);
+
+        $expectedFormattedEvent = [
+            'uitpas' => [
+                'prices' => $prices,
+                'advantages' => [],
+            ],
+            'type' => 'Cursus of workshop',
+            'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
+            'address' => [
+                'name' => 'Cultuurcentrum De Kruisboog',
+                'street' => 'Sint-Jorisplein 20 ',
+                'postcode' => '3300',
+                'municipality' => 'Tienen',
+            ],
+            'price' => 'Niet ingevoerd',
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+        ];
+
+        $this->assertEquals(
+            $expectedFormattedEvent,
+            $formattedEvent
+        );
+    }
 }

@@ -6,6 +6,13 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
@@ -17,6 +24,11 @@ class EventFormatter
      */
     protected $filters;
 
+    /**
+     * @var EventSpecification[]
+     */
+    protected $iconsSpecifications;
+
     public function __construct()
     {
         $this->filters = new CombinedStringFilter();
@@ -27,6 +39,17 @@ class EventFormatter
         $truncateFilter->addEllipsis();
         $truncateFilter->turnOnWordSafe(1);
         $this->filters->addFilter($truncateFilter);
+
+        $iconSpecs = array(
+            'UiTPAS'        => new HasUiTPASBrand(),
+            'vlieg'         => new HasVliegBrand(),
+            '1taalicoon'    => new Has1Taalicoon(),
+            '2taaliconen'   => new Has2Taaliconen(),
+            '3taaliconen'   => new Has3Taaliconen(),
+            '4taaliconen'   => new Has4Taaliconen()
+        );
+
+        $this->iconsSpecifications = $iconSpecs;
     }
 
     /**
@@ -74,6 +97,19 @@ class EventFormatter
 
         $formattedEvent['dates'] = $event->calendarSummary;
 
+        $formattedEvent['icons'] = $this->generateIcons($event);
+
         return $formattedEvent;
+    }
+
+    private function generateIcons($event)
+    {
+        return array_keys(array_filter(
+            $this->iconsSpecifications,
+            function ($eventSpec) use ($event) {
+                /** @var EventSpecificationInterface $eventSpec */
+                return $eventSpec->isSatisfiedBy($event);
+            }
+        ));
     }
 }

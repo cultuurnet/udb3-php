@@ -45,6 +45,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => 'Gratis',
+            'icons' => [],
         ];
 
         $this->assertEquals(
@@ -66,6 +67,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => '10',
+            'icons' => [],
         ];
 
         $this->assertEquals(
@@ -96,6 +98,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => "van 01/09/14 tot 29/06/15",
+            'icons' => [],
         ];
 
         $this->assertEquals(
@@ -125,6 +128,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+            'icons' => [],
         ];
 
         $this->assertEquals(
@@ -149,6 +153,29 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             'Opnieuw twee dagen na elkaar en ook ditmaal brengen ze drie...',
             $formattedEvent['description']
+        );
+    }
+
+    public function it_adds_all_the_icons()
+    {
+        $eventWithHTMLDescription = $this->getJSONEventFromFile(
+            'event_with_all_icon_labels.json'
+        );
+
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            $eventWithHTMLDescription
+        );
+
+        $this->assertEquals(
+            array(
+                'UiTPAS',
+                'Vlieg',
+                '1taalicoon',
+                '2taaliconen',
+                '3taaliconen',
+                '4taaliconen',
+            ),
+            $formattedEvent['icons']
         );
     }
 }

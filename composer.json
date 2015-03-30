@@ -31,7 +31,8 @@
     "twig/twig": "~1.0",
     "league/flysystem": "~1.0",
     "league/flysystem-ziparchive": "~1.0",
-    "danielstjules/stringy": "~1.9"
+    "danielstjules/stringy": "~1.9",
+    "doctrine/dbal": "~2.4"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

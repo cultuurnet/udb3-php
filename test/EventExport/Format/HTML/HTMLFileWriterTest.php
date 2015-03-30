@@ -269,6 +269,44 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_show_the_starting_age()
+    {
+        $events = [
+            [
+                'type' => 'Cursus of workshop',
+                'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+                'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de...',
+                'address' => [
+                    'name' => 'Cultuurcentrum De Kruisboog',
+                    'street' => 'Sint-Jorisplein 20',
+                    'postcode' => '3300',
+                    'municipality' => 'Tienen',
+                ],
+                'price' => 'Niet ingevoerd',
+                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'taalicoonCount' => 1,
+                'brands' => [
+                    'uitpas'
+                ],
+                'ageFrom' => '5'
+            ]
+        ];
+
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'UiT',
+            )
+        );
+        $fileWriter->write($this->filePath, $events);
+
+        $expected = file_get_contents(__DIR__ . '/results/export_event_with_age_range.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
      * @param array $variables
      * @return HTMLFileWriter
      */

@@ -120,6 +120,11 @@ class EventFormatter
 
         $formattedEvent['brands'] = $this->brand($event);
 
+        if (isset($event->typicalAgeRange)) {
+            $ageRange = $event->typicalAgeRange;
+            $formattedEvent['ageFrom'] = explode('-', $ageRange)[0];
+        }
+
         return $formattedEvent;
     }
 

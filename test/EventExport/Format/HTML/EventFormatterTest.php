@@ -198,4 +198,17 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
         $formattedEvent = $this->eventFormatter->formatEvent($event);
         $this->assertContains('acme', $formattedEvent['brands']);
     }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_starting_age_when_event_has_age_range()
+    {
+        $event = $this->getJSONEventFromFile(
+            'event_with_all_icon_labels.json'
+        );
+
+        $formattedEvent = $this->eventFormatter->formatEvent($event);
+        $this->assertEquals(5, $formattedEvent['ageFrom']);
+    }
 }

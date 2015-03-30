@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c5019f2552a0ffac4307f72b717012e0",
+    "hash": "947cfe2b6c346d3e3950012f376265f6",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -494,6 +494,106 @@
             "time": "2014-10-22 07:19:56"
         },
         {
+            "name": "danielstjules/stringy",
+            "version": "1.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielstjules/Stringy.git",
+                "reference": "3cf18e9e424a6dedc38b7eb7ef580edb0929461b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielstjules/Stringy/zipball/3cf18e9e424a6dedc38b7eb7ef580edb0929461b",
+                "reference": "3cf18e9e424a6dedc38b7eb7ef580edb0929461b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Stringy\\": "src/"
+                },
+                "files": [
+                    "src/Create.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel St. Jules",
+                    "email": "danielst.jules@gmail.com",
+                    "homepage": "http://www.danielstjules.com"
+                }
+            ],
+            "description": "A string manipulation library with multibyte support",
+            "homepage": "https://github.com/danielstjules/Stringy",
+            "keywords": [
+                "UTF",
+                "helpers",
+                "manipulation",
+                "methods",
+                "multibyte",
+                "string",
+                "utf-8",
+                "utility",
+                "utils"
+            ],
+            "time": "2015-02-10 06:19:18"
+        },
+        {
+            "name": "gridonic/princexml-php",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gridonic/PrinceXMLPhp.git",
+                "reference": "23def3ef0499200dd4500b50b6165bf5172e7460"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gridonic/PrinceXMLPhp/zipball/23def3ef0499200dd4500b50b6165bf5172e7460",
+                "reference": "23def3ef0499200dd4500b50b6165bf5172e7460",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PrinceXMLPhp": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gridonic",
+                    "homepage": "http://gridonic.ch"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/gridonic/PrinceXMLPhp/contributors"
+                }
+            ],
+            "description": "PrinceXML PHP5 wrapper converted to follow the PSR-0 standard.",
+            "keywords": [
+                "princexml",
+                "xml"
+            ],
+            "time": "2014-07-22 12:32:03"
+        },
+        {
             "name": "guzzle/guzzle",
             "version": "v3.9.3",
             "source": {
@@ -590,16 +690,16 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "680d026082c3aa234b2d8617c50e9c73999913ba"
+                "reference": "2465fe486c864e30badaa4d005ebdf89dbc503f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/680d026082c3aa234b2d8617c50e9c73999913ba",
-                "reference": "680d026082c3aa234b2d8617c50e9c73999913ba",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/2465fe486c864e30badaa4d005ebdf89dbc503f3",
+                "reference": "2465fe486c864e30badaa4d005ebdf89dbc503f3",
                 "shasum": ""
             },
             "require": {
@@ -652,7 +752,7 @@
                 "json",
                 "schema"
             ],
-            "time": "2015-03-23 20:38:38"
+            "time": "2015-03-27 16:41:39"
         },
         {
             "name": "league/flysystem",
@@ -1190,61 +1290,22 @@
             "time": "2012-12-21 11:40:51"
         },
         {
-            "name": "ptrofimov/tinyredisclient",
-            "version": "1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ptrofimov/tinyredisclient.git",
-                "reference": "7b8d487afa41b74e30d1a68400d89c12d9b82b6f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ptrofimov/tinyredisclient/zipball/7b8d487afa41b74e30d1a68400d89c12d9b82b6f",
-                "reference": "7b8d487afa41b74e30d1a68400d89c12d9b82b6f",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Petr Trofimov",
-                    "email": "petrofimov@yandex.ru",
-                    "homepage": "https://github.com/ptrofimov"
-                }
-            ],
-            "description": "The most lightweight Redis client written in PHP",
-            "homepage": "https://github.com/ptrofimov/tinyredisclient",
-            "keywords": [
-                "client",
-                "redis"
-            ],
-            "time": "2013-04-09 19:16:58"
-        },
-        {
             "name": "rase/socket.io-emitter",
-            "version": "0.7.0",
+            "version": "0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rase-/socket.io-php-emitter.git",
-                "reference": "82e1f27f04c02cc88fc4d986fc17a799390e7986"
+                "reference": "b7700205f43bd0047bb1ce2b32ee476c41780a06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rase-/socket.io-php-emitter/zipball/82e1f27f04c02cc88fc4d986fc17a799390e7986",
-                "reference": "82e1f27f04c02cc88fc4d986fc17a799390e7986",
+                "url": "https://api.github.com/repos/rase-/socket.io-php-emitter/zipball/b7700205f43bd0047bb1ce2b32ee476c41780a06",
+                "reference": "b7700205f43bd0047bb1ce2b32ee476c41780a06",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3",
-                "ptrofimov/tinyredisclient": "1.1.1"
+                "ext-redis": "*",
+                "php": ">=5.3"
             },
             "require-dev": {
                 "phpunit/phpunit": "3.7.*"
@@ -1265,7 +1326,7 @@
                 "Socket.io",
                 "emit"
             ],
-            "time": "2014-11-22 15:43:44"
+            "time": "2014-10-10 10:37:20"
         },
         {
             "name": "react/async",

@@ -1,6 +1,6 @@
 @import 'reset.css';
 @import 'normalize.css';
-@import 'font-awesome.min.css';
+@import 'font-awesome.css';
 @import 'open-sans.css';
 
 /* Apply a natural box layout model to all elements, but allowing components to change. */

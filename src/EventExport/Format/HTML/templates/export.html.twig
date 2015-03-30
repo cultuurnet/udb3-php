@@ -81,15 +81,14 @@
                                 <td>
                                     {{ event.price }}
                                 </td>
+                            </tr>
                             {%- if event.taalicoonCount > 0 %}
 
+                            <tr>
                                 <td>
                                     <i class="taalicoon taalicoon-face"></i>
                                 </td>
-                                {% else %}
-
-                            {% endif -%}
-                            {%- if event.taalicoonCount == 1 -%}
+                                {% if event.taalicoonCount == 1 -%}
                                 <td>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
                                     <i class="taalicoon taalicoon-ballon"></i>
@@ -101,7 +100,7 @@
                                     </p>
                                 </td>
                             {% endif -%}
-                            {%- if event.taalicoonCount == 2 -%}
+                            {%- if event.taalicoonCount == 2 %}
                                 <td>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
@@ -113,7 +112,7 @@
                                     </p>
                                 </td>
                             {% endif -%}
-                            {%- if event.taalicoonCount == 3 -%}
+                            {%- if event.taalicoonCount == 3 %}
                                 <td>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
@@ -125,7 +124,7 @@
                                     </p>
                                 </td>
                             {% endif -%}
-                            {%- if event.taalicoonCount == 4 -%}
+                            {%- if event.taalicoonCount == 4 %}
                                 <td>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
@@ -138,6 +137,9 @@
                                 </td>
                             {% endif -%}
                             </tr>
+                        {% else %}
+
+                        {% endif -%}
                         </table>
                     </div>
                 </section>

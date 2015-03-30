@@ -102,6 +102,12 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
             ];
         }
 
+        foreach ($uitpasPrices as &$tariff) {
+            if ($tariff['price'] === '0.0') {
+                $tariff['price'] = 'Gratis';
+            }
+        }
+
         return $uitpasPrices;
     }
 }

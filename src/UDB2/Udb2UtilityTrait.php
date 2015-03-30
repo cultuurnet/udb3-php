@@ -357,7 +357,17 @@ trait Udb2UtilityTrait
         $file->setMediaType(CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB);
         $file->setMain();
         $file->setHLink($mediaObject->getUrl());
-        $file->setFileName(end($uriParts));
+
+        $filename = end($uriParts);
+        $fileparts = explode('.', $filename);
+        $extension = end($fileparts);
+        if ($extension === 'jpg') {
+          $extension = 'jpeg';
+        }
+
+        $file->setFileType($extension);
+        $file->setFileName($filename);
+
         $file->setCopyright($mediaObject->getCopyrightHolder());
         $file->setTitle($mediaObject->getDescription());
         $detail->getMedia()->add($file);
@@ -404,7 +414,16 @@ trait Udb2UtilityTrait
                     $uriParts = explode('/', $mediaObject->getUrl());
 
                     $file->setHLink($mediaObject->getUrl());
-                    $file->setFileName(end($uriParts));
+
+                    $filename = end($uriParts);
+                    $fileparts = explode('.', $filename);
+                    $extension = end($fileparts);
+                    if ($extension === 'jpg') {
+                      $extension = 'jpeg';
+                    }
+
+                    $file->setFileType($extension);
+                    $file->setFileName($filename);
                     $file->setCopyright($mediaObject->getCopyrightHolder());
                     $file->setTitle($mediaObject->getDescription());
 

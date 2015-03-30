@@ -24,6 +24,7 @@ class UitpasEventInfo
     public function __construct($prices, $advantages)
     {
         $this->prices = $prices;
+        $this->advantages = $advantages;
     }
 
     public function getPrices()

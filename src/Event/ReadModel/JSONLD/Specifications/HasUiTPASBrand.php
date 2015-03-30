@@ -8,8 +8,19 @@ class HasUiTPASBrand implements EventSpecificationInterface
 {
     use Labelable;
 
+    /**
+     * @var string[]
+     */
+    private $UiTPASLabels = ['UiTPAS Regio Aalst', 'UiTPAS Gent', 'Paspartoe'];
+
     public function isSatisfiedBy($eventLd)
     {
-        return $this->hasLabel($eventLd, new String('UiTPAS'));
+        foreach ($this->UiTPASLabels as $label) {
+            if ($this->hasLabel($eventLd, new String($label))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

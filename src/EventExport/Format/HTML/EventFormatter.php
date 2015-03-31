@@ -45,10 +45,10 @@ class EventFormatter
         $this->filters->addFilter($truncateFilter);
 
         $this->taalicoonSpecs = array(
-            new Has1Taalicoon(),
-            new Has2Taaliconen(),
-            new Has3Taaliconen(),
-            new Has4Taaliconen()
+            'EEN_TAALICOON' => new Has1Taalicoon(),
+            'TWEE_TAALICONEN' => new Has2Taaliconen(),
+            'DRIE_TAALICONEN' => new Has3Taaliconen(),
+            'VIER_TAALICONEN' => new Has4Taaliconen()
         );
 
         $this->brandSpecs = array();
@@ -116,7 +116,7 @@ class EventFormatter
 
         $formattedEvent['dates'] = $event->calendarSummary;
 
-        $formattedEvent['taalicoonCount'] = $this->countTaaliconen($event);
+        $this->formatTaaliconen($event, $formattedEvent);
 
         $formattedEvent['brands'] = $this->brand($event);
 
@@ -128,18 +128,29 @@ class EventFormatter
         return $formattedEvent;
     }
 
-    private function countTaaliconen($event)
+    /**
+     * @param $event
+     * @param $formattedEvent
+     */
+    private function formatTaaliconen($event, &$formattedEvent)
     {
         $taalicoonCount = 0;
+        $description = '';
+        $i = 0;
 
-        foreach ($this->taalicoonSpecs as $index => $spec) {
+        foreach ($this->taalicoonSpecs as $name => $spec) {
+            $i++;
             /** @var EventSpecificationInterface $spec */
             if ($spec->isSatisfiedBy($event)) {
-                $taalicoonCount = $index + 1;
+                $taalicoonCount = $i;
+                $description = TaalicoonDescription::getByName($name)->getValue();
             }
         }
 
-        return $taalicoonCount;
+        if ($taalicoonCount > 0) {
+            $formattedEvent['taalicoonCount'] = $taalicoonCount;
+            $formattedEvent['taalicoonDescription'] = $description;
+        }
     }
 
     private function brand($event)

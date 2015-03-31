@@ -82,60 +82,24 @@
                                     {{ event.price }}
                                 </td>
                             </tr>
-                            {%- if event.taalicoonCount > 0 %}
+                            {%- if event.taalicoonCount %}
 
                             <tr>
                                 <td>
                                     <i class="taalicoon taalicoon-face"></i>
                                 </td>
-                                {% if event.taalicoonCount == 1 -%}
                                 <td>
+                                    {% for i in range(1, event.taalicoonCount) -%}
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
+                                    {% endfor -%}
+                                    {% for i in range(event.taalicoonCount, 3) -%}
                                     <i class="taalicoon taalicoon-ballon"></i>
-                                    <i class="taalicoon taalicoon-ballon"></i>
-                                    <i class="taalicoon taalicoon-ballon"></i>
+                                    {% endfor -%}
                                     <br>
                                     <p class="taalicoon--description">
-                                        Je spreekt nog geen of niet zo veel Nederlands.
+                                        {{ event.taalicoonDescription }}
                                     </p>
                                 </td>
-                            {% endif -%}
-                            {%- if event.taalicoonCount == 2 %}
-                                <td>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon"></i>
-                                    <i class="taalicoon taalicoon-ballon"></i>
-                                    <br>
-                                    <p class="taalicoon--description">
-                                        Je begrijpt al een beetje Nederlands, maar je durft nog niet zo goed praten.
-                                    </p>
-                                </td>
-                            {% endif -%}
-                            {%- if event.taalicoonCount == 3 %}
-                                <td>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon"></i>
-                                    <br>
-                                    <p class="taalicoon--description">
-                                        Je begrijpt al veel Nederlands en je kan ook al iets vertellen.
-                                    </p>
-                                </td>
-                            {% endif -%}
-                            {%- if event.taalicoonCount == 4 %}
-                                <td>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    <br>
-                                    <p class="taalicoon--description">
-                                        Je spreekt en begrijpt vlot Nederlands.
-                                    </p>
-                                </td>
-                            {% endif -%}
                             </tr>
                         {% else %}
 

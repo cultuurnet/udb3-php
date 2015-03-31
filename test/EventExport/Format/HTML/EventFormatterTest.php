@@ -69,7 +69,6 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => 'Gratis',
-            'taalicoonCount' => 0,
             'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedFreeEvent, $freeEvent);
@@ -99,7 +98,6 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => "van 01/09/14 tot 29/06/15",
-            'taalicoonCount' => 0,
             'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutBookingInfo);
@@ -123,7 +121,6 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
-            'taalicoonCount' => 0,
             'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutImage);
@@ -148,7 +145,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_correctly_sets_the_taalicoon_count()
+    public function it_correctly_sets_the_taalicoon_count_and_description()
     {
         $eventWithAllTaaliconen = $this->getJSONEventFromFile(
             'event_with_all_icon_labels.json'
@@ -159,6 +156,10 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(4, $formattedEvent['taalicoonCount']);
+        $this->assertEquals(
+            TaalicoonDescription::VIER_TAALICONEN(),
+            $formattedEvent['taalicoonDescription']
+        );
     }
 
     /**

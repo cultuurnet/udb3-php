@@ -10,6 +10,6 @@ class Has1Taalicoon implements EventSpecificationInterface
 
     public function isSatisfiedBy($eventLd)
     {
-        return $this->hasLabel($eventLd, new String('een_taalicoon'));
+        return $this->hasLabel($eventLd, new String('één taalicoon'));
     }
 }

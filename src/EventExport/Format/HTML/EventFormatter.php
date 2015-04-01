@@ -121,10 +121,6 @@ class EventFormatter
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
 
-        if (empty($formattedEvent['price'])) {
-            $formattedEvent['price'] = 'Gratis';
-        }
-
         $formattedEvent['dates'] = $event->calendarSummary;
 
         $this->addUitpasInfo($event, $formattedEvent);
@@ -172,6 +168,10 @@ class EventFormatter
     {
         // Limit the number of decimals to 2, and use a comma as decimal point and a dot as thousands separator.
         $price = number_format($price, 2, ',', '.');
+
+        if ($price === '0,00') {
+            return 'Gratis';
+        }
 
         // Trim any insignificant zeroes after the decimal point.
         $price = trim($price, 0);

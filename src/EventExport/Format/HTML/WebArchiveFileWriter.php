@@ -2,6 +2,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
+use ValueObjects\String\String;
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -126,6 +129,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     protected function writeHtml($dir, $events)
     {
         $filePath = $dir . '/index.html';
+        $brand = $this->htmlFileWriter->getBrand();
 
         // TransformingIteratorIterator requires a Traversable,
         // so if $events is a regular array we need to wrap it
@@ -135,6 +139,14 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
         }
 
         $formatter = new EventFormatter();
+
+        if ($brand !== 'uitpas') {
+            $formatter->showBrand(new String('uitpas'), new HasUiTPASBrand());
+        }
+
+        if ($brand !== 'vlieg') {
+            $formatter->showBrand(new String('vlieg'), new HasVliegBrand());
+        }
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,

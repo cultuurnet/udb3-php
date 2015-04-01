@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <title>{{ title }}</title>
+        <title>UiT</title>
 
         <link href="css/export.css" type="text/css" rel="stylesheet" />
     </head>
@@ -13,46 +13,21 @@
     <body>
         <div class="footer">
             <p class="footer__pagenumber"></p>
-            {%- if footer %}
-
-            <p class="footer__description">{{ footer }}</p>
-            {%- endif %}
-            {%- if publisher %}
-
-            <p class="footer__publisher">{{ publisher }}</p>
-            {%- endif %}
-
         </div>
 
-        <div class="page page--{{ brand }}">
+        <div class="page page--uit">
             <div class="header">
-                <h1 class="header__title">{{ title }}</h1>
-                {% if subtitle -%}
-                    <p class="header__baseline">{{ subtitle }}</p>
-                {%- endif %}
-
-                <img class="header__image" src="img/{{ brand }}.svg" />
+                <h1 class="header__title">UiT</h1>
+                
+                <img class="header__image" src="img/uit.svg" />
             </div>
 
             <div class="columns">
-                {%- for event in events %}
-
-                <section class="activity{% for brand in event.brands %} {{ brand }}{% endfor %}">
-                    {% if event.image -%}
-                    <div class="activity__image-container">
-                        {%  if event.image -%}
-                            <img src="{{ event.image }}?width=150&height=150&maxheight=150&crop=auto" class="activity__image" />
-                        {%- endif %}
-
-                    </div>
-                    {% endif -%}
-                    {% if event.ageFrom -%}
-                    <p class="activity__leeftijd">{{ event.ageFrom }}+</p>
-                    {% endif -%}
-                    <p class="activity__type">{{ event.type }}</p>
-                    <p class="activity__title">{{ event.title }}</p>
+                <section class="activity uitpas">
+                    <p class="activity__type">Cursus of workshop</p>
+                    <p class="activity__title">Koran, kaliefen en kruistochten - De fundamenten van de islam</p>
                     <div class="activity__description">
-                        <p>{{ event.description }}</p>
+                        <p>De islam is niet meer weg te denken uit onze maatschappij. Aan de...</p>
                     </div>
                     <div class="activity__info">
                         <table class="activity__info__table">
@@ -61,7 +36,7 @@
                                     <i class="fa fa-calendar"></i>&nbsp;
                                 </td>
                                 <td>
-                                    {{ event.dates }}
+                                    ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 
                                 </td>
                             </tr>
                             <tr>
@@ -69,9 +44,9 @@
                                     <i class="fa fa-map-marker"></i>&nbsp;
                                 </td>
                                 <td>
-                                    {{ event.address.name }}<br />
-                                    {{ event.address.street }}<br />
-                                    {{ event.address.postcode }} {{ event.address.municipality }}
+                                    Cultuurcentrum De Kruisboog<br />
+                                    Sint-Jorisplein 20<br />
+                                    3300 Tienen
                                 </td>
                             </tr>
                             <tr>
@@ -79,36 +54,27 @@
                                     <i class="fa fa-eur"></i>&nbsp;
                                 </td>
                                 <td>
-                                    {{ event.price }}
+                                    Niet ingevoerd
                                 </td>
                             </tr>
-                            {%- if event.taalicoonCount %}
-
                             <tr>
                                 <td>
                                     <i class="taalicoon taalicoon-face"></i>
                                 </td>
                                 <td>
-                                    {% for i in range(1, event.taalicoonCount) -%}
                                     <i class="taalicoon taalicoon-ballon-filled"></i>
-                                    {% endfor -%}
-                                    {% for i in range(event.taalicoonCount, 3) -%}
                                     <i class="taalicoon taalicoon-ballon"></i>
-                                    {% endfor -%}
+                                    <i class="taalicoon taalicoon-ballon"></i>
+                                    <i class="taalicoon taalicoon-ballon"></i>
                                     <br>
                                     <p class="taalicoon--description">
-                                        {{ event.taalicoonDescription }}
+                                        Je spreekt nog geen of niet zo veel Nederlands.
                                     </p>
                                 </td>
                             </tr>
-                        {% else %}
-
-                        {% endif -%}
                         </table>
                     </div>
                 </section>
-                {%- endfor %}
-
             </div>
         </div>
     </body>

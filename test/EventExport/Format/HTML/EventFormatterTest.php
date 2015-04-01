@@ -5,6 +5,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
+use ValueObjects\String\String;
+
 class EventFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -66,6 +69,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => 'Gratis',
+            'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedFreeEvent, $freeEvent);
 
@@ -94,6 +98,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => "van 01/09/14 tot 29/06/15",
+            'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutBookingInfo);
     }
@@ -116,6 +121,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'price' => 'Niet ingevoerd',
             'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+            'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutImage);
     }
@@ -134,5 +140,58 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             "Stefan Bracavalopnieuw van de...",
             $eventWithHTMLDescription['description']
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_correctly_sets_the_taalicoon_count_and_description()
+    {
+        $eventWithAllTaaliconen = $this->getJSONEventFromFile(
+            'event_with_all_icon_labels.json'
+        );
+
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            $eventWithAllTaaliconen
+        );
+
+        $this->assertEquals(4, $formattedEvent['taalicoonCount']);
+        $this->assertEquals(
+            TaalicoonDescription::VIER_TAALICONEN(),
+            $formattedEvent['taalicoonDescription']
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_shows_a_brand_when_it_passes_a_spec()
+    {
+        $event = $this->getJSONEventFromFile(
+            'event_with_all_icon_labels.json'
+        );
+
+        /** @var EventSpecificationInterface $brandSpec */
+        $brandSpec = $this->getMock(EventSpecificationInterface::class);
+        $brandSpec->expects($this->once())
+            ->method('isSatisfiedBy')
+            ->willReturn(true);
+
+        $this->eventFormatter->showBrand(new String('acme'), $brandSpec);
+        $formattedEvent = $this->eventFormatter->formatEvent($event);
+        $this->assertContains('acme', $formattedEvent['brands']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_starting_age_when_event_has_age_range()
+    {
+        $event = $this->getJSONEventFromFile(
+            'event_with_all_icon_labels.json'
+        );
+
+        $formattedEvent = $this->eventFormatter->formatEvent($event);
+        $this->assertEquals(5, $formattedEvent['ageFrom']);
     }
 }

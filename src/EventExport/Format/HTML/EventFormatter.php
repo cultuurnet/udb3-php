@@ -196,8 +196,7 @@ class EventFormatter
     {
         return array_keys(array_filter(
             $this->brandSpecs,
-            function ($brandSpec) use ($event) {
-                /** @var EventSpecificationInterface $eventSpec */
+            function (EventSpecificationInterface $brandSpec) use ($event) {
                 return $brandSpec->isSatisfiedBy($event);
             }
         ));

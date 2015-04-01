@@ -149,6 +149,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     {
         $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
 
+        /** @var UitpasEventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
         $uitpas = $this->getMock(UitpasEventInfoServiceInterface::class);
 
         $prices = [

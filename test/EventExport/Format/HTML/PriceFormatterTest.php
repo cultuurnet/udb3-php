@@ -85,6 +85,10 @@ class PriceFormatterTest extends \PHPUnit_Framework_TestCase
         $formatted = $formatter->format(0);
         $this->assertEquals('Free', $formatted);
 
+        $formatter->disableFreeLabel();
+        $formatted = $formatter->format(0.001);
+        $this->assertEquals('0', $formatted);
+
         $formatter->useFreeLabel('Free');
         $formatted = $formatter->format(0.001);
         $this->assertEquals('Free', $formatted);

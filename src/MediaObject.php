@@ -16,6 +16,12 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
+     * Type of media object.
+     * @var string
+     */
+    protected $type;
+
+    /**
      * Internal file id.
      */
      protected $internalId;
@@ -49,8 +55,9 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
      */
     protected $copyrightHolder;
 
-    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '')
+    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '', $type = NULL)
     {
+        $this->type = $type;
         $this->url = $url;
         $this->thumbnailUrl = $thumbnailUrl;
         $this->description = $description;
@@ -99,11 +106,20 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function deserialize(array $data)
     {
-        return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id']);
+        $type = !empty($data['type']) ? $data['type'] : NULL;
+        return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
     }
 
     /**
@@ -112,6 +128,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     public function serialize()
     {
         return [
+            'type' => $this->type,
             'url' => $this->url,
             'thumbnail_url' => $this->thumbnailUrl,
             'description' => $this->description,
@@ -125,12 +142,17 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
      */
     public function toJsonLd()
     {
-        // Matches the serialized array.
-        return [
-            'url' => $this->url,
-            'thumbnailUrl' => $this->thumbnailUrl,
-            'description' => $this->description,
-            'copyrightHolder' => $this->copyrightHolder
-        ];
+        $jsonLd = [];
+        if (!empty($this->type)) {
+          $jsonLd['@type'] = $this->type;
+        }
+
+        $jsonLd['url'] = $this->url;
+        $jsonLd['thumbnailUrl'] = $this->thumbnailUrl;
+        $jsonLd['description'] = $this->description;
+        $jsonLd['copyrightHolder'] = $this->copyrightHolder;
+
+        return $jsonLd;
+
     }
 }

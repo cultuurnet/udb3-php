@@ -278,15 +278,18 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * @param EventWasLabelled $eventLabeller
+     * @param EventWasLabelled $eventWasLabelled
      */
-    protected function applyEventWasLabelled(EventWasLabelled $eventLabeller)
+    public function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
     {
-        $document = $this->loadDocumentFromRepository($eventLabeller);
+        $document = $this->loadDocumentFromRepository($eventWasLabelled);
 
         $eventLd = $document->getBody();
-        // TODO: Check if the event is already has this label?
-        $eventLd->concept[] = (string)$eventLabeller->getLabel();
+        $labels = $eventLd->labels;
+        $label = (string)$eventWasLabelled->getLabel();
+
+        $labels[] = $label;
+        $eventLd->labels = array_unique($labels);
 
         $this->repository->save($document->withBody($eventLd));
     }
@@ -297,15 +300,17 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         $eventLd = $document->getBody();
 
-        $eventLd->concept = array_filter(
-            $eventLd->concept,
-            function ($label) use ($unlabelled) {
-                return $label !== (string)$unlabelled->getLabel();
-            }
-        );
-        // Ensure array keys start with 0 so json_encode() does encode it
-        // as an array and not as an object.
-        $eventLd->concept = array_values($eventLd->concept);
+        if (is_array($eventLd->labels)) {
+            $eventLd->labels = array_filter(
+                $eventLd->labels,
+                function ($label) use ($unlabelled) {
+                    return $label !== (string)$unlabelled->getLabel();
+                }
+            );
+            // Ensure array keys start with 0 so json_encode() does encode it
+            // as an array and not as an object.
+            $eventLd->labels = array_values($eventLd->labels);
+        }
 
         $this->repository->save($document->withBody($eventLd));
     }

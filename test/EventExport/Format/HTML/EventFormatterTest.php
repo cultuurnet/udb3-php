@@ -256,7 +256,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             'event_with_all_icon_labels.json'
         );
 
-        /** @var EventSpecificationInterface $brandSpec */
+        /** @var EventSpecificationInterface|\PHPUnit_Framework_MockObject_MockObject $brandSpec */
         $brandSpec = $this->getMock(EventSpecificationInterface::class);
         $brandSpec->expects($this->once())
             ->method('isSatisfiedBy')

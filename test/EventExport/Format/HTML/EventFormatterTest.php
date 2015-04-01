@@ -198,6 +198,11 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             $expectedFormattedEvent,
             $formattedEvent
         );
+
+        // assertEquals assumes 3 and 3.0 are equal, but we want to be sure that the price is formatted so only
+        // significant decimals are shown. So we compare the price, casted as a string, to the expected formatted price.
+        $this->assertTrue('1.5' === (string) $formattedEvent['uitpas']['prices'][0]['price']);
+        $this->assertTrue('3' === (string) $formattedEvent['uitpas']['prices'][1]['price']);
     }
 
     /**

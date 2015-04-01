@@ -156,6 +156,11 @@ class EventFormatter
                     'prices' => $uitpasInfo->getPrices(),
                     'advantages' => $uitpasInfo->getAdvantages()
                 ];
+
+                foreach ($formattedEvent['uitpas']['prices'] as &$price) {
+                    // Adding 0 to the price converts prices like 2.0 to 2, but a price like 2.5 stays 2.5.
+                    $price['price'] = $price['price'] + 0;
+                }
             }
         }
     }

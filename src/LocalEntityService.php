@@ -67,6 +67,12 @@ abstract class LocalEntityService implements EntityServiceInterface
 
             /** @var JsonDocument $document */
             $document = $this->documentRepository->get($id);
+
+            if (!$document) {
+                throw new EntityNotFoundException(
+                    sprintf('Entity with id: %s not found.', $id)
+                );
+            }
         }
 
         return $document->getRawBody();

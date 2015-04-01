@@ -40,11 +40,18 @@ class EventFormatter
     protected $uitpas;
 
     /**
+     * @var PriceFormatter
+     */
+    protected $priceFormatter;
+
+    /**
      * @param UitpasEventInfoServiceInterface|null $uitpas
      */
     public function __construct(UitpasEventInfoServiceInterface $uitpas = null)
     {
         $this->uitpas = $uitpas;
+
+        $this->priceFormatter = new PriceFormatter(2, ',', '.', 'Gratis');
 
         $this->filters = new CombinedStringFilter();
 
@@ -116,7 +123,7 @@ class EventFormatter
 
         if (isset($event->bookingInfo)) {
             $firstPrice = reset($event->bookingInfo);
-            $formattedEvent['price'] = $this->formatPrice($firstPrice->price);
+            $formattedEvent['price'] = $this->priceFormatter->format($firstPrice->price);
         } else {
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
@@ -154,33 +161,10 @@ class EventFormatter
                 ];
 
                 foreach ($formattedEvent['uitpas']['prices'] as &$price) {
-                    $price['price'] = $this->formatPrice($price['price']);
+                    $price['price'] = $this->priceFormatter->format($price['price']);
                 }
             }
         }
-    }
-
-    /**
-     * @param mixed $price
-     * @return string $price
-     */
-    protected function formatPrice($price)
-    {
-        // Limit the number of decimals to 2, and use a comma as decimal point and a dot as thousands separator.
-        $price = number_format($price, 2, ',', '.');
-
-        if ($price === '0,00') {
-            return 'Gratis';
-        }
-
-        // Trim any insignificant zeroes after the decimal point.
-        $price = trim($price, 0);
-
-        // Trim the comma if there were only zeroes after the decimal point. Don't do this in the same trim as above, as
-        // that would format 50,00 as 5.
-        $price = trim($price, ',');
-
-        return $price;
     }
 
     /**

@@ -6,10 +6,16 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 use stdClass;
+use ValueObjects\String\String;
 
 class EventFormatter
 {
@@ -17,6 +23,16 @@ class EventFormatter
      * @var CombinedStringFilter
      */
     protected $filters;
+
+    /**
+     * @var EventSpecification[]
+     */
+    protected $taalicoonSpecs;
+
+    /**
+     * @var EventSpecification[]
+     */
+    protected $brandSpecs;
 
     /**
      * @var UitpasEventInfoServiceInterface|null
@@ -38,6 +54,32 @@ class EventFormatter
         $truncateFilter->addEllipsis();
         $truncateFilter->turnOnWordSafe(1);
         $this->filters->addFilter($truncateFilter);
+
+        $this->taalicoonSpecs = array(
+            'EEN_TAALICOON' => new Has1Taalicoon(),
+            'TWEE_TAALICONEN' => new Has2Taaliconen(),
+            'DRIE_TAALICONEN' => new Has3Taaliconen(),
+            'VIER_TAALICONEN' => new Has4Taaliconen()
+        );
+
+        $this->brandSpecs = array();
+    }
+
+    /**
+     * @param \ValueObjects\String\String $brandName
+     * @param EventSpecificationInterface $brandSpec
+     */
+    public function showBrand(
+        String $brandName,
+        EventSpecificationInterface $brandSpec
+    ) {
+        $brand = (string) $brandName;
+
+        if (array_key_exists($brand, $this->brandSpecs)) {
+            throw new \InvalidArgumentException('Brand name is already in use');
+        }
+
+        $this->brandSpecs[$brand] = $brandSpec;
     }
 
     /**
@@ -87,6 +129,15 @@ class EventFormatter
 
         $this->addUitpasInfo($event, $formattedEvent);
 
+        $this->formatTaaliconen($event, $formattedEvent);
+
+        $formattedEvent['brands'] = $this->brand($event);
+
+        if (isset($event->typicalAgeRange)) {
+            $ageRange = $event->typicalAgeRange;
+            $formattedEvent['ageFrom'] = explode('-', $ageRange)[0];
+        }
+
         return $formattedEvent;
     }
 
@@ -107,5 +158,41 @@ class EventFormatter
                 ];
             }
         }
+    }
+
+    /**
+     * @param $event
+     * @param $formattedEvent
+     */
+    private function formatTaaliconen($event, &$formattedEvent)
+    {
+        $taalicoonCount = 0;
+        $description = '';
+        $i = 0;
+
+        foreach ($this->taalicoonSpecs as $name => $spec) {
+            $i++;
+            /** @var EventSpecificationInterface $spec */
+            if ($spec->isSatisfiedBy($event)) {
+                $taalicoonCount = $i;
+                $description = TaalicoonDescription::getByName($name)->getValue();
+            }
+        }
+
+        if ($taalicoonCount > 0) {
+            $formattedEvent['taalicoonCount'] = $taalicoonCount;
+            $formattedEvent['taalicoonDescription'] = $description;
+        }
+    }
+
+    private function brand($event)
+    {
+        return array_keys(array_filter(
+            $this->brandSpecs,
+            function ($brandSpec) use ($event) {
+                /** @var EventSpecificationInterface $eventSpec */
+                return $brandSpec->isSatisfiedBy($event);
+            }
+        ));
     }
 }

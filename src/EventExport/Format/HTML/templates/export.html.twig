@@ -37,7 +37,7 @@
             <div class="columns">
                 {%- for event in events %}
 
-                <section class="activity">
+                <section class="activity{% for brand in event.brands %} {{ brand }}{% endfor %}">
                     {% if event.image -%}
                     <div class="activity__image-container">
                         {%  if event.image -%}
@@ -45,6 +45,9 @@
                         {%- endif %}
 
                     </div>
+                    {% endif -%}
+                    {% if event.ageFrom -%}
+                    <p class="activity__leeftijd">{{ event.ageFrom }}+</p>
                     {% endif -%}
                     <p class="activity__type">{{ event.type }}</p>
                     <p class="activity__title">{{ event.title }}</p>
@@ -79,18 +82,41 @@
                                     {{ event.price }}
                                 </td>
                             </tr>
-                        {%  if event.price != 'Gratis' and event.uitpas -%}
-                            {% for tariff in event.uitpas.prices -%}
+                            {%-  if event.price != 'Gratis' and event.uitpas -%}
+                                {%- for tariff in event.uitpas.prices %}
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-eur"></i>&nbsp;
+                                        </td>
+                                        <td>
+                                            {{ tariff.price }} {{ tariff.label }}
+                                        </td>
+                                    </tr>
+                                {%- endfor %}
+
+                            {%- endif -%}
+                            {%- if event.taalicoonCount %}
+
                             <tr>
                                 <td>
-                                    <i class="fa fa-eur"></i>&nbsp;
+                                    <i class="taalicoon taalicoon-face"></i>
                                 </td>
                                 <td>
-                                    {{ tariff.price }} {{ tariff.label }}
+                                    {% for i in range(1, event.taalicoonCount) -%}
+                                    <i class="taalicoon taalicoon-ballon-filled"></i>
+                                    {% endfor -%}
+                                    {% for i in range(event.taalicoonCount, 3) -%}
+                                    <i class="taalicoon taalicoon-ballon"></i>
+                                    {% endfor -%}
+                                    <br>
+                                    <p class="taalicoon--description">
+                                        {{ event.taalicoonDescription }}
+                                    </p>
                                 </td>
                             </tr>
-                            {%- endfor %}
-                        {%- endif -%}
+                        {% else %}
+
+                        {% endif -%}
                         </table>
                     </div>
                 </section>

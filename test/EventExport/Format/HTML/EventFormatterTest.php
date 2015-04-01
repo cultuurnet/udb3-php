@@ -75,7 +75,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $pricedEvent = $this->getFormattedEventFromJSONFile('event_with_price.json');
         $expectedFormattedPricedEvent = $expectedFormattedFreeEvent;
-        $expectedFormattedPricedEvent['price'] = 10;
+        $expectedFormattedPricedEvent['price'] = '10,5';
         $this->assertEventFormatting($expectedFormattedPricedEvent, $pricedEvent);
     }
 
@@ -160,6 +160,33 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
                 'price' => '3.0',
                 'label' => 'Kansentarief voor kaarthouders uit een andere regio',
             ],
+            [
+                'price' => '150.0',
+                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '30',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+        ];
+
+        $expectedPrices = [
+            [
+                'price' => '1,5',
+                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '3',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+            [
+                'price' => '150',
+                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '30',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
         ];
 
         $advantages = [];
@@ -177,7 +204,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $expectedFormattedEvent = [
             'uitpas' => [
-                'prices' => $prices,
+                'prices' => $expectedPrices,
                 'advantages' => [],
             ],
             'type' => 'Cursus of workshop',
@@ -198,11 +225,6 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             $expectedFormattedEvent,
             $formattedEvent
         );
-
-        // assertEquals assumes 3 and 3.0 are equal, but we want to be sure that the price is formatted so only
-        // significant decimals are shown. So we compare the price, casted as a string, to the expected formatted price.
-        $this->assertTrue('1.5' === (string) $formattedEvent['uitpas']['prices'][0]['price']);
-        $this->assertTrue('3' === (string) $formattedEvent['uitpas']['prices'][1]['price']);
     }
 
     /**

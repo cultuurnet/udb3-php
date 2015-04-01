@@ -116,7 +116,7 @@ class EventFormatter
 
         if (isset($event->bookingInfo)) {
             $firstPrice = reset($event->bookingInfo);
-            $formattedEvent['price'] = $firstPrice->price;
+            $formattedEvent['price'] = $this->formatPrice($firstPrice->price);
         } else {
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
@@ -158,11 +158,29 @@ class EventFormatter
                 ];
 
                 foreach ($formattedEvent['uitpas']['prices'] as &$price) {
-                    // Adding 0 to the price converts prices like 2.0 to 2, but a price like 2.5 stays 2.5.
-                    $price['price'] = $price['price'] + 0;
+                    $price['price'] = $this->formatPrice($price['price']);
                 }
             }
         }
+    }
+
+    /**
+     * @param mixed $price
+     * @return string $price
+     */
+    protected function formatPrice($price)
+    {
+        // Limit the number of decimals to 2, and use a comma as decimal point and a dot as thousands separator.
+        $price = number_format($price, 2, ',', '.');
+
+        // Trim any insignificant zeroes after the decimal point.
+        $price = trim($price, 0);
+
+        // Trim the comma if there were only zeroes after the decimal point. Don't do this in the same trim as above, as
+        // that would format 50,00 as 5.
+        $price = trim($price, ',');
+
+        return $price;
     }
 
     /**

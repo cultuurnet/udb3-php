@@ -4,6 +4,12 @@ namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use ValueObjects\Enum\Enum;
 
+/**
+ * @method static $this EEN_TAALICOON()
+ * @method static $this TWEE_TAALICONEN()
+ * @method static $this DRIE_TAALICONEN()
+ * @method static $this VIER_TAALICONEN()
+ */
 class TaalicoonDescription extends Enum
 {
     const EEN_TAALICOON = "Je spreekt nog geen of niet zo veel Nederlands.";

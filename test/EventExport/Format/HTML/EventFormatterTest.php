@@ -165,7 +165,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_show_a_brand_when_it_passes_a_spec()
+    public function it_shows_a_brand_when_it_passes_a_spec()
     {
         $event = $this->getJSONEventFromFile(
             'event_with_all_icon_labels.json'

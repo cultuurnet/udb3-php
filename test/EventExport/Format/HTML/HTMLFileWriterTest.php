@@ -273,7 +273,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_show_the_starting_age()
+    public function it_shows_the_starting_age()
     {
         $events = [
             [

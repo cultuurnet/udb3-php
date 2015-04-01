@@ -25,12 +25,12 @@ class EventFormatter
     protected $filters;
 
     /**
-     * @var EventSpecification[]
+     * @var EventSpecificationInterface[]
      */
     protected $taalicoonSpecs;
 
     /**
-     * @var EventSpecification[]
+     * @var EventSpecificationInterface[]
      */
     protected $brandSpecs;
 

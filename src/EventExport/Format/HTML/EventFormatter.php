@@ -146,9 +146,9 @@ class EventFormatter
 
     /**
      * @param stdClass $event
-     * @param stdClass $formattedEvent
+     * @param array $formattedEvent
      */
-    private function addUitpasInfo($event, &$formattedEvent)
+    private function addUitpasInfo(stdClass $event, array &$formattedEvent)
     {
         if ($this->uitpas) {
             $urlParts = explode('/', $event->{'@id'});

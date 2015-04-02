@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use ValueObjects\String\String;
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
 use League\Flysystem\Adapter\Local;

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use PrinceXMLPhp\PrinceWrapper;

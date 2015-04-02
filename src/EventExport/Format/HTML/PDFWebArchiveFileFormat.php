@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 
 class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
 {

@@ -3,11 +3,11 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey;
 
 use CultureFeed_Uitpas_DistributionKey;
 
-class KansenTariefForOtherCardSystemsSpecification implements DistributionKeySpecification
+class KansentariefForCurrentCardSystemSpecification implements DistributionKeySpecification
 {
     public function isSatisfiedBy(
         CultureFeed_Uitpas_DistributionKey $distributionKey
@@ -16,7 +16,7 @@ class KansenTariefForOtherCardSystemsSpecification implements DistributionKeySpe
 
         foreach ($distributionKey->conditions as $condition) {
             if ($condition->definition == $condition::DEFINITION_KANSARM &&
-                $condition->value == $condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
+                $condition->value == $condition::VALUE_MY_CARDSYSTEM
             ) {
                 $satisfied = true;
                 break;

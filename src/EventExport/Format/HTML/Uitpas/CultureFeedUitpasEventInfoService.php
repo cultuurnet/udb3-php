@@ -3,16 +3,16 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas;
 
 use CultureFeed_Uitpas;
 use CultureFeed_Uitpas_CardSystem;
 use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Event_Query_SearchEventsOptions;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKeySpecification;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\KansentariefForCurrentCardSystemSpecification;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\KansentariefForOtherCardSystemsSpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeySpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForCurrentCardSystemSpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForOtherCardSystemsSpecification;
 
 class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterface
 {

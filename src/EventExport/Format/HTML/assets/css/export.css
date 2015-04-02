@@ -83,6 +83,10 @@ html {
     padding: 3px 0;
     vertical-align: top;
 }
+.activity__info__table tr td:first-child {
+    width: 2em;
+    text-align: center;
+}
 .activity__leeftijd {
     background-color: #777;
     width: 1cm;

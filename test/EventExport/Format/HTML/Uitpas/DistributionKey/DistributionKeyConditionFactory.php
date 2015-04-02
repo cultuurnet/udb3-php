@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey;
 
 use CultureFeed_Uitpas_DistributionKey_Condition;
 

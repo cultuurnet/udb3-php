@@ -3,93 +3,28 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey;
 
 use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_DistributionKey_Condition as Condition;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansenTariefForOtherCardSystemsSpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyConditionFactory;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyFactory;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForCurrentCardSystemSpecification;
 
-class KansentariefForOtherCardSystemsSpecificationTest extends \PHPUnit_Framework_TestCase
+class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var KansentariefForOtherCardSystemsSpecification
+     * @var DistributionKeyFactory
      */
-    protected $specification;
+    protected $keyFactory;
 
     public function setUp()
     {
-        $this->specification = new KansentariefForOtherCardSystemsSpecification();
+        $this->specification =
+            new KansentariefForCurrentCardSystemSpecification();
     }
 
     public function satisfyingDistributionKeysProvider()
-    {
-        $conditionFactory = new DistributionKeyConditionFactory();
-        $keyFactory = new DistributionKeyFactory();
-
-        $data = [
-            [
-                $keyFactory->buildKey(
-                    '1.0',
-                    [
-                        $conditionFactory->buildCondition(
-                            Condition::DEFINITION_KANSARM,
-                            Condition::OPERATOR_IN,
-                            Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
-                        ),
-                    ]
-                )
-            ],
-            [
-                $keyFactory->buildKey(
-                    '0.0',
-                    [
-                        $conditionFactory->buildCondition(
-                            Condition::DEFINITION_KANSARM,
-                            Condition::OPERATOR_IN,
-                            Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
-                        ),
-                    ]
-                )
-            ],
-            [
-                $keyFactory->buildKey(
-                    '0.0',
-                    [
-                        $conditionFactory->buildCondition(
-                            Condition::DEFINITION_KANSARM,
-                            Condition::OPERATOR_IN,
-                            Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
-                        ),
-                        $conditionFactory->buildCondition(
-                            Condition::DEFINITION_PRICE,
-                            Condition::OPERATOR_LESS_THAN,
-                            '7'
-                        ),
-                    ]
-                )
-            ],
-        ];
-
-        return $data;
-    }
-
-    /**
-     * @test
-     * @dataProvider satisfyingDistributionKeysProvider
-     * @param CultureFeed_Uitpas_DistributionKey $key
-     */
-    public function it_is_satisfied_by_a_kansarm_in_at_least_one_cardsystem_condition(
-        CultureFeed_Uitpas_DistributionKey $key
-    ) {
-        $this->assertTrue(
-            $this->specification->isSatisfiedBy($key)
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function nonSatisfyingDistributionKeysProvider()
     {
         $conditionFactory = new DistributionKeyConditionFactory();
         $keyFactory = new DistributionKeyFactory();
@@ -136,6 +71,71 @@ class KansentariefForOtherCardSystemsSpecificationTest extends \PHPUnit_Framewor
                     ]
                 ),
             ]
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @test
+     * @dataProvider satisfyingDistributionKeysProvider
+     * @param CultureFeed_Uitpas_DistributionKey $key
+     */
+    public function it_is_satisfied_by_a_kansarm_in_my_cardsystem_condition(
+        CultureFeed_Uitpas_DistributionKey $key
+    ) {
+        $this->assertTrue(
+            $this->specification->isSatisfiedBy($key)
+        );
+    }
+
+    public function nonSatisfyingDistributionKeysProvider()
+    {
+        $conditionFactory = new DistributionKeyConditionFactory();
+        $keyFactory = new DistributionKeyFactory();
+
+        $data = [
+            [
+                $keyFactory->buildKey(
+                    '1.0',
+                    [
+                        $conditionFactory->buildCondition(
+                            Condition::DEFINITION_KANSARM,
+                            Condition::OPERATOR_IN,
+                            Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
+                        ),
+                    ]
+                )
+            ],
+            [
+                $keyFactory->buildKey(
+                    '0.0',
+                    [
+                        $conditionFactory->buildCondition(
+                            Condition::DEFINITION_KANSARM,
+                            Condition::OPERATOR_IN,
+                            Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
+                        ),
+                    ]
+                )
+            ],
+            [
+                $keyFactory->buildKey(
+                    '0.0',
+                    [
+                        $conditionFactory->buildCondition(
+                            Condition::DEFINITION_KANSARM,
+                            Condition::OPERATOR_IN,
+                            Condition::VALUE_AT_LEAST_ONE_CARDSYSTEM
+                        ),
+                        $conditionFactory->buildCondition(
+                            Condition::DEFINITION_PRICE,
+                            Condition::OPERATOR_LESS_THAN,
+                            '7'
+                        ),
+                    ]
+                )
+            ],
         ];
 
         return $data;

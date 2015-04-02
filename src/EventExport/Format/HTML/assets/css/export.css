@@ -46,6 +46,12 @@ html {
 	margin-bottom: 6px;
 	padding-bottom: 6px;
 }
+
+.imageless.agedFrom.activity .activity__type,
+.imageless.agedFrom.activity .activity__title {
+    margin-right: 50px;
+}
+
 .activity__title {
 	font-size: 14px;
 	font-weight: bold;

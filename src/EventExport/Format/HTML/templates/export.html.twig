@@ -37,7 +37,11 @@
             <div class="columns">
                 {%- for event in events %}
 
-                <section class="activity{% for brand in event.brands %} {{ brand }}{% endfor %}">
+                <section class="activity
+                {%- for brand in event.brands %} {{ brand }}{% endfor -%}
+                {%- if event.image is not defined %} imageless{% endif -%}
+                {%- if event.ageFrom %} agedFrom{% endif -%}
+                ">
                     {% if event.image -%}
                     <div class="activity__image-container">
                         {%  if event.image -%}

@@ -78,7 +78,11 @@ class LegacySearchService implements SearchServiceInterface
 
         if (!empty($conditions)) {
             if (!empty($conditions['locationCdbId'])) {
-                $params[] = new Parameter\FilterQuery('"' . $conditions['locationCdbId'] . '"');
+                $params[] = new Parameter\FilterQuery('location_cdbid:"' . $conditions['locationCdbId'] . '"');
+            }
+            // Search on places
+            if (!empty($conditions['place_only'])) {
+                $params[] = new Parameter\FilterQuery('keywords:"UDB3 place"');
             }
             if (!empty($conditions['locationZip'])) {
                 $params[] = new Parameter\FilterQuery('zipcode' . ':' . $conditions['locationZip']);

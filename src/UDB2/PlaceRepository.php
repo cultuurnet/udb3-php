@@ -245,6 +245,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
         $event = new CultureFeed_Cdb_Item_Event();
         $event->setCdbId($placeCreated->getPlaceId());
+        $event->addKeyword('UDB3 place');
 
         $nlDetail = new CultureFeed_Cdb_Data_EventDetail();
         $nlDetail->setLanguage('nl');

@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfo;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use ValueObjects\String\String;
 
 class EventFormatterTest extends \PHPUnit_Framework_TestCase
@@ -75,7 +77,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $pricedEvent = $this->getFormattedEventFromJSONFile('event_with_price.json');
         $expectedFormattedPricedEvent = $expectedFormattedFreeEvent;
-        $expectedFormattedPricedEvent['price'] = 10;
+        $expectedFormattedPricedEvent['price'] = '10,5';
         $this->assertEventFormatting($expectedFormattedPricedEvent, $pricedEvent);
     }
 
@@ -145,6 +147,92 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_optionally_enriches_events_with_uitpas_info()
+    {
+        $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
+
+        /** @var UitpasEventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
+        $uitpas = $this->getMock(UitpasEventInfoServiceInterface::class);
+
+        $prices = [
+            [
+               'price' => '1.5',
+               'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '3.0',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+            [
+                'price' => '150.0',
+                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '30',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+        ];
+
+        $expectedPrices = [
+            [
+                'price' => '1,5',
+                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '3',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+            [
+                'price' => '150',
+                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+            ],
+            [
+                'price' => '30',
+                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+            ],
+        ];
+
+        $advantages = [];
+
+        $eventInfo = new UitpasEventInfo($prices, $advantages);
+
+        $uitpas->expects($this->once())
+            ->method('getEventInfo')
+            ->with('d1f0e71d-a9a8-4069-81fb-530134502c58')
+            ->willReturn($eventInfo);
+
+        $eventFormatter = new EventFormatter($uitpas);
+
+        $formattedEvent = $eventFormatter->formatEvent($eventWithoutImage);
+
+        $expectedFormattedEvent = [
+            'uitpas' => [
+                'prices' => $expectedPrices,
+                'advantages' => [],
+            ],
+            'type' => 'Cursus of workshop',
+            'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
+            'address' => [
+                'name' => 'Cultuurcentrum De Kruisboog',
+                'street' => 'Sint-Jorisplein 20 ',
+                'postcode' => '3300',
+                'municipality' => 'Tienen',
+            ],
+            'price' => 'Niet ingevoerd',
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+            'brands' => array(),
+        ];
+
+        $this->assertEquals(
+            $expectedFormattedEvent,
+            $formattedEvent
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_correctly_sets_the_taalicoon_count_and_description()
     {
         $eventWithAllTaaliconen = $this->getJSONEventFromFile(
@@ -171,7 +259,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             'event_with_all_icon_labels.json'
         );
 
-        /** @var EventSpecificationInterface $brandSpec */
+        /** @var EventSpecificationInterface|\PHPUnit_Framework_MockObject_MockObject $brandSpec */
         $brandSpec = $this->getMock(EventSpecificationInterface::class);
         $brandSpec->expects($this->once())
             ->method('isSatisfiedBy')

@@ -26,7 +26,7 @@ class EventInfo
     public function __construct($prices, $advantages)
     {
         foreach ($advantages as $advantage) {
-            if (!($advantage instanceof EventAdvantage::class)) {
+            if (!($advantage instanceof EventAdvantage)) {
                 throw new \InvalidArgumentException('EventInfo advantages should be instances of EventAdvantage');
             }
         }

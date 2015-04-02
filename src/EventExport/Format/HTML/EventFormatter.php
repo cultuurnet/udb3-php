@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
@@ -156,9 +157,18 @@ class EventFormatter
             $eventId = end($urlParts);
             $uitpasInfo = $this->uitpas->getEventInfo($eventId);
             if ($uitpasInfo) {
+                $advantages = [];
+                $advantageLabels = [
+                    EventAdvantage::POINT_COLLECTING => 'Spaar punten',
+                    EventAdvantage::KANSENTARIEF => 'Korting voor kansentarief',
+                ];
+                foreach ($uitpasInfo->getAdvantages() as $advantage) {
+                    $advantages = $advantageLabels[$advantage->getValue()];
+                }
+
                 $formattedEvent['uitpas'] = [
                     'prices' => $uitpasInfo->getPrices(),
-                    'advantages' => $uitpasInfo->getAdvantages()
+                    'advantages' => $advantages,
                 ];
 
                 foreach ($formattedEvent['uitpas']['prices'] as &$price) {

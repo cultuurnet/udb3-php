@@ -10,11 +10,13 @@ use CultureFeed_Uitpas_CardSystem;
 use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Event_Query_SearchEventsOptions;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeySpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefDiscountSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForCurrentCardSystemSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForOtherCardSystemsSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\PointCollectingSpecification;
 
 class CultureFeedEventInfoService implements EventInfoServiceInterface
 {
@@ -39,6 +41,11 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
     protected $kansentariefDiscount;
 
     /**
+     * @var PointCollectingSpecification
+     */
+    protected $pointCollecting;
+
+    /**
      * @param CultureFeed_Uitpas $uitpas
      */
     public function __construct(CultureFeed_Uitpas $uitpas)
@@ -52,6 +59,8 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
             new KansentariefForOtherCardSystemsSpecification();
 
         $this->kansentariefDiscount = new KansentariefDiscountSpecification();
+
+        $this->pointCollecting = new PointCollectingSpecification();
     }
 
     /**
@@ -101,6 +110,11 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
     private function getUitpasAdvantagesFromEvent(\CultureFeed_Uitpas_Event_CultureEvent $event)
     {
         $advantages = [];
+
+        if ($this->pointCollecting->isSatisfiedBy($event)) {
+            $advantages[] = EventAdvantage::POINT_COLLECTING();
+        }
+
         return $advantages;
     }
 

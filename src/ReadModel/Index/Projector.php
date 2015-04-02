@@ -187,6 +187,7 @@ class Projector implements EventListenerInterface
 
         $addresses = $organizer->getAddresses();
         if (isset($addresses[0])) {
+            $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
             $this->updateIndex($organizerId, 'organizer', $userId, $organizer->getTitle(), $addresses[0]->getPostalCode(), $creationDate);
         }
     }

@@ -11,7 +11,7 @@ use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsOOXML;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsPDF;
 use CultuurNet\UDB3\EventExport\Format\HTML\PDFWebArchiveFileFormat;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\JSONLD\JSONLDFileFormat;
 use CultuurNet\UDB3\EventExport\Format\TabularData\CSV\CSVFileFormat;
 use CultuurNet\UDB3\EventExport\Format\TabularData\OOXML\OOXMLFileFormat;
@@ -33,19 +33,19 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
     protected $princeXMLBinaryPath;
 
     /**
-     * @var UitpasEventInfoServiceInterface|null
+     * @var EventInfoServiceInterface|null
      */
     protected $uitpas;
 
     /**
      * @param EventExportServiceInterface $eventExportService
      * @param string $princeXMLBinaryPath
-     * @param UitpasEventInfoServiceInterface|null $uitpas
+     * @param EventInfoServiceInterface|null $uitpas
      */
     public function __construct(
         EventExportServiceInterface $eventExportService,
         $princeXMLBinaryPath,
-        UitpasEventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null
     ) {
         $this->eventExportService = $eventExportService;
         $this->princeXMLBinaryPath = $princeXMLBinaryPath;

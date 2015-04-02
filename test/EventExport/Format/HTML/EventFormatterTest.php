@@ -6,8 +6,8 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfo;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use ValueObjects\String\String;
 
 class EventFormatterTest extends \PHPUnit_Framework_TestCase
@@ -151,8 +151,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     {
         $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
 
-        /** @var UitpasEventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
-        $uitpas = $this->getMock(UitpasEventInfoServiceInterface::class);
+        /** @var EventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
+        $uitpas = $this->getMock(EventInfoServiceInterface::class);
 
         $prices = [
             [
@@ -194,7 +194,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $advantages = [];
 
-        $eventInfo = new UitpasEventInfo($prices, $advantages);
+        $eventInfo = new EventInfo($prices, $advantages);
 
         $uitpas->expects($this->once())
             ->method('getEventInfo')

@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
@@ -36,7 +36,7 @@ class EventFormatter
     protected $brandSpecs;
 
     /**
-     * @var UitpasEventInfoServiceInterface|null
+     * @var EventInfoServiceInterface|null
      */
     protected $uitpas;
 
@@ -46,9 +46,9 @@ class EventFormatter
     protected $priceFormatter;
 
     /**
-     * @param UitpasEventInfoServiceInterface|null $uitpas
+     * @param EventInfoServiceInterface|null $uitpas
      */
-    public function __construct(UitpasEventInfoServiceInterface $uitpas = null)
+    public function __construct(EventInfoServiceInterface $uitpas = null)
     {
         $this->uitpas = $uitpas;
 

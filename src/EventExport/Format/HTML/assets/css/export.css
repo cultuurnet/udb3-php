@@ -17,6 +17,7 @@ html {
 .activity {
 	position: relative;
 	page-break-inside: avoid;
+    margin-bottom: 1cm;
 }
 .activity__image-container
 {

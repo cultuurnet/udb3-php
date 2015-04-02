@@ -7,9 +7,6 @@ namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey;
 
 use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_DistributionKey_Condition as Condition;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyConditionFactory;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyFactory;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForCurrentCardSystemSpecification;
 
 class KansentariefForCurrentCardSystemSpecificationTest extends \PHPUnit_Framework_TestCase
 {

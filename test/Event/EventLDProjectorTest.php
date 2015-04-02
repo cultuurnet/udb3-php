@@ -9,14 +9,18 @@ use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use Broadway\UuidGenerator\Testing\MockUuidGenerator;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use Symfony\Component\EventDispatcher\Event;
 
 class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -528,5 +532,89 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             'event_without_languages.cdbxml.xml'
         );
         $this->projector->applyEventImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_addition_of_a_label()
+    {
+        $eventWasLabelled = new EventWasLabelled(
+            'foo',
+            new Label('label B')
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A']
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A', 'label B']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
+
+        $this->projector->applyEventWasLabelled($eventWasLabelled);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_removal_of_a_label()
+    {
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A', 'label B', 'label C']
+            ])
+        );
+
+        $eventWasUnlabelled = new Unlabelled(
+            'foo',
+            new Label('label B')
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A', 'label C']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
+
+        $this->projector->applyUnlabelled($eventWasUnlabelled);
     }
 }

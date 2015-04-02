@@ -253,7 +253,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'taalicoonCount' => 1,
                 'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
                 'brands' => [
-                    'uitpas'
+                    'uitpas',
+                    'vlieg'
                 ]
             ]
         ];

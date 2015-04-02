@@ -92,7 +92,7 @@ html {
     display: block;
     margin: 0;
 }
-.activity.vlieg .activity__leeftijd:before
+.page:not(.page--vlieg) .activity.vlieg .activity__leeftijd:before
 {
 	font-family: "FontAwesome";
 	content: "";
@@ -118,7 +118,7 @@ html {
 	position: relative;
 	padding-right: 50px;
 }
-.activity.uitpas .activity__uitpas:before
+.page:not(.page--uitpas) .activity.uitpas .activity__uitpas:before
 {
 	position: absolute;
 	top: 0;

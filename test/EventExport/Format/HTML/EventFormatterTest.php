@@ -253,21 +253,15 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_shows_a_brand_when_it_passes_a_spec()
+    public function it_shows_activity_branding()
     {
         $event = $this->getJSONEventFromFile(
             'event_with_all_icon_labels.json'
         );
 
-        /** @var EventSpecificationInterface|\PHPUnit_Framework_MockObject_MockObject $brandSpec */
-        $brandSpec = $this->getMock(EventSpecificationInterface::class);
-        $brandSpec->expects($this->once())
-            ->method('isSatisfiedBy')
-            ->willReturn(true);
-
-        $this->eventFormatter->showBrand(new String('acme'), $brandSpec);
         $formattedEvent = $this->eventFormatter->formatEvent($event);
-        $this->assertContains('acme', $formattedEvent['brands']);
+        $this->assertContains('uitpas', $formattedEvent['brands']);
+        $this->assertContains('vlieg', $formattedEvent['brands']);
     }
 
     /**

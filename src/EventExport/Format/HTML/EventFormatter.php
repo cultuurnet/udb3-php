@@ -11,9 +11,11 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
+use stdClass;
 use ValueObjects\String\String;
 
 class EventFormatter
@@ -33,8 +35,25 @@ class EventFormatter
      */
     protected $brandSpecs;
 
-    public function __construct()
+    /**
+     * @var UitpasEventInfoServiceInterface|null
+     */
+    protected $uitpas;
+
+    /**
+     * @var PriceFormatter
+     */
+    protected $priceFormatter;
+
+    /**
+     * @param UitpasEventInfoServiceInterface|null $uitpas
+     */
+    public function __construct(UitpasEventInfoServiceInterface $uitpas = null)
     {
+        $this->uitpas = $uitpas;
+
+        $this->priceFormatter = new PriceFormatter(2, ',', '.', 'Gratis');
+
         $this->filters = new CombinedStringFilter();
 
         $this->filters->addFilter(new StripHtmlStringFilter());
@@ -105,16 +124,14 @@ class EventFormatter
 
         if (isset($event->bookingInfo)) {
             $firstPrice = reset($event->bookingInfo);
-            $formattedEvent['price'] = $firstPrice->price;
+            $formattedEvent['price'] = $this->priceFormatter->format($firstPrice->price);
         } else {
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
 
-        if (empty($formattedEvent['price'])) {
-            $formattedEvent['price'] = 'Gratis';
-        }
-
         $formattedEvent['dates'] = $event->calendarSummary;
+
+        $this->addUitpasInfo($event, $formattedEvent);
 
         $this->formatTaaliconen($event, $formattedEvent);
 
@@ -126,6 +143,29 @@ class EventFormatter
         }
 
         return $formattedEvent;
+    }
+
+    /**
+     * @param stdClass $event
+     * @param array $formattedEvent
+     */
+    private function addUitpasInfo(stdClass $event, array &$formattedEvent)
+    {
+        if ($this->uitpas) {
+            $urlParts = explode('/', $event->{'@id'});
+            $eventId = end($urlParts);
+            $uitpasInfo = $this->uitpas->getEventInfo($eventId);
+            if ($uitpasInfo) {
+                $formattedEvent['uitpas'] = [
+                    'prices' => $uitpasInfo->getPrices(),
+                    'advantages' => $uitpasInfo->getAdvantages()
+                ];
+
+                foreach ($formattedEvent['uitpas']['prices'] as &$price) {
+                    $price['price'] = $this->priceFormatter->format($price['price']);
+                }
+            }
+        }
     }
 
     /**
@@ -157,8 +197,7 @@ class EventFormatter
     {
         return array_keys(array_filter(
             $this->brandSpecs,
-            function ($brandSpec) use ($event) {
-                /** @var EventSpecificationInterface $eventSpec */
+            function (EventSpecificationInterface $brandSpec) use ($event) {
                 return $brandSpec->isSatisfiedBy($event);
             }
         ));

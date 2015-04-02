@@ -22,7 +22,7 @@
     {
       "description": "",
       "name": "standard price",
-      "price": 10,
+      "price": 10.50,
       "priceCurrency": "EUR"
     }
   ],

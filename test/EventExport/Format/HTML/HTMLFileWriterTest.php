@@ -310,6 +310,57 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_shows_uitpas_info()
+    {
+        $events = [
+            [
+                'type' => 'Cursus of workshop',
+                'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+                'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de...',
+                'address' => [
+                    'name' => 'Cultuurcentrum De Kruisboog',
+                    'street' => 'Sint-Jorisplein 20',
+                    'postcode' => '3300',
+                    'municipality' => 'Tienen',
+                ],
+                'price' => 'Niet ingevoerd',
+                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'taalicoonCount' => 1,
+                'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
+                'brands' => [
+                ],
+                'ageFrom' => '5',
+                'uitpas' => [
+                    'prices' => [
+                        [
+                            'price' => '1,5',
+                            'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+                        ],
+                        [
+                            'price' => '3',
+                            'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+                        ],
+                    ],
+                    'advantages' => [],
+                ],
+            ],
+        ];
+
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'UiT',
+            )
+        );
+        $fileWriter->write($this->filePath, $events);
+
+        $expected = file_get_contents(__DIR__ . '/results/export_event_with_uitpas_info.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
      * @param array $variables
      * @return HTMLFileWriter
      */

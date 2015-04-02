@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use ValueObjects\String\String;
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
 use League\Flysystem\Adapter\Local;
@@ -29,12 +30,19 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     protected $tmpDir;
 
     /**
+     * @var UitpasEventInfoServiceInterface
+     */
+    protected $uitpas;
+
+    /**
      * @param HTMLFileWriter $htmlFileWriter
      */
     public function __construct(
-        HTMLFileWriter $htmlFileWriter
+        HTMLFileWriter $htmlFileWriter,
+        UitpasEventInfoServiceInterface $uitpas = null
     ) {
         $this->htmlFileWriter = $htmlFileWriter;
+        $this->uitpas = $uitpas;
 
         $this->tmpDir = sys_get_temp_dir();
 
@@ -138,7 +146,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
             $events = new \ArrayIterator($events);
         }
 
-        $formatter = new EventFormatter();
+        $formatter = new EventFormatter($this->uitpas);
 
         if ($brand !== 'uitpas') {
             $formatter->showBrand(new String('uitpas'), new HasUiTPASBrand());

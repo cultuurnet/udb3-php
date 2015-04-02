@@ -77,20 +77,34 @@ class PriceFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_replaces_zero_with_a_label_if_enabled()
     {
+        // Free label disabled by default.
         $formatter = new PriceFormatter();
         $formatted = $formatter->format(0);
         $this->assertEquals('0', $formatted);
 
+        // Use a free label.
         $formatter->useFreeLabel('Free');
         $formatted = $formatter->format(0);
         $this->assertEquals('Free', $formatted);
 
-        $formatter->disableFreeLabel();
-        $formatted = $formatter->format(0.001);
-        $this->assertEquals('0', $formatted);
-
+        // Free label for price that is rounded to zero.
         $formatter->useFreeLabel('Free');
         $formatted = $formatter->format(0.001);
         $this->assertEquals('Free', $formatted);
+
+        // Disabling the free label.
+        $formatter->disableFreeLabel();
+        $formatted = $formatter->format(0);
+        $this->assertEquals('0', $formatted);
+
+        // Re-enabling the free label.
+        $formatter->enableFreeLabel();
+        $formatted = $formatter->format(0);
+        $this->assertEquals('Free', $formatted);
+
+        // Changing the free label.
+        $formatter->setFreeLabel('Gratuit');
+        $formatted = $formatter->format(0);
+        $this->assertEquals('Gratuit', $formatted);
     }
 }

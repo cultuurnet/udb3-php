@@ -157,8 +157,9 @@ class EventFormatter
                     $price['price'] = $this->priceFormatter->format($price['price']);
                 }
 
-                // Format advantage labels. Start from a list of all known advantage labels, and filter out the ones
-                // that don't apply. Otherwise the order could get mixed up.
+                // Format advantage labels. Start from a list of all known
+                // advantage labels, and filter out the ones that don't apply.
+                // Otherwise the order could get mixed up.
                 $advantages = $uitpasInfo->getAdvantages();
                 $advantageLabels = [
                     EventAdvantage::POINT_COLLECTING => 'Spaar punten',

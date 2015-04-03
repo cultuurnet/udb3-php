@@ -106,6 +106,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
 
     /**
      * @param CultureFeed_Uitpas_Event_CultureEvent $event
+     * @return string[]
      */
     private function getUitpasAdvantagesFromEvent(\CultureFeed_Uitpas_Event_CultureEvent $event)
     {
@@ -118,6 +119,11 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         return $advantages;
     }
 
+    /**
+     * @param CultureFeed_Uitpas_CardSystem $cardSystem
+     * @param CultureFeed_Uitpas_DistributionKey $key
+     * @return array
+     */
     private function getUitpasPricesFromDistributionKey(
         CultureFeed_Uitpas_CardSystem $cardSystem,
         CultureFeed_Uitpas_DistributionKey $key

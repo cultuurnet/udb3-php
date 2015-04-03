@@ -23,7 +23,7 @@ class PointCollectingSpecificationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_satisfied_by_events_with_points(Event $event)
     {
-        $this->specification->isSatisfiedBy($event);
+        $this->assertTrue($this->specification->isSatisfiedBy($event));
     }
 
     public function satisfyingEventProvider()
@@ -52,7 +52,7 @@ class PointCollectingSpecificationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_unsatisfied_by_events_without_points(Event $event)
     {
-        $this->specification->isSatisfiedBy($event);
+        $this->assertFalse($this->specification->isSatisfiedBy($event));
     }
 
     public function unsatisfyingEventProvider()

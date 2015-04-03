@@ -21,16 +21,10 @@ class EventInfo
 
     /**
      * @param array $prices
-     * @param EventAdvantage[] $advantages
+     * @param array $advantages
      */
     public function __construct($prices, $advantages)
     {
-        foreach ($advantages as $advantage) {
-            if (!($advantage instanceof EventAdvantage)) {
-                throw new \InvalidArgumentException('EventInfo advantages should be instances of EventAdvantage');
-            }
-        }
-
         $this->prices = $prices;
         $this->advantages = $advantages;
     }
@@ -41,7 +35,7 @@ class EventInfo
     }
 
     /**
-     * @return EventAdvantage[]
+     * @return array
      */
     public function getAdvantages()
     {

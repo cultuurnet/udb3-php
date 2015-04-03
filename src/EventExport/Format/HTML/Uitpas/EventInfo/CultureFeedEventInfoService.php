@@ -112,7 +112,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         $advantages = [];
 
         if ($this->pointCollecting->isSatisfiedBy($event)) {
-            $advantages[] = EventAdvantage::POINT_COLLECTING();
+            $advantages[] = EventAdvantage::POINT_COLLECTING;
         }
 
         return $advantages;
@@ -150,7 +150,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         $advantages = [];
 
         if ($this->kansentariefDiscount->isSatisfiedBy($key)) {
-            $advantages[] = EventAdvantage::KANSENTARIEF();
+            $advantages[] = EventAdvantage::KANSENTARIEF;
         }
 
         return $advantages;

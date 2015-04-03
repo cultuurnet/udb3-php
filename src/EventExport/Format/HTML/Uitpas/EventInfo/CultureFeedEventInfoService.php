@@ -10,7 +10,6 @@ use CultureFeed_Uitpas_CardSystem;
 use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Event_Query_SearchEventsOptions;
-use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeySpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefDiscountSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForCurrentCardSystemSpecification;

@@ -13,7 +13,8 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
@@ -38,7 +39,7 @@ class EventFormatter
     protected $brandSpecs;
 
     /**
-     * @var UitpasEventInfoServiceInterface|null
+     * @var EventInfoServiceInterface|null
      */
     protected $uitpas;
 
@@ -48,9 +49,9 @@ class EventFormatter
     protected $priceFormatter;
 
     /**
-     * @param UitpasEventInfoServiceInterface|null $uitpas
+     * @param EventInfoServiceInterface|null $uitpas
      */
-    public function __construct(UitpasEventInfoServiceInterface $uitpas = null)
+    public function __construct(EventInfoServiceInterface $uitpas = null)
     {
         $this->uitpas = $uitpas;
 
@@ -150,14 +151,32 @@ class EventFormatter
             $eventId = end($urlParts);
             $uitpasInfo = $this->uitpas->getEventInfo($eventId);
             if ($uitpasInfo) {
-                $formattedEvent['uitpas'] = [
-                    'prices' => $uitpasInfo->getPrices(),
-                    'advantages' => $uitpasInfo->getAdvantages()
-                ];
-
-                foreach ($formattedEvent['uitpas']['prices'] as &$price) {
+                // Format prices.
+                $prices = $uitpasInfo->getPrices();
+                foreach ($prices as &$price) {
                     $price['price'] = $this->priceFormatter->format($price['price']);
                 }
+
+                // Format advantage labels. Start from a list of all known
+                // advantage labels, and filter out the ones that don't apply.
+                // Otherwise the order could get mixed up.
+                $advantages = $uitpasInfo->getAdvantages();
+                $advantageLabels = [
+                    EventAdvantage::POINT_COLLECTING => 'Spaar punten',
+                    EventAdvantage::KANSENTARIEF => 'Korting voor kansentarief',
+                ];
+                foreach ($advantageLabels as $advantage => $advantageLabel) {
+                    if (!in_array($advantage, $advantages)) {
+                        unset($advantageLabels[$advantage]);
+                    }
+                }
+                $advantages = array_values($advantageLabels);
+
+                // Add all uitpas info to the event.
+                $formattedEvent['uitpas'] = [
+                    'prices' => $prices,
+                    'advantages' => $advantages,
+                ];
             }
         }
     }

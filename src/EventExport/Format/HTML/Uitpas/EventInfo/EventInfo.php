@@ -3,9 +3,11 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo;
 
-class UitpasEventInfo
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+
+class EventInfo
 {
     /**
      * @var array
@@ -13,7 +15,7 @@ class UitpasEventInfo
     protected $prices;
 
     /**
-     * @var array
+     * @var EventAdvantage[]
      */
     protected $advantages;
 
@@ -32,6 +34,9 @@ class UitpasEventInfo
         return $this->prices;
     }
 
+    /**
+     * @return array
+     */
     public function getAdvantages()
     {
         return $this->advantages;

@@ -351,7 +351,10 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                             'label' => 'Kansentarief voor kaarthouders uit een andere regio',
                         ],
                     ],
-                    'advantages' => [],
+                    'advantages' => [
+                        'Spaar punten',
+                        'Korting voor kansentarief',
+                    ],
                 ],
             ],
         ];

@@ -5,9 +5,11 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use Broadway\EventStore\Event;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfo;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use ValueObjects\String\String;
 
 class EventFormatterTest extends \PHPUnit_Framework_TestCase
@@ -151,55 +153,24 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider uitpasInfoProvider
+     * @param array $priceData
+     * @param array $advantagesData
      */
-    public function it_optionally_enriches_events_with_uitpas_info()
+    public function it_optionally_enriches_events_with_uitpas_info($priceData, $advantagesData)
     {
         $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
 
-        /** @var UitpasEventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
-        $uitpas = $this->getMock(UitpasEventInfoServiceInterface::class);
+        /** @var EventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
+        $uitpas = $this->getMock(EventInfoServiceInterface::class);
 
-        $prices = [
-            [
-               'price' => '1.5',
-               'label' => 'Kansentarief voor UiTPAS Regio Aalst',
-            ],
-            [
-                'price' => '3.0',
-                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
-            ],
-            [
-                'price' => '150.0',
-                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
-            ],
-            [
-                'price' => '30',
-                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
-            ],
-        ];
+        $prices = $priceData['original'];
+        $expectedPrices = $priceData['formatted'];
 
-        $expectedPrices = [
-            [
-                'price' => '1,5',
-                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
-            ],
-            [
-                'price' => '3',
-                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
-            ],
-            [
-                'price' => '150',
-                'label' => 'Kansentarief voor UiTPAS Regio Aalst',
-            ],
-            [
-                'price' => '30',
-                'label' => 'Kansentarief voor kaarthouders uit een andere regio',
-            ],
-        ];
+        $advantages = $advantagesData['original'];
+        $expectedAdvantages = $advantagesData['formatted'];
 
-        $advantages = [];
-
-        $eventInfo = new UitpasEventInfo($prices, $advantages);
+        $eventInfo = new EventInfo($prices, $advantages);
 
         $uitpas->expects($this->once())
             ->method('getEventInfo')
@@ -213,7 +184,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
         $expectedFormattedEvent = [
             'uitpas' => [
                 'prices' => $expectedPrices,
-                'advantages' => [],
+                'advantages' => $expectedAdvantages,
             ],
             'type' => 'Cursus of workshop',
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
@@ -234,6 +205,125 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             $expectedFormattedEvent,
             $formattedEvent
         );
+    }
+
+    public function uitpasInfoProvider()
+    {
+        // Prices and their expected formatting, and advantages and their expected formatting.
+        $data = [
+            [
+                [
+                    'original' => [
+                        [
+                            'price' => '1.5',
+                            'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+                        ],
+                    ],
+                    'formatted' => [
+                        [
+                            'price' => '1,5',
+                            'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+                        ],
+                    ],
+                ],
+                [
+                    'original' => [
+                        EventAdvantage::KANSENTARIEF(),
+                    ],
+                    'formatted' => [
+                        'Korting voor kansentarief',
+                    ],
+                ],
+            ],
+            [
+                [
+                    'original' => [
+                        [
+                            'price' => '3.0',
+                            'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+                        ],
+                    ],
+                    'formatted' => [
+                        [
+                            'price' => '3',
+                            'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+                        ],
+                    ],
+                ],
+                [
+                    'original' => [
+                        EventAdvantage::POINT_COLLECTING(),
+                        EventAdvantage::KANSENTARIEF(),
+                    ],
+                    'formatted' => [
+                        'Spaar punten',
+                        'Korting voor kansentarief',
+                    ],
+                ],
+            ],
+            [
+                [
+                    'original' => [
+                        [
+                            'price' => '150.0',
+                            'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+                        ],
+                    ],
+                    'formatted' => [
+                        [
+                            'price' => '150',
+                            'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+                        ]
+                    ],
+                ],
+                [
+                    'original' => [
+                        EventAdvantage::KANSENTARIEF(),
+                        EventAdvantage::POINT_COLLECTING(),
+                    ],
+                    'formatted' => [
+                        'Spaar punten',
+                        'Korting voor kansentarief',
+                    ],
+                ],
+            ],
+            [
+                [
+                    'original' => [
+                        [
+                            'price' => '30',
+                            'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+                        ],
+                    ],
+                    'formatted' => [
+                        [
+                            'price' => '30',
+                            'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+                        ]
+                    ],
+                ],
+                [
+                    'original' => [],
+                    'formatted' => [],
+                ]
+            ],
+            [
+                [
+                    'original' => [],
+                    'formatted' => [],
+                ],
+                [
+                    'original' => [
+                        EventAdvantage::POINT_COLLECTING(),
+                    ],
+                    'formatted' => [
+                        'Spaar punten',
+                    ],
+                ]
+            ]
+        ];
+
+        return $data;
     }
 
     /**

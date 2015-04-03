@@ -120,6 +120,20 @@
                         {% endif -%}
                         </table>
                     </div>
+                    {%- if event.uitpas.advantages %}
+
+                    <div class="activity__uitpas">
+                        <p>Ga hierheen en ontvang deze UiTPAS-voordelen:</p>
+                        <ul>
+                            {%- for advantage in event.uitpas.advantages %}
+
+                            <li>{{ advantage }}</li>
+                            {%- endfor %}
+
+                        </ul>
+                    </div>
+                    {%- endif %}
+
                 </section>
                 {%- endfor %}
 

@@ -9,6 +9,6 @@ class PointCollectingSpecification implements EventSpecification
      */
     public function isSatisfiedBy(\CultureFeed_Uitpas_Event_CultureEvent $event)
     {
-        return $event->numberOfPoints > 0;
+        return isset($event->numberOfPoints) && $event->numberOfPoints > 0;
     }
 }

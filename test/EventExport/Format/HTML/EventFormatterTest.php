@@ -62,7 +62,9 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
             'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
             'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
-            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+            'calendarType' => 'multiple',
+            'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
+            'endDate' => new \DateTime('2015-03-30T16:30:00+02:00'),
             'address' => [
                 'name' => 'Cultuurcentrum De Kruisboog',
                 'street' => 'Sint-Jorisplein 20 ',
@@ -99,7 +101,9 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
                 'municipality' => 'Herent',
             ],
             'price' => 'Niet ingevoerd',
-            'dates' => "van 01/09/14 tot 29/06/15",
+            'calendarType' => "periodic",
+            'startDate' => new \DateTime('2014-09-01T00:00:00+02:00'),
+            'endDate' => new \DateTime('2015-06-29T00:00:00+02:00'),
             'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutBookingInfo);
@@ -122,7 +126,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
                 'municipality' => 'Tienen',
             ],
             'price' => 'Niet ingevoerd',
-            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+            'calendarType' => 'multiple',
+            'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
             'brands' => array()
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutImage);
@@ -220,7 +225,8 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
                 'municipality' => 'Tienen',
             ],
             'price' => 'Niet ingevoerd',
-            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+            'calendarType' => 'multiple',
+            'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
             'brands' => array(),
         ];
 
@@ -253,21 +259,15 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_shows_a_brand_when_it_passes_a_spec()
+    public function it_shows_activity_branding()
     {
         $event = $this->getJSONEventFromFile(
             'event_with_all_icon_labels.json'
         );
 
-        /** @var EventSpecificationInterface|\PHPUnit_Framework_MockObject_MockObject $brandSpec */
-        $brandSpec = $this->getMock(EventSpecificationInterface::class);
-        $brandSpec->expects($this->once())
-            ->method('isSatisfiedBy')
-            ->willReturn(true);
-
-        $this->eventFormatter->showBrand(new String('acme'), $brandSpec);
         $formattedEvent = $this->eventFormatter->formatEvent($event);
-        $this->assertContains('acme', $formattedEvent['brands']);
+        $this->assertContains('uitpas', $formattedEvent['brands']);
+        $this->assertContains('vlieg', $formattedEvent['brands']);
     }
 
     /**

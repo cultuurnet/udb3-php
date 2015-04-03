@@ -157,23 +157,27 @@ class EventFormatter
             $eventId = end($urlParts);
             $uitpasInfo = $this->uitpas->getEventInfo($eventId);
             if ($uitpasInfo) {
-                $advantages = [];
+                // Format prices.
+                $prices = $uitpasInfo->getPrices();
+                foreach ($prices as &$price) {
+                    $price['price'] = $this->priceFormatter->format($price['price']);
+                }
+
+                // Format advantage labels.
+                $advantages = $uitpasInfo->getAdvantages();
                 $advantageLabels = [
                     EventAdvantage::POINT_COLLECTING => 'Spaar punten',
                     EventAdvantage::KANSENTARIEF => 'Korting voor kansentarief',
                 ];
-                foreach ($uitpasInfo->getAdvantages() as $advantage) {
-                    $advantages = $advantageLabels[$advantage->getValue()];
+                foreach ($advantages as &$advantage) {
+                    $advantage = $advantageLabels[$advantage->getValue()];
                 }
 
+                // Add all uitpas info to the event.
                 $formattedEvent['uitpas'] = [
-                    'prices' => $uitpasInfo->getPrices(),
+                    'prices' => $prices,
                     'advantages' => $advantages,
                 ];
-
-                foreach ($formattedEvent['uitpas']['prices'] as &$price) {
-                    $price['price'] = $this->priceFormatter->format($price['price']);
-                }
             }
         }
     }

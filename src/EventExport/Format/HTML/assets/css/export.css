@@ -17,7 +17,7 @@ html {
 .activity {
 	position: relative;
 	page-break-inside: avoid;
-    margin-bottom: 1cm;
+    column-break-after: always;
 }
 .activity__image-container
 {

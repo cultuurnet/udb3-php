@@ -137,7 +137,6 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     protected function writeHtml($dir, $events)
     {
         $filePath = $dir . '/index.html';
-        $brand = $this->htmlFileWriter->getBrand();
 
         // TransformingIteratorIterator requires a Traversable,
         // so if $events is a regular array we need to wrap it
@@ -147,14 +146,6 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
         }
 
         $formatter = new EventFormatter($this->uitpas);
-
-        if ($brand !== 'uitpas') {
-            $formatter->showBrand(new String('uitpas'), new HasUiTPASBrand());
-        }
-
-        if ($brand !== 'vlieg') {
-            $formatter->showBrand(new String('vlieg'), new HasVliegBrand());
-        }
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,

@@ -115,7 +115,13 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
                 $eventId
             );
             $eventLD = $document->getBody();
-            $eventLD->place = json_decode($placeJSONLD);
+
+            $newEventLD = clone $eventLD;
+            $newEventLD->location = json_decode($placeJSONLD);
+
+            if ($newEventLD != $eventLD) {
+                $this->repository->save($document->withBody($newEventLD));
+            }
         }
     }
 

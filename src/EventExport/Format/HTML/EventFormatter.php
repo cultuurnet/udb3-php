@@ -15,7 +15,6 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;

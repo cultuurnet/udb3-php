@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use Symfony\Component\EventDispatcher\Event;
@@ -616,5 +617,124 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             ));
 
         $this->projector->applyUnlabelled($eventWasUnlabelled);
+    }
+
+    /**
+     * @test
+     */
+    public function it_embeds_the_projection_of_a_place_in_all_events_located_at_that_place()
+    {
+        $eventID = '468';
+        $secondEventID = '579';
+
+        $placeID = '101214';
+
+        $this->eventService
+            ->expects($this->once())
+            ->method('eventsLocatedAtPlace')
+            ->with($placeID)
+            ->willReturn(
+                [
+                    $eventID,
+                    $secondEventID,
+                ]
+            );
+
+        $placeJSONLD = json_encode(
+            [
+                'name' => "t,arsenaal mechelen",
+                'address' => [
+                    'addressCountry' => "BE",
+                    'addressLocality' => "Mechelen",
+                    'postalCode' => "2800",
+                    'streetAddress' => "Hanswijkstraat 63",
+                ],
+            ]
+        );
+
+        $this->placeService
+            ->expects($this->once())
+            ->method('getEntity')
+            ->with($placeID)
+            ->willReturn($placeJSONLD);
+
+        $initialEventDocument = new JsonDocument(
+            $eventID,
+            json_encode([
+              'labels' => ['test 1', 'test 2'],
+            ])
+        );
+
+        $initialSecondEventDocument = new JsonDocument(
+            $secondEventID,
+            json_encode([
+                'name' => [
+                    'nl' => 'Quicksand Valley',
+                ],
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->exactly(2))
+            ->method('get')
+            ->withConsecutive(
+                [$eventID],
+                [$secondEventID]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $initialEventDocument,
+                $initialSecondEventDocument
+            );
+
+        $expectedEventDocument = $initialEventDocument->withBody(
+            (object)[
+                'labels' => ['test 1', 'test 2'],
+                'location' => [
+                    'name' => "t,arsenaal mechelen",
+                    'address' => [
+                        'addressCountry' => "BE",
+                        'addressLocality' => "Mechelen",
+                        'postalCode' => "2800",
+                        'streetAddress' => "Hanswijkstraat 63",
+                    ],
+                ],
+            ]
+        );
+
+        $expectedSecondEventDocument = $initialSecondEventDocument->withBody(
+            (object) [
+                'name' => [
+                    'nl' => 'Quicksand Valley',
+                ],
+                'location' => [
+                    'name' => "t,arsenaal mechelen",
+                    'address' => [
+                        'addressCountry' => "BE",
+                        'addressLocality' => "Mechelen",
+                        'postalCode' => "2800",
+                        'streetAddress' => "Hanswijkstraat 63",
+                    ],
+                ],
+            ]
+        );
+
+        $this->documentRepository
+            ->expects($this->exactly(2))
+            ->method('save')
+            ->withConsecutive(
+                [$expectedEventDocument],
+                [$expectedSecondEventDocument]
+            );
+
+        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD($placeID);
+
+        $this->projector->handle(
+            DomainMessage::recordNow(
+                $placeProjectedToJSONLD->getId(),
+                0,
+                new Metadata(),
+                $placeProjectedToJSONLD
+            )
+        );
     }
 }

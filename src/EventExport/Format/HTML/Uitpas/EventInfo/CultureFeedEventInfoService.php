@@ -84,16 +84,16 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         $uitpasEvent = reset($resultSet->objects);
 
         if ($uitpasEvent) {
-            $advantages += $this->getUitpasAdvantagesFromEvent($uitpasEvent);
+            $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromEvent($uitpasEvent));
 
             foreach ($uitpasEvent->cardSystems as $cardSystem) {
                 foreach ($cardSystem->distributionKeys as $key) {
-                    $prices += $this->getUitpasPricesFromDistributionKey(
+                    $prices = array_merge($prices, $this->getUitpasPricesFromDistributionKey(
                         $cardSystem,
                         $key
-                    );
+                    ));
 
-                    $advantages += $this->getUitpasAdvantagesFromDistributionKey($key);
+                    $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromDistributionKey($key));
                 }
             }
         }

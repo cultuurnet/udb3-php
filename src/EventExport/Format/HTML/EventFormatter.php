@@ -117,7 +117,13 @@ class EventFormatter
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
 
-        $formattedEvent['dates'] = $event->calendarSummary;
+        $formattedEvent['calendarType'] = $event->calendarType;
+        if (isset($event->startDate)) {
+            $formattedEvent['startDate'] = new \DateTime($event->startDate);
+        }
+        if (isset($event->endDate)) {
+            $formattedEvent['endDate'] = new \DateTime($event->endDate);
+        }
 
         $this->addUitpasInfo($event, $formattedEvent);
 

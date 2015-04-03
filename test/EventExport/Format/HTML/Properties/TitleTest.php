@@ -1,7 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Properties;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Title;
 use \InvalidArgumentException;
 
 class TitleTest extends \PHPUnit_Framework_TestCase

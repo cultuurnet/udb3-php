@@ -8,11 +8,11 @@ namespace CultuurNet\UDB3\EventExport\Command;
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\EventExport\EventExportQuery;
-use CultuurNet\UDB3\EventExport\Format\HTML\Brand;
-use CultuurNet\UDB3\EventExport\Format\HTML\Footer;
-use CultuurNet\UDB3\EventExport\Format\HTML\Publisher;
-use CultuurNet\UDB3\EventExport\Format\HTML\Subtitle;
-use CultuurNet\UDB3\EventExport\Format\HTML\Title;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Brand;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Footer;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Publisher;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Subtitle;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Title;
 use ValueObjects\String\String;
 use ValueObjects\Web\EmailAddress;
 

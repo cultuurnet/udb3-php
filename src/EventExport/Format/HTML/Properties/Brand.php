@@ -3,8 +3,9 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Properties;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\InvalidBrandException;
 use ValueObjects\String\String;
 
 class Brand extends String

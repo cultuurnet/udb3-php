@@ -1,6 +1,9 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Properties;
+
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Brand;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\InvalidBrandException;
 
 class BrandTest extends \PHPUnit_Framework_TestCase
 {

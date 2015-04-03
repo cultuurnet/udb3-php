@@ -28,18 +28,19 @@ class PointCollectingSpecificationTest extends \PHPUnit_Framework_TestCase
 
     public function satisfyingEventProvider()
     {
+        $factory = new EventFactory();
         return [
             [
-                $this->createEventWithPoints(0.01),
+                $factory->buildEventWithPoints(0.01),
             ],
             [
-                $this->createEventWithPoints(0.2),
+                $factory->buildEventWithPoints(0.2),
             ],
             [
-                $this->createEventWithPoints(3.00),
+                $factory->buildEventWithPoints(3.00),
             ],
             [
-                $this->createEventWithPoints(4),
+                $factory->buildEventWithPoints(4),
             ],
         ];
     }
@@ -56,32 +57,23 @@ class PointCollectingSpecificationTest extends \PHPUnit_Framework_TestCase
 
     public function unsatisfyingEventProvider()
     {
+        $factory = new EventFactory();
         return [
             [
-                $this->createEventWithPoints(0),
+                $factory->buildEventWithPoints(0),
             ],
             [
-                $this->createEventWithPoints(0.00),
+                $factory->buildEventWithPoints(0.00),
             ],
             [
-                $this->createEventWithPoints(-1),
+                $factory->buildEventWithPoints(-1),
             ],
             [
-                $this->createEventWithPoints(-1.00),
+                $factory->buildEventWithPoints(-1.00),
             ],
             [
                 new Event(),
             ],
         ];
-    }
-
-    /**
-     * @param int|float $points
-     */
-    protected function createEventWithPoints($points)
-    {
-        $event = new Event();
-        $event->numberOfPoints = $points;
-        return $event;
     }
 }

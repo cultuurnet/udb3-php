@@ -8,6 +8,7 @@ class EventFactory
 {
     /**
      * @param float|int $points
+     * @return Event
      */
     public function buildEventWithPoints($points)
     {

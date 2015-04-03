@@ -97,6 +97,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
                 }
             }
         }
+        $advantages = array_unique($advantages);
 
         return new EventInfo(
             $prices,

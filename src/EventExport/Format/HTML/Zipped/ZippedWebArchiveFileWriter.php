@@ -1,7 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Zipped;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileWriter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 

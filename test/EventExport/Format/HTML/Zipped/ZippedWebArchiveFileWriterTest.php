@@ -3,9 +3,12 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Zipped;
 
 use Alchemy\Zippy\Zippy;
+use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
+use CultuurNet\UDB3\EventExport\Format\HTML\Zipped\ZippedWebArchiveFileWriter;
+
 use \Twig_Environment;
 use \Twig_Loader_Filesystem;
 
@@ -47,7 +50,7 @@ class ZippedWebArchiveFileWriterTest extends \PHPUnit_Framework_TestCase
                     'name' => 'world',
                 ],
                 new Twig_Environment(
-                    new Twig_Loader_Filesystem(__DIR__ . '/templates')
+                    new Twig_Loader_Filesystem(__DIR__ . '/../templates')
                 )
             )
         );
@@ -70,7 +73,7 @@ class ZippedWebArchiveFileWriterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFileExists($extractToDir . '/html/index.html');
         $this->assertFileEquals(
-            __DIR__ . '/results/hello-world.html',
+            __DIR__ . '/../results/hello-world.html',
             $extractToDir . '/html/index.html'
         );
 

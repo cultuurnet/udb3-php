@@ -1,9 +1,11 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\PDF\PDFWebArchiveFileWriter;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileFormat;
 
 class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
 {

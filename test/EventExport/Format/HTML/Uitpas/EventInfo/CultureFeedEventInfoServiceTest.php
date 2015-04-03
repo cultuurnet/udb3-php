@@ -9,6 +9,7 @@ use \CultureFeed_Uitpas_DistributionKey_Condition as Condition;
 use \CultureFeed_Uitpas_Event_Query_SearchEventsOptions as SearchEventsOptions;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyConditionFactory;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyFactory;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventFactory;
 
 /**
@@ -62,8 +63,9 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        // Store each kansentarief discount in a separate CardSystem, so we can verify that discounts from the one
-        // CardSystem are not overwritten by discounts from other CardSystem objects.
+        // Store each kansentarief discount in a separate CardSystem, so we can
+        // verify that discounts from the one CardSystem are not overwritten by
+        // discounts from other CardSystem objects.
         $event->cardSystems = [];
         $cardSystemId = 0;
         foreach ($distributionKeys as $distributionKey) {
@@ -71,7 +73,7 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
 
             $cardSystem = new CardSystem();
             $cardSystem->id = $cardSystemId;
-            $cardSystem->name = '';
+            $cardSystem->name = 'UiTPAS regio ' . $cardSystemId;
             $cardSystem->distributionKeys = [$distributionKey];
 
             $event->cardSystems[] = $cardSystem;
@@ -94,8 +96,8 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             ->with($searchEvents)
             ->willReturn($resultSet);
 
-        // Instantiate the CultureFeedEventInfoService using the mock Uitpas object that will return the event we just
-        // created.
+        // Instantiate the CultureFeedEventInfoService using the mock Uitpas
+        // object that will return the event we just created.
         $infoService = new CultureFeedEventInfoService($uitpas);
 
         // Request info for the event.
@@ -103,8 +105,31 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $prices = $eventInfo->getPrices();
         $advantages = $eventInfo->getAdvantages();
 
-        // Make sure we have the correct amount of prices and advantages.
-        $this->assertCount(3, $prices);
-        $this->assertCount(2, $advantages);
+        // Make sure we get back the correct prices and advantages.
+        $this->assertEquals(
+            [
+                [
+                    'price' => 2,
+                    'label' => 'Kansentarief voor UiTPAS regio 1'
+                ],
+                [
+                    'price' => 3,
+                    'label' => 'Kansentarief voor kaarthouders uit een andere regio'
+                ],
+                [
+                    'price' => 4,
+                    'label' => 'Kansentarief voor UiTPAS regio 3',
+                ],
+            ],
+            $prices
+        );
+
+        $this->assertEquals(
+            [
+                EventAdvantage::POINT_COLLECTING(),
+                EventAdvantage::KANSENTARIEF(),
+            ],
+            $advantages
+        );
     }
 }

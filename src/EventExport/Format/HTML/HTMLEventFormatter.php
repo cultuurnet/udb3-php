@@ -19,7 +19,7 @@ use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 use stdClass;
 use ValueObjects\String\String;
 
-class EventFormatter
+class HTMLEventFormatter
 {
     /**
      * @var CombinedStringFilter

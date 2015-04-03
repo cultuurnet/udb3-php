@@ -136,7 +136,7 @@ class EventFormatter
 
         $this->formatTaaliconen($event, $formattedEvent);
 
-        $formattedEvent['brands'] = $this->brand($event);
+        $formattedEvent['brands'] = $this->getBrands($event);
 
         if (isset($event->typicalAgeRange)) {
             $ageRange = $event->typicalAgeRange;
@@ -194,7 +194,11 @@ class EventFormatter
         }
     }
 
-    private function brand($event)
+    /**
+     * @param $event
+     * @return string[]
+     */
+    private function getBrands($event)
     {
         return array_keys(array_filter(
             $this->brandSpecs,

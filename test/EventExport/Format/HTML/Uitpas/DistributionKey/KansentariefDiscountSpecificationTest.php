@@ -108,7 +108,7 @@ class KansentariefDiscountSpecificationTest extends \PHPUnit_Framework_TestCase
      * @dataProvider unsatisfyingDistributionKeyProvider
      * @param CultureFeed_Uitpas_DistributionKey $key
      */
-    public function it_is_usatisfied_by_a_key_without_kansarm_condition(CultureFeed_Uitpas_DistributionKey $key)
+    public function it_is_unsatisfied_by_a_key_without_kansarm_condition(CultureFeed_Uitpas_DistributionKey $key)
     {
         $this->assertFalse($this->specification->isSatisfiedBy($key));
     }

@@ -112,17 +112,17 @@ class DBALRepository implements RepositoryInterface
         $table->addColumn(
             'event',
             'string',
-            array('length' => 32, 'notnull' => false)
+            array('length' => 36, 'notnull' => false)
         );
         $table->addColumn(
             'organizer',
             'string',
-            array('length' => 32, 'notnull' => false)
+            array('length' => 36, 'notnull' => false)
         );
         $table->addColumn(
             'place',
             'string',
-            array('length' => 32, 'notnull' => false)
+            array('length' => 36, 'notnull' => false)
         );
 
         $table->setPrimaryKey(array('event'));

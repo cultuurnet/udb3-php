@@ -1,6 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport;
+
+use CultuurNet\UDB3\EventExport\PriceFormatter;
 
 /**
  * Class PriceFormatterTest

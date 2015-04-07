@@ -13,15 +13,17 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has3Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\PriceFormatter;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 use stdClass;
 use ValueObjects\String\String;
 
-class EventFormatter
+class HTMLEventFormatter
 {
     /**
      * @var CombinedStringFilter
@@ -130,7 +132,7 @@ class EventFormatter
 
         $this->formatTaaliconen($event, $formattedEvent);
 
-        $formattedEvent['brands'] = $this->brand($event);
+        $formattedEvent['brands'] = $this->getBrands($event);
 
         if (isset($event->typicalAgeRange)) {
             $ageRange = $event->typicalAgeRange;
@@ -206,7 +208,11 @@ class EventFormatter
         }
     }
 
-    private function brand($event)
+    /**
+     * @param $event
+     * @return string[]
+     */
+    private function getBrands($event)
     {
         return array_keys(array_filter(
             $this->brandSpecs,

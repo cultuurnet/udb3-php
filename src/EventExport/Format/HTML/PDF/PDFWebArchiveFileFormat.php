@@ -1,18 +1,25 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileFormat;
 
-class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
+class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
 {
     /**
-     * @var EventInfoServiceInterface|null
+     * @var string
+     */
+    protected $princeXMLBinaryPath;
+
+    /**
+     * @var EventInfoServiceInterface
      */
     protected $uitpas;
 
     /**
+     * @param string $princeXMLBinaryPath
      * @param string $brand
      * @param string $title
      * @param string|null $subtitle
@@ -21,6 +28,7 @@ class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFor
      * @param EventInfoServiceInterface|null $uitpas
      */
     public function __construct(
+        $princeXMLBinaryPath,
         $brand,
         $title,
         $subTitle = null,
@@ -29,14 +37,16 @@ class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFor
         EventInfoServiceInterface $uitpas = null
     ) {
         parent::__construct($brand, $title, $subTitle, $footer, $publisher);
+        $this->princeXMLBinaryPath = $princeXMLBinaryPath;
         $this->uitpas = $uitpas;
     }
+
     /**
      * {@inheritdoc}
      */
     public function getFileNameExtension()
     {
-        return 'zip';
+        return 'pdf';
     }
 
     /**
@@ -44,7 +54,8 @@ class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFor
      */
     public function getWriter()
     {
-        return new ZippedWebArchiveFileWriter(
+        return new PDFWebArchiveFileWriter(
+            $this->princeXMLBinaryPath,
             $this->getHTMLFileWriter(),
             $this->uitpas
         );

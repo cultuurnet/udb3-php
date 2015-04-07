@@ -1,8 +1,10 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileWriter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use PrinceXMLPhp\PrinceWrapper;

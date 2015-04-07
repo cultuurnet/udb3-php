@@ -6,22 +6,22 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use Broadway\EventStore\Event;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use ValueObjects\String\String;
 
-class EventFormatterTest extends \PHPUnit_Framework_TestCase
+class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var EventFormatter
+     * @var HTMLEventFormatter
      */
     protected $eventFormatter;
 
     public function setUp()
     {
-        $this->eventFormatter = new EventFormatter();
+        $this->eventFormatter = new HTMLEventFormatter();
     }
 
     /**
@@ -177,7 +177,7 @@ class EventFormatterTest extends \PHPUnit_Framework_TestCase
             ->with('d1f0e71d-a9a8-4069-81fb-530134502c58')
             ->willReturn($eventInfo);
 
-        $eventFormatter = new EventFormatter($uitpas);
+        $eventFormatter = new HTMLEventFormatter($uitpas);
 
         $formattedEvent = $eventFormatter->formatEvent($eventWithoutImage);
 

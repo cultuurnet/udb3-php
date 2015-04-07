@@ -1,9 +1,10 @@
 <?php
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\WebArchive;
 
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
+use CultuurNet\UDB3\EventExport\Format\HTML\HTMLEventFormatter;
+use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
+use CultuurNet\UDB3\EventExport\Format\HTML\TransformingIteratorIterator;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use ValueObjects\String\String;
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
@@ -145,7 +146,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
             $events = new \ArrayIterator($events);
         }
 
-        $formatter = new EventFormatter($this->uitpas);
+        $formatter = new HTMLEventFormatter($this->uitpas);
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,

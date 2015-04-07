@@ -291,8 +291,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $document = $this->loadDocumentFromRepository($eventWasLabelled);
 
         $eventLd = $document->getBody();
-        $labels = $eventLd->labels;
-        $label = (string)$eventWasLabelled->getLabel();
+
+        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
+        $label = (string) $eventWasLabelled->getLabel();
 
         $labels[] = $label;
         $eventLd->labels = array_unique($labels);

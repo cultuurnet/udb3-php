@@ -3,4 +3,12 @@
     <testsuite name="all">
         <directory>test</directory>
     </testsuite>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
+    <filter>
+        <blacklist>
+            <directory>./vendor</directory>
+        </blacklist>
+    </filter>
 </phpunit>

@@ -591,8 +591,16 @@ class CdbXMLImporter
         $jsonLD
     ) {
 
-        $name = $jsonLD->name['nl'];
-        $slug = $slugger->slug($name);
+        // Some events seem to not have a Dutch name, even though this is
+        // required. If there's no Dutch name, we just leave the slug empty as
+        // that seems to be the behaviour on http://m.uitinvlaanderen.be
+        if (isset($jsonLD->name['nl'])) {
+            $name = $jsonLD->name['nl'];
+            $slug = $slugger->slug($name);
+        } else {
+            $slug = '';
+        }
+
         $reference = 'http://www.uitinvlaanderen.be/agenda/e/' . $slug . '/' . $event->getCdbId();
 
 

@@ -3,8 +3,7 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
-use CultuurNet\UDB3\EventExport\Format\HTML\PDF\PDFWebArchiveFileWriter;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileFormat;
 
 class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
@@ -15,7 +14,7 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
     protected $princeXMLBinaryPath;
 
     /**
-     * @var UitpasEventInfoServiceInterface
+     * @var EventInfoServiceInterface
      */
     protected $uitpas;
 
@@ -26,7 +25,7 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
      * @param string|null $subtitle
      * @param string|null $footer
      * @param string|null $publisher
-     * @param UitpasEventInfoServiceInterface|null $uitpas
+     * @param EventInfoServiceInterface|null $uitpas
      */
     public function __construct(
         $princeXMLBinaryPath,
@@ -35,7 +34,7 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
         $subTitle = null,
         $footer = null,
         $publisher = null,
-        UitpasEventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null
     ) {
         parent::__construct($brand, $title, $subTitle, $footer, $publisher);
         $this->princeXMLBinaryPath = $princeXMLBinaryPath;

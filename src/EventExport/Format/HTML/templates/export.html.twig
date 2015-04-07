@@ -37,11 +37,15 @@
             <div class="columns">
                 {%- for event in events %}
 
-                <section class="activity{% for brand in event.brands %} {{ brand }}{% endfor %}">
+                <section class="activity
+                {%- for brand in event.brands %} {{ brand }}{% endfor -%}
+                {%- if event.image is not defined %} imageless{% endif -%}
+                {%- if event.ageFrom %} agedFrom{% endif -%}
+                ">
                     {% if event.image -%}
                     <div class="activity__image-container">
                         {%  if event.image -%}
-                            <img src="{{ event.image }}?width=150&height=150&maxheight=150&crop=auto" class="activity__image" />
+                            <img src="{{ event.image }}?width=600&height=600&maxheight=600&crop=auto" class="activity__image" />
                         {%- endif %}
 
                     </div>
@@ -61,7 +65,38 @@
                                     <i class="fa fa-calendar"></i>&nbsp;
                                 </td>
                                 <td>
-                                    {{ event.dates }}
+                                    {% if event.calendarType == 'permanent' -%}
+                                    <span class="calendar-permanent">permanent</span>
+                                {% endif -%}
+                                    {% if event.calendarType == 'single' -%}
+                                    <span class="calendar-single">
+                                        <span class="calendar-start-date">
+                                            {{ event.startDate|date("d/m/Y") }}
+                                        </span>
+                                    </span>
+                                {% endif -%}
+                                    {% if event.calendarType == 'periodic' %}
+                                    <span class="calendar-periodic calendar-date-range">
+                                        <span class="calendar-start-date">
+                                            {{ event.startDate|date("d/m/Y") }}
+                                        </span>
+                                        <i class="fa fa-long-arrow-right"></i>
+                                        <span class="calendar-end-date">
+                                            {{ event.endDate|date("d/m/Y") }}
+                                        </span>
+                                    </span>
+                                {% endif -%}
+                                    {% if event.calendarType == 'multiple' %}
+                                    <span class="calendar-multiple calendar-date-range">
+                                        <span class="calendar-start-date">
+                                            {{ event.startDate|date("d/m/Y") }}
+                                        </span>
+                                        ,…,
+                                        <span class="calendar-end-date">
+                                            {{ event.endDate|date("d/m/Y") }}
+                                        </span>
+                                    </span>
+                                {% endif -%}
                                 </td>
                             </tr>
                             <tr>
@@ -120,6 +155,20 @@
                         {% endif -%}
                         </table>
                     </div>
+                    {%- if event.uitpas.advantages %}
+
+                    <div class="activity__uitpas">
+                        <p>Ga hierheen en ontvang deze UiTPAS-voordelen:</p>
+                        <ul>
+                            {%- for advantage in event.uitpas.advantages %}
+
+                            <li>{{ advantage }}</li>
+                            {%- endfor %}
+
+                        </ul>
+                    </div>
+                    {%- endif %}
+
                 </section>
                 {%- endfor %}
 

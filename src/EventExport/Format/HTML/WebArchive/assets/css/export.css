@@ -17,6 +17,7 @@ html {
 .activity {
 	position: relative;
 	page-break-inside: avoid;
+    column-break-after: always;
 }
 .activity__image-container
 {
@@ -29,7 +30,10 @@ html {
 }
 .activity__image
 {
-	width: 4cm;
+	width: auto;
+    height: auto;
+    max-height: 4cm;
+    max-width: 4cm;
 	margin: 0 auto 0.5cm auto;
 	display: block;
 }
@@ -45,6 +49,12 @@ html {
 	margin-bottom: 6px;
 	padding-bottom: 6px;
 }
+
+.imageless.agedFrom.activity .activity__type,
+.imageless.agedFrom.activity .activity__title {
+    margin-right: 50px;
+}
+
 .activity__title {
 	font-size: 14px;
 	font-weight: bold;
@@ -76,6 +86,10 @@ html {
     padding: 3px 0;
     vertical-align: top;
 }
+.activity__info__table tr td:first-child {
+    width: 2em;
+    text-align: center;
+}
 .activity__leeftijd {
     background-color: #777;
     width: 1cm;
@@ -92,7 +106,7 @@ html {
     display: block;
     margin: 0;
 }
-.activity.vlieg .activity__leeftijd:before
+.page:not(.page--vlieg) .activity.vlieg .activity__leeftijd:before
 {
 	font-family: "FontAwesome";
 	content: "";
@@ -118,7 +132,7 @@ html {
 	position: relative;
 	padding-right: 50px;
 }
-.activity.uitpas .activity__uitpas:before
+.page:not(.page--uitpas) .activity.uitpas .activity__uitpas:before
 {
 	position: absolute;
 	top: 0;

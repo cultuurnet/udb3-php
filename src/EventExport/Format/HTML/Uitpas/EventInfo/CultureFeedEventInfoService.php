@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas;
+namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo;
 
 use CultureFeed_Uitpas;
 use CultureFeed_Uitpas_CardSystem;
@@ -11,10 +11,13 @@ use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Event_Query_SearchEventsOptions;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeySpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefDiscountSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForCurrentCardSystemSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForOtherCardSystemsSpecification;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\PointCollectingSpecification;
 
-class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterface
+class CultureFeedEventInfoService implements EventInfoServiceInterface
 {
     /**
      * @var CultureFeed_Uitpas
@@ -32,6 +35,16 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
     protected $kansenTariefForOtherCardSystems;
 
     /**
+     * @var KansentariefDiscountSpecification
+     */
+    protected $kansentariefDiscount;
+
+    /**
+     * @var PointCollectingSpecification
+     */
+    protected $pointCollecting;
+
+    /**
      * @param CultureFeed_Uitpas $uitpas
      */
     public function __construct(CultureFeed_Uitpas $uitpas)
@@ -43,6 +56,10 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
 
         $this->kansenTariefForOtherCardSystems =
             new KansentariefForOtherCardSystemsSpecification();
+
+        $this->kansentariefDiscount = new KansentariefDiscountSpecification();
+
+        $this->pointCollecting = new PointCollectingSpecification();
     }
 
     /**
@@ -66,22 +83,47 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
         $uitpasEvent = reset($resultSet->objects);
 
         if ($uitpasEvent) {
+            $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromEvent($uitpasEvent));
+
             foreach ($uitpasEvent->cardSystems as $cardSystem) {
                 foreach ($cardSystem->distributionKeys as $key) {
-                    $prices += $this->getUitpasPricesFromDistributionKey(
+                    $prices = array_merge($prices, $this->getUitpasPricesFromDistributionKey(
                         $cardSystem,
                         $key
-                    );
+                    ));
+
+                    $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromDistributionKey($key));
                 }
             }
         }
+        $advantages = array_unique($advantages);
 
-        return new UitpasEventInfo(
+        return new EventInfo(
             $prices,
             $advantages
         );
     }
 
+    /**
+     * @param CultureFeed_Uitpas_Event_CultureEvent $event
+     * @return string[]
+     */
+    private function getUitpasAdvantagesFromEvent(\CultureFeed_Uitpas_Event_CultureEvent $event)
+    {
+        $advantages = [];
+
+        if ($this->pointCollecting->isSatisfiedBy($event)) {
+            $advantages[] = EventAdvantage::POINT_COLLECTING;
+        }
+
+        return $advantages;
+    }
+
+    /**
+     * @param CultureFeed_Uitpas_CardSystem $cardSystem
+     * @param CultureFeed_Uitpas_DistributionKey $key
+     * @return array
+     */
     private function getUitpasPricesFromDistributionKey(
         CultureFeed_Uitpas_CardSystem $cardSystem,
         CultureFeed_Uitpas_DistributionKey $key
@@ -103,5 +145,20 @@ class CultureFeedUitpasEventInfoService implements UitpasEventInfoServiceInterfa
         }
 
         return $uitpasPrices;
+    }
+
+    /**
+     * @param CultureFeed_Uitpas_DistributionKey $key
+     * @return array
+     */
+    private function getUitpasAdvantagesFromDistributionKey(CultureFeed_Uitpas_DistributionKey $key)
+    {
+        $advantages = [];
+
+        if ($this->kansentariefDiscount->isSatisfiedBy($key)) {
+            $advantages[] = EventAdvantage::KANSENTARIEF;
+        }
+
+        return $advantages;
     }
 }

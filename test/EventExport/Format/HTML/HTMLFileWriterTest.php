@@ -127,7 +127,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'type' => 'Cursus of workshop',
                 'title' => 'De muziek van de middeleeuwen // Een middeleeuwse muziekgeschiedenis in veertig toppers',
                 'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de ...',
-                'dates' => 'ma 22/09/14 van 10:00 tot 12:30  ma 2...',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'address' => array(
                     'name' => 'CC De Werf',
                     'street' => 'Molenstraat 51',
@@ -141,7 +142,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'type' => 'Spel of quiz',
                 'title' => 'Speurtocht Kapitein Massimiliaan en de vliegende Hollander',
                 'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de ...',
-                'dates' => 'elke zo, di, woe, do, vrij, za van 10...',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'address' => array(
                     'name' => 'Museum aan de Stroom (MAS)',
                     'street' => 'Hanzestedenplaats 1',
@@ -181,7 +183,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                     'municipality' => 'Tienen',
                 ],
                 'price' => 'Niet ingevoerd',
-                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
             ]
         ];
 
@@ -214,7 +217,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                     'municipality' => 'Tienen',
                 ],
                 'price' => 'Niet ingevoerd',
-                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'taalicoonCount' => 1,
                 'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
             ]
@@ -249,11 +253,13 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                     'municipality' => 'Tienen',
                 ],
                 'price' => 'Niet ingevoerd',
-                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'taalicoonCount' => 1,
                 'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
                 'brands' => [
-                    'uitpas'
+                    'uitpas',
+                    'vlieg'
                 ]
             ]
         ];
@@ -287,7 +293,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                     'municipality' => 'Tienen',
                 ],
                 'price' => 'Niet ingevoerd',
-                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'taalicoonCount' => 1,
                 'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
                 'brands' => [
@@ -326,7 +333,8 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                     'municipality' => 'Tienen',
                 ],
                 'price' => 'Niet ingevoerd',
-                'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'taalicoonCount' => 1,
                 'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
                 'brands' => [
@@ -343,7 +351,10 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                             'label' => 'Kansentarief voor kaarthouders uit een andere regio',
                         ],
                     ],
-                    'advantages' => [],
+                    'advantages' => [
+                        'Spaar punten',
+                        'Korting voor kansentarief',
+                    ],
                 ],
             ],
         ];

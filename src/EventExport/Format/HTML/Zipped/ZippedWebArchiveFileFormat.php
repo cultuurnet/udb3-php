@@ -3,14 +3,13 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Zipped;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileFormat;
-use CultuurNet\UDB3\EventExport\Format\HTML\Zipped\ZippedWebArchiveFileWriter;
 
 class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormatInterface
 {
     /**
-     * @var UitpasEventInfoServiceInterface|null
+     * @var EventInfoServiceInterface|null
      */
     protected $uitpas;
 
@@ -20,7 +19,7 @@ class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFor
      * @param string|null $subtitle
      * @param string|null $footer
      * @param string|null $publisher
-     * @param UitpasEventInfoServiceInterface|null $uitpas
+     * @param EventInfoServiceInterface|null $uitpas
      */
     public function __construct(
         $brand,
@@ -28,7 +27,7 @@ class ZippedWebArchiveFileFormat extends WebArchiveFileFormat implements FileFor
         $subTitle = null,
         $footer = null,
         $publisher = null,
-        UitpasEventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null
     ) {
         parent::__construct($brand, $title, $subTitle, $footer, $publisher);
         $this->uitpas = $uitpas;

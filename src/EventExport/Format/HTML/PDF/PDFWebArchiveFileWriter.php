@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
 use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\UitpasEventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileWriter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
@@ -22,12 +22,12 @@ class PDFWebArchiveFileWriter extends WebArchiveFileWriter
     /**
      * @param string $princeXMLBinaryPath
      * @param HTMLFileWriter $htmlFileWriter
-     * @param UitpasEventInfoServiceInterface|null $uitpas
+     * @param EventInfoServiceInterface|null $uitpas
      */
     public function __construct(
         $princeXMLBinaryPath,
         HTMLFileWriter $htmlFileWriter,
-        UitpasEventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null
     ) {
         parent::__construct($htmlFileWriter, $uitpas);
         $this->prince = new PrinceWrapper($princeXMLBinaryPath);

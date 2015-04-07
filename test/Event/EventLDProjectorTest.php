@@ -622,6 +622,49 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_projects_the_addition_of_a_label_to_an_event_without_existing_labels()
+    {
+        $eventWasLabelled = new EventWasLabelled(
+            'foo',
+            new Label('label B')
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'bar' => 'stool'
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'bar' => 'stool',
+                'labels' => ['label B']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
+
+        $this->projector->applyEventWasLabelled($eventWasLabelled);
+    }
+
+    /**
+     * @test
+     */
     public function it_embeds_the_projection_of_a_place_in_all_events_located_at_that_place()
     {
         $eventID = '468';

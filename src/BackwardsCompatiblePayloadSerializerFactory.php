@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializerInterface;
+use Broadway\Serializer\SimpleInterfaceSerializer;
+use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 
 /**
  * Factory chaining together the logic to manipulate the payload of old events
@@ -28,8 +30,8 @@ class BackwardsCompatiblePayloadSerializerFactory
      */
     public static function createSerializer()
     {
-        $payloadManipulatingSerializer = new \CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer(
-            new \Broadway\Serializer\SimpleInterfaceSerializer()
+        $payloadManipulatingSerializer = new PayloadManipulatingSerializer(
+            new SimpleInterfaceSerializer()
         );
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(

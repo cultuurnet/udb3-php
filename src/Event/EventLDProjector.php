@@ -194,16 +194,16 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param string $eventId
-     * @param string $cdbXmlNamespareUri
+     * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
      */
     protected function applyEventCdbXml(
         $eventId,
-        $cdbXmlNamespareUri,
+        $cdbXmlNamespaceUri,
         $cdbXml
     ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $cdbXmlNamespareUri,
+            $cdbXmlNamespaceUri,
             $cdbXml
         );
 

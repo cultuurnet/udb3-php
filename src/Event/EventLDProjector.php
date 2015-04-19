@@ -223,9 +223,12 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param EventCreated $eventCreated
+     * @param DomainMessageInterface $domainMessage
      */
-    protected function applyEventCreated(EventCreated $eventCreated, DomainMessageInterface $domainMessage)
-    {
+    protected function applyEventCreated(
+        EventCreated $eventCreated,
+        DomainMessageInterface $domainMessage
+    ) {
         $document = $this->newDocument($eventCreated->getEventId());
 
         $jsonLD = $document->getBody();

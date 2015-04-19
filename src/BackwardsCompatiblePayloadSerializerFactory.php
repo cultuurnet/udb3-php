@@ -7,7 +7,10 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
+use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
+use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 
 /**
  * Factory chaining together the logic to manipulate the payload of old events
@@ -37,7 +40,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\UsedKeywordsMemory\Created',
             function (array $serializedObject) {
-                $serializedObject['class'] = \CultuurNet\UDB3\UsedLabelsMemory\Created::class;
+                $serializedObject['class'] = UsedLabelsMemoryCreated::class;
 
                 return $serializedObject;
             }
@@ -46,7 +49,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
             function (array $serializedObject) {
-                $serializedObject['class'] = \CultuurNet\UDB3\UsedLabelsMemory\LabelUsed::class;
+                $serializedObject['class'] = LabelUsed::class;
 
                 $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
                 unset($serializedObject['payload']['keyword']);
@@ -58,7 +61,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\EventWasTagged',
             function (array $serializedObject) {
-                $serializedObject['class'] = Event\Events\EventWasLabelled::class;
+                $serializedObject['class'] = EventWasLabelled::class;
 
                 $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
                 unset($serializedObject['payload']['keyword']);

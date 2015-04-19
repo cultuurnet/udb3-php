@@ -95,8 +95,27 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
     {
-        // @todo get events linked to this organizer, and update their JSON-LD
-        // representation
+        $eventIds = $this->eventsOrganizedByOrganizer(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        $organizer = $this->organizerService->getEntity(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        foreach ($eventIds as $eventId) {
+            $document = $this->loadDocumentFromRepositoryByEventId(
+                $eventId
+            );
+            $eventLD = $document->getBody();
+
+            $newEventLD = clone $eventLD;
+            $newEventLD->organizer = json_decode($organizer);
+
+            if ($newEventLD != $eventLD) {
+                $this->repository->save($document->withBody($newEventLD));
+            }
+        }
     }
 
     protected function applyPlaceProjectedToJSONLD(

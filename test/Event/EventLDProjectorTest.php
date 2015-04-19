@@ -17,6 +17,7 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
@@ -777,6 +778,116 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
                 0,
                 new Metadata(),
                 $placeProjectedToJSONLD
+            )
+        );
+    }/**
+     * @test
+     */
+    public function it_embeds_the_projection_of_an_organizer_in_all_related_events()
+    {
+        $eventID = '468';
+        $secondEventID = '579';
+
+        $organizerId = '101214';
+
+        $this->eventService
+            ->expects($this->once())
+            ->method('eventsOrganizedByOrganizer')
+            ->with($organizerId)
+            ->willReturn(
+                [
+                    $eventID,
+                    $secondEventID,
+                ]
+            );
+
+        $organizerJSONLD = json_encode(
+            [
+                'name' => 'stichting tegen Kanker',
+                'email' => [
+                    'kgielens@stichtingtegenkanker.be',
+                ],
+            ]
+        );
+
+        $this->organizerService
+            ->expects($this->once())
+            ->method('getEntity')
+            ->with($organizerId)
+            ->willReturn($organizerJSONLD);
+
+        $initialEventDocument = new JsonDocument(
+            $eventID,
+            json_encode([
+              'labels' => ['beweging', 'kanker'],
+            ])
+        );
+
+        $initialSecondEventDocument = new JsonDocument(
+            $secondEventID,
+            json_encode([
+                'name' => [
+                    'nl' => 'Rekanto - TaiQi',
+                    'fr' => 'Raviva - TaiQi'
+                ],
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->exactly(2))
+            ->method('get')
+            ->withConsecutive(
+                [$eventID],
+                [$secondEventID]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $initialEventDocument,
+                $initialSecondEventDocument
+            );
+
+        $expectedEventDocument = $initialEventDocument->withBody(
+            (object)[
+                'labels' => ['beweging', 'kanker'],
+                'organizer' => [
+                    'name' => 'stichting tegen Kanker',
+                    'email' => [
+                        'kgielens@stichtingtegenkanker.be',
+                    ],
+                ],
+            ]
+        );
+
+        $expectedSecondEventDocument = $initialSecondEventDocument->withBody(
+            (object) [
+                'name' => [
+                    'nl' => 'Rekanto - TaiQi',
+                    'fr' => 'Raviva - TaiQi'
+                ],
+                'organizer' => [
+                    'name' => 'stichting tegen Kanker',
+                    'email' => [
+                        'kgielens@stichtingtegenkanker.be',
+                    ],
+                ],
+            ]
+        );
+
+        $this->documentRepository
+            ->expects($this->exactly(2))
+            ->method('save')
+            ->withConsecutive(
+                [$expectedEventDocument],
+                [$expectedSecondEventDocument]
+            );
+
+        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD($organizerId);
+
+        $this->projector->handle(
+            DomainMessage::recordNow(
+                $organizerProjectedToJSONLD->getId(),
+                0,
+                new Metadata(),
+                $organizerProjectedToJSONLD
             )
         );
     }

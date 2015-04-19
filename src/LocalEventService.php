@@ -82,7 +82,7 @@ class LocalEventService implements EventServiceInterface
      */
     public function eventsOrganizedByOrganizer($organizerId)
     {
-        $this->eventRelationsRepository->getEventsOrganizedByOrganizer($organizerId);
+        return $this->eventRelationsRepository->getEventsOrganizedByOrganizer($organizerId);
     }
 
     /**

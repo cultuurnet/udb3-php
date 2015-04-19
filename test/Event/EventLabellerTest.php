@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
-use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 
 class EventLabellerTest extends CommandHandlerScenarioTestCase
 {
@@ -139,7 +140,7 @@ class EventLabellerTest extends CommandHandlerScenarioTestCase
             ->method('search')
             ->will(
                 $this->throwException(
-                    new \Guzzle\Http\Exception\ClientErrorResponseException()
+                    new ClientErrorResponseException()
                 )
             );
 

@@ -46,12 +46,22 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             UuidGeneratorInterface::class
         );
 
+        /** @var RepositoryInterface $repository */
+        $repository = $this->getMock(RepositoryInterface::class);
+        /** @var PlaceService $placeService */
+        $placeService = $this->getMock(
+            PlaceService::class,
+            array(),
+            array(),
+            '',
+            false
+        );
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
             $this->commandBus,
             $this->uuidGenerator,
-            $this->getMock(RepositoryInterface::class),
-            $this->getMock(PlaceService::class, array(), array(), '', false)
+            $repository,
+            $placeService
         );
     }
 

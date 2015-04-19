@@ -162,6 +162,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     /**
      * @param string $eventId
      * @param bool $fallbackToUpdate
+     * @return null|Event
      */
     private function create($eventId, $fallbackToUpdate = true)
     {

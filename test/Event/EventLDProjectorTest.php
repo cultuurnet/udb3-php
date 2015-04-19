@@ -183,7 +183,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('save')
             ->with(
                 $this->callback(
-                    function ($jsonDocument) {
+                    function (JsonDocument $jsonDocument) {
                         $expectedLabels = ['gent', 'Quiz', 'Gent on Files'];
                         $body = $jsonDocument->getBody();
                         return count(

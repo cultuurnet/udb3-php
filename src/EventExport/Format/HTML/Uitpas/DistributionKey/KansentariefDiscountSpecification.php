@@ -6,6 +6,7 @@ class KansentariefDiscountSpecification implements DistributionKeySpecification
 {
     /**
      * @param \CultureFeed_Uitpas_DistributionKey $distributionKey
+     * @return bool
      */
     public function isSatisfiedBy(\CultureFeed_Uitpas_DistributionKey $distributionKey)
     {

@@ -9,6 +9,7 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface as RelationsRepository;
 
 class LocalEventService implements EventServiceInterface
 {
@@ -30,7 +31,7 @@ class LocalEventService implements EventServiceInterface
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
         RepositoryInterface $eventRepository,
-        \CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface $eventRelationsRepository
+        RelationsRepository $eventRelationsRepository
     ) {
         $this->documentRepository = $documentRepository;
         $this->eventRepository = $eventRepository;

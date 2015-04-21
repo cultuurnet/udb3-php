@@ -134,6 +134,10 @@ class HTMLEventFormatter
 
         $formattedEvent['brands'] = $this->getBrands($event);
 
+        if ($formattedEvent['uitpas'] && !in_array('uitpas', array_keys($formattedEvent['brands']))) {
+            var_dump($event);
+        }
+
         if (isset($event->typicalAgeRange)) {
             $ageRange = $event->typicalAgeRange;
             $formattedEvent['ageFrom'] = explode('-', $ageRange)[0];

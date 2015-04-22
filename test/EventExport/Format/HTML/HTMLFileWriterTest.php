@@ -239,6 +239,42 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_can_handle_four_taaliconen()
+    {
+        $events = [
+            [
+                'type' => 'Cursus of workshop',
+                'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+                'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de...',
+                'address' => [
+                    'name' => 'Cultuurcentrum De Kruisboog',
+                    'street' => 'Sint-Jorisplein 20',
+                    'postcode' => '3300',
+                    'municipality' => 'Tienen',
+                ],
+                'price' => 'Niet ingevoerd',
+                'calendarType' => 'single',
+                'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
+                'taalicoonCount' => 4,
+                'taalicoonDescription' => 'Je spreekt en begrijpt vlot Nederlands.',
+            ]
+        ];
+
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'uit',
+                'title' => 'UiT',
+            )
+        );
+        $fileWriter->write($this->filePath, $events);
+
+        $expected = file_get_contents(__DIR__ . '/results/export_event_with_four_taaliconen.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_event_brands_to_activities()
     {
         $events = [

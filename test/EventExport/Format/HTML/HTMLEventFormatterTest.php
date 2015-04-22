@@ -331,19 +331,15 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_correctly_sets_the_taalicoon_count_and_description()
     {
-        $eventWithAllTaaliconen = $this->getJSONEventFromFile(
-            'event_with_all_icon_labels.json'
-        );
-
-        $formattedEvent = $this->eventFormatter->formatEvent(
-            $eventWithAllTaaliconen
-        );
-
+        $eventWithFourTaaliconen = $this->getJSONEventFromFile('event_with_icon_label.json');
+        $formattedEvent = $this->eventFormatter->formatEvent($eventWithFourTaaliconen);
         $this->assertEquals(4, $formattedEvent['taalicoonCount']);
-        $this->assertEquals(
-            TaalicoonDescription::VIER_TAALICONEN(),
-            $formattedEvent['taalicoonDescription']
-        );
+        $this->assertEquals(TaalicoonDescription::VIER_TAALICONEN(), $formattedEvent['taalicoonDescription']);
+
+        $eventWithAllTaaliconen = $this->getJSONEventFromFile('event_with_all_icon_labels.json');
+        $formattedEvent = $this->eventFormatter->formatEvent($eventWithAllTaaliconen);
+        $this->assertArrayNotHasKey('taalicoonCount', $formattedEvent);
+        $this->assertArrayNotHasKey('taalicoonDescription', $formattedEvent);
     }
 
     /**

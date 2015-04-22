@@ -256,7 +256,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'calendarType' => 'single',
                 'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
                 'taalicoonCount' => 4,
-                'taalicoonDescription' => 'Je spreekt nog geen of niet zo veel Nederlands.',
+                'taalicoonDescription' => 'Je spreekt en begrijpt vlot Nederlands.',
             ]
         ];
 

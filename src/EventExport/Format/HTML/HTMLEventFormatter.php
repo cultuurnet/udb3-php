@@ -192,17 +192,21 @@ class HTMLEventFormatter
         $taalicoonCount = 0;
         $description = '';
         $i = 0;
+        $satisfiedCount = 0;
 
         foreach ($this->taalicoonSpecs as $name => $spec) {
             $i++;
             /** @var EventSpecificationInterface $spec */
             if ($spec->isSatisfiedBy($event)) {
+                $satisfiedCount++;
                 $taalicoonCount = $i;
                 $description = TaalicoonDescription::getByName($name)->getValue();
             }
         }
 
-        if ($taalicoonCount > 0) {
+        // Only add the taalicoonCount if the event was tagged with a single "taaliconen" tag. If multiple tags were
+        // added, simply ignore the taaliconen.
+        if ($taalicoonCount > 0 && $satisfiedCount == 1) {
             $formattedEvent['taalicoonCount'] = $taalicoonCount;
             $formattedEvent['taalicoonDescription'] = $description;
         }

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\WebArchive;
 
+use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\HTMLEventFormatter;
 use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
 use CultuurNet\UDB3\EventExport\Format\HTML\TransformingIteratorIterator;
@@ -36,14 +37,23 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     protected $uitpas;
 
     /**
+     * @var CalendarRepositoryInterface
+     */
+    protected $calendarRepository;
+
+    /**
      * @param HTMLFileWriter $htmlFileWriter
+     * @param EventInfoServiceInterface|null $uitpas
+     * @param CalendarRepositoryInterface|null $calendarRepository
      */
     public function __construct(
         HTMLFileWriter $htmlFileWriter,
-        EventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null,
+        CalendarRepositoryInterface $calendarRepository = null
     ) {
         $this->htmlFileWriter = $htmlFileWriter;
         $this->uitpas = $uitpas;
+        $this->calendarRepository = $calendarRepository;
 
         $this->tmpDir = sys_get_temp_dir();
 
@@ -146,7 +156,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
             $events = new \ArrayIterator($events);
         }
 
-        $formatter = new HTMLEventFormatter($this->uitpas);
+        $formatter = new HTMLEventFormatter($this->uitpas, $this->calendarRepository);
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,

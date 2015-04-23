@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
+use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileWriter;
@@ -23,13 +24,15 @@ class PDFWebArchiveFileWriter extends WebArchiveFileWriter
      * @param string $princeXMLBinaryPath
      * @param HTMLFileWriter $htmlFileWriter
      * @param EventInfoServiceInterface|null $uitpas
+     * @param CalendarRepositoryInterface|null $calendarRepository
      */
     public function __construct(
         $princeXMLBinaryPath,
         HTMLFileWriter $htmlFileWriter,
-        EventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null,
+        CalendarRepositoryInterface $calendarRepository = null
     ) {
-        parent::__construct($htmlFileWriter, $uitpas);
+        parent::__construct($htmlFileWriter, $uitpas, $calendarRepository);
         $this->prince = new PrinceWrapper($princeXMLBinaryPath);
     }
 

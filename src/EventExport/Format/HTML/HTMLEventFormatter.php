@@ -5,7 +5,11 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\CalendarSummary\Period\LargePeriodHTMLFormatter;
+use CultuurNet\CalendarSummary\Permanent\LargePermanentHTMLFormatter;
+use CultuurNet\CalendarSummary\Timestamps\LargeTimestampsHTMLFormatter;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has1Taalicoon;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has2Taaliconen;
@@ -51,11 +55,19 @@ class HTMLEventFormatter
     protected $priceFormatter;
 
     /**
+     * @var CalendarRepositoryInterface
+     */
+    protected $calendarRepository;
+
+    /**
      * @param EventInfoServiceInterface|null $uitpas
      */
-    public function __construct(EventInfoServiceInterface $uitpas = null)
-    {
+    public function __construct(
+        EventInfoServiceInterface $uitpas = null,
+        CalendarRepositoryInterface $calendarRepository = null
+    ) {
         $this->uitpas = $uitpas;
+        $this->calendarRepository = $calendarRepository;
 
         $this->priceFormatter = new PriceFormatter(2, ',', '.', 'Gratis');
 
@@ -120,13 +132,7 @@ class HTMLEventFormatter
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
 
-        $formattedEvent['calendarType'] = $event->calendarType;
-        if (isset($event->startDate)) {
-            $formattedEvent['startDate'] = new \DateTime($event->startDate);
-        }
-        if (isset($event->endDate)) {
-            $formattedEvent['endDate'] = new \DateTime($event->endDate);
-        }
+        $this->addCalendarInfo($event, $formattedEvent);
 
         $this->addUitpasInfo($event, $formattedEvent);
 
@@ -144,13 +150,52 @@ class HTMLEventFormatter
 
     /**
      * @param stdClass $event
+     * @return string
+     */
+    private function getEventId(stdClass $event)
+    {
+        $urlParts = explode('/', $event->{'@id'});
+        return end($urlParts);
+    }
+
+    /**
+     * @param stdClass $event
+     * @param array $formattedEvent
+     */
+    private function addCalendarInfo(stdClass $event, array &$formattedEvent)
+    {
+        // Set the pre-formatted calendar summary as fallback in case no calendar repository was provided.
+        $formattedEvent['dates'] = $event->calendarSummary;
+
+        $calendar = null;
+        $formatter = null;
+
+        if ($this->calendarRepository) {
+            $eventId = $this->getEventId($event);
+            $calendar = $this->calendarRepository->get($eventId);
+        }
+
+        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            $formatter = new LargeTimestampsHTMLFormatter();
+        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            $formatter = new LargePeriodHTMLFormatter();
+        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+            $formatter = new LargePermanentHTMLFormatter();
+        }
+
+        if ($formatter) {
+            $formattedEvent['dates'] = $formatter->format($calendar);
+        }
+    }
+
+    /**
+     * @param stdClass $event
      * @param array $formattedEvent
      */
     private function addUitpasInfo(stdClass $event, array &$formattedEvent)
     {
         if ($this->uitpas) {
-            $urlParts = explode('/', $event->{'@id'});
-            $eventId = end($urlParts);
+            $eventId = $this->getEventId($event);
             $uitpasInfo = $this->uitpas->getEventInfo($eventId);
             if ($uitpasInfo) {
                 // Format prices.

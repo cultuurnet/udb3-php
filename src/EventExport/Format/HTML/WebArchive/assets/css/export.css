@@ -234,6 +234,30 @@ html {
 	margin: 0;
 }
 
+/* CALENDAR SUMMARY */
+.cf-date,
+.cf-month,
+.cf-time
+{
+    font-weight: bold;
+}
+
+.cf-meta
+{
+    color: rgba(171, 174, 188, 0.96);
+}
+
+.list-unstyled,
+.list-unstyled li {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+.activity__info__dates p {
+    margin: 0;
+}
+
 /* PRINT */
 @media print
 {

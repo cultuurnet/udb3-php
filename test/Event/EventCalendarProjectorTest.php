@@ -55,7 +55,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
             ->method('save')
             ->with(
                 'someId',
-                $this->callback(function(PeriodList $calendar) {
+                $this->callback(function (PeriodList $calendar) {
                     // Counting the objects in an iterator will loop over all objects and set the pointer to a non-
                     // existing object when it's done, so we need to rewind to the start of the iterator.
                     $count = iterator_count($calendar);
@@ -97,7 +97,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
             ->method('save')
             ->with(
                 'someId',
-                $this->callback(function(TimestampList $calendar) {
+                $this->callback(function (TimestampList $calendar) {
                     // Counting the objects in an iterator will loop over all objects and set the pointer to a non-
                     // existing object when it's done, so we need to rewind to the start of the iterator.
                     $count = iterator_count($calendar);

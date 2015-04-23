@@ -27,7 +27,7 @@ class CacheCalendarRepository implements CalendarRepositoryInterface
     {
         $value = $this->cache->fetch($id);
         if ($value === false) {
-            return NULL;
+            return null;
         }
         return unserialize($value);
     }

@@ -127,7 +127,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'type' => 'Cursus of workshop',
                 'title' => 'De muziek van de middeleeuwen // Een middeleeuwse muziekgeschiedenis in veertig toppers',
                 'description' => 'Alhoewel de middeleeuwen zo’n duizend jaar duurden, is het grootste deel van de ...',
-                'dates' => 'ma 22/09/14 van 10:00 tot 12:30  ma 2...',
+                'dates' => '<time itemprop="startDate" datetime="2014-04-23T"><span class="cf-weekday cf-meta">woensdag</span> <span class="cf-date">23 april 2014</span> <span class="cf-from cf-meta">om</span> <span class="cf-time"></span></time>',
                 'address' => array(
                     'name' => 'CC De Werf',
                     'street' => 'Molenstraat 51',
@@ -141,7 +141,7 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 'type' => 'Spel of quiz',
                 'title' => 'Speurtocht Kapitein Massimiliaan en de vliegende Hollander',
                 'description' => 'Een familiespel voor jong en oud! Worden jullie de nieuwe matrozen van de ...',
-                'dates' => 'elke zo, di, woe, do, vrij, za van 10...',
+                'dates' => '<p><time itemprop="startDate" datetime="2014-04-23"><span class="cf-date">23 april 2014</span></time><span class="cf-to cf-meta">tot</span><time itemprop="endDate" datetime="2014-04-30"><span class="cf-date">30 april 2014</span></time></p>',
                 'address' => array(
                     'name' => 'Museum aan de Stroom (MAS)',
                     'street' => 'Hanzestedenplaats 1',

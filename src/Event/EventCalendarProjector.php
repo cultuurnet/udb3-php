@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\ReadModel\CacheCalendarRepository;
+use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 
 class EventCalendarProjector implements EventListenerInterface
@@ -16,14 +17,14 @@ class EventCalendarProjector implements EventListenerInterface
     use DelegateEventHandlingToSpecificMethodTrait;
 
     /**
-     * @var CacheCalendarRepository
+     * @var CalendarRepositoryInterface
      */
     protected $repository;
 
     /**
-     * @param CacheCalendarRepository $repository
+     * @param CalendarRepositoryInterface $repository
      */
-    public function __construct(CacheCalendarRepository $repository)
+    public function __construct(CalendarRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

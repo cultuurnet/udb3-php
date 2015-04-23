@@ -25,7 +25,7 @@ use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use Symfony\Component\EventDispatcher\Event;
 
-class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
+class EventLDProjectorTest extends CdbXMLProjectorTestBase
 {
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -200,20 +200,6 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->applyEventImportedFromUDB2($event);
 
 
-    }
-
-    private function eventImportedFromUDB2($fileName)
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/' . $fileName
-        );
-        $event = new EventImportedFromUDB2(
-            'someId',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-        );
-
-        return $event;
     }
 
     /**

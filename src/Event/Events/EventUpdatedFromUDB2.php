@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 
-class EventUpdatedFromUDB2 extends EventEvent
+class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
 {
     use HasCdbXmlTrait;
 

@@ -1,23 +1,23 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\ReadModel\Calendar;
 
-use \CultureFeed_Cdb_Data_Calendar as Calendar;
-use \CultureFeed_Cdb_Data_Calendar_OpeningTime as OpeningTime;
-use \CultureFeed_Cdb_Data_Calendar_PeriodList as PeriodList;
-use \CultureFeed_Cdb_Data_Calendar_Period as Period;
-use \CultureFeed_Cdb_Data_Calendar_SchemeDay as SchemeDay;
-use \CultureFeed_Cdb_Data_Calendar_TimestampList as TimestampList;
-use \CultureFeed_Cdb_Data_Calendar_Timestamp as Timestamp;
-use \CultureFeed_Cdb_Data_Calendar_Weekscheme as WeekScheme;
-use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
+use CultureFeed_Cdb_Data_Calendar as Calendar;
+use CultureFeed_Cdb_Data_Calendar_OpeningTime as OpeningTime;
+use CultureFeed_Cdb_Data_Calendar_Period as Period;
+use CultureFeed_Cdb_Data_Calendar_PeriodList as PeriodList;
+use CultureFeed_Cdb_Data_Calendar_SchemeDay as SchemeDay;
+use CultureFeed_Cdb_Data_Calendar_Timestamp as Timestamp;
+use CultureFeed_Cdb_Data_Calendar_TimestampList as TimestampList;
+use CultureFeed_Cdb_Data_Calendar_Weekscheme as WeekScheme;
+use CultuurNet\UDB3\Event\CdbXMLProjectorTestBase;
 use Doctrine\Common\Cache\ArrayCache;
 use ValueObjects\DateTime\Time;
 
 class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
 {
     /**
-     * @var CalendarRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var \CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $repository;
 

@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\CommandHandling\CommandHandler;
-use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsOOXML;

@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
-use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileWriter;

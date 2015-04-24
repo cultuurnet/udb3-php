@@ -6,8 +6,7 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use Broadway\EventStore\Event;
-use CultuurNet\UDB3\Event\ReadModel\CacheCalendarRepository;
-use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;

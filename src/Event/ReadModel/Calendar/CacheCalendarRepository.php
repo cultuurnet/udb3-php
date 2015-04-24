@@ -1,8 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\ReadModel;
+namespace CultuurNet\UDB3\Event\ReadModel\Calendar;
 
-use \CultureFeed_Cdb_Data_Calendar as Calendar;
+use CultureFeed_Cdb_Data_Calendar as Calendar;
 use Doctrine\Common\Cache\Cache;
 
 class CacheCalendarRepository implements CalendarRepositoryInterface

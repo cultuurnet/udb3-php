@@ -1,13 +1,12 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\ReadModel\Calendar;
 
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 
 class EventCalendarProjector implements EventListenerInterface

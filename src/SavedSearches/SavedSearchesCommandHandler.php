@@ -5,25 +5,28 @@ namespace CultuurNet\UDB3\SavedSearches;
 use \CultureFeed_SavedSearches as SavedSearches;
 use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use Broadway\CommandHandling\CommandHandler;
+use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
+use CultuurNet\UDB3\CommandHandling\ContextAwareTrait;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareInterface
+class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareInterface, ContextAwareInterface
 {
+    use ContextAwareTrait;
     use LoggerAwareTrait;
 
     /**
-     * @var SavedSearches
+     * @var SavedSearchesServiceFactory
      */
-    protected $savedSearchesService;
+    protected $savedSearchesServiceFactory;
 
     /**
      * @param SavedSearches $savedSearchesService
      */
-    public function __construct(SavedSearches $savedSearchesService)
+    public function __construct(SavedSearchesServiceFactory $savedSearchesServiceFactory)
     {
-        $this->savedSearchesService = $savedSearchesService;
+        $this->savedSearchesServiceFactory = $savedSearchesServiceFactory;
     }
 
     /**
@@ -36,10 +39,16 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
         $query = $subscribeToSavedSearch->getQuery();
         $frequency = $subscribeToSavedSearch->getFrequency();
 
+        $metadata = $this->metadata->serialize();
+        $tokenCredentials = $metadata['uitid_token_credentials'];
+
         $savedSearch = new SavedSearch($userId, $name, $query, $frequency);
+        $savedSearchesService = $this->savedSearchesServiceFactory->withTokenCredentials(
+            $tokenCredentials
+        );
 
         try {
-            $this->savedSearchesService->subscribe($savedSearch);
+            $savedSearchesService->subscribe($savedSearch);
         } catch (\Exception $exception) {
             if ($this->logger) {
                 $this->logger->error(

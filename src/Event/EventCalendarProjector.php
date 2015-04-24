@@ -3,12 +3,10 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventHandling\EventListenerInterface;
-use \CultureFeed_Cdb_Item_Event as Event;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\ReadModel\CacheCalendarRepository;
 use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 
@@ -46,7 +44,7 @@ class EventCalendarProjector implements EventListenerInterface
     }
 
     /**
-     * @param EventCdbXMLInterface $event
+     * @param EventCdbXMLInterface $eventEvent
      */
     private function saveEventCalendar(EventCdbXMLInterface $eventEvent)
     {

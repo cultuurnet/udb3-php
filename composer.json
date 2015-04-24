@@ -23,7 +23,7 @@
     "cultuurnet/deserializer": "~0.1",
     "broadway/broadway": "~0.2.0",
     "chrisboulton/php-resque": "~1.2",
-    "cultuurnet/culturefeed-php": "~1.0",
+    "cultuurnet/culturefeed-php": "dev-feature/III-291 as 1.0",
     "nicolopignatelli/valueobjects": "~2.0",
     "php": ">=5.5.0",
     "phpoffice/phpexcel": "~1.8",

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use \CultureFeed_Cdb_Data_Calendar as Calendar;
 use \CultureFeed_Cdb_Data_Calendar_OpeningTime as OpeningTime;
 use \CultureFeed_Cdb_Data_Calendar_PeriodList as PeriodList;
 use \CultureFeed_Cdb_Data_Calendar_Period as Period;
@@ -118,9 +119,9 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
 
     /**
      * @param string $id
-     * @param \CultureFeed_Cdb_Data_Calendar $calendar
+     * @param Calendar $calendar
      */
-    private function repositoryExpectsCalendarToBeSaved($id, \CultureFeed_Cdb_Data_Calendar $calendar)
+    private function repositoryExpectsCalendarToBeSaved($id, Calendar $calendar)
     {
         $this->repository->expects($this->once())
             ->method('save')

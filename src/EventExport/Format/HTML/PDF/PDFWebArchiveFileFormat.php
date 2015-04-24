@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\PDF;
 
+use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\WebArchive\WebArchiveFileFormat;
@@ -19,6 +20,11 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
     protected $uitpas;
 
     /**
+     * @var CalendarRepositoryInterface
+     */
+    protected $calendarRepository;
+
+    /**
      * @param string $princeXMLBinaryPath
      * @param string $brand
      * @param string $title
@@ -26,6 +32,7 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
      * @param string|null $footer
      * @param string|null $publisher
      * @param EventInfoServiceInterface|null $uitpas
+     * @param CalendarRepositoryInterface|null $calendarRepository
      */
     public function __construct(
         $princeXMLBinaryPath,
@@ -34,11 +41,13 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
         $subTitle = null,
         $footer = null,
         $publisher = null,
-        EventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null,
+        CalendarRepositoryInterface $calendarRepository = null
     ) {
         parent::__construct($brand, $title, $subTitle, $footer, $publisher);
         $this->princeXMLBinaryPath = $princeXMLBinaryPath;
         $this->uitpas = $uitpas;
+        $this->calendarRepository = $calendarRepository;
     }
 
     /**
@@ -57,7 +66,8 @@ class PDFWebArchiveFileFormat extends WebArchiveFileFormat implements FileFormat
         return new PDFWebArchiveFileWriter(
             $this->princeXMLBinaryPath,
             $this->getHTMLFileWriter(),
-            $this->uitpas
+            $this->uitpas,
+            $this->calendarRepository
         );
     }
 }

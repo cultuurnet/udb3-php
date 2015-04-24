@@ -9,6 +9,7 @@ use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use Broadway\UuidGenerator\Testing\MockUuidGenerator;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -24,7 +25,7 @@ use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use Symfony\Component\EventDispatcher\Event;
 
-class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
+class EventLDProjectorTest extends CdbXMLProjectorTestBase
 {
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -176,7 +177,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_strips_empty_keywords_when_importing_from_udb2()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_with_empty_keyword.cdbxml.xml'
+            'samples/event_with_empty_keyword.cdbxml.xml'
         );
 
         $this->documentRepository->expects($this->once())
@@ -201,27 +202,13 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    private function eventImportedFromUDB2($fileName)
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/' . $fileName
-        );
-        $event = new EventImportedFromUDB2(
-            'someId',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-        );
-
-        return $event;
-    }
-
     /**
      * @test
      */
     public function it_does_not_add_an_empty_labels_property()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_without_keywords.cdbxml.xml'
+            'samples/event_without_keywords.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -245,7 +232,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_add_an_empty_image_property()
     {
-        $event = $this->eventImportedFromUDB2('event_without_image.cdbxml.xml');
+        $event = $this->eventImportedFromUDB2('samples/event_without_image.cdbxml.xml');
 
         $this->documentRepository
             ->expects($this->once())
@@ -268,7 +255,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_adds_an_image_property_when_cdbxml_has_a_photo()
     {
-        $event = $this->eventImportedFromUDB2('event_with_photo.cdbxml.xml');
+        $event = $this->eventImportedFromUDB2('samples/event_with_photo.cdbxml.xml');
 
         $this->documentRepository
             ->expects($this->once())
@@ -292,7 +279,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_a_bookingInfo_property_when_cdbxml_has_pricevalue()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_with_price_value.cdbxml.xml'
+            'samples/event_with_price_value.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -325,7 +312,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_the_pricedescription_from_cdbxml_to_bookingInfo()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_with_price_value_and_description.cdbxml.xml'
+            'samples/event_with_price_value_and_description.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -359,7 +346,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_a_missing_price_from_cdbxml_to_bookingInfo()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_with_only_price_description.cdbxml.xml'
+            'samples/event_with_only_price_description.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -391,7 +378,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_booking_info_when_price_is_missing()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_without_price.cdbxml.xml'
+            'samples/event_without_price.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -416,7 +403,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_typical_age_range_when_age_from_is_missing()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_without_age_from.cdbxml.xml'
+            'samples/event_without_age_from.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -441,7 +428,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_typical_age_range_when_age_from_is_present()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_with_age_from.cdbxml.xml'
+            'samples/event_with_age_from.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -466,7 +453,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_a_language_property_when_cdbxml_has_languages()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_with_languages.cdbxml.xml'
+            'samples/event_with_languages.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -499,7 +486,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_an_empty_language_property()
     {
         $event = $this->eventImportedFromUDB2(
-            'event_without_languages.cdbxml.xml'
+            'samples/event_without_languages.cdbxml.xml'
         );
 
         $this->documentRepository
@@ -531,7 +518,7 @@ class EventLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->addDescriptionFilter($filter);
 
         $event = $this->eventImportedFromUDB2(
-            'event_without_languages.cdbxml.xml'
+            'samples/event_without_languages.cdbxml.xml'
         );
         $this->projector->applyEventImportedFromUDB2($event);
     }

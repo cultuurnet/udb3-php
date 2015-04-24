@@ -64,7 +64,7 @@ class EventTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_imported_from_udb2_cdbxml()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/EventTest.cdbxml.xml');
+        $cdbXml = file_get_contents(__DIR__ . '/samples/EventTest.cdbxml.xml');
         $event = Event::importFromUDB2(
             'someId',
             $cdbXml,

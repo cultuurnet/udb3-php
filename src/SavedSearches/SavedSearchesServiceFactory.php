@@ -15,7 +15,8 @@ class SavedSearchesServiceFactory
     /**
      * @param Consumer $consumer
      */
-    public function __construct(Consumer $consumer) {
+    public function __construct(Consumer $consumer)
+    {
         $this->consumer = $consumer;
     }
 

@@ -34,7 +34,8 @@ class SubscribeToSavedSearch
      * @throws \InvalidArgumentException
      *   When an invalid frequency value is given.
      */
-    public function __construct($userId, $name, $query, $frequency = SavedSearch::NEVER) {
+    public function __construct($userId, $name, $query, $frequency = SavedSearch::NEVER)
+    {
         $this->userId = $userId;
         $this->name = $name;
         $this->query = $query;

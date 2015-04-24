@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
+use CultuurNet\CalendarSummary\CalendarHTMLFormatter;
 use CultuurNet\CalendarSummary\Period\LargePeriodHTMLFormatter;
 use CultuurNet\CalendarSummary\Permanent\LargePermanentHTMLFormatter;
 use CultuurNet\CalendarSummary\Timestamps\LargeTimestampsHTMLFormatter;
@@ -168,23 +169,15 @@ class HTMLEventFormatter
         $formattedEvent['dates'] = $event->calendarSummary;
 
         $calendar = null;
-        $formatter = null;
 
         if ($this->calendarRepository) {
             $eventId = $this->getEventId($event);
             $calendar = $this->calendarRepository->get($eventId);
         }
 
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $formatter = new LargeTimestampsHTMLFormatter();
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $formatter = new LargePeriodHTMLFormatter();
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $formatter = new LargePermanentHTMLFormatter();
-        }
-
-        if ($formatter) {
-            $formattedEvent['dates'] = $formatter->format($calendar);
+        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar) {
+            $formatter = new CalendarHTMLFormatter();
+            $formattedEvent['dates'] = $formatter->format($calendar, 'lg');
         }
     }
 

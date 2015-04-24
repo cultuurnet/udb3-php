@@ -20,5 +20,5 @@ interface CalendarRepositoryInterface
      * @param Calendar $calendar
      *   Calendar object to store.
      */
-    public function save($id, Calendar $readModel);
+    public function save($id, Calendar $calendar);
 }

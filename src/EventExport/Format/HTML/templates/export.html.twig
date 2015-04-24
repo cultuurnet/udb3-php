@@ -64,39 +64,8 @@
                                 <td>
                                     <i class="fa fa-calendar"></i>&nbsp;
                                 </td>
-                                <td>
-                                    {% if event.calendarType == 'permanent' -%}
-                                    <span class="calendar-permanent">permanent</span>
-                                {% endif -%}
-                                    {% if event.calendarType == 'single' -%}
-                                    <span class="calendar-single">
-                                        <span class="calendar-start-date">
-                                            {{ event.startDate|date("d/m/Y") }}
-                                        </span>
-                                    </span>
-                                {% endif -%}
-                                    {% if event.calendarType == 'periodic' %}
-                                    <span class="calendar-periodic calendar-date-range">
-                                        <span class="calendar-start-date">
-                                            {{ event.startDate|date("d/m/Y") }}
-                                        </span>
-                                        <i class="fa fa-long-arrow-right"></i>
-                                        <span class="calendar-end-date">
-                                            {{ event.endDate|date("d/m/Y") }}
-                                        </span>
-                                    </span>
-                                {% endif -%}
-                                    {% if event.calendarType == 'multiple' %}
-                                    <span class="calendar-multiple calendar-date-range">
-                                        <span class="calendar-start-date">
-                                            {{ event.startDate|date("d/m/Y") }}
-                                        </span>
-                                        ,…,
-                                        <span class="calendar-end-date">
-                                            {{ event.endDate|date("d/m/Y") }}
-                                        </span>
-                                    </span>
-                                {% endif -%}
+                                <td class="activity__info__dates">
+                                    {{ event.dates|raw }}
                                 </td>
                             </tr>
                             <tr>

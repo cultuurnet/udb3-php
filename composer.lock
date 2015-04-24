@@ -258,6 +258,49 @@
             "time": "2014-10-28 13:01:49"
         },
         {
+            "name": "cultuurnet/calendar-summary",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cultuurnet/calendar-summary.git",
+                "reference": "17e540ff80da8443dda7281c4a7cebb1cc98fde4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cultuurnet/calendar-summary/zipball/17e540ff80da8443dda7281c4a7cebb1cc98fde4",
+                "reference": "17e540ff80da8443dda7281c4a7cebb1cc98fde4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*"
+            },
+            "require-dev": {
+                "phing/phing": "~2.10",
+                "phpunit/phpunit": "~4.5",
+                "squizlabs/php_codesniffer": "~2.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev",
+                    "dev-develop": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CultuurNet\\CalendarSummary\\": [
+                        "src"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Library to convert a cdbXML input to a readable summary",
+            "time": "2015-04-17 07:05:21"
+        },
+        {
             "name": "cultuurnet/cdb",
             "version": "2.0.x-dev",
             "source": {

@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
@@ -77,6 +78,15 @@ class BackwardsCompatiblePayloadSerializerFactory
 
                 $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
                 unset($serializedObject['payload']['keyword']);
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\EventImportedFromUDB2',
+            function (array $serializedObject) {
+                $serializedObject['class'] = EventImportedFromUDB2::class;
 
                 return $serializedObject;
             }

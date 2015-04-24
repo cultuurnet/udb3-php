@@ -3,11 +3,12 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Events;
 
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 
-class EventImportedFromUDB2 extends EventEvent
+class EventImportedFromUDB2 extends EventEvent implements EventCdbXMLInterface
 {
     use HasCdbXmlTrait;
 

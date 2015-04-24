@@ -6,10 +6,12 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use Broadway\EventStore\Event;
+use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+use Doctrine\Common\Cache\ArrayCache;
 use ValueObjects\String\String;
 
 class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
@@ -64,9 +66,6 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
             'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
             'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
-            'calendarType' => 'multiple',
-            'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
-            'endDate' => new \DateTime('2015-03-30T16:30:00+02:00'),
             'address' => [
                 'name' => 'Cultuurcentrum De Kruisboog',
                 'street' => 'Sint-Jorisplein 20 ',
@@ -75,7 +74,8 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             ],
             'type' => 'Cursus of workshop',
             'price' => 'Gratis',
-            'brands' => array()
+            'brands' => array(),
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
         ];
         $this->assertEventFormatting($expectedFormattedFreeEvent, $freeEvent);
 
@@ -103,10 +103,8 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                 'municipality' => 'Herent',
             ],
             'price' => 'Niet ingevoerd',
-            'calendarType' => "periodic",
-            'startDate' => new \DateTime('2014-09-01T00:00:00+02:00'),
-            'endDate' => new \DateTime('2015-06-29T00:00:00+02:00'),
-            'brands' => array()
+            'brands' => array(),
+            'dates' => 'van 01/09/14 tot 29/06/15',
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutBookingInfo);
     }
@@ -128,9 +126,8 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                 'municipality' => 'Tienen',
             ],
             'price' => 'Niet ingevoerd',
-            'calendarType' => 'multiple',
-            'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
-            'brands' => array()
+            'brands' => array(),
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutImage);
     }
@@ -149,6 +146,110 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             "Stefan Bracavalopnieuw van de...",
             $eventWithHTMLDescription['description']
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_optionally_enriches_events_with_calendar_period_info()
+    {
+        $id = 'd1f0e71d-a9a8-4069-81fb-530134502c58';
+        $period = new \CultureFeed_Cdb_Data_Calendar_Period('2014-04-23', '2014-04-30');
+        $periodList = new \CultureFeed_Cdb_Data_Calendar_PeriodList();
+        $periodList->add($period);
+
+        $repository = $this->getCalendarRepositoryWhichReturns($id, $periodList);
+        $this->eventFormatter = new HTMLEventFormatter(null, $repository);
+
+        $event = $this->getFormattedEventFromJSONFile('event_with_terms.json');
+        $expected = $this->getExpectedCalendarSummary('calendar_summary_periods.html');
+        $this->assertFormattedEventDates($event, $expected);
+    }
+
+    /**
+     * @test
+     */
+    public function it_optionally_enriches_events_with_calendar_timestamps_info()
+    {
+        $id = 'd1f0e71d-a9a8-4069-81fb-530134502c58';
+        $timestamp = new \CultureFeed_Cdb_Data_Calendar_Timestamp('2014-04-23');
+        $timestampList = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+        $timestampList->add($timestamp);
+
+        $repository = $this->getCalendarRepositoryWhichReturns($id, $timestampList);
+        $this->eventFormatter = new HTMLEventFormatter(null, $repository);
+
+        $event = $this->getFormattedEventFromJSONFile('event_with_terms.json');
+        $expected = $this->getExpectedCalendarSummary('calendar_summary_timestamps.html');
+        $this->assertFormattedEventDates($event, $expected);
+    }
+
+    /**
+     * @test
+     */
+    public function it_optionally_enriches_events_with_calendar_permanent_info()
+    {
+        $id = 'd1f0e71d-a9a8-4069-81fb-530134502c58';
+
+        $open = new \CultureFeed_Cdb_Data_Calendar_OpeningTime('09:00:00', '19:00:00');
+        $week = new \CultureFeed_Cdb_Data_Calendar_Weekscheme();
+        foreach (array('monday', 'tuesday', 'wednesday', 'thursday', 'friday') as $day) {
+            $schemeDay = new \CultureFeed_Cdb_Data_Calendar_SchemeDay($day);
+            $schemeDay->setOpen();
+            $schemeDay->addOpeningTime($open);
+            $week->setDay($day, $schemeDay);
+        }
+        foreach (array('saturday', 'sunday') as $day) {
+            $schemeDay = new \CultureFeed_Cdb_Data_Calendar_SchemeDay($day);
+            $schemeDay->setClosed();
+            $week->setDay($day, $schemeDay);
+        }
+
+        $permanent = new \CultureFeed_Cdb_Data_Calendar_Permanent();
+        $permanent->setWeekScheme($week);
+
+        $repository = $this->getCalendarRepositoryWhichReturns($id, $permanent);
+        $this->eventFormatter = new HTMLEventFormatter(null, $repository);
+
+        $event = $this->getFormattedEventFromJSONFile('event_with_terms.json');
+        $expected = $this->getExpectedCalendarSummary('calendar_summary_permanent.html');
+        $this->assertFormattedEventDates($event, $expected);
+    }
+
+    /**
+     * @param string $id
+     * @param \CultureFeed_Cdb_Data_Calendar $calendar
+     * @return CalendarRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getCalendarRepositoryWhichReturns($id, \CultureFeed_Cdb_Data_Calendar $calendar)
+    {
+        /* @var CalendarRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject $repository */
+        $repository = $this->getMock(CalendarRepositoryInterface::class);
+        $repository->expects($this->once())
+            ->method('get')
+            ->with($id)
+            ->willReturn($calendar);
+        return $repository;
+    }
+
+    /**
+     * @param $fileName
+     * @return string
+     */
+    private function getExpectedCalendarSummary($fileName)
+    {
+        $expected = file_get_contents(__DIR__ . '/../../samples/' . $fileName);
+        return trim($expected);
+    }
+
+    /**
+     * @param array $event
+     * @param string $expected
+     */
+    private function assertFormattedEventDates($event, $expected)
+    {
+        $this->assertArrayHasKey('dates', $event);
+        $this->assertEquals($expected, $event['dates']);
     }
 
     /**
@@ -196,9 +297,8 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                 'municipality' => 'Tienen',
             ],
             'price' => 'Niet ingevoerd',
-            'calendarType' => 'multiple',
-            'startDate' => new \DateTime('2015-03-02T13:30:00+01:00'),
             'brands' => array(),
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
         ];
 
         $this->assertEquals(

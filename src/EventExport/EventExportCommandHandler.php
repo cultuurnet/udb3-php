@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\CommandHandling\CommandHandler;
+use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsCSV;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsJsonLD;
 use CultuurNet\UDB3\EventExport\Command\ExportEventsAsOOXML;
@@ -38,6 +39,11 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
     protected $uitpas;
 
     /**
+     * @var CalendarRepositoryInterface
+     */
+    protected $calendarRepository;
+
+    /**
      * @param EventExportServiceInterface $eventExportService
      * @param string $princeXMLBinaryPath
      * @param EventInfoServiceInterface|null $uitpas
@@ -45,11 +51,13 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
     public function __construct(
         EventExportServiceInterface $eventExportService,
         $princeXMLBinaryPath,
-        EventInfoServiceInterface $uitpas = null
+        EventInfoServiceInterface $uitpas = null,
+        CalendarRepositoryInterface $calendarRepository = null
     ) {
         $this->eventExportService = $eventExportService;
         $this->princeXMLBinaryPath = $princeXMLBinaryPath;
         $this->uitpas = $uitpas;
+        $this->calendarRepository = $calendarRepository;
     }
 
     public function handleExportEventsAsJsonLD(
@@ -98,7 +106,8 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
             $exportEvents->getSubtitle(),
             $exportEvents->getFooter(),
             $exportEvents->getPublisher(),
-            $this->uitpas
+            $this->uitpas,
+            $this->calendarRepository
         );
 
         $this->eventExportService->exportEvents(

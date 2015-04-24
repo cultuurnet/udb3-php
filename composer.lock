@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "83728cc489987fe29db8f0b748cd8ff5",
+    "hash": "c7bdab1e8a72f049c24fbf00074d04c5",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -292,16 +292,16 @@
         },
         {
             "name": "cultuurnet/culturefeed-php",
-            "version": "dev-feature/III-291",
+            "version": "1.5.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/culturefeed-php.git",
-                "reference": "6097c7c3749680c4e33d2671d3a7d104e3bf655e"
+                "reference": "8935b84b9df857c3d0e3d15807387a918b6629ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/6097c7c3749680c4e33d2671d3a7d104e3bf655e",
-                "reference": "6097c7c3749680c4e33d2671d3a7d104e3bf655e",
+                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/8935b84b9df857c3d0e3d15807387a918b6629ab",
+                "reference": "8935b84b9df857c3d0e3d15807387a918b6629ab",
                 "shasum": ""
             },
             "require": {
@@ -355,7 +355,7 @@
                 }
             ],
             "description": "Culturefeed PHP library",
-            "time": "2015-04-24 08:46:20"
+            "time": "2015-04-24 14:33:09"
         },
         {
             "name": "cultuurnet/deserializer",
@@ -3977,19 +3977,11 @@
             "time": "2015-03-30 15:54:10"
         }
     ],
-    "aliases": [
-        {
-            "alias": "1.0",
-            "alias_normalized": "1.0.0.0",
-            "version": "dev-feature/III-291",
-            "package": "cultuurnet/culturefeed-php"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
         "cultuurnet/entry": 20,
-        "cultuurnet/cdb": 20,
-        "cultuurnet/culturefeed-php": 20
+        "cultuurnet/cdb": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

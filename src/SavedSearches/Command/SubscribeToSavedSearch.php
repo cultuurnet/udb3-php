@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\SavedSearch\Command;
+namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 

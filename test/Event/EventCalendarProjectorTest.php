@@ -2,12 +2,16 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use \CultureFeed_Cdb_Data_Calendar_OpeningTime as OpeningTime;
 use \CultureFeed_Cdb_Data_Calendar_PeriodList as PeriodList;
 use \CultureFeed_Cdb_Data_Calendar_Period as Period;
+use \CultureFeed_Cdb_Data_Calendar_SchemeDay as SchemeDay;
 use \CultureFeed_Cdb_Data_Calendar_TimestampList as TimestampList;
 use \CultureFeed_Cdb_Data_Calendar_Timestamp as Timestamp;
+use \CultureFeed_Cdb_Data_Calendar_Weekscheme as WeekScheme;
 use CultuurNet\UDB3\Event\ReadModel\CalendarRepositoryInterface;
 use Doctrine\Common\Cache\ArrayCache;
+use ValueObjects\DateTime\Time;
 
 class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
 {
@@ -35,7 +39,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
     public function it_saves_the_calendar_periods_from_events_imported_from_udb2()
     {
         $event = $this->eventImportedFromUDB2('samples/event_with_calendar_periods.cdbxml.xml');
-        $this->repositoryExpectsPeriodList();
+        $this->repositoryExpectsCalendarToBeSaved('someId', $this->getPeriodList());
         $this->projector->applyEventImportedFromUDB2($event);
     }
 
@@ -45,30 +49,8 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
     public function it_saves_the_calendar_periods_from_events_updated_from_udb2()
     {
         $event = $this->eventUpdatedFromUDB2('samples/event_with_calendar_periods.cdbxml.xml');
-        $this->repositoryExpectsPeriodList();
+        $this->repositoryExpectsCalendarToBeSaved('someId', $this->getPeriodList());
         $this->projector->applyEventUpdatedFromUDB2($event);
-    }
-
-    private function repositoryExpectsPeriodList()
-    {
-        $this->repository->expects($this->once())
-            ->method('save')
-            ->with(
-                'someId',
-                $this->callback(function (PeriodList $calendar) {
-                    // Counting the objects in an iterator will loop over all objects and set the pointer to a non-
-                    // existing object when it's done, so we need to rewind to the start of the iterator.
-                    $count = iterator_count($calendar);
-                    $calendar->rewind();
-
-                    /* @var Period $period */
-                    $period = $calendar->current();
-
-                    return $count == 1 &&
-                    $period->getDateFrom() == '2014-11-01' &&
-                    $period->getDateTo() == '2014-11-09';
-                })
-            );
     }
 
     /**
@@ -77,7 +59,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
     public function it_saves_the_calendar_timestamps_from_events_imported_from_udb2()
     {
         $event = $this->eventImportedFromUDB2('samples/event_with_calendar_timestamps.cdbxml.xml');
-        $this->repositoryExpectsTimestamps();
+        $this->repositoryExpectsCalendarToBeSaved('someId', $this->getTimestampList());
         $this->projector->applyEventImportedFromUDB2($event);
     }
 
@@ -87,29 +69,61 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
     public function it_saves_the_calendar_timestamps_from_events_updated_from_udb2()
     {
         $event = $this->eventUpdatedFromUDB2('samples/event_with_calendar_timestamps.cdbxml.xml');
-        $this->repositoryExpectsTimestamps();
+        $this->repositoryExpectsCalendarToBeSaved('someId', $this->getTimestampList());
         $this->projector->applyEventUpdatedFromUDB2($event);
     }
 
-    private function repositoryExpectsTimestamps()
+    /**
+     * @return PeriodList
+     */
+    private function getPeriodList()
+    {
+        $periodList = new PeriodList();
+
+        $period = new Period('2014-11-01', '2014-11-09');
+        $weekScheme = new WeekScheme();
+
+        $closedDays = ['monday', 'tuesday', 'wednesday'];
+        foreach ($closedDays as $closedDay) {
+            $day = new SchemeDay($closedDay, SchemeDay::SCHEMEDAY_OPEN_TYPE_CLOSED);
+            $weekScheme->setDay($closedDay, $day);
+        }
+
+        $openDays = ['thursday', 'friday', 'saturday', 'sunday'];
+        foreach ($openDays as $openDay) {
+            $day = new SchemeDay($openDay, SchemeDay::SCHEMEDAY_OPEN_TYPE_OPEN);
+            $openingTime = new OpeningTime('13:30:00', '18:00:00');
+            $day->addOpeningTime($openingTime);
+            $weekScheme->setDay($openDay, $day);
+        }
+
+        $period->setWeekScheme($weekScheme);
+        $periodList->add($period);
+
+        return $periodList;
+    }
+
+    /**
+     * @return TimestampList
+     */
+    private function getTimestampList()
+    {
+        $timestampList = new TimestampList();
+
+        $timestamp = new Timestamp('2014-11-21', '20:00:00');
+        $timestampList->add($timestamp);
+
+        return $timestampList;
+    }
+
+    /**
+     * @param string $id
+     * @param \CultureFeed_Cdb_Data_Calendar $calendar
+     */
+    private function repositoryExpectsCalendarToBeSaved($id, \CultureFeed_Cdb_Data_Calendar $calendar)
     {
         $this->repository->expects($this->once())
             ->method('save')
-            ->with(
-                'someId',
-                $this->callback(function (TimestampList $calendar) {
-                    // Counting the objects in an iterator will loop over all objects and set the pointer to a non-
-                    // existing object when it's done, so we need to rewind to the start of the iterator.
-                    $count = iterator_count($calendar);
-                    $calendar->rewind();
-
-                    /* @var Timestamp $timestamp */
-                    $timestamp = $calendar->current();
-
-                    return $count == 1 &&
-                        $timestamp->getDate() == '2014-11-21' &&
-                        $timestamp->getStartTime() == '20:00:00';
-                })
-            );
+            ->with($id, $calendar);
     }
 }

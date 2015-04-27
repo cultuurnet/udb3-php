@@ -120,14 +120,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($tokenCredentials)
             ->willReturn($savedSearchesService);
 
-        // Metadata with token credentials, necessary to create the saved searches service.
-        $metadataArray = [
+        $metadata = new Metadata([
             'uitid_token_credentials' => $tokenCredentials,
-        ];
-        $metadata = $this->getMock(Metadata::class);
-        $metadata->expects($this->once())
-            ->method('serialize')
-            ->willReturn($metadataArray);
+        ]);
 
         // Command handler with the factory object and context metadata.
         $commandHandler = new SavedSearchesCommandHandler($savedSearchesServiceFactory);

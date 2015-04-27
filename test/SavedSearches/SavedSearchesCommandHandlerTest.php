@@ -64,7 +64,6 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $userId = 'some-user-id';
         $name = 'My very first saved search!';
         $query = 'city:"Leuven"';
-        $frequency = SavedSearch::NEVER;
 
         $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
 
@@ -87,6 +86,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ->willThrowException(new \CultureFeed_Exception($error, 'UNKNOWN_ERROR'));
 
         // We expect the logger's error method to be called when the exception is thrown.
+        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
         $logger = $this->getMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('error')
@@ -109,12 +109,14 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param SavedSearches $savedSearchesService
+     * @return SavedSearchesCommandHandler
      */
     private function getSavedSearchesCommandHandlerWithService(SavedSearches $savedSearchesService)
     {
         $tokenCredentials = new TokenCredentials('token', 'secret');
 
         // Saved searches service factory used to instantiate the saved searches service.
+        /** @var SavedSearchesServiceFactoryInterface|\PHPUnit_Framework_MockObject_MockObject $savedSearchesServiceFactory */
         $savedSearchesServiceFactory = $this->getMock(
             SavedSearchesServiceFactoryInterface::class
         );

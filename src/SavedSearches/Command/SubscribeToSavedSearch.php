@@ -22,11 +22,6 @@ class SubscribeToSavedSearch
     protected $query;
 
     /**
-     * @var string
-     */
-    protected $frequency;
-
-    /**
      * @param string $userId
      * @param string $name
      * @param string $query
@@ -34,27 +29,11 @@ class SubscribeToSavedSearch
      * @throws \InvalidArgumentException
      *   When an invalid frequency value is given.
      */
-    public function __construct($userId, $name, $query, $frequency = SavedSearch::NEVER)
+    public function __construct($userId, $name, $query)
     {
         $this->userId = $userId;
         $this->name = $name;
         $this->query = $query;
-        $this->setFrequency($frequency);
-    }
-
-    /**
-     * @param string $frequency
-     *
-     * @throws \InvalidArgumentException
-     *   When an invalid frequency value is given.
-     */
-    private function setFrequency($frequency)
-    {
-        if (SavedSearch::validateFrequency($frequency)) {
-            $this->frequency = $frequency;
-        } else {
-            throw new \InvalidArgumentException('Invalid value for frequency: ' . $frequency);
-        }
     }
 
     /**
@@ -79,13 +58,5 @@ class SubscribeToSavedSearch
     public function getQuery()
     {
         return $this->query;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFrequency()
-    {
-        return $this->frequency;
     }
 }

@@ -45,7 +45,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
             $subscribeToSavedSearch->getUserId(),
             $subscribeToSavedSearch->getName(),
             $subscribeToSavedSearch->getQuery(),
-            $subscribeToSavedSearch->getFrequency()
+            SavedSearch::NEVER
         );
 
         $this->savedSearchesService->expects($this->once())
@@ -94,7 +94,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
                     'userId' => $subscribeToSavedSearch->getUserId(),
                     'name' => $subscribeToSavedSearch->getName(),
                     'query' => $subscribeToSavedSearch->getQuery(),
-                    'frequency' => $subscribeToSavedSearch->getFrequency(),
+                    'frequency' => SavedSearch::NEVER
                 ]
             );
         $this->commandHandler->setLogger($logger);

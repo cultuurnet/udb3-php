@@ -22,7 +22,7 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
     protected $savedSearchesServiceFactory;
 
     /**
-     * @param SavedSearches $savedSearchesService
+     * @param SavedSearchesServiceFactoryInterface $savedSearchesServiceFactory
      */
     public function __construct(SavedSearchesServiceFactoryInterface $savedSearchesServiceFactory)
     {
@@ -37,12 +37,11 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
         $userId = $subscribeToSavedSearch->getUserId();
         $name = $subscribeToSavedSearch->getName();
         $query = $subscribeToSavedSearch->getQuery();
-        $frequency = $subscribeToSavedSearch->getFrequency();
 
         $metadata = $this->metadata->serialize();
         $tokenCredentials = $metadata['uitid_token_credentials'];
 
-        $savedSearch = new SavedSearch($userId, $name, $query, $frequency);
+        $savedSearch = new SavedSearch($userId, $name, $query, SavedSearch::NEVER);
         $savedSearchesService = $this->savedSearchesServiceFactory->withTokenCredentials(
             $tokenCredentials
         );
@@ -58,7 +57,7 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
                         'userId' => $userId,
                         'name' => $name,
                         'query' => $query,
-                        'frequency' => $frequency,
+                        'frequency' => $savedSearch->frequency,
                     ]
                 );
             }

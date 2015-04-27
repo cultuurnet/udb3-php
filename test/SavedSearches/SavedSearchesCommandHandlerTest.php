@@ -44,7 +44,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $savedSearch = new SavedSearch(
             $subscribeToSavedSearch->getUserId(),
             $subscribeToSavedSearch->getName(),
-            $subscribeToSavedSearch->getQuery(),
+            'q=city%3A%22Leuven%22',
             SavedSearch::NEVER
         );
 

@@ -17,14 +17,14 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
     use LoggerAwareTrait;
 
     /**
-     * @var SavedSearchesServiceFactory
+     * @var SavedSearchesServiceFactoryInterface
      */
     protected $savedSearchesServiceFactory;
 
     /**
      * @param SavedSearches $savedSearchesService
      */
-    public function __construct(SavedSearchesServiceFactory $savedSearchesServiceFactory)
+    public function __construct(SavedSearchesServiceFactoryInterface $savedSearchesServiceFactory)
     {
         $this->savedSearchesServiceFactory = $savedSearchesServiceFactory;
     }

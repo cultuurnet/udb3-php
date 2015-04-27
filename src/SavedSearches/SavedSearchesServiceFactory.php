@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\SavedSearches;
 use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\UDB2\Consumer;
 
-class SavedSearchesServiceFactory
+class SavedSearchesServiceFactory implements SavedSearchesServiceFactoryInterface
 {
     /**
      * @var Consumer
@@ -21,8 +21,7 @@ class SavedSearchesServiceFactory
     }
 
     /**
-     * @param TokenCredentials $tokenCredentials
-     * @return \CultureFeed_SavedSearches_Default
+     * @inheritdoc
      */
     public function withTokenCredentials(TokenCredentials $tokenCredentials)
     {

@@ -11,12 +11,13 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
@@ -24,11 +25,7 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
@@ -308,7 +305,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function($term) {
-          return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
+            return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
         });
 
         $eventType = $majorInfoUpdated->getEventType();

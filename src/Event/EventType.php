@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Category;
+
 class EventType extends Category
 {
     const DOMAIN = 'eventtype';

@@ -55,7 +55,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
      */
     protected $copyrightHolder;
 
-    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '', $type = NULL)
+    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '', $type = null)
     {
         $this->type = $type;
         $this->url = $url;
@@ -118,7 +118,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
      */
     public static function deserialize(array $data)
     {
-        $type = !empty($data['type']) ? $data['type'] : NULL;
+        $type = !empty($data['type']) ? $data['type'] : null;
         return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
     }
 
@@ -144,7 +144,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     {
         $jsonLd = [];
         if (!empty($this->type)) {
-          $jsonLd['@type'] = $this->type;
+            $jsonLd['@type'] = $this->type;
         }
 
         $jsonLd['url'] = $this->url;

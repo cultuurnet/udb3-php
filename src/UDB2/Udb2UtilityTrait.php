@@ -347,8 +347,8 @@ trait Udb2UtilityTrait
 
         // Make sure a detail exists.
         if (empty($detail)) {
-          $detail = new CultureFeed_Cdb_Data_EventDetail();
-          $details->add($detail);
+            $detail = new CultureFeed_Cdb_Data_EventDetail();
+            $details->add($detail);
         }
 
         $uriParts = explode('/', $mediaObject->getUrl());
@@ -362,7 +362,7 @@ trait Udb2UtilityTrait
         $fileparts = explode('.', $filename);
         $extension = end($fileparts);
         if ($extension === 'jpg') {
-          $extension = 'jpeg';
+            $extension = 'jpeg';
         }
 
         $file->setFileType($extension);
@@ -399,8 +399,8 @@ trait Udb2UtilityTrait
 
         // Make sure a detail exists.
         if (empty($detail)) {
-          $detail = new CultureFeed_Cdb_Data_EventDetail();
-          $details->add($detail);
+            $detail = new CultureFeed_Cdb_Data_EventDetail();
+            $details->add($detail);
         }
 
         $media = $detail->getMedia();
@@ -410,7 +410,6 @@ trait Udb2UtilityTrait
             if ($file->getMediatype === CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB && $file->isMain()) {
                 // If the index matches, delete the file.
                 if ($index === $indexToUpdate) {
-
                     $uriParts = explode('/', $mediaObject->getUrl());
 
                     $file->setHLink($mediaObject->getUrl());
@@ -419,7 +418,7 @@ trait Udb2UtilityTrait
                     $fileparts = explode('.', $filename);
                     $extension = end($fileparts);
                     if ($extension === 'jpg') {
-                      $extension = 'jpeg';
+                        $extension = 'jpeg';
                     }
 
                     $file->setFileType($extension);
@@ -459,7 +458,7 @@ trait Udb2UtilityTrait
 
         // No detail = nothing to delete.
         if (empty($detail)) {
-          return;
+            return;
         }
 
         $media = $detail->getMedia();

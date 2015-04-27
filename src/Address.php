@@ -90,7 +90,8 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd() {
+    public function toJsonLd()
+    {
         return [
             'addressCountry' => $this->country,
             'addressLocality' => $this->locality,
@@ -98,5 +99,4 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
             'streetAddress' => $this->streetAddress
         ];
     }
-
 }

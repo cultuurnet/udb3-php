@@ -135,7 +135,8 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     /**
      * Return the jsonLD version of a calendar.
      */
-    public function toJsonLd() {
+    public function toJsonLd()
+    {
 
         $jsonLd = [];
 
@@ -189,5 +190,4 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
         return $jsonLd;
 
     }
-
 }

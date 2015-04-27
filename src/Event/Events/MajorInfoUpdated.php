@@ -17,7 +17,8 @@ use CultuurNet\UDB3\Title;
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends EventEvent {
+class MajorInfoUpdated extends EventEvent
+{
 
     /**
      * @var Title
@@ -138,5 +139,4 @@ class MajorInfoUpdated extends EventEvent {
             $theme
         );
     }
-
 }

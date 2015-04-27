@@ -209,7 +209,7 @@ class PlaceLDProjector extends ActorLDProjector
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function($term) {
-          return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
+            return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
         });
 
         $eventType = $majorInfoUpdated->getEventType();

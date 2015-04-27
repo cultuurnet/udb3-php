@@ -18,7 +18,8 @@ use CultuurNet\UDB3\Title;
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends PlaceEvent {
+class MajorInfoUpdated extends PlaceEvent
+{
 
     /**
      * @var Title
@@ -139,5 +140,4 @@ class MajorInfoUpdated extends PlaceEvent {
             $theme
         );
     }
-
 }

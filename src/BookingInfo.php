@@ -157,8 +157,8 @@ class BookingInfo implements JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd() {
+    public function toJsonLd()
+    {
         return $this->serialize();
     }
-
 }

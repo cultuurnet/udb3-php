@@ -70,7 +70,7 @@ class UpdateMajorInfo
      */
     public function getId()
     {
-      return $this->id;
+        return $this->id;
     }
 
     /**
@@ -78,7 +78,7 @@ class UpdateMajorInfo
      */
     public function getTitle()
     {
-      return $this->title;
+        return $this->title;
     }
 
     /**
@@ -86,7 +86,7 @@ class UpdateMajorInfo
      */
     public function getEventType()
     {
-      return $this->eventType;
+        return $this->eventType;
     }
 
     /**
@@ -94,7 +94,7 @@ class UpdateMajorInfo
      */
     public function getTheme()
     {
-      return $this->theme;
+        return $this->theme;
     }
 
     /**
@@ -102,7 +102,7 @@ class UpdateMajorInfo
      */
     public function getLocation()
     {
-      return $this->location;
+        return $this->location;
     }
 
     /**
@@ -110,8 +110,6 @@ class UpdateMajorInfo
      */
     public function getCalendar()
     {
-      return $this->calendar;
+        return $this->calendar;
     }
-
-
 }

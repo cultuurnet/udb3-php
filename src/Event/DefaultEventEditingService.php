@@ -176,5 +176,4 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
             new UpdateMajorInfo($eventId, $title, $eventType, $location, $calendar, $theme)
         );
     }
-
 }

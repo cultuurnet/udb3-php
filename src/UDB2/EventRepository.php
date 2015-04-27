@@ -29,21 +29,18 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\EventWasTagged;
-use CultuurNet\UDB3\Event\TagErased;
-use CultuurNet\UDB3\Event\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
-use \CultuurNet\UDB3\Udb3RepositoryTrait;
+use CultuurNet\UDB3\Udb3RepositoryTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -151,7 +148,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         break;
 
                     case Unlabelled::class:
-                        /** @var \CultuurNet\UDB3\Event\Events\Unlabelled $domainEvent */
+                        /** @var Unlabelled $domainEvent */
                         $this->applyUnlabelled(
                             $domainEvent,
                             $domainMessage->getMetadata()

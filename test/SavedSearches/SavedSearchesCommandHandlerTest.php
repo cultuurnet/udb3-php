@@ -56,13 +56,16 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $this->commandHandler->handle($subscribeToSavedSearch);
     }
 
-    private function aSubscribeToSavedSearchCommand() {
+    /**
+     * @return SubscribeToSavedSearch
+     */
+    private function aSubscribeToSavedSearchCommand()
+    {
         $userId = 'some-user-id';
         $name = 'My very first saved search!';
         $query = 'city:"Leuven"';
         $frequency = SavedSearch::NEVER;
 
-        // Subscribe command.
         $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
 
         return $subscribeToSavedSearch;

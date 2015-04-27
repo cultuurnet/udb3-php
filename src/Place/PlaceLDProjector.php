@@ -19,7 +19,6 @@ use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
@@ -79,7 +78,7 @@ class PlaceLDProjector extends ActorLDProjector
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EntityServiceInterface $organizerService,
+        OrganizerServiceInterface $organizerService,
         EventBusInterface $eventBus
     ) {
         $this->repository = $repository;

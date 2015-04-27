@@ -6,11 +6,10 @@
 namespace CultuurNet\UDB3\Place\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
-use Broadway\ReadModel\RepositoryInterface;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 
 class Projector implements EventListenerInterface
 {

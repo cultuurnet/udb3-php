@@ -135,9 +135,9 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
         ];
         $jsonLD->terms = [
             [
+                'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-                'id' => '0.50.4.0.0',
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';

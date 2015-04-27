@@ -8,7 +8,8 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 use CultuurNet\Deserializer\MissingValueException;
 use ValueObjects\String\String;
 
-class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_TestCase {
+class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+{
 
     /**
      * @var string

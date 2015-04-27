@@ -4,6 +4,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Repository\RepositoryInterface;
+
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\DeleteImage;
@@ -16,6 +17,12 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\LabelEvents;
+use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Label as Label;
+
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
@@ -43,16 +50,16 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         $this->searchService = $searchService;
     }
 
-    public function handleTagEvents(TagEvents $tagEvents)
+    public function handleLabelEvents(LabelEvents $labelEvents)
     {
-        foreach ($tagEvents->getEventIds() as $eventId) {
-            $this->tagEvent($tagEvents->getKeyword(), $eventId);
+        foreach ($labelEvents->getEventIds() as $eventId) {
+            $this->labelEvent($labelEvents->getLabel(), $eventId);
         }
     }
 
-    public function handleTagQuery(TagQuery $tagQuery)
+    public function handleLabelQuery(LabelQuery $labelQuery)
     {
-        $query = $tagQuery->getQuery();
+        $query = $labelQuery->getQuery();
         $totalItemCount = 0;
 
         // do a pre query to test if the query is valid and check the item count
@@ -62,7 +69,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         } catch (ClientErrorResponseException $e) {
             if ($this->logger) {
                 $this->logger->error(
-                    'query_was_not_tagged',
+                    'query_was_not_labelled',
                     array(
                         'query' => $query,
                         'error' => $e->getMessage(),
@@ -75,7 +82,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         if ($totalItemCount < 1) {
             if ($this->logger) {
                 $this->logger->error(
-                    'query_was_not_tagged',
+                    'query_was_not_labelled',
                     array(
                         'query' => $query,
                         'error' => "query did not return any results"
@@ -87,7 +94,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
             $pageSize = 10;
             $pageCount = ceil($totalItemCount / $pageSize);
             $pageCounter = 0;
-            $taggedEventIds = [];
+            $labelledEventIds = [];
 
             //Page querying the search service;
             while ($pageCounter < $pageCount) {
@@ -107,17 +114,17 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
                     $expoId = explode('/', $event['@id']);
                     $eventId = array_pop($expoId);
 
-                    if (!array_key_exists($eventId, $taggedEventIds)) {
-                        $taggedEventIds[$eventId] = $pageCounter;
+                    if (!array_key_exists($eventId, $labelledEventIds)) {
+                        $labelledEventIds[$eventId] = $pageCounter;
 
-                        $this->tagEvent($tagQuery->getKeyword(), $eventId);
+                        $this->labelEvent($labelQuery->getLabel(), $eventId);
                     } else {
                         if ($this->logger) {
                             $this->logger->error(
                                 'query_duplicate_event',
                                 array(
                                     'query' => $query,
-                                    'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$taggedEventIds[$eventId]}"
+                                    'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$labelledEventIds[$eventId]}"
                                 )
                             );
                         }
@@ -129,22 +136,22 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     }
 
     /**
-     * Tags a single event with a keyword.
+     * Labels a single event with a keyword.
      *
-     * @param Keyword $keyword
+     * @param Label $label
      * @param $eventId
      */
-    private function tagEvent(Keyword $keyword, $eventId)
+    private function labelEvent(Label $label, $eventId)
     {
         /** @var Event $event */
         $event = $this->eventRepository->load($eventId);
-        $event->tag($keyword);
+        $event->label($label);
         try {
             $this->eventRepository->add($event);
 
             if ($this->logger) {
                 $this->logger->info(
-                    'event_was_tagged',
+                    'event_was_labelled',
                     array(
                         'event_id' => $eventId,
                     )
@@ -153,7 +160,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         } catch (\Exception $e) {
             if ($this->logger) {
                 $this->logger->error(
-                    'event_was_not_tagged',
+                    'event_was_not_labelled',
                     array(
                         'event_id' => $eventId,
                         'error' => $e->getMessage(),
@@ -371,20 +378,20 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
     }
 
-    public function handleTag(Tag $tag)
+    public function handleApplyLabel(ApplyLabel $label)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($tag->getEventId());
-        $event->tag($tag->getKeyword());
+        $event = $this->eventRepository->load($label->getEventId());
+        $event->label($label->getLabel());
 
         $this->eventRepository->add($event);
     }
 
-    public function handleEraseTag(EraseTag $tag)
+    public function handleUnlabel(Unlabel $label)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($tag->getEventId());
-        $event->eraseTag($tag->getKeyword());
+        $event = $this->eventRepository->load($label->getEventId());
+        $event->unlabel($label->getLabel());
 
         $this->eventRepository->add($event);
     }

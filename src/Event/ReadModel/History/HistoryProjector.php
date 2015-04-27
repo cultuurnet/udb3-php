@@ -11,12 +11,12 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
-use CultuurNet\UDB3\Event\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\EventWasTagged;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Event\TagErased;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use ValueObjects\String\String;
@@ -114,29 +114,29 @@ class HistoryProjector implements EventListenerInterface
         }
     }
 
-    private function applyEventWasTagged(
-        EventWasTagged $eventWasTagged,
+    private function applyEventWasLabelled(
+        EventWasLabelled $eventWasLabelled,
         DomainMessageInterface $domainMessage
     ) {
         $this->writeHistory(
-            $eventWasTagged->getEventId(),
+            $eventWasLabelled->getEventId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$eventWasTagged->getKeyword()}' toegepast"),
+                new String("Label '{$eventWasLabelled->getLabel()}' toegepast"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }
 
-    private function applyTagErased(
-        TagErased $tagErased,
+    private function applyUnlabelled(
+        Unlabelled $unlabelled,
         DomainMessageInterface $domainMessage
     ) {
         $this->writeHistory(
-            $tagErased->getEventId(),
+            $unlabelled->getEventId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$tagErased->getKeyword()}' verwijderd"),
+                new String("Label '{$unlabelled->getLabel()}' verwijderd"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

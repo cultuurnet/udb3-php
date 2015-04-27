@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\Search\Parameter\Parameter;
+use CultuurNet\Search\Parameter\BooleanParameter;
+use CultuurNet\Search\Parameter\Group;
+use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Guzzle\Http\Message\Response;
 
@@ -67,6 +69,12 @@ EOS;
         $this->searchService
             ->expects($this->once())
             ->method('search')
+            ->with(
+                [
+                    new Query('cdbid:"' . $cdbId . '"'),
+                    new Group(true),
+                ]
+            )
             ->willReturn($response);
 
         $this->service->getCdbXmlOfEvent($cdbId);
@@ -96,5 +104,38 @@ EOS;
             __DIR__ . '/search-results-single-event.xml',
             $xml
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_include_past_events()
+    {
+        $cdbId = '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11';
+
+        $cdbXmlWithPastEvents = new EventCdbXmlFromSearchService(
+            $this->searchService,
+            true
+        );
+
+        $response = new Response(
+            200,
+            [],
+            file_get_contents(__DIR__ . '/search-results.xml')
+        );
+
+        $this->searchService
+            ->expects($this->once())
+            ->method('search')
+            ->with(
+                [
+                    new Query('cdbid:"' . $cdbId . '"'),
+                    new Group(true),
+                    new BooleanParameter('past', true),
+                ]
+            )
+            ->willReturn($response);
+
+        $cdbXmlWithPastEvents->getCdbXmlOfEvent($cdbId);
     }
 }

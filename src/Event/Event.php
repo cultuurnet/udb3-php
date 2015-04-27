@@ -6,12 +6,16 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
@@ -19,7 +23,8 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
@@ -28,7 +33,7 @@ use CultuurNet\UDB3\Title;
 class Event extends EventSourcedAggregateRoot
 {
     protected $eventId;
-    protected $keywords = array();
+    protected $labels = array();
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -82,26 +87,26 @@ class Event extends EventSourcedAggregateRoot
         return $this->eventId;
     }
 
-    public function getKeywords()
+    public function getLabels()
     {
-        return $this->keywords;
+        return $this->labels;
     }
 
-    public function tag(Keyword $keyword)
+    public function label(Label $label)
     {
-        if (in_array($keyword, $this->keywords)) {
+        if (in_array($label, $this->labels)) {
             return;
         }
 
-        $this->apply(new EventWasTagged($this->eventId, $keyword));
+        $this->apply(new EventWasLabelled($this->eventId, $label));
     }
 
-    public function eraseTag(Keyword $keyword)
+    public function unlabel(Label $label)
     {
-        if (!in_array($keyword, $this->keywords)) {
+        if (!in_array($label, $this->labels)) {
             return;
         }
-        $this->apply(new TagErased($this->eventId, $keyword));
+        $this->apply(new Unlabelled($this->eventId, $label));
     }
 
     protected function applyEventCreated(EventCreated $eventCreated)
@@ -109,17 +114,17 @@ class Event extends EventSourcedAggregateRoot
         $this->eventId = $eventCreated->getEventId();
     }
 
-    protected function applyEventWasTagged(EventWasTagged $eventTagged)
+    protected function applyEventWasLabelled(EventWasLabelled $eventLabelled)
     {
-        $this->keywords[] = $eventTagged->getKeyword();
+        $this->labels[] = $eventLabelled->getLabel();
     }
 
-    protected function applyTagErased(TagErased $tagErased)
+    protected function applyUnlabelled(Unlabelled $unlabelled)
     {
-        $this->keywords = array_filter(
-            $this->keywords,
-            function (Keyword $keyword) use ($tagErased) {
-                return $keyword != $tagErased->getKeyword();
+        $this->labels = array_filter(
+            $this->labels,
+            function (Label $label) use ($unlabelled) {
+                return $label != $unlabelled->getLabel();
             }
         );
     }
@@ -134,11 +139,11 @@ class Event extends EventSourcedAggregateRoot
             $eventImported->getCdbXml()
         );
 
-        $this->keywords = array();
+        $this->labels = array();
         foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
             $keyword = trim($udb2Keyword);
             if ($keyword) {
-                $this->keywords[] = new Keyword($keyword);
+                $this->labels[] = new Label($keyword);
             }
         }
     }

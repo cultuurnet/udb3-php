@@ -10,10 +10,13 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
@@ -115,31 +118,31 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
 
     /**
      * @param string $eventId
-     * @param Keyword $keyword
+     * @param Label $label
      * @return string command id
      * @throws EventNotFoundException
      */
-    public function tag($eventId, Keyword $keyword)
+    public function label($eventId, Label $label)
     {
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
-            new Tag($eventId, $keyword)
+            new ApplyLabel($eventId, $label)
         );
     }
 
     /**
      * @param string $eventId
-     * @param Keyword $keyword
+     * @param Label $label
      * @return string command id
      * @throws EventNotFoundException
      */
-    public function eraseTag($eventId, Keyword $keyword)
+    public function unlabel($eventId, Label $label)
     {
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
-            new EraseTag($eventId, $keyword)
+            new Unlabel($eventId, $label)
         );
     }
 

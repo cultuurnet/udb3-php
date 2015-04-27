@@ -11,6 +11,7 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -23,6 +24,11 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
@@ -104,8 +110,27 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
     {
-        // @todo get events linked to this organizer, and update their JSON-LD
-        // representation
+        $eventIds = $this->eventsOrganizedByOrganizer(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        $organizer = $this->organizerService->getEntity(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        foreach ($eventIds as $eventId) {
+            $document = $this->loadDocumentFromRepositoryByEventId(
+                $eventId
+            );
+            $eventLD = $document->getBody();
+
+            $newEventLD = clone $eventLD;
+            $newEventLD->organizer = json_decode($organizer);
+
+            if ($newEventLD != $eventLD) {
+                $this->repository->save($document->withBody($newEventLD));
+            }
+        }
     }
 
     protected function applyPlaceProjectedToJSONLD(
@@ -124,7 +149,13 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
                 $eventId
             );
             $eventLD = $document->getBody();
-            $eventLD->place = json_decode($placeJSONLD);
+
+            $newEventLD = clone $eventLD;
+            $newEventLD->location = json_decode($placeJSONLD);
+
+            if ($newEventLD != $eventLD) {
+                $this->repository->save($document->withBody($newEventLD));
+            }
         }
     }
 
@@ -178,16 +209,16 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param string $eventId
-     * @param string $cdbXmlNamespareUri
+     * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
      */
     protected function applyEventCdbXml(
         $eventId,
-        $cdbXmlNamespareUri,
+        $cdbXmlNamespaceUri,
         $cdbXml
     ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $cdbXmlNamespareUri,
+            $cdbXmlNamespaceUri,
             $cdbXml
         );
 
@@ -207,9 +238,12 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param EventCreated $eventCreated
+     * @param DomainMessageInterface $domainMessage
      */
-    protected function applyEventCreated(EventCreated $eventCreated, DomainMessageInterface $domainMessage)
-    {
+    protected function applyEventCreated(
+        EventCreated $eventCreated,
+        DomainMessageInterface $domainMessage
+    ) {
         $document = $this->newDocument($eventCreated->getEventId());
 
         $jsonLD = $document->getBody();
@@ -325,34 +359,40 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * @param EventWasTagged $eventTagged
+     * @param EventWasLabelled $eventWasLabelled
      */
-    protected function applyEventWasTagged(EventWasTagged $eventTagged)
+    public function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
     {
-        $document = $this->loadDocumentFromRepository($eventTagged);
+        $document = $this->loadDocumentFromRepository($eventWasLabelled);
 
         $eventLd = $document->getBody();
-        // TODO: Check if the event is already tagged with the keyword?
-        $eventLd->concept[] = (string)$eventTagged->getKeyword();
+
+        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
+        $label = (string) $eventWasLabelled->getLabel();
+
+        $labels[] = $label;
+        $eventLd->labels = array_unique($labels);
 
         $this->repository->save($document->withBody($eventLd));
     }
 
-    public function applyTagErased(TagErased $tagErased)
+    public function applyUnlabelled(Unlabelled $unlabelled)
     {
-        $document = $this->loadDocumentFromRepository($tagErased);
+        $document = $this->loadDocumentFromRepository($unlabelled);
 
         $eventLd = $document->getBody();
 
-        $eventLd->concept = array_filter(
-            $eventLd->concept,
-            function ($keyword) use ($tagErased) {
-                return $keyword !== (string)$tagErased->getKeyword();
-            }
-        );
-        // Ensure array keys start with 0 so json_encode() does encode it
-        // as an array and not as an object.
-        $eventLd->concept = array_values($eventLd->concept);
+        if (is_array($eventLd->labels)) {
+            $eventLd->labels = array_filter(
+                $eventLd->labels,
+                function ($label) use ($unlabelled) {
+                    return $label !== (string)$unlabelled->getLabel();
+                }
+            );
+            // Ensure array keys start with 0 so json_encode() does encode it
+            // as an array and not as an object.
+            $eventLd->labels = array_values($eventLd->labels);
+        }
 
         $this->repository->save($document->withBody($eventLd));
     }

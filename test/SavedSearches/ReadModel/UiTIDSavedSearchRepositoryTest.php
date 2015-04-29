@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\SavedSearches\ReadModel;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use Psr\Log\LoggerInterface;
 use ValueObjects\String\String;
 
 class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -14,6 +15,11 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
      * @var \CultureFeed_SavedSearches|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $savedSearches;
+
+    /**
+     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $logger;
 
     /**
      * @var UiTIDSavedSearchRepository
@@ -29,6 +35,9 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->repository = new UiTIDSavedSearchRepository(
             $this->savedSearches
         );
+
+        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->repository->setLogger($this->logger);
     }
 
     /**
@@ -75,5 +84,40 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $searches
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_handle_saved_searches_with_an_incorrect_query()
+    {
+        $this->savedSearches->expects($this->once())
+            ->method('getList')
+            ->with()
+            ->willReturn(
+                [
+                    100 => new \CultureFeed_SavedSearches_SavedSearch(
+                        'abc',
+                        'In Leuven',
+                        'city%3A%22Leuven%22',
+                        \CultureFeed_SavedSearches_SavedSearch::DAILY,
+                        '100'
+                    ),
+                ]
+            );
+
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with(
+                'Omitted saved search from list of current user because it was invalid.',
+                [
+                    'message' => 'Provided query string should contain a parameter named "q".',
+                    'name' => 'In Leuven',
+                    'query' => 'city%3A%22Leuven%22',
+                    'id' => '100',
+                ]
+            );
+
+        $this->repository->ownedByCurrentUser();
     }
 }

@@ -3,30 +3,32 @@
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
 
 class SubscribeToSavedSearch
 {
     /**
-     * @var string
+     * @var String
      */
     protected $userId;
 
     /**
-     * @var string
+     * @var String
      */
     protected $name;
 
     /**
-     * @var string
+     * @var QueryString
      */
     protected $query;
 
     /**
-     * @param string $userId
-     * @param string $name
-     * @param string $query
+     * @param String $userId
+     * @param String $name
+     * @param QueryString $query
      */
-    public function __construct($userId, $name, $query)
+    public function __construct(String $userId, String $name, QueryString $query)
     {
         $this->userId = $userId;
         $this->name = $name;
@@ -34,7 +36,7 @@ class SubscribeToSavedSearch
     }
 
     /**
-     * @return string
+     * @return String
      */
     public function getUserId()
     {
@@ -42,7 +44,7 @@ class SubscribeToSavedSearch
     }
 
     /**
-     * @return string
+     * @return String
      */
     public function getName()
     {
@@ -50,7 +52,7 @@ class SubscribeToSavedSearch
     }
 
     /**
-     * @return string
+     * @return QueryString
      */
     public function getQuery()
     {

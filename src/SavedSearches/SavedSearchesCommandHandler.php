@@ -36,9 +36,7 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
     {
         $userId = $subscribeToSavedSearch->getUserId();
         $name = $subscribeToSavedSearch->getName();
-        $query = http_build_query([
-            'q' => $subscribeToSavedSearch->getQuery()
-        ]);
+        $query = $subscribeToSavedSearch->getQuery()->toURLQueryString();
 
         $metadata = $this->metadata->serialize();
         $tokenCredentials = $metadata['uitid_token_credentials'];

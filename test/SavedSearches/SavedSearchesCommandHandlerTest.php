@@ -7,8 +7,10 @@ use \CultureFeed_SavedSearches as SavedSearches;
 use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use Guzzle\Log\ArrayLogAdapter;
 use Psr\Log\LoggerInterface;
+use ValueObjects\String\String;
 
 class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,9 +63,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function aSubscribeToSavedSearchCommand()
     {
-        $userId = 'some-user-id';
-        $name = 'My very first saved search!';
-        $query = 'city:"Leuven"';
+        $userId = new String('some-user-id');
+        $name = new String('My very first saved search!');
+        $query = new QueryString('city:"Leuven"');
 
         $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
 

@@ -7,6 +7,16 @@ use ValueObjects\String\String;
 class QueryString extends String
 {
     /**
+     * @return string
+     */
+    public function toURLQueryString()
+    {
+        return http_build_query([
+            'q' => $this->value,
+        ]);
+    }
+
+    /**
      * @param $queryString
      * @return QueryString
      */

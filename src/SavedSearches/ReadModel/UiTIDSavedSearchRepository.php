@@ -49,6 +49,7 @@ class UiTIDSavedSearchRepository implements SavedSearchRepositoryInterface, Logg
                             'name' => $search->name,
                             'query' => $search->query,
                             'id' => $search->id,
+                            'userId' => $search->userId,
                         ]
                     );
                 }

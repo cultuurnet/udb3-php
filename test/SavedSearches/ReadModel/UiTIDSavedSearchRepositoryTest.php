@@ -5,6 +5,9 @@
 
 namespace CultuurNet\UDB3\SavedSearches\ReadModel;
 
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
+
 class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -60,14 +63,14 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 new SavedSearch(
-                    'In Leuven',
-                    'city:"Leuven"',
-                    '100'
+                    new String('In Leuven'),
+                    new QueryString('city:"Leuven"'),
+                    new String('100')
                 ),
                 new SavedSearch(
-                    'In Herent',
-                    'city:"Herent"',
-                    '101'
+                    new String('In Herent'),
+                    new QueryString('city:"Herent"'),
+                    new String('101')
                 ),
             ],
             $searches

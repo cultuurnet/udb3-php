@@ -5,6 +5,9 @@
 
 namespace CultuurNet\UDB3\SavedSearches\ReadModel;
 
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
+
 /**
  * Implementation of a SavedSearchRepository on top of the UiTID saved searches
  * API.
@@ -42,8 +45,10 @@ class UiTIDSavedSearchRepository implements SavedSearchRepositoryInterface
      */
     private function createSavedSearchForRead(\CultureFeed_SavedSearches_SavedSearch $savedSearch)
     {
-        parse_str($savedSearch->query, $query);
+        $name = new String($savedSearch->name);
+        $query = QueryString::fromURLQueryString($savedSearch->query);
+        $id = new String($savedSearch->id);
 
-        return new SavedSearch($savedSearch->name, $query['q'], $savedSearch->id);
+        return new SavedSearch($name, $query, $id);
     }
 }

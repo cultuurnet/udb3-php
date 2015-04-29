@@ -9,6 +9,7 @@ class QueryStringTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_get_a_query_string_from_a_url_query_string()
     {
+        // Valid URL query string, with a "q" parameter.
         $urlQueryString = 'a=b&q=city:leuven&c=d';
         $expected = 'city:leuven';
 
@@ -16,5 +17,15 @@ class QueryStringTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $queryString);
         $this->assertEquals($expected, $queryString->toNative());
+
+        // Valid URL query string, but without "q" parameter.
+        $invalidUrlQueryString = 'a=b&c=d';
+        $this->setExpectedException(\InvalidArgumentException::class);
+        QueryString::fromURLQueryString($invalidUrlQueryString);
+
+        // Invalid URL query string.
+        $invalidUrlQueryString = 'this is not a url query string';
+        $this->setExpectedException(\InvalidArgumentException::class);
+        QueryString::fromURLQueryString($invalidUrlQueryString);
     }
 }

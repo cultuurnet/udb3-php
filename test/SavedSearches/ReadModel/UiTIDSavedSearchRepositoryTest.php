@@ -115,6 +115,7 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
                     'name' => 'In Leuven',
                     'query' => 'city%3A%22Leuven%22',
                     'id' => '100',
+                    'userId' => 'abc',
                 ]
             );
 

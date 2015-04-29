@@ -25,9 +25,6 @@ class SubscribeToSavedSearch
      * @param string $userId
      * @param string $name
      * @param string $query
-     *
-     * @throws \InvalidArgumentException
-     *   When an invalid frequency value is given.
      */
     public function __construct($userId, $name, $query)
     {

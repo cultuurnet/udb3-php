@@ -126,20 +126,17 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchWriteProvider
+     * @param String $userId
+     * @param String $name
+     * @param QueryString $query
+     * @param \CultureFeed_SavedSearches_SavedSearch $savedSearch
      */
-    public function it_can_write_saved_searches($userId, $name, $query, $savedSearch)
-    {
-        $userId = new String('some-user-id');
-        $name = new String('Random name for a search.');
-        $query = new QueryString('city:leuven');
-
-        $savedSearch = new \CultureFeed_SavedSearches_SavedSearch(
-            $userId->toNative(),
-            $name->toNative(),
-            $query->toURLQueryString(),
-            \CultureFeed_SavedSearches_SavedSearch::NEVER
-        );
-
+    public function it_can_write_saved_searches(
+        String $userId,
+        String $name,
+        QueryString $query,
+        \CultureFeed_SavedSearches_SavedSearch $savedSearch
+    ) {
         $this->savedSearches->expects($this->once())
             ->method('subscribe')
             ->with($savedSearch);
@@ -150,9 +147,17 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchWriteProvider
+     * @param String $userId
+     * @param String $name
+     * @param QueryString $query
+     * @param \CultureFeed_SavedSearches_SavedSearch $savedSearch
      */
-    public function it_can_handle_errors_while_writing($userId, $name, $query, $savedSearch)
-    {
+    public function it_can_handle_errors_while_writing(
+        String $userId,
+        String $name,
+        QueryString $query,
+        \CultureFeed_SavedSearches_SavedSearch $savedSearch
+    ) {
         $this->savedSearches->expects($this->once())
             ->method('subscribe')
             ->with($savedSearch)

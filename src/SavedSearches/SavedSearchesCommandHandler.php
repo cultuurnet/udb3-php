@@ -43,7 +43,7 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
         $name = $subscribeToSavedSearch->getName();
         $query = $subscribeToSavedSearch->getQuery();
 
-        $this->repository->write($userId, $name, $query);
+        $this->getUiTIDSavedSearchRepository()->write($userId, $name, $query);
     }
 
     /**
@@ -54,7 +54,7 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
         $userId = $unsubscribeFromSavedSearch->getUserId();
         $searchId = $unsubscribeFromSavedSearch->getSearchId();
 
-        $this->repository->delete($userId, $searchId);
+        $this->getUiTIDSavedSearchRepository()->delete($userId, $searchId);
     }
 
     /**
@@ -78,18 +78,5 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
         }
 
         return $repository;
-    }
-
-    /**
-     * @param $property
-     * @return mixed
-     */
-    public function __get($property)
-    {
-        switch ($property) {
-            case 'repository':
-                return $this->getUiTIDSavedSearchRepository();
-                break;
-        }
     }
 }

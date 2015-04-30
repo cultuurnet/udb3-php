@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\SavedSearches;
 
-use \CultureFeed_SavedSearches as SavedSearches;
-use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
 use CultuurNet\UDB3\CommandHandling\ContextAwareTrait;

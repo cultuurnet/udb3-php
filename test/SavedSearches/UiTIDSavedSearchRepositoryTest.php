@@ -202,6 +202,8 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchDeleteProvider
+     * @param String $userId
+     * @param String $searchId
      */
     public function it_can_delete_saved_searches(String $userId, String $searchId)
     {
@@ -218,6 +220,8 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchDeleteProvider
+     * @param String $userId
+     * @param String $searchId
      */
     public function it_can_handle_errors_while_deleting(String $userId, String $searchId)
     {

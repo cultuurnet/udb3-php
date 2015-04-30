@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
-use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use ValueObjects\String\String;
 

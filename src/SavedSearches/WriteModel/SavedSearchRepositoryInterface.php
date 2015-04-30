@@ -11,7 +11,7 @@ interface SavedSearchRepositoryInterface
      * @param String $userId
      * @param String $name
      * @param QueryString $queryString
-     * @return
+     * @return void
      */
     public function write(
         String $userId,

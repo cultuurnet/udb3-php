@@ -122,4 +122,75 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->repository->ownedByCurrentUser();
     }
+
+    /**
+     * @test
+     * @dataProvider savedSearchWriteProvider
+     */
+    public function it_can_write_saved_searches($userId, $name, $query, $savedSearch)
+    {
+        $userId = new String('some-user-id');
+        $name = new String('Random name for a search.');
+        $query = new QueryString('city:leuven');
+
+        $savedSearch = new \CultureFeed_SavedSearches_SavedSearch(
+            $userId->toNative(),
+            $name->toNative(),
+            $query->toURLQueryString(),
+            \CultureFeed_SavedSearches_SavedSearch::NEVER
+        );
+
+        $this->savedSearches->expects($this->once())
+            ->method('subscribe')
+            ->with($savedSearch);
+
+        $this->repository->write($userId, $name, $query);
+    }
+
+    /**
+     * @test
+     * @dataProvider savedSearchWriteProvider
+     */
+    public function it_can_handle_errors_while_writing($userId, $name, $query, $savedSearch)
+    {
+        $this->savedSearches->expects($this->once())
+            ->method('subscribe')
+            ->with($savedSearch)
+            ->willThrowException(new \CultureFeed_Exception('Something went wrong.', 'UNKNOWN_ERROR'));
+
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with(
+                'saved_search_was_not_subscribed',
+                [
+                    'error' => 'Something went wrong.',
+                    'userId' => (string) $userId,
+                    'name' => (string) $name,
+                    'query' => (string) $query,
+                ]
+            );
+
+        $this->repository->write($userId, $name, $query);
+    }
+
+    /**
+     * @return array
+     */
+    public function savedSearchWriteProvider()
+    {
+        $userId = new String('some-user-id');
+        $name = new String('Random name for a search.');
+        $query = new QueryString('city:leuven');
+
+        $savedSearch = new \CultureFeed_SavedSearches_SavedSearch(
+            $userId->toNative(),
+            $name->toNative(),
+            $query->toURLQueryString(),
+            \CultureFeed_SavedSearches_SavedSearch::NEVER
+        );
+
+        return [
+            [$userId, $name, $query, $savedSearch],
+        ];
+    }
 }

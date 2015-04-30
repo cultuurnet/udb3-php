@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\SavedSearches;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface as SavedSearchReadModelRepositoryInterface;
+use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface as SavedSearchWriteModelRepositoryInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use ValueObjects\String\String;
@@ -16,7 +17,10 @@ use ValueObjects\String\String;
  * Implementation of a SavedSearchRepository on top of the UiTID saved searches
  * API.
  */
-class UiTIDSavedSearchRepository implements SavedSearchReadModelRepositoryInterface, LoggerAwareInterface
+class UiTIDSavedSearchRepository implements
+    SavedSearchReadModelRepositoryInterface,
+    SavedSearchWriteModelRepositoryInterface,
+    LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -75,5 +79,38 @@ class UiTIDSavedSearchRepository implements SavedSearchReadModelRepositoryInterf
         $id = new String((string) $savedSearch->id);
 
         return new SavedSearch($name, $query, $id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write(String $userId, String $name, QueryString $queryString)
+    {
+        $userId = (string) $userId;
+        $name = (string) $name;
+        $query = $queryString->toURLQueryString();
+
+        $savedSearch = new \CultureFeed_SavedSearches_SavedSearch(
+            $userId,
+            $name,
+            $query,
+            \CultureFeed_SavedSearches_SavedSearch::NEVER
+        );
+
+        try {
+            $this->savedSearches->subscribe($savedSearch);
+        } catch (\Exception $exception) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'saved_search_was_not_subscribed',
+                    [
+                        'error' => $exception->getMessage(),
+                        'userId' => $userId,
+                        'name' => $name,
+                        'query' => (string) $queryString,
+                    ]
+                );
+            }
+        }
     }
 }

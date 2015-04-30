@@ -193,4 +193,61 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
             [$userId, $name, $query, $savedSearch],
         ];
     }
+
+    /**
+     * @test
+     * @dataProvider savedSearchDeleteProvider
+     */
+    public function it_can_delete_saved_searches(String $userId, String $searchId)
+    {
+        $this->savedSearches->expects($this->once())
+            ->method('unsubscribe')
+            ->with(
+                (string) $searchId,
+                (string) $userId
+            );
+
+        $this->repository->delete($userId, $searchId);
+    }
+
+    /**
+     * @test
+     * @dataProvider savedSearchDeleteProvider
+     */
+    public function it_can_handle_errors_while_deleting(String $userId, String $searchId)
+    {
+        $this->savedSearches->expects($this->once())
+            ->method('unsubscribe')
+            ->with(
+                (string) $searchId,
+                (string) $userId
+            )
+            ->willThrowException(new \CultureFeed_Exception('Something went wrong.', 'UNKNOWN_ERROR'));
+
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with(
+                'User was not unsubscribed from saved search.',
+                [
+                    'error' => 'Something went wrong.',
+                    'userId' => (string) $userId,
+                    'searchId' => (string) $searchId,
+                ]
+            );
+
+        $this->repository->delete($userId, $searchId);
+    }
+
+    /**
+     * @return array
+     */
+    public function savedSearchDeleteProvider()
+    {
+        return [
+            [
+                new String('some-user-id'),
+                new String('some-search-id'),
+            ],
+        ];
+    }
 }

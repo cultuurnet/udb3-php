@@ -2,7 +2,8 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
-use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
 
 class SubscribeToSavedSearchTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,9 +12,9 @@ class SubscribeToSavedSearchTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_the_stored_data()
     {
-        $userId = 'some-user-id';
-        $name = 'My very first saved search.';
-        $query = 'city:"Leuven"';
+        $userId = new String('some-user-id');
+        $name = new String('My very first saved search.');
+        $query = new QueryString('city:"Leuven"');
 
         $command = new SubscribeToSavedSearch($userId, $name, $query);
 

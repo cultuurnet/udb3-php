@@ -7,8 +7,9 @@ use \CultureFeed_SavedSearches as SavedSearches;
 use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
-use Guzzle\Log\ArrayLogAdapter;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use Psr\Log\LoggerInterface;
+use ValueObjects\String\String;
 
 class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,9 +62,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function aSubscribeToSavedSearchCommand()
     {
-        $userId = 'some-user-id';
-        $name = 'My very first saved search!';
-        $query = 'city:"Leuven"';
+        $userId = new String('some-user-id');
+        $name = new String('My very first saved search!');
+        $query = new QueryString('city:"Leuven"');
 
         $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
 
@@ -94,10 +95,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
                 'saved_search_was_not_subscribed',
                 [
                     'error' => $error,
-                    'userId' => $subscribeToSavedSearch->getUserId(),
-                    'name' => $subscribeToSavedSearch->getName(),
-                    'query' => $subscribeToSavedSearch->getQuery(),
-                    'frequency' => SavedSearch::NEVER
+                    'userId' => (string) $subscribeToSavedSearch->getUserId(),
+                    'name' => (string) $subscribeToSavedSearch->getName(),
+                    'query' => (string) $subscribeToSavedSearch->getQuery(),
                 ]
             );
         $this->commandHandler->setLogger($logger);

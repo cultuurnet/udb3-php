@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\SavedSearches;
 
-use \CultureFeed_SavedSearches as SavedSearches;
-use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
 use CultuurNet\UDB3\CommandHandling\ContextAwareTrait;
@@ -36,33 +34,19 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
     {
         $userId = $subscribeToSavedSearch->getUserId();
         $name = $subscribeToSavedSearch->getName();
-        $query = http_build_query([
-            'q' => $subscribeToSavedSearch->getQuery()
-        ]);
+        $query = $subscribeToSavedSearch->getQuery();
 
         $metadata = $this->metadata->serialize();
         $tokenCredentials = $metadata['uitid_token_credentials'];
 
-        $savedSearch = new SavedSearch($userId, $name, $query, SavedSearch::NEVER);
-        $savedSearchesService = $this->savedSearchesServiceFactory->withTokenCredentials(
-            $tokenCredentials
-        );
+        $savedSearchesService = $this->savedSearchesServiceFactory->withTokenCredentials($tokenCredentials);
 
-        try {
-            $savedSearchesService->subscribe($savedSearch);
-        } catch (\Exception $exception) {
-            if ($this->logger) {
-                $this->logger->error(
-                    'saved_search_was_not_subscribed',
-                    [
-                        'error' => $exception->getMessage(),
-                        'userId' => $userId,
-                        'name' => $name,
-                        'query' => $subscribeToSavedSearch->getQuery(),
-                        'frequency' => $savedSearch->frequency,
-                    ]
-                );
-            }
+        $repository = new UiTIDSavedSearchRepository($savedSearchesService);
+
+        if ($this->logger) {
+            $repository->setLogger($this->logger);
         }
+
+        $repository->write($userId, $name, $query);
     }
 }

@@ -9,7 +9,6 @@ use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use Guzzle\Log\ArrayLogAdapter;
 use Psr\Log\LoggerInterface;
 use ValueObjects\String\String;
 

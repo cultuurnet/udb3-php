@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\SavedSearches\WriteModel;
 
-use ValueObjects\String\String;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
 
 interface SavedSearchRepositoryInterface
 {
@@ -11,7 +11,7 @@ interface SavedSearchRepositoryInterface
      * @param String $userId
      * @param String $name
      * @param QueryString $queryString
-     * @param String $id
+     * @return
      */
     public function write(
         String $userId,

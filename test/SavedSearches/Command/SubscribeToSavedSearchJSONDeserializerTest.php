@@ -24,11 +24,8 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
     public function setUp()
     {
-        $this->userId = 'xyx';
-
-        $this->deserializer = new SubscribeToSavedSearchJSONDeserializer(
-            $this->userId
-        );
+        $this->userId = new String('xyx');
+        $this->deserializer = new SubscribeToSavedSearchJSONDeserializer($this->userId);
     }
 
     /**
@@ -42,7 +39,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
         $this->assertEquals(
             new SubscribeToSavedSearch(
-                new String($this->userId),
+                $this->userId,
                 new String('My very first saved search.'),
                 new QueryString('city:"Leuven"')
             ),

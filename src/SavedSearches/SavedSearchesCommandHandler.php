@@ -91,6 +91,5 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
                 return $this->getUiTIDSavedSearchRepository();
                 break;
         }
-        return null;
     }
 }

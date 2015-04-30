@@ -66,7 +66,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_imports_the_publication_info() {
+    public function it_imports_the_publication_info()
+    {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
 
         $this->assertEquals('kgielens@kanker.be', $jsonEvent->creator);

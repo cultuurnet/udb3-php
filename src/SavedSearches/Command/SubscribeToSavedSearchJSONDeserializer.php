@@ -13,11 +13,11 @@ use ValueObjects\String\String;
 class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
 {
     /**
-     * @var string $userId
+     * @var String $userId
      */
     protected $userId;
 
-    public function __construct($userId)
+    public function __construct(String $userId)
     {
         $this->userId = $userId;
     }
@@ -35,7 +35,7 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
         }
 
         return new SubscribeToSavedSearch(
-            new String($this->userId),
+            $this->userId,
             new String($json->name),
             new QueryString($json->query)
         );

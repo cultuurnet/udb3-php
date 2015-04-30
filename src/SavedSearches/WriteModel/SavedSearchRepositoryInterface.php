@@ -18,4 +18,13 @@ interface SavedSearchRepositoryInterface
         String $name,
         QueryString $queryString
     );
+
+    /**
+     * @param String $userId
+     * @param String $searchId
+     */
+    public function delete(
+        String $userId,
+        String $searchId
+    );
 }

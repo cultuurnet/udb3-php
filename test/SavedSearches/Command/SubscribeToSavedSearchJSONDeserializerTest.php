@@ -13,7 +13,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 {
 
     /**
-     * @var string
+     * @var String
      */
     protected $userId;
 

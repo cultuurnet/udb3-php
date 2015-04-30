@@ -113,4 +113,28 @@ class UiTIDSavedSearchRepository implements
             }
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(String $userId, String $searchId)
+    {
+        $userId = (string) $userId;
+        $searchId = (string) $searchId;
+
+        try {
+            $this->savedSearches->unsubscribe($searchId, $userId);
+        } catch (\Exception $exception) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'User was not unsubscribed from saved search.',
+                    [
+                        'error' => $exception->getMessage(),
+                        'userId' => $userId,
+                        'searchId' => $searchId,
+                    ]
+                );
+            }
+        }
+    }
 }

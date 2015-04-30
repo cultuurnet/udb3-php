@@ -2,21 +2,21 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\Web\EmailAddress;
 
 class CreatedByQueryString extends QueryString
 {
     /**
-     * @var String
+     * @var EmailAddress
      */
-    protected $userId;
+    protected $emailAddress;
 
     /**
      * @param String $userId
      */
-    public function __construct(String $userId)
+    public function __construct(EmailAddress $emailAddress)
     {
-        $this->userId = $userId;
+        $this->emailAddress = $emailAddress;
         parent::__construct($this->generateQuery());
     }
 
@@ -25,6 +25,6 @@ class CreatedByQueryString extends QueryString
      */
     private function generateQuery()
     {
-        return 'createdby:' . $this->userId;
+        return 'createdby:' . $this->emailAddress;
     }
 }

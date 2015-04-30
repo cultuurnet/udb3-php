@@ -32,33 +32,21 @@ class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareI
      */
     public function handleSubscribeToSavedSearch(SubscribeToSavedSearch $subscribeToSavedSearch)
     {
-        $userId = (string) $subscribeToSavedSearch->getUserId();
-        $name = (string) $subscribeToSavedSearch->getName();
-        $query = $subscribeToSavedSearch->getQuery()->toURLQueryString();
+        $userId = $subscribeToSavedSearch->getUserId();
+        $name = $subscribeToSavedSearch->getName();
+        $query = $subscribeToSavedSearch->getQuery();
 
         $metadata = $this->metadata->serialize();
         $tokenCredentials = $metadata['uitid_token_credentials'];
 
-        $savedSearch = new SavedSearch($userId, $name, $query, SavedSearch::NEVER);
-        $savedSearchesService = $this->savedSearchesServiceFactory->withTokenCredentials(
-            $tokenCredentials
-        );
+        $savedSearchesService = $this->savedSearchesServiceFactory->withTokenCredentials($tokenCredentials);
 
-        try {
-            $savedSearchesService->subscribe($savedSearch);
-        } catch (\Exception $exception) {
-            if ($this->logger) {
-                $this->logger->error(
-                    'saved_search_was_not_subscribed',
-                    [
-                        'error' => $exception->getMessage(),
-                        'userId' => $userId,
-                        'name' => $name,
-                        'query' => $subscribeToSavedSearch->getQuery(),
-                        'frequency' => $savedSearch->frequency,
-                    ]
-                );
-            }
+        $repository = new UiTIDSavedSearchRepository($savedSearchesService);
+
+        if ($this->logger) {
+            $repository->setLogger($this->logger);
         }
+
+        $repository->write($userId, $name, $query);
     }
 }

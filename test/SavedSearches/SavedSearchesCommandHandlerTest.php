@@ -96,10 +96,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
                 'saved_search_was_not_subscribed',
                 [
                     'error' => $error,
-                    'userId' => $subscribeToSavedSearch->getUserId(),
-                    'name' => $subscribeToSavedSearch->getName(),
-                    'query' => $subscribeToSavedSearch->getQuery(),
-                    'frequency' => SavedSearch::NEVER
+                    'userId' => (string) $subscribeToSavedSearch->getUserId(),
+                    'name' => (string) $subscribeToSavedSearch->getName(),
+                    'query' => (string) $subscribeToSavedSearch->getQuery(),
                 ]
             );
         $this->commandHandler->setLogger($logger);

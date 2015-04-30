@@ -404,6 +404,11 @@ class CdbXMLImporter
         );
         $jsonLD->created = $creationDate->format('c');
 
+        $lastUpdatedDate = $this->dateFromUdb2DateString(
+            $event->getLastUpdated()
+        );
+        $jsonLD->modified = $lastUpdatedDate->format('c');
+
         $jsonLD->publisher = $event->getOwner();
     }
 

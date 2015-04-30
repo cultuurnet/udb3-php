@@ -66,6 +66,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_imports_the_publication_info() {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
+
+        $this->assertEquals('kgielens@kanker.be', $jsonEvent->creator);
+        $this->assertEquals('2014-08-12T14:37:58+02:00', $jsonEvent->created);
+        $this->assertEquals('2014-10-21T16:47:23+02:00', $jsonEvent->modified);
+        $this->assertEquals('Invoerders Algemeen ', $jsonEvent->publisher);
+    }
+
+    /**
+     * @test
+     */
     public function it_filters_the_description_property_when_filters_are_added()
     {
         /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */

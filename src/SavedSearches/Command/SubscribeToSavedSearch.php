@@ -6,13 +6,8 @@ use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use ValueObjects\String\String;
 
-class SubscribeToSavedSearch
+class SubscribeToSavedSearch extends SavedSearchCommand
 {
-    /**
-     * @var String
-     */
-    protected $userId;
-
     /**
      * @var String
      */
@@ -24,23 +19,15 @@ class SubscribeToSavedSearch
     protected $query;
 
     /**
-     * @param String $userId
+     * {@inheritdoc}
      * @param String $name
      * @param QueryString $query
      */
     public function __construct(String $userId, String $name, QueryString $query)
     {
-        $this->userId = $userId;
+        parent::__construct($userId);
         $this->name = $name;
         $this->query = $query;
-    }
-
-    /**
-     * @return String
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**

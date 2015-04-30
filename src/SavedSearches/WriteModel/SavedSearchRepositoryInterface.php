@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\SavedSearches\WriteModel;
 
-use ValueObjects\String\String;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
 
 interface SavedSearchRepositoryInterface
 {

@@ -3,9 +3,11 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\SavedSearches\ReadModel;
+namespace CultuurNet\UDB3\SavedSearches;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
+use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface as SavedSearchReadModelRepositoryInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use ValueObjects\String\String;
@@ -14,7 +16,7 @@ use ValueObjects\String\String;
  * Implementation of a SavedSearchRepository on top of the UiTID saved searches
  * API.
  */
-class UiTIDSavedSearchRepository implements SavedSearchRepositoryInterface, LoggerAwareInterface
+class UiTIDSavedSearchRepository implements SavedSearchReadModelRepositoryInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -23,6 +25,9 @@ class UiTIDSavedSearchRepository implements SavedSearchRepositoryInterface, Logg
      */
     protected $savedSearches;
 
+    /**
+     * @param \CultureFeed_SavedSearches $savedSearches
+     */
     public function __construct(\CultureFeed_SavedSearches $savedSearches)
     {
         $this->savedSearches = $savedSearches;

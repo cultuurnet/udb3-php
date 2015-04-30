@@ -3,9 +3,10 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\SavedSearches\ReadModel;
+namespace CultuurNet\UDB3\SavedSearches;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use Psr\Log\LoggerInterface;
 use ValueObjects\String\String;
 

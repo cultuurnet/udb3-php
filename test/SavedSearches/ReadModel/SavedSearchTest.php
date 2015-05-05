@@ -24,7 +24,25 @@ class SavedSearchTest extends \PHPUnit_Framework_TestCase
         $jsonEncoded = json_encode($savedSearch);
 
         $this->assertEquals(
-            '{"id":"101","name":"In Leuven","query":"city:\"Leuven\""}',
+            '{"name":"In Leuven","query":"city:\"Leuven\"","id":"101"}',
+            $jsonEncoded
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_serialize_an_empty_id_property()
+    {
+        $savedSearch = new SavedSearch(
+            new String('In Leuven'),
+            new QueryString('city:"Leuven"')
+        );
+
+        $jsonEncoded = json_encode($savedSearch);
+
+        $this->assertEquals(
+            '{"name":"In Leuven","query":"city:\"Leuven\""}',
             $jsonEncoded
         );
     }

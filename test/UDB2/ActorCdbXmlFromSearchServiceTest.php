@@ -5,8 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-require __DIR__ . '/FixedResponseSearchService.php';
-
 class ActorCdbXmlFromSearchServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**

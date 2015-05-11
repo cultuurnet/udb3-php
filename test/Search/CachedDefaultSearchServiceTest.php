@@ -31,8 +31,6 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         $this->cache = $this->getMock(
             Cache::class
         );
-
-        $this->cachedDefaultSearchService = new CachedDefaultSearchService($this->searchServiceInterface, $this->cache);
     }
 
     /**
@@ -45,7 +43,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         $cacheKey = 'default-search:30:0:0';
 
         $arrayCache = new ArrayCache();
-        $CachedDefaultSearchService = new CachedDefaultSearchService($this->searchServiceInterface, $arrayCache);
+        $cachedDefaultSearchService = new CachedDefaultSearchService($this->searchServiceInterface, $arrayCache);
 
         $this->searchServiceInterface->expects($this->once())
             ->method('search')
@@ -56,7 +54,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($searchResultJson));
 
-        $CachedDefaultSearchService->search(
+        $cachedDefaultSearchService->search(
             '*.*',
             30,
             0
@@ -70,21 +68,22 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     function it_does_not_cache_non_default_searches()
     {
+        $cachedDefaultSearchService = new CachedDefaultSearchService($this->searchServiceInterface, $this->cache);
         $this->cache->expects($this->never())
             ->method('save');
 
         // Do some non default search.
-        $this->cachedDefaultSearchService->search(
+        $cachedDefaultSearchService->search(
             'title:organic',
             30,
             0
         );
-        $this->cachedDefaultSearchService->search(
+        $cachedDefaultSearchService->search(
             '*:organic',
             30,
             0
         );
-        $this->cachedDefaultSearchService->search(
+        $cachedDefaultSearchService->search(
             'title:*',
             30,
             0

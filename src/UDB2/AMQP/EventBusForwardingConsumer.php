@@ -11,13 +11,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\Deserializer\DeserializerLocatorInterface;
-use CultuurNet\Deserializer\DeserializerNotFoundException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Rhumsaa\Uuid\Uuid;
 use ValueObjects\String\String;
 
 /**
@@ -38,7 +36,12 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
     private $queueName;
 
     /**
-     * @var string
+     * @var String
+     */
+    private $exchangeName;
+
+    /**
+     * @var String
      */
     private $consumerTag;
 
@@ -64,7 +67,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
     public function __construct(
         AMQPStreamConnection $connection,
         EventBusInterface $eventBus,
-        DeserializerLocatorInterface $deserializerLocator
+        DeserializerLocatorInterface $deserializerLocator,
+        String $consumerTag,
+        String $exchangeName,
+        String $queueName
     ) {
         $this->connection = $connection;
         $this->channel = $connection->channel();
@@ -73,8 +79,9 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
         $this->deserializerLocator = $deserializerLocator;
 
-        $this->queueName = 'udb3.q.udb2';
-        $this->consumerTag = 'udb3';
+        $this->queueName = $queueName;
+        $this->consumerTag = $consumerTag;
+        $this->exchangeName = $exchangeName;
 
         $this->declareQueue();
         $this->registerConsumeCallback();
@@ -82,11 +89,18 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
     public function consume(AMQPMessage $message)
     {
+        $context = [];
+
+        if ($message->has('correlation_id')) {
+            $context['correlation_id'] = $message->get('correlation_id');
+        }
+
         if ($this->logger) {
             $this->logger->info(
                 'received message with content-type ' . $message->get(
                     'content_type'
-                )
+                ),
+                $context
             );
         }
 
@@ -113,7 +127,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             $stream = new DomainEventStream($events);
 
             if ($this->logger) {
-                $this->logger->info('passing on message to event bus');
+                $this->logger->info(
+                    'passing on message to event bus',
+                    $context
+                );
             }
 
             $this->eventBus->publish(
@@ -122,7 +139,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
         } catch (\Exception $e) {
             if ($this->logger) {
-                $this->logger->error($e->getMessage());
+                $this->logger->error(
+                    $e->getMessage(),
+                    $context
+                );
             }
 
             $message->delivery_info['channel']->basic_reject(
@@ -131,7 +151,10 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             );
 
             if ($this->logger) {
-                $this->logger->info('message rejected');
+                $this->logger->info(
+                    'message rejected',
+                    $context
+                );
             }
 
             return;
@@ -142,14 +165,17 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
         );
 
         if ($this->logger) {
-            $this->logger->info('message acknowledged');
+            $this->logger->info(
+                'message acknowledged',
+                $context
+            );
         }
     }
 
     protected function declareQueue()
     {
         $this->channel->queue_declare(
-            $this->queueName,
+            (string) $this->queueName,
             $passive = false,
             $durable = true,
             $exclusive = false,
@@ -158,7 +184,7 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
         $this->channel->queue_bind(
             $this->queueName,
-            'udb2',
+            $this->exchangeName,
             $routingKey = '#'
         );
     }
@@ -167,7 +193,7 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
     {
         $this->channel->basic_consume(
             $this->queueName,
-            $consumerTag = $this->consumerTag,
+            $consumerTag = (string) $this->consumerTag,
             $noLocal = false,
             $noAck = false,
             $exclusive = false,

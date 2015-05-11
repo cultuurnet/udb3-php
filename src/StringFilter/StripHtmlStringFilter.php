@@ -36,7 +36,7 @@ class StripHtmlStringFilter implements StringFilterInterface
      * @param string $string
      *   String to set newlines in.
      * @param string $tag
-     *   Tag name. For example "br" to set a newline after each "<br />" or "<br>" (if self-closing flag is set), or
+     *   Label name. For example "br" to set a newline after each "<br />" or "<br>" (if self-closing flag is set), or
      *   "p" to set a newline after each "</p>" (if not self-closing).
      * @param int $newlineCount
      *   Amount of newlines to set after the closing tag. If any newlines are set already, they will be removed.
@@ -73,7 +73,7 @@ class StripHtmlStringFilter implements StringFilterInterface
         }
 
         // Loop over all matching tags from the string.
-        return preg_replace_callback($pattern, function($match) use ($newlines) {
+        return preg_replace_callback($pattern, function ($match) use ($newlines) {
             // Return the tag appended by the specified amount of newlines. Note that $match[0] is the full captured
             // match, so it also includes the newlines after the tag. $match[1] is just the tag itself, and $match[2]
             // are the newlines following it (if any).

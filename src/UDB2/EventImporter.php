@@ -83,18 +83,48 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
         $this->updateEventFromUDB2($eventUpdated->getEventId());
     }
 
+    /**
+     * @inheritdoc
+     */
     public function updateEventFromUDB2($eventId)
+    {
+        return $this->update($eventId);
+    }
+
+    /**
+     * @param string $eventId
+     * @param bool $fallbackToCreate
+     * @return Event
+     * @throws EntityNotFoundException
+     */
+    private function update($eventId, $fallbackToCreate = false)
     {
         try {
             $event = $this->loadEvent($eventId);
         } catch (AggregateNotFoundException $e) {
-            $this->logger->notice(
-                "Could not update event because it does not exist yet on UDB3, will attempt to create the event instead",
-                [
-                    'eventId' => $eventId
-                ]
-            );
-            return $this->createEventFromUDB2($eventId);
+            if ($fallbackToCreate) {
+                if ($this->logger) {
+                    $this->logger->notice(
+                        "Could not update event because it does not exist yet on UDB3, will attempt to create the event instead",
+                        [
+                            'eventId' => $eventId
+                        ]
+                    );
+                }
+
+                return $this->create($eventId, false);
+            } else {
+                if ($this->logger) {
+                    $this->logger->notice(
+                        "Could not update event because it does not exist yet on UDB3",
+                        [
+                            'eventId' => $eventId
+                        ]
+                    );
+                }
+
+                return;
+            }
         }
 
         $eventXml = $this->getCdbXmlOfEvent($eventId);
@@ -129,7 +159,12 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
         return $this->cdbXmlService->getCdbXmlOfEvent($eventId);
     }
 
-    public function createEventFromUDB2($eventId)
+    /**
+     * @param string $eventId
+     * @param bool $fallbackToUpdate
+     * @return null|Event
+     */
+    private function create($eventId, $fallbackToUpdate = true)
     {
         $eventXml = $this->getCdbXmlOfEvent($eventId);
 
@@ -144,20 +179,43 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
 
             $this->repository->add($event);
         } catch (\Exception $e) {
-            $this->logger->notice(
-                "Event creation in UDB3 failed with an exception, will attempt to update the event instead",
-                [
-                    'exception' => $e,
-                    'eventId' => $eventId
-                ]
-            );
-            // @todo Differentiate between event exists locally already
-            // (same event arriving twice, event created on UDB3 first)
-            // and a real error while saving.
-            return $this->updateEventFromUDB2($eventId);
+            if ($fallbackToUpdate) {
+                if ($this->logger) {
+                    $this->logger->notice(
+                        "Event creation in UDB3 failed with an exception, will attempt to update the event instead",
+                        [
+                            'exception' => $e,
+                            'eventId' => $eventId
+                        ]
+                    );
+                }
+                // @todo Differentiate between event exists locally already
+                // (same event arriving twice, event created on UDB3 first)
+                // and a real error while saving.
+                return $this->update($eventId, false);
+            } else {
+                if ($this->logger) {
+                    $this->logger->notice(
+                        "Event creation in UDB3 failed with an exception",
+                        [
+                            'exception' => $e,
+                            'eventId' => $eventId
+                        ]
+                    );
+                }
+                return;
+            }
         }
 
         return $event;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createEventFromUDB2($eventId)
+    {
+        return $this->create($eventId);
     }
 
     /**

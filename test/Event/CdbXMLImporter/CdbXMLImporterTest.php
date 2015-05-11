@@ -66,6 +66,19 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_imports_the_publication_info()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_email_and_phone_number.cdbxml.xml');
+
+        $this->assertEquals('kgielens@kanker.be', $jsonEvent->creator);
+        $this->assertEquals('2014-08-12T14:37:58+02:00', $jsonEvent->created);
+        $this->assertEquals('2014-10-21T16:47:23+02:00', $jsonEvent->modified);
+        $this->assertEquals('Invoerders Algemeen ', $jsonEvent->publisher);
+    }
+
+    /**
+     * @test
+     */
     public function it_filters_the_description_property_when_filters_are_added()
     {
         /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
@@ -175,5 +188,111 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute('available', $anotherJsonEvent);
         $this->assertEquals('2014-10-22T00:00:00+02:00', $anotherJsonEvent->available);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_telephone_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertEquals('0475 82 21 36', $jsonEvent->contactPoint[0]['telephone'][0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_an_empty_telephone_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_just_an_email.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertTrue(is_array($jsonEvent->contactPoint));
+        $this->assertArrayNotHasKey('telephone', $jsonEvent->contactPoint[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_an_email_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_just_an_email.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertTrue(is_array($jsonEvent->contactPoint));
+        $this->assertEquals('kgielens@stichtingtegenkanker.be', $jsonEvent->contactPoint[0]['email'][0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_an_empty_email_property_to_contact_point()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_just_a_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertTrue(is_array($jsonEvent->contactPoint));
+        $this->assertArrayNotHasKey('email', $jsonEvent->contactPoint[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_contact_info_urls_to_seeAlso_property()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('seeAlso', $jsonEvent);
+        $this->assertContains('http://www.rekanto.be', $jsonEvent->seeAlso);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_reservation_url_to_bookingInfo_property()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_reservation_url.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
+        $this->assertEquals('http://brugge.iticketsro.com/ccmechelen/', $jsonEvent->bookingInfo[0]['url']);
+
+        // Reservation url should not have been added to seeAlso.
+        $this->assertObjectHasAttribute('seeAlso', $jsonEvent);
+        $this->assertNotContains('http://brugge.iticketsro.com/ccmechelen/', $jsonEvent->seeAlso);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_a_non_reservation_url_to_bookingInfo_property()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
+        $this->assertArrayNotHasKey('url', $jsonEvent->bookingInfo[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_a_separate_contact_point_for_reservation_info()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
+        $expectedContactPoints = array(
+            array(
+                'email' => array('kgielens@stichtingtegenkanker.be'),
+                'telephone' => array('0475 82 21 36'),
+                'contactType' => 'Reservations'
+            ),
+            array(
+                'email' => array('john@doe.be'),
+                'telephone' => array('1234 82 21 36')
+            )
+        );
+
+        $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
+        $this->assertEquals($expectedContactPoints, $jsonEvent->contactPoint);
     }
 }

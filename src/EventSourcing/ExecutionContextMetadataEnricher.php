@@ -8,18 +8,11 @@ namespace CultuurNet\UDB3\EventSourcing;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\MetadataEnrichment\MetadataEnricherInterface;
 use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
+use CultuurNet\UDB3\CommandHandling\ContextAwareTrait;
 
 class ExecutionContextMetadataEnricher implements MetadataEnricherInterface, ContextAwareInterface
 {
-    protected $metadata;
-
-    /**
-     * @param Metadata $metadata
-     */
-    public function setContext(Metadata $metadata = null)
-    {
-        $this->metadata = $metadata;
-    }
+    use ContextAwareTrait;
 
     /**
      * {@inheritdoc}

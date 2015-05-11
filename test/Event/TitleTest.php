@@ -19,6 +19,7 @@ class TitleTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider emptyStringValues()
+     * @param string $emptyStringValue
      */
     public function it_can_not_be_empty($emptyStringValue)
     {

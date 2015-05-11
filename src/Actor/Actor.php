@@ -9,7 +9,7 @@ namespace CultuurNet\UDB3\Actor;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\Keyword;
+use CultuurNet\UDB3\Label;
 
 class Actor extends EventSourcedAggregateRoot
 {
@@ -21,11 +21,11 @@ class Actor extends EventSourcedAggregateRoot
     protected $actorId;
 
     /**
-     * The keywords.
+     * The labels.
      *
      * @var array
      */
-    protected $keywords = array();
+    protected $labels = array();
 
     /**
      * Factory method to create a new actor.
@@ -99,11 +99,11 @@ class Actor extends EventSourcedAggregateRoot
             $actorImported->getCdbXml()
         );
 
-        $this->keywords = array();
+        $this->labels = array();
         foreach (array_values($udb2Actor->getKeywords()) as $udb2Keyword) {
             $keyword = trim($udb2Keyword);
             if ($keyword) {
-                $this->keywords[] = new Keyword($keyword);
+                $this->labels[] = new Label($keyword);
             }
         }
     }

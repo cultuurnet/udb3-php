@@ -70,7 +70,7 @@ class CdbXMLImporter
 
         $this->importPicture($detail, $jsonLD);
 
-        $this->importKeywords($event, $jsonLD);
+        $this->importLabels($event, $jsonLD);
 
         $jsonLD->calendarSummary = $detail->getCalendarSummary();
 
@@ -78,7 +78,7 @@ class CdbXMLImporter
 
         $this->importOrganizer($event, $organizerManager, $jsonLD);
 
-        $this->importBookingInfo($detail, $jsonLD);
+        $this->importBookingInfo($event, $detail, $jsonLD);
 
         $this->importTerms($event, $jsonLD);
 
@@ -95,6 +95,10 @@ class CdbXMLImporter
         $this->importUitInVlaanderenReference($event, $slugger, $jsonLD);
 
         $this->importExternalId($event, $jsonLD);
+
+        $this->importSeeAlso($event, $jsonLD);
+
+        $this->importContactPoint($event, $jsonLD);
 
         return $jsonLD;
     }
@@ -116,6 +120,19 @@ class CdbXMLImporter
         return \DateTime::createFromFormat(
             'Y-m-d?H:i:s',
             $dateString,
+            new \DateTimeZone('Europe/Brussels')
+        );
+    }
+
+    /**
+     * @param $unixTime
+     * @return \DateTime
+     */
+    private function dateFromUdb2UnixTime($unixTime)
+    {
+        return \DateTime::createFromFormat(
+            'U',
+            $unixTime,
             new \DateTimeZone('Europe/Brussels')
         );
     }
@@ -145,9 +162,9 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Item_Event $event
      * @param $jsonLD
      */
-    private function importKeywords(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
+    private function importLabels(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
-        $keywords = array_filter(
+        $labels = array_filter(
             array_values($event->getKeywords()),
             function ($keyword) {
                 return (strlen(trim($keyword)) > 0);
@@ -155,10 +172,10 @@ class CdbXMLImporter
         );
         // Ensure keys are continuous after the filtering was applied, otherwise
         // JSON-encoding the array will result in an object.
-        $keywords = array_values($keywords);
+        $labels = array_values($labels);
 
-        if ($keywords) {
-            $jsonLD->keywords = $keywords;
+        if ($labels) {
+            $jsonLD->labels = $labels;
         }
     }
 
@@ -258,8 +275,11 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Data_EventDetail $detail
      * @param \stdClass $jsonLD
      */
-    private function importBookingInfo(\CultureFeed_Cdb_Data_EventDetail $detail, $jsonLD)
-    {
+    private function importBookingInfo(
+        \CultureFeed_Cdb_Item_Event $event,
+        \CultureFeed_Cdb_Data_EventDetail $detail,
+        $jsonLD
+    ) {
         $price = $detail->getPrice();
 
         if ($price) {
@@ -276,7 +296,71 @@ class CdbXMLImporter
                 $bookingInfo['currency'] = 'EUR';
                 $bookingInfo['price'] = floatval($price->getValue());
             }
+            if ($bookingPeriod = $event->getBookingPeriod()) {
+                $startDate = $this->dateFromUdb2UnixTime($bookingPeriod->getDateFrom());
+                $endDate = $this->dateFromUdb2UnixTime($bookingPeriod->getDateTill());
+
+                $bookingInfo['availabilityStarts'] = $startDate->format('c');
+                $bookingInfo['availabilityEnds'] = $endDate->format('c');
+            }
+
+            // Add reservation URL
+            if ($contactInfo = $event->getContactInfo()) {
+                if ($bookingUrl = $contactInfo->getReservationUrl()) {
+                    $bookingInfo['url'] = $bookingUrl;
+                }
+            }
+
             $jsonLD->bookingInfo[] = $bookingInfo;
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importContactPoint(
+        \CultureFeed_Cdb_Item_Event $event,
+        \stdClass $jsonLD
+    ) {
+        $contactInfo = $event->getContactInfo();
+
+        if ($contactInfo) {
+            $reservationContactPoint = array();
+            $leftoverContactPoint = array();
+
+            foreach ($contactInfo->getMails() as $email) {
+                /** @var \CultureFeed_Cdb_Data_Mail $email */
+                $emailAddress = $email->getMailAddress();
+
+                if ($email->isForReservations()) {
+                    $reservationContactPoint['email'][] = $emailAddress;
+                } else {
+                    $leftoverContactPoint['email'][] = $emailAddress;
+                }
+            }
+
+            foreach ($contactInfo->getPhones() as $phone) {
+                /** @var \CultureFeed_Cdb_Data_Phone $phone */
+                $phoneNumber = $phone->getNumber();
+
+                if ($phone->isForReservations()) {
+                    $reservationContactPoint['telephone'][] = $phoneNumber;
+                } else {
+                    $leftoverContactPoint['telephone'][] = $phoneNumber;
+                }
+            }
+
+            array_filter($reservationContactPoint);
+            if (count($reservationContactPoint) > 0) {
+                $reservationContactPoint['contactType'] = "Reservations";
+                $jsonLD->contactPoint[] = $reservationContactPoint;
+            }
+
+            array_filter($leftoverContactPoint);
+            if (count($leftoverContactPoint) > 0) {
+                $jsonLD->contactPoint[] = $leftoverContactPoint;
+            }
         }
     }
 
@@ -319,6 +403,11 @@ class CdbXMLImporter
             $event->getCreationDate()
         );
         $jsonLD->created = $creationDate->format('c');
+
+        $lastUpdatedDate = $this->dateFromUdb2DateString(
+            $event->getLastUpdated()
+        );
+        $jsonLD->modified = $lastUpdatedDate->format('c');
 
         $jsonLD->publisher = $event->getOwner();
     }
@@ -472,6 +561,32 @@ class CdbXMLImporter
 
     /**
      * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importSeeAlso(
+        \CultureFeed_Cdb_Item_Event $event,
+        \stdClass $jsonLD
+    ) {
+        if (!property_exists($jsonLD, 'seeAlso')) {
+            $jsonLD->seeAlso = [];
+        }
+
+        // Add contact info url, if it's not for reservations.
+        if ($contactInfo = $event->getContactInfo()) {
+            /** @var \CultureFeed_Cdb_Data_Url[] $contactUrls */
+            $contactUrls = $contactInfo->getUrls();
+            if (is_array($contactUrls) && count($contactUrls) > 0) {
+                foreach ($contactUrls as $contactUrl) {
+                    if (!$contactUrl->isForReservations()) {
+                        $jsonLD->seeAlso[] = $contactUrl->getUrl();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
      * @param SluggerInterface $slugger
      * @param \stdClass $jsonLD
      */
@@ -481,8 +596,16 @@ class CdbXMLImporter
         $jsonLD
     ) {
 
-        $name = $jsonLD->name['nl'];
-        $slug = $slugger->slug($name);
+        // Some events seem to not have a Dutch name, even though this is
+        // required. If there's no Dutch name, we just leave the slug empty as
+        // that seems to be the behaviour on http://m.uitinvlaanderen.be
+        if (isset($jsonLD->name['nl'])) {
+            $name = $jsonLD->name['nl'];
+            $slug = $slugger->slug($name);
+        } else {
+            $slug = '';
+        }
+
         $reference = 'http://www.uitinvlaanderen.be/agenda/e/' . $slug . '/' . $event->getCdbId();
 
 

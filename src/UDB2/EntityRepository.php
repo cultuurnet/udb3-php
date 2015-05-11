@@ -11,7 +11,6 @@ use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 
 /**
  * Repository decorator that first updates UDB2.

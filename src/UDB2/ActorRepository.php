@@ -7,10 +7,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use Broadway\Repository\AggregateNotFoundException;
-use CultuurNet\Search\Parameter\FilterQuery;
-use CultuurNet\Search\Parameter\Query;
-
 /**
  * Repository decorator that first updates UDB2.
  *

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\Search\Parameter\Parameter;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Guzzle\Http\Message\Response;
 

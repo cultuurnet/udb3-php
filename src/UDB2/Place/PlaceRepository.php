@@ -5,11 +5,13 @@
  * Contains \Cultuurnet\UDB3\UDB2\PlaceRepository.
  */
 
-namespace CultuurNet\UDB3\UDB2;
+namespace CultuurNet\UDB3\UDB2\Place;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Place\Place;
+use CultuurNet\UDB3\UDB2\ActorRepository;
+use CultuurNet\UDB3\UDB2\EntryAPIImprovedFactory;
 
 /**
  * Repository decorator that first updates UDB2.

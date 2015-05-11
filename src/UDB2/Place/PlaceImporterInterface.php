@@ -3,12 +3,12 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\UDB2;
+namespace CultuurNet\UDB3\UDB2\Place;
 
 use CultuurNet\UDB3\Place\Place;
 
 /**
- * Imports actors from UDB2 into UDB3.
+ * Imports places from UDB2 (where they are called 'actors') into UDB3.
  */
 interface PlaceImporterInterface
 {

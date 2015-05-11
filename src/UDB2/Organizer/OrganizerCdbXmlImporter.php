@@ -3,14 +3,18 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\UDB2;
+namespace CultuurNet\UDB3\UDB2\Organizer;
 
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Place\Place;
+use CultuurNet\UDB3\Organizer\Organizer;
+use CultuurNet\UDB3\UDB2\ActorCdbXmlServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class PlaceCdbXmlImporter implements PlaceImporterInterface, LoggerAwareInterface
+/**
+ * Imports organizers from UDB2 into UDB3 based on cdbxml.
+ */
+class OrganizerCdbXmlImporter implements OrganizerImporterInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -37,38 +41,38 @@ class PlaceCdbXmlImporter implements PlaceImporterInterface, LoggerAwareInterfac
     }
 
     /**
-     * @param string $placeId
-     * @return Place|null
+     * @param string $organizerId
+     * @return Organizer|null
      */
-    public function updatePlaceFromUDB2($placeId)
+    public function updateOrganizerFromUDB2($organizerId)
     {
 
     }
 
     /**
-     * @param string $placeId
-     * @return Place|null
+     * @param string $organizerId
+     * @return Organizer|null
      */
-    public function createPlaceFromUDB2($placeId)
+    public function createOrganizerFromUDB2($organizerId)
     {
         try {
-            $placeXml = $this->cdbXmlService->getCdbXmlOfActor($placeId);
+            $organizerXml = $this->cdbXmlService->getCdbXmlOfActor($organizerId);
 
-            $place = Place::importFromUDB2(
-                $placeId,
-                $placeXml,
+            $organizer = Organizer::importFromUDB2(
+                $organizerId,
+                $organizerXml,
                 $this->cdbXmlService->getCdbXmlNamespaceUri()
             );
 
-            $this->repository->add($place);
+            $this->repository->add($organizer);
 
-            return $place;
+            return $organizer;
         } catch (\Exception $e) {
             $this->logger->notice(
-                "Place creation in UDB3 failed with an exception",
+                "Organizer creation in UDB3 failed with an exception",
                 [
                     'exception' => $e,
-                    'placeId' => $placeId
+                    'organizerId' => $organizerId
                 ]
             );
         }

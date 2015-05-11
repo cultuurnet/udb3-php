@@ -5,11 +5,13 @@
  * Contains \Cultuurnet\UDB3\UDB2\OrganizerRepository.
  */
 
-namespace CultuurNet\UDB3\UDB2;
+namespace CultuurNet\UDB3\UDB2\Organizer;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Organizer\Organizer;
+use CultuurNet\UDB3\UDB2\ActorRepository;
+use CultuurNet\UDB3\UDB2\EntryAPIImprovedFactory;
 
 /**
  * Repository decorator that first updates UDB2.

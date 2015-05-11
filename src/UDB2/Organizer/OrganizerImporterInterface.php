@@ -3,10 +3,13 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\UDB2;
+namespace CultuurNet\UDB3\UDB2\Organizer;
 
 use CultuurNet\UDB3\Organizer\Organizer;
 
+/**
+ * Imports organizers from UDB2 (where they are called 'actors') into UDB3.
+ */
 interface OrganizerImporterInterface
 {
     /**

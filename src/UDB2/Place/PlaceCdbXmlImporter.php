@@ -68,13 +68,15 @@ class PlaceCdbXmlImporter implements PlaceImporterInterface, LoggerAwareInterfac
 
             return $place;
         } catch (\Exception $e) {
-            $this->logger->notice(
-                "Place creation in UDB3 failed with an exception",
-                [
-                    'exception' => $e,
-                    'placeId' => $placeId
-                ]
-            );
+            if ($this->logger) {
+                $this->logger->notice(
+                    "Place creation in UDB3 failed with an exception",
+                    [
+                        'exception' => $e,
+                        'placeId' => $placeId
+                    ]
+                );
+            }
         }
     }
 }

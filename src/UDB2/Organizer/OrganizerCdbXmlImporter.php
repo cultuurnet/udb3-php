@@ -66,13 +66,15 @@ class OrganizerCdbXmlImporter implements OrganizerImporterInterface, LoggerAware
 
             return $organizer;
         } catch (\Exception $e) {
-            $this->logger->notice(
-                "Organizer creation in UDB3 failed with an exception",
-                [
-                    'exception' => $e,
-                    'organizerId' => $organizerId
-                ]
-            );
+            if ($this->logger) {
+                $this->logger->notice(
+                    "Organizer creation in UDB3 failed with an exception",
+                    [
+                        'exception' => $e,
+                        'organizerId' => $organizerId
+                    ]
+                );
+            }
         }
     }
 }

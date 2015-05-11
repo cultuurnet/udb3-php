@@ -41,7 +41,7 @@ class OrganizerRepository extends ActorRepository
     {
         $organizer = $this->tryMultipleTimes(
             2,
-            function() use ($id) {
+            function () use ($id) {
                 try {
                     $organizer = $this->decoratee->load($id);
                     return $organizer;

@@ -3,13 +3,15 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\EventHandling\EventBusInterface;
+use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit_Framework_TestCase;
 
-class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
+class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var PlaceLDProjector
@@ -17,7 +19,7 @@ class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
     protected $projector;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $documentRepository;
 
@@ -27,7 +29,7 @@ class PlaceLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->getMock(IriGeneratorInterface::class),
-            $this->getMock(OrganizerServiceInterface::class),
+            $this->getMock(EntityServiceInterface::class),
             $this->getMock(EventBusInterface::class)
         );
     }

@@ -12,11 +12,10 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\UDB2\ActorRepository;
 use CultuurNet\UDB3\UDB2\EntryAPIImprovedFactory;
+use CultuurNet\UDB3\UDB2\EntryAPIImprovedFactoryInterface;
 
 /**
- * Repository decorator that first updates UDB2.
- *
- * When a failure on UDB2 occurs, the whole transaction will fail.
+ * Repository decorator that synchronizes with UDB2.
  */
 class PlaceRepository extends ActorRepository
 {
@@ -27,7 +26,7 @@ class PlaceRepository extends ActorRepository
 
     public function __construct(
         RepositoryInterface $decoratee,
-        EntryAPIImprovedFactory $entryAPIImprovedFactory,
+        EntryAPIImprovedFactoryInterface $entryAPIImprovedFactory,
         PlaceImporterInterface $placeImporter,
         array $eventStreamDecorators = array()
     ) {

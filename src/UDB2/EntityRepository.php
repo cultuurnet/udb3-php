@@ -25,7 +25,7 @@ abstract class EntityRepository implements RepositoryInterface
     protected $decoratee;
 
     /**
-     * @var EntryAPIImprovedFactory
+     * @var EntryAPIImprovedFactoryInterface
      */
     protected $entryAPIImprovedFactory;
 
@@ -41,7 +41,7 @@ abstract class EntityRepository implements RepositoryInterface
 
     public function __construct(
         RepositoryInterface $decoratee,
-        EntryAPIImprovedFactory $entryAPIImprovedFactory,
+        EntryAPIImprovedFactoryInterface $entryAPIImprovedFactory,
         array $eventStreamDecorators = array()
     ) {
         $this->decoratee = $decoratee;

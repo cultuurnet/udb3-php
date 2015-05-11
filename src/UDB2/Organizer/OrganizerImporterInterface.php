@@ -14,13 +14,13 @@ interface OrganizerImporterInterface
 {
     /**
      * @param string $organizerId
-     * @return Organizer
+     * @return Organizer|null
      */
     public function updateOrganizerFromUDB2($organizerId);
 
     /**P
      * @param string $organizerId
-     * @return Organizer
+     * @return Organizer|null
      */
     public function createOrganizerFromUDB2($organizerId);
 }

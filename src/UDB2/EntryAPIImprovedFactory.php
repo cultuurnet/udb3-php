@@ -10,7 +10,7 @@ use CultuurNet\Entry\EntryAPI;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Plugin\Log\LogPlugin;
 
-final class EntryAPIImprovedFactory
+final class EntryAPIImprovedFactory implements EntryAPIImprovedFactoryInterface
 {
     /**
      * @var Consumer

@@ -41,8 +41,7 @@ class OrganizerCdbXmlImporter implements OrganizerImporterInterface, LoggerAware
     }
 
     /**
-     * @param string $organizerId
-     * @return Organizer|null
+     * @inheritdoc
      */
     public function updateOrganizerFromUDB2($organizerId)
     {
@@ -50,8 +49,7 @@ class OrganizerCdbXmlImporter implements OrganizerImporterInterface, LoggerAware
     }
 
     /**
-     * @param string $organizerId
-     * @return Organizer|null
+     * @inheritdoc
      */
     public function createOrganizerFromUDB2($organizerId)
     {

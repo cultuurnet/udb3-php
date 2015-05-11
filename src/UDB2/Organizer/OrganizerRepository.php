@@ -11,12 +11,10 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\UDB2\ActorRepository;
-use CultuurNet\UDB3\UDB2\EntryAPIImprovedFactory;
+use CultuurNet\UDB3\UDB2\EntryAPIImprovedFactoryInterface;
 
 /**
- * Repository decorator that first updates UDB2.
- *
- * When a failure on UDB2 occurs, the whole transaction will fail.
+ * Repository decorator that synchronizes with UDB2.
  */
 class OrganizerRepository extends ActorRepository
 {
@@ -27,7 +25,7 @@ class OrganizerRepository extends ActorRepository
 
     public function __construct(
         RepositoryInterface $decoratee,
-        EntryAPIImprovedFactory $entryAPIImprovedFactory,
+        EntryAPIImprovedFactoryInterface $entryAPIImprovedFactory,
         OrganizerImporterInterface $organizerImporter,
         array $eventStreamDecorators = array()
     ) {
@@ -41,57 +39,17 @@ class OrganizerRepository extends ActorRepository
 
     public function load($id)
     {
-        $organizer = $this->tryMultipleTimes(
-            2,
-            function () use ($id) {
-                try {
-                    $organizer = $this->decoratee->load($id);
-                    return $organizer;
-                } catch (AggregateNotFoundException $e) {
-                    $organizer = $this->organizerImporter->createOrganizerFromUDB2(
-                        $id
-                    );
+        try {
+            $organizer = $this->decoratee->load($id);
+        } catch (AggregateNotFoundException $e) {
+            $organizer = $this->organizerImporter->createOrganizerFromUDB2($id);
 
-                    if ($organizer) {
-                        return $organizer;
-                    } else {
-                        throw $e;
-                    }
-                }
+            if (!$organizer) {
+                throw $e;
             }
-        );
-
-        return $organizer;
-    }
-
-    /**
-     * @param int $times
-     * @param callable $callable
-     * @return mixed
-     */
-    private function tryMultipleTimes($times, callable $callable)
-    {
-        $result = null;
-
-        while ($times > 0) {
-            $times--;
-
-            try {
-                $result = $callable($times);
-
-                if (null !== $result) {
-                    break;
-                }
-            } catch (\Exception $e) {
-                if ($times == 0) {
-                    throw $e;
-                }
-            }
-
-            sleep(1);
         }
 
-        return $result;
+        return $organizer;
     }
 
     /**

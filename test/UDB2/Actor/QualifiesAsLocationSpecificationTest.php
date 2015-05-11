@@ -5,8 +5,8 @@
 
 namespace CultuurNet\UDB3\UDB2\Actor;
 
-class QualifiesAsLocationSpecificationTest extends \PHPUnit_Framework_TestCase {
-
+class QualifiesAsLocationSpecificationTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var QualifiesAsLocationSpecification
      */
@@ -29,6 +29,20 @@ class QualifiesAsLocationSpecificationTest extends \PHPUnit_Framework_TestCase {
         );
 
         $categories = new \CultureFeed_Cdb_Data_CategoryList();
+        $actor->setCategories($categories);
+
+        $categories->add(
+            new \CultureFeed_Cdb_Data_Category(
+                \CultureFeed_Cdb_Data_Category::CATEGORY_TYPE_ACTOR_TYPE,
+                '8.11.0.0.0',
+                'Organisator(en)'
+            )
+        );
+
+        $this->assertFalse(
+            $this->qualifiesAsLocationSpecification->isSatisfiedBy($actor)
+        );
+
         $categories->add(
             new \CultureFeed_Cdb_Data_Category(
                 \CultureFeed_Cdb_Data_Category::CATEGORY_TYPE_ACTOR_TYPE,
@@ -37,7 +51,6 @@ class QualifiesAsLocationSpecificationTest extends \PHPUnit_Framework_TestCase {
             )
         );
 
-        $actor->setCategories($categories);
 
         $this->assertTrue(
             $this->qualifiesAsLocationSpecification->isSatisfiedBy($actor)

@@ -10,4 +10,6 @@ interface DocumentRepositoryInterface
     public function get($id);
 
     public function save(JsonDocument $readModel);
+
+    public function delete($id);
 }

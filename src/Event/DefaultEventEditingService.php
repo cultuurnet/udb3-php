@@ -9,10 +9,10 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
-use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -174,6 +174,18 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
 
         return $this->commandBus->dispatch(
             new UpdateMajorInfo($eventId, $title, $eventType, $location, $calendar, $theme)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteEvent($eventId)
+    {
+        $this->guardId($eventId);
+
+        return $this->commandBus->dispatch(
+            new DeleteEvent($eventId)
         );
     }
 }

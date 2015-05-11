@@ -12,6 +12,7 @@ use Broadway\EventStore\EventStreamNotFoundException;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 
+
 /**
  * Class EventRepository
  *

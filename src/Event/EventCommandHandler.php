@@ -4,7 +4,6 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Repository\RepositoryInterface;
-
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\DeleteImage;
@@ -16,17 +15,18 @@ use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Label as Label;
-
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+
+
 
 class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
@@ -373,6 +373,20 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
             $updateMajorInfo->getCalendar(),
             $updateMajorInfo->getTheme()
         );
+
+        $this->eventRepository->add($event);
+
+    }
+
+    /**
+     * Handle a delete event command.
+     */
+    public function handleDeleteEvent(DeleteEvent $deleteEvent)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteEvent->getId());
+        $event->deleteEvent();
 
         $this->eventRepository->add($event);
 

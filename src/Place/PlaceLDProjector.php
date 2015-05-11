@@ -38,6 +38,7 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\SluggerInterface;
@@ -190,6 +191,14 @@ class PlaceLDProjector extends ActorLDProjector
         }
 
         $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param PlaceDeleted $placeDeleted
+     */
+    protected function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessageInterface $domainMessage)
+    {
+        $this->repository->delete($placeDeleted->getPlaceId());
     }
 
     /**

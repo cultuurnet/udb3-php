@@ -20,4 +20,12 @@ class InMemoryDocumentRepository implements DocumentRepositoryInterface
     {
         $this->documents[$readModel->getId()] = $readModel;
     }
+
+    public function delete($id)
+    {
+        if (isset($this->documents[$id])) {
+            unset($this->documents[$id]);
+        }
+        return $id;
+    }
 }

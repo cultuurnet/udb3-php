@@ -9,6 +9,7 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 
 class Projector implements EventListenerInterface
@@ -35,6 +36,13 @@ class Projector implements EventListenerInterface
         // No relation exists in UDB2.
         $placeId = $place->getPlaceId();
         $this->storeRelations($placeId, null);
+    }
+
+    protected function applyPlaceDeleted(PlaceDeleted $place)
+    {
+        $placeId = $place->getPlaceId();
+        $this->repository->removeRelations($placeId);
+
     }
 
     /**

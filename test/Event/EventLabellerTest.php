@@ -6,12 +6,13 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Keyword;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
@@ -20,11 +21,12 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
 use Guzzle\Http\Exception\ClientErrorResponseException;
+use PHPUnit_Framework_MockObject_MockObject;
 
 class EventLabellerTest extends CommandHandlerScenarioTestCase
 {
     /**
-     * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $search;
 
@@ -261,5 +263,21 @@ class EventLabellerTest extends CommandHandlerScenarioTestCase
             )
             ->when(new Unlabel($id, new Label('foo')))
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_events()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new DeleteEvent($id))
+            ->then([new EventDeleted($id)]);
     }
 }

@@ -13,9 +13,11 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use DateTime;
 use DateTimeZone;
@@ -198,5 +200,19 @@ class Projector implements EventListenerInterface
     protected function updateIndex($id, $type, $userId, $name, $postalCode, $creationDate = null)
     {
         $this->repository->updateIndex($id, $type, $userId, $name, $postalCode, $creationDate);
+    }
+
+    /**
+     * Remove the index for events
+     */
+    public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessageInterface $domainMessage) {
+        $this->repository->deleteIndex($eventDeleted->getEventId());
+    }
+
+    /**
+     * Remove the index for places
+     */
+    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessageInterface $domainMessage) {
+        $this->repository->deleteIndex($placeDeleted->getPlaceId());
     }
 }

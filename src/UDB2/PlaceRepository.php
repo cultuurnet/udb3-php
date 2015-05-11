@@ -133,9 +133,18 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
                 switch (get_class($domainEvent)) {
 
                     case PlaceCreated::class:
-                        $this->applyPlaceCreated($domainEvent, $domainMessage->getMetadata());
+                        $this->applyPlaceCreated(
+                          $domainEvent,
+                          $domainMessage->getMetadata()
+                        );
                         break;
 
+                    case PlaceDeleted::class:
+                        $this->applyPlaceDeleted(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
 
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
@@ -288,6 +297,16 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
             ->createEvent((string)$cdbXml);
 
         return $placeCreated->getPlaceId();
+    }
+
+    /**
+     * Listener on the placeDeleted event.
+     * Also send a request to remove the place in UDB2.
+     */
+    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, Metadata $metadata)
+    {
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        return $entryApi->deleteEvent($placeDeleted->getPlaceId());
     }
 
     /**

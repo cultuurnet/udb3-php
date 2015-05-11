@@ -140,4 +140,11 @@ interface EventEditingServiceInterface
      * @return string $eventId
      */
     public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+
+    /**
+     * @param string $eventId
+     *
+     * @return string $eventId
+     */
+    public function deleteEvent($eventId);
 }

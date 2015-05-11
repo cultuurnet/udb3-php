@@ -1,13 +1,12 @@
 <?php
 
-
 namespace CultuurNet\UDB3\Place;
 
-use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\DeleteImage;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
@@ -17,8 +16,11 @@ use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Place\Place;
+use Broadway\Repository\RepositoryInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+
+
 
 class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
@@ -226,6 +228,20 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateMajorInfo->getCalendar(),
             $updateMajorInfo->getTheme()
         );
+
+        $this->placeRepository->add($place);
+
+    }
+
+    /**
+     * Handle a delete place command.
+     */
+    public function handleDeletePlace(DeletePlace $deletePlace)
+    {
+
+        /** @var Place $place */
+        $place = $this->placeRepository->load($deletePlace->getId());
+        $place->deletePlace();
 
         $this->placeRepository->add($place);
 

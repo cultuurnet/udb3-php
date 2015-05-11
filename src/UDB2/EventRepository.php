@@ -173,7 +173,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         break;
 
                     case EventCreated::class:
-                        $this->applyEventCreated($domainEvent, $domainMessage->getMetadata());
+                        $this->applyEventCreated(
+                          $domainEvent,
+                          $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case EventDeleted::class:
+                        $this->applyEventDeleted(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
                         break;
 
                     case DescriptionUpdated::class:
@@ -386,6 +396,16 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             ->createEvent((string)$cdbXml);
 
         return $eventCreated->getEventId();
+    }
+
+    /**
+     * Listener on the EventDeleted event.
+     * Also send a request to remove the event in UDB2.
+     */
+    public function applyEventDeleted(EventDeleted $eventDeleted, Metadata $metadata)
+    {
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        return $entryApi->deleteEvent($eventDeleted->getEventId());
     }
 
     /**

@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -68,6 +69,13 @@ class Projector implements EventListenerInterface
             $organizer = null;
             $this->storeRelations($eventId, $cdbid, $organizer);
         }
+
+    }
+
+    protected function applyEventDeleted(EventDeleted $event)
+    {
+        $eventId = $event->getEventId();
+        $this->repository->removeRelations($eventId);
 
     }
 

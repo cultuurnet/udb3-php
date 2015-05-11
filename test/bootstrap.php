@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../../../autoload.php';
 require_once __DIR__ . '/Event/CdbXMLProjectorTestBase.php';
 require_once __DIR__ . '/EventExport/Format/HTML/Uitpas/DistributionKey/DistributionKeyConditionFactory.php';

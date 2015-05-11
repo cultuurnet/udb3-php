@@ -29,6 +29,13 @@ interface PlaceEditingServiceInterface
     public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null);
 
     /**
+     * @param string $id
+     *
+     * @return string $id
+     */
+    public function deletePlace($id);
+
+    /**
      * Update the major info of a place.
      *
      * @param string $id

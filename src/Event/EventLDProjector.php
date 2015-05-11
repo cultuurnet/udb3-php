@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
@@ -284,6 +285,14 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         }
 
         $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param EventDeleted $eventDeleted
+     */
+    protected function applyEventDeleted(EventDeleted $eventDeleted, DomainMessageInterface $domainMessage)
+    {
+        $this->repository->delete($eventDeleted->getEventId());
     }
 
     /**

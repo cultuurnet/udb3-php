@@ -292,7 +292,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                         $bookingInfo = $body->bookingInfo;
 
                         $expectedBookingInfo = new \stdClass();
-                        $expectedBookingInfo->currency = 'EUR';
+                        $expectedBookingInfo->priceCurrency = 'EUR';
                         $expectedBookingInfo->price = 0;
 
                         return
@@ -325,7 +325,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                         $bookingInfo = $body->bookingInfo;
 
                         $expectedBookingInfo = new \stdClass();
-                        $expectedBookingInfo->currency = 'EUR';
+                        $expectedBookingInfo->priceCurrency = 'EUR';
                         $expectedBookingInfo->price = 0;
                         $expectedBookingInfo->description = 'Gratis voor iedereen!';
 

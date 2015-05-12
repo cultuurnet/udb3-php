@@ -48,6 +48,11 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
     protected $eventBus;
 
     /**
+     * @var array
+     */
+    protected $logContext;
+
+    /**
      * @param ActorCdbXmlServiceInterface $cdbXmlService
      * @param EventBusInterface $eventBus
      */
@@ -60,6 +65,20 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
     }
 
     /**
+     * @param DomainMessageInterface $domainMessage
+     */
+    private function setLogContextFromDomainMessage(
+        DomainMessageInterface $domainMessage
+    ) {
+        $this->logContext = [];
+
+        $metadata = $domainMessage->getMetadata()->serialize();
+        if (isset($metadata['correlation_id'])) {
+            $this->logContext['correlation_id'] = $metadata['correlation_id'];
+        }
+    }
+
+    /**
      * @param ActorCreated $actorCreated
      * @return ActorCreatedEnrichedWithCdbXml
      */
@@ -67,6 +86,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
         ActorCreated $actorCreated,
         DomainMessageInterface $message
     ) {
+        $this->setLogContextFromDomainMessage($message);
+
         $xml = $this->getActorXml(
             $actorCreated->getActorId(),
             $actorCreated->getTime()
@@ -87,6 +108,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
         ActorUpdated $actorUpdated,
         DomainMessageInterface $message
     ) {
+        $this->setLogContextFromDomainMessage($message);
+
         $xml = $this->getActorXml(
             $actorUpdated->getActorId(),
             $actorUpdated->getTime()
@@ -152,8 +175,6 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
     {
         $actualUpdateDate = $this->getUpdatedDate($xml);
 
-        var_dump($actualUpdateDate);
-
         if ($actualUpdateDate < $updatedSince) {
             $msg = 'The xml retrieved from UDB2 seems older than the time indicated in the event message.';
 
@@ -169,6 +190,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
                 [
                     'actorId' => (string)$actorId,
                     'exception' => $exception,
+                    'actualUpdateDate' => $actualUpdateDate->format(\DateTime::ISO8601),
+                    'sinceDate' => $updatedSince->format(\DateTime::ISO8601)
                 ]
             );
 
@@ -179,7 +202,7 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
     private function logError($msg, $context = [])
     {
         if ($this->logger) {
-            $this->logger->error($msg, $context);
+            $this->logger->error($msg, $this->logContext + $context);
         }
     }
 

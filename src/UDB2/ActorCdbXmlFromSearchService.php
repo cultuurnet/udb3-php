@@ -16,8 +16,16 @@ class ActorCdbXmlFromSearchService implements ActorCdbXmlServiceInterface
      */
     protected $search;
 
-    public function __construct(SearchServiceInterface $search)
-    {
+    /**
+     * @var string
+     */
+    private $cdbXmlNamespaceUri;
+
+    public function __construct(
+        SearchServiceInterface $search,
+        $cdbXmlNamespaceUri = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+    ) {
+        $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
         $this->search = $search;
     }
 
@@ -26,7 +34,7 @@ class ActorCdbXmlFromSearchService implements ActorCdbXmlServiceInterface
      */
     public function getCdbXmlNamespaceUri()
     {
-        return \CultureFeed_Cdb_Default::CDB_SCHEME_URL;
+        return $this->cdbXmlNamespaceUri;
     }
 
     /**

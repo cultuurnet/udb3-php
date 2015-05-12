@@ -16,6 +16,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
 /**
@@ -116,9 +117,9 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
 
             $events = [
                 new DomainMessage(
-                    'foo',
+                    UUID::generateAsString(),
                     0,
-                    new Metadata(),
+                    new Metadata($context),
                     $event,
                     DateTime::now()
                 ),
@@ -141,7 +142,7 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
             if ($this->logger) {
                 $this->logger->error(
                     $e->getMessage(),
-                    $context
+                    $context + ['exception' => $e]
                 );
             }
 

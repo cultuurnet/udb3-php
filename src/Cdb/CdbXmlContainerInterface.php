@@ -12,5 +12,8 @@ interface CdbXmlContainerInterface
      */
     public function getCdbXml();
 
+    /**
+     * @return string
+     */
     public function getCdbXmlNamespaceUri();
 }

@@ -6,10 +6,11 @@
 namespace CultuurNet\UDB3\UDB2\Actor\Events;
 
 use CultuurNet\UDB2DomainEvents\ActorCreated;
+use CultuurNet\UDB3\Cdb\CdbXmlContainerInterface;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 use ValueObjects\String\String;
 
-class ActorCreatedEnrichedWithCdbXml extends ActorCreated
+class ActorCreatedEnrichedWithCdbXml extends ActorCreated implements CdbXmlContainerInterface
 {
     use HasCdbXmlTrait;
 

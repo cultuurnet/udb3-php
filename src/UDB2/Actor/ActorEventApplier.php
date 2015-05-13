@@ -149,7 +149,8 @@ class ActorEventApplier implements EventListenerInterface, LoggerAwareInterface
         }
     }
 
-    private function debug($message) {
+    private function debug($message)
+    {
         if ($this->logger) {
             $this->logger->debug($message);
         }

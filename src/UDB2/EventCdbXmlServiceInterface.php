@@ -13,4 +13,9 @@ interface EventCdbXmlServiceInterface
      * @throws EventNotFoundException If the event can not be found.
      */
     public function getCdbXmlOfEvent($eventId);
+
+    /**
+     * @return string
+     */
+    public function getCdbXmlNamespaceUri();
 }

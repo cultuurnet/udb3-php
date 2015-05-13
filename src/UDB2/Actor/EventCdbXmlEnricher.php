@@ -80,7 +80,7 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
     /**
      * @param ActorCreated $actorCreated
-     * @return ActorCreatedEnrichedWithCdbXml
+     * @param DomainMessageInterface $message
      */
     private function applyActorCreated(
         ActorCreated $actorCreated,
@@ -95,8 +95,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
         $enrichedActorCreated = ActorCreatedEnrichedWithCdbXml::fromActorCreated(
             $actorCreated,
-            $xml,
-            $this->cdbXmlService->getCdbXmlNamespaceUri()
+            new String($xml),
+            new String($this->cdbXmlService->getCdbXmlNamespaceUri())
         );
 
         $this->publish(
@@ -105,6 +105,10 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
         );
     }
 
+    /**
+     * @param ActorUpdated $actorUpdated
+     * @param DomainMessageInterface $message
+     */
     private function applyActorUpdated(
         ActorUpdated $actorUpdated,
         DomainMessageInterface $message
@@ -118,7 +122,7 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
         $enrichedActorUpdated = ActorUpdatedEnrichedWithCdbXml::fromActorUpdated(
             $actorUpdated,
-            $xml,
+            new String($xml),
             new String($this->cdbXmlService->getCdbXmlNamespaceUri())
         );
 

@@ -74,11 +74,17 @@ class EventCdbXmlEnricherTest extends \PHPUnit_Framework_TestCase
     public function messagesProvider()
     {
         $actorCreated = $this->newActorCreated(
-            new \DateTimeImmutable('2013-07-18T09:04:37')
+            new \DateTimeImmutable(
+                '2013-07-18T09:04:37',
+                new \DateTimeZone('Europe/Brussels')
+            )
         );
 
         $actorUpdated = $this->newActorUpdated(
-            new \DateTimeImmutable('2013-07-18T09:04:37')
+            new \DateTimeImmutable(
+                '2013-07-18T09:04:37',
+                new \DateTimeZone('Europe/Brussels')
+            )
         );
 
         return [

@@ -15,6 +15,9 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\UDB2\Actor\Events\ActorCreatedEnrichedWithCdbXml;
 use CultuurNet\UDB3\UDB2\Actor\Events\ActorUpdatedEnrichedWithCdbXml;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 
 /**
  * Applies incoming UDB2 actor events enriched with cdb xml on UDB3 organizers.
@@ -28,9 +31,10 @@ use CultuurNet\UDB3\UDB2\Actor\Events\ActorUpdatedEnrichedWithCdbXml;
  * Entities targeted by the ActorEventApplier need to implement
  * UpdateableWithCdbXmlInterface.
  */
-class ActorEventApplier implements EventListenerInterface
+class ActorEventApplier implements EventListenerInterface, LoggerAwareInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
+    use LoggerAwareTrait;
 
     /**
      * @var RepositoryInterface
@@ -67,7 +71,7 @@ class ActorEventApplier implements EventListenerInterface
     /**
      * @param ActorCreatedEnrichedWithCdbXml $actorCreated
      */
-    private function applyActorCreated(
+    private function applyActorCreatedEnrichedWithCdbXml(
         ActorCreatedEnrichedWithCdbXml $actorCreated
     ) {
         if (!$this->isSatisfiedBy($actorCreated)) {
@@ -83,7 +87,7 @@ class ActorEventApplier implements EventListenerInterface
     /**
      * @param ActorUpdatedEnrichedWithCdbXml $actorUpdated
      */
-    private function applyActorUpdated(
+    private function applyActorUpdatedEnrichedWithCdbXml(
         ActorUpdatedEnrichedWithCdbXml $actorUpdated
     ) {
         if (!$this->isSatisfiedBy($actorUpdated)) {
@@ -107,7 +111,15 @@ class ActorEventApplier implements EventListenerInterface
             $actorCdbXml->getCdbXml()
         );
 
-        return $this->actorSpecification->isSatisfiedBy($actor);
+        $satisfied = $this->actorSpecification->isSatisfiedBy($actor);
+
+        if (!$satisfied && $this->logger) {
+            $this->logger->debug(
+                'The specification of which actors need to be processed is not satisfied by UDB2 actor with cdbid: ' . $actor->getCdbId()
+            );
+        }
+
+        return $satisfied;
     }
 
     /**
@@ -120,8 +132,26 @@ class ActorEventApplier implements EventListenerInterface
     ) {
         try {
             $this->update($entityId, $cdbXml);
+
+            $this->debug(
+                'Actor succesfully updated.'
+            );
         } catch (AggregateNotFoundException $e) {
+            $this->debug(
+                'Update failed because entity did not exist yet, trying to create it as a fallback.'
+            );
+
             $this->create($entityId, $cdbXml);
+
+            $this->debug(
+                'Actor succesfully created.'
+            );
+        }
+    }
+
+    private function debug($message) {
+        if ($this->logger) {
+            $this->logger->debug($message);
         }
     }
 
@@ -135,8 +165,20 @@ class ActorEventApplier implements EventListenerInterface
     ) {
         try {
             $this->create($entityId, $cdbXml);
+
+            $this->debug(
+                'Actor succesfully created.'
+            );
         } catch (\Exception $e) {
+            $this->debug(
+                'Creation failed, trying to update as a fallback.'
+            );
+
             $this->update($entityId, $cdbXml);
+
+            $this->debug(
+                'Actor succesfully updated.'
+            );
         }
     }
 

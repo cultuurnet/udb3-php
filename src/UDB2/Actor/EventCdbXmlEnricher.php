@@ -95,7 +95,7 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
         $enrichedActorCreated = ActorCreatedEnrichedWithCdbXml::fromActorCreated(
             $actorCreated,
-            new String($xml),
+            $xml,
             new String($this->cdbXmlService->getCdbXmlNamespaceUri())
         );
 
@@ -122,7 +122,7 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
         $enrichedActorUpdated = ActorUpdatedEnrichedWithCdbXml::fromActorUpdated(
             $actorUpdated,
-            new String($xml),
+            $xml,
             new String($this->cdbXmlService->getCdbXmlNamespaceUri())
         );
 
@@ -195,7 +195,9 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
                 [
                     'actorId' => (string)$actorId,
                     'exception' => $exception,
-                    'actualUpdateDate' => $actualUpdateDate->format(\DateTime::ISO8601),
+                    'actualUpdateDate' => $actualUpdateDate->format(
+                        \DateTime::ISO8601
+                    ),
                     'sinceDate' => $updatedSince->format(\DateTime::ISO8601)
                 ]
             );
@@ -222,6 +224,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
             $actorXml
         );
 
-        return DateTimeFactory::dateTimeFromDateString($actor->getLastUpdated());
+        return DateTimeFactory::dateTimeFromDateString(
+            $actor->getLastUpdated()
+        );
     }
 }

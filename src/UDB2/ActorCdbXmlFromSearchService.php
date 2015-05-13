@@ -63,6 +63,11 @@ class ActorCdbXmlFromSearchService implements ActorCdbXmlServiceInterface
                     if ($reader->localName == "actor" &&
                         $reader->getAttribute('cdbid') == $actorId
                     ) {
+                        if ($reader->namespaceURI !== $this->cdbXmlNamespaceUri) {
+                            // @todo Use a more specific exception here.
+                            throw new \RuntimeException('Namespace URI does not match, expected ' . $this->cdbXmlNamespaceUri . ', actual ' . $reader->namespaceURI);
+                        }
+
                         $node = $reader->expand();
                         $dom = new \DomDocument('1.0');
                         $n = $dom->importNode($node, true);
@@ -76,8 +81,8 @@ class ActorCdbXmlFromSearchService implements ActorCdbXmlServiceInterface
             throw new ActorNotFoundException(
                 "Actor with cdbid '{$actorId}' could not be found via Search API v2."
             );
-        } else {
-            return $actorXml;
         }
+
+        return $actorXml;
     }
 }

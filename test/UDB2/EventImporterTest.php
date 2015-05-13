@@ -72,6 +72,10 @@ class EventImporterTest extends \PHPUnit_Framework_TestCase
             EventCdbXmlServiceInterface::class
         );
 
+        $this->eventCdbXmlService->expects($this->any())
+            ->method('getCdbXmlNamespaceUri')
+            ->willReturn('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL');
+
         $this->placeService = $this->getMock(
             PlaceService::class,
             [],
@@ -134,7 +138,7 @@ class EventImporterTest extends \PHPUnit_Framework_TestCase
                 new EventUpdatedFromUDB2(
                     $cdbId,
                     $eventXml,
-                    \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+                    $this->eventCdbXmlService->getCdbXmlNamespaceUri()
                 ),
             ]
         );

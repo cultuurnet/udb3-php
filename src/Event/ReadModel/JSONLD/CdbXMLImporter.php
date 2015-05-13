@@ -293,7 +293,7 @@ class CdbXMLImporter
                 $bookingInfo['name'] = $price->getTitle();
             }
             if ($price->getValue() !== null) {
-                $bookingInfo['currency'] = 'EUR';
+                $bookingInfo['priceCurrency'] = 'EUR';
                 $bookingInfo['price'] = floatval($price->getValue());
             }
             if ($bookingPeriod = $event->getBookingPeriod()) {

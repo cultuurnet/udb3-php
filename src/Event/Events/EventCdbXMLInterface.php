@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-interface EventCdbXMLInterface
+use CultuurNet\UDB3\Cdb\CdbXmlContainerInterface;
+
+interface EventCdbXMLInterface extends CdbXmlContainerInterface
 {
     /**
      * @return int

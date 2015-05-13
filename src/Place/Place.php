@@ -8,9 +8,11 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Actor\Actor;
+use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 
-class Place extends Actor
+class Place extends Actor implements UpdateableWithCdbXmlInterface
 {
     /**
      * Import from UDB2.
@@ -46,5 +48,19 @@ class Place extends Actor
         PlaceImportedFromUDB2 $placeImported
     ) {
         $this->applyActorImportedFromUDB2($placeImported);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
+    {
+        $this->apply(
+            new PlaceUpdatedFromUDB2(
+                $this->actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
     }
 }

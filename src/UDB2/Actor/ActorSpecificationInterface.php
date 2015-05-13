@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\UDB2\Actor;
 
-interface ActorSpecification
+interface ActorSpecificationInterface
 {
     /**
      * @param \CultureFeed_Cdb_Item_Actor $actor

@@ -38,7 +38,7 @@ class ActorEventApplier implements EventListenerInterface
     protected $repository;
 
     /**
-     * @var ActorSpecification
+     * @var ActorSpecificationInterface
      */
     protected $actorSpecification;
 
@@ -50,12 +50,12 @@ class ActorEventApplier implements EventListenerInterface
     /**
      * @param RepositoryInterface $repository
      * @param ActorFactoryInterface $actorFactory
-     * @param ActorSpecification $actorSpecification
+     * @param ActorSpecificationInterface $actorSpecification
      */
     public function __construct(
         RepositoryInterface $repository,
         ActorFactoryInterface $actorFactory,
-        ActorSpecification $actorSpecification
+        ActorSpecificationInterface $actorSpecification
     ) {
         $this->repository = $repository;
 

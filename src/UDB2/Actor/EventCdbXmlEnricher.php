@@ -100,7 +100,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
         );
 
         $this->publish(
-          $enrichedActorCreated, $message->getMetadata()
+            $enrichedActorCreated,
+            $message->getMetadata()
         );
     }
 
@@ -210,7 +211,8 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
      * @param string $actorXml
      * @return \DateTimeImmutable
      */
-    private function getUpdatedDate($actorXml) {
+    private function getUpdatedDate($actorXml)
+    {
         $actor = ActorItemFactory::createActorFromCdbXml(
             $this->cdbXmlService->getCdbXmlNamespaceUri(),
             $actorXml

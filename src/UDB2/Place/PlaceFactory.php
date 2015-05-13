@@ -24,5 +24,4 @@ class PlaceFactory implements ActorFactoryInterface
             $cdbXmlNamespaceUri
         );
     }
-
 }

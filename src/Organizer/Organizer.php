@@ -57,12 +57,10 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
     {
         $this->apply(
             new OrganizerUpdatedFromUDB2(
-               $this->actorId,
-               $cdbXml,
-               $cdbXmlNamespaceUri
+                $this->actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
             )
         );
     }
-
-
 }

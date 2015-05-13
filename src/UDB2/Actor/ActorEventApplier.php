@@ -100,7 +100,8 @@ class ActorEventApplier implements EventListenerInterface
      * @param CdbXmlContainerInterface $actorCdbXml
      * @return bool
      */
-    private function isSatisfiedBy(CdbXmlContainerInterface $actorCdbXml) {
+    private function isSatisfiedBy(CdbXmlContainerInterface $actorCdbXml)
+    {
         $actor = ActorItemFactory::createActorFromCdbXml(
             $actorCdbXml->getCdbXmlNamespaceUri(),
             $actorCdbXml->getCdbXml()
@@ -119,8 +120,7 @@ class ActorEventApplier implements EventListenerInterface
     ) {
         try {
             $this->update($entityId, $cdbXml);
-        }
-        catch (AggregateNotFoundException $e) {
+        } catch (AggregateNotFoundException $e) {
             $this->create($entityId, $cdbXml);
         }
     }

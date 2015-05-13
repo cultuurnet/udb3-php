@@ -133,7 +133,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
 
         $event->updateWithCdbXml(
             $eventXml,
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            $this->cdbXmlService->getCdbXmlNamespaceUri()
         );
 
         $this->repository->add($event);
@@ -174,7 +174,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
             $event = Event::importFromUDB2(
                 $eventId,
                 $eventXml,
-                \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+                $this->cdbXmlService->getCdbXmlNamespaceUri()
             );
 
             $this->repository->add($event);
@@ -226,7 +226,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     private function importDependencies($eventXml)
     {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
-            \CultureFeed_Cdb_Default::CDB_SCHEME_URL,
+            $this->cdbXmlService->getCdbXmlNamespaceUri(),
             $eventXml
         );
 

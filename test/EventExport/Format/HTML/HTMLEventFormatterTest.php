@@ -24,6 +24,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->eventFormatter = new HTMLEventFormatter();
+
+        if (!class_exists('IntlDateFormatter')) {
+            $this->markTestSkipped('IntlDateFormatter is missing, please install the PHP intl extension in order to run this test.');
+        }
     }
 
     /**

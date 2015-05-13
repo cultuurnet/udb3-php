@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 
 class OrganizerLDProjector extends ActorLDProjector
@@ -64,6 +65,30 @@ class OrganizerLDProjector extends ActorLDProjector
 
         $this->publishJSONLDUpdated(
             $actorImportedFromUDB2->getActorId()
+        );
+    }
+
+    public function applyOrganizerUpdatedFromUDB2(
+        OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+    ) {
+        $document = $this->loadDocumentFromRepository(
+            $organizerUpdatedFromUDB2
+        );
+
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $organizerUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $organizerUpdatedFromUDB2->getCdbXml()
+        );
+
+        $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $document->getBody(),
+            $udb2Actor
+        );
+
+        $this->repository->save($document->withBody($actorLd));
+
+        $this->publishJSONLDUpdated(
+            $organizerUpdatedFromUDB2->getActorId()
         );
     }
 

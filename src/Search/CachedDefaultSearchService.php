@@ -5,27 +5,44 @@
 
 namespace CultuurNet\UDB3\Search;
 
+use Broadway\Domain\DomainMessageInterface;
+use Broadway\EventHandling\EventListenerInterface;
 use Doctrine\Common\Cache\Cache;
 
-class CachedDefaultSearchService implements SearchServiceInterface
+class CachedDefaultSearchService implements SearchServiceInterface, EventListenerInterface
 {
+    /**
+     * @var \CultuurNet\UDB3\Search\SearchServiceInterface
+     */
+    protected $search;
+
     /**
      * @var Cache
      */
     protected $cache;
 
     /**
-     * @var \\CultuurNet\UDB3\Search\SearchServiceInterface
-     */
-    protected $search;
-
-    /**
      * @param \CultuurNet\UDB3\Search\SearchServiceInterface $search
      * @param \Doctrine\Common\Cache\Cache $cache
      */
-    public function __construct(SearchServiceInterface $search, Cache $cache) {
-        $this->cache = $cache;
+    public function __construct(SearchServiceInterface $search, Cache $cache)
+    {
         $this->search = $search;
+        $this->cache = $cache;
+    }
+
+    /**
+     * @param DomainMessageInterface $domainMessage
+     */
+    public function handle(DomainMessageInterface $domainMessage)
+    {
+        $event = $domainMessage->getPayload();
+
+        if (strpos(get_class($event), 'CultuurNet\UDB3\Event') === 0) {
+            $this->cache->delete('default-search');
+            $result = $this->search->search('*.*', 30, 0, 'lastupdated desc');
+            $this->cache->save('default-search', $result);
+        }
     }
 
     /**
@@ -41,22 +58,20 @@ class CachedDefaultSearchService implements SearchServiceInterface
      * @return array|\JsonSerializable
      *  A JSON-LD array or JSON serializable object.
      */
-    public function search($query, $limit = 30, $start = 0, $sort = NULL) {
-        if ($query == '*.*') {
-            $cacheResult = $this->cache->fetch('default-search:' . $limit . ':' . $start . ':' . (int) $sort);
+    public function search($query, $limit = 30, $start = 0, $sort = null)
+    {
+        if ($query == '*.*' && $limit == 30 && $start == 0 && $sort == 'lastupdated desc') {
+            $cacheResult = $this->cache->fetch('default-search');
             if ($cacheResult) {
                 return $cacheResult;
-            }
-            else {
+            } else {
                 $result = $this->search->search($query, $limit, $start, $sort);
-                $this->cache->save('default-search:' . $limit . ':' . $start . ':' . (int) $sort, $result);
+                $this->cache->save('default-search', $result);
 
                 return $result;
             }
-        }
-        else {
+        } else {
             return $this->search->search($query, $limit, $start, $sort);
         }
     }
-
 }

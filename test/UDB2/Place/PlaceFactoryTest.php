@@ -48,10 +48,12 @@ class PlaceFactoryTest extends \PHPUnit_Framework_TestCase
             $place->getUncommittedEvents()->getIterator()
         );
 
-        $payloads = $domainMessages;
-        array_walk($payloads, function (DomainMessageInterface &$item) {
-            $item = $item->getPayload();
-        });
+        $payloads = array_map(
+            function (DomainMessageInterface $item) {
+                return $item->getPayload();
+            },
+            $domainMessages
+        );
 
         $this->assertEquals(
             $expectedEvents,

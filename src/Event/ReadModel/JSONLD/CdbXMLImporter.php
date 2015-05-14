@@ -125,16 +125,17 @@ class CdbXMLImporter
     }
 
     /**
-     * @param $unixTime
+     * @param int $unixTime
      * @return \DateTime
      */
     private function dateFromUdb2UnixTime($unixTime)
     {
-        return \DateTime::createFromFormat(
-            'U',
-            $unixTime,
+        $dateTime = new \DateTime(
+            '@' . $unixTime,
             new \DateTimeZone('Europe/Brussels')
         );
+
+        return $dateTime;
     }
 
     /**

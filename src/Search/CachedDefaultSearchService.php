@@ -41,7 +41,7 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
         if (strpos(get_class($event), 'CultuurNet\UDB3\Event') === 0) {
             $this->cache->delete('default-search');
             $result = $this->search->search('*.*', 30, 0, 'lastupdated desc');
-            $this->cache->save('default-search', $result);
+            $this->cache->save('default-search', serialize($result));
         }
     }
 
@@ -63,10 +63,10 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
         if ($query == '*.*' && $limit == 30 && $start == 0 && $sort == 'lastupdated desc') {
             $cacheResult = $this->cache->fetch('default-search');
             if ($cacheResult) {
-                return $cacheResult;
+                return unserialize($cacheResult);
             } else {
                 $result = $this->search->search($query, $limit, $start, $sort);
-                $this->cache->save('default-search', $result);
+                $this->cache->save('default-search', serialize($result));
 
                 return $result;
             }

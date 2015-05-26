@@ -98,7 +98,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             $this->searchParams['sort']
         );
 
-        $this->assertEquals($this->searchResultJson, $this->arrayCache->fetch($this->cacheKey));
+        $this->assertEquals(serialize($this->searchResultJson), $this->arrayCache->fetch($this->cacheKey));
     }
 
     /**
@@ -196,7 +196,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         // The cache should be filled after the search.
-        $this->assertEquals($this->searchResultJson, $this->arrayCache->fetch($this->cacheKey));
+        $this->assertEquals(serialize($this->searchResultJson), $this->arrayCache->fetch($this->cacheKey));
     }
 
     /**
@@ -222,7 +222,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         // The cache should be filled after the search.
-        $this->assertEquals($this->searchResultJson, $this->arrayCache->fetch($this->cacheKey));
+        $this->assertEquals(serialize($this->searchResultJson), $this->arrayCache->fetch($this->cacheKey));
 
         $this->arrayCachedSearchService->search(
             $this->searchParams['query'],
@@ -232,6 +232,6 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         // The cache should be filled after the search.
-        $this->assertEquals($this->searchResultJson, $this->arrayCache->fetch($this->cacheKey));
+        $this->assertEquals(serialize($this->searchResultJson), $this->arrayCache->fetch($this->cacheKey));
     }
 }

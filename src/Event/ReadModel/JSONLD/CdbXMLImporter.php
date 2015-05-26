@@ -125,16 +125,17 @@ class CdbXMLImporter
     }
 
     /**
-     * @param $unixTime
+     * @param int $unixTime
      * @return \DateTime
      */
     private function dateFromUdb2UnixTime($unixTime)
     {
-        return \DateTime::createFromFormat(
-            'U',
-            $unixTime,
+        $dateTime = new \DateTime(
+            '@' . $unixTime,
             new \DateTimeZone('Europe/Brussels')
         );
+
+        return $dateTime;
     }
 
     /**
@@ -293,7 +294,7 @@ class CdbXMLImporter
                 $bookingInfo['name'] = $price->getTitle();
             }
             if ($price->getValue() !== null) {
-                $bookingInfo['currency'] = 'EUR';
+                $bookingInfo['priceCurrency'] = 'EUR';
                 $bookingInfo['price'] = floatval($price->getValue());
             }
             if ($bookingPeriod = $event->getBookingPeriod()) {
@@ -403,6 +404,11 @@ class CdbXMLImporter
             $event->getCreationDate()
         );
         $jsonLD->created = $creationDate->format('c');
+
+        $lastUpdatedDate = $this->dateFromUdb2DateString(
+            $event->getLastUpdated()
+        );
+        $jsonLD->modified = $lastUpdatedDate->format('c');
 
         $jsonLD->publisher = $event->getOwner();
     }

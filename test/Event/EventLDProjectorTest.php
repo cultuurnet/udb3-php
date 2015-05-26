@@ -295,8 +295,8 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                         $body = $jsonDocument->getBody();
                         $bookingInfo = $body->bookingInfo;
 
-                        $expectedBookingInfo = new stdClass();
-                        $expectedBookingInfo->currency = 'EUR';
+                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo->priceCurrency = 'EUR';
                         $expectedBookingInfo->price = 0;
 
                         return
@@ -328,8 +328,8 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                         $body = $jsonDocument->getBody();
                         $bookingInfo = $body->bookingInfo;
 
-                        $expectedBookingInfo = new stdClass();
-                        $expectedBookingInfo->currency = 'EUR';
+                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo->priceCurrency = 'EUR';
                         $expectedBookingInfo->price = 0;
                         $expectedBookingInfo->description = 'Gratis voor iedereen!';
 

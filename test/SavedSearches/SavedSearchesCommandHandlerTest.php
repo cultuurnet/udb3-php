@@ -7,8 +7,10 @@ use \CultureFeed_SavedSearches as SavedSearches;
 use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
 use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
-use Guzzle\Log\ArrayLogAdapter;
+use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use Psr\Log\LoggerInterface;
+use ValueObjects\String\String;
 
 class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,9 +63,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function aSubscribeToSavedSearchCommand()
     {
-        $userId = 'some-user-id';
-        $name = 'My very first saved search!';
-        $query = 'city:"Leuven"';
+        $userId = new String('some-user-id');
+        $name = new String('My very first saved search!');
+        $query = new QueryString('city:"Leuven"');
 
         $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
 
@@ -94,10 +96,9 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
                 'saved_search_was_not_subscribed',
                 [
                     'error' => $error,
-                    'userId' => $subscribeToSavedSearch->getUserId(),
-                    'name' => $subscribeToSavedSearch->getName(),
-                    'query' => $subscribeToSavedSearch->getQuery(),
-                    'frequency' => SavedSearch::NEVER
+                    'userId' => (string) $subscribeToSavedSearch->getUserId(),
+                    'name' => (string) $subscribeToSavedSearch->getName(),
+                    'query' => (string) $subscribeToSavedSearch->getQuery(),
                 ]
             );
         $this->commandHandler->setLogger($logger);
@@ -105,6 +106,74 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
         // Handle the "subscribe to saved search" command.
         // This will result in an exception being thrown, and logged.
         $this->commandHandler->handle($subscribeToSavedSearch);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_handle_unsubscribe_from_saved_search_commands()
+    {
+        // Unsubscribe command and its values.
+        $unsubscribeFromSavedSearch = $this->getUnsubscribeFromSavedSearchCommandStub();
+        $userId = (string) $unsubscribeFromSavedSearch->getUserId();
+        $searchId = (string) $unsubscribeFromSavedSearch->getSearchId();
+
+        // We expect the unsubscribe method to be called on the saved searches services,
+        // using the commands values as arguments.
+        $this->savedSearchesService->expects($this->once())
+            ->method('unsubscribe')
+            ->with(
+                $searchId,
+                $userId
+            );
+
+        // Handle the unsubscribe command.
+        $this->commandHandler->handle($unsubscribeFromSavedSearch);
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_unsubscribe_errors_when_they_occur()
+    {
+        // Unsubscribe command.
+        $unsubscribeFromSavedSearch = $this->getUnsubscribeFromSavedSearchCommandStub();
+
+        // We expect the unsubscribe method of the saved searches service to throw an exception.
+        $error = 'An unknown error has occurred.';
+        $this->savedSearchesService->expects($this->once())
+            ->method('unsubscribe')
+            ->willThrowException(new \CultureFeed_Exception($error, 'UNKNOWN_ERROR'));
+
+        // We expect the logger's error method to be called when the exception is thrown.
+        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
+        $logger = $this->getMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with(
+                'User was not unsubscribed from saved search.',
+                [
+                    'error' => $error,
+                    'userId' => (string) $unsubscribeFromSavedSearch->getUserId(),
+                    'searchId' => (string) $unsubscribeFromSavedSearch->getSearchId(),
+                ]
+            );
+        $this->commandHandler->setLogger($logger);
+
+        // Handle the unsubscribe command.
+        // This will result in an exception being thrown, and logged.
+        $this->commandHandler->handle($unsubscribeFromSavedSearch);
+    }
+
+    /**
+     * @return UnsubscribeFromSavedSearch
+     */
+    private function getUnsubscribeFromSavedSearchCommandStub()
+    {
+        $userId = new String('some-user-id');
+        $searchId = new String('some-search-id');
+
+        return new UnsubscribeFromSavedSearch($userId, $searchId);
     }
 
     /**

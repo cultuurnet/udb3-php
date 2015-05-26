@@ -7,16 +7,17 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use ValueObjects\String\String;
 
 class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
 {
     /**
-     * @var string $userId
+     * @var String $userId
      */
     protected $userId;
 
-    public function __construct($userId)
+    public function __construct(String $userId)
     {
         $this->userId = $userId;
     }
@@ -33,6 +34,10 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
             throw new MissingValueException('query is missing');
         }
 
-        return new SubscribeToSavedSearch($this->userId, $json->name, $json->query);
+        return new SubscribeToSavedSearch(
+            $this->userId,
+            new String($json->name),
+            new QueryString($json->query)
+        );
     }
 }

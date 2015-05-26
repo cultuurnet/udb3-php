@@ -2,50 +2,35 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
-use \CultureFeed_SavedSearches_SavedSearch as SavedSearch;
+use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use ValueObjects\String\String;
 
-class SubscribeToSavedSearch
+class SubscribeToSavedSearch extends SavedSearchCommand
 {
     /**
-     * @var string
-     */
-    protected $userId;
-
-    /**
-     * @var string
+     * @var String
      */
     protected $name;
 
     /**
-     * @var string
+     * @var QueryString
      */
     protected $query;
 
     /**
-     * @param string $userId
-     * @param string $name
-     * @param string $query
-     *
-     * @throws \InvalidArgumentException
-     *   When an invalid frequency value is given.
+     * {@inheritdoc}
+     * @param String $name
+     * @param QueryString $query
      */
-    public function __construct($userId, $name, $query)
+    public function __construct(String $userId, String $name, QueryString $query)
     {
-        $this->userId = $userId;
+        parent::__construct($userId);
         $this->name = $name;
         $this->query = $query;
     }
 
     /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @return string
+     * @return String
      */
     public function getName()
     {
@@ -53,7 +38,7 @@ class SubscribeToSavedSearch
     }
 
     /**
-     * @return string
+     * @return QueryString
      */
     public function getQuery()
     {

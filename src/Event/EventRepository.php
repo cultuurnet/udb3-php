@@ -69,7 +69,7 @@ class EventRepository implements RepositoryInterface
      *
      * Overwritten
      */
-    public function add(AggregateRoot $aggregate)
+    public function save(AggregateRoot $aggregate)
     {
         Assertion::isInstanceOf($aggregate, $this->getType());
 

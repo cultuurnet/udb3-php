@@ -86,7 +86,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function add(AggregateRoot $aggregate)
+    public function save(AggregateRoot $aggregate)
     {
         if ($this->syncBack) {
             // We can not directly act on the aggregate, as the uncommitted events will
@@ -145,7 +145,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             }
         }
 
-        $this->decoratee->add($aggregate);
+        $this->decoratee->save($aggregate);
     }
 
     private function applyEventWasLabelled(

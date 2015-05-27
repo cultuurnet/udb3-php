@@ -25,7 +25,7 @@ class DefaultUsedLabelsMemoryService implements UsedLabelsMemoryServiceInterface
 
         $usedLabelsMemory->labelUsed($keyword);
 
-        $this->repository->add($usedLabelsMemory);
+        $this->repository->save($usedLabelsMemory);
     }
 
     /**

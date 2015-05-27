@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3;
 
-use Broadway\Domain\DomainEventStream;
+use Broadway\Domain\DomainEventStreamInterface;
 
 /**
  * Class SimpleEventBus
@@ -39,7 +39,7 @@ class SimpleEventBus extends \Broadway\EventHandling\SimpleEventBus
         }
     }
 
-    public function publish(DomainEventStream $domainMessages)
+    public function publish(DomainEventStreamInterface $domainMessages)
     {
         if ($this->first) {
             $this->first = false;

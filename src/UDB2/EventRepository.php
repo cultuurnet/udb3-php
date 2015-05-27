@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\AggregateNotFoundException;
@@ -98,7 +98,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                 $domainEventStream
             );
 
-            /** @var DomainMessageInterface $domainMessage */
+            /** @var DomainMessage $domainMessage */
             foreach ($eventStream as $domainMessage) {
                 $domainEvent = $domainMessage->getPayload();
                 switch (get_class($domainEvent)) {

@@ -135,7 +135,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         $event = $this->eventRepository->load($eventId);
         $event->label($label);
         try {
-            $this->eventRepository->add($event);
+            $this->eventRepository->save($event);
 
             if ($this->logger) {
                 $this->logger->info(
@@ -169,7 +169,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
             $translateTitle->getTitle()
         );
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
     }
 
     public function handleTranslateDescription(
@@ -183,7 +183,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
             $translateDescription->getDescription()
         );
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
     }
 
     public function handleApplyLabel(ApplyLabel $label)
@@ -192,7 +192,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         $event = $this->eventRepository->load($label->getEventId());
         $event->label($label->getLabel());
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
     }
 
     public function handleUnlabel(Unlabel $label)
@@ -201,6 +201,6 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         $event = $this->eventRepository->load($label->getEventId());
         $event->unlabel($label->getLabel());
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
     }
 }

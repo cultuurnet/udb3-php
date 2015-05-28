@@ -8,6 +8,7 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\EventStoreInterface;
@@ -28,6 +29,7 @@ class PlaceRepository extends EventSourcingRepository
             $eventStore,
             $eventBus,
             '\CultuurNet\UDB3\Place\Place',
+            new PublicConstructorAggregateFactory(),
             $eventStreamDecorators
         );
     }

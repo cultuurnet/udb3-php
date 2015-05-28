@@ -158,7 +158,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
         $type = new EventType('0.50.4.0.0', 'concert');
         $event = Event::create($eventId, $title, $location, $date, $type);
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
 
         return $eventId;
     }

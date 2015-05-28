@@ -113,7 +113,7 @@ class EventImporterTest extends \PHPUnit_Framework_TestCase
                 'Opendeurdag'
             )
         );
-        $this->repository->add($event);
+        $this->repository->save($event);
 
         $eventXml = file_get_contents(
             __DIR__ . '/search-results-single-event.xml'

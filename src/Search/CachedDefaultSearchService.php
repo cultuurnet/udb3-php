@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Search;
 
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use Doctrine\Common\Cache\Cache;
 
@@ -32,9 +32,9 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
     }
 
     /**
-     * @param DomainMessageInterface $domainMessage
+     * @param DomainMessage $domainMessage
      */
-    public function handle(DomainMessageInterface $domainMessage)
+    public function handle(DomainMessage $domainMessage)
     {
         $event = $domainMessage->getPayload();
 

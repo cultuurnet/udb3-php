@@ -103,7 +103,7 @@ class Event extends EventSourcedAggregateRoot
             return strcasecmp($label, $newLabel) == 0;
         });
 
-        if(empty($similarLabels)) {
+        if (empty($similarLabels)) {
             $this->labels[] = $eventLabelled->getLabel();
         }
     }

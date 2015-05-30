@@ -66,9 +66,14 @@ class EventTest extends \PHPUnit_Framework_TestCase
     {
         $this->event->label(new Label('Foo'));
         $this->event->label(new Label('foo'));
+        $this->event->label(new Label('België'));
+        $this->event->label(new Label('BelgiË'));
 
         $this->assertEquals(
-            array(new Label('Foo')),
+            [
+                new Label('Foo'),
+                new Label('België')
+            ],
             $this->event->getLabels()
         );
     }

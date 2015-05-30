@@ -119,12 +119,10 @@ class TruncateStringFilter implements StringFilterInterface
             }
 
             $truncated = $stringy->safeTruncate($lastOccurrence + strlen($suffix), $suffix);
+        } else if ($wordSafe) {
+            $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {
-            if ($wordSafe) {
-                $truncated = $stringy->safeTruncate($maxLength, $suffix);
-            } else {
-                $truncated = $stringy->truncate($maxLength, $suffix);
-            }
+            $truncated = $stringy->truncate($maxLength, $suffix);
         }
 
         if ($this->addEllipsis) {

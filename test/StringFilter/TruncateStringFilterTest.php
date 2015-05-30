@@ -97,4 +97,39 @@ class TruncateStringFilterTest extends StringFilterTest
         $original = "Wij\n zijn Murgawawa çava, een vrolijke groep";
         $this->assertFilterValue($expected, $original);
     }
+
+    /**
+     * @test
+     */
+    public function it_truncates_to_the_closest_sentence_when_possible()
+    {
+        $this->filter->beSentenceFriendly();
+        $expected = "Een zin.";
+        $original = "Een zin. Een langere zin die niet meer past.";
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_still_truncates_there_is_no_sentence()
+    {
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $expected = "beschrijving";
+        $original = "beschrijving zonder leestekens dat langer is dan de limiet";
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_still_truncates_when_the_sentence_is_too_long()
+    {
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $expected = "Een zin die te";
+        $original = "Een zin die te lang is om volledig door te laten.";
+        $this->assertFilterValue($expected, $original);
+    }
 }

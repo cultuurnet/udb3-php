@@ -25,6 +25,11 @@ class TruncateStringFilter implements StringFilterInterface
     protected $addEllipsis = false;
 
     /**
+     * @var bool
+     */
+    protected $sentenceFriendly = false;
+
+    /**
      * @var int
      */
     protected $maxLength;
@@ -63,6 +68,14 @@ class TruncateStringFilter implements StringFilterInterface
     }
 
     /**
+     * When turned on, the filter will try not to truncate in the middle of a sentence.
+     */
+    public function beSentenceFriendly()
+    {
+        $this->sentenceFriendly = true;
+    }
+
+    /**
      * @inheritdoc
      */
     public function filter($string)
@@ -89,7 +102,24 @@ class TruncateStringFilter implements StringFilterInterface
 
         $stringy = Stringy::create($string, 'UTF-8');
 
-        if ($wordSafe) {
+        $endingSymbols = ['. ', '? ', '! '];
+        $hasEndingSymbolInRange = $stringy
+          ->first($maxLength)
+          ->containsAny($endingSymbols);
+
+        if ($this->sentenceFriendly && $hasEndingSymbolInRange) {
+            $lastOccurrence = 0;
+            $haystack = (string) $stringy->first($maxLength);
+
+            foreach ($endingSymbols as $needle) {
+                $position = strrpos($haystack, $needle);
+                if ($position && $position > $lastOccurrence) {
+                    $lastOccurrence = $position + 1;
+                }
+            }
+
+            $truncated = $stringy->safeTruncate($lastOccurrence + strlen($suffix), $suffix);
+        } else if ($wordSafe) {
             $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {
             $truncated = $stringy->truncate($maxLength, $suffix);

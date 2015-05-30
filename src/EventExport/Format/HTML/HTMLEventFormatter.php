@@ -79,6 +79,7 @@ class HTMLEventFormatter
         $truncateFilter = new TruncateStringFilter(300);
         $truncateFilter->addEllipsis();
         $truncateFilter->turnOnWordSafe(1);
+        $truncateFilter->beSentenceFriendly();
         $this->filters->addFilter($truncateFilter);
 
         $this->taalicoonSpecs = array(

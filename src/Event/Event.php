@@ -10,7 +10,6 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
-use Stringy\Stringy;
 
 class Event extends EventSourcedAggregateRoot
 {

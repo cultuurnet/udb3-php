@@ -10,6 +10,10 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\CommandHandler;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
+use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
@@ -18,6 +22,9 @@ use PHPUnit_Framework_MockObject_MockObject;
 
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {
+
+    use \CultuurNet\UDB3\CommandHandlerTestTrait;
+
     /**
      * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
      */
@@ -42,7 +49,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         return new CommandHandler($repository, $this->search);
     }
 
-    private function factorPlaceCreated($id)
+    private function factorOfferCreated($id)
     {
         return new PlaceCreated(
             $id,
@@ -56,13 +63,52 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_can_update_major_info_of_a_place()
+    {
+        $id = '1';
+        $title = new Title('foo');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $address = new Address('$street', '$postalcode', '$locality', '$country');
+        $calendar = new Calendar('permanent', '', '');
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(
+              new UpdateMajorInfo($id, $title, $eventType, $address, $calendar))
+            ->then([new MajorInfoUpdated($id, $title, $eventType, $address, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_facilities_of_a_place()
+    {
+        $id = '1';
+        $facilities = array('testing');
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(
+              new UpdateFacilities($id, $facilities))
+            ->then([new FacilitiesUpdated($id, $facilities)]);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_delete_places()
     {
         $id = '1';
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorPlaceCreated($id)]
+                [$this->factorOfferCreated($id)]
             )
             ->when(
               new DeletePlace($id))

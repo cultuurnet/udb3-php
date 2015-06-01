@@ -17,11 +17,11 @@ class DeleteOrganizer
 
     /**
      * @param string $id
-     * @param string $description
+     * @param string $organizerId
      */
-    public function __construct($id, $description)
+    public function __construct($id, $organizerId)
     {
         $this->id = $id;
-        $this->description = $description;
+        $this->organizerId = $organizerId;
     }
 }

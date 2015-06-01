@@ -74,7 +74,7 @@ class Event extends EventSourcedAggregateRoot
     {
         $newLabel = (string) $label;
         $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
-            return strcmp(mb_strtolower($label), mb_strtolower($newLabel)) == 0;
+            return strcmp(mb_strtolower($label, 'UTF-8'), mb_strtolower($newLabel, 'UTF-8')) == 0;
         });
 
         if (!empty($similarLabels)) {
@@ -101,7 +101,7 @@ class Event extends EventSourcedAggregateRoot
     {
         $newLabel = $eventLabelled->getLabel();
         $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
-            return strcmp(mb_strtolower($label), mb_strtolower($newLabel)) == 0;
+            return strcmp(mb_strtolower($label, 'UTF-8'), mb_strtolower($newLabel, 'UTF-8')) == 0;
         });
 
         if (empty($similarLabels)) {

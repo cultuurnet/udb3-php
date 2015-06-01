@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
+use Stringy\Stringy;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -73,7 +74,7 @@ class Event extends EventSourcedAggregateRoot
     {
         $newLabel = (string) $label;
         $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
-            return strcasecmp($label, $newLabel) == 0;
+            return strcmp(mb_strtolower($label), mb_strtolower($newLabel)) == 0;
         });
 
         if (!empty($similarLabels)) {
@@ -100,7 +101,7 @@ class Event extends EventSourcedAggregateRoot
     {
         $newLabel = $eventLabelled->getLabel();
         $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
-            return strcasecmp($label, $newLabel) == 0;
+            return strcmp(mb_strtolower($label), mb_strtolower($newLabel)) == 0;
         });
 
         if (empty($similarLabels)) {

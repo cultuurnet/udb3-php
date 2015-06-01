@@ -129,11 +129,16 @@
                     {%- if event.uitpas.advantages %}
 
                     <div class="activity__uitpas">
-                        <p>Ga hierheen en ontvang deze UiTPAS-voordelen:</p>
+                        <p>Ga met je UiTPAS:</p>
                         <ul>
                             {%- for advantage in event.uitpas.advantages %}
 
                             <li>{{ advantage }}</li>
+                            {%- endfor %}
+
+                            {%- for promotion in event.uitpas.promotions %}
+
+                            <li>{{ promotion }}</li>
                             {%- endfor %}
 
                         </ul>

@@ -69,15 +69,14 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
     {
         $prices = [];
         $advantages = [];
+        $promotions = [];
 
-        $searchEvents =
+        $eventQuery =
             new CultureFeed_Uitpas_Event_Query_SearchEventsOptions();
 
-        $searchEvents->cdbid = $eventId;
+        $eventQuery->cdbid = $eventId;
 
-        $resultSet = $this->uitpas->searchEvents(
-            $searchEvents
-        );
+        $resultSet = $this->uitpas->searchEvents($eventQuery);
 
         /** @var CultureFeed_Uitpas_Event_CultureEvent $uitpasEvent */
         $uitpasEvent = reset($resultSet->objects);
@@ -95,12 +94,15 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
                     $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromDistributionKey($key));
                 }
             }
+
+            $promotions = $this->getUitpasPointsPromotionsFromEvent($uitpasEvent);
         }
         $advantages = array_unique($advantages);
 
         return new EventInfo(
             $prices,
-            $advantages
+            $advantages,
+            $promotions
         );
     }
 
@@ -117,6 +119,35 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         }
 
         return $advantages;
+    }
+
+    /**
+     * Get a list of formatted promotions
+     *
+     * @param \CultureFeed_Uitpas_Event_CultureEvent $event
+     * @return string[]
+     */
+    private function getUitpasPointsPromotionsFromEvent(\CultureFeed_Uitpas_Event_CultureEvent $event)
+    {
+        $promotions = [];
+
+        $promotionsQuery = new \CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions();
+        $promotionsQuery->balieConsumerKey = $event->organiserId;
+        $promotionsQuery->unexpired = true;
+        $promotionsQuery->max = 2;
+
+        /** @var \CultureFeed_PointsPromotion[] $promotionsQueryResults */
+        $promotionsQueryResults = $this->uitpas->getPromotionPoints($promotionsQuery)->objects;
+        foreach ($promotionsQueryResults as $promotionsQueryResult) {
+            $promotion = sprintf(
+                '%s punten: %s',
+                $promotionsQueryResult->points,
+                $promotionsQueryResult->title
+            );
+            $promotions[] = $promotion;
+        }
+
+        return $promotions;
     }
 
     /**

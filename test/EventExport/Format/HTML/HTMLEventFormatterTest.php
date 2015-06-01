@@ -258,7 +258,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
      * @param array $priceData
      * @param array $advantagesData
      */
-    public function it_optionally_enriches_events_with_uitpas_info($priceData, $advantagesData)
+    public function it_optionally_enriches_events_with_uitpas_info($priceData, $advantagesData, $promotionsData)
     {
         $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
 
@@ -271,7 +271,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
         $advantages = $advantagesData['original'];
         $expectedAdvantages = $advantagesData['formatted'];
 
-        $eventInfo = new EventInfo($prices, $advantages);
+        $promotions = $promotionsData['original'];
+        $expectedPromotions = $promotionsData['formatted'];
+
+        $eventInfo = new EventInfo($prices, $advantages, $promotions);
 
         $uitpas->expects($this->once())
             ->method('getEventInfo')
@@ -286,6 +289,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             'uitpas' => [
                 'prices' => $expectedPrices,
                 'advantages' => $expectedAdvantages,
+                'promotions' => $expectedPromotions,
             ],
             'type' => 'Cursus of workshop',
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
@@ -334,6 +338,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                         'Korting voor kansentarief',
                     ],
                 ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
             ],
             [
                 [
@@ -359,6 +367,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                         'Spaar punten',
                         'Korting voor kansentarief',
                     ],
+                ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
                 ],
             ],
             [
@@ -386,6 +398,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                         'Korting voor kansentarief',
                     ],
                 ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
             ],
             [
                 [
@@ -405,7 +421,11 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                 [
                     'original' => [],
                     'formatted' => [],
-                ]
+                ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
             ],
             [
                 [
@@ -419,8 +439,12 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                     'formatted' => [
                         'Spaar punten',
                     ],
-                ]
-            ]
+                ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
+            ],
         ];
 
         return $data;

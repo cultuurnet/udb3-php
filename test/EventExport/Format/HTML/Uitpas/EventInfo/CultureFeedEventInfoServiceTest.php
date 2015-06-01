@@ -88,13 +88,23 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $resultSet->total = 1;
         $resultSet->objects = [$event];
 
+        $promotion = new \CultureFeed_PointsPromotion();
+        $promotion->points = 12;
+        $promotion->title = 'Een voordeel van 12 punten.';
+        $promotionResultSet = new \CultureFeed_ResultSet(1, [$promotion]);
+
         // Mock the CultureFeed_Uitpas class and glue everything together.
         /** @var EventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
         $uitpas = $this->getMock(Uitpas::class);
+
         $uitpas->expects($this->once())
             ->method('searchEvents')
             ->with($searchEvents)
             ->willReturn($resultSet);
+
+        $uitpas->expects($this->once())
+            ->method('getPromotionPoints')
+            ->willReturn($promotionResultSet);
 
         // Instantiate the CultureFeedEventInfoService using the mock Uitpas
         // object that will return the event we just created.

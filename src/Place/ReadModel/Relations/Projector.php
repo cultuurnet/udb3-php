@@ -38,6 +38,9 @@ class Projector implements EventListenerInterface
         $this->storeRelations($placeId, null);
     }
 
+    /**
+     * Delete the relations.
+     */
     protected function applyPlaceDeleted(PlaceDeleted $place)
     {
         $placeId = $place->getPlaceId();

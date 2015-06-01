@@ -72,6 +72,10 @@ class Projector implements EventListenerInterface
 
     }
 
+    /**
+     * Delete the relations.
+     * @param EventDeleted $event
+     */
     protected function applyEventDeleted(EventDeleted $event)
     {
         $eventId = $event->getEventId();

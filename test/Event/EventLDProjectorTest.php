@@ -10,7 +10,6 @@ use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -18,16 +17,16 @@ use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Title;
 use stdClass;
-use Symfony\Component\EventDispatcher\Event;
 
 class EventLDProjectorTest extends CdbXMLProjectorTestBase
 {
@@ -881,5 +880,84 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                 $organizerProjectedToJSONLD
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_age_range()
+    {
+        $typicalAgeRangeUpdated = new TypicalAgeRangeUpdated(
+            'foo',
+            '-18'
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'typicalAgeRange' => '12-14'
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'typicalAgeRange' => '-18'
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
+
+        $this->projector->applyTypicalAgeRangeUpdated($typicalAgeRangeUpdated);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_deleting_of_age_range()
+    {
+        $typicalAgeRangeUpdated = new TypicalAgeRangeUpdated(
+            'foo',
+            '-1'
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'typicalAgeRange' => '-18'
+            ])
+        );
+
+        $expectedDocument = new JsonDocument('foo');
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
+
+        $this->projector->applyTypicalAgeRangeUpdated($typicalAgeRangeUpdated);
     }
 }

@@ -5,25 +5,48 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\DeleteImage;
+use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
+use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Event\Commands\UpdateDescription;
+use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use PHPUnit_Framework_MockObject_MockObject;
 
-class EventLabellerTest extends CommandHandlerScenarioTestCase
+class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
     /**
      * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
@@ -268,6 +291,181 @@ class EventLabellerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_can_update_booking_info_of_an_event()
+    {
+        $id = '1';
+        $bookingInfo = new BookingInfo();
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateBookingInfo($id, $bookingInfo))
+            ->then([new BookingInfoUpdated($id, $bookingInfo)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_contact_point_of_an_event()
+    {
+        $id = '1';
+        $contactPoint = new ContactPoint();
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateContactPoint($id, $contactPoint))
+            ->then([new ContactPointUpdated($id, $contactPoint)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_description_of_an_event()
+    {
+        $id = '1';
+        $description = 'foo';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateDescription($id, $description))
+            ->then([new DescriptionUpdated($id, $description)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_an_image_to_an_event()
+    {
+        $id = '1';
+        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new AddImage($id, $mediaObject))
+            ->then([new ImageAdded($id, $mediaObject)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_delete_an_image_of_an_event()
+    {
+        $id = '1';
+        $indexToDelete = 1;
+        $internalId = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new DeleteImage($id, $indexToDelete, $internalId))
+            ->then([new ImageDeleted($id, $indexToDelete, $internalId)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_update_an_image_of_an_event()
+    {
+        $id = '1';
+        $index = 1;
+        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateImage($id, $index, $mediaObject))
+            ->then([new ImageUpdated($id, $index, $mediaObject)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_major_info_of_an_event()
+    {
+        $id = '1';
+        $title = new Title('foo');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
+        $calendar = new Calendar('permanent', '', '');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateMajorInfo($id, $title, $eventType, $location, $calendar))
+            ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_organizer_of_an_event()
+    {
+        $id = '1';
+        $organizerId = '5';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new DeleteOrganizer($id, $organizerId))
+            ->then([new OrganizerDeleted($id, $organizerId)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_organizer_of_an_event()
+    {
+        $id = '1';
+        $organizer = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateOrganizer($id, $organizer))
+            ->then([new OrganizerUpdated($id, $organizer)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_typical_agerange_of_an_event()
+    {
+        $id = '1';
+        $ageRange = '-18';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorEventCreated($id)]
+            )
+            ->when(
+              new UpdateTypicalAgeRange($id, $ageRange))
+            ->then([new TypicalAgeRangeUpdated($id, $ageRange)]);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_delete_events()
     {
         $id = '1';
@@ -280,4 +478,5 @@ class EventLabellerTest extends CommandHandlerScenarioTestCase
               new DeleteEvent($id))
             ->then([new EventDeleted($id)]);
     }
+
 }

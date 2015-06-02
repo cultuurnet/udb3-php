@@ -89,8 +89,8 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $resultSet->objects = [$event];
 
         $promotion = new \CultureFeed_PointsPromotion();
-        $promotion->points = 12;
-        $promotion->title = 'Een voordeel van 12 punten.';
+        $promotion->points = 10;
+        $promotion->title = 'free drink';
         $promotionResultSet = new \CultureFeed_ResultSet(1, [$promotion]);
 
         // Mock the CultureFeed_Uitpas class and glue everything together.
@@ -114,6 +114,7 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $eventInfo = $infoService->getEventInfo($eventId);
         $prices = $eventInfo->getPrices();
         $advantages = $eventInfo->getAdvantages();
+        $promotions = $eventInfo->getPromotions();
 
         // Make sure we get back the correct prices and advantages.
         $this->assertEquals(
@@ -139,6 +140,11 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
                 EventAdvantage::POINT_COLLECTING(),
             ],
             $advantages
+        );
+
+        $this->assertEquals(
+            ['10 punten: free drink'],
+            $promotions
         );
     }
 }

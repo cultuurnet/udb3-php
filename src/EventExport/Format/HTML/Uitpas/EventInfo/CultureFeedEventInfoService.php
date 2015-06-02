@@ -90,8 +90,6 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
                         $cardSystem,
                         $key
                     ));
-
-                    $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromDistributionKey($key));
                 }
             }
 

@@ -137,7 +137,6 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 EventAdvantage::POINT_COLLECTING(),
-                EventAdvantage::KANSENTARIEF(),
             ],
             $advantages
         );

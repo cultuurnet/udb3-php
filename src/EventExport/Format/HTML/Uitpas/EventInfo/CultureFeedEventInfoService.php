@@ -39,11 +39,6 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
     protected $kansenTariefForOtherCardSystems;
 
     /**
-     * @var KansentariefDiscountSpecification
-     */
-    protected $kansentariefDiscount;
-
-    /**
      * @var PointCollectingSpecification
      */
     protected $pointCollecting;
@@ -60,8 +55,6 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
 
         $this->kansenTariefForOtherCardSystems =
             new KansentariefForOtherCardSystemsSpecification();
-
-        $this->kansentariefDiscount = new KansentariefDiscountSpecification();
 
         $this->pointCollecting = new PointCollectingSpecification();
     }
@@ -258,20 +251,5 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
         }
 
         return $uitpasPrices;
-    }
-
-    /**
-     * @param CultureFeed_Uitpas_DistributionKey $key
-     * @return array
-     */
-    private function getUitpasAdvantagesFromDistributionKey(CultureFeed_Uitpas_DistributionKey $key)
-    {
-        $advantages = [];
-
-        if ($this->kansentariefDiscount->isSatisfiedBy($key)) {
-            $advantages[] = EventAdvantage::KANSENTARIEF;
-        }
-
-        return $advantages;
     }
 }

@@ -99,7 +99,8 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
      * @param CultureFeed_Uitpas_Event_CultureEvent $event
      * @return array
      */
-    private function getUitpasPricesFromEvent(CultureFeed_Uitpas_Event_CultureEvent $event) {
+    private function getUitpasPricesFromEvent(CultureFeed_Uitpas_Event_CultureEvent $event)
+    {
         $prices = [];
 
         foreach ($event->cardSystems as $cardSystem) {

@@ -16,9 +16,13 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefF
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\KansentariefForOtherCardSystemsSpecification;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\PointCollectingSpecification;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class CultureFeedEventInfoService implements EventInfoServiceInterface
+class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var CultureFeed_Uitpas
      */
@@ -194,8 +198,21 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         $promotionsQuery->unexpired = true;
         $promotionsQuery->max = 2;
 
+
         /** @var \CultureFeed_PointsPromotion[] $promotionsQueryResults */
-        $promotionsQueryResults = $this->uitpas->getPromotionPoints($promotionsQuery)->objects;
+        $promotionsQueryResults = [];
+
+        try {
+            $promotionsQueryResults = $this->uitpas->getPromotionPoints($promotionsQuery)->objects;
+        } catch (\Exception $e) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'Can\'t retrieve promotions for organizer with id:' . $event->organiserId,
+                    ['exception' => $e]
+                );
+            }
+        };
+
         foreach ($promotionsQueryResults as $promotionsQueryResult) {
             if ($promotionsQueryResult->points === 1) {
                 $pointChoice = 'punt';

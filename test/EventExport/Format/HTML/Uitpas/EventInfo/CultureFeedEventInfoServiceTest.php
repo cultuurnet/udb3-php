@@ -107,7 +107,12 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $promotion = new \CultureFeed_PointsPromotion();
         $promotion->points = 10;
         $promotion->title = 'free drink';
-        $promotionResultSet = new \CultureFeed_ResultSet(1, [$promotion]);
+
+        $onePointPromotion = new \CultureFeed_PointsPromotion();
+        $onePointPromotion->points = 1;
+        $onePointPromotion->title = 'one point to rule them all';
+
+        $promotionResultSet = new \CultureFeed_ResultSet(1, [$promotion, $onePointPromotion]);
 
         $this->uitpas->expects($this->once())
             ->method('searchEvents')
@@ -151,7 +156,10 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            ['10 punten: free drink'],
+            [
+                '10 punten: free drink',
+                '1 punt: one point to rule them all'
+            ],
             $promotions
         );
     }

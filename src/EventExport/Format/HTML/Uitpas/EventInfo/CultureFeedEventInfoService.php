@@ -197,9 +197,16 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface
         /** @var \CultureFeed_PointsPromotion[] $promotionsQueryResults */
         $promotionsQueryResults = $this->uitpas->getPromotionPoints($promotionsQuery)->objects;
         foreach ($promotionsQueryResults as $promotionsQueryResult) {
+            if ($promotionsQueryResult->points === 1) {
+                $pointChoice = 'punt';
+            } else {
+                $pointChoice = 'punten';
+            }
+
             $promotion = sprintf(
-                '%s punten: %s',
+                '%s %s: %s',
                 $promotionsQueryResult->points,
+                $pointChoice,
                 $promotionsQueryResult->title
             );
             $promotions[] = $promotion;

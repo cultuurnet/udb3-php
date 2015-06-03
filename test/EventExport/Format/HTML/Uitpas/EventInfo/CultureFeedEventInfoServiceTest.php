@@ -19,6 +19,22 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventFactory;
 class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var \CultureFeed_Uitpas|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $uitpas;
+
+    /**
+     * @var EventInfoServiceInterface
+     */
+    protected $infoService;
+
+    public function setUp()
+    {
+        $this->uitpas = $this->getMock(Uitpas::class);
+        $this->infoService = new CultureFeedEventInfoService($this->uitpas);
+    }
+
+    /**
      * @test
      */
     public function it_can_return_multiple_prices_and_advantages()
@@ -93,25 +109,17 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $promotion->title = 'free drink';
         $promotionResultSet = new \CultureFeed_ResultSet(1, [$promotion]);
 
-        // Mock the CultureFeed_Uitpas class and glue everything together.
-        /** @var EventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
-        $uitpas = $this->getMock(Uitpas::class);
-
-        $uitpas->expects($this->once())
+        $this->uitpas->expects($this->once())
             ->method('searchEvents')
             ->with($searchEvents)
             ->willReturn($resultSet);
 
-        $uitpas->expects($this->once())
+        $this->uitpas->expects($this->once())
             ->method('getPromotionPoints')
             ->willReturn($promotionResultSet);
 
-        // Instantiate the CultureFeedEventInfoService using the mock Uitpas
-        // object that will return the event we just created.
-        $infoService = new CultureFeedEventInfoService($uitpas);
-
         // Request info for the event.
-        $eventInfo = $infoService->getEventInfo($eventId);
+        $eventInfo = $this->infoService->getEventInfo($eventId);
         $prices = $eventInfo->getPrices();
         $advantages = $eventInfo->getAdvantages();
         $promotions = $eventInfo->getPromotions();
@@ -146,5 +154,33 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             ['10 punten: free drink'],
             $promotions
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_extract_a_date_range_from_an_uitpas_calendar()
+    {
+        $eventCalendar = new \CultureFeed_Uitpas_Calendar();
+        $today = new \DateTimeImmutable();
+        $tomorrow = $today->modify('+1 day');
+
+        $timestampToday = new \CultureFeed_Uitpas_Calendar_Timestamp();
+        $timestampToday->date = $today->getTimestamp();
+
+        $timestampTomorrow = new \CultureFeed_Uitpas_Calendar_Timestamp();
+        $timestampTomorrow->date = $tomorrow->getTimestamp();
+
+        $eventCalendar->addTimestamp($timestampToday);
+        $eventCalendar->addTimestamp($timestampTomorrow);
+
+        /** @var \CultureFeed_Uitpas_Calendar_Period $dateRange */
+        $dateRange = $this->infoService->getDateRangeFromUitpasCalendar($eventCalendar);
+
+        $expectedFromDate = $today->setTime(0, 0, 0)->getTimestamp();
+        $expectedToDate = $tomorrow->setTime(24, 59, 59)->getTimestamp();
+
+        $this->assertEquals($dateRange->datefrom, $expectedFromDate);
+        $this->assertEquals($dateRange->dateto, $expectedToDate);
     }
 }

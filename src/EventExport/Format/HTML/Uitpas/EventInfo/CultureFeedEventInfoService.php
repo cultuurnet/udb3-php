@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo;
 
 use CultureFeed_Uitpas;
+use CultureFeed_Uitpas_Calendar;
+use CultureFeed_Uitpas_Calendar_Period;
 use CultureFeed_Uitpas_CardSystem;
 use CultureFeed_Uitpas_DistributionKey;
 use CultureFeed_Uitpas_Event_CultureEvent;
@@ -80,14 +82,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
         if ($uitpasEvent) {
             $advantages = $this->getUitpasAdvantagesFromEvent($uitpasEvent);
 
-            foreach ($uitpasEvent->cardSystems as $cardSystem) {
-                foreach ($cardSystem->distributionKeys as $key) {
-                    $prices = array_merge($prices, $this->getUitpasPricesFromDistributionKey(
-                        $cardSystem,
-                        $key
-                    ));
-                }
-            }
+            $prices = $this->getUitpasPricesFromEvent($uitpasEvent);
 
             $promotions = $this->getUitpasPointsPromotionsFromEvent($uitpasEvent);
         }
@@ -102,9 +97,28 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
 
     /**
      * @param CultureFeed_Uitpas_Event_CultureEvent $event
+     * @return array
+     */
+    private function getUitpasPricesFromEvent(CultureFeed_Uitpas_Event_CultureEvent $event) {
+        $prices = [];
+
+        foreach ($event->cardSystems as $cardSystem) {
+            foreach ($cardSystem->distributionKeys as $key) {
+                $prices = array_merge($prices, $this->getUitpasPricesFromDistributionKey(
+                    $cardSystem,
+                    $key
+                ));
+            }
+        }
+
+        return $prices;
+    }
+
+    /**
+     * @param CultureFeed_Uitpas_Event_CultureEvent $event
      * @return string[]
      */
-    private function getUitpasAdvantagesFromEvent(\CultureFeed_Uitpas_Event_CultureEvent $event)
+    private function getUitpasAdvantagesFromEvent(CultureFeed_Uitpas_Event_CultureEvent $event)
     {
         $advantages = [];
 
@@ -117,19 +131,19 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
 
 
     /**
-     * @param \CultureFeed_Uitpas_Calendar $uitpasCalendar
-     * @return \CultureFeed_Uitpas_Calendar_Period
+     * @param CultureFeed_Uitpas_Calendar $uitpasCalendar
+     * @return CultureFeed_Uitpas_Calendar_Period
      */
-    public function getDateRangeFromUitpasCalendar(\CultureFeed_Uitpas_Calendar $uitpasCalendar)
+    public function getDateRangeFromUitpasCalendar(CultureFeed_Uitpas_Calendar $uitpasCalendar)
     {
-        $dateRange = new \CultureFeed_Uitpas_Calendar_Period();
+        $dateRange = new CultureFeed_Uitpas_Calendar_Period();
 
         if (!empty($uitpasCalendar->periods)) {
-            /** @var \CultureFeed_Uitpas_Calendar_Period $firstPeriod */
+            /** @var CultureFeed_Uitpas_Calendar_Period $firstPeriod */
             $firstPeriod = reset($uitpasCalendar->periods);
             $dateRange->datefrom = $firstPeriod->datefrom;
 
-            /** @var \CultureFeed_Uitpas_Calendar_Period $lastPeriod */
+            /** @var CultureFeed_Uitpas_Calendar_Period $lastPeriod */
             $lastPeriod =  end($uitpasCalendar->periods);
             $dateRange->dateto = $lastPeriod->dateto;
         } else if (!empty($uitpasCalendar->timestamps)) {
@@ -172,12 +186,12 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
     private function getUitpasPointsPromotionsFromEvent(\CultureFeed_Uitpas_Event_CultureEvent $event)
     {
         $promotions = [];
-        /** @var \CultureFeed_Uitpas_Calendar $eventCalendar */
+        /** @var CultureFeed_Uitpas_Calendar $eventCalendar */
         $eventCalendar = $event->calendar;
         if ($eventCalendar) {
             $dateRange = $this->getDateRangeFromUitpasCalendar($eventCalendar);
         } else {
-            $dateRange = new \CultureFeed_Uitpas_Calendar_Period();
+            $dateRange = new CultureFeed_Uitpas_Calendar_Period();
             $dateRange->datefrom = time();
         }
 

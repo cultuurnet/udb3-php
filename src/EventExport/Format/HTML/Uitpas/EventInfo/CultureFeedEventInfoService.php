@@ -78,7 +78,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
         $uitpasEvent = reset($resultSet->objects);
 
         if ($uitpasEvent) {
-            $advantages = array_merge($advantages, $this->getUitpasAdvantagesFromEvent($uitpasEvent));
+            $advantages = $this->getUitpasAdvantagesFromEvent($uitpasEvent);
 
             foreach ($uitpasEvent->cardSystems as $cardSystem) {
                 foreach ($cardSystem->distributionKeys as $key) {

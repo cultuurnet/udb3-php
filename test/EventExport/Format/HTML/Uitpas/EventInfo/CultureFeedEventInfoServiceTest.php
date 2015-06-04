@@ -163,32 +163,4 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             $promotions
         );
     }
-
-    /**
-     * @test
-     */
-    public function it_can_extract_a_date_range_from_an_uitpas_calendar()
-    {
-        $eventCalendar = new \CultureFeed_Uitpas_Calendar();
-        $today = new \DateTimeImmutable();
-        $tomorrow = $today->modify('+1 day');
-
-        $timestampToday = new \CultureFeed_Uitpas_Calendar_Timestamp();
-        $timestampToday->date = $today->getTimestamp();
-
-        $timestampTomorrow = new \CultureFeed_Uitpas_Calendar_Timestamp();
-        $timestampTomorrow->date = $tomorrow->getTimestamp();
-
-        $eventCalendar->addTimestamp($timestampToday);
-        $eventCalendar->addTimestamp($timestampTomorrow);
-
-        /** @var \CultureFeed_Uitpas_Calendar_Period $dateRange */
-        $dateRange = $this->infoService->getDateRangeFromUitpasCalendar($eventCalendar);
-
-        $expectedFromDate = $today->setTime(0, 0, 0)->getTimestamp();
-        $expectedToDate = $tomorrow->setTime(24, 59, 59)->getTimestamp();
-
-        $this->assertEquals($dateRange->datefrom, $expectedFromDate);
-        $this->assertEquals($dateRange->dateto, $expectedToDate);
-    }
 }

@@ -200,7 +200,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
         $promotionsQuery->balieConsumerKey = $event->organiserId;
         $promotionsQuery->cashingPeriodBegin = $dateRange->datefrom;
         if ($dateRange->dateto) {
-            $promotionsQuery->cashingPeriodBegin = $dateRange->dateto;
+            $promotionsQuery->cashingPeriodEnd = $dateRange->dateto;
         }
         $promotionsQuery->unexpired = true;
         $promotionsQuery->max = 2;

@@ -12,6 +12,7 @@ use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Editing\EventVariationCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
@@ -270,6 +271,38 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
             $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
         }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param EventVariationCreated $eventVariationCreatedCreated
+     */
+    public function applyEventVariationCreated(
+        EventVariationCreated $eventVariationCreatedCreated
+    ) {
+        // load the original event document and use its content for the variation
+        $document = $this->loadDocumentFromRepositoryByEventId(
+            $eventVariationCreatedCreated->getOriginalEventId()
+        );
+
+        $jsonLD = $document->getBody();
+
+        // override the original document id with the variation id
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $eventVariationCreatedCreated->getEventId()
+        );
+
+        // add the original event to the list of similar entities
+        $originalEventIri = $this->iriGenerator->iri(
+            $eventVariationCreatedCreated->getOriginalEventId()
+        );
+        $existingSameAsEntities = $jsonLD->sameAs;
+        $newSameAsEntities = array_unique(array_merge(
+            $existingSameAsEntities,
+            [$originalEventIri]
+        ));
+        $jsonLD->sameAs = $newSameAsEntities;
 
         $this->repository->save($document->withBody($jsonLD));
     }

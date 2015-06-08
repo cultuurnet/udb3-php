@@ -9,6 +9,7 @@ use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use Broadway\UuidGenerator\Testing\MockUuidGenerator;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Editing\EventVariationCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -169,6 +170,37 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                 DateTime::fromString('2015-01-20T13:25:21+01:00')
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_a_variation_of_an_existing_event()
+    {
+        $originalEventId = 'originalId';
+        $eventVariationId = 'variationId';
+        $originalEventDocument = new JsonDocument($originalEventId, '{"sameAs": []}');
+
+        $this->documentRepository->expects($this->once())
+            ->method('get')
+            ->with($originalEventId)
+            ->willReturn($originalEventDocument);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) {
+                        // make the original event is added to the list of similar entities
+                        $sameAs = $jsonDocument->getBody()->sameAs;
+                        return in_array('http://example.com/entity/originalId', $sameAs);
+                    }
+                )
+            );
+
+        $event = new EventVariationCreated($eventVariationId, $originalEventId);
+
+        $this->projector->applyEventVariationCreated($event);
     }
 
     /**

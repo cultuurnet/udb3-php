@@ -7,18 +7,34 @@ use CultureFeed_Uitpas_Calendar;
 use CultureFeed_Uitpas_Calendar_Timestamp;
 use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions;
+use DateTimeImmutable;
+use CultuurNet\Clock\FrozenClock;
 
 class EventOrganizerPromotionQueryFactoryTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var EventOrganizerPromotionQueryFactory
      */
     protected $queryFactory;
 
+    /**
+     * @var int
+     */
+    protected $unixTime = 435052800;
+
     public function setUp()
     {
-        $this->queryFactory = new EventOrganizerPromotionQueryFactory();
+        $this->dateTime = new DateTimeImmutable();
+
+        $this->queryFactory = new EventOrganizerPromotionQueryFactory(
+            new FrozenClock(
+                DateTimeImmutable::createFromFormat(
+                    'U',
+                    $this->unixTime,
+                    new \DateTimeZone('Europe/Brussels')
+                )
+            )
+        );
     }
 
     /**
@@ -87,6 +103,26 @@ class EventOrganizerPromotionQueryFactoryTest extends \PHPUnit_Framework_TestCas
         $expectedQuery->balieConsumerKey = $event->organiserId;
         $expectedQuery->cashingPeriodBegin = $expectedFromDate;
         $expectedQuery->cashingPeriodEnd = $expectedToDate;
+
+        $this->assertEquals($expectedQuery, $query);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_the_system_time_if_other_event_calendar_than_periods_or_timestamps()
+    {
+        $eventCalendar = new CultureFeed_Uitpas_Calendar();
+
+        $event = new CultureFeed_Uitpas_Event_CultureEvent();
+        $event->organiserId = 'xyz';
+        $event->calendar = $eventCalendar;
+
+        $query = $this->queryFactory->createForEvent($event);
+
+        $expectedQuery = $this->createBaseQuery();
+        $expectedQuery->balieConsumerKey = $event->organiserId;
+        $expectedQuery->cashingPeriodBegin = $this->unixTime;
 
         $this->assertEquals($expectedQuery, $query);
     }

@@ -7,9 +7,19 @@ use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions;
 use CultureFeed_Uitpas_Calendar;
 use CultureFeed_Uitpas_Calendar_Period;
+use CultuurNet\Clock\Clock;
 
 class EventOrganizerPromotionQueryFactory implements PromotionQueryFactoryInterface
 {
+    /**
+     * @var CultuurNet\Clock\Clock
+     */
+    private $clock;
+
+    public function __construct(Clock $clock)
+    {
+        $this->clock = $clock;
+    }
 
     /**
      * @inheritdoc
@@ -79,7 +89,8 @@ class EventOrganizerPromotionQueryFactory implements PromotionQueryFactoryInterf
         } else {
             // If there is no useful calendar info, start from the time the
             // export was created.
-            $dateRange->datefrom = time();
+            $now = $this->clock->getDateTime();
+            $dateRange->datefrom = $now->getTimestamp();
         }
 
         return $dateRange;

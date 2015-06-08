@@ -52,8 +52,10 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
     /**
      * @param CultureFeed_Uitpas $uitpas
      */
-    public function __construct(CultureFeed_Uitpas $uitpas)
-    {
+    public function __construct(
+        CultureFeed_Uitpas $uitpas,
+        PromotionQueryFactoryInterface $promotionQueryFactory
+    ) {
         $this->uitpas = $uitpas;
 
         $this->kansenTariefForCurrentCardSystem =
@@ -64,7 +66,7 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
 
         $this->pointCollecting = new PointCollectingSpecification();
 
-        $this->promotionQueryFactory = new EventOrganizerPromotionQueryFactory();
+        $this->promotionQueryFactory = $promotionQueryFactory;
     }
 
     /**

@@ -2,15 +2,16 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo;
 
-use \CultureFeed_ResultSet as ResultSet;
-use \CultureFeed_Uitpas as Uitpas;
-use \CultureFeed_Uitpas_CardSystem as CardSystem;
-use \CultureFeed_Uitpas_DistributionKey_Condition as Condition;
-use \CultureFeed_Uitpas_Event_Query_SearchEventsOptions as SearchEventsOptions;
+use CultureFeed_ResultSet as ResultSet;
+use CultureFeed_Uitpas as Uitpas;
+use CultureFeed_Uitpas_CardSystem as CardSystem;
+use CultureFeed_Uitpas_DistributionKey_Condition as Condition;
+use CultureFeed_Uitpas_Event_Query_SearchEventsOptions as SearchEventsOptions;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyConditionFactory;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyFactory;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventFactory;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Promotion\PromotionQueryFactoryInterface;
 
 /**
  * Class CultureFeedEventInfoServiceTest
@@ -28,10 +29,20 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $infoService;
 
+    /**
+     * @var PromotionQueryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $promotionQueryFactory;
+
     public function setUp()
     {
+        $this->promotionQueryFactory = $this->getMock(PromotionQueryFactoryInterface::class);
+
         $this->uitpas = $this->getMock(Uitpas::class);
-        $this->infoService = new CultureFeedEventInfoService($this->uitpas);
+        $this->infoService = new CultureFeedEventInfoService(
+            $this->uitpas,
+            $this->promotionQueryFactory
+        );
     }
 
     /**
@@ -119,8 +130,16 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             ->with($searchEvents)
             ->willReturn($resultSet);
 
+        $promotionsQuery = new \CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions();
+
+        $this->promotionQueryFactory->expects($this->once())
+            ->method('createForEvent')
+            ->with($event)
+            ->willReturn($promotionsQuery);
+
         $this->uitpas->expects($this->once())
             ->method('getPromotionPoints')
+            ->with($promotionsQuery)
             ->willReturn($promotionResultSet);
 
         // Request info for the event.

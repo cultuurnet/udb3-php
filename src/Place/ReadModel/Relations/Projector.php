@@ -34,7 +34,7 @@ class Projector implements EventListenerInterface
     {
 
         // No relation exists in UDB2.
-        $placeId = $place->getPlaceId();
+        $placeId = $place->getActorId();
         $this->storeRelations($placeId, null);
     }
 

@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3;
 
+use Assert\Assertion;
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 
@@ -15,6 +16,18 @@ use Broadway\Domain\DomainEventStream;
  */
 trait Udb3RepositoryTrait
 {
+
+    private function decorateForWrite(AggregateRoot $aggregate, DomainEventStream $eventStream)
+    {
+        $aggregateType       = $this->getType();
+        $aggregateIdentifier = $aggregate->getAggregateRootId();
+
+        foreach ($this->eventStreamDecorators as $eventStreamDecorator) {
+            $eventStream = $eventStreamDecorator->decorateForWrite($aggregateType, $aggregateIdentifier, $eventStream);
+        }
+
+        return $eventStream;
+    }
 
     private function getType()
     {

@@ -92,7 +92,7 @@ class OrganizerRepository extends ActorRepository
     /**
      * {@inheritdoc}
      */
-    public function add(AggregateRoot $aggregate)
+    public function save(AggregateRoot $aggregate)
     {
 
         if ($this->syncBack) {
@@ -120,7 +120,7 @@ class OrganizerRepository extends ActorRepository
             }
         }
 
-        $this->decoratee->add($aggregate);
+        $this->decoratee->save($aggregate);
     }
 
     /**

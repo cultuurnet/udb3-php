@@ -114,7 +114,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
     /**
      * {@inheritdoc}
      */
-    public function add(AggregateRoot $aggregate)
+    public function save(AggregateRoot $aggregate)
     {
 
         if ($this->syncBack) {
@@ -223,7 +223,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
             }
         }
 
-        $this->decoratee->add($aggregate);
+        $this->decoratee->save($aggregate);
     }
 
     /**

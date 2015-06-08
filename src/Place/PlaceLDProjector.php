@@ -22,7 +22,6 @@ use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -41,6 +40,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Theme;
 
@@ -153,7 +153,7 @@ class PlaceLDProjector extends ActorLDProjector
     /**
      * @param PlaceCreated $placeCreated
      */
-    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage)
+    public function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage)
     {
         $document = $this->newDocument($placeCreated->getPlaceId());
 
@@ -196,7 +196,7 @@ class PlaceLDProjector extends ActorLDProjector
     /**
      * @param PlaceDeleted $placeDeleted
      */
-    protected function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessageInterface $domainMessage)
+    public function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
         $this->repository->delete($placeDeleted->getPlaceId());
     }
@@ -239,13 +239,16 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the description updated event to the place repository.
      * @param DescriptionUpdated $descriptionUpdated
      */
-    protected function applyDescriptionUpdated(
+    public function applyDescriptionUpdated(
         DescriptionUpdated $descriptionUpdated
     ) {
 
         $document = $this->loadPlaceDocumentFromRepository($descriptionUpdated);
 
         $placeLD = $document->getBody();
+        if (empty($placeLD->description)) {
+            $placeLD->description = new \stdClass();
+        }
         $placeLD->description->{'nl'} = $descriptionUpdated->getDescription();
 
         $this->repository->save($document->withBody($placeLD));
@@ -255,7 +258,7 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the booking info updated event to the event repository.
      * @param BookingInfoUpdated $bookingInfoUpdated
      */
-    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    public function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
@@ -271,7 +274,7 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the typical age range updated event to the event repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
-    protected function applyTypicalAgeRangeUpdated(
+    public function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated
     ) {
         $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeUpdated);
@@ -291,7 +294,7 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the organizer updated event to the event repository.
      * @param OrganizerUpdated $organizerUpdated
      */
-    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($organizerUpdated);
@@ -309,7 +312,7 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the organizer delete event to the event repository.
      * @param OrganizerDeleted $organizerDeleted
      */
-    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($organizerDeleted);
@@ -325,7 +328,7 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the contact point updated event to the event repository.
      * @param ContactPointUpdated $contactPointUpdated
      */
-    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    public function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($contactPointUpdated);
@@ -340,7 +343,7 @@ class PlaceLDProjector extends ActorLDProjector
      * Apply the facilitiesupdated event to the event repository.
      * @param FacilitiesUpdated $facilitiesUpdated
      */
-    protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
+    public function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
@@ -373,7 +376,7 @@ class PlaceLDProjector extends ActorLDProjector
      *
      * @param ImageAdded $imageAdded
      */
-    protected function applyImageAdded(ImageAdded $imageAdded)
+    public function applyImageAdded(ImageAdded $imageAdded)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($imageAdded);
@@ -391,7 +394,7 @@ class PlaceLDProjector extends ActorLDProjector
      *
      * @param ImageUpdated $imageUpdated
      */
-    protected function applyImageUpdated(ImageUpdated $imageUpdated)
+    public function applyImageUpdated(ImageUpdated $imageUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($imageUpdated);
@@ -408,7 +411,7 @@ class PlaceLDProjector extends ActorLDProjector
      *
      * @param ImageDeleted $imageDeleted
      */
-    protected function applyImageDeleted(ImageDeleted $imageDeleted)
+    public function applyImageDeleted(ImageDeleted $imageDeleted)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($imageDeleted);

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event\ReadModel;
+namespace CultuurNet\UDB3\ReadModel;
 
 use Broadway\ReadModel\ReadModelInterface;
 

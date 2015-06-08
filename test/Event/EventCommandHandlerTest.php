@@ -28,7 +28,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
 
-    use \CultuurNet\UDB3\CommandHandlerTestTrait;
+    use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 
     /**
      * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject

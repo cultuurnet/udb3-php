@@ -28,7 +28,6 @@ use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
@@ -39,6 +38,7 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
@@ -290,7 +290,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventDeleted $eventDeleted
      */
-    protected function applyEventDeleted(EventDeleted $eventDeleted, DomainMessageInterface $domainMessage)
+    public function applyEventDeleted(EventDeleted $eventDeleted)
     {
         $this->repository->delete($eventDeleted->getEventId());
     }
@@ -436,6 +436,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $document = $this->loadDocumentFromRepository($descriptionUpdated);
 
         $eventLd = $document->getBody();
+        if (empty($eventLd->description)) {
+            $eventLd->description = new \stdClass();
+        }
         $eventLd->description->{'nl'} = $descriptionUpdated->getDescription();
 
         $this->repository->save($document->withBody($eventLd));

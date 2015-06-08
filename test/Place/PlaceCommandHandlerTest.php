@@ -8,6 +8,7 @@ use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Place\CommandHandler;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
@@ -23,7 +24,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {
 
-    use \CultuurNet\UDB3\CommandHandlerTestTrait;
+    use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 
     /**
      * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
@@ -55,7 +56,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Address('$street', '$postalcode', '$locality', '$country'),
             new Calendar('permanent', '', '')
         );
     }
@@ -87,7 +88,9 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_update_facilities_of_a_place()
     {
         $id = '1';
-        $facilities = array('testing');
+        $facilities = [
+            new Facility('facility1', 'facility label'),
+        ];
 
         $this->scenario
             ->withAggregateId($id)

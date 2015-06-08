@@ -7,13 +7,12 @@
 
 namespace CultuurNet\UDB3;
 
-use CultuurNet\UDB3\Event\EventType;
 use ReflectionObject;
 
 /**
- * Description of CommandHandlerTestTrait
+ * Provides a trait to test commands that are applicable for all UDB3 offer types
  */
-trait CommandHandlerTestTrait {
+trait OfferCommandHandlerTestTrait {
 
     /**
      * Get the namespaced classname of the command to create.

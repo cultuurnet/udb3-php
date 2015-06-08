@@ -3,9 +3,10 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Promotion;
 
-use CultureFeed_Uitpas_Event_CultureEvent;
 use CultureFeed_Uitpas_Calendar;
 use CultureFeed_Uitpas_Calendar_Timestamp;
+use CultureFeed_Uitpas_Event_CultureEvent;
+use CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions;
 
 class EventOrganizerPromotionQueryFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,14 +40,37 @@ class EventOrganizerPromotionQueryFactoryTest extends \PHPUnit_Framework_TestCas
         $eventCalendar->addTimestamp($timestampTomorrow);
 
         $event = new CultureFeed_Uitpas_Event_CultureEvent();
+        $event->organiserId = 'xyz';
         $event->calendar = $eventCalendar;
 
-        $queryOptions = $this->queryFactory->createForEvent($event);
+        $query = $this->queryFactory->createForEvent($event);
 
         $expectedFromDate = $today->setTime(0, 0, 0)->getTimestamp();
         $expectedToDate = $tomorrow->setTime(24, 59, 59)->getTimestamp();
 
-        $this->assertEquals($queryOptions->cashingPeriodBegin, $expectedFromDate);
-        $this->assertEquals($queryOptions->cashingPeriodEnd, $expectedToDate);
+        $expectedQuery = $this->createBaseQuery();
+        $expectedQuery->balieConsumerKey = $event->organiserId;
+        $expectedQuery->cashingPeriodBegin = $expectedFromDate;
+        $expectedQuery->cashingPeriodEnd = $expectedToDate;
+
+        $this->assertEquals($expectedQuery, $query);
+
+        /*$this->assertEquals($queryOptions->cashingPeriodBegin, $expectedFromDate);
+        $this->assertEquals($queryOptions->cashingPeriodEnd, $expectedToDate);*/
+    }
+
+    /**
+     * Creates the base for the query, with all necessary properties set that
+     * are independent from the cultural event passed to createForEvent().
+     *
+     * @return CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions
+     */
+    private function createBaseQuery()
+    {
+        $expectedQueryOptions = new CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions();
+        $expectedQueryOptions->max = 2;
+        $expectedQueryOptions->unexpired = true;
+
+        return $expectedQueryOptions;
     }
 }

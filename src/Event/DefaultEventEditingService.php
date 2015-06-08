@@ -10,6 +10,8 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Editing\EditDescription;
+use CultuurNet\UDB3\Event\Editing\EditPurpose;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;

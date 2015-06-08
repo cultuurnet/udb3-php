@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Event\Editing\EditPurpose;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;

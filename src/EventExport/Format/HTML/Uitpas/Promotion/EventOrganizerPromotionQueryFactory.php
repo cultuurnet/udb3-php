@@ -64,7 +64,7 @@ class EventOrganizerPromotionQueryFactory implements PromotionQueryFactoryInterf
             /** @var CultureFeed_Uitpas_Calendar_Period $lastPeriod */
             $lastPeriod =  end($uitpasCalendar->periods);
             $dateRange->dateto = $lastPeriod->dateto;
-        } else if (!empty($uitpasCalendar->timestamps)) {
+        } elseif (!empty($uitpasCalendar->timestamps)) {
             /**
              * The custom Timestamp format for these UiTPAS calendars is a pain
              * to work with. I pick the start and end of the day to determine the

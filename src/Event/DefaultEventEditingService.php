@@ -92,6 +92,18 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function editDescription($eventId, EditPurpose $purpose, $description)
+    {
+        $this->guardEventId($eventId);
+
+        return $this->commandBus->dispatch(
+            new EditDescription($eventId, $purpose, $description)
+        );
+    }
+
+    /**
      * @param string $eventId
      * @throws EventNotFoundException
      */

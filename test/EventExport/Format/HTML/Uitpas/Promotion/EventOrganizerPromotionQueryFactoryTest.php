@@ -57,6 +57,41 @@ class EventOrganizerPromotionQueryFactoryTest extends \PHPUnit_Framework_TestCas
     }
 
     /**
+     * @test
+     */
+    public function it_handles_a_calendar_with_periods()
+    {
+        $eventCalendar = new CultureFeed_Uitpas_Calendar();
+
+        $period = new \CultureFeed_Uitpas_Calendar_Period();
+        $period->datefrom = 1420070400;
+        $period->dateto = 1422748800;
+        $eventCalendar->addPeriod($period);
+
+        $secondPeriod = new \CultureFeed_Uitpas_Calendar_Period();
+        $secondPeriod->datefrom = 1425168000;
+        $secondPeriod->dateto = 1427846400;
+
+        $eventCalendar->addPeriod($secondPeriod);
+
+        $event = new CultureFeed_Uitpas_Event_CultureEvent();
+        $event->organiserId = 'xyz';
+        $event->calendar = $eventCalendar;
+
+        $query = $this->queryFactory->createForEvent($event);
+
+        $expectedFromDate = $period->datefrom;
+        $expectedToDate = $secondPeriod->dateto;
+
+        $expectedQuery = $this->createBaseQuery();
+        $expectedQuery->balieConsumerKey = $event->organiserId;
+        $expectedQuery->cashingPeriodBegin = $expectedFromDate;
+        $expectedQuery->cashingPeriodEnd = $expectedToDate;
+
+        $this->assertEquals($expectedQuery, $query);
+    }
+
+    /**
      * Creates the base for the query, with all necessary properties set that
      * are independent from the cultural event passed to createForEvent().
      *

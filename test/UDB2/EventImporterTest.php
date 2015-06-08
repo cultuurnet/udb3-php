@@ -111,8 +111,7 @@ class EventImporterTest extends \PHPUnit_Framework_TestCase
             new Location('7914ed2d-9f28-4946-b9bd-ae8f7a4aea22', 'LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
             new Calendar('single', '2015-01-26T13:25:21+01:00')
         );
-
-        $this->repository->add($event);
+        $this->repository->save($event);
 
         $eventXml = file_get_contents(
             __DIR__ . '/search-results-single-event.xml'

@@ -6,30 +6,22 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventSourcing\AggregateFactory\AggregateFactoryInterface;
+use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
+use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\EventStoreInterface;
-use Broadway\EventStore\EventStreamNotFoundException;
-use Broadway\Repository\AggregateNotFoundException;
-use Broadway\Repository\RepositoryInterface;
 
 
 /**
  * Class EventRepository
- *
- * This class used to extend EventSourcingRepository from the Broadway library,
- * however we had to change it to publish the decorated event stream to the
- * event bus, instead of the non-decorated event stream. See the add() method.
- *
- * @link https://github.com/qandidate-labs/broadway/issues/61
  */
-class EventRepository implements RepositoryInterface
+class EventRepository extends EventSourcingRepository
 {
-    use \CultuurNet\UDB3\Udb3RepositoryTrait;
-
-    private $eventStore;
-    private $eventBus;
-    private $aggregateClass;
-    private $eventStreamDecorators = array();
+    /**
+     * @var AggregateFactoryInterface
+     */
+    private $aggregateFactory;
 
     /**
      * @param EventStoreInterface             $eventStore
@@ -41,26 +33,12 @@ class EventRepository implements RepositoryInterface
         EventBusInterface $eventBus,
         array $eventStreamDecorators = array()
     ) {
-        $this->eventStore            = $eventStore;
-        $this->eventBus              = $eventBus;
-        $this->aggregateClass        = Event::class;
-        $this->eventStreamDecorators = $eventStreamDecorators;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function load($id)
-    {
-        try {
-            $domainEventStream = $this->eventStore->load($id);
-
-            $aggregate = new $this->aggregateClass();
-            $aggregate->initializeState($domainEventStream);
-
-            return $aggregate;
-        } catch (EventStreamNotFoundException $e) {
-            throw AggregateNotFoundException::create($id, $e);
-        }
+        parent::__construct(
+            $eventStore,
+            $eventBus,
+            Event::class,
+            new PublicConstructorAggregateFactory(),
+            $eventStreamDecorators
+        );
     }
 }

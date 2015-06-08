@@ -159,7 +159,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
 
         $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
 
         return $eventId;
     }

@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -236,11 +236,11 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param EventCreated $eventCreated
-     * @param DomainMessageInterface $domainMessage
+     * @param DomainMessage $domainMessage
      */
     protected function applyEventCreated(
         EventCreated $eventCreated,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $document = $this->newDocument($eventCreated->getEventId());
 

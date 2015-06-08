@@ -10,7 +10,6 @@ namespace CultuurNet\UDB3\Place;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
@@ -153,7 +152,7 @@ class PlaceLDProjector extends ActorLDProjector
     /**
      * @param PlaceCreated $placeCreated
      */
-    public function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage)
+    public function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
         $document = $this->newDocument($placeCreated->getPlaceId());
 

@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Search;
 
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use Doctrine\Common\Cache\Cache;
 
@@ -32,16 +32,16 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
     }
 
     /**
-     * @param DomainMessageInterface $domainMessage
+     * @param DomainMessage $domainMessage
      */
-    public function handle(DomainMessageInterface $domainMessage)
+    public function handle(DomainMessage $domainMessage)
     {
         $event = $domainMessage->getPayload();
 
         if (strpos(get_class($event), 'CultuurNet\UDB3\Event') === 0) {
             $this->cache->delete('default-search');
             $result = $this->search->search('*.*', 30, 0, 'lastupdated desc');
-            $this->cache->save('default-search', $result);
+            $this->cache->save('default-search', serialize($result));
         }
     }
 
@@ -63,11 +63,10 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
         if ($query == '*.*' && $limit == 30 && $start == 0 && $sort == 'lastupdated desc') {
             $cacheResult = $this->cache->fetch('default-search');
             if ($cacheResult) {
-                return $cacheResult;
+                return unserialize($cacheResult);
             } else {
-                $result = $this->search->search($query, $limit, $start, $sort, $conditions);
-                $this->cache->save('default-search', $result);
-
+                $result = $this->search->search($query, $limit, $start, $sort);
+                $this->cache->save('default-search', serialize($result));
                 return $result;
             }
         } else {

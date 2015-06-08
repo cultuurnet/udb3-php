@@ -50,7 +50,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateDescription->getDescription()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -67,7 +67,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $typicalAgeRange->getTypicalAgeRange()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -84,7 +84,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateOrganizer->getOrganizerId()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -101,7 +101,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $deleteOrganizer->getOrganizerId()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -118,7 +118,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateContactPoint->getContactPoint()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -135,7 +135,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateFacilities->getFacilities()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
     }
 
     /**
@@ -151,7 +151,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateBookingInfo->getBookingInfo()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -170,7 +170,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $addImage->getMediaObject()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -189,7 +189,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateImage->getMediaObject()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -208,7 +208,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $deleteImage->getInternalId()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -229,7 +229,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateMajorInfo->getTheme()
         );
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 
@@ -243,7 +243,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
         $place = $this->placeRepository->load($deletePlace->getId());
         $place->deletePlace();
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
     }
 }

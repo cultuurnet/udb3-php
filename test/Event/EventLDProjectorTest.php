@@ -371,8 +371,20 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             '@type' => 'Place',
             '@id' => 'http://example.com/entity/LOCATION-ABC-123'
         );
-        $jsonLD->calendarType = 'single';
+        $jsonLD->calendarType = 'multiple';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->endDate = '2015-01-29T13:25:21+01:00';
+        $jsonLD->subEvent = array();
+        $jsonLD->subEvent[] = array(
+            '@type' => 'Event',
+            'startDate' => '2015-01-26T13:25:21+01:00',
+            'endDate' => '2015-01-27T13:25:21+01:00',
+        );
+        $jsonLD->subEvent[] = array(
+            '@type' => 'Event',
+            'startDate' => '2015-01-28T13:25:21+01:00',
+            'endDate' => '2015-01-29T13:25:21+01:00',
+        );
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -389,7 +401,6 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
-        $jsonLD->creator = '1 (Tester)';
 
         $expectedDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);
@@ -413,15 +424,11 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ->method('save')
             ->with($expectedDocument);
 
-        $metadata = array(
-          'user_id' => '1',
-          'user_nick' => 'Tester'
-        );
         $this->projector->handle(
             new DomainMessage(
                 1,
                 1,
-                new Metadata($metadata),
+                new Metadata(),
                 $eventCreated,
                 DateTime::fromString('2015-01-20T13:25:21+01:00')
             )

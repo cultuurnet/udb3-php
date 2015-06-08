@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
@@ -136,7 +136,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
             \CultureFeed_Cdb_Default::CDB_SCHEME_URL
         );
 
-        $this->repository->add($event);
+        $this->repository->save($event);
 
         return $event;
     }
@@ -177,7 +177,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
                 \CultureFeed_Cdb_Default::CDB_SCHEME_URL
             );
 
-            $this->repository->add($event);
+            $this->repository->save($event);
         } catch (\Exception $e) {
             if ($fallbackToUpdate) {
                 if ($this->logger) {

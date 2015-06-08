@@ -10,7 +10,6 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
@@ -73,7 +72,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param OrganizerCreated $organizerCreated
      */
-    protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessageInterface $domainMessage)
+    protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
     {
         $document = $this->newDocument($organizerCreated->getOrganizerId());
 

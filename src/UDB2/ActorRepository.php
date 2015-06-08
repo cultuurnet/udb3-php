@@ -79,7 +79,7 @@ abstract class ActorRepository extends EntityRepository
                 \CultureFeed_Cdb_Default::CDB_SCHEME_URL
             );
 
-            $this->add($actor);
+            $this->save($actor);
         }
 
         return $actor;

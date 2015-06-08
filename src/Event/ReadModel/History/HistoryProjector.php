@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\History;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -37,7 +37,7 @@ class HistoryProjector implements EventListenerInterface
 
     private function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
@@ -94,7 +94,7 @@ class HistoryProjector implements EventListenerInterface
 
     private function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $this->writeHistory(
             $eventUpdatedFromUDB2->getEventId(),
@@ -116,7 +116,7 @@ class HistoryProjector implements EventListenerInterface
 
     private function applyEventWasLabelled(
         EventWasLabelled $eventWasLabelled,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $this->writeHistory(
             $eventWasLabelled->getEventId(),
@@ -130,7 +130,7 @@ class HistoryProjector implements EventListenerInterface
 
     private function applyUnlabelled(
         Unlabelled $unlabelled,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $this->writeHistory(
             $unlabelled->getEventId(),
@@ -144,7 +144,7 @@ class HistoryProjector implements EventListenerInterface
 
     private function applyTitleTranslated(
         TitleTranslated $titleTranslated,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $this->writeHistory(
             $titleTranslated->getEventId(),
@@ -158,7 +158,7 @@ class HistoryProjector implements EventListenerInterface
 
     private function applyDescriptionTranslated(
         DescriptionTranslated $descriptionTranslated,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $this->writeHistory(
             $descriptionTranslated->getEventId(),

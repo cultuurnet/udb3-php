@@ -3,7 +3,9 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Editing;
+
+use CultuurNet\UDB3\Event\EventEvent;
 
 abstract class PropertyEdited extends EventEvent
 {

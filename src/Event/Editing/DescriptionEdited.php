@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Editing;
 
 class DescriptionEdited extends PropertyEdited
 {

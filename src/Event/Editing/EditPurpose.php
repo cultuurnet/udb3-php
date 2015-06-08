@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\Editing;
 
 use ValueObjects\String\String;
 

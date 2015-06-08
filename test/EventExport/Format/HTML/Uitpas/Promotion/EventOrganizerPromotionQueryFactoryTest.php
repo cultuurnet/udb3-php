@@ -54,9 +54,6 @@ class EventOrganizerPromotionQueryFactoryTest extends \PHPUnit_Framework_TestCas
         $expectedQuery->cashingPeriodEnd = $expectedToDate;
 
         $this->assertEquals($expectedQuery, $query);
-
-        /*$this->assertEquals($queryOptions->cashingPeriodBegin, $expectedFromDate);
-        $this->assertEquals($queryOptions->cashingPeriodEnd, $expectedToDate);*/
     }
 
     /**

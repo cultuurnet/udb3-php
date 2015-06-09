@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index;
 
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -144,7 +144,7 @@ class Projector implements EventListenerInterface
     /**
      * Listener for event created commands.
      */
-    protected function applyEventCreated(EventCreated $eventCreated, DomainMessageInterface $domainMessage)
+    protected function applyEventCreated(EventCreated $eventCreated, DomainMessage $domainMessage)
     {
 
         $eventId = $eventCreated->getEventId();
@@ -162,7 +162,7 @@ class Projector implements EventListenerInterface
     /**
      * Listener for place created commands.
      */
-    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessageInterface $domainMessage)
+    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
 
         $placeId = $placeCreated->getPlaceId();
@@ -179,7 +179,7 @@ class Projector implements EventListenerInterface
     /**
      * Listener for organizer created commands.
      */
-    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessageInterface $domainMessage)
+    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessage $domainMessage)
     {
 
         $organizerId = $organizer->getOrganizerId();
@@ -205,14 +205,14 @@ class Projector implements EventListenerInterface
     /**
      * Remove the index for events
      */
-    public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessageInterface $domainMessage) {
+    public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage) {
         $this->repository->deleteIndex($eventDeleted->getEventId());
     }
 
     /**
      * Remove the index for places
      */
-    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessageInterface $domainMessage) {
+    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage) {
         $this->repository->deleteIndex($placeDeleted->getPlaceId());
     }
 }

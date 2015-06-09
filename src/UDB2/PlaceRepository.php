@@ -8,7 +8,7 @@
 namespace CultuurNet\UDB3\UDB2;
 
 use Broadway\Domain\AggregateRoot;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Repository\RepositoryInterface;
@@ -35,6 +35,7 @@ use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
@@ -127,7 +128,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
                 $domainEventStream
             );
 
-            /** @var DomainMessageInterface $domainMessage */
+            /** @var DomainMessage $domainMessage */
             foreach ($eventStream as $domainMessage) {
                 $domainEvent = $domainMessage->getPayload();
                 switch (get_class($domainEvent)) {

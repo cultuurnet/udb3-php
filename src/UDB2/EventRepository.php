@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;

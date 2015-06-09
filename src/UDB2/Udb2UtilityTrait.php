@@ -34,6 +34,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use DateTime;
 use Zend\Validator\Exception\RuntimeException;
 
 /**
@@ -148,8 +149,9 @@ trait Udb2UtilityTrait
                 );
             }
 
-        // Single day
-        } elseif ($eventCalendar->getType() == Calendar::SINGLE) {
+        }
+        // Single day.
+        elseif ($eventCalendar->getType() == Calendar::SINGLE) {
             $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
             $startdate = strtotime($eventCalendar->getStartDate());
             $enddate = strtotime($eventCalendar->getEndDate());
@@ -284,11 +286,13 @@ trait Udb2UtilityTrait
             $bookingPeriod = new CultureFeed_Cdb_Data_Calendar_BookingPeriod();
         }
 
-        if (!empty($bookingInfo->availabilityStarts)) {
-            $bookingPeriod->setDateFrom($bookingInfo->availabilityStarts);
+        if ($bookingInfo->getAvailabilityStarts()) {
+            $startDate = new DateTime($bookingInfo->getAvailabilityStarts());
+            $bookingPeriod->setDateFrom($startDate->getTimestamp());
         }
-        if (!empty($bookingInfo->availabilityEnds)) {
-            $bookingPeriod->setDateTill($bookingInfo->availabilityEnds);
+        if ($bookingInfo->getAvailabilityEnds()) {
+            $endDate = new DateTime($bookingInfo->getAvailabilityEnds());
+            $bookingPeriod->setDateTill($endDate->getTimestamp());
         }
         $cdbItem->setBookingPeriod($bookingPeriod);
 
@@ -297,31 +301,31 @@ trait Udb2UtilityTrait
         if (empty($contactInfo)) {
             $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
         }
-        if (!empty($bookingInfo->phone)) {
+        if ($bookingInfo->getPhone()) {
             foreach ($contactInfo->getPhones() as $phoneIndex => $phone) {
                 if ($phone->isForReservations()) {
                     $contactInfo->removePhone($phoneIndex);
                 }
             }
-            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->phone));
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->getPhone()));
         }
 
-        if (!empty($bookingInfo->url)) {
+        if ($bookingInfo->getUrl()) {
             foreach ($contactInfo->getUrls() as $urlIndex => $url) {
                 if ($url->isForReservations()) {
                     $contactInfo->removeUrl($urlIndex);
                 }
             }
-            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->url));
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->getUrl()));
         }
 
-        if (!empty($bookingInfo->email)) {
+        if (!empty($bookingInfo->getEmail())) {
             foreach ($contactInfo->getMails() as $mailIndex => $mail) {
                 if ($mail->isForReservations()) {
                     $contactInfo->removeMail($mailIndex);
                 }
             }
-            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->email));
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->getEmail()));
         }
         $cdbItem->setContactInfo($contactInfo);
 

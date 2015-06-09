@@ -12,7 +12,6 @@ use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\EventStoreInterface;
 
-
 /**
  * Class EventRepository
  */

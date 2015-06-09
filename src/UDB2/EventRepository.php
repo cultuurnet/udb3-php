@@ -175,8 +175,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
                     case EventCreated::class:
                         $this->applyEventCreated(
-                          $domainEvent,
-                          $domainMessage->getMetadata()
+                            $domainEvent,
+                            $domainMessage->getMetadata()
                         );
                         break;
 

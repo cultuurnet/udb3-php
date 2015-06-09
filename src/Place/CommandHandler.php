@@ -20,8 +20,9 @@ use Broadway\Repository\RepositoryInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-
-
+/**
+ * Commandhandler for places.
+ */
 class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;

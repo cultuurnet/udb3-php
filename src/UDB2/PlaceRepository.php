@@ -135,8 +135,8 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case PlaceCreated::class:
                         $this->applyPlaceCreated(
-                          $domainEvent,
-                          $domainMessage->getMetadata()
+                            $domainEvent,
+                            $domainMessage->getMetadata()
                         );
                         break;
 

@@ -12,7 +12,8 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 /**
  * Provides a trait to test ld projection that is applicable for all UDB3 offer types
  */
-trait OfferLDProjectorTestTrait {
+trait OfferLDProjectorTestTrait
+{
 
     /**
      * Get the namespaced classname of the event to create.
@@ -588,5 +589,4 @@ trait OfferLDProjectorTestTrait {
 
         $this->projector->applyTypicalAgeRangeUpdated($typicalAgeRangeUpdated);
     }
-
 }

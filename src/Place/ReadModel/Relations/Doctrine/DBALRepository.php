@@ -69,7 +69,8 @@ class DBALRepository implements RepositoryInterface
         return $events;
     }
 
-    public function removeRelations($eventId) {
+    public function removeRelations($eventId)
+    {
       // @todo implement this for non-drupal.
     }
 

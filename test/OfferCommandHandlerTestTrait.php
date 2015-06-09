@@ -12,7 +12,8 @@ use ReflectionObject;
 /**
  * Provides a trait to test commands that are applicable for all UDB3 offer types
  */
-trait OfferCommandHandlerTestTrait {
+trait OfferCommandHandlerTestTrait
+{
 
     /**
      * Get the namespaced classname of the command to create.
@@ -54,7 +55,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $bookingInfo))
+                new $commandClass($id, $bookingInfo)
+            )
             ->then([new $eventClass($id, $bookingInfo)]);
     }
 
@@ -74,7 +76,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $contactPoint))
+                new $commandClass($id, $contactPoint)
+            )
             ->then([new $eventClass($id, $contactPoint)]);
     }
 
@@ -94,7 +97,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $description))
+                new $commandClass($id, $description)
+            )
             ->then([new $eventClass($id, $description)]);
     }
 
@@ -114,7 +118,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $mediaObject))
+                new $commandClass($id, $mediaObject)
+            )
             ->then([new $eventClass($id, $mediaObject)]);
     }
 
@@ -135,7 +140,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $indexToDelete, $internalId))
+                new $commandClass($id, $indexToDelete, $internalId)
+            )
             ->then([new $eventClass($id, $indexToDelete, $internalId)]);
     }
 
@@ -156,7 +162,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $index, $mediaObject))
+                new $commandClass($id, $index, $mediaObject)
+            )
             ->then([new $eventClass($id, $index, $mediaObject)]);
     }
 
@@ -176,7 +183,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $organizerId))
+                new $commandClass($id, $organizerId)
+            )
             ->then([new $eventClass($id, $organizerId)]);
     }
 
@@ -196,7 +204,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $organizer))
+                new $commandClass($id, $organizer)
+            )
             ->then([new $eventClass($id, $organizer)]);
     }
 
@@ -216,8 +225,8 @@ trait OfferCommandHandlerTestTrait {
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new $commandClass($id, $ageRange))
+                new $commandClass($id, $ageRange)
+            )
             ->then([new $eventClass($id, $ageRange)]);
     }
-
 }

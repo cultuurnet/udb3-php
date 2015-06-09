@@ -78,7 +78,8 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new UpdateMajorInfo($id, $title, $eventType, $address, $calendar))
+                new UpdateMajorInfo($id, $title, $eventType, $address, $calendar)
+            )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $address, $calendar)]);
     }
 
@@ -98,7 +99,8 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new UpdateFacilities($id, $facilities))
+                new UpdateFacilities($id, $facilities)
+            )
             ->then([new FacilitiesUpdated($id, $facilities)]);
     }
 
@@ -114,7 +116,8 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new DeletePlace($id))
+                new DeletePlace($id)
+            )
             ->then([new PlaceDeleted($id)]);
     }
 }

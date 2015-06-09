@@ -26,8 +26,9 @@ use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-
-
+/**
+ * Commandhandler for events
+ */
 class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;

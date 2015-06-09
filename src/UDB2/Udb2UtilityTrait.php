@@ -148,10 +148,8 @@ trait Udb2UtilityTrait
                     )
                 );
             }
-
-        }
         // Single day.
-        elseif ($eventCalendar->getType() == Calendar::SINGLE) {
+        } elseif ($eventCalendar->getType() == Calendar::SINGLE) {
             $calendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
             $startdate = strtotime($eventCalendar->getStartDate());
             $enddate = strtotime($eventCalendar->getEndDate());

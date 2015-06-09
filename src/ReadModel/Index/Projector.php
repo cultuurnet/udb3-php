@@ -205,14 +205,16 @@ class Projector implements EventListenerInterface
     /**
      * Remove the index for events
      */
-    public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage) {
+    public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage)
+    {
         $this->repository->deleteIndex($eventDeleted->getEventId());
     }
 
     /**
      * Remove the index for places
      */
-    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage) {
+    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
+    {
         $this->repository->deleteIndex($placeDeleted->getPlaceId());
     }
 }

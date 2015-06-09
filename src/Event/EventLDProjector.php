@@ -313,7 +313,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
         // Remove old theme and event type.
-        $jsonLD->terms = array_filter($jsonLD->terms, function($term) {
+        $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {
             return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
         });
 

@@ -22,5 +22,4 @@ class EventDeleted extends EventEvent
     {
         parent::__construct($id);
     }
-
 }

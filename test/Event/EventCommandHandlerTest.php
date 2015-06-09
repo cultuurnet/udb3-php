@@ -287,7 +287,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new UpdateMajorInfo($id, $title, $eventType, $location, $calendar))
+                new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
+            )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
     }
 
@@ -303,8 +304,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-              new DeleteEvent($id))
+                new DeleteEvent($id)
+            )
             ->then([new EventDeleted($id)]);
     }
-
 }

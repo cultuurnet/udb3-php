@@ -12,10 +12,13 @@ use CultuurNet\Clock\Clock;
 class EventOrganizerPromotionQueryFactory implements PromotionQueryFactoryInterface
 {
     /**
-     * @var CultuurNet\Clock\Clock
+     * @var Clock
      */
     private $clock;
 
+    /**
+     * @param Clock $clock
+     */
     public function __construct(Clock $clock)
     {
         $this->clock = $clock;

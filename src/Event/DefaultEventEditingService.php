@@ -10,11 +10,11 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
-use CultuurNet\UDB3\Event\Editing\EditDescription;
-use CultuurNet\UDB3\Event\Editing\EditPurpose;
-use CultuurNet\UDB3\Event\Editing\EventVariationCreated;
-use CultuurNet\UDB3\Event\Editing\EventVariationNotFoundException;
-use CultuurNet\UDB3\Event\Editing\EventVariationServiceInterface;
+use CultuurNet\UDB3\Variations\EditDescription;
+use CultuurNet\UDB3\Variations\EditPurpose;
+use CultuurNet\UDB3\Variations\EventVariationCreated;
+use CultuurNet\UDB3\Variations\EventVariationNotFoundException;
+use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -98,25 +98,6 @@ class DefaultEventEditingService implements EventEditingServiceInterface
 
         return $this->commandBus->dispatch(
             new TranslateDescription($eventId, $language, $description)
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function editDescription($eventId, $editorId, EditPurpose $purpose, $description)
-    {
-        $this->guardEventId($eventId);
-        $personalEventVariation = $this->eventVariationService
-          ->getPersonalEventVariation($eventId, $editorId);
-
-        return $this->commandBus->dispatch(
-            new EditDescription(
-                $personalEventVariation->getAggregateRootId(),
-                $editorId,
-                new EditPurpose('personal'),
-                $description
-            )
         );
     }
 

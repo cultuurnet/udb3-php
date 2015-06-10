@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event\Editing;
+namespace CultuurNet\UDB3\Variations;
 
 abstract class EditProperty
 {

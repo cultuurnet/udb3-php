@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\Editing;
+namespace CultuurNet\UDB3\Variations;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Event\Event;
@@ -30,6 +30,25 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     ) {
         $this->eventVariationRepository = $eventVariationRepository;
         $this->uuidGenerator = $uuidGenerator;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function editDescription($eventId, $editorId, EditPurpose $purpose, $description)
+    {
+        $this->guardEventId($eventId);
+        $personalEventVariation = $this->eventVariationService
+          ->getPersonalEventVariation($eventId, $editorId);
+
+        return $this->commandBus->dispatch(
+          new EditDescription(
+            $personalEventVariation->getAggregateRootId(),
+            $editorId,
+            new EditPurpose('personal'),
+            $description
+          )
+        );
     }
 
     /**

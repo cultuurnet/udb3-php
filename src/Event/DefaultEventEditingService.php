@@ -96,12 +96,12 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function editDescription($eventId, EditPurpose $purpose, $description)
+    public function editDescription($eventId, $editorId, EditPurpose $purpose, $description)
     {
         $this->guardEventId($eventId);
 
         return $this->commandBus->dispatch(
-            new EditDescription($eventId, $purpose, $description)
+            new EditDescription($eventId, $editorId, $purpose, $description)
         );
     }
 

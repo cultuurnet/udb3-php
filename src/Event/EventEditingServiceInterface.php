@@ -32,12 +32,13 @@ interface EventEditingServiceInterface
 
     /**
      * @param string $eventId
+     * @param string $editorId
      * @param EditPurpose $purpose
      * @param string $description
      * @return string command id
      * @throws EventNotFoundException
      */
-    public function editDescription($eventId, EditPurpose $purpose, $description);
+    public function editDescription($eventId, $editorId, EditPurpose $purpose, $description);
 
     /**
      * @param string $eventId

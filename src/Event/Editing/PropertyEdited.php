@@ -14,9 +14,15 @@ abstract class PropertyEdited extends EventEvent
      */
     protected $purpose;
 
-    public function __construct($id, EditPurpose $purpose)
+    /**
+     * @var string
+     */
+    protected $editorId;
+
+    public function __construct($id, $editorId, EditPurpose $purpose)
     {
         $this->purpose = $purpose;
+        $this->editorId;
         parent::__construct($id);
     }
 
@@ -29,12 +35,21 @@ abstract class PropertyEdited extends EventEvent
     }
 
     /**
+     * @return string
+     */
+    public function getEditorId()
+    {
+        return $this->editorId;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function serialize()
     {
         return parent::serialize() + array(
             'purpose' => (string)$this->purpose,
+            'editor_id' => $this->editorId
         );
     }
 }

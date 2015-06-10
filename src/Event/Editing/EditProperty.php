@@ -17,10 +17,20 @@ abstract class EditProperty
      */
     protected $purpose;
 
+    /**
+     * @var string
+     */
+    protected $editorId;
 
-    public function __construct($id, $purpose)
+    /**
+     * @param $id
+     * @param EditPurpose $purpose
+     * @param $editorId
+     */
+    public function __construct($id, $editorId, EditPurpose $purpose)
     {
         $this->id = $id;
+        $this->editorId = $editorId;
         $this->purpose = $purpose;
     }
 
@@ -38,5 +48,13 @@ abstract class EditProperty
     public function getPurpose()
     {
         return $this->purpose;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEditorId()
+    {
+        return $this->editorId;
     }
 }

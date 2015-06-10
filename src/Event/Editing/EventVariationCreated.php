@@ -15,14 +15,21 @@ class EventVariationCreated extends EventEvent
     private $originalEventId;
 
     /**
+     * @var string
+     */
+    private $ownerId;
+
+    /**
      * @param string $eventId
      * @param string $originalEventId
+     * @param string $ownerId
      */
-    public function __construct($eventId, $originalEventId)
+    public function __construct($eventId, $originalEventId, $ownerId)
     {
         parent::__construct($eventId);
 
         $this->setOriginalEventId($originalEventId);
+        $this->setOwnerId($ownerId);
     }
 
     /**
@@ -42,12 +49,29 @@ class EventVariationCreated extends EventEvent
     }
 
     /**
+     * @return string
+     */
+    public function getOwnerId()
+    {
+        return $this->ownerId;
+    }
+
+    /**
+     * @param string $ownerId
+     */
+    public function setOwnerId($ownerId)
+    {
+        $this->ownerId = $ownerId;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
     {
         return parent::serialize() + array(
-            'original_event_id' => $this->getOriginalEventId()
+            'original_event_id' => $this->getOriginalEventId(),
+            'owner_id' => $this->getOwnerId()
         );
     }
 
@@ -58,7 +82,8 @@ class EventVariationCreated extends EventEvent
     {
         return new static(
             $data['event_id'],
-            $data['original_event_id']
+            $data['original_event_id'],
+            $data['owner_id']
         );
     }
 }

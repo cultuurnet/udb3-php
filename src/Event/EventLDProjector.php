@@ -276,26 +276,26 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * @param EventVariationCreated $eventVariationCreatedCreated
+     * @param EventVariationCreated $eventVariationCreated
      */
     public function applyEventVariationCreated(
-        EventVariationCreated $eventVariationCreatedCreated
+        EventVariationCreated $eventVariationCreated
     ) {
         // load the original event document and use its content for the variation
         $document = $this->loadDocumentFromRepositoryByEventId(
-            $eventVariationCreatedCreated->getOriginalEventId()
+            $eventVariationCreated->getOriginalEventId()
         );
 
         $jsonLD = $document->getBody();
 
         // override the original document id with the variation id
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
-            $eventVariationCreatedCreated->getEventId()
+            $eventVariationCreated->getEventId()
         );
 
         // add the original event to the list of similar entities
         $originalEventIri = $this->iriGenerator->iri(
-            $eventVariationCreatedCreated->getOriginalEventId()
+            $eventVariationCreated->getOriginalEventId()
         );
         $existingSameAsEntities = $jsonLD->sameAs;
         $newSameAsEntities = array_unique(array_merge(

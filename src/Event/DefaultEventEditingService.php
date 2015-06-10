@@ -12,6 +12,9 @@ use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Event\Editing\EditDescription;
 use CultuurNet\UDB3\Event\Editing\EditPurpose;
+use CultuurNet\UDB3\Event\Editing\EventVariationCreated;
+use CultuurNet\UDB3\Event\Editing\EventVariationNotFoundException;
+use CultuurNet\UDB3\Event\Editing\EventVariationServiceInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -27,6 +30,11 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      * @var EventServiceInterface
      */
     protected $eventService;
+
+    /**
+     * @var EventVariationServiceInterface
+     */
+    protected $eventVariationService;
 
     /**
      * @var CommandBusInterface
@@ -99,9 +107,16 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     public function editDescription($eventId, $editorId, EditPurpose $purpose, $description)
     {
         $this->guardEventId($eventId);
+        $personalEventVariation = $this->eventVariationService
+          ->getPersonalEventVariation($eventId, $editorId);
 
         return $this->commandBus->dispatch(
-            new EditDescription($eventId, $editorId, $purpose, $description)
+            new EditDescription(
+                $personalEventVariation->getAggregateRootId(),
+                $editorId,
+                new EditPurpose('personal'),
+                $description
+            )
         );
     }
 

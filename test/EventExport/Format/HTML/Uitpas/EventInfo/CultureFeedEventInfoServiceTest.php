@@ -12,6 +12,8 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionK
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventFactory;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Promotion\PromotionQueryFactoryInterface;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 
 /**
  * Class CultureFeedEventInfoServiceTest
@@ -25,7 +27,7 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
     protected $uitpas;
 
     /**
-     * @var EventInfoServiceInterface
+     * @var CultureFeedEventInfoService
      */
     protected $infoService;
 
@@ -180,6 +182,69 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
                 '1 punt: one point to rule them all'
             ],
             $promotions
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_failures_occurring_when_retrieving_promotions()
+    {
+        // Create an event with a specific id.
+        $eventFactory = new EventFactory();
+        $event = $eventFactory->buildEventWithPoints(1);
+        $event->cdbid = 'd1f0e71d-a9a8-4069-81fb-530134502c58';
+
+        // We expect to receive the event object we just instantiated.
+        $resultSet = new ResultSet();
+        $resultSet->total = 1;
+        $resultSet->objects = [$event];
+
+        $this->uitpas->expects($this->any())
+            ->method('searchEvents')
+            ->willReturn($resultSet);
+
+        $promotionsQuery = new \CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions();
+
+        $this->promotionQueryFactory->expects($this->any())
+            ->method('createForEvent')
+            ->with($event)
+            ->willReturn($promotionsQuery);
+
+        $this->uitpas->expects($this->any())
+            ->method('getPromotionPoints')
+            ->with($promotionsQuery)
+            ->willThrowException(
+                new \Exception('whatever exception')
+            );
+
+        // Assert that the exception that occurred was handled gracefully,
+        // event info is still returned.
+        $eventInfo = $this->infoService->getEventInfo($event->cdbid);
+        $this->assertEquals(
+            [
+                EventAdvantage::POINT_COLLECTING(),
+            ],
+            $eventInfo->getAdvantages()
+        );
+
+        // Assert that when we attach a logger, event info is still returned and
+        // the exception also gets logged.
+        $testLogHandler = new TestHandler();
+        $logger = new Logger('test', [$testLogHandler]);
+        $this->infoService->setLogger($logger);
+        $eventInfo = $this->infoService->getEventInfo($event->cdbid);
+        $this->assertEquals(
+            [
+                EventAdvantage::POINT_COLLECTING(),
+            ],
+            $eventInfo->getAdvantages()
+        );
+
+        $this->assertTrue(
+            $testLogHandler->hasError(
+                'Can\'t retrieve promotions for event with id:' . $event->cdbid
+            )
         );
     }
 }

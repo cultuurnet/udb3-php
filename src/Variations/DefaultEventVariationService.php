@@ -35,7 +35,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function editDescription($eventId, $editorId, EditPurpose $purpose, $description)
+    public function editDescription($eventId, $editorId, Purpose $purpose, $description)
     {
         $this->guardEventId($eventId);
         $personalEventVariation = $this->eventVariationService
@@ -45,7 +45,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
           new EditDescription(
             $personalEventVariation->getAggregateRootId(),
             $editorId,
-            new EditPurpose('personal'),
+            new Purpose('personal'),
             $description
           )
         );
@@ -76,7 +76,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     {
         $originalEvent = $this->eventService->getEvent($originalEventId);
         $eventVariationId = $this->uuidGenerator->generate();
-        new EventVariationCreated($eventVariationId, $originalEventId, $ownerId);
+        new EventVariationCreated($eventVariationId, $originalEventId, $ownerId, new Purpose('personal'));
 
         // TODO: return an event variation...
     }

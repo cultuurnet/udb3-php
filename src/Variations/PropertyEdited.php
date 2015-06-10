@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Event\EventEvent;
 abstract class PropertyEdited extends EventEvent
 {
     /**
-     * @var EditPurpose
+     * @var Purpose
      */
     protected $purpose;
 
@@ -19,7 +19,7 @@ abstract class PropertyEdited extends EventEvent
      */
     protected $editorId;
 
-    public function __construct($id, $editorId, EditPurpose $purpose)
+    public function __construct($id, $editorId, Purpose $purpose)
     {
         $this->purpose = $purpose;
         $this->editorId;
@@ -27,7 +27,7 @@ abstract class PropertyEdited extends EventEvent
     }
 
     /**
-     * @return EditPurpose
+     * @return Purpose
      */
     public function getPurpose()
     {

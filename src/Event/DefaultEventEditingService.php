@@ -11,7 +11,7 @@ use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Variations\EditDescription;
-use CultuurNet\UDB3\Variations\EditPurpose;
+use CultuurNet\UDB3\Variations\Purpose;
 use CultuurNet\UDB3\Variations\EventVariationCreated;
 use CultuurNet\UDB3\Variations\EventVariationNotFoundException;
 use CultuurNet\UDB3\Variations\EventVariationServiceInterface;

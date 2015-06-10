@@ -15,10 +15,10 @@ class EditDescription extends EditProperty
     /**
      * @param string $id
      * @param string $editorId
-     * @param EditPurpose $purpose
+     * @param Purpose $purpose
      * @param string $description
      */
-    public function __construct($id, $editorId, EditPurpose $purpose, $description)
+    public function __construct($id, $editorId, Purpose $purpose, $description)
     {
         parent::__construct($id, $editorId, $purpose);
         $this->description = $description;

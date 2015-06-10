@@ -20,11 +20,17 @@ class EventVariationCreated extends EventEvent
     private $ownerId;
 
     /**
+     * @var Purpose
+     */
+    private $purpose;
+
+    /**
      * @param string $eventId
      * @param string $originalEventId
      * @param string $ownerId
+     * @param Purpose $purpose
      */
-    public function __construct($eventId, $originalEventId, $ownerId)
+    public function __construct($eventId, $originalEventId, $ownerId, Purpose $purpose)
     {
         parent::__construct($eventId);
 
@@ -65,13 +71,30 @@ class EventVariationCreated extends EventEvent
     }
 
     /**
+     * @return Purpose
+     */
+    public function getPurpose()
+    {
+        return $this->purpose;
+    }
+
+    /**
+     * @param Purpose $purpose
+     */
+    public function setPurpose($purpose)
+    {
+        $this->purpose = $purpose;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
     {
         return parent::serialize() + array(
             'original_event_id' => $this->getOriginalEventId(),
-            'owner_id' => $this->getOwnerId()
+            'owner_id' => $this->getOwnerId(),
+            'purpose' => (string) $this->getPurpose()
         );
     }
 
@@ -83,7 +106,8 @@ class EventVariationCreated extends EventEvent
         return new static(
             $data['event_id'],
             $data['original_event_id'],
-            $data['owner_id']
+            $data['owner_id'],
+            new Purpose($data['purpose'])
         );
     }
 }

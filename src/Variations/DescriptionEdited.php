@@ -14,11 +14,11 @@ class DescriptionEdited extends PropertyEdited
 
     /**
      * @param string $id
-     * @param EditPurpose $purpose
+     * @param Purpose $purpose
      * @param string $editorId
      * @param string $description
      */
-    public function __construct($id, $editorId, EditPurpose $purpose, $description)
+    public function __construct($id, $editorId, Purpose $purpose, $description)
     {
         parent::__construct($id, $editorId, $purpose);
         $this->description = $description;
@@ -50,7 +50,7 @@ class DescriptionEdited extends PropertyEdited
         return new static(
             $data['event_id'],
             $data['editor_id'],
-            new EditPurpose($data['purpose']),
+            new Purpose($data['purpose']),
             $data['description']
         );
     }

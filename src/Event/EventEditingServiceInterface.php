@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\Variations\EditPurpose;
+use CultuurNet\UDB3\Variations\Purpose;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
@@ -33,12 +33,12 @@ interface EventEditingServiceInterface
     /**
      * @param string $eventId
      * @param string $editorId
-     * @param EditPurpose $purpose
+     * @param Purpose $purpose
      * @param string $description
      * @return string command id
      * @throws EventNotFoundException
      */
-    public function editDescription($eventId, $editorId, EditPurpose $purpose, $description);
+    public function editDescription($eventId, $editorId, Purpose $purpose, $description);
 
     /**
      * @param string $eventId

@@ -49,7 +49,7 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
     }
 
     private function assertUncommittedEventsEquals(
-        array $expected = [],
+        array $expected,
         EventSourcedAggregateRoot $aggregateRoot
     ) {
         $this->assertEquals(

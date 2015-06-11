@@ -15,6 +15,11 @@ use CultuurNet\UDB3\Variations\Model\Properties\Url;
 class EventVariation extends \Broadway\EventSourcing\EventSourcedAggregateRoot
 {
     /**
+     * @var Id
+     */
+    private $id;
+
+    /**
      * @param Id $id
      * @param Url $eventUrl
      * @param Purpose $purpose
@@ -25,8 +30,8 @@ class EventVariation extends \Broadway\EventSourcing\EventSourcedAggregateRoot
     public static function create(
         Id $id,
         Url $eventUrl,
-        Purpose $purpose,
         OwnerId $ownerId,
+        Purpose $purpose,
         Description $description
     )
     {
@@ -44,12 +49,17 @@ class EventVariation extends \Broadway\EventSourcing\EventSourcedAggregateRoot
         return $variation;
     }
 
+    protected function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
+    {
+        $this->id = $eventVariationCreated->getId();
+    }
+
     /**
      * @return string
      */
     public function getAggregateRootId()
     {
-        return $this->id;
+        return (string) $this->id;
     }
 
 }

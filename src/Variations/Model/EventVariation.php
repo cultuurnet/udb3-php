@@ -14,6 +14,14 @@ use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
 class EventVariation extends \Broadway\EventSourcing\EventSourcedAggregateRoot
 {
+    /**
+     * @param Id $id
+     * @param Url $eventUrl
+     * @param Purpose $purpose
+     * @param OwnerId $ownerId
+     * @param Description $description
+     * @return static
+     */
     public static function create(
         Id $id,
         Url $eventUrl,

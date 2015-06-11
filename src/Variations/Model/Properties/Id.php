@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\Identity\UUID;
 
-class Url extends String
+class Id extends UUID
 {
 
 }

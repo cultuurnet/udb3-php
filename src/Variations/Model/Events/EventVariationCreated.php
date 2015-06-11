@@ -5,18 +5,16 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Variations\Model\Properties\Description;
+use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariationCreated extends EventEvent
+class EventVariationCreated extends EventVariationEvent
 {
     /**
-     * @var string
-     */
-    private $originalEventId;
-
-    /**
-     * @var string
+     * @var OwnerId
      */
     private $ownerId;
 
@@ -26,49 +24,59 @@ class EventVariationCreated extends EventEvent
     private $purpose;
 
     /**
-     * @param string $eventId
-     * @param string $originalEventId
-     * @param string $ownerId
+     * @var Description
+     */
+    private $description;
+
+    /**
+     * @var Url
+     */
+    private $eventUrl;
+
+    /**
+     * @param Id $id
+     * @param Url $eventUrl
+     * @param OwnerId $ownerId
      * @param Purpose $purpose
+     * @param Description $description
      */
-    public function __construct($eventId, $originalEventId, $ownerId, Purpose $purpose)
-    {
-        parent::__construct($eventId);
+    public function __construct(
+        Id $id,
+        Url $eventUrl,
+        OwnerId $ownerId,
+        Purpose $purpose,
+        Description $description
+    ) {
+        parent::__construct($id);
 
-        $this->setOriginalEventId($originalEventId);
-        $this->setOwnerId($ownerId);
+        $this->eventUrl = $eventUrl;
+        $this->ownerId = $ownerId;
+        $this->purpose = $purpose;
+        $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return Description
      */
-    public function getOriginalEventId()
+    public function getDescription()
     {
-        return $this->originalEventId;
+        return $this->description;
     }
 
     /**
-     * @param string $originalEventId
+     * @return Url
      */
-    public function setOriginalEventId($originalEventId)
+    public function getEventUrl()
     {
-        $this->originalEventId = $originalEventId;
+        return $this->eventUrl;
     }
 
     /**
-     * @return string
+     * @return OwnerId
      */
     public function getOwnerId()
     {
         return $this->ownerId;
-    }
-
-    /**
-     * @param string $ownerId
-     */
-    public function setOwnerId($ownerId)
-    {
-        $this->ownerId = $ownerId;
     }
 
     /**
@@ -80,22 +88,15 @@ class EventVariationCreated extends EventEvent
     }
 
     /**
-     * @param Purpose $purpose
-     */
-    public function setPurpose($purpose)
-    {
-        $this->purpose = $purpose;
-    }
-
-    /**
      * @return array
      */
     public function serialize()
     {
         return parent::serialize() + array(
-            'original_event_id' => $this->getOriginalEventId(),
-            'owner_id' => $this->getOwnerId(),
-            'purpose' => (string) $this->getPurpose()
+            'event_url' => (string) $this->getEventUrl(),
+            'owner_id' => (string) $this->getOwnerId(),
+            'purpose' => (string) $this->getPurpose(),
+            'description' => (string) $this->getDescription()
         );
     }
 
@@ -105,10 +106,11 @@ class EventVariationCreated extends EventEvent
     public static function deserialize(array $data)
     {
         return new static(
-            $data['event_id'],
-            $data['original_event_id'],
-            $data['owner_id'],
-            new Purpose($data['purpose'])
+            new Id($data['id']),
+            new Url($data['event_url']),
+            new OwnerId($data['owner_id']),
+            new Purpose($data['purpose']),
+            new Description($data['description'])
         );
     }
 }

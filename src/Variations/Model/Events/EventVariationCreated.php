@@ -3,9 +3,10 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Variations;
+namespace CultuurNet\UDB3\Variations\Model\Events;
 
 use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 class EventVariationCreated extends EventEvent
 {

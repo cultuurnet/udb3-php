@@ -3,7 +3,10 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Variations;
+namespace CultuurNet\UDB3\Variations\Model\Events;
+
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+use CultuurNet\UDB3\Variations\Model\Events\PropertyEdited;
 
 class DescriptionEdited extends PropertyEdited
 {

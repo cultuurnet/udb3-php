@@ -3,15 +3,13 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Variations;
+namespace CultuurNet\UDB3\Variations\Model\Events;
 
-abstract class EditProperty
+use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+
+abstract class PropertyEdited extends EventEvent
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
     /**
      * @var Purpose
      */
@@ -22,24 +20,11 @@ abstract class EditProperty
      */
     protected $editorId;
 
-    /**
-     * @param $id
-     * @param Purpose $purpose
-     * @param $editorId
-     */
     public function __construct($id, $editorId, Purpose $purpose)
     {
-        $this->id = $id;
-        $this->editorId = $editorId;
         $this->purpose = $purpose;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
+        $this->editorId;
+        parent::__construct($id);
     }
 
     /**
@@ -56,5 +41,16 @@ abstract class EditProperty
     public function getEditorId()
     {
         return $this->editorId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return parent::serialize() + array(
+            'purpose' => (string)$this->purpose,
+            'editor_id' => $this->editorId
+        );
     }
 }

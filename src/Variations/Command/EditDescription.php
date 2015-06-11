@@ -3,7 +3,10 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Variations;
+namespace CultuurNet\UDB3\Variations\Command;
+
+use CultuurNet\UDB3\Variations\Command\EditProperty;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 class EditDescription extends EditProperty
 {

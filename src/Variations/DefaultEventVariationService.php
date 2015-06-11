@@ -5,7 +5,9 @@ namespace CultuurNet\UDB3\Variations;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\UDB2\EventNotFoundException;
+use CultuurNet\UDB3\Variations\Command\EditDescription;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 class DefaultEventVariationService implements EventVariationServiceInterface
 {

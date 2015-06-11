@@ -173,37 +173,6 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
     /**
      * @test
      */
-    public function it_creates_a_variation_of_an_existing_event()
-    {
-        $originalEventId = 'originalId';
-        $eventVariationId = 'variationId';
-        $originalEventDocument = new JsonDocument($originalEventId, '{"sameAs": []}');
-
-        $this->documentRepository->expects($this->once())
-            ->method('get')
-            ->with($originalEventId)
-            ->willReturn($originalEventDocument);
-
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with(
-                $this->callback(
-                    function (JsonDocument $jsonDocument) {
-                        // make the original event is added to the list of similar entities
-                        $sameAs = $jsonDocument->getBody()->sameAs;
-                        return in_array('http://example.com/entity/originalId', $sameAs);
-                    }
-                )
-            );
-
-        $event = new EventVariationCreated($eventVariationId, $originalEventId);
-
-        $this->projector->applyEventVariationCreated($event);
-    }
-
-    /**
-     * @test
-     */
     public function it_strips_empty_keywords_when_importing_from_udb2()
     {
         $event = $this->eventImportedFromUDB2(

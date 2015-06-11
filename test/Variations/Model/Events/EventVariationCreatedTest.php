@@ -16,7 +16,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_allows_creation_with_factory_method()
+    public function it_sets_property_values_on_creation()
     {
         $eventVariationCreated = new EventVariationCreated(
             new Id('29d6d973-ca78-4561-b593-631502c74a8c'),

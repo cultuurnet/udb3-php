@@ -33,8 +33,7 @@ class EventVariation extends \Broadway\EventSourcing\EventSourcedAggregateRoot
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
-    )
-    {
+    ) {
         $variation = new static();
         $variation->apply(
             new EventVariationCreated(
@@ -61,5 +60,4 @@ class EventVariation extends \Broadway\EventSourcing\EventSourcedAggregateRoot
     {
         return (string) $this->id;
     }
-
 }

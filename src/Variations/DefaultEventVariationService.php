@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 class DefaultEventVariationService implements EventVariationServiceInterface
 {
     /**
-     * @var EventVariationRepositoryInterface
+     * @var RepositoryInterface
      */
     protected $eventVariationRepository;
 
@@ -27,7 +27,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     protected $uuidGenerator;
 
     public function __construct(
-        EventVariationRepositoryInterface $eventVariationRepository,
+        RepositoryInterface $eventVariationRepository,
         UuidGeneratorInterface $uuidGenerator
     ) {
         $this->eventVariationRepository = $eventVariationRepository;
@@ -44,12 +44,12 @@ class DefaultEventVariationService implements EventVariationServiceInterface
           ->getPersonalEventVariation($eventId, $editorId);
 
         return $this->commandBus->dispatch(
-          new EditDescription(
-            $personalEventVariation->getAggregateRootId(),
-            $editorId,
-            new Purpose('personal'),
-            $description
-          )
+            new EditDescription(
+                $personalEventVariation->getAggregateRootId(),
+                $editorId,
+                new Purpose('personal'),
+                $description
+            )
         );
     }
 

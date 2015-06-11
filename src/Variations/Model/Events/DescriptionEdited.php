@@ -5,10 +5,10 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
-use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
-use CultuurNet\UDB3\Variations\Model\Events\PropertyEdited;
+use CultuurNet\UDB3\Variations\Model\Properties\Description;
+use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
-class DescriptionEdited extends PropertyEdited
+class DescriptionEdited extends EventVariationEvent
 {
     /**
      * @var string
@@ -16,14 +16,12 @@ class DescriptionEdited extends PropertyEdited
     protected $description;
 
     /**
-     * @param string $id
-     * @param Purpose $purpose
-     * @param string $editorId
-     * @param string $description
+     * @param Id $id
+     * @param Description $description
      */
-    public function __construct($id, $editorId, Purpose $purpose, $description)
+    public function __construct(Id $id, Description $description)
     {
-        parent::__construct($id, $editorId, $purpose);
+        parent::__construct($id);
         $this->description = $description;
     }
 
@@ -41,7 +39,7 @@ class DescriptionEdited extends PropertyEdited
     public function serialize()
     {
         return parent::serialize() + array(
-            'description' => $this->description,
+            'description' => (string) $this->description,
         );
     }
 
@@ -51,10 +49,8 @@ class DescriptionEdited extends PropertyEdited
     public static function deserialize(array $data)
     {
         return new static(
-            $data['event_id'],
-            $data['editor_id'],
-            new Purpose($data['purpose']),
-            $data['description']
+            new Id($data['id']),
+            new Description($data['description'])
         );
     }
 }

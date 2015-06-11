@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8474496ad3a6951fe243ca0d99c881f9",
+    "hash": "4bc3d83e8fb5370556910465f1fa7dd9",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -340,6 +340,47 @@
             ],
             "description": "PHP library for hydrating/manipulating CultuurNet's Cdb XML documents",
             "time": "2015-05-22 08:48:28"
+        },
+        {
+            "name": "cultuurnet/clock",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cultuurnet/clock.git",
+                "reference": "601aaf46375fffd3d3367a866253ca6bb092f584"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cultuurnet/clock/zipball/601aaf46375fffd3d3367a866253ca6bb092f584",
+                "reference": "601aaf46375fffd3d3367a866253ca6bb092f584",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CultuurNet\\Clock\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Kristof Coomans",
+                    "email": "kristof@2dotstwice.be"
+                }
+            ],
+            "description": "Clock abstraction library",
+            "time": "2015-06-08 16:12:34"
         },
         {
             "name": "cultuurnet/culturefeed-php",

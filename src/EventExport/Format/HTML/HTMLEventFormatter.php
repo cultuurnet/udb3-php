@@ -217,6 +217,7 @@ class HTMLEventFormatter
                 $formattedEvent['uitpas'] = [
                     'prices' => $prices,
                     'advantages' => $advantages,
+                    'promotions' => $uitpasInfo->getPromotions(),
                 ];
             }
         }

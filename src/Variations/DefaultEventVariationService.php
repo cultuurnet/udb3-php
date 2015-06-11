@@ -2,12 +2,15 @@
 
 namespace CultuurNet\UDB3\Variations;
 
+use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\Variations\Command\EditDescription;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Variations\Model\Properties\Description;
+use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
 class DefaultEventVariationService implements EventVariationServiceInterface
 {
@@ -35,51 +38,29 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function editDescription($eventId, $editorId, Purpose $purpose, $description)
-    {
-        $this->guardEventId($eventId);
-        $personalEventVariation = $this->eventVariationService
-          ->getPersonalEventVariation($eventId, $editorId);
-
-        return $this->commandBus->dispatch(
-            new EditDescription(
-                $personalEventVariation->getAggregateRootId(),
-                $editorId,
-                new Purpose('personal'),
-                $description
-            )
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPersonalEventVariation($originalEventId, $ownerId)
-    {
-        try {
-            $eventVariation = $this->eventVariationRepository
-              ->getPersonalVariation($originalEventId);
-        } catch (EventVariationNotFoundException $e) {
-            $eventVariation = $this->createPersonalEventVariation($originalEventId, $ownerId);
-        }
-
-        return $eventVariation;
-    }
-
-    /**
-     * @param string $originalEventId
-     * @param string $ownerId
+     * @param Url $eventUrl
+     * @param OwnerId $ownerId
+     * @param Purpose $purpose
+     * @param Description $description
      *
-     * @return Event
+     * @return EventVariation
      */
-    protected function createPersonalEventVariation($originalEventId, $ownerId)
-    {
-        $originalEvent = $this->eventService->getEvent($originalEventId);
-        $eventVariationId = $this->uuidGenerator->generate();
-        new EventVariationCreated($eventVariationId, $originalEventId, $ownerId, new Purpose('personal'));
+    public function createEventVariation(
+        Url $eventUrl,
+        OwnerId $ownerId,
+        Purpose $purpose,
+        Description $description
+    ) {
+        $variation = EventVariation::create(
+            new Id($this->uuidGenerator->generate()),
+            $eventUrl,
+            $ownerId,
+            $purpose,
+            $description
+        );
 
-        // TODO: return an event variation...
+        $this->eventVariationRepository->save($variation);
+
+        return $variation;
     }
 }

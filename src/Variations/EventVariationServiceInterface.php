@@ -2,19 +2,17 @@
 
 namespace CultuurNet\UDB3\Variations;
 
-use CultuurNet\UDB3\Event\Event;
-use CultuurNet\UDB3\UDB2\EventNotFoundException;
+use CultuurNet\UDB3\Variations\Model\Properties\Description;
+use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
 interface EventVariationServiceInterface
 {
-    /**
-     * Returns the personal variation of an existing event
-     *
-     * @param string $originalEventId
-     * @param string $ownerId
-     *
-     * @return Event
-     * @throws EventNotFoundException
-     */
-    public function getPersonalEventVariation($originalEventId, $ownerId);
+    public function createEventVariation(
+        Url $eventUrl,
+        OwnerId $ownerId,
+        Purpose $purpose,
+        Description $description
+    );
 }

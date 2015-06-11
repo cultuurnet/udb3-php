@@ -29,6 +29,10 @@ class DefaultEventVariationService implements EventVariationServiceInterface
      */
     protected $uuidGenerator;
 
+    /**
+     * @param RepositoryInterface $eventVariationRepository
+     * @param UuidGeneratorInterface $uuidGenerator
+     */
     public function __construct(
         RepositoryInterface $eventVariationRepository,
         UuidGeneratorInterface $uuidGenerator
@@ -38,12 +42,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     }
 
     /**
-     * @param Url $eventUrl
-     * @param OwnerId $ownerId
-     * @param Purpose $purpose
-     * @param Description $description
-     *
-     * @return EventVariation
+     * @inheritdoc
      */
     public function createEventVariation(
         Url $eventUrl,

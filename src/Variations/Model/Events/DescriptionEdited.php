@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 class DescriptionEdited extends EventVariationEvent
 {
     /**
-     * @var string
+     * @var Description
      */
     protected $description;
 

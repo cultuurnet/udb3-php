@@ -48,6 +48,26 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function its_description_can_be_edited()
+    {
+        $eventVariation = EventVariation::create(
+            new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
+            new Url('//beta.uitdatabank.be/event/xyz'),
+            new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
+            new Purpose('personal'),
+            new Description('my custom description')
+        );
+
+        $description = new Description('An edited description');
+
+        $eventVariation->editDescription($description);
+
+        $this->assertEquals($description, $eventVariation->getDescription());
+    }
+
     private function assertUncommittedEventsEquals(
         array $expected,
         EventSourcedAggregateRoot $aggregateRoot

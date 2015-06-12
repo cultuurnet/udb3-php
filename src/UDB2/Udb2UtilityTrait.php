@@ -362,7 +362,7 @@ trait Udb2UtilityTrait
 
         $filename = end($uriParts);
         $fileparts = explode('.', $filename);
-        $extension = end($fileparts);
+        $extension = strtolower(end($fileparts));
         if ($extension === 'jpg') {
             $extension = 'jpeg';
         }

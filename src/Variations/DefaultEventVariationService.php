@@ -62,4 +62,14 @@ class DefaultEventVariationService implements EventVariationServiceInterface
 
         return $variation;
     }
+
+    public function editDescription(Id $id, Description $description)
+    {
+        /** @var EventVariation $variation */
+        $variation = $this->eventVariationRepository->load((string) $id);
+
+        $variation->editDescription($description);
+
+        $this->eventVariationRepository->save($variation);
+    }
 }

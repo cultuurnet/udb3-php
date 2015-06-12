@@ -5,58 +5,28 @@
 
 namespace CultuurNet\UDB3\Variations\Command;
 
+use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 abstract class EditProperty
 {
     /**
-     * @var string
+     * @var Id
      */
     protected $id;
-
     /**
-     * @var Purpose
+     * @param Id $id
      */
-    protected $purpose;
-
-    /**
-     * @var string
-     */
-    protected $editorId;
-
-    /**
-     * @param $id
-     * @param Purpose $purpose
-     * @param $editorId
-     */
-    public function __construct($id, $editorId, Purpose $purpose)
+    public function __construct(Id $id)
     {
         $this->id = $id;
-        $this->editorId = $editorId;
-        $this->purpose = $purpose;
     }
 
     /**
-     * @return string
+     * @return Id
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return Purpose
-     */
-    public function getPurpose()
-    {
-        return $this->purpose;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEditorId()
-    {
-        return $this->editorId;
     }
 }

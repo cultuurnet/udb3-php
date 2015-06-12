@@ -11,6 +11,7 @@ use Broadway\EventStore\EventStoreInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Variations\DefaultEventVariationService;
 use CultuurNet\UDB3\Variations\EventVariationRepository;
+use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -40,7 +41,6 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
         $eventVariationService = new DefaultEventVariationService(
             new EventVariationRepository($eventStore, $eventBus),
             $this->generator
-
         );
 
         return new EventVariationCommandHandler($eventVariationService);
@@ -81,5 +81,31 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
                     )
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_edit_a_description()
+    {
+        $id = new Id(UUID::generateAsString());
+        $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
+        $ownerId = new OwnerId('xyz');
+        $purpose = new Purpose('personal');
+        $description = new Description('my own description');
+
+        $newDescription = new Description('A new description.');
+
+        $this->scenario
+            ->withAggregateId((string) $id)
+            ->given([new EventVariationCreated(
+                $id,
+                $eventUrl,
+                $ownerId,
+                $purpose,
+                $description
+            )])
+            ->when(new EditDescription($id, $newDescription))
+            ->then([new DescriptionEdited($id, $newDescription)]);
     }
 }

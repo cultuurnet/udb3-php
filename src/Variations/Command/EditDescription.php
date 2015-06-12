@@ -6,29 +6,29 @@
 namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\UDB3\Variations\Command\EditProperty;
+use CultuurNet\UDB3\Variations\Model\Properties\Description;
+use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 class EditDescription extends EditProperty
 {
     /**
-     * @var string
+     * @var Description
      */
     protected $description;
 
     /**
-     * @param string $id
-     * @param string $editorId
-     * @param Purpose $purpose
-     * @param string $description
+     * @param Id $id
+     * @param Description $description
      */
-    public function __construct($id, $editorId, Purpose $purpose, $description)
+    public function __construct(Id $id, Description $description)
     {
-        parent::__construct($id, $editorId, $purpose);
+        parent::__construct($id);
         $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return Description
      */
     public function getDescription()
     {

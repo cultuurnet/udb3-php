@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class EventVariationCommandHandler extends CommandHandler Implements LoggerAwareInterface
+class EventVariationCommandHandler extends CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -40,6 +40,23 @@ class EventVariationCommandHandler extends CommandHandler Implements LoggerAware
                 'job_info',
                 [
                     'event_variation_id' => $variation->getAggregateRootId(),
+                ]
+            );
+        }
+    }
+
+    protected function handleEditDescription(EditDescription $editDescription)
+    {
+        $this->variationService->editDescription(
+            $editDescription->getId(),
+            $editDescription->getDescription()
+        );
+
+        if ($this->logger) {
+            $this->logger->info(
+                'description_edited',
+                [
+                    'event_variation_id' => $editDescription->getId(),
                 ]
             );
         }

@@ -26,7 +26,7 @@ class DescriptionEdited extends EventVariationEvent
     }
 
     /**
-     * @return string
+     * @return Description
      */
     public function getDescription()
     {

@@ -56,7 +56,7 @@ class EventVariationCommandHandler extends CommandHandler implements LoggerAware
             $this->logger->info(
                 'description_edited',
                 [
-                    'event_variation_id' => $editDescription->getId(),
+                    'event_variation_id' => (string) $editDescription->getId(),
                 ]
             );
         }

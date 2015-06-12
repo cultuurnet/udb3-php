@@ -32,8 +32,7 @@ class CreateEventVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
 
         try {
             $this->deserializer->deserialize(new String('{"owner": "foo"}'));
-        }
-        catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->assertEquals(
                 [
                     'the property purpose is required',

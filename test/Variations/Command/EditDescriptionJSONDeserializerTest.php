@@ -7,8 +7,8 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
-class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase {
-
+class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var EditDescriptionJSONDeserializer
      */
@@ -49,7 +49,7 @@ class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase {
      */
     public function it_validates_the_json_command()
     {
-        $jsonData = '{"unwanted_property": "What am I doing here."}';
+        $jsonData = '{"unwanted": "What am I doing here."}';
         $jsonCommand = new String($jsonData);
 
         try {
@@ -58,7 +58,7 @@ class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase {
             $this->assertEquals(
                 [
                     'the property description is required',
-                    'The property unwanted_property is not defined and the definition does not allow additional properties'
+                    'The property unwanted is not defined and the definition does not allow additional properties'
                 ],
                 $e->getErrors()
             );

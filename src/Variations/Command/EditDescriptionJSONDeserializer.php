@@ -61,7 +61,8 @@ class EditDescriptionJSONDeserializer extends JSONDeserializer
      *
      * @throws ValidationException
      */
-    private function guardValidnessWithJSONSchema($json) {
+    private function guardValidnessWithJSONSchema($json)
+    {
         // @todo JSON-SCHEMA inside swagger.json should be reused here
         $schema = json_decode('{
             "type": "object",

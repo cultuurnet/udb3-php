@@ -6,15 +6,19 @@
 namespace CultuurNet\UDB3\Variations\Model;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Variations\AggregateDeletedException;
+use CultuurNet\UDB3\Variations\Command\DeleteEventVariation;
+use CultuurNet\UDB3\Variations\Deleteable;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariation extends EventSourcedAggregateRoot
+class EventVariation extends EventSourcedAggregateRoot implements Deleteable
 {
     /**
      * @var Id
@@ -25,6 +29,11 @@ class EventVariation extends EventSourcedAggregateRoot
      * @var Description
      */
     private $description;
+
+    /**
+     * @var boolean
+     */
+    private $deleted = false;
 
     /**
      * @param Id $id
@@ -79,6 +88,25 @@ class EventVariation extends EventSourcedAggregateRoot
     protected function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
     {
         $this->id = $eventVariationCreated->getId();
+    }
+
+    protected function applyEventVariationDeleted()
+    {
+        $this->deleted = true;
+    }
+
+    public function markDeleted()
+    {
+        if ($this->isDeleted()) {
+            throw new AggregateDeletedException((string) $this->id);
+        }
+
+        $this->apply(new EventVariationDeleted($this->id));
+    }
+
+    public function isDeleted()
+    {
+        return $this->deleted;
     }
 
     /**

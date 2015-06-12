@@ -31,4 +31,11 @@ interface EventVariationServiceInterface
      * @param Description $description
      */
     public function editDescription(Id $id, Description $description);
+
+    /**
+     * Delete a variation
+     *
+     * @param Id $id
+     */
+    public function deleteEventVariation(Id $id);
 }

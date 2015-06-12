@@ -42,7 +42,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function createEventVariation(
         Url $eventUrl,
@@ -63,12 +63,28 @@ class DefaultEventVariationService implements EventVariationServiceInterface
         return $variation;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function editDescription(Id $id, Description $description)
     {
         /** @var EventVariation $variation */
         $variation = $this->eventVariationRepository->load((string) $id);
 
         $variation->editDescription($description);
+
+        $this->eventVariationRepository->save($variation);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteEventVariation(Id $id)
+    {
+        /** @var EventVariation $variation */
+        $variation = $this->eventVariationRepository->load((string) $id);
+
+        $variation->markDeleted();
 
         $this->eventVariationRepository->save($variation);
     }

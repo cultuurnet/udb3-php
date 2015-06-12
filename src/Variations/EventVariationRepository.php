@@ -26,4 +26,18 @@ class EventVariationRepository extends EventSourcingRepository
             $eventStreamDecorators
         );
     }
+
+    /**
+     * {@inheritDoc}
+     * @throws AggregateDeletedException
+     */
+    public function load($id)
+    {
+        /** @var Deleteable $variationAggregate */
+        $variationAggregate = parent::load($id);
+
+        if ($variationAggregate->isDeleted()) {
+            throw new AggregateDeletedException($id);
+        }
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Variations;
 
-class EventVariationNotFoundException extends \Exception
+use Exception;
+
+class EventVariationNotFoundException extends Exception
 {
 }

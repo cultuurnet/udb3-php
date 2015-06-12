@@ -274,38 +274,6 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->repository->save($document->withBody($jsonLD));
     }
 
-    /**
-     * @param \CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated $eventVariationCreated
-     */
-    public function applyEventVariationCreated(
-        EventVariationCreated $eventVariationCreated
-    ) {
-        // load the original event document and use its content for the variation
-        $document = $this->loadDocumentFromRepositoryByEventId(
-            $eventVariationCreated->getOriginalEventId()
-        );
-
-        $jsonLD = $document->getBody();
-
-        // override the original document id with the variation id
-        $jsonLD->{'@id'} = $this->iriGenerator->iri(
-            $eventVariationCreated->getEventId()
-        );
-
-        // add the original event to the list of similar entities
-        $originalEventIri = $this->iriGenerator->iri(
-            $eventVariationCreated->getOriginalEventId()
-        );
-        $existingSameAsEntities = $jsonLD->sameAs;
-        $newSameAsEntities = array_unique(array_merge(
-            $existingSameAsEntities,
-            [$originalEventIri]
-        ));
-        $jsonLD->sameAs = $newSameAsEntities;
-
-        $this->repository->save($document->withBody($jsonLD));
-    }
-
     public function placeJSONLD($placeId)
     {
         try {

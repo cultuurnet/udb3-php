@@ -37,7 +37,7 @@ class PayloadManipulatingSerializer implements SerializerInterface
     }
 
     /**
-     * @param string $oldClassName
+     * @param string $className
      * @param callable $callback
      */
     public function manipulateEventsOfClass($className, callable $callback)

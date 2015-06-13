@@ -6,9 +6,6 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\CalendarSummary\CalendarHTMLFormatter;
-use CultuurNet\CalendarSummary\Period\LargePeriodHTMLFormatter;
-use CultuurNet\CalendarSummary\Permanent\LargePermanentHTMLFormatter;
-use CultuurNet\CalendarSummary\Timestamps\LargeTimestampsHTMLFormatter;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
@@ -26,7 +23,6 @@ use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 use stdClass;
-use ValueObjects\String\String;
 
 class HTMLEventFormatter
 {

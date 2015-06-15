@@ -30,6 +30,21 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     private $description;
 
     /**
+     * @var Purpose
+     */
+    private $purpose;
+
+    /**
+     * @var Url
+     */
+    private $eventUrl;
+
+    /**
+     * @var OwnerId
+     */
+    private $ownerId;
+
+    /**
      * @var boolean
      */
     private $deleted = false;
@@ -93,6 +108,10 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     protected function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
     {
         $this->id = $eventVariationCreated->getId();
+        $this->purpose = $eventVariationCreated->getPurpose();
+        $this->description = $eventVariationCreated->getDescription();
+        $this->ownerId = $eventVariationCreated->getOwnerId();
+        $this->eventUrl = $eventVariationCreated->getEventUrl();
     }
 
     protected function applyEventVariationDeleted()
@@ -130,5 +149,29 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     public function getAggregateRootId()
     {
         return (string) $this->id;
+    }
+
+    /**
+     * @return Purpose
+     */
+    public function getPurpose()
+    {
+        return $this->purpose;
+    }
+
+    /**
+     * @return OwnerId
+     */
+    public function getOwnerId()
+    {
+        return $this->ownerId;
+    }
+
+    /**
+     * @return Url
+     */
+    public function getEventUrl()
+    {
+        return $this->eventUrl;
     }
 }

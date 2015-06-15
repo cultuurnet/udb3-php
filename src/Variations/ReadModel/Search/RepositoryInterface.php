@@ -21,6 +21,13 @@ interface RepositoryInterface
     );
 
     /**
+     * @param Criteria $criteria
+     */
+    public function countEventVariations(
+        Criteria $criteria
+    );
+
+    /**
      * @param Id $variationId
      * @param Url $eventUrl
      * @param OwnerId $ownerId

@@ -66,6 +66,25 @@ class DBALRepository implements RepositoryInterface
         );
     }
 
+    public function countEventVariations(Criteria $criteria)
+    {
+        $q = $this->connection->createQueryBuilder();
+        $q
+            ->select('COUNT(id) as total')
+            ->from($this->tableName);
+
+        $conditions = $this->expressionFactory->createExpressionFromCriteria(
+            $q->expr(),
+            $criteria
+        );
+
+        if ($conditions) {
+            $q->where($conditions);
+        }
+
+        return $q->execute()->fetchColumn(0);
+    }
+
     public function getEventVariations(
         Criteria $criteria,
         $limit = 30,

@@ -74,9 +74,12 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
 
     /**
      * @param Description $description
+     *
+     * @throws AggregateDeletedException
      */
     public function editDescription(Description $description)
     {
+        $this->guardNotDeleted();
         $this->apply(new DescriptionEdited($this->id, $description));
     }
 
@@ -95,15 +98,19 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
         $this->deleted = true;
     }
 
+    private function guardNotDeleted()
+    {
+        if ($this->isDeleted()) {
+            throw new AggregateDeletedException((string) $this->id);
+        }
+    }
+
     /**
      * @inheritdoc
      */
     public function markDeleted()
     {
-        if ($this->isDeleted()) {
-            throw new AggregateDeletedException((string) $this->id);
-        }
-
+        $this->guardNotDeleted();
         $this->apply(new EventVariationDeleted($this->id));
     }
 

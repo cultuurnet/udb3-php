@@ -1,13 +1,13 @@
 <?php
 
-namespace Event\ReadModel;
+namespace CultuurNet\UDB3\Event\ReadModel;
 
+use Broadway\Domain\DomainEventStream;
+use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
-use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Event\ReadModel\BroadcastingDocumentRepositoryDecorator;
-use CultuurNet\UDB3\Event\ReadModel\DocumentEventFactory;
-use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use Broadway\EventHandling\SimpleEventBusTestEvent;
+use Broadway\EventHandling\SimpleEventBusTestListener;
 
 class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -60,6 +60,9 @@ class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_Tes
         $this->decoratedRepository->expects($this->once())
             ->method('save')
             ->with($document);
+
+        $this->eventBus->expects($this->once())
+            ->method('publish');
 
         $this->repository->save($document);
     }

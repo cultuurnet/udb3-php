@@ -38,7 +38,7 @@ class ExpressionFactory
         }
 
         if (count($compositeExpression) === 0) {
-            return NULL;
+            return null;
         }
 
         return $compositeExpression;

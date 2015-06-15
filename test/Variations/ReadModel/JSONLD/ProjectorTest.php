@@ -2,27 +2,51 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
         $this->repository = $this->getMock(
-            RepositoryInterface::class
+            DocumentRepositoryInterface::class
+        );
+
+        $this->eventRepository = $this->getMock(
+            DocumentRepositoryInterface::class
+        );
+
+        $this->searchRepository = $this->getMock(
+            SearchRepositoryInterface::class
+        );
+
+        $this->eventIriGenerator = $this->getMock(
+            IriGeneratorInterface::class
+        );
+
+        $this->variationIriGenerator = $this->getMock(
+            IriGeneratorInterface::class
         );
 
         $this->projector = new Projector(
-            $this->repository
+            $this->repository,
+            $this->eventRepository,
+            $this->searchRepository,
+            $this->eventIriGenerator,
+            $this->variationIriGenerator
         );
     }
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $repository;
 
@@ -31,6 +55,25 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $projector;
 
+    /**
+     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $eventIriGenerator;
+
+    /**
+     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $variationIriGenerator;
+
+    /**
+     * @var SearchRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $searchRepository;
+
+    /**
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $eventRepository;
 
     /**
      * @test
@@ -75,5 +118,82 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ));
 
         $this->projector->applyDescriptionEdited($descriptionEdited);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_variations_when_the_original_event_changes()
+    {
+        $eventId = 'some-event-id';
+        $eventUrl = 'http://acme.org/event/' . $eventId;
+        $this->eventIriGenerator
+            ->expects($this->atLeastOnce())
+            ->method('iri')
+            ->with($eventId)
+            ->willReturn($eventUrl);
+
+        $variationId = 'a-variation-id';
+        $variationUrl = 'http://acme.org/variation/' . $variationId;
+        $this->variationIriGenerator
+            ->expects($this->atLeastOnce())
+            ->method('iri')
+            ->with($variationId)
+            ->willReturn($variationUrl);
+
+        $event = new JsonDocument(
+            'some-event-id',
+            json_encode([
+                '@id' => $eventUrl,
+                'description' => [
+                    'nl' => 'Original event description',
+                    'fr' => 'Le french translation'
+                ],
+                'sameAs' => []
+            ])
+        );
+
+        $variation = new JsonDocument(
+            'a-variation-id',
+            json_encode([
+                '@id' => $variationUrl,
+                'description' => [
+                    'nl' => 'The variation description'
+                ],
+                'sameAs' => [$eventUrl]
+            ])
+        );
+
+        $expectedVariation = new JsonDocument(
+            'a-variation-id',
+            json_encode([
+                '@id' => $variationUrl,
+                'description' => [
+                    'nl' => 'The variation description',
+                    'fr' => 'Le french translation'
+                ],
+                'sameAs' => [$eventUrl]
+            ])
+        );
+
+        $this->eventRepository->expects($this->once())
+            ->method('get')
+            ->willReturn($event);
+
+        $this->searchRepository->expects($this->once())
+            ->method('getEventVariations')
+            ->willReturn([$variation]);
+
+        $this->repository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedVariation) {
+                    return $expectedVariation == $jsonDocument;
+                }
+            ));
+
+        $eventProjectedEvent = new EventProjectedToJSONLD($eventId);
+        $this->projector->applyEventProjectedToJSONLD($eventProjectedEvent);
     }
 }

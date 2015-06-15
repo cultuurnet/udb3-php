@@ -10,12 +10,12 @@ class PagedCollection implements \JsonSerializable
     /**
      * @var int
      */
-    private $itemsPerPage;
+    private $pageNumber;
 
     /**
      * @var int
      */
-    private $totalItems;
+    private $itemsPerPage;
 
     /**
      * @var array
@@ -23,16 +23,44 @@ class PagedCollection implements \JsonSerializable
     private $members;
 
     /**
-     * @param array $members
-     * @param int $itemsPerPage
-     * @param int $totalItems
+     * @var int
      */
-    public function __construct(array $members, $itemsPerPage, $totalItems)
-    {
-        $this->members = $members;
+    private $totalItems;
 
+    /**
+     * @var PageUrlGenerator
+     */
+    private $pageUrlFactory;
+
+    /**
+     * @param int $pageNumber
+     * @param int $itemsPerPage
+     * @param array $members
+     * @param int $totalItems
+     * @param PageUrlGenerator $pageUrlFactory
+     */
+    public function __construct(
+        $pageNumber,
+        $itemsPerPage,
+        array $members,
+        $totalItems,
+        PageUrlGenerator $pageUrlFactory
+    ) {
+        $this->setPageNumber($pageNumber);
         $this->setItemsPerpage($itemsPerPage);
+        $this->members = $members;
         $this->setTotalItems($totalItems);
+        $this->pageUrlFactory = $pageUrlFactory;
+    }
+
+    private function setPageNumber($pageNumber)
+    {
+        if (!is_int($pageNumber)) {
+            throw new \InvalidArgumentException(
+                'pageNumber should be an integer, got ' . gettype($pageNumber)
+            );
+        }
+        $this->pageNumber = $pageNumber;
     }
 
     /**
@@ -61,17 +89,68 @@ class PagedCollection implements \JsonSerializable
         $this->itemsPerPage = $itemsPerPage;
     }
 
+    public function firstPage()
+    {
+        return $this->pageUrlFactory->urlForPage(0);
+    }
+
+    /**
+     * @return int
+     */
+    private function lastPageNumber()
+    {
+        $lastPageNumber = (int) floor($this->totalItems / $this->itemsPerPage);
+
+        return $lastPageNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function lastPage()
+    {
+        return $this->pageUrlFactory->urlForPage(
+            $this->lastPageNumber()
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function nextPage()
+    {
+        if ($this->lastPageNumber() > $this->pageNumber) {
+            return $this->pageUrlFactory->urlForPage($this->pageNumber + 1);
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function previousPage()
+    {
+        if ($this->pageNumber > 0) {
+            return $this->pageUrlFactory->urlForPage($this->pageNumber - 1);
+        }
+    }
+
     /**
      * @inheritdoc
      */
     public function jsonSerialize()
     {
-        return [
+        $data = [
             '@context' => 'http://www.w3.org/ns/hydra/context.jsonld',
             '@type' => 'PagedCollection',
             'itemsPerPage' => $this->itemsPerPage,
             'totalItems' => $this->totalItems,
             'member' => $this->members,
+            'firstPage' => $this->firstPage(),
+            'lastPage' => $this->lastPage(),
+            'previousPage' => $this->previousPage(),
+            'nextPage' => $this->nextPage(),
         ];
+
+        return array_filter($data);
     }
 }

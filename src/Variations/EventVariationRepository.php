@@ -29,6 +29,7 @@ class EventVariationRepository extends EventSourcingRepository
 
     /**
      * {@inheritDoc}
+     * @return EventVariation
      * @throws AggregateDeletedException
      */
     public function load($id)
@@ -39,5 +40,7 @@ class EventVariationRepository extends EventSourcingRepository
         if ($variationAggregate->isDeleted()) {
             throw new AggregateDeletedException($id);
         }
+
+        return $variationAggregate;
     }
 }

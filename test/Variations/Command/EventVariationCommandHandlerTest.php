@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Variations\DefaultEventVariationService;
 use CultuurNet\UDB3\Variations\EventVariationRepository;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -84,7 +85,7 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
     }
 
     /**
-     * TODO: not sure why this is breaking, fix and add test annotation
+     * @test
      */
     public function it_can_edit_a_description()
     {
@@ -107,5 +108,29 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
             )])
             ->when(new EditDescription($id, $newDescription))
             ->then([new DescriptionEdited($id, $newDescription)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_a_variation()
+    {
+        $id = new Id(UUID::generateAsString());
+        $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
+        $ownerId = new OwnerId('xyz');
+        $purpose = new Purpose('personal');
+        $description = new Description('my own description');
+
+        $this->scenario
+            ->withAggregateId((string) $id)
+            ->given([new EventVariationCreated(
+                $id,
+                $eventUrl,
+                $ownerId,
+                $purpose,
+                $description
+            )])
+            ->when(new DeleteEventVariation($id))
+            ->then([new EventVariationDeleted($id)]);
     }
 }

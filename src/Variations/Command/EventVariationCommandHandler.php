@@ -54,11 +54,25 @@ class EventVariationCommandHandler extends CommandHandler implements LoggerAware
 
         if ($this->logger) {
             $this->logger->info(
-                'description_edited',
+                'job_info',
                 [
                     'event_variation_id' => (string) $editDescription->getId(),
                 ]
             );
+        }
+    }
+
+    protected function handleDeleteEventVariation(DeleteEventVariation $deleteEventVariation)
+    {
+        $this->variationService->deleteEventVariation($deleteEventVariation->getId());
+
+        if ($this->logger) {
+            $this->logger->info(
+                'job_info',
+                [
+                    'event_variation_id' => (string) $deleteEventVariation->getId()
+                ]
+           );
         }
     }
 }

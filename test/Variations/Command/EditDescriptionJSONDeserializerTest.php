@@ -58,7 +58,7 @@ class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(
                 [
                     'the property description is required',
-                    'The property unwanted is not defined and the definition does not allow additional properties'
+                    'The property - unwanted - is not defined and the definition does not allow additional properties'
                 ],
                 $e->getErrors()
             );

@@ -27,6 +27,7 @@ class DBALRepository implements RepositoryInterface
 
     /**
      * @param Connection $connection
+     * @param ExpressionFactory $expressionFactory
      */
     public function __construct(
         Connection $connection,
@@ -44,26 +45,17 @@ class DBALRepository implements RepositoryInterface
     ) {
         $this->connection->beginTransaction();
 
-        $insert = $this->prepareInsertStatement();
-        $insert->bindValue('id', (string) $variationId);
-        $insert->bindValue('event', (string) $eventUrl);
-        $insert->bindValue('owner', (string) $ownerId);
-        $insert->bindValue('purpose', (string) $purpose);
-        $insert->execute();
+        $this->connection->insert(
+            $this->connection->quoteIdentifier($this->tableName),
+            [
+                'id' => (string) $variationId,
+                'event' => (string) $eventUrl,
+                'owner' => (string) $ownerId,
+                'purpose' => (string) $purpose,
+            ]
+        );
 
         $this->connection->commit();
-    }
-
-    private function prepareInsertStatement()
-    {
-        $table = $this->connection->quoteIdentifier($this->tableName);
-        return $this->connection->prepare(
-            "INSERT INTO {$table} SET
-              id = :id,
-              event = :event,
-              owner = :owner,
-              purpose = :purpose"
-        );
     }
 
     /**

@@ -80,7 +80,10 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     public function editDescription(Description $description)
     {
         $this->guardNotDeleted();
-        $this->apply(new DescriptionEdited($this->id, $description));
+
+        if ($description !== $this->description) {
+            $this->apply(new DescriptionEdited($this->id, $description));
+        }
     }
 
     protected function applyDescriptionEdited(DescriptionEdited $descriptionEdited)

@@ -95,6 +95,9 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
         $this->deleted = true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function markDeleted()
     {
         if ($this->isDeleted()) {
@@ -104,6 +107,9 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
         $this->apply(new EventVariationDeleted($this->id));
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isDeleted()
     {
         return $this->deleted;

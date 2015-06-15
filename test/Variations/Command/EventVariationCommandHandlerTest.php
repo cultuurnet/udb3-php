@@ -89,23 +89,14 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     public function it_can_edit_a_description()
     {
-        $id = new Id(UUID::generateAsString());
-        $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
-        $ownerId = new OwnerId('xyz');
-        $purpose = new Purpose('personal');
-        $description = new Description('my own description');
+        $creationEvent = $this->getExampleVariationCreatedEvent();
+        $id = $creationEvent->getId();
 
         $newDescription = new Description('A new description.');
 
         $this->scenario
             ->withAggregateId((string) $id)
-            ->given([new EventVariationCreated(
-                $id,
-                $eventUrl,
-                $ownerId,
-                $purpose,
-                $description
-            )])
+            ->given([$creationEvent])
             ->when(new EditDescription($id, $newDescription))
             ->then([new DescriptionEdited($id, $newDescription)]);
     }
@@ -115,22 +106,27 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     public function it_can_delete_a_variation()
     {
-        $id = new Id(UUID::generateAsString());
-        $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
-        $ownerId = new OwnerId('xyz');
-        $purpose = new Purpose('personal');
-        $description = new Description('my own description');
+        $creationEvent = $this->getExampleVariationCreatedEvent();
+        $id = $creationEvent->getId();
 
         $this->scenario
             ->withAggregateId((string) $id)
-            ->given([new EventVariationCreated(
-                $id,
-                $eventUrl,
-                $ownerId,
-                $purpose,
-                $description
-            )])
+            ->given([$creationEvent])
             ->when(new DeleteEventVariation($id))
             ->then([new EventVariationDeleted($id)]);
+    }
+
+    /**
+     * @return EventVariationCreated
+     */
+    private function getExampleVariationCreatedEvent()
+    {
+        return new EventVariationCreated(
+            $id = new Id(UUID::generateAsString()),
+            $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98'),
+            $ownerId = new OwnerId('xyz'),
+            $purpose = new Purpose('personal'),
+            $description = new Description('my own description')
+        );
     }
 }

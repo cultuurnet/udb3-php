@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
-
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
 class EventVariationEventTest extends \PHPUnit_Framework_TestCase

@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Variations\ReadModel\Relations;
+namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -25,7 +25,7 @@ class Projector implements EventListenerInterface
 
     protected function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
     {
-        $this->repository->storeRelations(
+        $this->repository->save(
             $eventVariationCreated->getId(),
             $eventVariationCreated->getEventUrl(),
             $eventVariationCreated->getOwnerId(),

@@ -1,18 +1,19 @@
 <?php
 
-namespace CultuurNet\UDB3\Variations\ReadModel\Relations\Doctrine;
+namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
-use CultuurNet\UDB3\Variations\ReadModel\Relations\RepositoryInterface;
+use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
+use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 
 class DBALRepository implements RepositoryInterface
 {
-    protected $tableName = 'event_variation_relations';
+    protected $tableName = 'event_variation_search_index';
 
     /**
      * @var Connection
@@ -20,14 +21,22 @@ class DBALRepository implements RepositoryInterface
     protected $connection;
 
     /**
+     * @var ExpressionFactory
+     */
+    protected $expressionFactory;
+
+    /**
      * @param Connection $connection
      */
-    public function __construct(Connection $connection)
-    {
+    public function __construct(
+        Connection $connection,
+        ExpressionFactory $expressionFactory
+    ) {
         $this->connection = $connection;
+        $this->expressionFactory = $expressionFactory;
     }
 
-    public function storeRelations(
+    public function save(
         Id $variationId,
         Url $eventUrl,
         OwnerId $ownerId,
@@ -36,9 +45,9 @@ class DBALRepository implements RepositoryInterface
         $this->connection->beginTransaction();
 
         $insert = $this->prepareInsertStatement();
-        $insert->bindValue('event', $eventUrl);
-        $insert->bindValue('variation', $variationId);
-        $insert->bindValue('owner', $ownerId);
+        $insert->bindValue('id', (string) $variationId);
+        $insert->bindValue('event', (string) $eventUrl);
+        $insert->bindValue('owner', (string) $ownerId);
         $insert->bindValue('purpose', (string) $purpose);
         $insert->execute();
 
@@ -50,35 +59,38 @@ class DBALRepository implements RepositoryInterface
         $table = $this->connection->quoteIdentifier($this->tableName);
         return $this->connection->prepare(
             "INSERT INTO {$table} SET
+              id = :id,
               event = :event,
-              variation = :variation,
               owner = :owner,
-              purpose = :purpose
-            ON DUPLICATE KEY UPDATE
-              place = :place,
-              organizer = :organizer"
+              purpose = :purpose"
         );
     }
 
-    public function getOwnerEventVariationByPurpose(
-        Url $eventUrl,
-        OwnerId $ownerId,
-        Purpose $purpose
+    public function getEventVariations(
+        Criteria $criteria
     ) {
         $q = $this->connection->createQueryBuilder();
         $q
-            ->select('variation')
-            ->from($this->tableName)
-            ->where(
-                $q->expr()->andX(
-                    $q->expr()->eq('event', $eventUrl),
-                    $q->expr()->eq('owner', $ownerId),
-                    $q->expr()->eq('purpose', (string) $purpose)
-                )
-            );
+            ->select('id')
+            ->from($this->tableName);
+
+        $conditions = $this->expressionFactory->createExpressionFromCriteria(
+            $q->expr(),
+            $criteria
+        );
+
+        if ($conditions) {
+            $q->where($conditions);
+        }
+
         $results = $q->execute();
 
-        return $results->fetchColumn(0);
+        $ids = [];
+        while ($variationId = $results->fetchColumn(0)) {
+            $ids[] = $variationId;
+        }
+
+        return $ids;
     }
 
     /**
@@ -101,27 +113,27 @@ class DBALRepository implements RepositoryInterface
         $table = $schema->createTable($this->tableName);
 
         $table->addColumn(
-            'variation',
+            'id',
             'string',
-            array('length' => 36, 'notnull' => false)
+            array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
             'event',
-            'string',
-            array('length' => 36, 'notnull' => false)
+            'text',
+            array('notnull' => true)
         );
         $table->addColumn(
             'owner',
             'string',
-            array('length' => 36, 'notnull' => false)
+            array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
             'purpose',
-            'string',
-            array('length' => 36, 'notnull' => false)
+            'text',
+            array('length' => 36, 'notnull' => true)
         );
 
-        $table->setPrimaryKey(array('variation'));
+        $table->setPrimaryKey(array('id'));
 
         return $table;
     }

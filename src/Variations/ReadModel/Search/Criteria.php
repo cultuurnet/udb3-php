@@ -106,8 +106,7 @@ class Criteria
     {
         $satisfied = true;
 
-        if (
-            ($this->purpose && $variation->getPurpose() != $this->purpose) ||
+        if (($this->purpose && $variation->getPurpose() != $this->purpose) ||
             ($this->ownerId && $variation->getOwnerId() != $this->ownerId) ||
             ($this->eventUrl && $variation->getEventUrl() != $this->eventUrl)
         ) {

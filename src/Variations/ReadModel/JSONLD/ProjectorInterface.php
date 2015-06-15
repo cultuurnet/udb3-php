@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\Event\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
 

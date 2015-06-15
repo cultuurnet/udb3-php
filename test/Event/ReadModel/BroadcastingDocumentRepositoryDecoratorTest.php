@@ -1,0 +1,66 @@
+<?php
+
+namespace Event\ReadModel;
+
+use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Event\ReadModel\BroadcastingDocumentRepositoryDecorator;
+use CultuurNet\UDB3\Event\ReadModel\DocumentEventFactory;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+
+class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var EventBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $eventBus;
+
+    /**
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $decoratedRepository;
+
+    /**
+     * @var BroadcastingDocumentRepositoryDecorator
+     */
+    protected $repository;
+
+    /**
+     * @var DocumentEventFactory|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $eventFactory;
+
+    public function setUp()
+    {
+        $this->decoratedRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->eventBus = $this->getMock(EventBusInterface::class);
+        $this->eventFactory = $this->getMock(DocumentEventFactory::class);
+
+        $this->repository = new BroadcastingDocumentRepositoryDecorator(
+            $this->decoratedRepository,
+            $this->eventBus,
+            $this->eventFactory
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_broadcasts_when_a_document_is_saved()
+    {
+        $document = new JsonDocument('some-document-id', '{"nice":"body"}');
+
+        // the provided factory should be used to create a new event
+        $this->eventFactory->expects($this->once())
+            ->method('createEvent')
+            ->with('some-document-id');
+
+        // when saving the event it should also save the document in the decorated repository
+        $this->decoratedRepository->expects($this->once())
+            ->method('save')
+            ->with($document);
+
+        $this->repository->save($document);
+    }
+}

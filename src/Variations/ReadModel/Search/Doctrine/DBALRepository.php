@@ -67,12 +67,16 @@ class DBALRepository implements RepositoryInterface
     }
 
     public function getEventVariations(
-        Criteria $criteria
+        Criteria $criteria,
+        $limit = 30,
+        $offset = 0
     ) {
         $q = $this->connection->createQueryBuilder();
         $q
             ->select('id')
-            ->from($this->tableName);
+            ->from($this->tableName)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
 
         $conditions = $this->expressionFactory->createExpressionFromCriteria(
             $q->expr(),

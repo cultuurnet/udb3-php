@@ -38,7 +38,7 @@ class EventVariationRepository extends EventSourcingRepository
         $variationAggregate = parent::load($id);
 
         if ($variationAggregate->isDeleted()) {
-            throw new AggregateDeletedException($id);
+            throw AggregateDeletedException::create($id);
         }
 
         return $variationAggregate;

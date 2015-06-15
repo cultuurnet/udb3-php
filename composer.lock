@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
     "hash": "4bc3d83e8fb5370556910465f1fa7dd9",
@@ -1997,7 +1997,6 @@
                 "identifier",
                 "uuid"
             ],
-            "abandoned": "ramsey/uuid",
             "time": "2014-11-09 18:42:56"
         },
         {

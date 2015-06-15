@@ -1,17 +1,18 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Event\ReadModel\Relations\Doctrine;
+namespace CultuurNet\UDB3\Variations\ReadModel\Relations\Doctrine;
 
-use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface;
+use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+use CultuurNet\UDB3\Variations\Model\Properties\Url;
+use CultuurNet\UDB3\Variations\ReadModel\Relations\RepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 
 class DBALRepository implements RepositoryInterface
 {
-    protected $tableName = 'event_relations';
+    protected $tableName = 'event_variation_relations';
 
     /**
      * @var Connection
@@ -26,14 +27,19 @@ class DBALRepository implements RepositoryInterface
         $this->connection = $connection;
     }
 
-    public function storeRelations($eventId, $placeId, $organizerId)
-    {
+    public function storeRelations(
+        Id $variationId,
+        Url $eventUrl,
+        OwnerId $ownerId,
+        Purpose $purpose
+    ) {
         $this->connection->beginTransaction();
 
         $insert = $this->prepareInsertStatement();
-        $insert->bindValue('event', $eventId);
-        $insert->bindValue('place', $placeId);
-        $insert->bindValue('organizer', $organizerId);
+        $insert->bindValue('event', $eventUrl);
+        $insert->bindValue('variation', $variationId);
+        $insert->bindValue('owner', $ownerId);
+        $insert->bindValue('purpose', (string) $purpose);
         $insert->execute();
 
         $this->connection->commit();
@@ -45,52 +51,38 @@ class DBALRepository implements RepositoryInterface
         return $this->connection->prepare(
             "INSERT INTO {$table} SET
               event = :event,
-              place = :place,
-              organizer = :organizer
+              variation = :variation,
+              owner = :owner,
+              purpose = :purpose
             ON DUPLICATE KEY UPDATE
               place = :place,
-              organizer=:organizer"
+              organizer = :organizer"
         );
     }
 
-    public function getEventsLocatedAtPlace($placeId)
-    {
-        $q = $this->connection->createQueryBuilder();
-        $q->select('event')
-          ->from($this->tableName)
-          ->where('place = ?')
-          ->setParameter(0, $placeId);
-
-        $results = $q->execute();
-
-        $events = array();
-        while ($id = $results->fetchColumn(0)) {
-            $events[] = $id;
-        }
-
-        return $events;
-    }
-
-    public function getEventsOrganizedByOrganizer($organizerId)
-    {
+    public function getOwnerEventVariationByPurpose(
+        Url $eventUrl,
+        OwnerId $ownerId,
+        Purpose $purpose
+    ) {
         $q = $this->connection->createQueryBuilder();
         $q
-            ->select('event')
+            ->select('variation')
             ->from($this->tableName)
-            ->where('organizer = ?')
-            ->setParameter(0, $organizerId);
-
+            ->where(
+                $q->expr()->andX(
+                    $q->expr()->eq('event', $eventUrl),
+                    $q->expr()->eq('owner', $ownerId),
+                    $q->expr()->eq('purpose', (string) $purpose)
+                )
+            );
         $results = $q->execute();
 
-        $events = array();
-        while ($id = $results->fetchColumn(0)) {
-            $events[] = $id;
-        }
-
-        return $events;
+        return $results->fetchColumn(0);
     }
 
     /**
+     * @param \Doctrine\DBAL\Schema\Schema $schema
      * @return \Doctrine\DBAL\Schema\Table|null
      */
     public function configureSchema(Schema $schema)
@@ -109,22 +101,27 @@ class DBALRepository implements RepositoryInterface
         $table = $schema->createTable($this->tableName);
 
         $table->addColumn(
+            'variation',
+            'string',
+            array('length' => 36, 'notnull' => false)
+        );
+        $table->addColumn(
             'event',
             'string',
             array('length' => 36, 'notnull' => false)
         );
         $table->addColumn(
-            'organizer',
+            'owner',
             'string',
             array('length' => 36, 'notnull' => false)
         );
         $table->addColumn(
-            'place',
+            'purpose',
             'string',
             array('length' => 36, 'notnull' => false)
         );
 
-        $table->setPrimaryKey(array('event'));
+        $table->setPrimaryKey(array('variation'));
 
         return $table;
     }

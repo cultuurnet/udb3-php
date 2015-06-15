@@ -19,6 +19,8 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 
 class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -28,9 +30,15 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     private $generator;
 
+    /**
+     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $logger;
+
     public function setUp()
     {
         $this->generator = $this->getMock(UuidGeneratorInterface::class);
+        $this->logger = $this->getMock(LoggerInterface::class);
         parent::setUp();
     }
 
@@ -44,7 +52,10 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
             $this->generator
         );
 
-        return new EventVariationCommandHandler($eventVariationService);
+        $commandHandler = new EventVariationCommandHandler($eventVariationService);
+        $commandHandler->setLogger($this->logger);
+
+        return $commandHandler;
     }
 
     /**
@@ -62,6 +73,10 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->generator->expects($this->once())
             ->method('generate')
             ->willReturn($id);
+
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with('job_info',['event_variation_id' => $id]);
 
         $this->scenario
             ->withAggregateId($id)
@@ -94,6 +109,10 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $newDescription = new Description('A new description.');
 
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with('job_info',['event_variation_id' => $id]);
+
         $this->scenario
             ->withAggregateId((string) $id)
             ->given([$creationEvent])
@@ -108,6 +127,10 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $creationEvent = $this->getExampleVariationCreatedEvent();
         $id = $creationEvent->getId();
+
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with('job_info',['event_variation_id' => $id]);
 
         $this->scenario
             ->withAggregateId((string) $id)

@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Variations\Model;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
+use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -54,19 +55,37 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
      */
     public function its_description_can_be_edited()
     {
+        $id = new Id('29d6d973-ca78-4561-b593-631502c74a8c');
+
         $eventVariation = EventVariation::create(
-            new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
+            $id,
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
             new Description('my custom description')
         );
 
+        $eventVariation->getUncommittedEvents();
+
         $description = new Description('An edited description');
 
         $eventVariation->editDescription($description);
 
         $this->assertEquals($description, $eventVariation->getDescription());
+
+        // Apply the description once again. This shouldn't become a
+        // separate event.
+        $eventVariation->editDescription($description);
+
+        $this->assertUncommittedEventsEquals(
+            [
+                new DescriptionEdited(
+                    $id,
+                    $description
+                )
+            ],
+            $eventVariation
+        );
     }
 
     /**

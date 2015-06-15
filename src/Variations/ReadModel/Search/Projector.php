@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
 
 class Projector implements EventListenerInterface
 {
@@ -31,5 +32,10 @@ class Projector implements EventListenerInterface
             $eventVariationCreated->getOwnerId(),
             $eventVariationCreated->getPurpose()
         );
+    }
+
+    protected function applyEventVariationDeleted(EventVariationDeleted $eventVariationDeleted)
+    {
+        $this->repository->remove($eventVariationDeleted->getId());
     }
 }

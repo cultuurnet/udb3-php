@@ -30,4 +30,6 @@ interface RepositoryInterface
         OwnerId $ownerId,
         Purpose $purpose
     );
+
+    public function remove(Id $variationId);
 }

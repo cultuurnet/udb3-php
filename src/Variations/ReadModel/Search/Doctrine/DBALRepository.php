@@ -93,6 +93,14 @@ class DBALRepository implements RepositoryInterface
         return $ids;
     }
 
+    public function remove(Id $variationId)
+    {
+        $this->connection->delete(
+            $this->connection->quoteIdentifier($this->tableName),
+            ['id' => (string)$variationId]
+        );
+    }
+
     /**
      * @param \Doctrine\DBAL\Schema\Schema $schema
      * @return \Doctrine\DBAL\Schema\Table|null

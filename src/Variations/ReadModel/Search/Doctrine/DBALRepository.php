@@ -66,6 +66,9 @@ class DBALRepository implements RepositoryInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function countEventVariations(Criteria $criteria)
     {
         $q = $this->connection->createQueryBuilder();
@@ -82,9 +85,12 @@ class DBALRepository implements RepositoryInterface
             $q->where($conditions);
         }
 
-        return $q->execute()->fetchColumn(0);
+        return intval($q->execute()->fetchColumn(0));
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getEventVariations(
         Criteria $criteria,
         $limit = 30,

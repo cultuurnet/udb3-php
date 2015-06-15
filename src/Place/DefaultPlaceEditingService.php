@@ -62,7 +62,7 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
 
         $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
 
-        $this->placeRepository->add($place);
+        $this->placeRepository->save($place);
 
         return $id;
     }

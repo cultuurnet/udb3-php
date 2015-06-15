@@ -11,6 +11,7 @@ use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -98,6 +99,39 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
                 )
             ],
             $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_variations()
+    {
+        $this->eventStore->trace();
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('29910c56-db76-4cf6-bc28-b25a7270de2e');
+
+        $this->variationService->createEventVariation(
+            new Url('//beta.uitdatabank.be/event/'),
+            new OwnerId('xyz'),
+            new Purpose('personal'),
+            new Description('my personal description')
+        );
+
+        $variationId = new Id('29910c56-db76-4cf6-bc28-b25a7270de2e');
+        $this->variationService->deleteEventVariation($variationId);
+
+        // get the events and remove the creation event before asserting
+        $events = $this->eventStore->getEvents();
+        array_shift($events);
+
+        $this->assertEquals(
+            [
+                new EventVariationDeleted($variationId)
+            ],
+            $events
         );
     }
 }

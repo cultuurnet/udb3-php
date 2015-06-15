@@ -72,7 +72,7 @@ class EventVariationCommandHandler extends CommandHandler implements LoggerAware
                 [
                     'event_variation_id' => (string) $deleteEventVariation->getId()
                 ]
-           );
+            );
         }
     }
 }

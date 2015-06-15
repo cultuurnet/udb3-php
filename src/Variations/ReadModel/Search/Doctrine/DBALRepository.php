@@ -94,8 +94,9 @@ class DBALRepository implements RepositoryInterface
     public function getEventVariations(
         Criteria $criteria,
         $limit = 30,
-        $offset = 0
+        $page = 0
     ) {
+        $offset = $limit * $page;
         $q = $this->connection->createQueryBuilder();
         $q
             ->select('id')

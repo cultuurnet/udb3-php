@@ -12,12 +12,12 @@ interface RepositoryInterface
     /**
      * @param Criteria $criteria
      * @param int $limit
-     * @param int $offset
+     * @param int $page
      */
     public function getEventVariations(
         Criteria $criteria,
         $limit = 30,
-        $offset = 0
+        $page = 0
     );
 
     /**

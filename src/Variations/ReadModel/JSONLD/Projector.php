@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 
-class Projector
+class Projector implements ProjectorInterface
 {
     /**
      * @var RepositoryInterface

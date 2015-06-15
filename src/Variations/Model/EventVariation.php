@@ -7,7 +7,6 @@ namespace CultuurNet\UDB3\Variations\Model;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
-use CultuurNet\UDB3\Variations\Command\DeleteEventVariation;
 use CultuurNet\UDB3\Variations\Deleteable;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;

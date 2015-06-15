@@ -5,10 +5,8 @@
 
 namespace CultuurNet\UDB3\Variations\Command;
 
-use CultuurNet\UDB3\Variations\Command\EditProperty;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
-use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 class EditDescription extends EditProperty
 {

@@ -101,6 +101,7 @@ class EventVariationCreated extends EventVariationEvent
     }
 
     /**
+     * @inheritdoc
      * @return static
      */
     public static function deserialize(array $data)

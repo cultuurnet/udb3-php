@@ -42,6 +42,7 @@ abstract class EventVariationEvent implements SerializableInterface
     }
 
     /**
+     * @inheritdoc
      * @return static
      */
     public static function deserialize(array $data)

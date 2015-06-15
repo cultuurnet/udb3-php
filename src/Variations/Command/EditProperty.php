@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
-use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 
 abstract class EditProperty
 {

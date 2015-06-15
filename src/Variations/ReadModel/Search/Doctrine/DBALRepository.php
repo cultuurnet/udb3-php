@@ -52,6 +52,7 @@ class DBALRepository implements RepositoryInterface
                 'event' => (string) $eventUrl,
                 'owner' => (string) $ownerId,
                 'purpose' => (string) $purpose,
+                'inserted' => time(),
             ]
         );
 
@@ -93,6 +94,7 @@ class DBALRepository implements RepositoryInterface
         $q
             ->select('id')
             ->from($this->tableName)
+            ->orderBy('inserted')
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 
@@ -163,7 +165,15 @@ class DBALRepository implements RepositoryInterface
             array('length' => 36, 'notnull' => true)
         );
 
+        $table->addColumn(
+            'inserted',
+            'integer',
+            array('notnull' => true, 'unsigned' => true)
+        );
+
         $table->setPrimaryKey(array('id'));
+
+        $table->addIndex(['inserted']);
 
         return $table;
     }

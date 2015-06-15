@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Variations;
 
-
 class AggregateDeletedExceptionTest extends \PHPUnit_Framework_TestCase
 {
     /**

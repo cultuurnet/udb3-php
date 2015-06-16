@@ -39,6 +39,6 @@ class InMemoryDocumentRepository implements DocumentRepositoryInterface
      */
     public function remove($id)
     {
-       $this->documents[$id] = 'GONE';
+        $this->documents[$id] = 'GONE';
     }
 }

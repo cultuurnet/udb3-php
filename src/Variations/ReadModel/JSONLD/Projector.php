@@ -2,9 +2,11 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 
+use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
@@ -13,8 +15,10 @@ use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
 
-class Projector implements ProjectorInterface
+class Projector implements ProjectorInterface, EventListenerInterface
 {
+    use DelegateEventHandlingToSpecificMethodTrait;
+
     /**
      * @var DocumentRepositoryInterface
      */
@@ -72,9 +76,13 @@ class Projector implements ProjectorInterface
         /** @var JsonDocument $eventDocument */
         $eventDocument = $this->eventRepository->get($eventId);
 
+        if (!$eventDocument) {
+            return;
+        }
+
         $searchCriteria = new Criteria();
         $eventUrl = new Url($eventDocument->getBody()->{'@id'});
-        $searchCriteria->withEventUrl($eventUrl);
+        $searchCriteria = $searchCriteria->withEventUrl($eventUrl);
         $variationIds = $this->searchRepository->getEventVariations($searchCriteria);
 
         foreach ($variationIds as $variationId) {

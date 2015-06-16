@@ -16,7 +16,7 @@ abstract class DocumentRepositoryDecorator implements DocumentRepositoryInterfac
 
     public function get($id)
     {
-        $this->decoratedRepository->get($id);
+        return $this->decoratedRepository->get($id);
     }
 
     public function save(JsonDocument $readModel)

@@ -7,8 +7,12 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
+use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
+use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use ValueObjects\Identity\UUID;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
 
@@ -126,11 +130,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $eventId = 'some-event-id';
         $eventUrl = 'http://acme.org/event/' . $eventId;
-        $this->eventIriGenerator
-            ->expects($this->atLeastOnce())
-            ->method('iri')
-            ->with($eventId)
-            ->willReturn($eventUrl);
 
         $variationId = 'a-variation-id';
         $variationUrl = 'http://acme.org/variation/' . $variationId;
@@ -199,5 +198,69 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $eventProjectedEvent = new EventProjectedToJSONLD($eventId);
         $this->projector->applyEventProjectedToJSONLD($eventProjectedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_variations()
+    {
+        $eventId = 'DEF99055-FE91-4039-B96C-1238529045C5';
+        $eventUrl = 'http://acme.org/event/' . $eventId;
+
+        $variationId = 'BAE91055-FE91-4039-B96C-29F5661045C5';
+        $variationUrl = 'http://acme.org/variation/' . $variationId;
+        $this->variationIriGenerator
+            ->expects($this->atLeastOnce())
+            ->method('iri')
+            ->with($variationId)
+            ->willReturn($variationUrl);
+
+        $event = new JsonDocument(
+            'DEF99055-FE91-4039-B96C-1238529045C5',
+            json_encode([
+                '@id' => $eventUrl,
+                'description' => [
+                    'nl' => 'Original event description',
+                    'fr' => 'Le french translation'
+                ],
+                'sameAs' => []
+            ])
+        );
+
+        $expectedVariation = new JsonDocument(
+            'BAE91055-FE91-4039-B96C-29F5661045C5',
+            json_encode([
+                '@id' => $variationUrl,
+                'description' => [
+                    'nl' => 'The variation description',
+                    'fr' => 'Le french translation'
+                ],
+                'sameAs' => [$eventUrl]
+            ])
+        );
+
+        $this->eventRepository->expects($this->once())
+            ->method('get')
+            ->with('DEF99055-FE91-4039-B96C-1238529045C5')
+            ->willReturn($event);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedVariation) {
+                    return $expectedVariation == $jsonDocument;
+                }
+            ));
+
+        $variationCreatedEvent = new EventVariationCreated(
+            new Id($variationId),
+            new Url($eventUrl),
+            new OwnerId('this-is-a-owner-id'),
+            new Purpose('personal'),
+            new Description('The variation description')
+        );
+        $this->projector->applyEventVariationCreated($variationCreatedEvent);
     }
 }

@@ -86,9 +86,7 @@ class Projector implements ProjectorInterface
             $variationLD->description->nl = $variationDocument->getBody()->description->nl;
 
             // overwrite the event url with the variation url
-            $variationLD->{'@id'} = $this->variationIriGenerator->iri(
-                $variationId
-            );
+            $variationLD->{'@id'} = $this->variationIriGenerator->iri($variationId);
 
             // add the original event to the list of similar entities
             $existingSameAsEntities = $variationDocument->getBody()->sameAs;
@@ -100,6 +98,37 @@ class Projector implements ProjectorInterface
 
             $this->repository->save($variationDocument->withBody($variationLD));
         }
+    }
+
+    /**
+     * @param EventVariationCreated $eventVariationCreated
+     */
+    public function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
+    {
+        // TODO: figure out how to get the id with parsing it from the URL
+        $eventUrlParts = explode('/', $eventVariationCreated->getEventUrl());
+        $eventId = end($eventUrlParts);
+        $eventDocument = $this->eventRepository->get($eventId);
+
+        // use the up-to-date event json as a base
+        $variationLD = $eventDocument->getBody();
+
+        // overwrite the description that's already set in the variation
+        $variationLD->description->nl = (string)$eventVariationCreated->getDescription();
+
+        // overwrite the event url with the variation url
+        $variationLD->{'@id'} = $this->variationIriGenerator->iri($eventVariationCreated->getId());
+
+        // add the original event to the list of similar entities
+        $existingSameAsEntities = $eventDocument->getBody()->sameAs;
+        $newSameAsEntities = array_unique(array_merge(
+            $existingSameAsEntities,
+            [(string)$eventVariationCreated->getEventUrl()]
+        ));
+        $variationLD->sameAs = $newSameAsEntities;
+
+        $variationDocument = new JsonDocument($eventVariationCreated->getId(), $variationLD);
+        $this->repository->save($variationDocument->withBody($variationLD));
     }
 
     /**

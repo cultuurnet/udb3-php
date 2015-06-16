@@ -105,7 +105,7 @@ class Projector implements ProjectorInterface
      */
     public function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
     {
-        // TODO: figure out how to get the id with parsing it from the URL
+        // TODO: figure out how to get the event id without parsing it from the URL
         $eventUrlParts = explode('/', $eventVariationCreated->getEventUrl());
         $eventId = end($eventUrlParts);
         $eventDocument = $this->eventRepository->get($eventId);

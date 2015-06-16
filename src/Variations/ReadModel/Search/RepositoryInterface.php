@@ -13,6 +13,9 @@ interface RepositoryInterface
      * @param Criteria $criteria
      * @param int $limit
      * @param int $page
+     *
+     * @return string[]
+     *  A list of variation ids
      */
     public function getEventVariations(
         Criteria $criteria,
@@ -22,6 +25,7 @@ interface RepositoryInterface
 
     /**
      * @param Criteria $criteria
+     * @return int
      */
     public function countEventVariations(
         Criteria $criteria

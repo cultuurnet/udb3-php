@@ -40,7 +40,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $this->repository,
             $this->eventRepository,
             $this->searchRepository,
-            $this->eventIriGenerator,
             $this->variationIriGenerator
         );
     }
@@ -182,10 +181,15 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->searchRepository->expects($this->once())
             ->method('getEventVariations')
-            ->willReturn([$variation]);
+            ->willReturn([$variationId]);
 
         $this->repository
-            ->expects(($this->once()))
+            ->expects($this->at(0))
+            ->method('get')
+            ->with('a-variation-id')
+            ->willReturn($variation);
+        $this->repository
+            ->expects($this->at(1))
             ->method('save')
             ->with($this->callback(
                 function (JsonDocument $jsonDocument) use ($expectedVariation) {

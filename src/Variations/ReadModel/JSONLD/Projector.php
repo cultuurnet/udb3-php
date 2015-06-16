@@ -144,6 +144,6 @@ class Projector implements ProjectorInterface, EventListenerInterface
      */
     public function applyEventVariationDeleted(EventVariationDeleted $eventVariationDeleted)
     {
-        // TODO: Implement applyEventVariationDeleted() method.
+        $this->repository->remove((string)$eventVariationDeleted->getId());
     }
 }

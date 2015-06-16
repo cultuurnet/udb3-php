@@ -23,4 +23,9 @@ abstract class DocumentRepositoryDecorator implements DocumentRepositoryInterfac
     {
         $this->decoratedRepository->save($readModel);
     }
+
+    public function remove($id)
+    {
+        $this->decoratedRepository->remove($id);
+    }
 }

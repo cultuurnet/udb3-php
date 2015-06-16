@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Event\EventEvent;
-use CultuurNet\UDB3\Event\EventProjectedToJSONLD;
+use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentEventFactory;
 
 class EventFactory implements DocumentEventFactory

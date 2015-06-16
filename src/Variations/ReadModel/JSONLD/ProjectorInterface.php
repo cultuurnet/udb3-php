@@ -15,14 +15,12 @@ interface ProjectorInterface
      * @param DocumentRepositoryInterface $repository
      * @param DocumentRepositoryInterface $eventRepository
      * @param SearchRepositoryInterface $searchRepository
-     * @param IriGeneratorInterface $eventIriGenerator
      * @param IriGeneratorInterface $variationIriGenerator
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         DocumentRepositoryInterface $eventRepository,
         SearchRepositoryInterface $searchRepository,
-        IriGeneratorInterface $eventIriGenerator,
         IriGeneratorInterface $variationIriGenerator
     );
 

@@ -47,7 +47,7 @@ class VariationDecoratedEventService implements EventServiceInterface
      * @param DocumentRepositoryInterface $variationJsonLdRepository
      * @param IriGeneratorInterface $eventIriGenerator
      */
-    function __construct(
+    public function __construct(
         EventServiceInterface $decoratedEventService,
         RepositoryInterface $searchRepository,
         Criteria $baseCriteria,
@@ -86,17 +86,11 @@ class VariationDecoratedEventService implements EventServiceInterface
                     return $document->getRawBody();
                 }
             }
-        }
-        catch (DocumentGoneException $e) {
+        } catch (DocumentGoneException $e) {
             // Document was gone. This is a situation that might occur
             // at a moment where the read models are not entirely consistent
-            // yet.
-        }
-        catch (\Exception $e) {
-            // Intentionally catch any exception that might occur.
-            // Below there's a fallback to the event service.
-            // @todo Add logging.
-            throw $e;
+            // yet. We just ignore the exception and fall back to the regular
+            // event info.
         }
 
         return $this->decoratedEventService->getEvent($id);
@@ -117,5 +111,4 @@ class VariationDecoratedEventService implements EventServiceInterface
     {
         return $this->decoratedEventService->eventsLocatedAtPlace($placeId);
     }
-
 }

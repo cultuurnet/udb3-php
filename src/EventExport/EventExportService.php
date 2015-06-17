@@ -119,6 +119,7 @@ class EventExportService implements EventExportServiceInterface
                 $this->uuidGenerator->generate()
             );
 
+            // $events are keyed here by the authoritative event ID.
             if ($selection) {
                 $events = $this->getEventsAsJSONLD($selection);
             } else {
@@ -180,7 +181,7 @@ class EventExportService implements EventExportServiceInterface
     private function getEventsAsJSONLD($events)
     {
         foreach ($events as $eventId) {
-            yield $this->eventService->getEvent($eventId);
+            yield $eventId => $this->eventService->getEvent($eventId);
         }
     }
 
@@ -241,7 +242,7 @@ class EventExportService implements EventExportServiceInterface
 
                     $event = $this->eventService->getEvent($eventId);
 
-                    yield $event;
+                    yield $eventId => $event;
                 } else {
                     if ($logger) {
                         $logger->error(

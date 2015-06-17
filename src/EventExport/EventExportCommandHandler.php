@@ -47,6 +47,7 @@ class EventExportCommandHandler extends CommandHandler implements LoggerAwareInt
      * @param EventExportServiceInterface $eventExportService
      * @param string $princeXMLBinaryPath
      * @param EventInfoServiceInterface|null $uitpas
+     * @param CalendarRepositoryInterface $calendarRepository
      */
     public function __construct(
         EventExportServiceInterface $eventExportService,

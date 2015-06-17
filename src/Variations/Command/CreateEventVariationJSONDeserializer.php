@@ -10,12 +10,26 @@ use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
+use CultuurNet\UDB3\Variations\Model\Properties\UrlValidator;
 use JsonSchema\Validator;
 use ValueObjects\String\String;
 use stdClass;
 
 class CreateEventVariationJSONDeserializer extends JSONDeserializer
 {
+    /**
+     * @var UrlValidator[]
+     */
+    private $urlValidators;
+
+    /**
+     * @param UrlValidator $urlValidator
+     */
+    public function addUrlValidator(UrlValidator $urlValidator)
+    {
+        $this->urlValidators[] = $urlValidator;
+    }
+
     /**
      * @inheritdoc
      *
@@ -36,11 +50,19 @@ class CreateEventVariationJSONDeserializer extends JSONDeserializer
      * @param stdClass $json
      *
      * @return CreateEventVariation
+     *
+     * @throws ValidationException
      */
     private function createTypedObject(stdClass $json)
     {
+        $url = new Url($json->same_as);
+
+        foreach ($this->urlValidators as $urlValidator) {
+            $urlValidator->validateUrl($url);
+        }
+
         return new CreateEventVariation(
-            new Url($json->same_as),
+            $url,
             new OwnerId($json->owner),
             new Purpose($json->purpose),
             new Description($json->description)

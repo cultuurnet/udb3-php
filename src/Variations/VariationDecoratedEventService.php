@@ -83,7 +83,7 @@ class VariationDecoratedEventService implements EventServiceInterface
                 $document = $this->variationJsonLdRepository->get($variationId);
 
                 if ($document) {
-                    return $document;
+                    return $document->getRawBody();
                 }
             }
         }

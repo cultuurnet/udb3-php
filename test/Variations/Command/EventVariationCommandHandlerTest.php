@@ -19,7 +19,6 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 

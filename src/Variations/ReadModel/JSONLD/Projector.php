@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
 
-class Projector implements ProjectorInterface, EventListenerInterface
+class Projector implements EventListenerInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
 

@@ -20,7 +20,7 @@ class CreateEventVariationJSONDeserializer extends JSONDeserializer
     /**
      * @var UrlValidator[]
      */
-    private $urlValidators;
+    private $urlValidators = [];
 
     /**
      * @param UrlValidator $urlValidator

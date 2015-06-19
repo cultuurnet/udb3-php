@@ -112,6 +112,22 @@ class TruncateStringFilterTest extends StringFilterTest
     /**
      * @test
      */
+    public function it_truncates_sentences_followed_immediately_by_a_new_line()
+    {
+        // @codingStandardsIgnoreStart
+        $original = "Tijdens de zomerweek gaan we een week lang tijdstappen , we reizen\ndoor tijd en ruimte van de prehistorie naar onze moderne tijd.\nTijdens de zomerweek gaan we tijdstappen , we reizen door tijd en\nruimte van de prehistorie naar de Vikingen en via de middeleeuwen\nnaar onze moderne tijd!\nWe ontmoeten dino\u2019s, verdedigen een middeleeuws kasteel, maken\nkennis met Asterix en zo veel meer.\nEen waar avontuur en een overheerlijke vakantie\n";
+        $expected = "Tijdens de zomerweek gaan we een week lang tijdstappen , we reizen\ndoor tijd en ruimte van de prehistorie naar onze moderne tijd.\nTijdens de zomerweek gaan we tijdstappen , we reizen door tijd en\nruimte van de prehistorie naar de Vikingen en via de middeleeuwen\nnaar onze moderne tijd!...";
+        // @codingStandardsIgnoreEnd
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $this->filter->setMaxLength(300);
+        $this->filter->addEllipsis();
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
     public function it_still_truncates_there_is_no_sentence()
     {
         $this->filter->turnOnWordSafe(0);

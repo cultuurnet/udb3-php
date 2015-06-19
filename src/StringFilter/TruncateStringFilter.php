@@ -112,9 +112,10 @@ class TruncateStringFilter implements StringFilterInterface
             $haystack = (string) $stringy->first($maxLength);
 
             foreach ($endingSymbols as $needle) {
-                $position = strrpos($haystack, $needle);
+                $position = mb_strrpos($haystack, $needle);
                 if ($position && $position > $lastOccurrence) {
-                    $lastOccurrence = $position + (strlen($needle) - 1);
+                    // Add one to include the first character of the ending symbol
+                    $lastOccurrence = $position + 1;
                 }
             }
 

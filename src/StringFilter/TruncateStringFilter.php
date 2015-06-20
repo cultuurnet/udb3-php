@@ -102,7 +102,7 @@ class TruncateStringFilter implements StringFilterInterface
 
         $stringy = Stringy::create($string, 'UTF-8');
 
-        $endingSymbols = ['. ', '? ', '! '];
+        $endingSymbols = ['. ', '? ', '! ', '.'.PHP_EOL, '?'.PHP_EOL, '!'.PHP_EOL];
         $hasEndingSymbolInRange = $stringy
           ->first($maxLength)
           ->containsAny($endingSymbols);
@@ -112,13 +112,14 @@ class TruncateStringFilter implements StringFilterInterface
             $haystack = (string) $stringy->first($maxLength);
 
             foreach ($endingSymbols as $needle) {
-                $position = strrpos($haystack, $needle);
+                $position = mb_strrpos($haystack, $needle, null, 'UTF-8');
                 if ($position && $position > $lastOccurrence) {
+                    // Add one to include the first character of the ending symbol
                     $lastOccurrence = $position + 1;
                 }
             }
 
-            $truncated = $stringy->safeTruncate($lastOccurrence + strlen($suffix), $suffix);
+            $truncated = $stringy->truncate($lastOccurrence + strlen($suffix), $suffix);
         } else if ($wordSafe) {
             $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {

@@ -46,32 +46,28 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
     }
 
     /**
-     * Find UDB3 data based on an arbitrary query.
-     *
-     * @param string $query
-     *   An arbitrary query.
-     * @param int $limit
-     *   How many items to retrieve.
-     * @param int $start
-     *   Offset to start from.
-     *
-     * @return array|\JsonSerializable
-     *  A JSON-LD array or JSON serializable object.
+     * {@inheritdoc}
      */
-    public function search($query, $limit = 30, $start = 0, $sort = null)
+    public function search($query, $limit = 30, $start = 0, $sort = null, $unavailable = true, $past = true)
     {
-        if ($query == '*.*' && $limit == 30 && $start == 0 && $sort == 'lastupdated desc') {
+        if ($query == '*.*' &&
+            $limit == 30 &&
+            $start == 0 &&
+            $sort == 'lastupdated desc' &&
+            $unavailable &&
+            $past
+        ) {
             $cacheResult = $this->cache->fetch('default-search');
             if ($cacheResult) {
                 return unserialize($cacheResult);
             } else {
-                $result = $this->search->search($query, $limit, $start, $sort);
+                $result = $this->search->search($query, $limit, $start, $sort, $unavailable, $past);
                 $this->cache->save('default-search', serialize($result));
 
                 return $result;
             }
         } else {
-            return $this->search->search($query, $limit, $start, $sort);
+            return $this->search->search($query, $limit, $start, $sort, $unavailable, $past);
         }
     }
 }

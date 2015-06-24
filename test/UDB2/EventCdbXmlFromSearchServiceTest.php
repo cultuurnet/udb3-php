@@ -105,37 +105,4 @@ EOS;
             $xml
         );
     }
-
-    /**
-     * @test
-     */
-    public function it_can_include_past_events()
-    {
-        $cdbId = '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11';
-
-        $cdbXmlWithPastEvents = new EventCdbXmlFromSearchService(
-            $this->searchService,
-            true
-        );
-
-        $response = new Response(
-            200,
-            [],
-            file_get_contents(__DIR__ . '/search-results.xml')
-        );
-
-        $this->searchService
-            ->expects($this->once())
-            ->method('search')
-            ->with(
-                [
-                    new Query('cdbid:"' . $cdbId . '"'),
-                    new Group(true),
-                    new BooleanParameter('past', true),
-                ]
-            )
-            ->willReturn($response);
-
-        $cdbXmlWithPastEvents->getCdbXmlOfEvent($cdbId);
-    }
 }

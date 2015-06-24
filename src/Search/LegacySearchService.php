@@ -50,11 +50,19 @@ class LegacySearchService implements SearchServiceInterface
      *   Offset to start from.
      * @param string $sort
      *   Sorting to use.
+     * @param boolean $unavailable
+     * @param boolean $past
      *
      * @return \Guzzle\Http\Message\Response
      */
-    protected function _search($query, $limit, $start, $sort = null, $unavailable = true, $past = true)
-    {
+    protected function _search(
+        $query,
+        $limit,
+        $start,
+        $sort = null,
+        $unavailable = true,
+        $past = true
+    ) {
         $qParam = new Parameter\Query($query);
         $groupParam = new Parameter\Group();
         $startParam = new Parameter\Start($start);
@@ -73,10 +81,10 @@ class LegacySearchService implements SearchServiceInterface
             $params[] = new Parameter\Parameter('sort', $sort);
         }
         if ($unavailable) {
-            $params[] = new Parameter\Parameter('unavailable', 'true');
+            $params[] = new Parameter\BooleanParameter('unavailable', true);
         }
         if ($past) {
-            $params[] = new Parameter\Parameter('past', 'true');
+            $params[] = new Parameter\BooleanParameter('past', true);
         }
 
         $response = $this->searchAPI2->search($params);

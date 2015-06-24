@@ -134,6 +134,21 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             $this->searchParams['start'],
             'lastupdated asc'
         );
+        $this->mockCachedSearchService->search(
+            $this->searchParams['query'],
+            $this->searchParams['limit'],
+            $this->searchParams['start'],
+            $this->searchParams['sort'],
+            false
+        );
+        $this->mockCachedSearchService->search(
+            $this->searchParams['query'],
+            $this->searchParams['limit'],
+            $this->searchParams['start'],
+            $this->searchParams['sort'],
+            true,
+            false
+        );
     }
 
     /**

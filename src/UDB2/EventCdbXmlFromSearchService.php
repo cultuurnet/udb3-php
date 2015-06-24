@@ -18,18 +18,11 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
     private $search;
 
     /**
-     * @var bool
-     */
-    private $includePastEvents;
-
-    /**
      * @param SearchServiceInterface $search
-     * @param bool $includePastEvents
      */
-    public function __construct(SearchServiceInterface $search, $includePastEvents = false)
+    public function __construct(SearchServiceInterface $search)
     {
         $this->search = $search;
-        $this->includePastEvents = $includePastEvents;
     }
 
     public function getCdbXmlOfEvent($eventId)
@@ -37,11 +30,9 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
         $parameters = [
             new Query('cdbid:"' . $eventId . '"'),
             new Group(true),
+            new BooleanParameter('past', true),
+            new BooleanParameter('unavailable', true),
         ];
-
-        if ($this->includePastEvents) {
-            $parameters[] = new BooleanParameter('past', true);
-        }
 
         $results = $this->search->search(
             $parameters

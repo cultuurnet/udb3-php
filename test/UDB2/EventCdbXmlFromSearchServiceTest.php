@@ -53,6 +53,42 @@ EOS;
     }
 
     /**
+     * @param string $fileName
+     * @return Response
+     */
+    private function loadResponseFromFile($fileName)
+    {
+        return new Response(
+            200,
+            [],
+            file_get_contents(__DIR__ . '/' . $fileName)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_includes_unavailable_and_past_events()
+    {
+        $cdbId = '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11';
+
+        $this->searchService
+            ->expects($this->once())
+            ->method('search')
+            ->with(
+                [
+                    new Query('cdbid:"' . $cdbId . '"'),
+                    new Group(true),
+                    new BooleanParameter('past', true),
+                    new BooleanParameter('unavailable', true),
+                ]
+            )
+        ->willReturn($this->loadResponseFromFile('search-results.xml'));
+
+        $this->service->getCdbXmlOfEvent($cdbId);
+    }
+
+    /**
      * @test
      */
     public function it_throws_an_exception_if_event_was_not_found()
@@ -73,6 +109,8 @@ EOS;
                 [
                     new Query('cdbid:"' . $cdbId . '"'),
                     new Group(true),
+                    new BooleanParameter('past', true),
+                    new BooleanParameter('unavailable', true),
                 ]
             )
             ->willReturn($response);
@@ -85,16 +123,10 @@ EOS;
      */
     public function it_extracts_event_from_returned_results()
     {
-        $response = new Response(
-            200,
-            [],
-            file_get_contents(__DIR__ . '/search-results.xml')
-        );
-
         $this->searchService
             ->expects($this->once())
             ->method('search')
-            ->willReturn($response);
+            ->willReturn($this->loadResponseFromFile('search-results.xml'));
 
         $xml = $this->service->getCdbXmlOfEvent(
             '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11'
@@ -104,38 +136,5 @@ EOS;
             __DIR__ . '/search-results-single-event.xml',
             $xml
         );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_include_past_events()
-    {
-        $cdbId = '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11';
-
-        $cdbXmlWithPastEvents = new EventCdbXmlFromSearchService(
-            $this->searchService,
-            true
-        );
-
-        $response = new Response(
-            200,
-            [],
-            file_get_contents(__DIR__ . '/search-results.xml')
-        );
-
-        $this->searchService
-            ->expects($this->once())
-            ->method('search')
-            ->with(
-                [
-                    new Query('cdbid:"' . $cdbId . '"'),
-                    new Group(true),
-                    new BooleanParameter('past', true),
-                ]
-            )
-            ->willReturn($response);
-
-        $cdbXmlWithPastEvents->getCdbXmlOfEvent($cdbId);
     }
 }

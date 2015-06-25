@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\Search\Parameter\BooleanParameter;
 use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;

@@ -27,6 +27,11 @@ class Event extends EventSourcedAggregateRoot
      */
     public static function create($eventId, Title $title, $location, \DateTime $date, EventType $type)
     {
+        if (!is_string($eventId)) {
+            throw new \InvalidArgumentException(
+                'Expected eventId to be a string, received ' . gettype($eventId)
+            );
+        }
         $event = new self();
         $event->apply(new EventCreated($eventId, $title, $location, $date, $type));
 

@@ -71,7 +71,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     private function applyEventCreated(EventCreated $eventCreated)
     {
         // @todo Should we add additional layer to check for author and timestamp?
-        $this->createEventFromUDB2($eventCreated->getEventId());
+        $this->createEventFromUDB2((string)$eventCreated->getEventId());
     }
 
     /**
@@ -80,7 +80,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     private function applyEventUpdated(EventUpdated $eventUpdated)
     {
         // @todo Should we add additional layer to check for author and timestamp?
-        $this->updateEventFromUDB2($eventUpdated->getEventId());
+        $this->updateEventFromUDB2((string)$eventUpdated->getEventId());
     }
 
     /**

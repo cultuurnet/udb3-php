@@ -22,6 +22,7 @@ use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
+use CultuurNet\Entry\BookingPeriod;
 use CultuurNet\Entry\EntityType;
 use CultuurNet\Entry\Language;
 use CultuurNet\Entry\Number;
@@ -40,11 +41,11 @@ use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
-use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Udb3RepositoryTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -506,14 +507,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $ages = explode('-', $ageRangeUpdated->getTypicalAgeRange());
         $entityType = new EntityType('event');
-
-        if ($ages[0] == -1) {
-          $entryApi->deleteAge($ageRangeUpdated->getEventId(), $entityType);
-        }
-        else {
-          $age = new Number($ages[0]);
-          $entryApi->updateAge($ageRangeUpdated->getEventId(), $entityType, $age);
-        }
+        $age = new Number($ages[0]);
+        $entryApi->updateAge($ageRangeUpdated->getEventId(), $entityType, $age);
 
     }
 
@@ -568,7 +563,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $entryApi->deleteOrganiser($organizerDeleted->getPlaceId());
+        $entityType = new EntityType('event');
+        $entryApi->deleteOrganiser($organizerDeleted->getEventId(), $entityType);
 
     }
 
@@ -589,7 +585,11 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $this->updateCdbItemByContactPoint($event, $contactPoint);
 
-        $entryApi->updateContactInfo($domainEvent->getEventId(), $event->getContactInfo());
+        $entryApi->updateContactInfo(
+            $domainEvent->getEventId(),
+            new EntityType('event'),
+            $event->getContactInfo()
+        );
 
     }
 
@@ -608,8 +608,31 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $event = $entryApi->getEvent($domainEvent->getEventId());
         $bookingInfo = $domainEvent->getBookingInfo();
 
+        $entityType = new EntityType('event');
+
         $this->updateCdbItemByBookingInfo($event, $bookingInfo);
-        $entryApi->updateEvent($event);
+
+        // Save contact info.
+        $entryApi->updateContactInfo(
+            $domainEvent->getEventId(),
+            $entityType,
+            $event->getContactInfo()
+        );
+
+        // Save the bookingperiod.
+        if ($bookingInfo->getAvailabilityStarts() && $bookingInfo->getAvailabilityEnds()) {
+          $startDate = new \DateTime($bookingInfo->getAvailabilityStarts());
+          $endDate = new \DateTime($bookingInfo->getAvailabilityEnds());
+          $bookingPeriod = new BookingPeriod(
+              $startDate->format('d/m/Y'),
+              $endDate->format('d/m/Y')
+          );
+
+          $entryApi->updateBookingPeriod(
+              $domainEvent->getEventId(),
+              $bookingPeriod
+          );
+        }
 
     }
 

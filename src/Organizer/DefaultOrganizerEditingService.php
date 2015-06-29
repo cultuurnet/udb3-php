@@ -54,7 +54,7 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
 
         $organizer = Organizer::createOrganizer($id, $title, $addresses, $phones, $emails, $urls);
 
-        $this->organizerRepository->add($organizer);
+        $this->organizerRepository->save($organizer);
 
         return $id;
     }

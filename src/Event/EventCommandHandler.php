@@ -6,8 +6,14 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
+use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
+use CultuurNet\UDB3\Event\Commands\LabelEvents;
+use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
@@ -15,11 +21,6 @@ use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Event\Commands\ApplyLabel;
-use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Label as Label;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -220,15 +221,30 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     /**
      * Handle an update command to update the typical age range.
      */
-    public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $typicalAgeRange)
+    public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $updateTypicalAgeRange)
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($typicalAgeRange->getId());
+        $event = $this->eventRepository->load($updateTypicalAgeRange->getId());
 
         $event->updateTypicalAgeRange(
-            $typicalAgeRange->getTypicalAgeRange()
+            $updateTypicalAgeRange->getTypicalAgeRange()
         );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle the deletion of typical age range on an event.
+     */
+    public function handleDeleteTypicalAgeRange(DeleteTypicalAgeRange $deleteTypicalAgeRange)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteTypicalAgeRange->getId());
+
+        $event->deleteTypicalAgeRange();
 
         $this->eventRepository->save($event);
 

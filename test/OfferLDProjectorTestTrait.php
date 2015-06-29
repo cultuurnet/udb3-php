@@ -560,8 +560,8 @@ trait OfferLDProjectorTestTrait
     public function it_projects_the_deleting_of_age_range()
     {
         $id = 'foo';
-        $eventClass = $this->getEventClass('TypicalAgeRangeUpdated');
-        $typicalAgeRangeUpdated = new $eventClass($id, '-1');
+        $eventClass = $this->getEventClass('TypicalAgeRangeDeleted');
+        $typicalAgeRangeDeleted = new $eventClass($id);
 
         $initialDocument = new JsonDocument(
             $id,
@@ -587,6 +587,6 @@ trait OfferLDProjectorTestTrait
                 }
             ));
 
-        $this->projector->applyTypicalAgeRangeUpdated($typicalAgeRangeUpdated);
+        $this->projector->applyTypicalAgeRangeDeleted($typicalAgeRangeDeleted);
     }
 }

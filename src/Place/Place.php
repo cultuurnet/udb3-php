@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
@@ -82,6 +83,11 @@ class Place extends Actor
     public function updateTypicalAgeRange($typicalAgeRange)
     {
         $this->apply(new TypicalAgeRangeUpdated($this->actorId, $typicalAgeRange));
+    }
+
+    public function deleteTypicalAgeRange()
+    {
+        $this->apply(new TypicalAgeRangeDeleted($this->actorId));
     }
 
     /**

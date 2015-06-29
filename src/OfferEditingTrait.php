@@ -58,6 +58,22 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
+    public function deleteTypicalAgeRange($id)
+    {
+
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('DeleteTypicalAgeRange');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id)
+        );
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function updateOrganizer($id, $organizerId)
     {
 

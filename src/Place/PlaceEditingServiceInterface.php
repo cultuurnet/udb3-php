@@ -64,6 +64,13 @@ interface PlaceEditingServiceInterface
     public function updateTypicalAgeRange($id, $ageRange);
 
     /**
+     * Delete the typical age range of a place.
+     *
+     * @param string $id
+     */
+    public function deleteTypicalAgeRange($id);
+
+    /**
      * Update the organizer of a place.
      *
      * @param string $id

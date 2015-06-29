@@ -20,9 +20,12 @@ use CultureFeed_Cdb_Data_ContactInfo;
 use CultureFeed_Cdb_Data_EventDetail;
 use CultureFeed_Cdb_Data_EventDetailList;
 use CultureFeed_Cdb_Data_Location;
-use CultureFeed_Cdb_Data_Organiser;
 use CultureFeed_Cdb_Default;
 use CultureFeed_Cdb_Item_Event;
+use CultuurNet\Entry\EntityType;
+use CultuurNet\Entry\Language;
+use CultuurNet\Entry\Number;
+use CultuurNet\Entry\String;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
@@ -34,12 +37,14 @@ use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Udb3RepositoryTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -187,6 +192,13 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                         );
                         break;
 
+                    case MajorInfoUpdated::class:
+                        $this->applyMajorInfoUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
                         $this->applyDescriptionUpdated(
@@ -198,6 +210,14 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                     case TypicalAgeRangeUpdated::class:
                         /** @var TypicalAgeRangeUpdated $domainEvent */
                         $this->applyTypicalAgeRangeUpdated(
+                            $domainEvent,
+                            $domainMessage->getMetadata()
+                        );
+                        break;
+
+                    case TypicalAgeRangeDeleted::class:
+                        /** @var TypicalAgeRangeDeleted $domainEvent */
+                        $this->applyTypicalAgeRangeDeleted(
                             $domainEvent,
                             $domainMessage->getMetadata()
                         );
@@ -410,6 +430,46 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     }
 
     /**
+     * Send the updated major info to UDB2.
+     */
+    public function applyMajorInfoUpdated(MajorInfoUpdated $infoUpdated, Metadata $metadata) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+        $event = $entryApi->getEvent($infoUpdated->getEventId());
+
+        $this->setLocationForEventCreated($infoUpdated, $event);
+        $this->setCalendarForItemCreated($infoUpdated, $event);
+
+        // Set event type and theme.
+        $categories = $event->getCategories();
+        foreach ($categories as $key => $category) {
+          if ($category->getType() == 'eventtype' || $category->getType() == 'theme') {
+            $categories->delete($key);
+          }
+        }
+
+        $eventType = new CultureFeed_Cdb_Data_Category(
+            'eventtype',
+            $infoUpdated->getEventType()->getId(),
+            $infoUpdated->getEventType()->getLabel()
+        );
+        $event->getCategories()->add($eventType);
+
+        if ($infoUpdated->getTheme() !== null) {
+            $theme = new CultureFeed_Cdb_Data_Category(
+                'theme',
+                $infoUpdated->getTheme()->getId(),
+                $infoUpdated->getTheme()->getLabel()
+            );
+            $event->getCategories()->add($theme);
+        }
+
+
+        $entryApi->updateEvent($event);
+
+    }
+
+    /**
      * Send the updated description also to CDB2.
      */
     private function applyDescriptionUpdated(
@@ -418,11 +478,19 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
 
-        $event->getDetails()->getDetailByLanguage('nl')->setLongDescription($descriptionUpdated->getDescription());
+        $newDescription = $descriptionUpdated->getDescription();
+        $entityId = $descriptionUpdated->getEventId();
+        $entityType = new EntityType('event');
+        $description = new String($newDescription);
+        $language = new Language('nl');
 
-        $entryApi->updateEvent($event);
+        if (!empty($newDescription)) {
+          $entryApi->updateDescription($entityId, $entityType, $description, $language);
+        }
+        else {
+          $entryApi->deleteDescription($entityId, $entityType, $language);
+        }
 
     }
 
@@ -435,12 +503,32 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($ageRangeUpdated->getEventId());
 
         $ages = explode('-', $ageRangeUpdated->getTypicalAgeRange());
-        $event->setAgeFrom($ages[0]);
+        $entityType = new EntityType('event');
 
-        $entryApi->updateEvent($event);
+        if ($ages[0] == -1) {
+          $entryApi->deleteAge($ageRangeUpdated->getEventId(), $entityType);
+        }
+        else {
+          $age = new Number($ages[0]);
+          $entryApi->updateAge($ageRangeUpdated->getEventId(), $entityType, $age);
+        }
+
+    }
+
+    /**
+     * Send the deleted age range also to CDB2.
+     */
+    private function applyTypicalAgeRangeDeleted(
+        TypicalAgeRangeDeleted $ageRangeDeleted,
+        Metadata $metadata
+    ) {
+
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+
+        $entityType = new EntityType('event');
+        $entryApi->deleteAge($ageRangeDeleted->getEventId(), $entityType);
 
     }
 
@@ -449,43 +537,38 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
      * @param OrganizerUpdated $organizerUpdated
      */
     private function applyOrganizerUpdated(
-        OrganizerUpdated $domainEvent,
+        OrganizerUpdated $organizerUpdated,
         Metadata $metadata
     ) {
 
         $organizerJSONLD = $this->organizerService->getEntity(
-            $domainEvent->getOrganizerId()
+            $organizerUpdated->getOrganizerId()
         );
 
         $organizer = json_decode($organizerJSONLD);
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
 
-        $cdbOrganizer = new CultureFeed_Cdb_Data_Organiser();
-        $cdbOrganizer->setLabel($organizer->name);
-        $event->setOrganiser($cdbOrganizer);
+        $entityType = new EntityType('event');
+        $organiserName = new String($organizer->name);
 
-        $entryApi->updateEvent($event);
+        $entryApi->updateOrganiser($organizerUpdated->getEventId(), $entityType, $organiserName);
 
     }
 
     /**
-     * Delete the organizer also in cdb.
+     * Delete the organizer also in UDB2..
      *
-     * @param OrganizerDeleted $domainEvent
+     * @param OrganizerDeleted $organizerDeleted
      * @param Metadata $metadata
      */
     private function applyOrganizerDeleted(
-        OrganizerDeleted $domainEvent,
+        OrganizerDeleted $organizerDeleted,
         Metadata $metadata
     ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
-        $event = $entryApi->getEvent($domainEvent->getEventId());
-        $event->deleteOrganiser();
-
-        $entryApi->updateEvent($event);
+        $entryApi->deleteOrganiser($organizerDeleted->getPlaceId());
 
     }
 
@@ -505,7 +588,8 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $contactPoint = $domainEvent->getContactPoint();
 
         $this->updateCdbItemByContactPoint($event, $contactPoint);
-        $entryApi->updateEvent($event);
+
+        $entryApi->updateContactInfo($domainEvent->getEventId(), $event->getContactInfo());
 
     }
 

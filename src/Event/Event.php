@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
@@ -177,6 +178,11 @@ class Event extends EventSourcedAggregateRoot
     public function updateTypicalAgeRange($typicalAgeRange)
     {
         $this->apply(new TypicalAgeRangeUpdated($this->eventId, $typicalAgeRange));
+    }
+
+    public function deleteTypicalAgeRange()
+    {
+        $this->apply(new TypicalAgeRangeDeleted($this->eventId));
     }
 
     /**

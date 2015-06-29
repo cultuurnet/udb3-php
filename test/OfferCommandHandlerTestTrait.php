@@ -229,4 +229,24 @@ trait OfferCommandHandlerTestTrait
             )
             ->then([new $eventClass($id, $ageRange)]);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_typical_agerange_of_an_offer()
+    {
+        $id = '1';
+        $commandClass = $this->getCommandClass('DeleteTypicalAgeRange');
+        $eventClass = $this->getEventClass('TypicalAgeRangeDeleted');
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(
+                new $commandClass($id)
+            )
+            ->then([new $eventClass($id)]);
+    }
 }

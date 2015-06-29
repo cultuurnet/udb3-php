@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -454,12 +455,23 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
 
         $eventLd = $document->getBody();
+        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
 
-        if ($typicalAgeRangeUpdated->getTypicalAgeRange() === "-1") {
-            unset($eventLd->typicalAgeRange);
-        } else {
-            $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
-        }
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the typical age range deleted event to the event repository.
+     * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    public function applyTypicalAgeRangeDeleted(
+        TypicalAgeRangeDeleted $typicalAgeRangeDeleted
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->typicalAgeRange);
 
         $this->repository->save($document->withBody($eventLd));
     }

@@ -37,6 +37,7 @@ use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -254,7 +255,7 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
-     * Apply the booking info updated event to the event repository.
+     * Apply the booking info updated event to the place repository.
      * @param BookingInfoUpdated $bookingInfoUpdated
      */
     public function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
@@ -270,7 +271,7 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
-     * Apply the typical age range updated event to the event repository.
+     * Apply the typical age range updated event to the place repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
     public function applyTypicalAgeRangeUpdated(
@@ -279,18 +280,29 @@ class PlaceLDProjector extends ActorLDProjector
         $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeUpdated);
 
         $eventLd = $document->getBody();
-
-        if ($typicalAgeRangeUpdated->getTypicalAgeRange() === "-1") {
-            unset($eventLd->typicalAgeRange);
-        } else {
-            $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
-        }
+        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
 
         $this->repository->save($document->withBody($eventLd));
     }
 
     /**
-     * Apply the organizer updated event to the event repository.
+     * Apply the typical age range deleted event to the place repository.
+     * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    public function applyTypicalAgeRangeDeleted(
+        TypicalAgeRangeDeleted $typicalAgeRangeDeleted
+    ) {
+        $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeDeleted);
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->typicalAgeRange);
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the organizer updated event to the place repository.
      * @param OrganizerUpdated $organizerUpdated
      */
     public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
@@ -308,7 +320,7 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
-     * Apply the organizer delete event to the event repository.
+     * Apply the organizer delete event to the place repository.
      * @param OrganizerDeleted $organizerDeleted
      */
     public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
@@ -324,7 +336,7 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
-     * Apply the contact point updated event to the event repository.
+     * Apply the contact point updated event to the place repository.
      * @param ContactPointUpdated $contactPointUpdated
      */
     public function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
@@ -339,7 +351,7 @@ class PlaceLDProjector extends ActorLDProjector
     }
 
     /**
-     * Apply the facilitiesupdated event to the event repository.
+     * Apply the facilitiesupdated event to the place repository.
      * @param FacilitiesUpdated $facilitiesUpdated
      */
     public function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)

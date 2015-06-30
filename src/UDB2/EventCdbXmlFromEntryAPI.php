@@ -5,10 +5,42 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
+use CultuurNet\Auth\ConsumerCredentials;
 use CultuurNet\Auth\Guzzle\OAuthProtectedService;
+use ValueObjects\String\String;
 
+/**
+ * Service to retrieve event CDBXML, from the Entry API.
+ *
+ * This uses the 'Light UiTID' authentication, as described in
+ * https://docs.google.com/document/d/14vteMLuhDbUbn_49WMoGxHXtGJIpMaD7fqoR7VyQDwI/edit#.
+ */
 class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbXmlServiceInterface
 {
+    /**
+     * @var String
+     */
+    private $userId;
+
+    /**
+     * @param string $baseUrl
+     * @param ConsumerCredentials $consumerCredentials
+     * @param String $userId
+     */
+    public function __construct(
+        $baseUrl,
+        ConsumerCredentials $consumerCredentials,
+        String $userId
+    )
+    {
+        parent::__construct(
+            $baseUrl,
+            $consumerCredentials
+        );
+
+        $this->userId = $userId;
+    }
+
     /**
      * @return \Guzzle\Http\Client
      */
@@ -19,6 +51,12 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
             'headers',
             [
                 'Accept' => 'text/xml'
+            ]
+        );
+        $client->setDefaultOption(
+            'query',
+            [
+                'uid' => (string) $this->userId
             ]
         );
 

@@ -43,9 +43,9 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
     /**
      * @return \Guzzle\Http\Client
      */
-    protected function getClient()
+    protected function getClient(array $additionalOAuthParameters)
     {
-        $client = parent::getClient();
+        $client = parent::getClient($additionalOAuthParameters);
         $client->setDefaultOption(
             'headers',
             [

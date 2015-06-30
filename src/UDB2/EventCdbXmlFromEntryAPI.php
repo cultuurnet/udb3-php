@@ -31,8 +31,7 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
         $baseUrl,
         ConsumerCredentials $consumerCredentials,
         String $userId
-    )
-    {
+    ) {
         parent::__construct(
             $baseUrl,
             $consumerCredentials

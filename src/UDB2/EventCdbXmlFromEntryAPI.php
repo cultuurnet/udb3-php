@@ -69,6 +69,8 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
      */
     public function getCdbXmlOfEvent($eventId)
     {
+        $this->guardEventId($eventId);
+
         $request = $this->getClient()->get('event/' . $eventId);
         $response = $request->send();
 
@@ -78,5 +80,18 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
         $result = $response->getBody(true);
 
         return $result;
+    }
+
+    private function guardEventId($eventId)
+    {
+        if (!is_string($eventId)) {
+            throw new \InvalidArgumentException(
+                'Expected $eventId to be a string, received value of type ' . gettype($eventId)
+            );
+        }
+
+        if ('' == trim($eventId)) {
+            throw new \InvalidArgumentException('$eventId should not be empty');
+        }
     }
 }

@@ -72,8 +72,9 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
         $request = $this->getClient()->get('event/' . $eventId);
         $response = $request->send();
 
-        // @todo catch a 404 and throw EventNotFoundException instead
+        // @todo verify response Content-Type
 
+        // @todo catch a 404 and throw EventNotFoundException instead
         $result = $response->getBody(true);
 
         return $result;

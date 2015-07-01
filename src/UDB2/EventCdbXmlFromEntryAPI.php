@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\UDB2;
 
 use CultuurNet\Auth\ConsumerCredentials;
 use CultuurNet\Auth\Guzzle\OAuthProtectedService;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use ValueObjects\String\String;
 
 /**
@@ -63,23 +64,61 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
     }
 
     /**
-     * @param string $eventId
-     * @return string
-     * @throws EventNotFoundException If the event can not be found.
+     * @inheritdoc
      */
     public function getCdbXmlOfEvent($eventId)
     {
         $this->guardEventId($eventId);
 
         $request = $this->getClient()->get('event/' . $eventId);
-        $response = $request->send();
+
+        try {
+            $response = $request->send();
+        } catch (ClientErrorResponseException $e) {
+            if ($e->getResponse()->getStatusCode() == '404') {
+                throw new EventNotFoundException(
+                    "Event with cdbid '{$eventId}' could not be found via Entry API."
+                );
+            }
+
+            throw $e;
+        }
 
         // @todo verify response Content-Type
 
-        // @todo catch a 404 and throw EventNotFoundException instead
-        $result = $response->getBody(true);
+        $cdbXml = $response->getBody(true);
+        return $this->extractEventElement($cdbXml, $eventId);
+    }
 
-        return $result;
+    /**
+     * @param string $cdbXml
+     * @param string $eventId
+     * @return string
+     * @throws \RuntimeException
+     */
+    private function extractEventElement($cdbXml, $eventId)
+    {
+        $reader = new \XMLReader();
+        $reader->xml($cdbXml);
+
+        while ($reader->read()) {
+            switch ($reader->nodeType) {
+                case ($reader::ELEMENT):
+                    if ($reader->localName == "event" &&
+                        $reader->getAttribute('cdbid') == $eventId
+                    ) {
+                        $node = $reader->expand();
+                        $dom = new \DomDocument('1.0');
+                        $n = $dom->importNode($node, true);
+                        $dom->appendChild($n);
+                        return $dom->saveXML();
+                    }
+            }
+        }
+
+        throw new \RuntimeException(
+            "Event with cdbid '{$eventId}' could not be found in the Entry API response body."
+        );
     }
 
     private function guardEventId($eventId)

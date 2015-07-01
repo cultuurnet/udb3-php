@@ -67,11 +67,16 @@ class EventCdbXmlFromEntryAPITest extends \PHPUnit_Framework_TestCase
             ->method('send')
             ->with($this->callback(
                 function (RequestInterface $request) {
-                    return $request->getUrl() == '/event/event-abc?uid=user-xyz';
+                    return $request->getUrl() == '/event/7914ed2d-9f28-4946-b9bd-ae8f7a4aea11?uid=user-xyz';
                 }
             ))
-            ->willReturn(new Response(200));
+            ->willReturn(new Response(200, null, file_get_contents(__DIR__ . '/entry-api-event-response.xml')));
 
-        $this->service->getCdbXmlOfEvent('event-abc');
+        $eventXml = $this->service->getCdbXmlOfEvent('7914ed2d-9f28-4946-b9bd-ae8f7a4aea11');
+
+        $this->assertXmlStringEqualsXmlFile(
+            __DIR__ . '/search-results-single-event.xml',
+            $eventXml
+        );
     }
 }

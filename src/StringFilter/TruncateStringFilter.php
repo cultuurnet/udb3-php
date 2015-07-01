@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\StringFilter;
 
 use Stringy\Stringy as Stringy;
+use ValueObjects\String\String;
 
 class TruncateStringFilter implements StringFilterInterface
 {
@@ -102,24 +103,13 @@ class TruncateStringFilter implements StringFilterInterface
 
         $stringy = Stringy::create($string, 'UTF-8');
 
-        $endingSymbols = ['. ', '? ', '! ', '.'.PHP_EOL, '?'.PHP_EOL, '!'.PHP_EOL];
-        $hasEndingSymbolInRange = $stringy
-          ->first($maxLength)
-          ->containsAny($endingSymbols);
+        $sentencePattern = '/(.*[.!?])(?:\\s|\\h|$|\\\u00a0).*/su';
+        $trunc = (string) $stringy->first($maxLength);
+        $hasEndingSymbolInRange = preg_match($sentencePattern, $trunc);
 
-        if ($this->sentenceFriendly && $hasEndingSymbolInRange) {
-            $lastOccurrence = 0;
-            $haystack = (string) $stringy->first($maxLength);
-
-            foreach ($endingSymbols as $needle) {
-                $position = mb_strrpos($haystack, $needle, null, 'UTF-8');
-                if ($position && $position > $lastOccurrence) {
-                    // Add one to include the first character of the ending symbol
-                    $lastOccurrence = $position + 1;
-                }
-            }
-
-            $truncated = $stringy->truncate($lastOccurrence + strlen($suffix), $suffix);
+        if ($this->sentenceFriendly && $hasEndingSymbolInRange === 1) {
+            $sentenceTruncated = preg_replace($sentencePattern, "$1".$suffix, $trunc);
+            $truncated = Stringy::create($sentenceTruncated, 'UTF-8');
         } else if ($wordSafe) {
             $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {

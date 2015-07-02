@@ -500,7 +500,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
 
         $id = 'foo';
         $this->documentRepository->expects($this->once())
-            ->method('delete')
+            ->method('remove')
             ->with($id);
 
         $placeDeleted = new PlaceDeleted($id);

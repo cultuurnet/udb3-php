@@ -11,8 +11,17 @@ abstract class EventEvent implements SerializableInterface
 {
     protected $eventId;
 
+    /**
+     * @param string $eventId
+     */
     public function __construct($eventId)
     {
+        if (!is_string($eventId)) {
+            throw new \InvalidArgumentException(
+                'Expected eventId to be a string, received ' . gettype($eventId)
+            );
+        }
+
         $this->eventId = $eventId;
     }
 

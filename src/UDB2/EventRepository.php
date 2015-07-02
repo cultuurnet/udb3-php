@@ -433,7 +433,10 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     /**
      * Send the updated major info to UDB2.
      */
-    public function applyMajorInfoUpdated(MajorInfoUpdated $infoUpdated, Metadata $metadata) {
+    public function applyMajorInfoUpdated(
+        MajorInfoUpdated $infoUpdated,
+        Metadata $metadata
+    ) {
 
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($infoUpdated->getEventId());
@@ -444,9 +447,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         // Set event type and theme.
         $categories = $event->getCategories();
         foreach ($categories as $key => $category) {
-          if ($category->getType() == 'eventtype' || $category->getType() == 'theme') {
-            $categories->delete($key);
-          }
+            if ($category->getType() == 'eventtype' || $category->getType() == 'theme') {
+                $categories->delete($key);
+            }
         }
 
         $eventType = new CultureFeed_Cdb_Data_Category(
@@ -487,10 +490,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $language = new Language('nl');
 
         if (!empty($newDescription)) {
-          $entryApi->updateDescription($entityId, $entityType, $description, $language);
-        }
-        else {
-          $entryApi->deleteDescription($entityId, $entityType, $language);
+            $entryApi->updateDescription($entityId, $entityType, $description, $language);
+        } else {
+            $entryApi->deleteDescription($entityId, $entityType, $language);
         }
 
     }
@@ -621,17 +623,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         // Save the bookingperiod.
         if ($bookingInfo->getAvailabilityStarts() && $bookingInfo->getAvailabilityEnds()) {
-          $startDate = new \DateTime($bookingInfo->getAvailabilityStarts());
-          $endDate = new \DateTime($bookingInfo->getAvailabilityEnds());
-          $bookingPeriod = new BookingPeriod(
-              $startDate->format('d/m/Y'),
-              $endDate->format('d/m/Y')
-          );
+            $startDate = new \DateTime($bookingInfo->getAvailabilityStarts());
+            $endDate = new \DateTime($bookingInfo->getAvailabilityEnds());
+            $bookingPeriod = new BookingPeriod(
+                $startDate->format('d/m/Y'),
+                $endDate->format('d/m/Y')
+            );
 
-          $entryApi->updateBookingPeriod(
-              $domainEvent->getEventId(),
-              $bookingPeriod
-          );
+            $entryApi->updateBookingPeriod(
+                $domainEvent->getEventId(),
+                $bookingPeriod
+            );
         }
 
     }

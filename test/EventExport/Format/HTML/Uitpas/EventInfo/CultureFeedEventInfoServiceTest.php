@@ -2,15 +2,18 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo;
 
-use \CultureFeed_ResultSet as ResultSet;
-use \CultureFeed_Uitpas as Uitpas;
-use \CultureFeed_Uitpas_CardSystem as CardSystem;
-use \CultureFeed_Uitpas_DistributionKey_Condition as Condition;
-use \CultureFeed_Uitpas_Event_Query_SearchEventsOptions as SearchEventsOptions;
+use CultureFeed_ResultSet as ResultSet;
+use CultureFeed_Uitpas as Uitpas;
+use CultureFeed_Uitpas_CardSystem as CardSystem;
+use CultureFeed_Uitpas_DistributionKey_Condition as Condition;
+use CultureFeed_Uitpas_Event_Query_SearchEventsOptions as SearchEventsOptions;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyConditionFactory;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\DistributionKey\DistributionKeyFactory;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventFactory;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Promotion\PromotionQueryFactoryInterface;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 
 /**
  * Class CultureFeedEventInfoServiceTest
@@ -18,6 +21,32 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventFactory;
  */
 class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \CultureFeed_Uitpas|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $uitpas;
+
+    /**
+     * @var CultureFeedEventInfoService
+     */
+    protected $infoService;
+
+    /**
+     * @var PromotionQueryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $promotionQueryFactory;
+
+    public function setUp()
+    {
+        $this->promotionQueryFactory = $this->getMock(PromotionQueryFactoryInterface::class);
+
+        $this->uitpas = $this->getMock(Uitpas::class);
+        $this->infoService = new CultureFeedEventInfoService(
+            $this->uitpas,
+            $this->promotionQueryFactory
+        );
+    }
+
     /**
      * @test
      */
@@ -88,22 +117,38 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $resultSet->total = 1;
         $resultSet->objects = [$event];
 
-        // Mock the CultureFeed_Uitpas class and glue everything together.
-        /** @var EventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
-        $uitpas = $this->getMock(Uitpas::class);
-        $uitpas->expects($this->once())
+        $promotion = new \CultureFeed_PointsPromotion();
+        $promotion->points = 10;
+        $promotion->title = 'free drink';
+
+        $onePointPromotion = new \CultureFeed_PointsPromotion();
+        $onePointPromotion->points = 1;
+        $onePointPromotion->title = 'one point to rule them all';
+
+        $promotionResultSet = new \CultureFeed_ResultSet(1, [$promotion, $onePointPromotion]);
+
+        $this->uitpas->expects($this->once())
             ->method('searchEvents')
             ->with($searchEvents)
             ->willReturn($resultSet);
 
-        // Instantiate the CultureFeedEventInfoService using the mock Uitpas
-        // object that will return the event we just created.
-        $infoService = new CultureFeedEventInfoService($uitpas);
+        $promotionsQuery = new \CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions();
+
+        $this->promotionQueryFactory->expects($this->once())
+            ->method('createForEvent')
+            ->with($event)
+            ->willReturn($promotionsQuery);
+
+        $this->uitpas->expects($this->once())
+            ->method('getPromotionPoints')
+            ->with($promotionsQuery)
+            ->willReturn($promotionResultSet);
 
         // Request info for the event.
-        $eventInfo = $infoService->getEventInfo($eventId);
+        $eventInfo = $this->infoService->getEventInfo($eventId);
         $prices = $eventInfo->getPrices();
         $advantages = $eventInfo->getAdvantages();
+        $promotions = $eventInfo->getPromotions();
 
         // Make sure we get back the correct prices and advantages.
         $this->assertEquals(
@@ -127,9 +172,79 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 EventAdvantage::POINT_COLLECTING(),
-                EventAdvantage::KANSENTARIEF(),
             ],
             $advantages
+        );
+
+        $this->assertEquals(
+            [
+                '10 punten: free drink',
+                '1 punt: one point to rule them all'
+            ],
+            $promotions
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_failures_occurring_when_retrieving_promotions()
+    {
+        // Create an event with a specific id.
+        $eventFactory = new EventFactory();
+        $event = $eventFactory->buildEventWithPoints(1);
+        $event->cdbid = 'd1f0e71d-a9a8-4069-81fb-530134502c58';
+
+        // We expect to receive the event object we just instantiated.
+        $resultSet = new ResultSet();
+        $resultSet->total = 1;
+        $resultSet->objects = [$event];
+
+        $this->uitpas->expects($this->any())
+            ->method('searchEvents')
+            ->willReturn($resultSet);
+
+        $promotionsQuery = new \CultureFeed_Uitpas_Passholder_Query_SearchPromotionPointsOptions();
+
+        $this->promotionQueryFactory->expects($this->any())
+            ->method('createForEvent')
+            ->with($event)
+            ->willReturn($promotionsQuery);
+
+        $this->uitpas->expects($this->any())
+            ->method('getPromotionPoints')
+            ->with($promotionsQuery)
+            ->willThrowException(
+                new \Exception('whatever exception')
+            );
+
+        // Assert that the exception that occurred was handled gracefully,
+        // event info is still returned.
+        $eventInfo = $this->infoService->getEventInfo($event->cdbid);
+        $this->assertEquals(
+            [
+                EventAdvantage::POINT_COLLECTING(),
+            ],
+            $eventInfo->getAdvantages()
+        );
+
+        // Assert that when we attach a logger, event info is still returned and
+        // the exception also gets logged.
+        $testLogHandler = new TestHandler();
+        $logger = new Logger('test', [$testLogHandler]);
+        $this->infoService->setLogger($logger);
+        $eventInfo = $this->infoService->getEventInfo($event->cdbid);
+        $this->assertEquals(
+            [
+                EventAdvantage::POINT_COLLECTING(),
+            ],
+            $eventInfo->getAdvantages()
+        );
+
+        $this->assertTrue(
+            $testLogHandler->hasError(
+                'Can\'t retrieve promotions for event with id:' . $event->cdbid
+            )
         );
     }
 }

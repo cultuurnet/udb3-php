@@ -9,9 +9,15 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 interface DocumentRepositoryInterface
 {
+    /**
+     * @param string $id
+     * @return JsonDocument
+     *
+     * @throws DocumentGoneException
+     */
     public function get($id);
 
     public function save(JsonDocument $readModel);
 
-    public function delete($id);
+    public function remove($id);
 }

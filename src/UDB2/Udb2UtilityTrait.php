@@ -305,7 +305,7 @@ trait Udb2UtilityTrait
                     $contactInfo->removePhone($phoneIndex);
                 }
             }
-            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->getPhone(), FALSE, TRUE));
+            $contactInfo->addPhone(new CultureFeed_Cdb_Data_Phone($bookingInfo->getPhone(), false, true));
         }
 
         if ($bookingInfo->getUrl()) {
@@ -314,7 +314,7 @@ trait Udb2UtilityTrait
                     $contactInfo->removeUrl($urlIndex);
                 }
             }
-            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->getUrl(), FALSE, TRUE));
+            $contactInfo->addUrl(new CultureFeed_Cdb_Data_Url($bookingInfo->getUrl(), false, true));
         }
 
         if (!empty($bookingInfo->getEmail())) {
@@ -323,7 +323,7 @@ trait Udb2UtilityTrait
                     $contactInfo->removeMail($mailIndex);
                 }
             }
-            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->getEmail(), FALSE, TRUE));
+            $contactInfo->addMail(new CultureFeed_Cdb_Data_Mail($bookingInfo->getEmail(), false, true));
         }
         $cdbItem->setContactInfo($contactInfo);
 

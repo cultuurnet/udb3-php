@@ -198,7 +198,7 @@ class PlaceLDProjector extends ActorLDProjector
      */
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
-        $this->repository->delete($placeDeleted->getPlaceId());
+        $this->repository->remove($placeDeleted->getPlaceId());
     }
 
     /**

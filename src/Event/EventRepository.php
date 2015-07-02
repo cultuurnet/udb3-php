@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventHandling\EventBusInterface;
-use Broadway\EventSourcing\AggregateFactory\AggregateFactoryInterface;
 use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
@@ -17,11 +16,6 @@ use Broadway\EventStore\EventStoreInterface;
  */
 class EventRepository extends EventSourcingRepository
 {
-    /**
-     * @var AggregateFactoryInterface
-     */
-    private $aggregateFactory;
-
     /**
      * @param EventStoreInterface             $eventStore
      * @param EventBusInterface               $eventBus

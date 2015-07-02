@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 
 class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
 {
@@ -33,6 +34,11 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
      * @var EventServiceInterface
      */
     protected $eventService;
+
+    /**
+     * @var EventVariationServiceInterface
+     */
+    protected $eventVariationService;
 
     /**
      * @var CommandBusInterface

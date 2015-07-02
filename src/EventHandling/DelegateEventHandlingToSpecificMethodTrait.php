@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\EventHandling;
 
 use Broadway\Domain\DomainMessage;
-use Broadway\EventHandling\EventListenerInterface;
 
 trait DelegateEventHandlingToSpecificMethodTrait
 {

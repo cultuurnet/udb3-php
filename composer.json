@@ -22,6 +22,7 @@
     "cultuurnet/entry": "~0.0@dev",
     "cultuurnet/cdb": "~2.1",
     "cultuurnet/deserializer": "~0.1",
+    "cultuurnet/clock": "~0.1",
     "broadway/broadway": "~0.5.2",
     "chrisboulton/php-resque": "~1.2",
     "cultuurnet/culturefeed-php": "~1.5",
@@ -33,7 +34,8 @@
     "league/flysystem": "~1.0",
     "league/flysystem-ziparchive": "~1.0",
     "danielstjules/stringy": "~1.9",
-    "doctrine/dbal": "~2.4"
+    "doctrine/dbal": "~2.4",
+    "symfony/http-foundation": "~2.6.9"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

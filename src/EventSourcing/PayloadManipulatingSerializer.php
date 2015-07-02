@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\EventSourcing;
 
 use Assert\Assertion;
-use Broadway\Serializer\SerializationException;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 
@@ -38,7 +37,7 @@ class PayloadManipulatingSerializer implements SerializerInterface
     }
 
     /**
-     * @param string $oldClassName
+     * @param string $className
      * @param callable $callback
      */
     public function manipulateEventsOfClass($className, callable $callback)

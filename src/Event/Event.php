@@ -50,6 +50,11 @@ class Event extends EventSourcedAggregateRoot
      */
     public static function create($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
+        if (!is_string($eventId)) {
+            throw new \InvalidArgumentException(
+                'Expected eventId to be a string, received ' . gettype($eventId)
+            );
+        }
         $event = new self();
         $event->apply(new EventCreated($eventId, $title, $eventType, $location, $calendar, $theme));
 
@@ -94,7 +99,12 @@ class Event extends EventSourcedAggregateRoot
 
     public function label(Label $label)
     {
-        if (in_array($label, $this->labels)) {
+        $newLabel = (string) $label;
+        $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
+            return strcmp(mb_strtolower($label, 'UTF-8'), mb_strtolower($newLabel, 'UTF-8')) == 0;
+        });
+
+        if (!empty($similarLabels)) {
             return;
         }
 
@@ -116,7 +126,14 @@ class Event extends EventSourcedAggregateRoot
 
     protected function applyEventWasLabelled(EventWasLabelled $eventLabelled)
     {
-        $this->labels[] = $eventLabelled->getLabel();
+        $newLabel = $eventLabelled->getLabel();
+        $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
+            return strcmp(mb_strtolower($label, 'UTF-8'), mb_strtolower($newLabel, 'UTF-8')) == 0;
+        });
+
+        if (empty($similarLabels)) {
+            $this->labels[] = $eventLabelled->getLabel();
+        }
     }
 
     protected function applyUnlabelled(Unlabelled $unlabelled)

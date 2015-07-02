@@ -1242,7 +1242,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
 
         $id = 'foo';
         $this->documentRepository->expects($this->once())
-            ->method('delete')
+            ->method('remove')
             ->with($id);
 
         $eventDeleted = new EventDeleted($id);

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use CultuurNet\Search\Parameter\BooleanParameter;
 use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
@@ -18,18 +17,11 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
     private $search;
 
     /**
-     * @var bool
-     */
-    private $includePastEvents;
-
-    /**
      * @param SearchServiceInterface $search
-     * @param bool $includePastEvents
      */
-    public function __construct(SearchServiceInterface $search, $includePastEvents = false)
+    public function __construct(SearchServiceInterface $search)
     {
         $this->search = $search;
-        $this->includePastEvents = $includePastEvents;
     }
 
     public function getCdbXmlOfEvent($eventId)
@@ -38,10 +30,6 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
             new Query('cdbid:"' . $eventId . '"'),
             new Group(true),
         ];
-
-        if ($this->includePastEvents) {
-            $parameters[] = new BooleanParameter('past', true);
-        }
 
         $results = $this->search->search(
             $parameters

@@ -24,7 +24,7 @@ class DeleteTypicalAgeRange
     /**
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return $this->id;
     }

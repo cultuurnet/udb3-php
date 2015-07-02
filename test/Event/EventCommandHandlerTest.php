@@ -104,17 +104,18 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $total = 60;
 
         for ($i = 1; $i <= $total; $i++) {
+            $eventId = (string)$i;
             $events[] = array(
-                '@id' => 'http://example.com/event/' . $i,
+                '@id' => 'http://example.com/event/' . $eventId,
             );
 
-            $expectedSourcedEvents[] = new EventWasLabelled($i, new Label('foo'));
+            $expectedSourcedEvents[] = new EventWasLabelled($eventId, new Label('foo'));
 
             $this->scenario
                 ->withAggregateId($i)
                 ->given(
                     [
-                        $this->factorOfferCreated($i)
+                        $this->factorOfferCreated($eventId)
                     ]
                 );
         }

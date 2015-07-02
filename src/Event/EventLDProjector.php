@@ -293,7 +293,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      */
     public function applyEventDeleted(EventDeleted $eventDeleted)
     {
-        $this->repository->delete($eventDeleted->getEventId());
+        $this->repository->remove($eventDeleted->getEventId());
     }
 
     /**

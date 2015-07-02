@@ -5,13 +5,11 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
-use Broadway\EventStore\Event;
 use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
-use Doctrine\Common\Cache\ArrayCache;
 use ValueObjects\String\String;
 
 class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
@@ -43,7 +41,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
     protected function getFormattedEventFromJSONFile($fileName)
     {
         $event = $this->getJSONEventFromFile($fileName);
-        return $this->eventFormatter->formatEvent($event);
+        $decodedEvent = json_decode($event);
+        $urlParts = explode('/', $decodedEvent->{'@id'});
+        $eventId = end($urlParts);
+        return $this->eventFormatter->formatEvent($eventId, $event);
     }
 
     /**
@@ -65,7 +66,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
         $expectedFormattedFreeEvent = [
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
             'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
-            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken...',
             'address' => [
                 'name' => 'Cultuurcentrum De Kruisboog',
                 'street' => 'Sint-Jorisplein 20 ',
@@ -95,7 +96,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             'image' => 'http://media.uitdatabank.be/20141211/558bb7cf-5ff8-40b4-872b-5f5b46bb16c2.jpg',
             'type' => 'Cursus of workshop',
             'title' => 'Lessenreeks MURGA',
-            'description' => "Wij zijn Murga çava, een vrolijke groep van 20 percussionisten,\njong en oud, uit Herent en omgeving. Bij ons is iedereen welkom!\nMuzikale voorkennis is geen vereiste. Behalve percussie staan we\nook open voor blazers, dansers of ander talent. Kom gratis met ons\nkennismaken op maandag 1 september...",
+            'description' => "Wij zijn Murga çava, een vrolijke groep van 20 percussionisten,\njong en oud, uit Herent en omgeving. Bij ons is iedereen welkom!\nMuzikale voorkennis is geen vereiste. Behalve percussie staan we\nook open voor blazers, dansers of ander talent...",
             'address' => [
                 'name' => 'GC De Wildeman',
                 'street' => 'Schoolstraat 15',
@@ -118,7 +119,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
         $expectedFormattedEvent = [
             'type' => 'Cursus of workshop',
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
-            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken...',
             'address' => [
                 'name' => 'Cultuurcentrum De Kruisboog',
                 'street' => 'Sint-Jorisplein 20 ',
@@ -143,7 +144,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             "artiestenmee die garant staan voor authenticiteit en originaliteit.\n" .
             "De eerste gastis niemand minder dan Stoomboot, die in het seizoen\n" .
             "2014 doorbrakmet zijn bejubelde debuutalbum. Verder is ooK fluitist\n" .
-            "Stefan Bracavalopnieuw van de...",
+            "Stefan Bracavalopnieuw van de partij...",
             $eventWithHTMLDescription['description']
         );
     }
@@ -258,7 +259,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
      * @param array $priceData
      * @param array $advantagesData
      */
-    public function it_optionally_enriches_events_with_uitpas_info($priceData, $advantagesData)
+    public function it_optionally_enriches_events_with_uitpas_info($priceData, $advantagesData, $promotionsData)
     {
         $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
 
@@ -271,7 +272,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
         $advantages = $advantagesData['original'];
         $expectedAdvantages = $advantagesData['formatted'];
 
-        $eventInfo = new EventInfo($prices, $advantages);
+        $promotions = $promotionsData['original'];
+        $expectedPromotions = $promotionsData['formatted'];
+
+        $eventInfo = new EventInfo($prices, $advantages, $promotions);
 
         $uitpas->expects($this->once())
             ->method('getEventInfo')
@@ -280,16 +284,20 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $eventFormatter = new HTMLEventFormatter($uitpas);
 
-        $formattedEvent = $eventFormatter->formatEvent($eventWithoutImage);
+        $formattedEvent = $eventFormatter->formatEvent(
+            'd1f0e71d-a9a8-4069-81fb-530134502c58',
+            $eventWithoutImage
+        );
 
         $expectedFormattedEvent = [
             'uitpas' => [
                 'prices' => $expectedPrices,
                 'advantages' => $expectedAdvantages,
+                'promotions' => $expectedPromotions,
             ],
             'type' => 'Cursus of workshop',
             'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
-            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische...',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken...',
             'address' => [
                 'name' => 'Cultuurcentrum De Kruisboog',
                 'street' => 'Sint-Jorisplein 20 ',
@@ -334,6 +342,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                         'Korting voor kansentarief',
                     ],
                 ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
             ],
             [
                 [
@@ -359,6 +371,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                         'Spaar punten',
                         'Korting voor kansentarief',
                     ],
+                ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
                 ],
             ],
             [
@@ -386,6 +402,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                         'Korting voor kansentarief',
                     ],
                 ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
             ],
             [
                 [
@@ -405,7 +425,11 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                 [
                     'original' => [],
                     'formatted' => [],
-                ]
+                ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
             ],
             [
                 [
@@ -419,8 +443,12 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
                     'formatted' => [
                         'Spaar punten',
                     ],
-                ]
-            ]
+                ],
+                [
+                    'original' => ['12 punten: Een voordeel van 12 punten.'],
+                    'formatted' => ['12 punten: Een voordeel van 12 punten.'],
+                ],
+            ],
         ];
 
         return $data;
@@ -432,12 +460,18 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
     public function it_correctly_sets_the_taalicoon_count_and_description()
     {
         $eventWithFourTaaliconen = $this->getJSONEventFromFile('event_with_icon_label.json');
-        $formattedEvent = $this->eventFormatter->formatEvent($eventWithFourTaaliconen);
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            'd1f0e71d-a9a8-4069-81fb-530134502c58',
+            $eventWithFourTaaliconen
+        );
         $this->assertEquals(4, $formattedEvent['taalicoonCount']);
         $this->assertEquals(TaalicoonDescription::VIER_TAALICONEN(), $formattedEvent['taalicoonDescription']);
 
         $eventWithAllTaaliconen = $this->getJSONEventFromFile('event_with_all_icon_labels.json');
-        $formattedEvent = $this->eventFormatter->formatEvent($eventWithAllTaaliconen);
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            'd1f0e71d-a9a8-4069-81fb-530134502c58',
+            $eventWithAllTaaliconen
+        );
         $this->assertArrayNotHasKey('taalicoonCount', $formattedEvent);
         $this->assertArrayNotHasKey('taalicoonDescription', $formattedEvent);
     }
@@ -451,7 +485,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             'event_with_all_icon_labels.json'
         );
 
-        $formattedEvent = $this->eventFormatter->formatEvent($event);
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            'd1f0e71d-a9a8-4069-81fb-530134502c58',
+            $event
+        );
         $this->assertContains('uitpas', $formattedEvent['brands']);
         $this->assertContains('vlieg', $formattedEvent['brands']);
     }
@@ -465,7 +502,10 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             'event_with_all_icon_labels.json'
         );
 
-        $formattedEvent = $this->eventFormatter->formatEvent($event);
+        $formattedEvent = $this->eventFormatter->formatEvent(
+            'd1f0e71d-a9a8-4069-81fb-530134502c58',
+            $event
+        );
         $this->assertEquals(5, $formattedEvent['ageFrom']);
     }
 }

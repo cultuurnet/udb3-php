@@ -6,9 +6,6 @@
 namespace CultuurNet\UDB3\EventExport\Format\HTML;
 
 use CultuurNet\CalendarSummary\CalendarHTMLFormatter;
-use CultuurNet\CalendarSummary\Period\LargePeriodHTMLFormatter;
-use CultuurNet\CalendarSummary\Permanent\LargePermanentHTMLFormatter;
-use CultuurNet\CalendarSummary\Timestamps\LargeTimestampsHTMLFormatter;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\EventSpecificationInterface;
@@ -26,7 +23,6 @@ use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 use CultuurNet\UDB3\StringFilter\TruncateStringFilter;
 use stdClass;
-use ValueObjects\String\String;
 
 class HTMLEventFormatter
 {
@@ -79,6 +75,7 @@ class HTMLEventFormatter
         $truncateFilter = new TruncateStringFilter(300);
         $truncateFilter->addEllipsis();
         $truncateFilter->turnOnWordSafe(1);
+        $truncateFilter->beSentenceFriendly();
         $this->filters->addFilter($truncateFilter);
 
         $this->taalicoonSpecs = array(
@@ -95,13 +92,15 @@ class HTMLEventFormatter
     }
 
     /**
+     * @param string $eventId
+     *   The event's CDB ID.
      * @param string $eventString
      *   The cultural event encoded as JSON-LD
      *
      * @return array
      *   The event as an array suitable for rendering with HTMLFileWriter
      */
-    public function formatEvent($eventString)
+    public function formatEvent($eventId, $eventString)
     {
         $event = json_decode($eventString);
 
@@ -133,9 +132,9 @@ class HTMLEventFormatter
             $formattedEvent['price'] = 'Niet ingevoerd';
         }
 
-        $this->addCalendarInfo($event, $formattedEvent);
+        $this->addCalendarInfo($eventId, $event, $formattedEvent);
 
-        $this->addUitpasInfo($event, $formattedEvent);
+        $this->addUitpasInfo($eventId, $formattedEvent);
 
         $this->formatTaaliconen($event, $formattedEvent);
 
@@ -150,20 +149,11 @@ class HTMLEventFormatter
     }
 
     /**
-     * @param stdClass $event
-     * @return string
-     */
-    private function getEventId(stdClass $event)
-    {
-        $urlParts = explode('/', $event->{'@id'});
-        return end($urlParts);
-    }
-
-    /**
+     * @param string $eventId
      * @param stdClass $event
      * @param array $formattedEvent
      */
-    private function addCalendarInfo(stdClass $event, array &$formattedEvent)
+    private function addCalendarInfo($eventId, stdClass $event, array &$formattedEvent)
     {
         // Set the pre-formatted calendar summary as fallback in case no calendar repository was provided.
         $formattedEvent['dates'] = $event->calendarSummary;
@@ -171,7 +161,6 @@ class HTMLEventFormatter
         $calendar = null;
 
         if ($this->calendarRepository) {
-            $eventId = $this->getEventId($event);
             $calendar = $this->calendarRepository->get($eventId);
         }
 
@@ -182,13 +171,12 @@ class HTMLEventFormatter
     }
 
     /**
-     * @param stdClass $event
+     * @param string $eventId
      * @param array $formattedEvent
      */
-    private function addUitpasInfo(stdClass $event, array &$formattedEvent)
+    private function addUitpasInfo($eventId, array &$formattedEvent)
     {
         if ($this->uitpas) {
-            $eventId = $this->getEventId($event);
             $uitpasInfo = $this->uitpas->getEventInfo($eventId);
             if ($uitpasInfo) {
                 // Format prices.
@@ -216,6 +204,7 @@ class HTMLEventFormatter
                 $formattedEvent['uitpas'] = [
                     'prices' => $prices,
                     'advantages' => $advantages,
+                    'promotions' => $uitpasInfo->getPromotions(),
                 ];
             }
         }

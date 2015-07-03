@@ -36,7 +36,7 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
         $this->search = new PullParsingSearchService(
             $this->sapi2,
             new CallableIriGenerator(
-                function($item) {
+                function ($item) {
                     return 'http://example.com/event/' . $item;
                 }
             )

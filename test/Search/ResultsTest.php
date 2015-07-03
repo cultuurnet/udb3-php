@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Search;
 
-
 use ValueObjects\Number\Integer;
 
 class ResultsTest extends \PHPUnit_Framework_TestCase

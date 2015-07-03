@@ -171,11 +171,13 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         $this->arrayCache = new ArrayCache();
 
         $this->arrayCachedSearchService = new CachedDefaultSearchService(
-            $this->searchService, $this->arrayCache
+            $this->searchService,
+            $this->arrayCache
         );
 
         $this->mockCachedSearchService = new CachedDefaultSearchService(
-            $this->searchService, $this->cache
+            $this->searchService,
+            $this->cache
         );
 
         $this->eventBus = new SimpleEventBus();

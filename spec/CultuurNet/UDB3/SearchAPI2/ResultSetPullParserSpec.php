@@ -3,9 +3,11 @@
 namespace spec\CultuurNet\UDB3\SearchAPI2;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use ValueObjects\Number\Integer;
 
 /**
  * @mixin \CultuurNet\UDB3\SearchAPI2\ResultSetPullParser
@@ -55,10 +57,9 @@ class ResultSetPullParserSpec extends ObjectBehavior
         );
         $this
             ->getResultSet($cdbxml)
-            ->shouldBe(
-                array(
-                    'totalItems' => 1820,
-                    'member' => array(
+            ->shouldBeLike(
+               new Results(
+                   array(
                         array(
                             '@id' => '590174eb-5577-4b49-8bc2-4b619a948c56'
                         ),
@@ -84,6 +85,7 @@ class ResultSetPullParserSpec extends ObjectBehavior
                             '@id' => 'ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
                         ),
                     ),
+                   new Integer(1820)
                 )
             );
     }

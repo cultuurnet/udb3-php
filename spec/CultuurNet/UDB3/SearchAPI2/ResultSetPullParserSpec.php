@@ -58,8 +58,8 @@ class ResultSetPullParserSpec extends ObjectBehavior
         $this
             ->getResultSet($cdbxml)
             ->shouldBeLike(
-               new Results(
-                   array(
+                new Results(
+                    array(
                         array(
                             '@id' => '590174eb-5577-4b49-8bc2-4b619a948c56'
                         ),
@@ -85,7 +85,7 @@ class ResultSetPullParserSpec extends ObjectBehavior
                             '@id' => 'ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
                         ),
                     ),
-                   new Integer(1820)
+                    new Integer(1820)
                 )
             );
     }

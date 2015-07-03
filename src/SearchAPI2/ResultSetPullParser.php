@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\SearchAPI2;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Search\Results;
+use ValueObjects\Number\Integer;
 
 /**
  * Parser using XML pull parsing to extract the ids from the CDBXML-formatted
@@ -41,12 +43,12 @@ class ResultSetPullParser
      * @param string $cdbxml
      *   The CDBXML-formatted search results.
      *
-     * @return array
-     *   Search results as a JSON-LD array.
+     * @return Results
      */
     public function getResultSet($cdbxml)
     {
-        $results = array();
+        $items = [];
+        $totalItems = null;
 
         $r = $this->xmlReader;
 
@@ -54,11 +56,11 @@ class ResultSetPullParser
 
         while ($r->read()) {
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'nofrecords') {
-                $results['totalItems'] = (int)$r->readString();
+                $totalItems = new Integer((int)$r->readString());
             }
 
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
-                $results['member'][] = array(
+                $items[] = array(
                     '@id' => $this->iriGenerator->iri(
                         $r->getAttribute('cdbid')
                     ),
@@ -66,6 +68,6 @@ class ResultSetPullParser
             }
         }
 
-        return $results;
+        return new Results($items, $totalItems);
     }
 }

@@ -21,6 +21,8 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
      */
     protected $cache;
 
+    const CACHE_KEY = 'default-search';
+
     /**
      * @param \CultuurNet\UDB3\Search\SearchServiceInterface $search
      * @param \Doctrine\Common\Cache\Cache $cache
@@ -58,19 +60,42 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
      * @return array|\JsonSerializable
      *  A JSON-LD array or JSON serializable object.
      */
-    public function search($query, $limit = 30, $start = 0, $sort = null, $conditions = array())
+    public function search($query, $limit = 30, $start = 0, $sort = null)
     {
         if ($query == '*.*' && $limit == 30 && $start == 0 && $sort == 'lastupdated desc') {
-            $cacheResult = $this->cache->fetch('default-search');
-            if ($cacheResult) {
-                return unserialize($cacheResult);
-            } else {
+            $result = $this->fetchFromCache();
+
+            if (null === $result) {
                 $result = $this->search->search($query, $limit, $start, $sort);
-                $this->cache->save('default-search', serialize($result));
+                $this->saveToCache($result);
+            }
+
+            return $result;
+        } else {
+            return $this->search->search($query, $limit, $start, $sort);
+        }
+    }
+
+    /**
+     * @return Results|null
+     */
+    private function fetchFromCache()
+    {
+        $cacheResult = $this->cache->fetch(self::CACHE_KEY);
+        if ($cacheResult) {
+            $result = unserialize($cacheResult);
+
+            if (is_object($result) && $result instanceof Results) {
                 return $result;
             }
-        } else {
-            return $this->search->search($query, $limit, $start, $sort, $conditions);
         }
+    }
+
+    /**
+     * @param Results $result
+     */
+    private function saveToCache(Results $result)
+    {
+        $this->cache->save(self::CACHE_KEY, serialize($result));
     }
 }

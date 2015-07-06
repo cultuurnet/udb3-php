@@ -311,11 +311,8 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $contactInfo = new CultureFeed_Cdb_Data_ContactInfo();
         $event->setContactInfo($contactInfo);
 
-        $cdbXml = new CultureFeed_Cdb_Default();
-        $cdbXml->addItem($event);
-
         $this->createImprovedEntryAPIFromMetadata($metadata)
-            ->createEvent((string)$cdbXml);
+            ->createEvent($event);
 
         return $placeCreated->getPlaceId();
     }

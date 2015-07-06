@@ -192,11 +192,8 @@ class OrganizerRepository extends ActorRepository
         $categorieList->add(new \CultureFeed_Cdb_Data_Category('actortype', '8.11.0.0.0', 'Organisator(en)'));
         $actor->setCategories($categorieList);
 
-        $cdbXml = new CultureFeed_Cdb_Default();
-        $cdbXml->addItem($actor);
-
         $this->createImprovedEntryAPIFromMetadata($metadata)
-            ->createActor((string)$cdbXml);
+            ->createActor($actor;
 
         return $organizerCreated->getOrganizerId();
     }

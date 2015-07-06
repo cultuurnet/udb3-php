@@ -37,6 +37,7 @@ use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
@@ -95,7 +96,7 @@ class PlaceLDProjector extends ActorLDProjector
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
     public function applyPlaceImportedFromUDB2(
-        ActorImportedFromUDB2 $actorImportedFromUDB2
+        PlaceImportedFromUDB2 $actorImportedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $actorImportedFromUDB2->getCdbXmlNamespaceUri(),

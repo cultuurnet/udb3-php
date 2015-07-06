@@ -352,11 +352,15 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
         $this->setCalendarForItemCreated($infoUpdated, $event);
 
+        $detail = $event->getDetails()->getDetailByLanguage('nl');
+        $detail->setTitle($infoUpdated->getTitle());
+
         // Set event type and theme.
+        $newCategories = new CultureFeed_Cdb_Data_CategoryList();
         $categories = $event->getCategories();
-        foreach ($categories as $key => $category) {
-          if ($category->getType() == 'eventtype' || $category->getType() == 'theme') {
-            $categories->delete($key);
+        foreach ($categories as $category) {
+          if ($category->getType() !== 'eventtype' && $category->getType() !== 'theme') {
+            $newCategories->add($category);
           }
         }
 
@@ -365,7 +369,7 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
             $infoUpdated->getEventType()->getId(),
             $infoUpdated->getEventType()->getLabel()
         );
-        $event->getCategories()->add($eventType);
+        $newCategories->add($eventType);
 
         if ($infoUpdated->getTheme() !== null) {
             $theme = new CultureFeed_Cdb_Data_Category(
@@ -373,8 +377,9 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
                 $infoUpdated->getTheme()->getId(),
                 $infoUpdated->getTheme()->getLabel()
             );
-            $event->getCategories()->add($theme);
+            $newCategories->add($theme);
         }
+        $event->setCategories($newCategories);
 
         $entryApi->updateEvent($event);
 

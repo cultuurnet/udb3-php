@@ -47,6 +47,7 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Udb3RepositoryTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -386,7 +387,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $event->setDetails($details);
 
         // Set location and calendar info.
-        $this->setLocationForEventCreated($eventCreated, $event);
+        $this->setLocationForEvent($eventCreated->getLocation(), $event);
         $this->setCalendarForItemCreated($eventCreated, $event);
 
         // Set event type and theme.
@@ -435,14 +436,18 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
         $event = $entryApi->getEvent($infoUpdated->getEventId());
 
-        $this->setLocationForEventCreated($infoUpdated, $event);
+        $this->setLocationForEvent($infoUpdated->getLocation(), $event);
         $this->setCalendarForItemCreated($infoUpdated, $event);
 
+        $detail = $event->getDetails()->getDetailByLanguage('nl');
+        $detail->setTitle($infoUpdated->getTitle());
+
         // Set event type and theme.
+        $newCategories = new CultureFeed_Cdb_Data_CategoryList();
         $categories = $event->getCategories();
-        foreach ($categories as $key => $category) {
-          if ($category->getType() == 'eventtype' || $category->getType() == 'theme') {
-            $categories->delete($key);
+        foreach ($categories as $category) {
+          if ($category->getType() !== 'eventtype' && $category->getType() !== 'theme') {
+            $newCategories->add($category);
           }
         }
 
@@ -451,7 +456,7 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $infoUpdated->getEventType()->getId(),
             $infoUpdated->getEventType()->getLabel()
         );
-        $event->getCategories()->add($eventType);
+        $newCategories->add($eventType);
 
         if ($infoUpdated->getTheme() !== null) {
             $theme = new CultureFeed_Cdb_Data_Category(
@@ -459,9 +464,9 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
                 $infoUpdated->getTheme()->getId(),
                 $infoUpdated->getTheme()->getLabel()
             );
-            $event->getCategories()->add($theme);
+            $newCategories->add($theme);
         }
-
+        $event->setCategories($newCategories);
 
         $entryApi->updateEvent($event);
 
@@ -687,22 +692,19 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
     /**
      * Set the location on the cdb event based on an eventCreated event.
      *
-     * @param EventCreated $eventCreated
+     * @param Location $location
      * @param CultureFeed_Cdb_Item_Event $cdbEvent
      */
-    private function setLocationForEventCreated(EventCreated $eventCreated, CultureFeed_Cdb_Item_Event $cdbEvent)
+    private function setLocationForEvent(Location $location, CultureFeed_Cdb_Item_Event $cdbEvent)
     {
 
-        $placeEntity = $this->placeService->getEntity($eventCreated->getLocation()->getCdbid());
+        $placeEntity = $this->placeService->getEntity($location->getCdbid());
         $place = json_decode($placeEntity);
-
-        $eventLocation = $eventCreated->getLocation();
 
         $physicalAddress = new CultureFeed_Cdb_Data_Address_PhysicalAddress();
         $physicalAddress->setCountry($place->address->addressCountry);
         $physicalAddress->setCity($place->address->addressLocality);
         $physicalAddress->setZip($place->address->postalCode);
-
 
         // @todo This is not an exact mapping, because we do not have a separate
         // house number in JSONLD, this should be fixed somehow. Probably it's
@@ -714,14 +716,14 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
             $physicalAddress->setStreet(implode(' ', $streetParts));
             $physicalAddress->setHouseNumber($number);
         } else {
-            $physicalAddress->setStreet($eventLocation->getStreet());
+            $physicalAddress->setStreet($location->getStreet());
         }
 
         $address = new CultureFeed_Cdb_Data_Address($physicalAddress);
 
-        $location = new CultureFeed_Cdb_Data_Location($address);
-        $location->setLabel($eventLocation->getName());
-        $cdbEvent->setLocation($location);
+        $cdbLocation = new CultureFeed_Cdb_Data_Location($address);
+        $cdbLocation->setLabel($location->getName());
+        $cdbEvent->setLocation($cdbLocation);
 
     }
 }

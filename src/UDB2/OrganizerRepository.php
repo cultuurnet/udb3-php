@@ -193,7 +193,7 @@ class OrganizerRepository extends ActorRepository
         $actor->setCategories($categorieList);
 
         $this->createImprovedEntryAPIFromMetadata($metadata)
-            ->createActor($actor;
+            ->createActor($actor);
 
         return $organizerCreated->getOrganizerId();
     }

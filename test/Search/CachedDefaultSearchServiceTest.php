@@ -142,9 +142,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
     public function it_rebuilds_the_cache_when_an_event_is_altered()
     {
         $event = new EventWasLabelled('02139bf4-6c09-4d05-9368-9b72d8b2307f', new Label('label'));
-        $this->cache->expects($this->at(0))
-            ->method('delete');
-        $this->cache->expects($this->at(1))
+        $this->cache->expects($this->once())
             ->method('save');
 
         $generator = new Version4Generator();

@@ -75,14 +75,12 @@ class PullParsingSearchService implements SearchServiceInterface
         $groupParam = new Parameter\Group();
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);
-        $typeParam = new Parameter\FilterQuery('type:event');
 
         $params = array(
             $qParam,
             $groupParam,
             $limitParam,
-            $startParam,
-            $typeParam,
+            $startParam
         );
 
         if ($sort) {

@@ -7,42 +7,52 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use Symfony\Component\EventDispatcher\Event;
+use CultuurNet\UDB3\Theme;
+use CultuurNet\UDB3\Title;
+use PHPUnit_Framework_MockObject_MockObject;
+use stdClass;
 
 class EventLDProjectorTest extends CdbXMLProjectorTestBase
 {
+
+    use \CultuurNet\UDB3\OfferLDProjectorTestTrait;
+
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     private $documentRepository;
 
     /**
-     * @var EventServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventServiceInterface|PHPUnit_Framework_MockObject_MockObject
      */
     private $eventService;
 
     /**
-     * @var PlaceService|\PHPUnit_Framework_MockObject_MockObject
+     * @var PlaceService|PHPUnit_Framework_MockObject_MockObject
      */
     private $placeService;
 
     /**
-     * @var OrganizerService|\PHPUnit_Framework_MockObject_MockObject
+     * @var OrganizerService|PHPUnit_Framework_MockObject_MockObject
      */
     private $organizerService;
 
@@ -101,7 +111,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
     /**
      * @test
      */
-    public function it_handles_new_events()
+    public function it_handles_new_events_without_theme()
     {
         $uuidGenerator = new Version4Generator();
         $eventId = $uuidGenerator->generate();
@@ -110,12 +120,12 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
         $eventCreated = new EventCreated(
             $eventId,
             new Title('some representative title'),
-            'LOCATION-ABC-123',
-            $date,
-            new EventType('0.50.4.0.0', 'concert')
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('single', '2015-01-26T13:25:21+01:00')
         );
 
-        $jsonLD = new \stdClass();
+        $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
         $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
         $jsonLD->name = array('nl' => 'some representative title');
@@ -130,9 +140,264 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
         ];
         $jsonLD->terms = [
             [
+                'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
+            ]
+        ];
+        $jsonLD->created = '2015-01-20T13:25:21+01:00';
+
+        $expectedDocument = (new JsonDocument($eventId))
+            ->withBody($jsonLD);
+
+        // Set up the placeService so that it does not know about the JSON-LD
+        // representation of the Place yet and only returns the URI of the
+        // Place.
+        $this->placeService->expects($this->once())
+            ->method('getEntity')
+            ->with('LOCATION-ABC-123')
+            ->willThrowException(new EntityNotFoundException());
+        $this->placeService->expects($this->once())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle(
+            new DomainMessage(
+                1,
+                1,
+                new Metadata(),
+                $eventCreated,
+                DateTime::fromString('2015-01-20T13:25:21+01:00')
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_new_events_with_theme()
+    {
+        $uuidGenerator = new Version4Generator();
+        $eventId = $uuidGenerator->generate();
+        $date = new \DateTime('2015-01-26T13:25:21+01:00');
+
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('single', '2015-01-26T13:25:21+01:00'),
+            new Theme('123', 'theme label')
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
+        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->name = array('nl' => 'some representative title');
+        $jsonLD->location = array(
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-123'
+        );
+        $jsonLD->calendarType = 'single';
+        $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->sameAs = [
+            'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
+        ];
+        $jsonLD->terms = [
+            [
                 'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+            [
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
+            ]
+        ];
+        $jsonLD->created = '2015-01-20T13:25:21+01:00';
+
+        $expectedDocument = (new JsonDocument($eventId))
+            ->withBody($jsonLD);
+
+        // Set up the placeService so that it does not know about the JSON-LD
+        // representation of the Place yet and only returns the URI of the
+        // Place.
+        $this->placeService->expects($this->once())
+            ->method('getEntity')
+            ->with('LOCATION-ABC-123')
+            ->willThrowException(new EntityNotFoundException());
+        $this->placeService->expects($this->once())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle(
+            new DomainMessage(
+                1,
+                1,
+                new Metadata(),
+                $eventCreated,
+                DateTime::fromString('2015-01-20T13:25:21+01:00')
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_new_events_with_creator()
+    {
+        $uuidGenerator = new Version4Generator();
+        $eventId = $uuidGenerator->generate();
+        $date = new \DateTime('2015-01-26T13:25:21+01:00');
+
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('single', '2015-01-26T13:25:21+01:00'),
+            new Theme('123', 'theme label')
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
+        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->name = array('nl' => 'some representative title');
+        $jsonLD->location = array(
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-123'
+        );
+        $jsonLD->calendarType = 'single';
+        $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->sameAs = [
+            'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
+        ];
+        $jsonLD->terms = [
+            [
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+            [
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
+            ]
+        ];
+        $jsonLD->created = '2015-01-20T13:25:21+01:00';
+        $jsonLD->creator = '1 (Tester)';
+
+        $expectedDocument = (new JsonDocument($eventId))
+            ->withBody($jsonLD);
+
+        // Set up the placeService so that it does not know about the JSON-LD
+        // representation of the Place yet and only returns the URI of the
+        // Place.
+        $this->placeService->expects($this->once())
+            ->method('getEntity')
+            ->with('LOCATION-ABC-123')
+            ->willThrowException(new EntityNotFoundException());
+        $this->placeService->expects($this->once())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $metadata = array(
+          'user_id' => '1',
+          'user_nick' => 'Tester'
+        );
+        $this->projector->handle(
+            new DomainMessage(
+                1,
+                1,
+                new Metadata($metadata),
+                $eventCreated,
+                DateTime::fromString('2015-01-20T13:25:21+01:00')
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_new_events_with_multiple_timestamps()
+    {
+        $uuidGenerator = new Version4Generator();
+        $eventId = $uuidGenerator->generate();
+        $date = new \DateTime('2015-01-26T13:25:21+01:00');
+
+        $timestamps = [
+            new \CultuurNet\UDB3\Timestamp('2015-01-26T13:25:21+01:00', '2015-01-27T13:25:21+01:00'),
+            new \CultuurNet\UDB3\Timestamp('2015-01-28T13:25:21+01:00', '2015-01-29T13:25:21+01:00')
+        ];
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('multiple', '2015-01-26T13:25:21+01:00', '2015-01-29T13:25:21+01:00', $timestamps),
+            new Theme('123', 'theme label')
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
+        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->name = array('nl' => 'some representative title');
+        $jsonLD->location = array(
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-123'
+        );
+        $jsonLD->calendarType = 'multiple';
+        $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->endDate = '2015-01-29T13:25:21+01:00';
+        $jsonLD->subEvent = array();
+        $jsonLD->subEvent[] = array(
+            '@type' => 'Event',
+            'startDate' => '2015-01-26T13:25:21+01:00',
+            'endDate' => '2015-01-27T13:25:21+01:00',
+        );
+        $jsonLD->subEvent[] = array(
+            '@type' => 'Event',
+            'startDate' => '2015-01-28T13:25:21+01:00',
+            'endDate' => '2015-01-29T13:25:21+01:00',
+        );
+        $jsonLD->sameAs = [
+            'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
+        ];
+        $jsonLD->terms = [
+            [
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+            [
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
@@ -357,7 +622,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                         $body = $jsonDocument->getBody();
                         $bookingInfo = $body->bookingInfo;
 
-                        $expectedBookingInfo = new \stdClass();
+                        $expectedBookingInfo = new stdClass();
                         $expectedBookingInfo->description = 'Gratis voor iedereen!';
 
                         return
@@ -509,7 +774,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
      */
     public function it_filters_the_description_property_when_filters_are_added()
     {
-        /** @var StringFilterInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
+        /** @var StringFilterInterface|PHPUnit_Framework_MockObject_MockObject $filter */
         $filter = $this->getMock(StringFilterInterface::class);
         $filter->expects($this->atLeastOnce())
             ->method('filter');
@@ -876,5 +1141,112 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                 $organizerProjectedToJSONLD
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_major_info()
+    {
+
+        // Make sure the places entities return an iri.
+        $this->placeService->expects($this->once())
+            ->method('getEntity')
+            ->with('LOCATION-ABC-456')
+            ->willThrowException(new EntityNotFoundException());
+        $this->placeService->expects($this->once())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
+
+        $id = 'foo';
+        $title = new Title('new title');
+        $eventType = new EventType('0.50.4.0.1', 'concertnew');
+        $location = new Location('LOCATION-ABC-456', '$newName', '$newCountry', '$newLocality', '$newPostalcode', '$newStreet');
+        $calendar = new Calendar('single', '2015-01-26T13:25:21+01:00', '2015-02-26T13:25:21+01:00');
+        $theme = new Theme('123', 'theme label');
+        $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $location, $calendar, $theme);
+
+        $jsonLD = new stdClass();
+        $jsonLD->id = $id;
+        $jsonLD->name = ['nl' => 'some representative title'];
+        $jsonLD->location = [
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-123'
+        ];
+        $jsonLD->calendarType = 'permanent';
+        $jsonLD->terms = [
+            [
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ]
+        ];
+
+        $initialDocument = (new JsonDocument('foo'))
+            ->withBody($jsonLD);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->id = $id;
+        $expectedJsonLD->name = ['nl' => 'new title'];
+        $expectedJsonLD->location = [
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-456'
+        ];
+        $expectedJsonLD->calendarType = 'single';
+        $expectedJsonLD->terms = [
+            [
+                'id' => '0.50.4.0.1',
+                'label' => 'concertnew',
+                'domain' => 'eventtype',
+            ],
+            [
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
+            ]
+        ];
+        $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
+
+        $expectedDocument = (new JsonDocument('foo'))
+            ->withBody($expectedJsonLD);
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($id)
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
+
+        $this->projector->applyMajorInfoUpdated($majorInfoUpdated);
+
+    }
+
+    /**
+     * @test
+     */
+    public function it_deletes_events()
+    {
+
+        $id = 'foo';
+        $this->documentRepository->expects($this->once())
+            ->method('remove')
+            ->with($id);
+
+        $eventDeleted = new EventDeleted($id);
+        $this->projector->applyEventDeleted($eventDeleted);
+
     }
 }

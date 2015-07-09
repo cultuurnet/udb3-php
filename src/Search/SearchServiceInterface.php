@@ -19,9 +19,10 @@ interface SearchServiceInterface
      *   How many items to retrieve.
      * @param int $start
      *   Offset to start from.
+     * @param string $sort
+     *   Sort by field.
      *
-     * @return array|\JsonSerializable
-     *  A JSON-LD array or JSON serializable object.
+     * @return Results
      */
     public function search($query, $limit = 30, $start = 0, $sort = null);
 }

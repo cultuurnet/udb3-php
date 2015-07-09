@@ -8,6 +8,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\SimpleEventBusTestEvent;
 use Broadway\EventHandling\SimpleEventBusTestListener;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_TestCase
 {

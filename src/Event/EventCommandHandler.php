@@ -3,19 +3,34 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\CommandHandling\CommandHandler;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\DeleteImage;
+use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
+use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Event\Commands\UpdateDescription;
+use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Label as Label;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
+/**
+ * Commandhandler for events
+ */
+class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -28,7 +43,6 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
      * @var SearchServiceInterface
      */
     protected $searchService;
-
 
     public function __construct(
         RepositoryInterface $eventRepository,
@@ -175,6 +189,7 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
     public function handleTranslateDescription(
         TranslateDescription $translateDescription
     ) {
+
         /** @var Event $event */
         $event = $this->eventRepository->load($translateDescription->getId());
 
@@ -184,6 +199,214 @@ class EventCommandHandler extends CommandHandler implements LoggerAwareInterface
         );
 
         $this->eventRepository->save($event);
+    }
+
+    /**
+     * Handle an update command to update the main description.
+     */
+    public function handleUpdateDescription(UpdateDescription $updateDescription)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateDescription->getId());
+
+        $event->updateDescription(
+            $updateDescription->getDescription()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update command to update the typical age range.
+     */
+    public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $updateTypicalAgeRange)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateTypicalAgeRange->getId());
+
+        $event->updateTypicalAgeRange(
+            $updateTypicalAgeRange->getTypicalAgeRange()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle the deletion of typical age range on an event.
+     */
+    public function handleDeleteTypicalAgeRange(DeleteTypicalAgeRange $deleteTypicalAgeRange)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteTypicalAgeRange->getId());
+
+        $event->deleteTypicalAgeRange();
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update command to update organizer.
+     */
+    public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateOrganizer->getId());
+
+        $event->updateOrganizer(
+            $updateOrganizer->getOrganizerId()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update command to delete the organizer.
+     */
+    public function handleDeleteOrganizer(DeleteOrganizer $deleteOrganizer)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteOrganizer->getId());
+
+        $event->deleteOrganizer(
+            $deleteOrganizer->getOrganizerId()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update command to updated the contact point.
+     */
+    public function handleUpdateContactPoint(UpdateContactPoint $updateContactPoint)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateContactPoint->getId());
+
+        $event->updateContactPoint(
+            $updateContactPoint->getContactPoint()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update command to updated the booking info.
+     */
+    public function handleUpdateBookingInfo(UpdateBookingInfo $updateBookingInfo)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateBookingInfo->getId());
+
+        $event->updateBookingInfo(
+            $updateBookingInfo->getBookingInfo()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an add image command.
+     * @param AddImage $addImage
+     */
+    public function handleAddImage(AddImage $addImage)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($addImage->getId());
+
+        $event->addImage(
+            $addImage->getMediaObject()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update image command.
+     * @param UpdateImage $updateImage
+     */
+    public function handleUpdateImage(UpdateImage $updateImage)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateImage->getId());
+
+        $event->updateImage(
+            $updateImage->getIndexToUpdate(),
+            $updateImage->getMediaObject()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle a delete image command.
+     * @param DeleteImage $deleteImage
+     */
+    public function handleDeleteImage(DeleteImage $deleteImage)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteImage->getId());
+
+        $event->deleteImage(
+            $deleteImage->getIndexToDelete(),
+            $deleteImage->getInternalId()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle an update the major info command.
+     */
+    public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($updateMajorInfo->getId());
+
+        $event->updateMajorInfo(
+            $updateMajorInfo->getTitle(),
+            $updateMajorInfo->getEventType(),
+            $updateMajorInfo->getLocation(),
+            $updateMajorInfo->getCalendar(),
+            $updateMajorInfo->getTheme()
+        );
+
+        $this->eventRepository->save($event);
+
+    }
+
+    /**
+     * Handle a delete event command.
+     */
+    public function handleDeleteEvent(DeleteEvent $deleteEvent)
+    {
+
+        /** @var Event $event */
+        $event = $this->eventRepository->load($deleteEvent->getId());
+        $event->deleteEvent();
+
+        $this->eventRepository->save($event);
+
     }
 
     public function handleApplyLabel(ApplyLabel $label)

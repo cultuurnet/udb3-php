@@ -6,8 +6,8 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
@@ -16,8 +16,8 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
-use ValueObjects\Identity\UUID;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
+use ValueObjects\Identity\UUID;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {

@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Title;
+
 class TitleTest extends \PHPUnit_Framework_TestCase
 {
     public function emptyStringValues()

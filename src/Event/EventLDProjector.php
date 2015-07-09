@@ -11,12 +11,24 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
@@ -27,9 +39,10 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Theme;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -75,18 +88,18 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
      * @param PlaceService $placeService
-     * @param OrganizerService $organiserService
+     * @param OrganizerService $organizerService
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EventServiceInterface $eventService,
         PlaceService $placeService,
-        OrganizerService $organiserService
+        OrganizerService $organizerService
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
-        $this->organizerService = $organiserService;
+        $this->organizerService = $organizerService;
         $this->placeService = $placeService;
         $this->eventService = $eventService;
 
@@ -239,26 +252,27 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         );
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
-                '@type' => 'Place',
-            ) + (array)$this->placeJSONLD($eventCreated->getLocation());
+          '@type' => 'Place',
+        ) + (array)$this->placeJSONLD($eventCreated->getLocation()->getCdbid());
 
+        $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
+        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
-        $jsonLD->calendarType = 'single';
-        $jsonLD->startDate = $eventCreated->getDate()->format('c');
-
+        // Same as.
         $jsonLD->sameAs = $this->generateSameAs(
             $eventCreated->getEventId(),
             reset($jsonLD->name)
         );
 
-        $eventType = $eventCreated->getType();
-        $jsonLD->terms = array(
-            array(
-                'label' => $eventType->getLabel(),
-                'domain' => 'eventtype',
-                'id' => $eventType->getId()
-            )
-        );
+        $eventType = $eventCreated->getEventType();
+        $jsonLD->terms = [
+            $eventType->toJsonLd()
+        ];
+
+        $theme = $eventCreated->getTheme();
+        if (!empty($theme)) {
+            $jsonLD->terms[] = $theme->toJsonLd();
+        }
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
@@ -272,6 +286,50 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         }
 
         $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param EventDeleted $eventDeleted
+     */
+    public function applyEventDeleted(EventDeleted $eventDeleted)
+    {
+        $this->repository->remove($eventDeleted->getEventId());
+    }
+
+    /**
+     * Apply the major info updated command to the projector.
+     */
+    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($majorInfoUpdated);
+        $jsonLD = $document->getBody();
+
+        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
+        $jsonLD->location = array(
+          '@type' => 'Place',
+        ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
+
+        $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
+        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
+
+        // Remove old theme and event type.
+        $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {
+            return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
+        });
+
+        $eventType = $majorInfoUpdated->getEventType();
+        $jsonLD->terms = [
+            $eventType->toJsonLd()
+        ];
+
+        $theme = $majorInfoUpdated->getTheme();
+        if (!empty($theme)) {
+            $jsonLD->terms[] = $theme->toJsonLd();
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+
     }
 
     public function placeJSONLD($placeId)
@@ -292,6 +350,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     public function organizerJSONLD($organizerId)
     {
+
         try {
             $organizerJSONLD = $this->organizerService->getEntity(
                 $organizerId
@@ -366,6 +425,176 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         )} = $descriptionTranslated->getDescription();
 
         $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the description updated event to the event repository.
+     * @param DescriptionUpdated $descriptionUpdated
+     */
+    public function applyDescriptionUpdated(
+        DescriptionUpdated $descriptionUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionUpdated);
+
+        $eventLd = $document->getBody();
+        if (empty($eventLd->description)) {
+            $eventLd->description = new \stdClass();
+        }
+        $eventLd->description->{'nl'} = $descriptionUpdated->getDescription();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the typical age range updated event to the event repository.
+     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    public function applyTypicalAgeRangeUpdated(
+        TypicalAgeRangeUpdated $typicalAgeRangeUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the typical age range deleted event to the event repository.
+     * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    public function applyTypicalAgeRangeDeleted(
+        TypicalAgeRangeDeleted $typicalAgeRangeDeleted
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->typicalAgeRange);
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the organizer updated event to the event repository.
+     * @param OrganizerUpdated $organizerUpdated
+     */
+    public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($organizerUpdated);
+
+        $eventLd = $document->getBody();
+
+        $eventLd->organizer = array(
+          '@type' => 'Organizer',
+        ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the organizer delete event to the event repository.
+     * @param OrganizerDeleted $organizerDeleted
+     */
+    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    {
+
+        $document = $this->loadDocumentFromRepository($organizerDeleted);
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->organizer);
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the contact info updated event to the event repository.
+     * @param ContactPointUpdated $contactPointUpdated
+     */
+    public function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($contactPointUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the booking info updated event to the event repository.
+     * @param BookingInfoUpdated $bookingInfoUpdated
+     */
+    public function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
+
+        $this->repository->save($document->withBody($eventLd));
+
+    }
+
+    /**
+     * Apply the imageAdded event to the event repository.
+     *
+     * @param ImageAdded $imageAdded
+     */
+    public function applyImageAdded(ImageAdded $imageAdded)
+    {
+
+        $document = $this->loadDocumentFromRepository($imageAdded);
+
+        $eventLd = $document->getBody();
+        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
+        $eventLd->mediaObject[] = $imageAdded->getMediaObject()->toJsonLd();
+
+        $this->repository->save($document->withBody($eventLd));
+
+    }
+
+    /**
+     * Apply the ImageUpdated event to the event repository.
+     *
+     * @param ImageUpdated $imageUpdated
+     */
+    public function applyImageUpdated(ImageUpdated $imageUpdated)
+    {
+
+        $document = $this->loadDocumentFromRepository($imageUpdated);
+
+        $eventLd = $document->getBody();
+        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
+        $eventLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
+
+        $this->repository->save($document->withBody($eventLd));
+
+    }
+
+    /**
+     * Apply the imageDeleted event to the event repository.
+     *
+     * @param ImageDeleted $imageDeleted
+     */
+    public function applyImageDeleted(ImageDeleted $imageDeleted)
+    {
+
+        $document = $this->loadDocumentFromRepository($imageDeleted);
+
+        $eventLd = $document->getBody();
+        unset($eventLd->mediaObject[$imageDeleted->getIndexToDelete()]);
+
+        // Generate new numeric keys.
+        $eventLd->mediaObject = array_values($eventLd->mediaObject);
+
+        $this->repository->save($document->withBody($eventLd));
+
     }
 
     /**

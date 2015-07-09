@@ -10,10 +10,10 @@ namespace CultuurNet\UDB3;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 
-abstract class LocalEntityService implements EntityServiceInterface
+class LocalEntityService implements EntityServiceInterface
 {
     /**
      * @var DocumentRepositoryInterface
@@ -70,7 +70,7 @@ abstract class LocalEntityService implements EntityServiceInterface
 
             if (!$document) {
                 throw new EntityNotFoundException(
-                    sprintf('Entity with id: %s not found.', $id)
+                    sprintf('Document with id: %s not found.', $id)
                 );
             }
         }

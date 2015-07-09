@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
@@ -15,10 +16,11 @@ use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class OrganizerLDProjector extends ActorLDProjector
 {
@@ -42,17 +44,17 @@ class OrganizerLDProjector extends ActorLDProjector
     }
 
     /**
-     * @param ActorImportedFromUDB2 $actorImportedFromUDB2
+     * @param OrganizerImportedFromUDB2 $organizerImportedFromUDB2
      */
     public function applyOrganizerImportedFromUDB2(
-        ActorImportedFromUDB2 $actorImportedFromUDB2
+        OrganizerImportedFromUDB2 $organizerImportedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
-            $actorImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $actorImportedFromUDB2->getCdbXml()
+            $organizerImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $organizerImportedFromUDB2->getCdbXml()
         );
 
-        $document = $this->newDocument($actorImportedFromUDB2->getActorId());
+        $document = $this->newDocument($organizerImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
 
         $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
@@ -63,8 +65,53 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->repository->save($document->withBody($actorLd));
 
         $this->publishJSONLDUpdated(
-            $actorImportedFromUDB2->getActorId()
+            $organizerImportedFromUDB2->getActorId()
         );
+    }
+
+    /**
+     * @param OrganizerCreated $organizerCreated
+     */
+    protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
+    {
+        $document = $this->newDocument($organizerCreated->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $organizerCreated->getOrganizerId()
+        );
+
+        $jsonLD->name = $organizerCreated->getTitle();
+
+        $addresses = $organizerCreated->getAddresses();
+        $jsonLD->addresses = array();
+        foreach ($addresses as $address) {
+            $jsonLD->addresses[] = array(
+              'addressCountry' => $address->getCountry(),
+              'addressLocality' => $address->getLocality(),
+              'postalCode' => $address->getPostalCode(),
+              'streetAddress' => $address->getStreetAddress(),
+            );
+        }
+
+        $jsonLD->phone = $organizerCreated->getPhones();
+        $jsonLD->email = $organizerCreated->getEmails();
+        $jsonLD->url = $organizerCreated->getUrls();
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $jsonLD->created = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
+            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+
     }
 
     protected function publishJSONLDUpdated($id)

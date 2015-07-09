@@ -44,7 +44,7 @@ class PagedCollection implements \JsonSerializable
         $itemsPerPage,
         array $members,
         $totalItems,
-        PageUrlGenerator $pageUrlFactory
+        PageUrlGenerator $pageUrlFactory = null
     ) {
         $this->setPageNumber($pageNumber);
         $this->setItemsPerpage($itemsPerPage);
@@ -91,7 +91,9 @@ class PagedCollection implements \JsonSerializable
 
     public function firstPage()
     {
-        return $this->pageUrlFactory->urlForPage(0);
+        if ($this->pageUrlFactory) {
+            return $this->pageUrlFactory->urlForPage(0);
+        }
     }
 
     /**
@@ -109,9 +111,11 @@ class PagedCollection implements \JsonSerializable
      */
     public function lastPage()
     {
-        return $this->pageUrlFactory->urlForPage(
-            $this->lastPageNumber()
-        );
+        if ($this->pageUrlFactory) {
+            return $this->pageUrlFactory->urlForPage(
+                $this->lastPageNumber()
+            );
+        }
     }
 
     /**
@@ -119,7 +123,7 @@ class PagedCollection implements \JsonSerializable
      */
     public function nextPage()
     {
-        if ($this->lastPageNumber() > $this->pageNumber) {
+        if ($this->pageUrlFactory && $this->lastPageNumber() > $this->pageNumber) {
             return $this->pageUrlFactory->urlForPage($this->pageNumber + 1);
         }
     }
@@ -129,7 +133,7 @@ class PagedCollection implements \JsonSerializable
      */
     public function previousPage()
     {
-        if ($this->pageNumber > 0) {
+        if ($this->pageUrlFactory && $this->pageNumber > 0) {
             return $this->pageUrlFactory->urlForPage($this->pageNumber - 1);
         }
     }
@@ -151,6 +155,8 @@ class PagedCollection implements \JsonSerializable
             'nextPage' => $this->nextPage(),
         ];
 
-        return array_filter($data);
+        return array_filter($data, function ($item) {
+            return null !== $item;
+        });
     }
 }

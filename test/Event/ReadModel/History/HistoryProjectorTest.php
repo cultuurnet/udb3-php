@@ -12,14 +12,13 @@ use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use DateTime as BaseDateTime;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {

@@ -7,9 +7,10 @@ namespace CultuurNet\UDB3\Search;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Search\Cache\WarmUpInterface;
 use Doctrine\Common\Cache\Cache;
 
-class CachedDefaultSearchService implements SearchServiceInterface, EventListenerInterface
+class CachedDefaultSearchService implements SearchServiceInterface, EventListenerInterface, WarmUpInterface
 {
     /**
      * @var \CultuurNet\UDB3\Search\SearchServiceInterface

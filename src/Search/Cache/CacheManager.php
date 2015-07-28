@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Search;
+namespace CultuurNet\UDB3\Search\Cache;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
@@ -21,7 +21,7 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * @var CachedDefaultSearchService
+     * @var WarmUpInterface
      */
     private $search;
 
@@ -36,10 +36,12 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
     private $redisKey;
 
     /**
-     * @param CachedDefaultSearchService $search
+     * @param WarmUpInterface $search
+     * @param ClientInterface $redis
+     * @param string $redisKey
      */
     public function __construct(
-        CachedDefaultSearchService $search,
+        WarmUpInterface $search,
         ClientInterface $redis,
         $redisKey = 'search-cache-outdated'
     ) {
@@ -61,7 +63,7 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
     /**
      * @return void
      */
-    public function warmupCacheIfNeeded()
+    public function warmUpCacheIfNeeded()
     {
         $flaggedAsOutdated = $this->isCacheFlaggedAsOutdated();
 

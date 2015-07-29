@@ -162,7 +162,7 @@ class DBALRepository implements RepositoryInterface
         $table->addColumn(
             'purpose',
             'text',
-            array('length' => 36, 'notnull' => true)
+            array('notnull' => true)
         );
 
         $table->addColumn(

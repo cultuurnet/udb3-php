@@ -36,7 +36,8 @@
     "league/flysystem-ziparchive": "~1.0",
     "danielstjules/stringy": "~1.9",
     "doctrine/dbal": "~2.4",
-    "symfony/http-foundation": "~2.6.9"
+    "symfony/http-foundation": "~2.6.9",
+    "justinrainbow/json-schema": "1.4.3"
   },
   "require-dev": {
     "phpspec/phpspec": "~2.0",

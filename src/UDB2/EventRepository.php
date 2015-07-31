@@ -99,6 +99,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
     private $aggregateClass;
 
+    /**
+     * @var bool
+     *
+     * Feature toggle to use the full event cdbxml to update the description.
+     * This is a temporary workaround for a bug on the Entry API which does not
+     * properly handle UTF-8 encoded description posted to
+     * event/[cdbid]/description. See http://jira.uitdatabank.be:8080/browse/MSS-208
+     * for more details.
+     */
+    private $useFullEventDataToUpdateDescription = false;
+
     public function __construct(
         RepositoryInterface $decoratee,
         EntryAPIImprovedFactory $entryAPIImprovedFactory,
@@ -114,6 +125,18 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
         $this->placeService = $placeService;
         $this->aggregateClass = Event::class;
         $this->eventImporter = $eventImporter;
+    }
+
+    /**
+     * @return EventRepository
+     */
+    public function withFullEventDataToUpdateDescription()
+    {
+        $c = clone $this;
+
+        $c->useFullEventDataToUpdateDescription = true;
+
+        return $c;
     }
 
     public function syncBackOn()
@@ -203,10 +226,17 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
-                        $this->applyDescriptionUpdated(
-                            $domainEvent,
-                            $domainMessage->getMetadata()
-                        );
+                        if ($this->useFullEventDataToUpdateDescription) {
+                            $this->applyDescriptionUpdatedWithFullEventData(
+                                $domainEvent,
+                                $domainMessage->getMetadata()
+                            );
+                        } else {
+                            $this->applyDescriptionUpdated(
+                                $domainEvent,
+                                $domainMessage->getMetadata()
+                            );
+                        }
                         break;
 
                     case TypicalAgeRangeUpdated::class:
@@ -470,6 +500,23 @@ class EventRepository implements RepositoryInterface, LoggerAwareInterface
 
         $entryApi->updateEvent($event);
 
+    }
+
+    /**
+     * Send the updated description also to CDB2.
+     */
+    private function applyDescriptionUpdatedWithFullEventData(
+        DescriptionUpdated $descriptionUpdated,
+        Metadata $metadata
+    ) {
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+
+        $event = $entryApi->getEvent($descriptionUpdated->getEventId());
+
+        $detail = $event->getDetails()->getDetailByLanguage('nl');
+        $detail->setLongDescription($descriptionUpdated->getDescription());
+
+        $entryApi->updateEvent($event);
     }
 
     /**

@@ -92,6 +92,17 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
     private $aggregateClass;
 
+    /**
+     * @var bool
+     *
+     * Feature toggle to use the full event cdbxml to update the description.
+     * This is a temporary workaround for a bug on the Entry API which does not
+     * properly handle UTF-8 encoded description posted to
+     * event/[cdbid]/description. See http://jira.uitdatabank.be:8080/browse/MSS-208
+     * for more details.
+     */
+    private $useFullEventDataToUpdateDescription = false;
+
     public function __construct(
         RepositoryInterface $decoratee,
         SearchServiceInterface $search,
@@ -105,6 +116,18 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
         $this->eventStreamDecorators = $eventStreamDecorators;
         $this->organizerService = $organizerService;
         $this->aggregateClass = Place::class;
+    }
+
+    /**
+     * @return PlaceRepository
+     */
+    public function withFullEventDataToUpdateDescription()
+    {
+        $c = clone $this;
+
+        $c->useFullEventDataToUpdateDescription = true;
+
+        return $c;
     }
 
     public function syncBackOn()
@@ -161,10 +184,17 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
                     case DescriptionUpdated::class:
                         /** @var DescriptionUpdated $domainEvent */
-                        $this->applyDescriptionUpdated(
-                            $domainEvent,
-                            $domainMessage->getMetadata()
-                        );
+                        if ($this->useFullEventDataToUpdateDescription) {
+                            $this->applyDescriptionUpdatedWithFullEventData(
+                                $domainEvent,
+                                $domainMessage->getMetadata()
+                            );
+                        } else {
+                            $this->applyDescriptionUpdated(
+                                $domainEvent,
+                                $domainMessage->getMetadata()
+                            );
+                        }
                         break;
 
                     case TypicalAgeRangeUpdated::class:
@@ -383,6 +413,23 @@ class PlaceRepository extends ActorRepository implements RepositoryInterface, Lo
 
         $entryApi->updateEvent($event);
 
+    }
+
+    /**
+     * Send the updated description also to CDB2.
+     */
+    private function applyDescriptionUpdatedWithFullEventData(
+        DescriptionUpdated $descriptionUpdated,
+        Metadata $metadata
+    ) {
+        $entryApi = $this->createImprovedEntryAPIFromMetadata($metadata);
+
+        $event = $entryApi->getEvent($descriptionUpdated->getPlaceId());
+
+        $detail = $event->getDetails()->getDetailByLanguage('nl');
+        $detail->setLongDescription($descriptionUpdated->getDescription());
+
+        $entryApi->updateEvent($event);
     }
 
     /**

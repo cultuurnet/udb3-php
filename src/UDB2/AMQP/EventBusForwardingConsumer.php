@@ -84,7 +84,7 @@ class EventBusForwardingConsumer implements LoggerAwareInterface
         $this->channel = $connection->channel();
         $this->channel->basic_qos(0, 4, true);
 
-        $this->eventBus = $eventBus;q
+        $this->eventBus = $eventBus;
 
         $this->deserializerLocator = $deserializerLocator;
 

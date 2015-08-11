@@ -132,7 +132,7 @@ html {
 	position: relative;
 	padding-right: 50px;
 }
-.page:not(.page--uitpas) .activity.uitpas .activity__uitpas:before
+.page:not(.page--uitpas):not(.page--paspartoe) .activity.uitpas .activity__uitpas:before
 {
 	position: absolute;
 	top: 0;
@@ -145,7 +145,8 @@ html {
 	height: 40px;
 	display: block;
 }
-.page--uitpas .activity__uitpas
+.page--uitpas .activity__uitpas,
+.page--paspartoe .activity__uitpas
 {
 	padding-right: 6px;
 }

@@ -94,7 +94,12 @@
                                     <i class="fa fa-eur"></i>&nbsp;
                                 </td>
                                 <td>
-                                    {{ tariff.price }} {{ tariff.label }}
+                                    {% if not tariff.forOtherCardSystems -%}
+                                        {{ tariff.price }} Kansentarief voor {{ tariff.cardSystem }}
+                                    {%- else -%}
+                                        {{ tariff.price }} Kansentarief voor kaarthouders uit een andere regio
+                                    {%- endif %}
+
                                 </td>
                             </tr>
                             {%- endfor %}

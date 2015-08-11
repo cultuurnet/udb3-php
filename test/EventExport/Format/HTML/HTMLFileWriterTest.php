@@ -369,11 +369,13 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                     'prices' => [
                         [
                             'price' => '1,5',
-                            'label' => 'Kansentarief voor UiTPAS Regio Aalst',
+                            'cardSystem' => 'UiTPAS Regio Aalst',
+                            'forOtherCardSystems' => false,
                         ],
                         [
                             'price' => '3',
-                            'label' => 'Kansentarief voor kaarthouders uit een andere regio',
+                            'cardSystem' => 'UiTPAS Regio Aalst',
+                            'forOtherCardSystems' => true,
                         ],
                     ],
                     'advantages' => [

@@ -155,15 +155,18 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'price' => 2,
-                    'label' => 'Kansentarief voor UiTPAS regio 1'
+                    'cardSystem' => 'UiTPAS regio 1',
+                    'forOtherCardSystems' => false,
                 ],
                 [
                     'price' => 3,
-                    'label' => 'Kansentarief voor kaarthouders uit een andere regio'
+                    'cardSystem' => 'UiTPAS regio 2',
+                    'forOtherCardSystems' => true,
                 ],
                 [
                     'price' => 4,
-                    'label' => 'Kansentarief voor UiTPAS regio 3',
+                    'cardSystem' => 'UiTPAS regio 3',
+                    'forOtherCardSystems' => false,
                 ],
             ],
             $prices

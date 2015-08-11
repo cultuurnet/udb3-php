@@ -87,6 +87,7 @@
                                 </td>
                             </tr>
                             {%-  if event.price != 'Gratis' and event.uitpas -%}
+                            {% set tarifflabel = brand == "paspartoe" ? "Reductietarief" : "Kansentarief" %}
                             {%- for tariff in event.uitpas.prices %}
 
                             <tr>
@@ -95,9 +96,9 @@
                                 </td>
                                 <td>
                                     {% if not tariff.forOtherCardSystems -%}
-                                        {{ tariff.price }} Kansentarief voor {{ tariff.cardSystem }}
+                                        {{ tariff.price }} {{ tarifflabel }} voor {{ tariff.cardSystem }}
                                     {%- else -%}
-                                        {{ tariff.price }} Kansentarief voor kaarthouders uit een andere regio
+                                        {{ tariff.price }} {{ tarifflabel }} voor kaarthouders uit een andere regio
                                     {%- endif %}
 
                                 </td>

@@ -345,12 +345,9 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         $this->assertHTMLFileContents($expected, $this->filePath);
     }
 
-    /**
-     * @test
-     */
-    public function it_shows_uitpas_info()
+    private function getEventsWithUiTPASInfo()
     {
-        $events = [
+        return [
             [
                 'type' => 'Cursus of workshop',
                 'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
@@ -386,6 +383,14 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_shows_uitpas_info()
+    {
+        $events = $this->getEventsWithUiTPASInfo();
 
         $fileWriter = $this->createHTMLFileWriter(
             array(
@@ -396,6 +401,25 @@ class HTMLFileWriterTest extends \PHPUnit_Framework_TestCase
         $fileWriter->write($this->filePath, $events);
 
         $expected = file_get_contents(__DIR__ . '/results/export_event_with_uitpas_info.html');
+        $this->assertHTMLFileContents($expected, $this->filePath);
+    }
+
+    /**
+     * @test
+     */
+    public function it_shows_paspartoe_branded_uitpas_info()
+    {
+        $events = $this->getEventsWithUiTPASInfo();
+
+        $fileWriter = $this->createHTMLFileWriter(
+            array(
+                'brand' => 'paspartoe',
+                'title' => 'UiT',
+            )
+        );
+        $fileWriter->write($this->filePath, $events);
+
+        $expected = file_get_contents(__DIR__ . '/results/export_event_with_uitpas_info_paspartoe_branded.html');
         $this->assertHTMLFileContents($expected, $this->filePath);
     }
 

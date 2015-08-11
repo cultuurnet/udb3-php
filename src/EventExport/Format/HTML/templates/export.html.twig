@@ -129,7 +129,13 @@
                     {%- if event.uitpas.advantages %}
 
                     <div class="activity__uitpas">
-                        <p>Ga met je UiTPAS:</p>
+                        <p>
+                            {%- if brand == "paspartoe" -%}
+                                Ga met je Paspartoe:
+                            {%- else -%}
+                                Ga met je UiTPAS:
+                            {%- endif -%}
+                        </p>
                         <ul>
                             {%- for advantage in event.uitpas.advantages %}
 

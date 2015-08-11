@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Properties;
 
-use CultuurNet\UDB3\EventExport\Format\HTML\Properties\InvalidBrandException;
 use ValueObjects\String\String;
 
 class Brand extends String
@@ -14,7 +13,7 @@ class Brand extends String
     {
         parent::__construct($brand);
 
-        $knownBrands = ['uit', 'uitpas', 'vlieg'];
+        $knownBrands = ['uit', 'uitpas', 'vlieg', 'paspartoe'];
 
         if (!in_array($brand, $knownBrands)) {
             throw new InvalidBrandException(

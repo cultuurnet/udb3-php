@@ -194,16 +194,18 @@ class CultureFeedEventInfoService implements EventInfoServiceInterface, LoggerAw
     ) {
         $uitpasPrices = [];
 
+        $tariffAsNumeric = is_integer($key->tariff) || is_float($key->tariff) ? $key->tariff : floatval($key->tariff);
+
         if ($this->kansenTariefForCurrentCardSystem->isSatisfiedBy($key)) {
             $uitpasPrices[] = [
-                'price' => $key->tariff,
+                'price' => $tariffAsNumeric,
                 'label' => 'Kansentarief voor ' . $cardSystem->name,
             ];
         }
 
         if ($this->kansenTariefForOtherCardSystems->isSatisfiedBy($key)) {
             $uitpasPrices[] = [
-                'price' => $key->tariff,
+                'price' => $tariffAsNumeric,
                 'label' => 'Kansentarief voor kaarthouders uit een andere regio',
             ];
         }

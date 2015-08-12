@@ -24,14 +24,21 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
     private $userId;
 
     /**
+     * @var string
+     */
+    private $cdbXmlNamespaceUri;
+
+    /**
      * @param string $baseUrl
      * @param ConsumerCredentials $consumerCredentials
      * @param String $userId
+     * @param string $cdbXmlNamespaceUri
      */
     public function __construct(
         $baseUrl,
         ConsumerCredentials $consumerCredentials,
-        String $userId
+        String $userId,
+        $cdbXmlNamespaceUri = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
     ) {
         parent::__construct(
             $baseUrl,
@@ -39,6 +46,7 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
         );
 
         $this->userId = $userId;
+        $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
     }
 
     /**
@@ -132,5 +140,13 @@ class EventCdbXmlFromEntryAPI extends OAuthProtectedService implements EventCdbX
         if ('' == trim($eventId)) {
             throw new \InvalidArgumentException('$eventId should not be empty');
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCdbXmlNamespaceUri()
+    {
+        return $this->cdbXmlNamespaceUri;
     }
 }

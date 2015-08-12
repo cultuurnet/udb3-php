@@ -8,7 +8,6 @@ namespace CultuurNet\UDB3\UDB2\Actor;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\DomainMessageInterface;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\EventListenerInterface;
@@ -65,10 +64,10 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
     }
 
     /**
-     * @param DomainMessageInterface $domainMessage
+     * @param DomainMessage $domainMessage
      */
     private function setLogContextFromDomainMessage(
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $this->logContext = [];
 
@@ -80,11 +79,11 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
     /**
      * @param ActorCreated $actorCreated
-     * @param DomainMessageInterface $message
+     * @param DomainMessage $message
      */
     private function applyActorCreated(
         ActorCreated $actorCreated,
-        DomainMessageInterface $message
+        DomainMessage $message
     ) {
         $this->setLogContextFromDomainMessage($message);
 
@@ -107,11 +106,11 @@ class EventCdbXmlEnricher implements EventListenerInterface, LoggerAwareInterfac
 
     /**
      * @param ActorUpdated $actorUpdated
-     * @param DomainMessageInterface $message
+     * @param DomainMessage $message
      */
     private function applyActorUpdated(
         ActorUpdated $actorUpdated,
-        DomainMessageInterface $message
+        DomainMessage $message
     ) {
         $this->setLogContextFromDomainMessage($message);
 

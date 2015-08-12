@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\UDB2\Place;
 
 use Broadway\Domain\AggregateRoot;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Place;
 
@@ -49,7 +49,7 @@ class PlaceFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $payloads = array_map(
-            function (DomainMessageInterface $item) {
+            function (DomainMessage $item) {
                 return $item->getPayload();
             },
             $domainMessages

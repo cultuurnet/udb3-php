@@ -62,7 +62,7 @@ class OrganizerCdbXmlImporter implements OrganizerImporterInterface, LoggerAware
                 $this->cdbXmlService->getCdbXmlNamespaceUri()
             );
 
-            $this->repository->add($organizer);
+            $this->repository->save($organizer);
 
             return $organizer;
         } catch (\Exception $e) {

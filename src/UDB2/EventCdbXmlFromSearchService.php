@@ -23,6 +23,7 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
 
     /**
      * @param SearchServiceInterface $search
+     * @param string $cdbXmlNamespaceUri
      */
     public function __construct(
         SearchServiceInterface $search,
@@ -32,6 +33,9 @@ class EventCdbXmlFromSearchService implements EventCdbXmlServiceInterface
         $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getCdbXmlNamespaceUri()
     {
         return $this->cdbXmlNamespaceUri;

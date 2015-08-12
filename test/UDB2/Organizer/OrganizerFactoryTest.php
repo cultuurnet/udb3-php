@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\UDB2\Organizer;
 
 use Broadway\Domain\AggregateRoot;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Organizer;
 
@@ -49,7 +49,7 @@ class OrganizerFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $payloads = array_map(
-            function (DomainMessageInterface $item) {
+            function (DomainMessage $item) {
                 return $item->getPayload();
             },
             $domainMessages

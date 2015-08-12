@@ -64,7 +64,7 @@ class PlaceCdbXmlImporter implements PlaceImporterInterface, LoggerAwareInterfac
                 $this->cdbXmlService->getCdbXmlNamespaceUri()
             );
 
-            $this->repository->add($place);
+            $this->repository->save($place);
 
             return $place;
         } catch (\Exception $e) {

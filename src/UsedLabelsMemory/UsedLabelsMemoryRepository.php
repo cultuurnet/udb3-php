@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\UsedLabelsMemory;
 
 use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\EventStoreInterface;
 
@@ -20,6 +21,7 @@ class UsedLabelsMemoryRepository extends EventSourcingRepository
             $eventStore,
             $eventBus,
             UsedLabelsMemory::class,
+            new PublicConstructorAggregateFactory(),
             $eventStreamDecorators
         );
     }

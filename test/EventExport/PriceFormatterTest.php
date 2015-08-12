@@ -50,6 +50,7 @@ class PriceFormatterTest extends \PHPUnit_Framework_TestCase
             [2, 10.555, '10.56'],
             [2, 10.001, '10'],
             [2, 10.005, '10.01'],
+            [2, 0.45, '0.45'],
         ];
     }
 

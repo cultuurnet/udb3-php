@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\UDB2;
 
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
@@ -71,7 +71,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     private function applyEventCreated(EventCreated $eventCreated)
     {
         // @todo Should we add additional layer to check for author and timestamp?
-        $this->createEventFromUDB2($eventCreated->getEventId());
+        $this->createEventFromUDB2((string)$eventCreated->getEventId());
     }
 
     /**
@@ -80,7 +80,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
     private function applyEventUpdated(EventUpdated $eventUpdated)
     {
         // @todo Should we add additional layer to check for author and timestamp?
-        $this->updateEventFromUDB2($eventUpdated->getEventId());
+        $this->updateEventFromUDB2((string)$eventUpdated->getEventId());
     }
 
     /**
@@ -136,7 +136,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
             $this->cdbXmlService->getCdbXmlNamespaceUri()
         );
 
-        $this->repository->add($event);
+        $this->repository->save($event);
 
         return $event;
     }
@@ -177,7 +177,7 @@ class EventImporter implements EventListenerInterface, EventImporterInterface, L
                 $this->cdbXmlService->getCdbXmlNamespaceUri()
             );
 
-            $this->repository->add($event);
+            $this->repository->save($event);
         } catch (\Exception $e) {
             if ($fallbackToUpdate) {
                 if ($this->logger) {

@@ -20,13 +20,20 @@ class EventInfo
     protected $advantages;
 
     /**
-     * @param array $prices
-     * @param array $advantages
+     * @var string[]
      */
-    public function __construct($prices, $advantages)
+    protected $promotions;
+
+    /**
+     * @param array $prices
+     * @param EventAdvantage[] $advantages
+     * @param string[] $promotions
+     */
+    public function __construct($prices, $advantages, $promotions)
     {
         $this->prices = $prices;
         $this->advantages = $advantages;
+        $this->promotions = $promotions;
     }
 
     public function getPrices()
@@ -35,10 +42,18 @@ class EventInfo
     }
 
     /**
-     * @return array
+     * @return EventAdvantage[]
      */
     public function getAdvantages()
     {
         return $this->advantages;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPromotions()
+    {
+        return $this->promotions;
     }
 }

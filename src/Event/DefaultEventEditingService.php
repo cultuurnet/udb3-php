@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
@@ -16,8 +17,8 @@ use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 
 class DefaultEventEditingService implements EventEditingServiceInterface
 {
@@ -25,6 +26,11 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      * @var EventServiceInterface
      */
     protected $eventService;
+
+    /**
+     * @var EventVariationServiceInterface
+     */
+    protected $eventVariationService;
 
     /**
      * @var CommandBusInterface
@@ -158,7 +164,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
         $type = new EventType('0.50.4.0.0', 'concert');
         $event = Event::create($eventId, $title, $location, $date, $type);
 
-        $this->eventRepository->add($event);
+        $this->eventRepository->save($event);
 
         return $eventId;
     }

@@ -7,12 +7,10 @@ use CultuurNet\UDB3\EventExport\Format\HTML\HTMLEventFormatter;
 use CultuurNet\UDB3\EventExport\Format\HTML\HTMLFileWriter;
 use CultuurNet\UDB3\EventExport\Format\HTML\TransformingIteratorIterator;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
-use ValueObjects\String\String;
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
-use League\Flysystem\ZipArchive;
 
 abstract class WebArchiveFileWriter implements FileWriterInterface
 {
@@ -133,7 +131,7 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
     /**
      * Expands a path relative to the tmp:// mount point to a full path.
      *
-     * @param string $dir
+     * @param string $tmpPath
      * @return string
      */
     protected function expandTmpPath($tmpPath)
@@ -160,8 +158,8 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,
-            function ($event) use ($formatter) {
-                return $formatter->formatEvent($event);
+            function ($event, $eventId) use ($formatter) {
+                return $formatter->formatEvent($eventId, $event);
             }
         );
 

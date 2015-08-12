@@ -52,7 +52,7 @@ class DefaultUsedLabelsMemoryServiceTest extends \PHPUnit_Framework_TestCase
             ->with($label);
 
         $this->repository->expects(($this->once()))
-            ->method('add')
+            ->method('save')
             ->with($usedLabelsMemory);
 
         $this->service->rememberLabelUsed($userId, $label);
@@ -79,7 +79,7 @@ class DefaultUsedLabelsMemoryServiceTest extends \PHPUnit_Framework_TestCase
         $expectedUsedLabelsMemory->labelUsed($label);
 
         $this->repository->expects($this->once())
-            ->method('add')
+            ->method('save')
             ->with($expectedUsedLabelsMemory);
 
         $this->service->rememberLabelUsed($userId, $label);

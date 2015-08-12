@@ -56,11 +56,10 @@ class DBALRepository implements RepositoryInterface
     public function getEventsLocatedAtPlace($placeId)
     {
         $q = $this->connection->createQueryBuilder();
-        $q
-            ->select('event')
-            ->from($this->tableName)
-            ->where('place = ?')
-            ->setParameter(0, $placeId);
+        $q->select('event')
+          ->from($this->tableName)
+          ->where('place = ?')
+          ->setParameter(0, $placeId);
 
         $results = $q->execute();
 

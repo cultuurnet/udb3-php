@@ -80,6 +80,8 @@ class DefaultSearchServiceSpec extends ObjectBehavior
         $queryString->add('q', 'pop')->shouldBeCalled();
         $queryString->add('fq', 'type:event')->shouldBeCalled();
         $queryString->add('group', 'true')->shouldBeCalled();
+        $queryString->add('unavailable', 'true')->shouldBeCalled();
+        $queryString->add('past', 'true')->shouldBeCalled();
 
         $request->send()->shouldBeCalled();
 

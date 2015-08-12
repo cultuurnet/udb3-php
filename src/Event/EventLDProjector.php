@@ -6,9 +6,8 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessageInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
-use Broadway\ReadModel\Projector;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
@@ -16,20 +15,21 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -224,11 +224,11 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param EventCreated $eventCreated
-     * @param DomainMessageInterface $domainMessage
+     * @param DomainMessage $domainMessage
      */
     protected function applyEventCreated(
         EventCreated $eventCreated,
-        DomainMessageInterface $domainMessage
+        DomainMessage $domainMessage
     ) {
         $document = $this->newDocument($eventCreated->getEventId());
 

@@ -26,6 +26,6 @@ class TransformingIteratorIterator extends IteratorIterator
     {
         $fn = $this->function;
         $current = parent::current();
-        return $fn($current);
+        return $fn($current, parent::key());
     }
 }

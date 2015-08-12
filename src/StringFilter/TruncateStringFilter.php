@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\StringFilter;
 
 use Stringy\Stringy as Stringy;
+use ValueObjects\String\String;
 
 class TruncateStringFilter implements StringFilterInterface
 {
@@ -23,6 +24,11 @@ class TruncateStringFilter implements StringFilterInterface
      * @var bool
      */
     protected $addEllipsis = false;
+
+    /**
+     * @var bool
+     */
+    protected $sentenceFriendly = false;
 
     /**
      * @var int
@@ -63,6 +69,14 @@ class TruncateStringFilter implements StringFilterInterface
     }
 
     /**
+     * When turned on, the filter will try not to truncate in the middle of a sentence.
+     */
+    public function beSentenceFriendly()
+    {
+        $this->sentenceFriendly = true;
+    }
+
+    /**
      * @inheritdoc
      */
     public function filter($string)
@@ -89,7 +103,14 @@ class TruncateStringFilter implements StringFilterInterface
 
         $stringy = Stringy::create($string, 'UTF-8');
 
-        if ($wordSafe) {
+        $sentencePattern = '/(.*[.!?])(?:\\s|\\h|$|\\\u00a0).*/su';
+        $trunc = (string) $stringy->first($maxLength);
+        $hasEndingSymbolInRange = preg_match($sentencePattern, $trunc);
+
+        if ($this->sentenceFriendly && $hasEndingSymbolInRange === 1) {
+            $sentenceTruncated = preg_replace($sentencePattern, "$1".$suffix, $trunc);
+            $truncated = Stringy::create($sentenceTruncated, 'UTF-8');
+        } else if ($wordSafe) {
             $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {
             $truncated = $stringy->truncate($maxLength, $suffix);

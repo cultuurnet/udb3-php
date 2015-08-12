@@ -97,4 +97,71 @@ class TruncateStringFilterTest extends StringFilterTest
         $original = "Wij\n zijn Murgawawa çava, een vrolijke groep";
         $this->assertFilterValue($expected, $original);
     }
+
+    /**
+     * @test
+     */
+    public function it_truncates_to_the_closest_sentence_when_possible()
+    {
+        $this->filter->beSentenceFriendly();
+        $expected = "Een zin.";
+        $original = "Een zin. Een langere zin die niet meer past.";
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_truncates_sentences_followed_immediately_by_a_new_line()
+    {
+        // @codingStandardsIgnoreStart
+        $original = "Tijdens de zomerweek gaan we een week lang tijdstappen , we reizen\ndoor tijd en ruimte van de prehistorie naar onze moderne tijd.\nTijdens de zomerweek gaan we tijdstappen , we reizen door tijd en\nruimte van de prehistorie naar de Vikingen en via de middeleeuwen\nnaar onze moderne tijd!\nWe ontmoeten dino\u2019s, verdedigen een middeleeuws kasteel, maken\nkennis met Asterix en zo veel meer.\nEen waar avontuur en een overheerlijke vakantie\n";
+        $expected = "Tijdens de zomerweek gaan we een week lang tijdstappen , we reizen\ndoor tijd en ruimte van de prehistorie naar onze moderne tijd.\nTijdens de zomerweek gaan we tijdstappen , we reizen door tijd en\nruimte van de prehistorie naar de Vikingen en via de middeleeuwen\nnaar onze moderne tijd!...";
+        // @codingStandardsIgnoreEnd
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $this->filter->setMaxLength(300);
+        $this->filter->addEllipsis();
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_truncates_sentences_followed_by_a_no_break_space()
+    {
+        // @codingStandardsIgnoreStart
+        $original = "The Dialogue Series: IV Moya is het resultaat van een intiem\ngesprek tussen de Congolese choreograaf Faustin Linyekula,\nafgelopen seizoenen vaste gast in KVS, en de Zuid-Afrikaanse Moya\nMichael die danste bij Rosas, Akram Kahn en\u00a0Sidi Larbi\nCherkaoui.\u00a0 De voorstelling verbindt hun persoonlijke\ngeschiedenis en leefwereld met elkaar. To be or not to be couloured\n(kleurling): in Johannesburg, Kisangani of Brussel heeft het een\nandere betekenis. Een danssolo, kwetsbaar en eerlijk, die indruk\nmaakt door zijn eenvoud.";
+        $expected = "The Dialogue Series: IV Moya is het resultaat van een intiem\ngesprek tussen de Congolese choreograaf Faustin Linyekula,\nafgelopen seizoenen vaste gast in KVS, en de Zuid-Afrikaanse Moya\nMichael die danste bij Rosas, Akram Kahn en\u00a0Sidi Larbi\nCherkaoui...";
+        // @codingStandardsIgnoreEnd
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $this->filter->setMaxLength(300);
+        $this->filter->addEllipsis();
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_still_truncates_there_is_no_sentence()
+    {
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $expected = "beschrijving";
+        $original = "beschrijving zonder leestekens dat langer is dan de limiet";
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_still_truncates_when_the_sentence_is_too_long()
+    {
+        $this->filter->turnOnWordSafe(0);
+        $this->filter->beSentenceFriendly();
+        $expected = "Een zin die te";
+        $original = "Een zin die te lang is om volledig door te laten.";
+        $this->assertFilterValue($expected, $original);
+    }
 }

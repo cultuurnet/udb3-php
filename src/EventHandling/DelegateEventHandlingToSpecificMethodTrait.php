@@ -5,15 +5,14 @@
 
 namespace CultuurNet\UDB3\EventHandling;
 
-use Broadway\Domain\DomainMessageInterface;
-use Broadway\EventHandling\EventListenerInterface;
+use Broadway\Domain\DomainMessage;
 
 trait DelegateEventHandlingToSpecificMethodTrait
 {
     /**
      * {@inheritDoc}
      */
-    public function handle(DomainMessageInterface $domainMessage)
+    public function handle(DomainMessage $domainMessage)
     {
         $event  = $domainMessage->getPayload();
         $method = $this->getHandleMethod($event);

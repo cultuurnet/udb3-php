@@ -13,6 +13,7 @@ class EventFactory
     public function buildEventWithPoints($points)
     {
         $event = new Event();
+        $event->cardSystems = [];
         $event->numberOfPoints = $points;
         return $event;
     }

@@ -292,4 +292,16 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
         $this->assertEquals($expectedContactPoints, $jsonEvent->contactPoint);
     }
+
+    /**
+     * @test
+     */
+    public function it_has_a_correct_datetime_when_cdbxml_contains_minimum_unix_timestamp()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_minimum_timestamp.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
+        $this->assertEquals('1970-01-01T00:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityStarts']);
+        $this->assertEquals('1970-01-01T00:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityEnds']);
+    }
 }

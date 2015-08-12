@@ -76,7 +76,7 @@ class PriceFormatter
         }
 
         // Trim any insignificant zeroes after the decimal point.
-        $price = trim($price, 0);
+        $price = rtrim($price, 0);
 
         // Trim the decimal point if there were only zeroes after the decimal point. Don't do this in the same trim as
         // above, as that would format 50,00 as 5.

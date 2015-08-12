@@ -13,8 +13,8 @@
         <cdb:activity count="0" type="review"/>
     </cdb:activities>
     <cdb:bookingperiod>
-        <cdb:datefrom>1970-01-01</cdb:datefrom>
-        <cdb:dateto>1970-01-01</cdb:dateto>
+        <cdb:datefrom>1969-01-01</cdb:datefrom>
+        <cdb:dateto>1969-01-01</cdb:dateto>
     </cdb:bookingperiod>
     <cdb:calendar>
         <cdb:periods>

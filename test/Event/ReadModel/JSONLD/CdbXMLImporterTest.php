@@ -299,7 +299,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_has_a_correct_datetime_when_cdbxml_contains_negative_unix_timestamp()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_minimum_timestamp.cdbxml.xml');
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_negative_timestamp.cdbxml.xml');
 
         $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityStarts']);

@@ -40,7 +40,6 @@
     "justinrainbow/json-schema": "1.4.3"
   },
   "require-dev": {
-    "phpspec/phpspec": "~2.0",
     "phpunit/phpunit": "~4.3",
     "squizlabs/php_codesniffer": "~2.2",
     "phing/phing": "~2.10",

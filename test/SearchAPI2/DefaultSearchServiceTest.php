@@ -26,6 +26,9 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $searchService;
 
+    /**
+     * @var string
+     */
     protected $baseUrl = 'http://acc.uitid.be/uitid/rest/searchv2';
 
     /**

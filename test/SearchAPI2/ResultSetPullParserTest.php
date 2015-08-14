@@ -19,7 +19,7 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
      */
     protected $resultSetPullParser;
 
-    public function SetUp()
+    public function setUp()
     {
         $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
         $this->resultSetPullParser = new ResultSetPullParser(

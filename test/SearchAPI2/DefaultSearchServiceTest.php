@@ -33,7 +33,7 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $clientFactory;
 
-    public function SetUp()
+    public function setUp()
     {
         $this->consumerCredentials = new ConsumerCredentials();
         $this->searchService = new DefaultSearchService(

@@ -6,7 +6,6 @@
 namespace CultuurNet\UDB3\StringFilter;
 
 use Stringy\Stringy as Stringy;
-use ValueObjects\String\String;
 
 class TruncateStringFilter implements StringFilterInterface
 {

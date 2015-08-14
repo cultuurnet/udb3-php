@@ -174,6 +174,10 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(new TitleTranslated($this->eventId, $language, $title));
     }
 
+    /**
+     * @param Language $language
+     * @param string $description
+     */
     public function translateDescription(Language $language, $description)
     {
         $this->apply(

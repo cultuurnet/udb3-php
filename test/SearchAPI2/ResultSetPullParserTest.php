@@ -34,7 +34,7 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
     public function it_extracts_totalItems_and_member_ids_from_a_cbxml_result_set()
     {
         $cdbxml = file_get_contents(
-            __DIR__ . '/ResultSetPullParserSpec.search.xml'
+            __DIR__ . '/search_results.xml'
         );
 
         $this->iriGenerator

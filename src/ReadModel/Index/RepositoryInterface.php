@@ -5,9 +5,24 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index;
 
+use \DateTimeInterface;
+
 interface RepositoryInterface
 {
-    public function updateIndex($id, $type, $userId, $name, $zip);
-    public function getOrganizersByTitle($title, $limit = 10);
+    /**
+     * @param string $id
+     * @param EntityType $entityType
+     * @param string $userId
+     * @param string $name
+     * @param string $postalCode
+     * @param DateTimeInterface $created
+     * @return void
+     */
+    public function updateIndex($id, EntityType $entityType, $userId, $name, $postalCode, DateTimeInterface $created = null);
+
+    /**
+     * @param string$id
+     * @return void
+     */
     public function deleteIndex($id);
 }

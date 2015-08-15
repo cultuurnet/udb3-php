@@ -27,10 +27,17 @@ use DateTimeZone;
  */
 class Projector implements EventListenerInterface
 {
-
     use DelegateEventHandlingToSpecificMethodTrait;
 
-    public function __construct($repository)
+    /**
+     * @var RepositoryInterface
+     */
+    protected $repository;
+
+    /**
+     * @param RepositoryInterface $repository
+     */
+    public function __construct(RepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

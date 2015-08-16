@@ -72,7 +72,7 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $distributionKeys[] = $distributionKeyFactory->buildKey(
-            3.0,
+            "3.45",
             [
                 $distributionKeyConditionFactory->buildCondition(
                     Condition::DEFINITION_KANSARM,
@@ -82,7 +82,7 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $distributionKeys[] = $distributionKeyFactory->buildKey(
-            4.0,
+            0.50,
             [
                 $distributionKeyConditionFactory->buildCondition(
                     Condition::DEFINITION_KANSARM,
@@ -159,12 +159,12 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
                     'forOtherCardSystems' => false,
                 ],
                 [
-                    'price' => 3,
+                    'price' => 3.45,
                     'cardSystem' => 'UiTPAS regio 2',
                     'forOtherCardSystems' => true,
                 ],
                 [
-                    'price' => 4,
+                    'price' => 0.50,
                     'cardSystem' => 'UiTPAS regio 3',
                     'forOtherCardSystems' => false,
                 ],

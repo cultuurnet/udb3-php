@@ -1,12 +1,9 @@
 <?php
 
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -39,6 +36,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
         $this->slugger = $this->getMock(SluggerInterface::class);
+        date_default_timezone_set('Europe/Brussels');
     }
 
     private function createJsonEventFromCdbXml($fileName)
@@ -294,5 +292,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute('contactPoint', $jsonEvent);
         $this->assertEquals($expectedContactPoints, $jsonEvent->contactPoint);
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_a_correct_datetime_when_cdbxml_contains_negative_unix_timestamp()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_negative_timestamp.cdbxml.xml');
+
+        $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
+        $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityStarts']);
+        $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityEnds']);
     }
 }

@@ -24,5 +24,5 @@ interface RepositoryInterface
      * @param string$id
      * @return void
      */
-    public function deleteIndex($id);
+    public function deleteIndex($id, EntityType $entityType);
 }

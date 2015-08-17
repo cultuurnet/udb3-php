@@ -5,21 +5,28 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\UDB3\Doctrine\DBAL\SchemaConfiguratorInterface;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use ValueObjects\String\String as StringLiteral;
 
-class SchemaConfigurator
+class SchemaConfigurator implements SchemaConfiguratorInterface
 {
     /**
      * @var StringLiteral
      */
     protected $tableName;
 
+    /**
+     * @param StringLiteral $tableName
+     */
     public function __construct(StringLiteral $tableName)
     {
         $this->tableName = $tableName;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function configure(AbstractSchemaManager $schemaManager)
     {
         $schema = $schemaManager->createSchema();
@@ -27,7 +34,7 @@ class SchemaConfigurator
 
         $table->addColumn(
             'entity_id',
-            'string',
+            'guid',
             array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
@@ -37,26 +44,22 @@ class SchemaConfigurator
         );
         $table->addColumn(
             'title',
-            'string',
-            array('length' => 36, 'notnull' => true)
+            'text'
         );
         $table->addColumn(
             'uid',
-            'string',
+            'guid',
             array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
             'zip',
-            'string',
-            array('length' => 36, 'notnull' => false)
+            'text'
         );
         $table->addColumn(
             'created',
-            'string',
+            'text',
             array('length' => 36, 'notnull' => true)
         );
-
-        $table->setPrimaryKey(['entity_id', 'entity_type']);
 
         $schemaManager->createTable($table);
     }

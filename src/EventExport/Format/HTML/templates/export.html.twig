@@ -87,7 +87,7 @@
                                 </td>
                             </tr>
                             {%-  if event.price != 'Gratis' and event.uitpas -%}
-                            {% set tarifflabel = brand == "paspartoe" ? "Reductietarief" : "Kansentarief" %}
+                            {% set tarifflabel = brand == "paspartoe" ? "Reductieprijs" : "Kansentarief" %}
                             {%- for tariff in event.uitpas.prices %}
 
                             <tr>

@@ -197,6 +197,4 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
 
         return $results->fetchAll(\PDO::FETCH_COLUMN);
     }
-
-
 }

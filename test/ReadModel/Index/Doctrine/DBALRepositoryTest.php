@@ -200,4 +200,20 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertCurrentData($expectedData);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_find_places_by_postal_code()
+    {
+        $expectedIds = [
+            'abc',
+            '123'
+        ];
+
+        $this->assertEquals(
+            $expectedIds,
+            $this->repository->findPlacesByPostalCode('3000')
+        );
+    }
 }

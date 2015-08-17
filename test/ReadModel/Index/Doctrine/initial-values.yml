@@ -22,3 +22,9 @@
   title: Test abc organizer
   zip: 3040
   created: 0
+- entity_id: 123
+  entity_type: place
+  uid: foo
+  title: Test 123 place
+  zip: 3000
+  created: 0

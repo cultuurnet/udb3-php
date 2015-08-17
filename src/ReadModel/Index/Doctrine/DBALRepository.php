@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\UDB3\Place\ReadModel\Lookup\PlaceLookupServiceInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use CultuurNet\UDB3\ReadModel\Index\RepositoryInterface;
 use DateTimeInterface;
@@ -12,7 +13,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use ValueObjects\String\String as StringLiteral;
 
-class DBALRepository implements RepositoryInterface
+class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
 {
     /**
      * @var Connection
@@ -171,4 +172,31 @@ class DBALRepository implements RepositoryInterface
 
         $q->execute();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function findPlacesByPostalCode($postalCode)
+    {
+        $q = $this->connection->createQueryBuilder();
+        $expr = $q->expr();
+
+        $q->select('entity_id')
+            ->from($this->tableName->toNative())
+            ->where(
+                $expr->andX(
+                    $expr->eq('entity_type', ':entity_type'),
+                    $expr->eq('zip', ':zip')
+                )
+            );
+
+        $q->setParameter('entity_type', EntityType::PLACE()->toNative());
+        $q->setParameter('zip', $postalCode);
+
+        $results = $q->execute();
+
+        return $results->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+
 }

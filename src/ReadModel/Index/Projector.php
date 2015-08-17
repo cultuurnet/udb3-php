@@ -11,7 +11,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -66,7 +66,7 @@ class Projector implements EventListenerInterface
             // The first language detail found will be used to retrieve
             // properties from which in UDB3 are not any longer considered
             // to be language specific.
-            if (!$detail) {
+            if (!isset($detail)) {
                 $detail = $languageDetail;
             }
 
@@ -92,7 +92,7 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($eventId, 'event', $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($eventId, EntityType::EVENT(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**
@@ -102,7 +102,7 @@ class Projector implements EventListenerInterface
     protected function applyPlaceImportedFromUDB2(PlaceImportedFromUDB2 $placeImportedFromUDB2)
     {
 
-        $placeId = $placeImportedFromUDB2->getPlaceId();
+        $placeId = $placeImportedFromUDB2->getActorId();
         $userId = ''; // imported = no uid.
         $name = '';
         $postalCode = '';
@@ -119,7 +119,7 @@ class Projector implements EventListenerInterface
             // The first language detail found will be used to retrieve
             // properties from which in UDB3 are not any longer considered
             // to be language specific.
-            if (!$detail) {
+            if (!isset($detail)) {
                 $detail = $languageDetail;
             }
 
@@ -138,14 +138,14 @@ class Projector implements EventListenerInterface
             }
         }
 
-        $dateString = $place->getCreationDate();
+        $dateString = $udb2Actor->getCreationDate();
         $creationDate = DateTime::createFromFormat(
             'Y-m-d?H:i:s',
             $dateString,
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($placeId, 'place', $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($placeId, EntityTYpe::PLACE(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**
@@ -163,7 +163,7 @@ class Projector implements EventListenerInterface
 
         $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
 
-        $this->updateIndex($eventId, 'event', $userId, $eventCreated->getTitle(), $location->getPostalcode(), $creationDate);
+        $this->updateIndex($eventId, EntityType::EVENT(), $userId, $eventCreated->getTitle(), $location->getPostalcode(), $creationDate);
     }
 
     /**
@@ -180,7 +180,7 @@ class Projector implements EventListenerInterface
         $address = $placeCreated->getAddress();
 
         $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-        $this->updateIndex($placeId, 'place', $userId, $placeCreated->getTitle(), $address->getPostalcode(), $creationDate);
+        $this->updateIndex($placeId, EntityType::PLACE(), $userId, $placeCreated->getTitle(), $address->getPostalcode(), $creationDate);
     }
 
     /**
@@ -197,14 +197,14 @@ class Projector implements EventListenerInterface
         $addresses = $organizer->getAddresses();
         if (isset($addresses[0])) {
             $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-            $this->updateIndex($organizerId, 'organizer', $userId, $organizer->getTitle(), $addresses[0]->getPostalCode(), $creationDate);
+            $this->updateIndex($organizerId, EntityType::ORGANIZER(), $userId, $organizer->getTitle(), $addresses[0]->getPostalCode(), $creationDate);
         }
     }
 
     /**
      * Update the index
      */
-    protected function updateIndex($id, $type, $userId, $name, $postalCode, $creationDate = null)
+    protected function updateIndex($id, EntityType $type, $userId, $name, $postalCode, \DateTimeInterface $creationDate = null)
     {
         $this->repository->updateIndex($id, $type, $userId, $name, $postalCode, $creationDate);
     }
@@ -214,7 +214,7 @@ class Projector implements EventListenerInterface
      */
     public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage)
     {
-        $this->repository->deleteIndex($eventDeleted->getEventId());
+        $this->repository->deleteIndex($eventDeleted->getEventId(), EntityType::EVENT());
     }
 
     /**
@@ -222,6 +222,6 @@ class Projector implements EventListenerInterface
      */
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
-        $this->repository->deleteIndex($placeDeleted->getPlaceId());
+        $this->repository->deleteIndex($placeDeleted->getPlaceId(), EntityType::PLACE());
     }
 }

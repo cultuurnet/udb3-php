@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "285dc6594614e2c5774e952f30679544",
+    "hash": "f16409eef7520d0d609353561c0ed402",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -592,53 +592,6 @@
             ],
             "description": "CultuurNet search service",
             "time": "2015-05-27 16:14:23"
-        },
-        {
-            "name": "cultuurnet/udb2-domain-events",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/cultuurnet/udb2-domain-events.git",
-                "reference": "eb6012dddf67d7bc5052de545c2afdd5366ce40a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/udb2-domain-events/zipball/eb6012dddf67d7bc5052de545c2afdd5366ce40a",
-                "reference": "eb6012dddf67d7bc5052de545c2afdd5366ce40a",
-                "shasum": ""
-            },
-            "require": {
-                "cultuurnet/deserializer": "~0.1",
-                "nicolopignatelli/valueobjects": "~2.0"
-            },
-            "require-dev": {
-                "phing/phing": "~2.10",
-                "phpunit/phpunit": "~4.3",
-                "squizlabs/php_codesniffer": "~2.2"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "CultuurNet\\UDB2DomainEvents\\": "src\\"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Kristof Coomans",
-                    "email": "kristof@2dotstwice.be"
-                }
-            ],
-            "description": "PHP models for domain events in UiTdatabank version 2",
-            "time": "2015-08-12 19:02:32"
         },
         {
             "name": "danielstjules/stringy",

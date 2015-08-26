@@ -23,15 +23,25 @@ trait HasCdbXmlTrait
      */
     private function setCdbXml($cdbXml)
     {
+        if (!is_string($cdbXml)) {
+            throw new \InvalidArgumentException(
+                'Expected argument 1 to be a scalar string, received ' . gettype($cdbXml)
+            );
+        }
         $this->cdbXml = $cdbXml;
     }
 
     /**
-     * @param string $cdbXmlNamespareUri
+     * @param string $cdbXmlNamespaceUri
      */
-    private function setCdbXmlNamespaceUri($cdbXmlNamespareUri)
+    private function setCdbXmlNamespaceUri($cdbXmlNamespaceUri)
     {
-        $this->cdbXmlNamespaceUri = $cdbXmlNamespareUri;
+        if (!is_string($cdbXmlNamespaceUri)) {
+            throw new \InvalidArgumentException(
+                'Expected argument 1 to be a scalar string, received ' . gettype($cdbXmlNamespaceUri)
+            );
+        }
+        $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
     }
 
     /**

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\MediaObject;
@@ -27,13 +28,14 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
 
-class Place extends Actor
+class Place extends Actor implements UpdateableWithCdbXmlInterface
 {
 
     /**
@@ -226,5 +228,19 @@ class Place extends Actor
         PlaceImportedFromUDB2 $placeImported
     ) {
         $this->applyActorImportedFromUDB2($placeImported);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
+    {
+        $this->apply(
+            new PlaceUpdatedFromUDB2(
+                $this->actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
     }
 }

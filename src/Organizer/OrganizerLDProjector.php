@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 
@@ -88,10 +89,10 @@ class OrganizerLDProjector extends ActorLDProjector
         $jsonLD->addresses = array();
         foreach ($addresses as $address) {
             $jsonLD->addresses[] = array(
-              'addressCountry' => $address->getCountry(),
-              'addressLocality' => $address->getLocality(),
-              'postalCode' => $address->getPostalCode(),
-              'streetAddress' => $address->getStreetAddress(),
+                'addressCountry' => $address->getCountry(),
+                'addressLocality' => $address->getLocality(),
+                'postalCode' => $address->getPostalCode(),
+                'streetAddress' => $address->getStreetAddress(),
             );
         }
 
@@ -111,7 +112,30 @@ class OrganizerLDProjector extends ActorLDProjector
         }
 
         $this->repository->save($document->withBody($jsonLD));
+    }
 
+    public function applyOrganizerUpdatedFromUDB2(
+        OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+    ) {
+        $document = $this->loadDocumentFromRepository(
+            $organizerUpdatedFromUDB2
+        );
+
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $organizerUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $organizerUpdatedFromUDB2->getCdbXml()
+        );
+
+        $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $document->getBody(),
+            $udb2Actor
+        );
+
+        $this->repository->save($document->withBody($actorLd));
+
+        $this->publishJSONLDUpdated(
+            $organizerUpdatedFromUDB2->getActorId()
+        );
     }
 
     protected function publishJSONLDUpdated($id)

@@ -28,7 +28,7 @@ class OrganizerRepository extends EventSourcingRepository
         parent::__construct(
             $eventStore,
             $eventBus,
-            '\CultuurNet\UDB3\Organizer\Organizer',
+            Organizer::class,
             new PublicConstructorAggregateFactory(),
             $eventStreamDecorators
         );

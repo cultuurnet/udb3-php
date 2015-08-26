@@ -2,9 +2,6 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Properties;
 
-use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Brand;
-use CultuurNet\UDB3\EventExport\Format\HTML\Properties\InvalidBrandException;
-
 class BrandTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -34,6 +31,7 @@ class BrandTest extends \PHPUnit_Framework_TestCase
             array('vlieg'),
             array('uit'),
             array('uitpas'),
+            array('paspartoe'),
         );
     }
 }

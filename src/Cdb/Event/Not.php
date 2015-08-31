@@ -14,7 +14,7 @@ class Not implements SpecificationInterface
      */
     private $spec;
 
-    function __construct(SpecificationInterface $spec)
+    public function __construct(SpecificationInterface $spec)
     {
         $this->spec = $spec;
     }
@@ -26,5 +26,4 @@ class Not implements SpecificationInterface
     {
         return !$this->spec->isSatisfiedByEvent($event);
     }
-
 }

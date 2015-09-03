@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -333,7 +334,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             $eventLd->labels = array_filter(
                 $eventLd->labels,
                 function ($label) use ($unlabelled) {
-                    return $label !== (string)$unlabelled->getLabel();
+                    return !$unlabelled->getLabel()->equals(
+                        new Label($label)
+                    );
                 }
             );
             // Ensure array keys start with 0 so json_encode() does encode it

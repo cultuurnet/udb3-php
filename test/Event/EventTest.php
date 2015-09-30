@@ -85,6 +85,28 @@ class EventTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_unlabels_in_a_case_insensitive_way()
+    {
+        $this->event->label(new Label('foo'));
+
+        $this->assertEquals(
+            [
+                new Label('foo')
+            ],
+            $this->event->getLabels()
+        );
+
+        $this->event->unlabel(new Label('Foo'));
+
+        $this->assertEquals(
+            [],
+            $this->event->getLabels()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_can_be_imported_from_udb2_cdbxml()
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/EventTest.cdbxml.xml');

@@ -33,7 +33,11 @@ use CultuurNet\UDB3\Title;
 class Event extends EventSourcedAggregateRoot
 {
     protected $eventId;
-    protected $labels = array();
+
+    /**
+     * @var Label[]
+     */
+    protected $labels = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -97,26 +101,40 @@ class Event extends EventSourcedAggregateRoot
         return $this->labels;
     }
 
-    public function label(Label $label)
+    /**
+     * @param Label $label
+     * @return bool
+     */
+    private function hasLabel(Label $label)
     {
-        $newLabel = (string) $label;
-        $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
-            return strcmp(mb_strtolower($label, 'UTF-8'), mb_strtolower($newLabel, 'UTF-8')) == 0;
-        });
+        $equalLabels = array_filter(
+            $this->labels,
+            function (Label $existingLabel) use ($label) {
+                return $label->equals($existingLabel);
+            }
+        );
 
-        if (!empty($similarLabels)) {
-            return;
-        }
-
-        $this->apply(new EventWasLabelled($this->eventId, $label));
+        return !empty($equalLabels);
     }
 
+    /**
+     * @param Label $label
+     */
+    public function label(Label $label)
+    {
+        if (!$this->hasLabel($label)) {
+            $this->apply(new EventWasLabelled($this->eventId, $label));
+        }
+    }
+
+    /**
+     * @param Label $label
+     */
     public function unlabel(Label $label)
     {
-        if (!in_array($label, $this->labels)) {
-            return;
+        if ($this->hasLabel($label)) {
+            $this->apply(new Unlabelled($this->eventId, $label));
         }
-        $this->apply(new Unlabelled($this->eventId, $label));
     }
 
     protected function applyEventCreated(EventCreated $eventCreated)
@@ -127,12 +145,9 @@ class Event extends EventSourcedAggregateRoot
     protected function applyEventWasLabelled(EventWasLabelled $eventLabelled)
     {
         $newLabel = $eventLabelled->getLabel();
-        $similarLabels = array_filter($this->labels, function ($label) use ($newLabel) {
-            return strcmp(mb_strtolower($label, 'UTF-8'), mb_strtolower($newLabel, 'UTF-8')) == 0;
-        });
 
-        if (empty($similarLabels)) {
-            $this->labels[] = $eventLabelled->getLabel();
+        if (!$this->hasLabel($newLabel)) {
+            $this->labels[] = $newLabel;
         }
     }
 
@@ -141,7 +156,7 @@ class Event extends EventSourcedAggregateRoot
         $this->labels = array_filter(
             $this->labels,
             function (Label $label) use ($unlabelled) {
-                return $label != $unlabelled->getLabel();
+                return !$label->equals($unlabelled->getLabel());
             }
         );
     }

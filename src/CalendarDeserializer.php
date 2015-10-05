@@ -17,36 +17,29 @@ class CalendarDeserializer
 
                     // Check if a correct starthour is given.
                     if (!empty($timestamp->showStartHour) && !empty($timestamp->startHour)) {
-
-                        list($hour, $minute) = explode(':',
-                            $timestamp->startHour);
+                        list($hour, $minute) = explode(':', $timestamp->startHour);
                         if (strlen($hour) == 2 && strlen($minute) == 2) {
                             $startDate = $date . 'T' . $timestamp->startHour . ':00';
                         } else {
                             $startDate = $date . 'T00:00:00';
                         }
-
                     } else {
                         $startDate = $date . 'T00:00:00';
                     }
 
                     // Check if a correct endhour is given.
                     if (!empty($timestamp->showEndHour) && !empty($timestamp->endHour)) {
-
-                        list($hour, $minute) = explode(':',
-                            $timestamp->endHour);
+                        list($hour, $minute) = explode(':', $timestamp->endHour);
                         if (strlen($hour) == 2 && strlen($minute) == 2) {
                             $endDate = $date . 'T' . $timestamp->endHour . ':00';
                         } else {
                             $endDate = $date . 'T00:00:00';
                         }
-
                     } else {
                         $endDate = $date . 'T00:00:00';
                     }
 
-                    $timestamps[strtotime($startDate)] = new Timestamp($startDate,
-                        $endDate);
+                    $timestamps[strtotime($startDate)] = new Timestamp($startDate, $endDate);
                 }
             }
             ksort($timestamps);
@@ -59,21 +52,18 @@ class CalendarDeserializer
         // Also calculate the correct startDate and endDate for the calendar object.
         $calendarType = !empty($eventData->calendarType) ? $eventData->calendarType : 'permanent';
         if ($calendarType == Calendar::SINGLE && count($timestamps) == 1) {
-
             // 1 timestamp = no timestamps needed. Copy start and enddate.
             $firstTimestamp = current($timestamps);
             $startDate = $firstTimestamp->getStartDate();
             $endDate = $firstTimestamp->getEndDate();
             $timestamps = array();
-        } elseif ($calendarType == Calendar::SINGLE && count($timestamps) > 1) {
-
+        } else if ($calendarType == Calendar::SINGLE && count($timestamps) > 1) {
             // Multiple timestamps, startDate = first date, endDate = last date.
             $calendarType = Calendar::MULTIPLE;
             $firstTimestamp = current($timestamps);
             $lastTimestamp = end($timestamps);
             $startDate = $firstTimestamp->getStartDate();
             $endDate = $lastTimestamp->getEndDate();
-
         }
 
         // Remove empty opening hours.
@@ -87,7 +77,6 @@ class CalendarDeserializer
             }
         }
 
-        return new Calendar($calendarType, $startDate, $endDate, $timestamps,
-            $openingHours);
+        return new Calendar($calendarType, $startDate, $endDate, $timestamps, $openingHours);
     }
 }

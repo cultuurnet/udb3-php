@@ -202,6 +202,12 @@ class Event extends EventSourcedAggregateRoot
     {
     }
 
+    protected function applyEventCreatedFromCdbXml(
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml
+    ) {
+        $this->eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
+    }
+
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
     {
         $this->apply(

@@ -10,6 +10,9 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\XmlString;
+use src\Event\Events\EventCreatedFromCdbXml;
+use ValueObjects\String\String;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -59,6 +62,24 @@ class Event extends EventSourcedAggregateRoot
                 $eventId,
                 $cdbXml,
                 $cdbXmlNamespaceUri
+            )
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param XmlString $xmlString
+     * @param String $eventId
+     * @return Event
+     */
+    public static function createFromCdbXml(String $eventId, XmlString $xmlString)
+    {
+        $event = new self();
+        $event->apply(
+            new EventCreatedFromCdbXml(
+                $eventId,
+                $xmlString
             )
         );
 

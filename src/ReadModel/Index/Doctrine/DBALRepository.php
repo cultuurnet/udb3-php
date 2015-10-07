@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\UDB3\Organizer\ReadModel\Lookup\OrganizerLookupServiceInterface;
 use CultuurNet\UDB3\Place\ReadModel\Lookup\PlaceLookupServiceInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use CultuurNet\UDB3\ReadModel\Index\RepositoryInterface;
@@ -13,7 +14,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use ValueObjects\String\String as StringLiteral;
 
-class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
+class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, OrganizerLookupServiceInterface
 {
     /**
      * @var Connection
@@ -192,6 +193,31 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
 
         $q->setParameter('entity_type', EntityType::PLACE()->toNative());
         $q->setParameter('zip', $postalCode);
+
+        $results = $q->execute();
+
+        return $results->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function findOrganizersByPartOfTitle($part)
+    {
+        $q = $this->connection->createQueryBuilder();
+        $expr = $q->expr();
+
+        $q->select('entity_id')
+            ->from($this->tableName->toNative())
+            ->where(
+                $expr->andX(
+                    $expr->eq('entity_type', ':entity_type'),
+                    $expr->like('title', ':title')
+                )
+            );
+
+        $q->setParameter('entity_type', EntityType::ORGANIZER()->toNative());
+        $q->setParameter('title', '%' . $part . '%');
 
         $results = $q->execute();
 

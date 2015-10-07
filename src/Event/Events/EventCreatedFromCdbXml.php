@@ -48,4 +48,20 @@ class EventCreatedFromCdbXml implements SerializableInterface
     {
         return array('event_id' => $this->eventId->toNative(), 'cdbxml' => $this->xmlString->toNative());
     }
+
+    /**
+     * @return XmlString
+     */
+    public function getXmlString()
+    {
+        return $this->xmlString;
+    }
+
+    /**
+     * @return String
+     */
+    public function getEventId()
+    {
+        return $this->eventId;
+    }
 }

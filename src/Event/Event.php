@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\XmlString;
-use src\Event\Events\EventCreatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use ValueObjects\String\String;
 
 class Event extends EventSourcedAggregateRoot

@@ -6,7 +6,7 @@
  * Time: 11:25
  */
 
-namespace src\Event\Events;
+namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\XmlString;

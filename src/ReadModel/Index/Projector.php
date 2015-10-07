@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -199,6 +200,44 @@ class Projector implements EventListenerInterface
             $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
             $this->updateIndex($organizerId, EntityType::ORGANIZER(), $userId, $organizer->getTitle(), $addresses[0]->getPostalCode(), $creationDate);
         }
+    }
+
+    protected function applyOrganizerImportedFromUDB2(OrganizerImportedFromUDB2 $organizerImportedFromUDB2)
+    {
+
+        $organizerId = $organizerImportedFromUDB2->getActorId();
+        $userId = ''; // imported = no uid.
+        $name = '';
+        $postalCode = '';
+
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $organizerImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $organizerImportedFromUDB2->getCdbXml()
+        );
+
+        $details = $udb2Actor->getDetails();
+        /** @var \CultureFeed_Cdb_Data_ActorDetail $languageDetail */
+        foreach ($details as $languageDetail) {
+            $language = $languageDetail->getLanguage();
+
+            // The first language detail found will be used to retrieve
+            // properties from which in UDB3 are not any longer considered
+            // to be language specific.
+            if (!isset($detail)) {
+                $detail = $languageDetail;
+            }
+
+            $name = $languageDetail->getTitle();
+        }
+
+        $dateString = $udb2Actor->getCreationDate();
+        $creationDate = DateTime::createFromFormat(
+            'Y-m-d?H:i:s',
+            $dateString,
+            new DateTimeZone('Europe/Brussels')
+        );
+
+        $this->updateIndex($organizerId, EntityTYpe::ORGANIZER(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**

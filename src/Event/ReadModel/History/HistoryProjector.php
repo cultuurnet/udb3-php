@@ -11,6 +11,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
@@ -62,6 +63,21 @@ class HistoryProjector implements EventListenerInterface
                     $domainMessage->getRecordedOn()
                 ),
                 new String('Geïmporteerd vanuit UDB2')
+            )
+        );
+    }
+
+    private function applyEventCreatedFromCdbXml(
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $this->writeHistory(
+            $eventCreatedFromCdbXml->getEventId(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String('Aangemaakt vanuit EntryAPI')
             )
         );
     }

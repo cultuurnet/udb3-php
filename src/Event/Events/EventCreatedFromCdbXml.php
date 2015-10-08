@@ -24,10 +24,16 @@ class EventCreatedFromCdbXml implements SerializableInterface
      */
     protected $eventId;
 
-    public function __construct(String $eventId, XmlString $xmlString)
+    /**
+     * @var String
+     */
+    protected $cdbXmlNamespaceUri;
+
+    public function __construct(String $eventId, XmlString $xmlString, String $cdbXmlNamespaceUri)
     {
         $this->xmlString = $xmlString;
         $this->eventId = $eventId;
+        $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
     }
 
     /**
@@ -37,7 +43,8 @@ class EventCreatedFromCdbXml implements SerializableInterface
     {
         return new static(
             new String($data['event_id']),
-            new XmlString($data['cdbxml'])
+            new XmlString($data['cdbxml']),
+            new String($data['cdbXmlNamespaceUri'])
         );
     }
 
@@ -46,7 +53,10 @@ class EventCreatedFromCdbXml implements SerializableInterface
      */
     public function serialize()
     {
-        return array('event_id' => $this->eventId->toNative(), 'cdbxml' => $this->xmlString->toNative());
+        return array(
+            'event_id' => $this->eventId->toNative(),
+            'cdbxml' => $this->xmlString->toNative(),
+            'cdbXmlNamespaceUri' => $this->cdbXmlNamespaceUri->toNative());
     }
 
     /**
@@ -63,5 +73,13 @@ class EventCreatedFromCdbXml implements SerializableInterface
     public function getEventId()
     {
         return $this->eventId;
+    }
+
+    /**
+     * @return String
+     */
+    public function getCdbXmlNamespaceUri()
+    {
+        return $this->cdbXmlNamespaceUri;
     }
 }

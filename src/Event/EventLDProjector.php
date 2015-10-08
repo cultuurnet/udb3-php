@@ -11,6 +11,7 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
@@ -190,6 +191,19 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             $eventUpdatedFromUDB2->getEventId(),
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $eventUpdatedFromUDB2->getCdbXml()
+        );
+    }
+
+    /**
+     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
+     */
+    public function applyEventCreatedFromCdbXml(
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml
+    ) {
+        $this->applyEventCdbXml(
+            $eventCreatedFromCdbXml->getEventId(),
+            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
+            $eventCreatedFromCdbXml->getXmlString()
         );
     }
 

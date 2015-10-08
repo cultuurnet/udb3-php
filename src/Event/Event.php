@@ -71,15 +71,20 @@ class Event extends EventSourcedAggregateRoot
     /**
      * @param XmlString $xmlString
      * @param String $eventId
+     * @param String $cdbXmlNamespaceUri
      * @return Event
      */
-    public static function createFromCdbXml(String $eventId, XmlString $xmlString)
-    {
+    public static function createFromCdbXml(
+        String $eventId,
+        XmlString $xmlString,
+        String $cdbXmlNamespaceUri
+    ) {
         $event = new self();
         $event->apply(
             new EventCreatedFromCdbXml(
                 $eventId,
-                $xmlString
+                $xmlString,
+                $cdbXmlNamespaceUri
             )
         );
 

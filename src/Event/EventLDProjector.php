@@ -203,7 +203,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->applyEventCdbXml(
             $eventCreatedFromCdbXml->getEventId()->toNative(),
             $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
-            $eventCreatedFromCdbXml->getXmlString()->toNative()
+            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
     }
 

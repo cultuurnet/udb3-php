@@ -9,13 +9,13 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\XmlString;
+use CultuurNet\UDB3SilexEntryAPI\EventXmlString;
 use ValueObjects\String\String;
 
 class EventCreatedFromCdbXml implements SerializableInterface
 {
     /**
-     * @var XMLString
+     * @var EventXMLString
      */
     protected $xmlString;
 
@@ -29,7 +29,12 @@ class EventCreatedFromCdbXml implements SerializableInterface
      */
     protected $cdbXmlNamespaceUri;
 
-    public function __construct(String $eventId, XmlString $xmlString, String $cdbXmlNamespaceUri)
+    /**
+     * @param String $eventId
+     * @param EventXmlString $xmlString
+     * @param String $cdbXmlNamespaceUri
+     */
+    public function __construct(String $eventId, EventXmlString $xmlString, String $cdbXmlNamespaceUri)
     {
         $this->xmlString = $xmlString;
         $this->eventId = $eventId;
@@ -43,7 +48,7 @@ class EventCreatedFromCdbXml implements SerializableInterface
     {
         return new static(
             new String($data['event_id']),
-            new XmlString($data['cdbxml']),
+            new EventXmlString($data['cdbxml']),
             new String($data['cdbXmlNamespaceUri'])
         );
     }
@@ -60,7 +65,7 @@ class EventCreatedFromCdbXml implements SerializableInterface
     }
 
     /**
-     * @return XmlString
+     * @return EventXmlString
      */
     public function getXmlString()
     {

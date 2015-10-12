@@ -33,6 +33,9 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
      */
     protected $placeRepository;
 
+    /**
+     * @param RepositoryInterface $placeRepository
+     */
     public function __construct(
         RepositoryInterface $placeRepository
     ) {
@@ -89,11 +92,10 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Handle an update command to update organizer.
+     * Handle an update command to update organizer of a place.
      */
     public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
     {
-
         /** @var Place $place */
         $place = $this->placeRepository->load($updateOrganizer->getId());
 

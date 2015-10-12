@@ -20,7 +20,7 @@
     "psr/log": "~1.0",
     "cultuurnet/auth": "~1.2",
     "cultuurnet/search": "~1.1",
-    "cultuurnet/entry": "~0.0@dev",
+    "cultuurnet/entry": "~0.1",
     "cultuurnet/cdb": "~2.1",
     "cultuurnet/deserializer": "~0.1",
     "cultuurnet/clock": "~0.1",
@@ -40,7 +40,6 @@
     "justinrainbow/json-schema": "1.4.3"
   },
   "require-dev": {
-    "phpspec/phpspec": "~2.0",
     "phpunit/phpunit": "~4.3",
     "squizlabs/php_codesniffer": "~2.2",
     "phing/phing": "~2.10",

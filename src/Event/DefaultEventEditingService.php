@@ -8,20 +8,28 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
+use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 
-class DefaultEventEditingService implements EventEditingServiceInterface
+class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
 {
+
+    use \CultuurNet\UDB3\OfferEditingTrait;
+
     /**
      * @var EventServiceInterface
      */
@@ -76,7 +84,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function translateTitle($eventId, Language $language, $title)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
         $this->guardTranslationLanguage($language);
 
         return $this->commandBus->dispatch(
@@ -89,7 +97,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function translateDescription($eventId, Language $language, $description)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
         $this->guardTranslationLanguage($language);
 
         return $this->commandBus->dispatch(
@@ -98,13 +106,13 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
-     * @param string $eventId
+     * @param string $id
      * @throws EventNotFoundException
      */
-    protected function guardEventId($eventId)
+    public function guardId($id)
     {
         // This validates if the eventId is valid.
-        $this->eventService->getEvent($eventId);
+        $this->eventService->getEvent($id);
     }
 
     protected function guardTranslationLanguage(Language $language)
@@ -122,7 +130,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function label($eventId, Label $label)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
             new ApplyLabel($eventId, $label)
@@ -137,7 +145,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface
      */
     public function unlabel($eventId, Label $label)
     {
-        $this->guardEventId($eventId);
+        $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
             new Unlabel($eventId, $label)
@@ -145,27 +153,45 @@ class DefaultEventEditingService implements EventEditingServiceInterface
     }
 
     /**
-     * @param Title $title
-     * @param string $location
-     * @param mixed $date
-     *
-     * @return string $eventId
-     *
-     * @throws EntityNotFoundException If the location can not be found.
+     * {@inheritdoc}
      */
-    public function createEvent(Title $title, $location, $date)
+    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
         $eventId = $this->uuidGenerator->generate();
 
         // This will throw an EntityNotFoundException if the place does
         // not exist.
-        $this->places->getEntity($location);
+        //$this->places->getEntity($location);
 
-        $type = new EventType('0.50.4.0.0', 'concert');
-        $event = Event::create($eventId, $title, $location, $date, $type);
+        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
 
         $this->eventRepository->save($event);
 
         return $eventId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
+    {
+
+        $this->guardId($eventId);
+
+        return $this->commandBus->dispatch(
+            new UpdateMajorInfo($eventId, $title, $eventType, $location, $calendar, $theme)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteEvent($eventId)
+    {
+        $this->guardId($eventId);
+
+        return $this->commandBus->dispatch(
+            new DeleteEvent($eventId)
+        );
     }
 }

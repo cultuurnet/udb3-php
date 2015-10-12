@@ -12,4 +12,6 @@ interface RepositoryInterface
     public function getEventsLocatedAtPlace($placeId);
 
     public function getEventsOrganizedByOrganizer($organizerId);
+
+    public function removeRelations($eventId);
 }

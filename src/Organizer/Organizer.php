@@ -9,8 +9,12 @@ namespace CultuurNet\UDB3\Organizer;
 
 use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Place;
+use CultuurNet\UDB3\Title;
+use ValueObjects\String\String;
 
 class Organizer extends Actor implements UpdateableWithCdbXmlInterface
 {
@@ -42,6 +46,38 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
         );
 
         return $organizer;
+    }
+
+    /**
+     * Factory method to create a new Organizer.
+     *
+     * @todo Refactor this method so it can be called create. Currently the
+     * normal behavior for create is taken by the legacy udb2 logic.
+     *
+     * @param String $id
+     * @param Title $title
+     * @param array $addresses
+     * @param array $phones
+     * @param array $emails
+     * @param array $urls
+     *
+     * @return Place
+     */
+    public static function createOrganizer($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    {
+        $organizer = new self();
+        $organizer->apply(new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls));
+
+        return $organizer;
+    }
+
+    /**
+     * Apply the organizer created event.
+     * @param OrganizerCreated $organizerCreated
+     */
+    protected function applyOrganizerCreated(OrganizerCreated $organizerCreated)
+    {
+        $this->actorId = $organizerCreated->getOrganizerId();
     }
 
     public function applyOrganizerImportedFromUDB2(

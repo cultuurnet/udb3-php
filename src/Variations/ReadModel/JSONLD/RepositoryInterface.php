@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
 interface RepositoryInterface

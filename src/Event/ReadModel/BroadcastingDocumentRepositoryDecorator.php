@@ -7,6 +7,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 /**
  * Class BroadcastingDocumentRepositoryDecorator

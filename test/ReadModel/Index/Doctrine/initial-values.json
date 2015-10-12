@@ -1,0 +1,42 @@
+[
+    {
+        "entity_id": "abc",
+        "entity_type": "place",
+        "uid": "foo",
+        "title": "Test abc place",
+        "zip": 3000,
+        "created": 0
+    },
+    {
+        "entity_id": "def",
+        "entity_type": "event",
+        "uid": "foo",
+        "title": "Test def event",
+        "zip": 3000,
+        "created": 0
+    },
+    {
+        "entity_id": "ghj",
+        "entity_type": "event",
+        "uid": "foo",
+        "title": "Test ghj event",
+        "zip": 3020,
+        "created": 0
+    },
+    {
+        "entity_id": "abc",
+        "entity_type": "organizer",
+        "uid": "foo",
+        "title": "Test abc organizer",
+        "zip": 3040,
+        "created": 0
+    },
+    {
+        "entity_id": 123,
+        "entity_type": "place",
+        "uid": "foo",
+        "title": "Test 123 place",
+        "zip": 3000,
+        "created": 0
+    }
+]

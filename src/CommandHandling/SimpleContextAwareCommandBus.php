@@ -43,6 +43,7 @@ class SimpleContextAwareCommandBus implements CommandBusInterface, ContextAwareI
      */
     public function dispatch($command)
     {
+
         /** @var CommandHandlerInterface|ContextAwareInterface|LoggerAwareInterface $handler */
         foreach ($this->commandHandlers as $handler) {
             if ($this->logger && $handler instanceof LoggerAwareInterface) {

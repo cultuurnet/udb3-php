@@ -8,8 +8,8 @@ namespace CultuurNet\UDB3;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface as RelationsRepository;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class LocalEventService implements EventServiceInterface
 {

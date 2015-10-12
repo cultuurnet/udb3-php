@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;

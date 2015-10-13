@@ -74,7 +74,7 @@ class HistoryProjector implements EventListenerInterface
         $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
 
         $this->writeHistory(
-            $eventCreatedFromCdbXml->getEventId(),
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
             new Log(
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()

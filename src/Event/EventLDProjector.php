@@ -212,13 +212,35 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
      */
     public function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
+        DomainMessage $domainMessage
     ) {
-        $this->applyEventCdbXml(
-            $eventCreatedFromCdbXml->getEventId()->toNative(),
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        $cdbXmlNamespaceUri = $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
+        $cdbXml = $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString();
+        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $cdbXmlNamespaceUri,
+            $cdbXml
         );
+
+        $document = $this->newDocument($eventId);
+        $eventLd = $document->getBody();
+
+        $eventLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $eventLd,
+            $udb2Event,
+            $this,
+            $this,
+            $this->slugger
+        );
+
+        // Add creation date and update date from metadata.
+        $eventCreationDate = $domainMessage->getRecordedOn();
+        $eventLd->created = $eventCreationDate;
+        $eventLd->modified = $eventCreationDate;
+
+        $this->repository->save($document->withBody($eventLd));
     }
 
     /**

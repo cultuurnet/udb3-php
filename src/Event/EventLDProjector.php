@@ -251,6 +251,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         // Add creator.
         $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
 
+        // Add publisher, which is the consumer name.
+        $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
+
         $this->repository->save($document->withBody($eventLd));
     }
 
@@ -707,6 +710,15 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         if (isset($properties['user_nick'])) {
             return new String($properties['user_nick']);
+        }
+    }
+
+    private function getConsumerFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['consumer']['name'])) {
+            return new String($properties['consumer']['name']);
         }
     }
 }

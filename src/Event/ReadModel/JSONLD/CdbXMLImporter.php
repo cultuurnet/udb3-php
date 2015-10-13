@@ -399,15 +399,29 @@ class CdbXMLImporter
 // Input info.
         $jsonLD->creator = $event->getCreatedBy();
 
-        // format using ISO-8601 with time zone designator
-        $creationDate = $this->dateFromUdb2DateString(
-            $event->getCreationDate()
-        );
+        $eventCreationDate = $event->getCreationDate();
+
+        if (!empty($eventCreationDate)) {
+            // format using ISO-8601 with time zone designator
+            $creationDate = $this->dateFromUdb2DateString(
+                $eventCreationDate
+            );
+        } else {
+            $creationDate = new \DateTime('now', new \DateTimeZone('Europe/Brussels'));
+        }
+
         $jsonLD->created = $creationDate->format('c');
 
-        $lastUpdatedDate = $this->dateFromUdb2DateString(
-            $event->getLastUpdated()
-        );
+        $eventLastUpdatedDate = $event->getLastUpdated();
+
+        if (!empty($eventLastUpdatedDate)) {
+            $lastUpdatedDate = $this->dateFromUdb2DateString(
+                $eventLastUpdatedDate
+            );
+        } else {
+            $lastUpdatedDate = $creationDate;
+        }
+
         $jsonLD->modified = $lastUpdatedDate->format('c');
 
         $jsonLD->publisher = $event->getOwner();

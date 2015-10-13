@@ -396,7 +396,7 @@ class CdbXMLImporter
      */
     private function importPublicationInfo(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
-// Input info.
+        // Input info.
         $jsonLD->creator = $event->getCreatedBy();
 
         $eventCreationDate = $event->getCreationDate();
@@ -406,11 +406,9 @@ class CdbXMLImporter
             $creationDate = $this->dateFromUdb2DateString(
                 $eventCreationDate
             );
-        } else {
-            $creationDate = new \DateTime('now', new \DateTimeZone('Europe/Brussels'));
-        }
 
-        $jsonLD->created = $creationDate->format('c');
+            $jsonLD->created = $creationDate->format('c');
+        }
 
         $eventLastUpdatedDate = $event->getLastUpdated();
 
@@ -418,11 +416,9 @@ class CdbXMLImporter
             $lastUpdatedDate = $this->dateFromUdb2DateString(
                 $eventLastUpdatedDate
             );
-        } else {
-            $lastUpdatedDate = $creationDate;
-        }
 
-        $jsonLD->modified = $lastUpdatedDate->format('c');
+            $jsonLD->modified = $lastUpdatedDate->format('c');
+        }
 
         $jsonLD->publisher = $event->getOwner();
     }

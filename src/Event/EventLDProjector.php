@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -45,6 +46,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
+use ValueObjects\String\String;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -237,8 +239,17 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         // Add creation date and update date from metadata.
         $eventCreationDate = $domainMessage->getRecordedOn();
-        $eventLd->created = $eventCreationDate;
-        $eventLd->modified = $eventCreationDate;
+
+        $eventCreationString = $eventCreationDate->toString();
+        $eventCreationDateTime = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $eventCreationString
+        );
+        $eventLd->created = $eventCreationDateTime->format('c');
+        $eventLd->modified = $eventCreationDateTime->format('c');
+
+        // Add creator.
+        $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
 
         $this->repository->save($document->withBody($eventLd));
     }
@@ -688,5 +699,14 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     public function addDescriptionFilter(StringFilterInterface $filter)
     {
         $this->cdbXMLImporter->addDescriptionFilter($filter);
+    }
+
+    private function getAuthorFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['user_nick'])) {
+            return new String($properties['user_nick']);
+        }
     }
 }

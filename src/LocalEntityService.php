@@ -70,7 +70,7 @@ class LocalEntityService implements EntityServiceInterface
 
             if (!$document) {
                 throw new EntityNotFoundException(
-                    sprintf('Entity with id: %s not found.', $id)
+                    sprintf('Document with id: %s not found.', $id)
                 );
             }
         }

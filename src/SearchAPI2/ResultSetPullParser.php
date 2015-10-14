@@ -59,7 +59,7 @@ class ResultSetPullParser
                 $totalItems = new Integer((int)$r->readString());
             }
 
-            if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
+            if ($r->nodeType == $r::ELEMENT && ($r->localName == 'event' || $r->localName == 'actor')) {
                 $items[] = array(
                     '@id' => $this->iriGenerator->iri(
                         $r->getAttribute('cdbid')

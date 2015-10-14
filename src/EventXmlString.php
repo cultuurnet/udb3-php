@@ -45,7 +45,12 @@ class EventXmlString extends XmlString
             /** @var \DOMElement $element */
             $element = $elements->item(0);
             $element->setAttribute('cdbid', $eventid);
+        } else {
+            throw new \LogicException(
+                'Unable to find cdbxml event element in the xml string.'
+            );
         }
+
         $xmlWithCdbid = $dom->saveXML();
 
         return new EventXmlString($xmlWithCdbid);

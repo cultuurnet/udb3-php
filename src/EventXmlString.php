@@ -9,6 +9,7 @@
 namespace CultuurNet\UDB3;
 
 use DOMDocument;
+use DOMXPath;
 
 class EventXmlString extends XmlString
 {
@@ -29,5 +30,22 @@ class EventXmlString extends XmlString
         $eventXml = $temp_document->saveXML();
 
         return $eventXml;
+    }
+
+    public function withCdbidAttribute($eventid)
+    {
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $dom->preserveWhiteSpace = false;
+        $dom->loadXML($this->value);
+
+        $xpath = new DOMXPath($dom);
+        $elements = $xpath->query('//cdbxml/event');
+        if ($elements->length >= 1) {
+            $element = $elements->item(0);
+            $element->setAttribute('cdbid', $eventid);
+        }
+        $xmlWithCdbid = $dom->saveXML();
+
+        return new EventXmlString($xmlWithCdbid);
     }
 }

@@ -39,8 +39,10 @@ class EventXmlString extends XmlString
         $dom->loadXML($this->value);
 
         $xpath = new DOMXPath($dom);
-        $elements = $xpath->query('//cdbxml/event');
+        $xpath->registerNamespace('cdb', $dom->documentElement->namespaceURI);
+        $elements = $xpath->query('//cdb:event');
         if ($elements->length >= 1) {
+            /** @var \DOMElement $element */
             $element = $elements->item(0);
             $element->setAttribute('cdbid', $eventid);
         }

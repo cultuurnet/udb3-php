@@ -345,6 +345,20 @@ class TabularDataEventFormatter
                 },
                 'property' => 'sameAs'
             ],
+            'phone' => [
+                'name' => 'Telefoon',
+                'include' => function ($event) {
+                    if (property_exists($event, 'phone')) {
+                        $ids = array();
+                        foreach ($event->phone as $externalId) {
+                            $ids[] = $externalId;
+                        }
+
+                        //return implode("\r\n", $ids);
+                    }
+                },
+                'property' => 'phone'
+            ],
         ];
     }
 }

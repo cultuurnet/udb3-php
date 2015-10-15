@@ -109,6 +109,7 @@ class TabularDataEventFormatter
             'id' => [
                 'name' => 'id',
                 'include' => function ($event) {
+                    var_dump($event);
                     $eventUri = $event->{'@id'};
                     $uriParts = explode('/', $eventUri);
                     $eventId = array_pop($uriParts);
@@ -345,19 +346,19 @@ class TabularDataEventFormatter
                 },
                 'property' => 'sameAs'
             ],
-            'phone' => [
-                'name' => 'Telefoon',
+            'contactInfo' => [
+                'name' => 'contactinformatie',
                 'include' => function ($event) {
-                    if (property_exists($event, 'phone')) {
-                        $ids = array();
-                        foreach ($event->phone as $externalId) {
-                            $ids[] = $externalId;
+                    if (property_exists($event, 'contactInfo')) {
+                        $contactInfo = array();
+                        foreach ($event->contactInfo as $contactInfo) {
+                            $contactInfos[] = $contactInfo;
                         }
 
-                        //return implode("\r\n", $ids);
+                        return implode("\r\n", $contactInfos);
                     }
                 },
-                'property' => 'phone'
+                'property' => 'contactInfo'
             ],
         ];
     }

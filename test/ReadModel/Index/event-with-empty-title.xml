@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<event xmlns="http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL"
+       availablefrom="2015-08-07T00:00:00" availableto="2015-09-18T00:00:00"
+       cdbid="b9e86894-c037-4921-a13f-78dfd5c18e80"
+       createdby="devriese.christiane@1telenet.be"
+       creationdate="2015-08-07T13:43:43"
+       externalid="CDB:145509cf-c588-40bd-b2e0-4ac985cc60af"
+       lastupdated="2015-08-07T13:43:47"
+       lastupdatedby="devriese.christiane@1telenet.be"
+       owner="Invoerders Algemeen " pctcomplete="20" private="false"
+       published="true" validator="Oudenburg Validatoren"
+       wfstatus="readyforvalidation" isparent="false">
+    <calendar>
+        <periods>
+            <period>
+                <datefrom>2015-09-12</datefrom>
+                <dateto>2015-09-17</dateto>
+            </period>
+        </periods>
+    </calendar>
+    <categories>
+        <category type="flanderstouristregion" catid="reg.369">Brugse Ommeland
+        </category>
+        <category type="eventtype" catid="0.0.0.0.0">Tentoonstelling</category>
+        <category type="flandersregion" catid="reg.1055">8460 Westkerke
+            (Oudenburg)
+        </category>
+    </categories>
+    <contactinfo>
+        <address>
+            <physical>
+                <city>Westkerke</city>
+                <country>BE</country>
+                <gis>
+                    <xcoordinate>3.011210</xcoordinate>
+                    <ycoordinate>51.162907</ycoordinate>
+                </gis>
+                <housenr>15</housenr>
+                <street>Zuidstraat</street>
+                <zipcode>8460</zipcode>
+            </physical>
+        </address>
+    </contactinfo>
+    <eventdetails>
+        <eventdetail lang="nl">
+            <calendarsummary>van 12/09/15 tot 17/09/15</calendarsummary>
+            <shortdescription>Annette schildert haar emoties over actuele
+                gebeurtenissen met acrylverf op PDF, onder de naam Grublar(
+                "piekeraar'). Daarbij gebruikt ze niet alleen borstels, maar
+                gebrukt daarbij allerlei materialen, waarmee ze haar emoties van
+                het moment scilderrt. Verschillende werken van vroeger en nu
+                stelt ze tentoon. Een aanrader !
+            </shortdescription>
+            <title/>
+        </eventdetail>
+    </eventdetails>
+    <location>
+        <address>
+            <physical>
+                <city>Westkerke</city>
+                <country>BE</country>
+                <gis>
+                    <xcoordinate>3.011210</xcoordinate>
+                    <ycoordinate>51.162907</ycoordinate>
+                </gis>
+                <housenr>15</housenr>
+                <street>Zuidstraat</street>
+                <zipcode>8460</zipcode>
+            </physical>
+        </address>
+        <label>tentoonstelling Grublar</label>
+    </location>
+</event>

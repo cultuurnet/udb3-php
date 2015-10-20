@@ -9,7 +9,7 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3SilexEntryAPI\EventXmlString;
+use CultuurNet\UDB3\EventXmlString;
 use ValueObjects\String\String;
 
 class EventCreatedFromCdbXml implements SerializableInterface

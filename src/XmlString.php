@@ -17,7 +17,7 @@ class XmlString extends String
         parent::__construct($value);
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
-        $isValidXML = $dom->loadXML($value);
+        $isValidXML = @$dom->loadXML($value);
 
         if (!$isValidXML) {
             throw new XMLSyntaxException();

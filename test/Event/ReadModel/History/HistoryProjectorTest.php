@@ -9,6 +9,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
@@ -19,6 +20,8 @@ use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\EventXmlString;
+use ValueObjects\String\String;
 
 class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -339,6 +342,45 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_EventCreatedFromCdbXml()
+    {
+        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
+            new String(self::EVENT_ID_2),
+            new EventXmlString($this->getEventCdbXml(self::EVENT_ID_2)),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $eventCreatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => 'Aangemaakt via EntryAPI door consumer "UiTDatabank"',
+                    'author' => 'Jantest',
                 ]
             ]
         );

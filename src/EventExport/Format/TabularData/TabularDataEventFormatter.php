@@ -94,8 +94,6 @@ class TabularDataEventFormatter
                 $properties[] = "address.addressLocality";
                 $properties[] = "address.addressCountry";
             }
-
-            array_unshift($properties, 'id');
         } else {
             $properties = array_keys($this->columns());
         }
@@ -109,7 +107,6 @@ class TabularDataEventFormatter
             'id' => [
                 'name' => 'id',
                 'include' => function ($event) {
-                    var_dump($event);
                     $eventUri = $event->{'@id'};
                     $uriParts = explode('/', $eventUri);
                     $eventId = array_pop($uriParts);
@@ -346,19 +343,44 @@ class TabularDataEventFormatter
                 },
                 'property' => 'sameAs'
             ],
-            'contactInfo' => [
-                'name' => 'contactinformatie',
+            'contactPoint.email' => [
+                'name' => 'e-mail',
                 'include' => function ($event) {
-                    if (property_exists($event, 'contactInfo')) {
-                        $contactInfo = array();
-                        foreach ($event->contactInfo as $contactInfo) {
-                            $contactInfos[] = $contactInfo;
+                    if (property_exists($event, 'contactPoint')) {
+                        foreach ($event->contactPoint as $contact) {
+                            if ($contact->email) {
+                                return implode("\r\n", $contact->email);
+                            }
                         }
-
-                        return implode("\r\n", $contactInfos);
                     }
                 },
-                'property' => 'contactInfo'
+                'property' => 'contactPoint.email'
+            ],
+            'contactPoint.phone' => [
+                'name' => 'Telefoon',
+                'include' => function ($event) {
+                    if (property_exists($event, 'contactPoint')) {
+                        foreach ($event->contactPoint as $contact) {
+                            if ($contact->phone) {
+                                return implode("\r\n", $contact->phone);
+                            }
+                        }
+                    }
+                },
+                'property' => 'contactPoint.phone'
+            ],
+            'contactPoint.url' => [
+                'name' => 'Website',
+                'include' => function ($event) {
+                    if (property_exists($event, 'contactPoint')) {
+                        foreach ($event->contactPoint as $contact) {
+                            if ($contact->url) {
+                                return implode("\r\n", $contact->url);
+                            }
+                        }
+                    }
+                },
+                'property' => 'contactPoint.url'
             ],
         ];
     }

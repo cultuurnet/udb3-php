@@ -379,7 +379,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             [
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
-                    'description' => 'Aangemaakt vanuit EntryAPI door consumer "UiTDatabank"',
+                    'description' => 'Aangemaakt via EntryAPI door consumer "UiTDatabank"',
                     'author' => 'Jantest',
                 ]
             ]

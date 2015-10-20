@@ -1297,6 +1297,6 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                 )
             );
 
-        $this->projector->applyEventCreatedFromCdbXml($eventCreatedFromCdbXml, $domainMessage);
+        $this->projector->handle($domainMessage);
     }
 }

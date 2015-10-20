@@ -372,18 +372,14 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             DateTime::fromString($importedDate)
         );
 
-        $historyProjector = new HistoryProjector(
-            $this->documentRepository
-        );
-
-        $historyProjector->handle($domainMessage);
+        $this->historyProjector->handle($domainMessage);
 
         $this->assertHistoryOfEvent(
             self::EVENT_ID_2,
             [
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
-                    'description' => 'Aangemaakt vanuit EntryAPI door consumer "UiTDatabank"',
+                    'description' => 'Aangemaakt via EntryAPI door consumer "UiTDatabank"',
                     'author' => 'Jantest',
                 ]
             ]

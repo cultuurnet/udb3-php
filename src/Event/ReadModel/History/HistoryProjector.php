@@ -80,7 +80,7 @@ class HistoryProjector implements EventListenerInterface
                     $domainMessage->getRecordedOn()
                 ),
                 new String(
-                    'Aangemaakt vanuit EntryAPI door consumer "' . $consumerName .'"'
+                    'Aangemaakt via EntryAPI door consumer "' . $consumerName . '"'
                 ),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )

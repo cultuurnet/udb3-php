@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
@@ -44,17 +45,8 @@ class Projector implements EventListenerInterface
             $event->getCdbXml()
         );
 
-        $location = $udb2Event->getLocation();
-        $placeId = null;
-        if ($location->getCdbid()) {
-            $placeId = $location->getCdbid();
-        }
-
-        $organizer = $udb2Event->getOrganiser();
-        $organizerId = null;
-        if ($organizer && $organizer->getCdbid()) {
-            $organizerId = $organizer->getCdbid();
-        }
+        $placeId = $this->getPlaceId($udb2Event);
+        $organizerId = $this->getOrganizerId($udb2Event);
 
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
@@ -117,5 +109,53 @@ class Projector implements EventListenerInterface
     protected function storeRelations($eventId, $placeId, $organizerId)
     {
         $this->repository->storeRelations($eventId, $placeId, $organizerId);
+    }
+
+    /**
+     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
+     */
+    protected function applyEventCreatedFromCdbXml(EventCreatedFromCdbXml $eventCreatedFromCdbXml)
+    {
+        $eventId = $eventCreatedFromCdbXml->getEventId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $placeId = $this->getPlaceId($udb2Event);
+        $organizerId = $this->getOrganizerId($udb2Event);
+
+        $this->storeRelations($eventId, $placeId, $organizerId);
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $udb2Event
+     * @return string
+     */
+    protected function getPlaceId(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
+        $location = $udb2Event->getLocation();
+        $placeId = null;
+        if ($location->getCdbid()) {
+            $placeId = $location->getCdbid();
+        }
+
+        return $placeId;
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $udb2Event
+     * @return string
+     */
+    protected function getOrganizerId(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
+        $organizer = $udb2Event->getOrganiser();
+        $organizerId = null;
+        if ($organizer && $organizer->getCdbid()) {
+            $organizerId = $organizer->getCdbid();
+        }
+
+        return $organizerId;
     }
 }

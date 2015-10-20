@@ -68,6 +68,17 @@ class TabularDataEventFormatter
         return $datetime->format('Y-m-d H:i');
     }
 
+    /**
+     * @param string $date Date in ISO 8601 format.
+     * @return string Date formatted for tabular data export.
+     */
+    protected function formatDateWithoutTime($date)
+    {
+        $timezone = new \DateTimeZone('Europe/Brussels');
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, $date, $timezone);
+        return $datetime->format('Y-m-d');
+    }
+
     public function emptyRow()
     {
         $row = array();
@@ -264,7 +275,7 @@ class TabularDataEventFormatter
                 'name' => 'Embargodatum',
                 'include' => function ($event) {
                     if (!empty($event->available)) {
-                        return $this->formatDate($event->available);
+                        return $this->formatDateWithoutTime($event->available);
                     } else {
                         return '';
                     }

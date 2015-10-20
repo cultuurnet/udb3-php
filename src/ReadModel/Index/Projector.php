@@ -152,7 +152,7 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($placeId, EntityTYpe::PLACE(), $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($placeId, EntityType::PLACE(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**
@@ -244,7 +244,7 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($organizerId, EntityTYpe::ORGANIZER(), $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($organizerId, EntityType::ORGANIZER(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**

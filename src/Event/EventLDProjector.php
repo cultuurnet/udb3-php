@@ -213,7 +213,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
      */
-    public function applyEventCreatedFromCdbXml(
+    protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml,
         DomainMessage $domainMessage
     ) {

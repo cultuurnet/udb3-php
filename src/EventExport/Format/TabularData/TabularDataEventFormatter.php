@@ -94,6 +94,8 @@ class TabularDataEventFormatter
                 $properties[] = "address.addressLocality";
                 $properties[] = "address.addressCountry";
             }
+
+            array_unshift($properties, 'id');
         } else {
             $properties = array_keys($this->columns());
         }

@@ -71,13 +71,18 @@ class HistoryProjector implements EventListenerInterface
         EventCreatedFromCdbXml $eventCreatedFromCdbXml,
         DomainMessage $domainMessage
     ) {
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
         $this->writeHistory(
-            $eventCreatedFromCdbXml->getEventId(),
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
             new Log(
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()
                 ),
-                new String('Aangemaakt vanuit EntryAPI')
+                new String(
+                    'Aangemaakt vanuit EntryAPI door consumer "' . $consumerName .'"'
+                ),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -127,6 +132,15 @@ class HistoryProjector implements EventListenerInterface
 
         if (isset($properties['user_nick'])) {
             return new String($properties['user_nick']);
+        }
+    }
+
+    private function getConsumerFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['consumer']['name'])) {
+            return new String($properties['consumer']['name']);
         }
     }
 

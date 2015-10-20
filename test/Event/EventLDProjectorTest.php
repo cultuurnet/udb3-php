@@ -10,12 +10,14 @@ use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -30,11 +32,14 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
+use ValueObjects\String\String;
 
 class EventLDProjectorTest extends CdbXMLProjectorTestBase
 {
 
     use \CultuurNet\UDB3\OfferLDProjectorTestTrait;
+
+    const CDBXML_NAMESPACE = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
     /**
      * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
@@ -1248,5 +1253,50 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
         $eventDeleted = new EventDeleted($id);
         $this->projector->applyEventDeleted($eventDeleted);
 
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_events_from_cdbxml()
+    {
+        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+
+        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
+            new String('foo'),
+            new EventXmlString($xml),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $eventCreatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $expectedJsonLD = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid_expected.json');
+
+        $expectedDocument = (new JsonDocument('foo', $expectedJsonLD));
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                        return $expectedDocument == $jsonDocument;
+                    }
+                )
+            );
+
+        $this->projector->applyEventCreatedFromCdbXml($eventCreatedFromCdbXml, $domainMessage);
     }
 }

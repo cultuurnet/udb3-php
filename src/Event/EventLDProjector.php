@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -45,6 +46,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
+use ValueObjects\String\String;
 
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
@@ -212,13 +214,47 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
      */
     public function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
+        DomainMessage $domainMessage
     ) {
-        $this->applyEventCdbXml(
-            $eventCreatedFromCdbXml->getEventId()->toNative(),
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        $cdbXmlNamespaceUri = $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
+        $cdbXml = $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString();
+        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $cdbXmlNamespaceUri,
+            $cdbXml
         );
+
+        $document = $this->newDocument($eventId);
+        $eventLd = $document->getBody();
+
+        $eventLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $eventLd,
+            $udb2Event,
+            $this,
+            $this,
+            $this->slugger
+        );
+
+        // Add creation date and update date from metadata.
+        $eventCreationDate = $domainMessage->getRecordedOn();
+
+        $eventCreationString = $eventCreationDate->toString();
+        $eventCreationDateTime = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $eventCreationString
+        );
+        $eventLd->created = $eventCreationDateTime->format('c');
+        $eventLd->modified = $eventCreationDateTime->format('c');
+
+        // Add creator.
+        $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+
+        // Add publisher, which is the consumer name.
+        $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
+
+        $this->repository->save($document->withBody($eventLd));
     }
 
     /**
@@ -666,5 +702,23 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     public function addDescriptionFilter(StringFilterInterface $filter)
     {
         $this->cdbXMLImporter->addDescriptionFilter($filter);
+    }
+
+    private function getAuthorFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['user_nick'])) {
+            return new String($properties['user_nick']);
+        }
+    }
+
+    private function getConsumerFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['consumer']['name'])) {
+            return new String($properties['consumer']['name']);
+        }
     }
 }

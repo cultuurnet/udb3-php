@@ -261,7 +261,7 @@ class TabularDataEventFormatter
                 'property' => 'created'
             ],
             'modified' => [
-                'name' => 'datum aangepast',
+                'name' => 'datum laatste aanpassing',
                 'include' => function ($event) {
                     if (!empty($event->modified)) {
                         return $this->formatDate($event->modified);
@@ -272,7 +272,7 @@ class TabularDataEventFormatter
                 'property' => 'modified'
             ],
             'available' => [
-                'name' => 'Embargodatum',
+                'name' => 'embargodatum',
                 'include' => function ($event) {
                     if (!empty($event->available)) {
                         return $this->formatDateWithoutTime($event->available);

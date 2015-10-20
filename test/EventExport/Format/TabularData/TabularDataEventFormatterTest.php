@@ -137,14 +137,46 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($formattedEvent['image']);
     }
 
-    public function it_can_format_contact_points()
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_all_contact_points()
     {
-        $event = $this->getJSONEventFromFile('event_without_image.json');
-        $formatter = new TabularDataEventFormatter(array('image'));
-        $formattedEvent = $formatter->formatEvent($event);
+        $includedProperties = [
+            'id',
+            'contactPoint.email'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_all_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
 
-        $this->assertTrue(isset($formattedEvent['image']));
-        $this->assertEmpty($formattedEvent['image']);
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_some_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_all_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
     }
 
     /**

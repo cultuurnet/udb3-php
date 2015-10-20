@@ -249,6 +249,28 @@ class TabularDataEventFormatter
                 },
                 'property' => 'created'
             ],
+            'modified' => [
+                'name' => 'datum aangepast',
+                'include' => function ($event) {
+                    if (!empty($event->modified)) {
+                        return $this->formatDate($event->modified);
+                    } else {
+                        return '';
+                    }
+                },
+                'property' => 'modified'
+            ],
+            'available' => [
+                'name' => 'Embargodatum',
+                'include' => function ($event) {
+                    if (!empty($event->available)) {
+                        return $this->formatDate($event->available);
+                    } else {
+                        return '';
+                    }
+                },
+                'property' => 'available'
+            ],
             'startDate' => [
                 'name' => 'startdatum',
                 'include' => function ($event) {

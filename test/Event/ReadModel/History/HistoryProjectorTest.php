@@ -372,11 +372,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             DateTime::fromString($importedDate)
         );
 
-        $historyProjector = new HistoryProjector(
-            $this->documentRepository
-        );
-
-        $historyProjector->handle($domainMessage);
+        $this->historyProjector->handle($domainMessage);
 
         $this->assertHistoryOfEvent(
             self::EVENT_ID_2,

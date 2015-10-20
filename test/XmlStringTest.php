@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3;
 
-
 class XmlStringTest extends \PHPUnit_Framework_TestCase
 {
     /**

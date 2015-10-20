@@ -354,7 +354,7 @@ class TabularDataEventFormatter
                         }
                     }
                 },
-                'property' => 'contactPoint.email'
+                'property' => 'contactInfo'
             ],
             'contactPoint.phone' => [
                 'name' => 'Telefoon',
@@ -367,7 +367,7 @@ class TabularDataEventFormatter
                         }
                     }
                 },
-                'property' => 'contactPoint.phone'
+                'property' => 'contactInfo'
             ],
             'contactPoint.url' => [
                 'name' => 'Website',
@@ -380,7 +380,7 @@ class TabularDataEventFormatter
                         }
                     }
                 },
-                'property' => 'contactPoint.url'
+                'property' => 'contactInfo'
             ],
         ];
     }

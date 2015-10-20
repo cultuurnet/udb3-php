@@ -396,19 +396,29 @@ class CdbXMLImporter
      */
     private function importPublicationInfo(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
-// Input info.
+        // Input info.
         $jsonLD->creator = $event->getCreatedBy();
 
-        // format using ISO-8601 with time zone designator
-        $creationDate = $this->dateFromUdb2DateString(
-            $event->getCreationDate()
-        );
-        $jsonLD->created = $creationDate->format('c');
+        $eventCreationDate = $event->getCreationDate();
 
-        $lastUpdatedDate = $this->dateFromUdb2DateString(
-            $event->getLastUpdated()
-        );
-        $jsonLD->modified = $lastUpdatedDate->format('c');
+        if (!empty($eventCreationDate)) {
+            // format using ISO-8601 with time zone designator
+            $creationDate = $this->dateFromUdb2DateString(
+                $eventCreationDate
+            );
+
+            $jsonLD->created = $creationDate->format('c');
+        }
+
+        $eventLastUpdatedDate = $event->getLastUpdated();
+
+        if (!empty($eventLastUpdatedDate)) {
+            $lastUpdatedDate = $this->dateFromUdb2DateString(
+                $eventLastUpdatedDate
+            );
+
+            $jsonLD->modified = $lastUpdatedDate->format('c');
+        }
 
         $jsonLD->publisher = $event->getOwner();
     }

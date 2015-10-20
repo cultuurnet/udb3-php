@@ -79,21 +79,44 @@ class TabularDataEventFormatter
         return $row;
     }
 
+    protected function expandMultiColumnProperties($properties)
+    {
+        $expandedProperties = [];
+
+        $expansions = [
+            'address' => [
+                'address.streetAddress',
+                'address.postalCode',
+                'address.addressLocality',
+                'address.addressCountry'
+            ],
+            'contactPoint' => [
+                'bookingInfo.url',
+                'contactPoint.email',
+                'contactPoint.telephone',
+            ],
+            'bookingInfo' => [
+                'bookingInfo.price',
+            ],
+        ];
+
+        foreach ($properties as $property) {
+            if (isset($expansions[$property])) {
+                $expandedProperties = array_merge($expandedProperties, $expansions[$property]);
+            } else {
+                $expandedProperties[] = $property;
+            }
+        }
+
+        return $expandedProperties;
+    }
+
     protected function includedOrDefaultProperties($include)
     {
         $properties = null;
 
         if ($include) {
-            $properties = $include;
-
-            // include the address as separate properties
-            if (($key = array_search("address", $properties)) !== false) {
-                unset($properties[$key]);
-                $properties[] = "address.streetAddress";
-                $properties[] = "address.postalCode";
-                $properties[] = "address.addressLocality";
-                $properties[] = "address.addressCountry";
-            }
+            $properties = $this->expandMultiColumnProperties($include);
 
             array_unshift($properties, 'id');
         } else {
@@ -133,13 +156,25 @@ class TabularDataEventFormatter
                 },
                 'property' => 'creator'
             ],
-            'bookingInfo' => [
+            'bookingInfo.price' => [
                 'name' => 'prijs',
                 'include' => function ($event) {
                     if (property_exists($event, 'bookingInfo')) {
-                        $firstPrice = reset($event->bookingInfo);
-                        if (is_object($firstPrice) && isset($firstPrice->price)) {
-                            return $firstPrice->price;
+                        $first = reset($event->bookingInfo);
+                        if (is_object($first) && property_exists($first, 'price')) {
+                            return $first->price;
+                        }
+                    }
+                },
+                'property' => 'bookingInfo'
+            ],
+            'bookingInfo.url' => [
+                'name' => 'ticket url',
+                'include' => function ($event) {
+                    if (property_exists($event, 'bookingInfo')) {
+                        $first = reset($event->bookingInfo);
+                        if (is_object($first) && property_exists($first, 'url')) {
+                            return $first->url;
                         }
                     }
                 },
@@ -350,39 +385,26 @@ class TabularDataEventFormatter
                 'include' => function ($event) {
                     if (property_exists($event, 'contactPoint')) {
                         foreach ($event->contactPoint as $contact) {
-                            if ($contact->email) {
+                            if (property_exists($contact, 'email')) {
                                 return implode("\r\n", $contact->email);
                             }
                         }
                     }
                 },
-                'property' => 'contactInfo'
+                'property' => 'contactPoint'
             ],
-            'contactPoint.phone' => [
-                'name' => 'Telefoon',
+            'contactPoint.telephone' => [
+                'name' => 'telefoon',
                 'include' => function ($event) {
                     if (property_exists($event, 'contactPoint')) {
                         foreach ($event->contactPoint as $contact) {
-                            if ($contact->phone) {
-                                return implode("\r\n", $contact->phone);
+                            if (property_exists($contact, 'telephone')) {
+                                return implode("\r\n", $contact->telephone);
                             }
                         }
                     }
                 },
-                'property' => 'contactInfo'
-            ],
-            'contactPoint.url' => [
-                'name' => 'Website',
-                'include' => function ($event) {
-                    if (property_exists($event, 'contactPoint')) {
-                        foreach ($event->contactPoint as $contact) {
-                            if ($contact->url) {
-                                return implode("\r\n", $contact->url);
-                            }
-                        }
-                    }
-                },
-                'property' => 'contactInfo'
+                'property' => 'contactPoint'
             ],
         ];
     }

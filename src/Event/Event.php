@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
@@ -106,6 +107,29 @@ class Event extends EventSourcedAggregateRoot
         $event = new self();
         $event->apply(
             new EventCreatedFromCdbXml(
+                $eventId,
+                $xmlString,
+                $cdbXmlNamespaceUri
+            )
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param String $eventId
+     * @param EventXmlString $xmlString
+     * @param String $cdbXmlNamespaceUri
+     * @return Event
+     */
+    public static function updateFromCdbXml(
+        String $eventId,
+        EventXmlString $xmlString,
+        String $cdbXmlNamespaceUri
+    ) {
+        $event = new self();
+        $event->apply(
+            new EventUpdatedFromCdbXml(
                 $eventId,
                 $xmlString,
                 $cdbXmlNamespaceUri
@@ -354,6 +378,25 @@ class Event extends EventSourcedAggregateRoot
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
             $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $this->labels = array();
+        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword);
+            if ($keyword) {
+                $this->labels[] = new Label($keyword);
+            }
+        }
+    }
+
+    protected function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+    ) {
+        $this->eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri(),
+            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
         $this->labels = array();

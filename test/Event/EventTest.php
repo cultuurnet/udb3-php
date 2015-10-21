@@ -153,4 +153,25 @@ class EventTest extends PHPUnit_Framework_TestCase
             $event->getLabels()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_be_updated_from_cdbxml()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::updateFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $this->assertEquals(
+            array(
+                new Label('polen'),
+                new Label('slagwerk')
+            ),
+            $event->getLabels()
+        );
+    }
 }

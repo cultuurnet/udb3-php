@@ -6,10 +6,12 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\String\String;
 
 class EventTest extends PHPUnit_Framework_TestCase
 {
@@ -126,6 +128,27 @@ class EventTest extends PHPUnit_Framework_TestCase
                 new Label('TRAEGHE GENUINE ARTS'),
                 new Label('janine de conink'),
                 new Label('brugge oktober')
+            ),
+            $event->getLabels()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_created_from_cdbxml()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $this->assertEquals(
+            array(
+                new Label('polen'),
+                new Label('slagwerk')
             ),
             $event->getLabels()
         );

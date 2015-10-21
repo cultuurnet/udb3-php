@@ -101,18 +101,20 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider eventDateProvider
      */
-    public function it_formats_dates($eventFile, $created, $startDate, $endDate)
+    public function it_formats_dates($eventFile, $created, $startDate, $endDate, $modified)
     {
         $expectedFormatting = [
             'created' => $created,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'modified' => $modified
         ];
 
         $includedProperties = [
             'created',
             'startDate',
-            'endDate'
+            'endDate',
+            'modified'
         ];
         $event = $this->getJSONEventFromFile($eventFile);
         $formatter = new TabularDataEventFormatter($includedProperties);
@@ -173,7 +175,28 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
         $expectedFormatting = array(
             "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
-            "contactPoint.email" => "nicolas.leroy+test@gmail.com"
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_available_date()
+    {
+        $includedProperties = [
+            'id',
+            'available'
+        ];
+        $eventWithAvailableDate = $this->getJSONEventFromFile('event_with_available_from.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithAvailableDate);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "available" => "2015-10-13"
         );
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
@@ -188,8 +211,9 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     public function eventDateProvider()
     {
         return array(
-            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30'),
-            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', ''),
+            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30', ''),
+            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', '', ''),
+            array('event_with_modified_date.json', '2015-10-13 14:27', '2015-10-29 20:00', '', '2015-10-13 14:27'),
         );
     }
 }

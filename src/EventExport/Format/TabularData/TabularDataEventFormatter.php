@@ -468,7 +468,8 @@ class TabularDataEventFormatter
      * @param string|null $type
      * @return object
      */
-    private function contactPoint($event, $type = NULL) {
+    private function contactPoint($event, $type = null)
+    {
         if (property_exists($event, 'contactPoint')) {
             $contactPoints = $event->contactPoint;
 

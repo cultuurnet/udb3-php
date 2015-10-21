@@ -99,15 +99,17 @@ class TabularDataEventFormatter
                 'address.streetAddress',
                 'address.postalCode',
                 'address.addressLocality',
-                'address.addressCountry'
+                'address.addressCountry',
             ],
             'contactPoint' => [
-                'bookingInfo.url',
                 'contactPoint.email',
                 'contactPoint.telephone',
+                'contactPoint.reservations.email',
+                'contactPoint.reservations.telephone',
             ],
             'bookingInfo' => [
                 'bookingInfo.price',
+                'bookingInfo.url',
             ],
         ];
 
@@ -139,6 +141,11 @@ class TabularDataEventFormatter
 
     protected function columns()
     {
+        $formatter = $this;
+        $contactPoint = function (\stdClass $event, $type = null) use ($formatter) {
+            return $formatter->contactPoint($event, $type);
+        };
+
         return [
             'id' => [
                 'name' => 'id',
@@ -180,7 +187,7 @@ class TabularDataEventFormatter
                 'property' => 'bookingInfo'
             ],
             'bookingInfo.url' => [
-                'name' => 'ticket url',
+                'name' => 'ticket link',
                 'include' => function ($event) {
                     if (property_exists($event, 'bookingInfo')) {
                         $first = reset($event->bookingInfo);
@@ -415,30 +422,67 @@ class TabularDataEventFormatter
             ],
             'contactPoint.email' => [
                 'name' => 'e-mail',
-                'include' => function ($event) {
-                    if (property_exists($event, 'contactPoint')) {
-                        foreach ($event->contactPoint as $contact) {
-                            if (property_exists($contact, 'email')) {
-                                return implode("\r\n", $contact->email);
-                            }
-                        }
+                'include' => function ($event) use ($contactPoint) {
+                    $contact = $contactPoint($event);
+                    if (property_exists($contact, 'email')) {
+                        return implode("\r\n", $contact->email);
                     }
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.telephone' => [
                 'name' => 'telefoon',
-                'include' => function ($event) {
-                    if (property_exists($event, 'contactPoint')) {
-                        foreach ($event->contactPoint as $contact) {
-                            if (property_exists($contact, 'telephone')) {
-                                return implode("\r\n", $contact->telephone);
-                            }
-                        }
+                'include' => function ($event) use ($contactPoint) {
+                    $contact = $contactPoint($event);
+                    if (property_exists($contact, 'telephone')) {
+                        return implode("\r\n", $contact->telephone);
+                    }
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.reservations.email' => [
+                'name' => 'e-mail reservaties',
+                'include' => function ($event) use ($contactPoint) {
+                    $contact = $contactPoint($event, 'Reservations');
+                    if (property_exists($contact, 'email')) {
+                        return implode("\r\n", $contact->email);
+                    }
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.reservations.telephone' => [
+                'name' => 'telefoon reservaties',
+                'include' => function ($event) use ($contactPoint) {
+                    $contact = $contactPoint($event, 'Reservations');
+                    if (property_exists($contact, 'telephone')) {
+                        return implode("\r\n", $contact->telephone);
                     }
                 },
                 'property' => 'contactPoint'
             ],
         ];
+    }
+
+    /**
+     * @param object $event
+     * @param string|null $type
+     * @return object
+     */
+    private function contactPoint($event, $type = NULL) {
+        if (property_exists($event, 'contactPoint')) {
+            $contactPoints = $event->contactPoint;
+
+            foreach ($contactPoints as $contactPoint) {
+                $contactType = property_exists(
+                    $contactPoint,
+                    'contactType'
+                ) ? $contactPoint->type : null;
+                if ($type == $contactType) {
+                    return $contactPoint;
+                }
+            }
+        }
+
+        return new \stdClass();
     }
 }

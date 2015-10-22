@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 
@@ -53,6 +54,21 @@ class EventCalendarProjector implements EventListenerInterface
         $event = EventItemFactory::createEventFromCdbXml(
             $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
             $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $this->repository->save($eventId, $event->getCalendar());
+    }
+
+    /**
+     * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+     */
+    public function applyEventUpdatedFromCdbXml(EventUpdatedFromCdbXml $eventUpdatedFromCdbXml)
+    {
+        $eventId = $eventUpdatedFromCdbXml->getEventId();
+
+        $event = EventItemFactory::createEventFromCdbXml(
+            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
         $this->repository->save($eventId, $event->getCalendar());

@@ -15,6 +15,7 @@ use CultureFeed_Cdb_Data_Calendar_TimestampList as TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme as WeekScheme;
 use CultuurNet\UDB3\Event\CdbXMLProjectorTestBase;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\EventXmlString;
 use Doctrine\Common\Cache\ArrayCache;
 use ValueObjects\DateTime\Time;
@@ -138,6 +139,68 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
             1,
             new Metadata($metadata),
             $eventCreatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->repositoryExpectsCalendarToBeSaved('foo', $this->getTimestampList());
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_saves_the_calendar_periods_from_events_updated_from_cdbxml()
+    {
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid_with_calendar_periods.xml');
+
+        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
+            new String('foo'),
+            new EventXmlString($xml),
+            new String(self::CDBXML_NAMESPACE_33)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $eventUpdatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->repositoryExpectsCalendarToBeSaved('foo', $this->getPeriodList());
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_saves_the_calendar_timestamps_from_events_updated_from_cdbxml()
+    {
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid_with_calendar_timestamps.xml');
+
+        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
+            new String('foo'),
+            new EventXmlString($xml),
+            new String(self::CDBXML_NAMESPACE_33)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $eventUpdatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
 

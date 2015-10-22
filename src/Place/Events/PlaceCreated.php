@@ -19,7 +19,6 @@ use CultuurNet\UDB3\Title;
  */
 class PlaceCreated extends PlaceEvent
 {
-
     /**
      * @var Title
      */
@@ -51,8 +50,9 @@ class PlaceCreated extends PlaceEvent
      * @param Address $address
      * @param EventType $eventType
      * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    public function __construct($eventId, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {
         parent::__construct($eventId);
 
@@ -113,11 +113,11 @@ class PlaceCreated extends PlaceEvent
             $theme = $this->getTheme()->serialize();
         }
         return parent::serialize() + array(
-          'title' => (string) $this->getTitle(),
-          'event_type' => $this->getEventType()->serialize(),
-          'theme' => $theme,
-          'address' => $this->getAddress()->serialize(),
-          'calendar' => $this->getCalendar()->serialize(),
+            'title' => (string) $this->getTitle(),
+            'event_type' => $this->getEventType()->serialize(),
+            'theme' => $theme,
+            'address' => $this->getAddress()->serialize(),
+            'calendar' => $this->getCalendar()->serialize(),
         );
     }
 
@@ -131,7 +131,12 @@ class PlaceCreated extends PlaceEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-             $data['place_id'], new Title($data['title']), EventType::deserialize($data['event_type']), Address::deserialize($data['address']), Calendar::deserialize($data['calendar'])
+            $data['place_id'],
+            new Title($data['title']),
+            EventType::deserialize($data['event_type']),
+            Address::deserialize($data['address']),
+            Calendar::deserialize($data['calendar']),
+            $theme
         );
     }
 }

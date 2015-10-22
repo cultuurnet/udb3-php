@@ -357,10 +357,6 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(new EventDeleted($this->eventId));
     }
 
-    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
-    {
-    }
-
     /**
      * @param \CultureFeed_Cdb_Item_Event $udb2Event
      */

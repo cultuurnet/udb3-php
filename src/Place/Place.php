@@ -31,6 +31,7 @@ use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
@@ -54,7 +55,7 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
      *
      * @return Event
      */
-    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {
         $place = new self();
         $place->apply(new PlaceCreated($id, $title, $eventType, $address, $calendar, $theme));

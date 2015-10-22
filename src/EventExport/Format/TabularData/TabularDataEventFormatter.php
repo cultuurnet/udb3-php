@@ -92,8 +92,6 @@ class TabularDataEventFormatter
 
     protected function includedOrDefaultProperties($include)
     {
-        $properties = null;
-
         if ($include) {
             $properties = $include;
 

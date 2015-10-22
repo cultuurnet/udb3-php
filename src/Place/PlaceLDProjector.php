@@ -122,12 +122,14 @@ class PlaceLDProjector extends ActorLDProjector
     protected function publishJSONLDUpdated($id)
     {
         $generator = new Version4Generator();
-        $events[] = DomainMessage::recordNow(
-            $generator->generate(),
-            1,
-            new Metadata(),
-            new PlaceProjectedToJSONLD($id)
-        );
+        $events = [
+            DomainMessage::recordNow(
+                $generator->generate(),
+                1,
+                new Metadata(),
+                new PlaceProjectedToJSONLD($id)
+            )
+        ];
 
         $this->eventBus->publish(
             new DomainEventStream($events)

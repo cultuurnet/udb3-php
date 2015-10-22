@@ -350,6 +350,19 @@ class Event extends EventSourcedAggregateRoot
         EventCreatedFromCdbXml $eventCreatedFromCdbXml
     ) {
         $this->eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
+            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $this->labels = array();
+        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword);
+            if ($keyword) {
+                $this->labels[] = new Label($keyword);
+            }
+        }
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

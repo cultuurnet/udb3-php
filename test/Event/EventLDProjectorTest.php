@@ -1290,13 +1290,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
         $this->documentRepository
             ->expects($this->once())
             ->method('save')
-            ->with(
-                $this->callback(
-                    function (JsonDocument $jsonDocument) use ($expectedDocument) {
-                        return $expectedDocument == $jsonDocument;
-                    }
-                )
-            );
+            ->with($expectedDocument);
 
         $this->projector->handle($domainMessage);
     }
@@ -1304,7 +1298,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
     /**
      * @test
      */
-    public function it_updates_Events_from_cdbxml()
+    public function it_updates_events_from_cdbxml()
     {
         $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
 
@@ -1335,13 +1329,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
         $this->documentRepository
             ->expects($this->once())
             ->method('save')
-            ->with(
-                $this->callback(
-                    function (JsonDocument $jsonDocument) use ($expectedDocument) {
-                        return $expectedDocument == $jsonDocument;
-                    }
-                )
-            );
+            ->with($expectedDocument);
 
         $this->projector->handle($domainMessage);
     }

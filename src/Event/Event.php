@@ -122,21 +122,18 @@ class Event extends EventSourcedAggregateRoot
      * @param String $cdbXmlNamespaceUri
      * @return Event
      */
-    public static function updateFromCdbXml(
+    public function updateFromCdbXml(
         String $eventId,
         EventXmlString $xmlString,
         String $cdbXmlNamespaceUri
     ) {
-        $event = new self();
-        $event->apply(
+        $this->apply(
             new EventUpdatedFromCdbXml(
                 $eventId,
                 $xmlString,
                 $cdbXmlNamespaceUri
             )
         );
-
-        return $event;
     }
 
     /**

@@ -80,14 +80,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
         $domainMessage = new DomainMessage(
             $eventCreatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            new Metadata(),
             $eventCreatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
@@ -123,14 +119,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
         $domainMessage = new DomainMessage(
             $eventCreatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            new Metadata(),
             $eventCreatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
@@ -166,14 +158,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
         $domainMessage = new DomainMessage(
             $eventCreatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            new Metadata(),
             $eventCreatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
@@ -209,14 +197,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
         $domainMessage = new DomainMessage(
             $eventUpdatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            new Metadata(),
             $eventUpdatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
@@ -252,14 +236,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
         $domainMessage = new DomainMessage(
             $eventUpdatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            new Metadata(),
             $eventUpdatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
@@ -295,14 +275,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
         $domainMessage = new DomainMessage(
             $eventUpdatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            new Metadata(),
             $eventUpdatedFromCdbXml,
             DateTime::fromString($importedDate)
         );

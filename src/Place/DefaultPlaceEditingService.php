@@ -16,6 +16,7 @@ use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
@@ -56,7 +57,7 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {
         $id = $this->uuidGenerator->generate();
 

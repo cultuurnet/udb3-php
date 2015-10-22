@@ -342,10 +342,6 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(new EventDeleted($this->eventId));
     }
 
-    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
-    {
-    }
-
     protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml
     ) {

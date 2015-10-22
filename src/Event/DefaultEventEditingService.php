@@ -159,10 +159,6 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
     {
         $eventId = $this->uuidGenerator->generate();
 
-        // This will throw an EntityNotFoundException if the place does
-        // not exist.
-        //$this->places->getEntity($location);
-
         $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
 
         $this->eventRepository->save($event);

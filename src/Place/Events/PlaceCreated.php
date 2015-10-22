@@ -113,11 +113,11 @@ class PlaceCreated extends PlaceEvent
             $theme = $this->getTheme()->serialize();
         }
         return parent::serialize() + array(
-          'title' => (string) $this->getTitle(),
-          'event_type' => $this->getEventType()->serialize(),
-          'theme' => $theme,
-          'address' => $this->getAddress()->serialize(),
-          'calendar' => $this->getCalendar()->serialize(),
+            'title' => (string) $this->getTitle(),
+            'event_type' => $this->getEventType()->serialize(),
+            'theme' => $theme,
+            'address' => $this->getAddress()->serialize(),
+            'calendar' => $this->getCalendar()->serialize(),
         );
     }
 
@@ -131,7 +131,7 @@ class PlaceCreated extends PlaceEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-             $data['place_id'],
+            $data['place_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Address::deserialize($data['address']),

@@ -48,12 +48,14 @@ class BroadcastingDocumentRepositoryDecorator extends DocumentRepositoryDecorato
         $event = $this->eventFactory->createEvent($id);
 
         $generator = new Version4Generator();
-        $events[] = DomainMessage::recordNow(
-            $generator->generate(),
-            1,
-            new Metadata(),
-            $event
-        );
+        $events = [
+            DomainMessage::recordNow(
+                $generator->generate(),
+                1,
+                new Metadata(),
+                $event
+            )
+        ];
 
         $this->eventBus->publish(
             new DomainEventStream($events)

@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
@@ -212,6 +213,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     /**
      * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
+     * @param DomainMessage $domainMessage
      */
     protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml,
@@ -221,6 +223,48 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $cdbXml = $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString();
         $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
 
+        $this->applyEventFromCdbXml(
+            $eventId,
+            $cdbXmlNamespaceUri,
+            $cdbXml,
+            $domainMessage
+        );
+    }
+
+    /**
+     * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $cdbXmlNamespaceUri = $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
+        $cdbXml = $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString();
+        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
+
+        $this->applyEventFromCdbXml(
+            $eventId,
+            $cdbXmlNamespaceUri,
+            $cdbXml,
+            $domainMessage
+        );
+    }
+
+    /**
+     * Helper function to save JSONLD document from entryapi cdbxml.
+     *
+     * @param string $eventId
+     * @param string $cdbXmlNamespaceUri
+     * @param string $cdbXml
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventFromCdbXml(
+        $eventId,
+        $cdbXmlNamespaceUri,
+        $cdbXml,
+        $domainMessage
+    ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $cdbXmlNamespaceUri,
             $cdbXml

@@ -12,6 +12,7 @@ use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -1279,6 +1280,51 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             1,
             new Metadata($metadata),
             $eventCreatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $expectedJsonLD = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid_expected.json');
+
+        $expectedDocument = (new JsonDocument('foo', $expectedJsonLD));
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                        return $expectedDocument == $jsonDocument;
+                    }
+                )
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_Events_from_cdbxml()
+    {
+        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+
+        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
+            new String('foo'),
+            new EventXmlString($xml),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $eventUpdatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
 

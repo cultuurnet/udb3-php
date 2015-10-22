@@ -222,13 +222,7 @@ class Event extends EventSourcedAggregateRoot
             $eventImported->getCdbXml()
         );
 
-        $this->labels = array();
-        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword);
-            if ($keyword) {
-                $this->labels[] = new Label($keyword);
-            }
-        }
+        $this->setLabelsFromUDB2Event($udb2Event);
     }
 
     /**
@@ -370,6 +364,20 @@ class Event extends EventSourcedAggregateRoot
     {
     }
 
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $udb2Event
+     */
+    protected function setLabelsFromUDB2Event(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
+        $this->labels = array();
+        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword);
+            if ($keyword) {
+                $this->labels[] = new Label($keyword);
+            }
+        }
+    }
+
     protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml
     ) {
@@ -380,13 +388,7 @@ class Event extends EventSourcedAggregateRoot
             $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->labels = array();
-        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword);
-            if ($keyword) {
-                $this->labels[] = new Label($keyword);
-            }
-        }
+        $this->setLabelsFromUDB2Event($udb2Event);
     }
 
     protected function applyEventUpdatedFromCdbXml(
@@ -399,13 +401,7 @@ class Event extends EventSourcedAggregateRoot
             $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->labels = array();
-        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword);
-            if ($keyword) {
-                $this->labels[] = new Label($keyword);
-            }
-        }
+        $this->setLabelsFromUDB2Event($udb2Event);
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

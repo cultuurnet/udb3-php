@@ -21,7 +21,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     const CDBXML_NAMESPACE_33 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
     /**
-     * @var RepositoryInterface
+     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $repository;
 
@@ -31,7 +31,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $projector;
 
     /**
-     * @var EventServiceInterface
+     * @var EventServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $eventService;
 

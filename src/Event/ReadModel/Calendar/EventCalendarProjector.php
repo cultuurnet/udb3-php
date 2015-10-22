@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\Calendar;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -40,6 +41,21 @@ class EventCalendarProjector implements EventListenerInterface
     public function applyEventUpdatedFromUDB2(EventUpdatedFromUDB2 $eventUpdatedFromUDB2)
     {
         $this->saveEventCalendar($eventUpdatedFromUDB2);
+    }
+
+    /**
+     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
+     */
+    public function applyEventCreatedFromCdbXml(EventCreatedFromCdbXml $eventCreatedFromCdbXml)
+    {
+        $eventId = $eventCreatedFromCdbXml->getEventId();
+
+        $event = EventItemFactory::createEventFromCdbXml(
+            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $this->repository->save($eventId, $event->getCalendar());
     }
 
     /**

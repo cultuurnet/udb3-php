@@ -477,7 +477,7 @@ class TabularDataEventFormatter
                 $contactType = property_exists(
                     $contactPoint,
                     'contactType'
-                ) ? $contactPoint->type : null;
+                ) ? $contactPoint->contactType : null;
                 if ($type == $contactType) {
                     return $contactPoint;
                 }

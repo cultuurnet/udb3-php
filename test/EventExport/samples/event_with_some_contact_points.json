@@ -29,7 +29,7 @@
   "publisher":null,
   "startDate":"2015-10-29T20:00:00+01:00",
   "calendarType":"single",
-  "sameAs": ["http:\/\/www.uitinvlaanderen.be\/agenda\/e\/test-nicolas\/",null],
+  "sameAs": ["http:\/\/www.uitinvlaanderen.be\/agenda\/e\/test-nicolas\/"],
   "seeAlso":[],
   "contactPoint": [
     {"email":["nicolas.leroy+test@gmail.com"]}

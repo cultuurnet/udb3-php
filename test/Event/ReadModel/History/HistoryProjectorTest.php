@@ -11,6 +11,7 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -360,14 +361,12 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
 
         $domainMessage = new DomainMessage(
             $eventCreatedFromCdbXml->getEventId()->toNative(),
             1,
-            new Metadata($metadata),
+            $metadata,
             $eventCreatedFromCdbXml,
             DateTime::fromString($importedDate)
         );
@@ -387,6 +386,43 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_logs_EventUpdatedFromCdbXml()
+    {
+        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
+            new String(self::EVENT_ID_2),
+            new EventXmlString($this->getEventCdbXml(self::EVENT_ID_2)),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            1,
+            $metadata,
+            $eventUpdatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => 'Geüpdatet via EntryAPI door consumer "UiTDatabank"',
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
      * @param string $eventId
      * @param array $history
      */
@@ -399,5 +435,22 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             $history,
             $document->getBody()
         );
+    }
+
+    /**
+     * @param string $userNick
+     * @param string $consumerName
+     * @return Metadata
+     */
+    protected function entryApiMetadata($userNick, $consumerName)
+    {
+        $values = [
+            'user_nick' => $userNick,
+            'consumer' => [
+                'name' => $consumerName,
+            ],
+        ];
+
+        return new Metadata($values);
     }
 }

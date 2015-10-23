@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -81,6 +82,26 @@ class HistoryProjector implements EventListenerInterface
                 ),
                 new String(
                     'Aangemaakt via EntryAPI door consumer "' . $consumerName . '"'
+                ),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    private function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        $this->writeHistory(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String(
+                    'Geüpdatet via EntryAPI door consumer "' . $consumerName . '"'
                 ),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )

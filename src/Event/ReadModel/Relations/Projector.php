@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -128,6 +129,25 @@ class Projector implements EventListenerInterface
 
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
+
+    /**
+    * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+    */
+    protected function applyEventUpdatedFromCdbXml(EventUpdatedFromCdbXml $eventUpdatedFromCdbXml)
+    {
+        $eventId = $eventUpdatedFromCdbXml->getEventId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $placeId = $this->getPlaceId($udb2Event);
+        $organizerId = $this->getOrganizerId($udb2Event);
+
+        $this->storeRelations($eventId, $placeId, $organizerId);
+    }
+
 
     /**
      * @param \CultureFeed_Cdb_Item_Event $udb2Event

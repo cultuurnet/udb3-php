@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
@@ -116,6 +117,26 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param String $eventId
+     * @param EventXmlString $xmlString
+     * @param String $cdbXmlNamespaceUri
+     * @return Event
+     */
+    public function updateFromCdbXml(
+        String $eventId,
+        EventXmlString $xmlString,
+        String $cdbXmlNamespaceUri
+    ) {
+        $this->apply(
+            new EventUpdatedFromCdbXml(
+                $eventId,
+                $xmlString,
+                $cdbXmlNamespaceUri
+            )
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -198,13 +219,7 @@ class Event extends EventSourcedAggregateRoot
             $eventImported->getCdbXml()
         );
 
-        $this->labels = array();
-        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword);
-            if ($keyword) {
-                $this->labels[] = new Label($keyword);
-            }
-        }
+        $this->setLabelsFromUDB2Event($udb2Event);
     }
 
     /**
@@ -342,6 +357,20 @@ class Event extends EventSourcedAggregateRoot
         $this->apply(new EventDeleted($this->eventId));
     }
 
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $udb2Event
+     */
+    protected function setLabelsFromUDB2Event(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
+        $this->labels = array();
+        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword);
+            if ($keyword) {
+                $this->labels[] = new Label($keyword);
+            }
+        }
+    }
+
     protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml
     ) {
@@ -352,13 +381,20 @@ class Event extends EventSourcedAggregateRoot
             $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->labels = array();
-        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword);
-            if ($keyword) {
-                $this->labels[] = new Label($keyword);
-            }
-        }
+        $this->setLabelsFromUDB2Event($udb2Event);
+    }
+
+    protected function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+    ) {
+        $this->eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri(),
+            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $this->setLabelsFromUDB2Event($udb2Event);
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

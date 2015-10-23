@@ -557,6 +557,10 @@ class CdbXMLImporter
     private function importExternalId(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
         $externalId = $event->getExternalId();
+        if (empty($externalId)) {
+            return;
+        }
+
         $externalIdIsCDB = (strpos($externalId, 'CDB:') === 0);
 
         if (!property_exists($jsonLD, 'sameAs')) {

@@ -142,6 +142,96 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_can_format_event_with_all_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_all_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_some_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_all_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_contact_point_with_reservation_contact_point()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.reservations.email',
+            'contactPoint.reservations.telephone'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_reservation_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16755083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.reservations.email" => "educatie@debijloke.be",
+            "contactPoint.reservations.telephone" => "09 269 92 92"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_mixed_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email',
+            'contactPoint.reservations.email',
+            'contactPoint.reservations.telephone'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_mixed_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com",
+            "contactPoint.reservations.email" => "educatie@cultuurnet.be",
+            "contactPoint.reservations.telephone" => "09 269 92 92",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
     public function it_formats_available_date()
     {
         $includedProperties = [

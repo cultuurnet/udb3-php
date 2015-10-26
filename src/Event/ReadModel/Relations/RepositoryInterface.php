@@ -13,5 +13,7 @@ interface RepositoryInterface
 
     public function getEventsOrganizedByOrganizer($organizerId);
 
+    public function getEventsEditability($uitid, $email);
+
     public function removeRelations($eventId);
 }

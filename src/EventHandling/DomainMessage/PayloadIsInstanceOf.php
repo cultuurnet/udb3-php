@@ -6,9 +6,14 @@
 namespace CultuurNet\UDB3\EventHandling\DomainMessage;
 
 use Broadway\Domain\DomainMessage;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
-class PayloadIsInstanceOf implements SpecificationInterface
+class PayloadIsInstanceOf implements SpecificationInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var string
      */
@@ -23,6 +28,7 @@ class PayloadIsInstanceOf implements SpecificationInterface
             throw new \InvalidArgumentException('Value for argument typeName should be a string');
         }
         $this->typeName = $typeName;
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -32,12 +38,16 @@ class PayloadIsInstanceOf implements SpecificationInterface
     {
         $payload = $domainMessage->getPayload();
 
-        print 'expected: ' . $this->typeName . PHP_EOL;
-        print 'actual: ' . get_class($payload) . PHP_EOL;
+        $payloadClass = get_class($payload);
+        $this->logger->info(
+            "expected: {$this->typeName}, actual: {$payloadClass}"
+        );
 
-        $satisfied = is_a($payload, $this->typeName) || is_subclass_of($payload, $this->typeName);
+        $satisfied =
+            is_a($payload, $this->typeName) ||
+            is_subclass_of($payload, $this->typeName);
 
-        print 'satisfied: ' . ($satisfied ? 'yes' : 'no') . PHP_EOL;
+        $this->logger->info('satisfied: ' . ($satisfied ? 'yes' : 'no'));
 
         return $satisfied;
     }

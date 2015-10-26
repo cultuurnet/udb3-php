@@ -11,9 +11,14 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\EventHandling\DomainMessage\SpecificationInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
-class AMQPPublisher implements EventListenerInterface
+class AMQPPublisher implements EventListenerInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var string
      */
@@ -46,6 +51,7 @@ class AMQPPublisher implements EventListenerInterface
         $this->channel = $channel;
         $this->exchange = $exchange;
         $this->domainMessageSpecification = $domainMessageSpecification;
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -58,7 +64,9 @@ class AMQPPublisher implements EventListenerInterface
             return;
         }
 
-        print 'message was skipped by specification ' . get_class($this->domainMessageSpecification) . PHP_EOL;
+        $this->logger->info(
+            'specification ' . get_class($this->domainMessageSpecification) . ' was not satisified by message'
+        );
     }
 
     /**
@@ -70,7 +78,7 @@ class AMQPPublisher implements EventListenerInterface
 
         $message = $this->createAMQPMessage($domainMessage);
 
-        print 'publishing to exchange ' . $this->exchange . PHP_EOL;
+        $this->logger->info('publishing to exchange ' . $this->exchange);
 
         $this->channel->basic_publish(
             $message,

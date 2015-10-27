@@ -23,6 +23,19 @@ class KeywordsString extends String
     protected $visibles;
 
     /**
+     * @var Label[]
+     */
+    protected $labels;
+
+    /**
+     * @return Label[]
+     */
+    public function getLabels()
+    {
+        return $this->labels;
+    }
+
+    /**
      * @return array
      */
     public function getKeywords()
@@ -64,6 +77,8 @@ class KeywordsString extends String
             throw new UnequalAmountOfValuesException('keywords', 'visibles');
         }
 
+        $this->labels = $this->createLabels($this->keywords, $this->visibles);
+
         parent::__construct($value);
     }
 
@@ -102,5 +117,16 @@ class KeywordsString extends String
         }
 
         return $values;
+    }
+
+    public function createLabels($keywords, $visibles)
+    {
+        $labels = array();
+
+        foreach ($keywords as $key => $keyword) {
+            $labels[] = new Label(trim($keyword), (bool)$visibles[$key]);
+        }
+
+        return $labels;
     }
 }

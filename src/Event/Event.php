@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
@@ -19,21 +20,22 @@ use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\EventXmlString;
+use CultuurNet\UDB3\KeywordsString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\XmlString;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
-use CultuurNet\UDB3\EventXmlString;
-use ValueObjects\String\String;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\XmlString;
+use ValueObjects\String\String;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -132,6 +134,18 @@ class Event extends EventSourcedAggregateRoot
                 $eventId,
                 $xmlString,
                 $cdbXmlNamespaceUri
+            )
+        );
+    }
+
+    public function applyLabels(
+        String $eventId,
+        KeywordsString $keywordsString
+    ) {
+        $this->apply(
+            new LabelsApplied(
+                $eventId,
+                $keywordsString
             )
         );
     }
@@ -395,6 +409,15 @@ class Event extends EventSourcedAggregateRoot
         );
 
         $this->setLabelsFromUDB2Event($udb2Event);
+    }
+
+    protected function applyLabelsApplied(
+        LabelsApplied $labelsApplied
+    ) {
+        $this->eventId = $labelsApplied->getEventId()->toNative();
+
+        $keywordsString = $labelsApplied->getKeywordsString();
+        $this->labels = $keywordsString->getLabels();
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EventXmlString;
+use CultuurNet\UDB3\KeywordsString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
@@ -179,6 +180,36 @@ class EventTest extends PHPUnit_Framework_TestCase
                 new Label('slagwerk'),
                 new Label('test'),
                 new Label('aangepast')
+            ),
+            $event->getLabels()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_labels_applied()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $keywordsString = new KeywordsString(
+            file_get_contents(__DIR__ . '/samples/keywords_entryapi_two_keywords.txt')
+        );
+
+        $event->applyLabels(
+            new String('someid'),
+            $keywordsString
+        );
+
+        $this->assertEquals(
+            array(
+                new Label('muziek'),
+                new Label('orkest')
             ),
             $event->getLabels()
         );

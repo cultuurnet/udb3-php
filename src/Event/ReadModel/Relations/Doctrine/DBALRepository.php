@@ -71,25 +71,6 @@ class DBALRepository implements RepositoryInterface
         return $events;
     }
 
-    public function getEventsEditability($uitid, $email)
-    {
-        $q = $this->connection->createQueryBuilder();
-        $q
-            ->select('event')
-            ->from($this->tableName)
-            ->where('createdBy = ?')
-            ->setParameter(0, $email);
-
-        $results = $q->execute();
-
-        $events = array();
-        while ($id = $results->fetchColumn(0)) {
-            $events[] = $id;
-        }
-
-        return $events;
-    }
-
     public function getEventsOrganizedByOrganizer($organizerId)
     {
         $q = $this->connection->createQueryBuilder();

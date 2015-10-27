@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -497,6 +498,24 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             // as an array and not as an object.
             $eventLd->labels = array_values($eventLd->labels);
         }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * @param LabelsApplied $labelsApplied
+     */
+    protected function applyLabelApplied(LabelsApplied $labelsApplied)
+    {
+        $document = $this->loadDocumentFromRepository($labelsApplied);
+
+        $eventLd = $document->getBody();
+
+        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
+        $newLabels = $labelsApplied->getKeywordsString()->getLabels();
+
+        $labels = array_merge($labels, $newLabels);
+        $eventLd->labels = array_unique($labels);
 
         $this->repository->save($document->withBody($eventLd));
     }

@@ -14,10 +14,12 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\KeywordsString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -416,6 +418,45 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
                     'description' => 'Geüpdatet via EntryAPI door consumer "UiTDatabank"',
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_LabelsApplied()
+    {
+        $keywordsString = file_get_contents(__DIR__ . '/keywords_entryapi_two_keywords.txt');
+        $labelsApplied = new LabelsApplied(
+            new String(self::EVENT_ID_2),
+            new KeywordsString($keywordsString)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $labelsApplied->getEventId()->toNative(),
+            1,
+            $metadata,
+            $labelsApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $labels = 'label B, label C';
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => "Labels '{$labels}' toegepast",
                     'author' => 'Jantest',
                 ]
             ]

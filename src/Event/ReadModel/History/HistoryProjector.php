@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -188,6 +189,27 @@ class HistoryProjector implements EventListenerInterface
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new String("Label '{$unlabelled->getLabel()}' verwijderd"),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    /**
+     * @param LabelsApplied $labelsApplied
+     * @param DomainMessage $domainMessage
+     */
+    private function applyLabelsApplied(
+        LabelsApplied $labelsApplied,
+        DomainMessage $domainMessage
+    ) {
+        $labels = $labelsApplied->getKeywordsString()->getKeywords();
+        $labels = implode(', ', $labels);
+
+        $this->writeHistory(
+            $labelsApplied->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
+                new String("Labels '{$labels}' toegepast"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

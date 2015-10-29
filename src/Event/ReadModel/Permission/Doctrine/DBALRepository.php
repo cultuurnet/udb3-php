@@ -8,42 +8,69 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Permission\Doctrine;
 
+use CultuurNet\UDB3\Event\ReadModel\Permission\PermissionQueryInterface;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
-use CultuurNet\UDB3\Event\ReadModel\Permission;
+use CultuurNet\UDB3\Event\ReadModel\Permission\PermissionRepositoryInterface;
+use ValueObjects\String\String;
 
-class DBALRepository implements Permission\PermissionRepositoryInterface
+class DBALRepository implements PermissionRepositoryInterface, PermissionQueryInterface
 {
-    protected $tableName = 'event';
-
     /**
      * @var Connection
      */
     protected $connection;
 
     /**
+     * @param String $tableName
      * @param Connection $connection
      */
-    public function __construct(Connection $connection)
+    public function __construct(String $tableName, Connection $connection)
     {
+        $this->tableName = $tableName;
         $this->connection = $connection;
     }
 
-    public function getEditableEvents($uitid, $email)
+    /**
+     * @inheritdoc
+     */
+    public function getEditableEvents(String $uitId)
     {
         $q = $this->connection->createQueryBuilder();
-        $q->select('event')
-            ->from($this->tableName)
-            ->where('createdBy = ?')
-            ->setParameter(0, $email);
+        $q->select('event_id')
+            ->from($this->tableName->toNative())
+            ->where('user_id = :userId')
+            ->setParameter(':userId', $uitId->toNative());
 
         $results = $q->execute();
 
         $events = array();
         while ($id = $results->fetchColumn(0)) {
-            $events[] = $id;
+            $events[] = new String($id);
         }
 
         return $events;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function markEventEditableByUser(String $eventId, String $uitId)
+    {
+        try {
+            $this->connection->insert(
+                $this->tableName->toNative(),
+                [
+                    'event_id' => $eventId->toNative(),
+                    'user_id' => $uitId->toNative()
+                ]
+            );
+        } catch (UniqueConstraintViolationException $e) {
+            // Intentionally catching database exception occurring when the
+            // permission record is already in place.
+        }
+    }
+
+
 }

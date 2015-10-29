@@ -31,7 +31,7 @@ class Projector implements EventListenerInterface, LoggerAwareInterface
      */
     private $permissionRepository;
 
-    function __construct(
+    public function __construct(
         UsersInterface $users,
         PermissionRepositoryInterface $permissionRepository
     ) {

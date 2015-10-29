@@ -71,6 +71,4 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
             // permission record is already in place.
         }
     }
-
-
 }

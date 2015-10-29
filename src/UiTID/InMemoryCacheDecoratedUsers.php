@@ -47,8 +47,7 @@ class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterfac
         $key = $email->toNative();
         if (!isset($this->mailMap[$key])) {
             $this->mailMap[$key] = $this->wrapped->byEmail($email);
-        }
-        else {
+        } else {
             $this->logger->info('found user id of ' . $email->toNative() . ' in cache');
         }
 
@@ -63,12 +62,10 @@ class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterfac
         $key = $nick->toNative();
         if (!isset($this->nickMap[$key])) {
             $this->nickMap[$key] = $this->wrapped->byNick($nick);
-        }
-        else {
+        } else {
             $this->logger->info('found user id of ' . $nick->toNative() . ' in cache');
         }
 
         return $this->nickMap[$key];
     }
-
 }

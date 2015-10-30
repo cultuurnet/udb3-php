@@ -14,6 +14,14 @@ class Label extends Keyword
      */
     protected $visible;
 
+    /**
+     * @return boolean
+     */
+    public function isVisible()
+    {
+        return $this->visible;
+    }
+
     public function __construct($value, $visible = true)
     {
         parent::__construct($value);

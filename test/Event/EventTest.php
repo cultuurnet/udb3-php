@@ -208,8 +208,8 @@ class EventTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                new Label('muziek'),
-                new Label('orkest')
+                new Label('muziek', true),
+                new Label('orkest', false)
             ),
             $event->getLabels()
         );

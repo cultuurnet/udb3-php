@@ -9,24 +9,9 @@ use CultuurNet\Entry\Keyword;
 
 class Label extends Keyword
 {
-    /**
-     * @var bool
-     */
-    protected $visible;
-
-    /**
-     * @return boolean
-     */
-    public function isVisible()
-    {
-        return $this->visible;
-    }
-
     public function __construct($value, $visible = true)
     {
-        parent::__construct($value);
-
-        $this->visible = $visible;
+        parent::__construct($value, $visible);
     }
 
     /**

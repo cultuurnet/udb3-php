@@ -4,27 +4,23 @@ namespace CultuurNet\UDB3\Event\ReadModel\Permission;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\UiTID\UsersInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\NullLogger;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\String\String;
 use ValueObjects\Web\EmailAddress;
 
-class Projector implements EventListenerInterface, LoggerAwareInterface
+class Projector implements EventListenerInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
-    use LoggerAwareTrait;
 
     /**
-     * @var UsersInterface
+     * @var CreatedByToUserIdResolverInterface
      */
-    private $users;
+    private $userIdResolver;
 
     /**
      * @var PermissionRepositoryInterface
@@ -32,12 +28,11 @@ class Projector implements EventListenerInterface, LoggerAwareInterface
     private $permissionRepository;
 
     public function __construct(
-        UsersInterface $users,
-        PermissionRepositoryInterface $permissionRepository
+        PermissionRepositoryInterface $permissionRepository,
+        CreatedByToUserIdResolverInterface $createdByToUserIdResolver
     ) {
-        $this->users = $users;
+        $this->userIdResolver = $createdByToUserIdResolver;
         $this->permissionRepository = $permissionRepository;
-        $this->logger = new NullLogger();
     }
 
     protected function applyEventImportedFromUDB2(
@@ -51,7 +46,9 @@ class Projector implements EventListenerInterface, LoggerAwareInterface
         $createdByIdentifier = $cdbEvent->getCreatedBy();
 
         if ($createdByIdentifier) {
-            $ownerId = $this->getUserIdByCreatedByIdentifier($createdByIdentifier);
+            $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
+                new String($createdByIdentifier)
+            );
 
             if (!$ownerId) {
                 return;
@@ -83,7 +80,9 @@ class Projector implements EventListenerInterface, LoggerAwareInterface
         // If createdby is supplied, consider the user identified by createdby
         // as the owner.
         if ($createdByIdentifier) {
-            $ownerId = $this->getUserIdByCreatedByIdentifier($createdByIdentifier);
+            $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
+                new String($createdByIdentifier)
+            );
         }
 
         if (!$ownerId) {
@@ -94,28 +93,5 @@ class Projector implements EventListenerInterface, LoggerAwareInterface
             $eventCreatedFromCdbXml->getEventId(),
             $ownerId
         );
-    }
-
-    /**
-     * @param $createdByIdentifier
-     * @return String
-     */
-    private function getUserIdByCreatedByIdentifier($createdByIdentifier)
-    {
-        try {
-            $email = new EmailAddress($createdByIdentifier);
-            $userId = $this->users->byEmail($email);
-        } catch (InvalidNativeArgumentException $e) {
-            $nick = new String($createdByIdentifier);
-            $userId = $this->users->byNick($nick);
-        }
-
-        if (!$userId) {
-            $this->logger->warning(
-                'Unable to find user with identifier ' . $createdByIdentifier
-            );
-        }
-
-        return $userId;
     }
 }

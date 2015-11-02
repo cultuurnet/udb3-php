@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
+use Guzzle\Common\Validation\Email;
 use ValueObjects\String\String;
 use ValueObjects\Web\EmailAddress;
 
@@ -76,6 +77,24 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             new String('abc'),
             $id
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_the_user_can_not_be_found()
+    {
+        $this->cultureFeed->expects($this->any())
+            ->method('searchUsers')
+            ->willReturn(new \CultureFeed_ResultSet());
+
+        $this->assertNull(
+            $this->users->byEmail(new EmailAddress('johndoe@example.com'))
+        );
+
+        $this->assertNull(
+            $this->users->byNick(new String('johndoe'))
         );
     }
 }

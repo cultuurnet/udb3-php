@@ -8,7 +8,10 @@ namespace CultuurNet\UDB3\Event\ReadModel\Permission;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\EventXmlString;
 use ValueObjects\String\String;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
@@ -103,6 +106,103 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->repository->expects($this->never())
             ->method('markEventEditableByUser');
+
+        $this->projector->handle($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_permission_to_the_user_identified_by_the_createdby_element_for_events_created_from_cdbxml()
+    {
+        $cdbXmlVersion = '3.2';
+        $eventId = new String('dcd1ef37-0608-4824-afe3-99124feda64b');
+        $createdBy = new String('gentonfiles@gmail.com');
+
+        $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
+
+        $event = EventItemFactory::createEventFromCdbXml(
+            \CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion),
+            $cdbXml
+        );
+
+        $cdbXml = new \CultureFeed_Cdb_Default($cdbXmlVersion);
+        $cdbXml->addItem($event);
+
+        $payload = new EventCreatedFromCdbXml(
+            $eventId,
+            new EventXmlString((string)$cdbXml),
+            new String(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
+        );
+
+        $msg = DomainMessage::recordNow(
+            $eventId->toNative(),
+            1,
+            new Metadata(['user_id' => 'foo']),
+            $payload
+        );
+
+        $userId = new String('123');
+
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->with($createdBy)
+            ->willReturn($userId);
+
+        $this->repository->expects($this->once())
+            ->method('markEventEditableByUser')
+            ->with(
+                $eventId,
+                $userId
+            );
+
+        $this->projector->handle($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_permission_to_the_user_that_submitted_the_cdbxml_for_events_created_from_cdbxml_without_createdby()
+    {
+        $cdbXmlVersion = '3.2';
+        $eventId = new String('dcd1ef37-0608-4824-afe3-99124feda64b');
+        $userIdWhileSubmittingCdbXml = new String('foo');
+
+        $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
+
+        $event = EventItemFactory::createEventFromCdbXml(
+            \CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion),
+            $cdbXml
+        );
+        $event->setCreatedBy(null);
+
+        $cdbXml = new \CultureFeed_Cdb_Default($cdbXmlVersion);
+        $cdbXml->addItem($event);
+
+        $payload = new EventCreatedFromCdbXml(
+            $eventId,
+            new EventXmlString((string)$cdbXml),
+            new String(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
+        );
+
+        $msg = DomainMessage::recordNow(
+            $eventId->toNative(),
+            1,
+            new Metadata(
+                ['user_id' => $userIdWhileSubmittingCdbXml->toNative()]
+            ),
+            $payload
+        );
+
+        $this->userIdResolver->expects($this->never())
+            ->method('resolveCreatedByToUserId');
+
+        $this->repository->expects($this->once())
+            ->method('markEventEditableByUser')
+            ->with(
+                $eventId,
+                $userIdWhileSubmittingCdbXml
+            );
 
         $this->projector->handle($msg);
     }

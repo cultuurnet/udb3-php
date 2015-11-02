@@ -162,6 +162,49 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_does_not_add_any_permissions_for_events_created_from_cdbxml_with_unresolvable_createdby_value()
+    {
+        $cdbXmlVersion = '3.2';
+        $eventId = new String('dcd1ef37-0608-4824-afe3-99124feda64b');
+        $createdBy = new String('gentonfiles@gmail.com');
+
+        $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
+
+        $event = EventItemFactory::createEventFromCdbXml(
+            \CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion),
+            $cdbXml
+        );
+
+        $cdbXml = new \CultureFeed_Cdb_Default($cdbXmlVersion);
+        $cdbXml->addItem($event);
+
+        $payload = new EventCreatedFromCdbXml(
+            $eventId,
+            new EventXmlString((string)$cdbXml),
+            new String(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
+        );
+
+        $msg = DomainMessage::recordNow(
+            $eventId->toNative(),
+            1,
+            new Metadata(['user_id' => 'foo']),
+            $payload
+        );
+
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->with($createdBy)
+            ->willReturn(null);
+
+        $this->repository->expects($this->never())
+            ->method('markEventEditableByUser');
+
+        $this->projector->handle($msg);
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_permission_to_the_user_that_submitted_the_cdbxml_for_events_created_from_cdbxml_without_createdby()
     {
         $cdbXmlVersion = '3.2';

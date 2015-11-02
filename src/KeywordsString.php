@@ -124,7 +124,8 @@ class KeywordsString extends String
         $labels = array();
 
         foreach ($keywords as $key => $keyword) {
-            $labels[] = new Label(trim($keyword), (bool)$visibles[$key]);
+            $visible = $visibles[$key] === 'true' ? true : false;
+            $labels[] = new Label(trim($keyword), $visible);
         }
 
         return $labels;

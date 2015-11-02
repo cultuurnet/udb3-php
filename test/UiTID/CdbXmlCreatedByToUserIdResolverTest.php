@@ -64,4 +64,20 @@ class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($userId, $actualUserId);
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_user_id_not_resolved()
+    {
+        $createdBy = new String('johndoe');
+
+        $this->users->expects($this->once())
+            ->method('byNick')
+            ->willReturn(null);
+
+        $userId = $this->resolver->resolveCreatedByToUserId($createdBy);
+
+        $this->assertNull($userId);
+    }
 }

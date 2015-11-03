@@ -507,7 +507,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      */
     protected function applyLabelsApplied(LabelsApplied $labelsApplied)
     {
-        $document = $this->loadDocumentFromRepositoryByEventId($labelsApplied->getEventId());
+        $document = $this->loadDocumentFromRepositoryByEventId($labelsApplied->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 

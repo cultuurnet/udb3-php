@@ -56,6 +56,7 @@ class KeywordsString extends String
      */
     public function __construct($value)
     {
+        $value = urldecode($value);
         $expectedKeys = array('keywords', 'visibles');
         $valuesDelimiter = ';';
         $keysDelimiter = '&';

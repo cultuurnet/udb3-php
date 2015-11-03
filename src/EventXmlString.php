@@ -18,9 +18,7 @@ class EventXmlString extends XmlString
      */
     public function toEventXmlString()
     {
-        $dom = new DOMDocument('1.0', 'utf-8');
-        $dom->preserveWhiteSpace = false;
-        $dom->loadXML($this->value);
+        $dom = $this->loadDOM();
         $childNodes = $dom->documentElement->childNodes;
         $eventElement = $childNodes->item(0);
 
@@ -32,11 +30,42 @@ class EventXmlString extends XmlString
         return $eventXml;
     }
 
-    public function withCdbidAttribute($eventid)
+    /**
+     * @return DOMDocument
+     */
+    private function loadDOM()
     {
         $dom = new DOMDocument('1.0', 'utf-8');
         $dom->preserveWhiteSpace = false;
         $dom->loadXML($this->value);
+
+        return $dom;
+    }
+
+    /**
+     * @return \DOMElement
+     */
+    public function eventElement()
+    {
+        $dom = $this->loadDOM();
+
+        $xpath = new DOMXPath($dom);
+        $xpath->registerNamespace('cdb', $dom->documentElement->namespaceURI);
+        $elements = $xpath->query('//cdb:event');
+        if ($elements->length >= 1) {
+            /** @var \DOMElement $element */
+            $element = $elements->item(0);
+            return $element;
+        } else {
+            throw new \LogicException(
+                'Unable to find cdbxml event element in the xml string.'
+            );
+        }
+    }
+
+    public function withCdbidAttribute($eventid)
+    {
+        $dom = $this->loadDOM();
 
         $xpath = new DOMXPath($dom);
         $xpath->registerNamespace('cdb', $dom->documentElement->namespaceURI);

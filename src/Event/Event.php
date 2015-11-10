@@ -146,7 +146,8 @@ class Event extends EventSourcedAggregateRoot
     /**
      * @param LabelCollection $labels
      */
-    public function mergeLabels(LabelCollection $labels) {
+    public function mergeLabels(LabelCollection $labels)
+    {
         if (count($labels) === 0) {
             throw new \InvalidArgumentException(
                 'Argument $labels should contain at least one label'

@@ -213,10 +213,10 @@ class HistoryProjector implements EventListenerInterface
         $labels = $labelsMerged->getLabels()->toStrings();
         // Quote labels.
         $quotedLabels = array_map(
-          function ($label) {
-            return "'{$label}'";
-          },
-          $labels
+            function ($label) {
+                return "'{$label}'";
+            },
+            $labels
         );
         $quotedLabelsString = implode(', ', $quotedLabels);
 

@@ -20,7 +20,7 @@
     "psr/log": "~1.0",
     "cultuurnet/auth": "~1.2",
     "cultuurnet/search": "~1.1",
-    "cultuurnet/entry": "dev-feature/III-481 as 0.1",
+    "cultuurnet/entry": "dev-feature/III-482 as 0.1",
     "cultuurnet/cdb": "~2.1",
     "cultuurnet/deserializer": "~0.1",
     "cultuurnet/clock": "~0.1",

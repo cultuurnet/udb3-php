@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\LabelsApplied;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -240,6 +241,32 @@ class HistoryProjector implements EventListenerInterface
                     $domainMessage->getRecordedOn()
                 ),
                 new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    private function applyTranslationApplied(
+        TranslationApplied $translationApplied,
+        DomainMessage $domainMessage
+    ) {
+        $logMessage = '';
+        if ($translationApplied->getTitle()->toNative() !== null) {
+            $logMessage .= "Titel vertaald ({$translationApplied->getLanguage()->getCode()})";
+        }
+        if ($translationApplied->getLongDescription()->toNative() !== null) {
+            if (!empty($logMessage)) {
+                $logMessage .= " & ";
+            }
+            $logMessage .= "Beschrijving vertaald ({$translationApplied->getLanguage()->getCode()})";
+        }
+        $this->writeHistory(
+            $translationApplied->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($logMessage),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

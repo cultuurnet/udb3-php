@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\LabelsApplied;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
@@ -457,6 +458,47 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
                     'description' => "Labels '{$labels}' toegepast",
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_TranslationApplied()
+    {
+        $translationApplied = new TranslationApplied(
+            new String(self::EVENT_ID_2),
+            new Language('en'),
+            new String('Title'),
+            new String('Short description'),
+            new String('Long long long extra long description')
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $translationApplied->getEventId()->toNative(),
+            1,
+            $metadata,
+            $translationApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $logMessage = 'Titel vertaald (en) & Beschrijving vertaald (en)';
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => $logMessage,
                     'author' => 'Jantest',
                 ]
             ]

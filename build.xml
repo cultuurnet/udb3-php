@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Culturefeed" default="test">
     <fileset id="php" dir=".">
-        <include name="**/*.php"/>
-        <exclude name="vendor/"/>
+        <include name="src/**/*.php"/>
+        <include name="test/**/*.php"/>
     </fileset>
 
     <target name="test">
+        <phingcall target="composer-validate"/>
+        <phingcall target="lint"/>
+        <phingcall target="coding-standards"/>
+    </target>
+
+    <target name="composer-validate">
         <exec command="composer validate" passthru="true" />
+    </target>
+
+    <target name="lint">
         <phplint>
             <fileset refid="php"/>
         </phplint>
+    </target>
+
+    <target name="coding-standards">
         <phpcodesniffer
                 standard="phpcs-ruleset.xml"
                 format="full"

@@ -24,6 +24,7 @@ use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -34,6 +35,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\Translation;
+use CultuurNet\UDB3\TranslationsString;
 use CultuurNet\UDB3\XmlString;
 use ValueObjects\String\String;
 
@@ -45,6 +48,11 @@ class Event extends EventSourcedAggregateRoot
      * @var Label[]
      */
     protected $labels = [];
+
+    /**
+     * @var Translation[]
+     */
+    protected $translations = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -138,6 +146,10 @@ class Event extends EventSourcedAggregateRoot
         );
     }
 
+    /**
+     * @param String $eventId
+     * @param KeywordsString $keywordsString
+     */
     public function applyLabels(
         String $eventId,
         KeywordsString $keywordsString
@@ -146,6 +158,28 @@ class Event extends EventSourcedAggregateRoot
             new LabelsApplied(
                 $eventId,
                 $keywordsString
+            )
+        );
+    }
+
+    /**
+     * @param String $eventId
+     * @param TranslationsString $translationsString
+     */
+    public function applyTranslation(
+        String $eventId,
+        Language $language,
+        String $title,
+        String $shortDescription,
+        String $longDescription
+    ) {
+        $this->apply(
+            new TranslationApplied(
+                $eventId,
+                $language,
+                $title,
+                $shortDescription,
+                $longDescription
             )
         );
     }
@@ -161,6 +195,11 @@ class Event extends EventSourcedAggregateRoot
     public function getLabels()
     {
         return $this->labels;
+    }
+
+    public function getTranslations()
+    {
+        return $this->translations;
     }
 
     /**
@@ -418,6 +457,27 @@ class Event extends EventSourcedAggregateRoot
 
         $keywordsString = $labelsApplied->getKeywordsString();
         $this->labels = $keywordsString->getLabels();
+    }
+
+    protected function applyTranslationApplied(
+        TranslationApplied $translationApplied
+    ) {
+        $this->eventId = $translationApplied->getEventId()->toNative();
+
+        $language = $translationApplied->getLanguage()->getCode();
+        $translation = new Translation(
+            $translationApplied->getLanguage(),
+            $translationApplied->getTitle(),
+            $translationApplied->getShortdescription(),
+            $translationApplied->getLongdescription()
+        );
+
+        if (!array_key_exists($language, $this->translations)) {
+            $this->translations[$language] = $translation;
+        } else {
+            $newTranslation = $this->translations[$language]->mergeTranslation($translation);
+            $this->translations[$language] = $newTranslation;
+        }
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

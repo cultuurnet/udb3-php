@@ -25,7 +25,7 @@ use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
-use CultuurNet\UDB3\Event\Events\LabelsApplied;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -40,6 +40,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -503,19 +504,20 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * @param LabelsApplied $labelsApplied
+     * @param LabelsMerged $labelsMerged
      */
-    protected function applyLabelsApplied(LabelsApplied $labelsApplied)
+    protected function applyLabelsMerged(LabelsMerged $labelsMerged)
     {
-        $document = $this->loadDocumentFromRepositoryByEventId($labelsApplied->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByEventId($labelsMerged->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
         $labels = isset($eventLd->labels) ? $eventLd->labels : [];
-        $newLabels = $labelsApplied->getKeywordsString()->getLabels();
 
-        $labels = array_merge($labels, $newLabels);
-        $eventLd->labels = array_unique($labels);
+        $currentCollection = LabelCollection::fromStrings($labels);
+        $newLabels = $labelsMerged->getLabels();
+
+        $eventLd->labels = $currentCollection->merge($newLabels)->toStrings();
 
         $this->repository->save($document->withBody($eventLd));
     }

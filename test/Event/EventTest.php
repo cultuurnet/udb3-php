@@ -226,7 +226,7 @@ class EventTest extends PHPUnit_Framework_TestCase
             new Label('polen'),
             new Label('slagwerk'),
             new Label('muziek'),
-            new Label('orkest'),
+            new Label('orkest', false),
         ];
 
         $this->assertEquals(

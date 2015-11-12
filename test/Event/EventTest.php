@@ -204,7 +204,7 @@ class EventTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_have_labels_applied()
+    public function it_can_have_labels_merged()
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
         $event = Event::createFromCdbXml(
@@ -233,5 +233,25 @@ class EventTest extends PHPUnit_Framework_TestCase
             new LabelCollection($expectedLabels),
             $event->getLabels()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_at_least_one_label_when_merging_labels()
+    {
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'Argument $labels should contain at least one label'
+        );
+
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $event->mergeLabels(new LabelCollection());
     }
 }

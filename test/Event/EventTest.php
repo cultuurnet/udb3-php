@@ -7,7 +7,9 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EventXmlString;
+use CultuurNet\UDB3SilexEntryAPI\KeywordsVisiblesPair;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_TestCase;
@@ -39,14 +41,19 @@ class EventTest extends PHPUnit_Framework_TestCase
         $this->event->label(new Label('foo'));
 
         $this->assertEquals(
-            array(new Label('foo')),
+            (new LabelCollection())->with(new Label('foo')),
             $this->event->getLabels()
         );
 
         $this->event->label(new Label('bar'));
 
         $this->assertEquals(
-            array(new Label('foo'), new Label('bar')),
+            new LabelCollection(
+                [
+                    new Label('foo'),
+                    new Label('bar')
+                ]
+            ),
             $this->event->getLabels()
         );
     }
@@ -60,7 +67,7 @@ class EventTest extends PHPUnit_Framework_TestCase
         $this->event->label(new Label('foo'));
 
         $this->assertEquals(
-            array(new Label('foo')),
+            (new LabelCollection())->with(new Label('foo')),
             $this->event->getLabels()
         );
     }
@@ -75,11 +82,13 @@ class EventTest extends PHPUnit_Framework_TestCase
         $this->event->label(new Label('België'));
         $this->event->label(new Label('BelgiË'));
 
+        $expectedLabels = [
+            new Label('Foo'),
+            new Label('België')
+        ];
+
         $this->assertEquals(
-            [
-                new Label('Foo'),
-                new Label('België')
-            ],
+            new LabelCollection($expectedLabels),
             $this->event->getLabels()
         );
     }
@@ -92,16 +101,18 @@ class EventTest extends PHPUnit_Framework_TestCase
         $this->event->label(new Label('foo'));
 
         $this->assertEquals(
-            [
-                new Label('foo')
-            ],
+            new LabelCollection(
+                [
+                    new Label('foo')
+                ]
+            ),
             $this->event->getLabels()
         );
 
         $this->event->unlabel(new Label('Foo'));
 
         $this->assertEquals(
-            [],
+            new LabelCollection(),
             $this->event->getLabels()
         );
     }
@@ -118,17 +129,19 @@ class EventTest extends PHPUnit_Framework_TestCase
             'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
         );
 
+        $expectedLabels = [
+            new Label('kunst'),
+            new Label('tentoonstelling'),
+            new Label('brugge'),
+            new Label('grafiek'),
+            new Label('oud sint jan'),
+            new Label('TRAEGHE GENUINE ARTS'),
+            new Label('janine de conink'),
+            new Label('brugge oktober'),
+        ];
+
         $this->assertEquals(
-            array(
-                new Label('kunst'),
-                new Label('tentoonstelling'),
-                new Label('brugge'),
-                new Label('grafiek'),
-                new Label('oud sint jan'),
-                new Label('TRAEGHE GENUINE ARTS'),
-                new Label('janine de conink'),
-                new Label('brugge oktober')
-            ),
+            new LabelCollection($expectedLabels),
             $event->getLabels()
         );
     }
@@ -145,11 +158,13 @@ class EventTest extends PHPUnit_Framework_TestCase
             new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
         );
 
+        $expectedLabels = [
+            new Label('polen'),
+            new Label('slagwerk'),
+        ];
+
         $this->assertEquals(
-            array(
-                new Label('polen'),
-                new Label('slagwerk')
-            ),
+            new LabelCollection($expectedLabels),
             $event->getLabels()
         );
     }
@@ -173,14 +188,70 @@ class EventTest extends PHPUnit_Framework_TestCase
             new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
         );
 
+        $expectedLabels = [
+            new Label('polen'),
+            new Label('slagwerk'),
+            new Label('test'),
+            new Label('aangepast'),
+        ];
+
         $this->assertEquals(
-            array(
-                new Label('polen'),
-                new Label('slagwerk'),
-                new Label('test'),
-                new Label('aangepast')
-            ),
+            new LabelCollection($expectedLabels),
             $event->getLabels()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_labels_merged()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $labels = new LabelCollection(
+            [
+                new Label('muziek', true),
+                new Label('orkest', false),
+            ]
+        );
+
+        $event->mergeLabels($labels);
+
+        $expectedLabels = [
+            new Label('polen'),
+            new Label('slagwerk'),
+            new Label('muziek'),
+            new Label('orkest', false),
+        ];
+
+        $this->assertEquals(
+            new LabelCollection($expectedLabels),
+            $event->getLabels()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_at_least_one_label_when_merging_labels()
+    {
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'Argument $labels should contain at least one label'
+        );
+
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $event->mergeLabels(new LabelCollection());
     }
 }

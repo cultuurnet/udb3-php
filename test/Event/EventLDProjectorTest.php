@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -21,7 +22,9 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3SilexEntryAPI\KeywordsVisiblesPair;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
@@ -1330,6 +1333,67 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_application_of_labels()
+    {
+        $labelsApplied = new LabelsMerged(
+            new String('foo'),
+            new LabelCollection(
+                [
+                    new Label('label B', true),
+                    new Label('label C', false),
+                ]
+            )
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $labelsApplied->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $labelsApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A']
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A', 'label B', 'label C']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects(($this->once()))
+            ->method('save')
+            ->with($this->callback(
+                function (JsonDocument $jsonDocument) use ($expectedDocument) {
+                    return $expectedDocument == $jsonDocument;
+                }
+            ));
 
         $this->projector->handle($domainMessage);
     }

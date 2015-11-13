@@ -16,8 +16,8 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
-use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -149,6 +149,10 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
+    /**
+     * @param Metadata $metadata
+     * @return String|null
+     */
     private function getAuthorFromMetadata(Metadata $metadata)
     {
         $properties = $metadata->serialize();
@@ -158,6 +162,10 @@ class HistoryProjector implements EventListenerInterface
         }
     }
 
+    /**
+     * @param Metadata $metadata
+     * @return String|null
+     */
     private function getConsumerFromMetadata(Metadata $metadata)
     {
         $properties = $metadata->serialize();
@@ -196,21 +204,36 @@ class HistoryProjector implements EventListenerInterface
     }
 
     /**
-     * @param LabelsApplied $labelsApplied
+     * @param LabelsMerged $labelsMerged
      * @param DomainMessage $domainMessage
      */
-    private function applyLabelsApplied(
-        LabelsApplied $labelsApplied,
+    private function applyLabelsMerged(
+        LabelsMerged $labelsMerged,
         DomainMessage $domainMessage
     ) {
-        $labels = $labelsApplied->getKeywordsString()->getKeywords();
-        $labels = implode(', ', $labels);
+        $labels = $labelsMerged->getLabels()->toStrings();
+        // Quote labels.
+        $quotedLabels = array_map(
+            function ($label) {
+                return "'{$label}'";
+            },
+            $labels
+        );
+        $quotedLabelsString = implode(', ', $quotedLabels);
+
+        $message = "Labels {$quotedLabelsString} toegepast";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        if ($consumerName) {
+            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
+        }
 
         $this->writeHistory(
-            $labelsApplied->getEventId()->toNative(),
+            $labelsMerged->getEventId()->toNative(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Labels '{$labels}' toegepast"),
+                new String($message),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

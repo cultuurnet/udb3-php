@@ -14,14 +14,14 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
-use CultuurNet\UDB3\Event\Events\LabelsApplied;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Event\TitleTranslated;
-use CultuurNet\UDB3\KeywordsString;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventXmlString;
@@ -428,12 +428,17 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_logs_LabelsApplied()
+    public function it_logs_LabelsMerged()
     {
-        $keywordsString = file_get_contents(__DIR__ . '/keywords_entryapi_two_keywords.txt');
-        $labelsApplied = new LabelsApplied(
+        $labels = new LabelCollection(
+            [
+                new Label('label B', true),
+                new Label('label C', false),
+            ]
+        );
+        $labelsMerged = new LabelsMerged(
             new String(self::EVENT_ID_2),
-            new KeywordsString($keywordsString)
+            $labels
         );
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
@@ -441,23 +446,21 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
 
         $domainMessage = new DomainMessage(
-            $labelsApplied->getEventId()->toNative(),
+            $labelsMerged->getEventId()->toNative(),
             1,
             $metadata,
-            $labelsApplied,
+            $labelsMerged,
             DateTime::fromString($importedDate)
         );
 
         $this->historyProjector->handle($domainMessage);
-
-        $labels = 'label B, label C';
 
         $this->assertHistoryOfEvent(
             self::EVENT_ID_2,
             [
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
-                    'description' => "Labels '{$labels}' toegepast",
+                    'description' => "Labels 'label B', 'label C' toegepast via EntryAPI door consumer \"UiTDatabank\"",
                     'author' => 'Jantest',
                 ]
             ]

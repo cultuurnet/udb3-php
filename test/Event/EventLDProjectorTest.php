@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
-use CultuurNet\UDB3\Event\Events\LabelsApplied;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -23,9 +23,9 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\KeywordsString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
@@ -1343,13 +1343,14 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
      */
     public function it_projects_the_application_of_labels()
     {
-        $keywordsString = new KeywordsString(
-            file_get_contents(__DIR__ . '/ReadModel/JSONLD/keywords_entryapi_two_keywords.txt')
-        );
-
-        $labelsApplied = new LabelsApplied(
+        $labelsApplied = new LabelsMerged(
             new String('foo'),
-            $keywordsString
+            new LabelCollection(
+                [
+                    new Label('label B', true),
+                    new Label('label C', false),
+                ]
+            )
         );
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';

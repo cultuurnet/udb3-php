@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
-use CultuurNet\UDB3\Event\Events\LabelsApplied;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -29,8 +29,8 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\EventXmlString;
-use CultuurNet\UDB3\KeywordsString;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
@@ -45,9 +45,9 @@ class Event extends EventSourcedAggregateRoot
     protected $eventId;
 
     /**
-     * @var Label[]
+     * @var LabelCollection
      */
-    protected $labels = [];
+    protected $labels;
 
     /**
      * @var Translation[]
@@ -55,6 +55,11 @@ class Event extends EventSourcedAggregateRoot
     protected $translations = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
+
+    public function __construct()
+    {
+        $this->resetLabels();
+    }
 
     /**
      * Factory method to create a new event.
@@ -147,17 +152,20 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param String $eventId
-     * @param KeywordsString $keywordsString
+     * @param LabelCollection $labels
      */
-    public function applyLabels(
-        String $eventId,
-        KeywordsString $keywordsString
-    ) {
+    public function mergeLabels(LabelCollection $labels)
+    {
+        if (count($labels) === 0) {
+            throw new \InvalidArgumentException(
+                'Argument $labels should contain at least one label'
+            );
+        }
+
         $this->apply(
-            new LabelsApplied(
-                $eventId,
-                $keywordsString
+            new LabelsMerged(
+                new String($this->eventId),
+                $labels
             )
         );
     }
@@ -192,30 +200,17 @@ class Event extends EventSourcedAggregateRoot
         return $this->eventId;
     }
 
-    public function getLabels()
-    {
-        return $this->labels;
-    }
-
     public function getTranslations()
     {
         return $this->translations;
     }
 
     /**
-     * @param Label $label
-     * @return bool
+     * @return LabelCollection
      */
-    private function hasLabel(Label $label)
+    public function getLabels()
     {
-        $equalLabels = array_filter(
-            $this->labels,
-            function (Label $existingLabel) use ($label) {
-                return $label->equals($existingLabel);
-            }
-        );
-
-        return !empty($equalLabels);
+        return $this->labels;
     }
 
     /**
@@ -223,7 +218,7 @@ class Event extends EventSourcedAggregateRoot
      */
     public function label(Label $label)
     {
-        if (!$this->hasLabel($label)) {
+        if (!$this->labels->contains($label)) {
             $this->apply(new EventWasLabelled($this->eventId, $label));
         }
     }
@@ -233,7 +228,7 @@ class Event extends EventSourcedAggregateRoot
      */
     public function unlabel(Label $label)
     {
-        if ($this->hasLabel($label)) {
+        if ($this->labels->contains($label)) {
             $this->apply(new Unlabelled($this->eventId, $label));
         }
     }
@@ -247,19 +242,16 @@ class Event extends EventSourcedAggregateRoot
     {
         $newLabel = $eventLabelled->getLabel();
 
-        if (!$this->hasLabel($newLabel)) {
-            $this->labels[] = $newLabel;
+        if (!$this->labels->contains($newLabel)) {
+            $this->labels = $this->labels->with($newLabel);
         }
     }
 
     protected function applyUnlabelled(Unlabelled $unlabelled)
     {
-        $this->labels = array_filter(
-            $this->labels,
-            function (Label $label) use ($unlabelled) {
-                return !$label->equals($unlabelled->getLabel());
-            }
-        );
+        $removedLabel = $unlabelled->getLabel();
+
+        $this->labels = $this->labels->without($removedLabel);
     }
 
     protected function applyEventImportedFromUDB2(
@@ -415,13 +407,22 @@ class Event extends EventSourcedAggregateRoot
      */
     protected function setLabelsFromUDB2Event(\CultureFeed_Cdb_Item_Event $udb2Event)
     {
-        $this->labels = array();
-        foreach (array_values($udb2Event->getKeywords()) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword);
+        $this->resetLabels();
+
+        /** @var \CultureFeed_Cdb_Data_Keyword $udb2Keyword */
+        foreach (array_values($udb2Event->getKeywords(true)) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword->getValue());
             if ($keyword) {
-                $this->labels[] = new Label($keyword);
+                $this->labels = $this->labels->with(
+                    new Label($keyword, $udb2Keyword->isVisible())
+                );
             }
         }
+    }
+
+    protected function resetLabels()
+    {
+        $this->labels = new LabelCollection();
     }
 
     protected function applyEventCreatedFromCdbXml(
@@ -450,13 +451,10 @@ class Event extends EventSourcedAggregateRoot
         $this->setLabelsFromUDB2Event($udb2Event);
     }
 
-    protected function applyLabelsApplied(
-        LabelsApplied $labelsApplied
+    protected function applyLabelsMerged(
+        LabelsMerged $labelsMerged
     ) {
-        $this->eventId = $labelsApplied->getEventId()->toNative();
-
-        $keywordsString = $labelsApplied->getKeywordsString();
-        $this->labels = $keywordsString->getLabels();
+        $this->labels = $this->labels->merge($labelsMerged->getLabels());
     }
 
     protected function applyTranslationApplied(

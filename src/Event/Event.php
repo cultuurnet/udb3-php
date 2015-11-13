@@ -172,15 +172,15 @@ class Event extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param String $title
-     * @param String $shortDescription
-     * @param String $longDescription
+     * @param String|null $title
+     * @param String|null $shortDescription
+     * @param String|null $longDescription
      */
     public function applyTranslation(
         Language $language,
-        String $title,
-        String $shortDescription,
-        String $longDescription
+        String $title = null,
+        String $shortDescription = null,
+        String $longDescription = null
     ) {
         $this->apply(
             new TranslationApplied(

@@ -39,13 +39,20 @@ class TranslationApplied implements SerializableInterface
      */
     protected $longDescription;
 
-
+    /**
+     * TranslationApplied constructor.
+     * @param String $eventId
+     * @param Language $language
+     * @param String|null $title
+     * @param String|null $shortDescription
+     * @param String|null $longDescription
+     */
     public function __construct(
         String $eventId,
         Language $language,
-        String $title,
-        String $shortDescription,
-        String $longDescription
+        String $title = null,
+        String $shortDescription = null,
+        String $longDescription = null
     ) {
         $this->eventId = $eventId;
         $this->language = $language;

@@ -275,7 +275,6 @@ class EventTest extends PHPUnit_Framework_TestCase
         );
 
         $event->applyTranslation(
-            new String('someid'),
             new Language('fr'),
             new String('Dizorkestra en concert'),
             new String('Concert Dizôrkestra, un groupe qui.'),
@@ -312,7 +311,6 @@ class EventTest extends PHPUnit_Framework_TestCase
         );
 
         $event->applyTranslation(
-            new String('someid'),
             new Language('fr'),
             new String('Dizorkestra en concert'),
             new String('Concert Dizôrkestra, un groupe qui.'),
@@ -332,7 +330,6 @@ class EventTest extends PHPUnit_Framework_TestCase
         );
 
         $event->applyTranslation(
-            new String('someid'),
             new Language('fr'),
             new String('Nicorkestra en concert'),
             new String('Concert Nicôrkestra, un groupe qui.'),

@@ -171,11 +171,12 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param String $eventId
-     * @param TranslationsString $translationsString
+     * @param Language $language
+     * @param String $title
+     * @param String $shortDescription
+     * @param String $longDescription
      */
     public function applyTranslation(
-        String $eventId,
         Language $language,
         String $title,
         String $shortDescription,
@@ -183,7 +184,7 @@ class Event extends EventSourcedAggregateRoot
     ) {
         $this->apply(
             new TranslationApplied(
-                $eventId,
+                new String($this->eventId),
                 $language,
                 $title,
                 $shortDescription,

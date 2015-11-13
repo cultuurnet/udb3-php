@@ -14,11 +14,14 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3SilexEntryAPI\KeywordsVisiblesPair;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventXmlString;
@@ -416,6 +419,48 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
                     'description' => 'Geüpdatet via EntryAPI door consumer "UiTDatabank"',
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_LabelsMerged()
+    {
+        $labels = new LabelCollection(
+            [
+                new Label('label B', true),
+                new Label('label C', false),
+            ]
+        );
+        $labelsMerged = new LabelsMerged(
+            new String(self::EVENT_ID_2),
+            $labels
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $labelsMerged->getEventId()->toNative(),
+            1,
+            $metadata,
+            $labelsMerged,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => "Labels 'label B', 'label C' toegepast via EntryAPI door consumer \"UiTDatabank\"",
                     'author' => 'Jantest',
                 ]
             ]

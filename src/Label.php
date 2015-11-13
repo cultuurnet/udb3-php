@@ -9,6 +9,11 @@ use CultuurNet\Entry\Keyword;
 
 class Label extends Keyword
 {
+    public function __construct($value, $visible = true)
+    {
+        parent::__construct($value, $visible);
+    }
+
     /**
      * @param Label $label
      * @return bool

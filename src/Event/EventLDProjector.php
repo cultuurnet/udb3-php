@@ -553,10 +553,15 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         $eventLd = $document->getBody();
 
-        $eventLd->name->{$translationApplied->getLanguage()->getCode(
-        )} = $translationApplied->getTitle()->toNative();
-        $eventLd->description->{$translationApplied->getLanguage()->getCode(
-        )} = $translationApplied->getLongDescription()->toNative();
+        if ($translationApplied->getTitle() !== null) {
+            $eventLd->name->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getTitle()->toNative();
+        }
+
+        if ($translationApplied->getLongDescription() !== null) {
+            $eventLd->description->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getLongDescription()->toNative();
+        }
 
         $this->repository->save($document->withBody($eventLd));
     }

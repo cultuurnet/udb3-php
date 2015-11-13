@@ -1455,4 +1455,61 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
 
         $this->projector->handle($domainMessage);
     }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_application_of_a_title_translation()
+    {
+        $translationApplied = new TranslationApplied(
+            new String('foo'),
+            new Language('en'),
+            new String('Title'),
+            null,
+            null
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $translationApplied->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $translationApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel'],
+                'description' => ['nl' => 'Omschrijving']
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel', 'en' => 'Title'],
+                'description' => ['nl' => 'Omschrijving']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
 }

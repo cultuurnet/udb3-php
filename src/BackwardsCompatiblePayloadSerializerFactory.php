@@ -9,6 +9,7 @@ use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
@@ -87,6 +88,42 @@ class BackwardsCompatiblePayloadSerializerFactory
             'CultuurNet\UDB3\Event\EventImportedFromUDB2',
             function (array $serializedObject) {
                 $serializedObject['class'] = EventImportedFromUDB2::class;
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\Events\LabelsApplied',
+            function (array $serializedObject) {
+                $serializedObject['class'] = LabelsMerged::class;
+
+                $keywordsString = $serializedObject['payload']['keywords_string'];
+
+                $query = array();
+                parse_str($keywordsString, $query);
+
+                $keywords = explode(';', $query['keywords']);
+                $visibles = explode(';', $query['visibles']);
+
+                $labelsArray = array();
+
+                foreach ($keywords as $key => $keyword) {
+                    $labelsArray[] = new Label($keyword, $visibles[$key]);
+                }
+
+                $labels = array_map(
+                    function (Label $label) {
+                        return [
+                            'text' => (string) $label,
+                            'visible' => $label->isVisible(),
+                        ];
+                    },
+                    $labelsArray
+                );
+
+                $serializedObject['payload']['labels'] = $labels;
+                unset($serializedObject['payload']['keywords_string']);
 
                 return $serializedObject;
             }

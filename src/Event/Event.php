@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -189,6 +190,20 @@ class Event extends EventSourcedAggregateRoot
                 $title,
                 $shortDescription,
                 $longDescription
+            )
+        );
+    }
+
+    /**
+     * @param Language $language
+     */
+    public function deleteTranslation(
+        Language $language
+    ) {
+        $this->apply(
+            new TranslationDeleted(
+                new String($this->eventId),
+                $language
             )
         );
     }
@@ -476,6 +491,18 @@ class Event extends EventSourcedAggregateRoot
         } else {
             $newTranslation = $this->translations[$language]->mergeTranslation($translation);
             $this->translations[$language] = $newTranslation;
+        }
+    }
+
+    protected function applyTranslationDeleted(
+        TranslationDeleted $translationDeleted
+    ) {
+        $this->eventId = $translationDeleted->getEventId()->toNative();
+
+        $language = $translationDeleted->getLanguage()->getCode();
+
+        if (array_key_exists($language, $this->translations)) {
+            unset($this->translations[$language]);
         }
     }
 

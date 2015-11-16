@@ -348,4 +348,45 @@ class EventTest extends PHPUnit_Framework_TestCase
             $event->getTranslations()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_have_a_translation_deleted()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $event->applyTranslation(
+            new Language('fr'),
+            new String('Dizorkestra en concert'),
+            new String('Concert Dizôrkestra, un groupe qui.'),
+            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+        );
+
+        $this->assertEquals(
+            array(
+                'fr' => new Translation(
+                    new Language('fr'),
+                    new String('Dizorkestra en concert'),
+                    new String('Concert Dizôrkestra, un groupe qui.'),
+                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                ),
+            ),
+            $event->getTranslations()
+        );
+
+        $event->deleteTranslation(
+            new Language('fr')
+        );
+
+        $this->assertEquals(
+            array(),
+            $event->getTranslations()
+        );
+    }
 }

@@ -59,19 +59,19 @@ class Translation
      */
     public function mergeTranslation(Translation $newTranslation)
     {
-        if ($newTranslation->getTitle()->toNative() !== null) {
+        if ($newTranslation->getTitle() !== null) {
             $newTitle = $newTranslation->getTitle();
         } else {
             $newTitle = $this->title;
         }
 
-        if ($newTranslation->getShortDescription()->toNative() !== null) {
+        if ($newTranslation->getShortDescription() !== null) {
             $newShortDescription = $newTranslation->getShortDescription();
         } else {
             $newShortDescription = $this->shortDescription;
         }
 
-        if ($newTranslation->getLongDescription()->toNative() !== null) {
+        if ($newTranslation->getLongDescription() !== null) {
             $newLongDescription = $newTranslation->getLongDescription();
         } else {
             $newLongDescription = $this->longDescription;

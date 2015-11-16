@@ -10,6 +10,22 @@ use ValueObjects\String\String;
 
 class TranslationTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @test
+     */
+    public function it_can_only_merge_a_translation_with_the_same_language()
+    {
+        $englishTranslation = new Translation(
+            new Language('en'),
+            new String('title')
+        );
+        $frenchTranslation = new Translation(new Language('fr'), new String('titre'));
+
+        $this->setExpectedException(\LogicException::class);
+
+        $englishTranslation->mergeTranslation($frenchTranslation);
+    }
+
     public function mergeDataProvider()
     {
         $a = new Translation(

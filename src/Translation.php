@@ -59,6 +59,12 @@ class Translation
      */
     public function mergeTranslation(Translation $newTranslation)
     {
+        if ($newTranslation->getLanguage() != $this->getLanguage()) {
+            throw new \LogicException(
+                'Can only merge a translation with the same language.'
+            );
+        }
+
         if ($newTranslation->getTitle() !== null) {
             $newTitle = $newTranslation->getTitle();
         } else {

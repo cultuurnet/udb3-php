@@ -290,7 +290,7 @@ class HistoryProjector implements EventListenerInterface
 
         $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
         if ($consumerName) {
-            $logMessage .= " via EntryAPI door consumer {$consumerName}";
+            $logMessage .= " via EntryAPI door consumer \"{$consumerName}\"";
         }
 
         $this->writeHistory(

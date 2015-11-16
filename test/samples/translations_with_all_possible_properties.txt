@@ -1,4 +1,0 @@
-lang=FR&
-title=Dizorkestra%20en%20concert&
-shortdescription=Concert%20Diz%C3%B4rkestra%2C%20un%20groupe%20qui.&
-longdescription=Concert%20Diz%C3%B4rkestra%2C%20un%20groupe%20qui%20se%20montre%20inventif.

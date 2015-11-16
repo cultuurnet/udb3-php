@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -84,7 +85,7 @@ class Projector implements EventListenerInterface
         $eventEntity = $this->eventService->getEvent($organizerUpdated->getEventId());
         $event = json_decode($eventEntity);
 
-        $placeId = !empty($event->location) ? $event->location->{'@id'}: null;
+        $placeId = $this->getPlaceIdFromEventEvent($organizerUpdated);
 
         $this->storeRelations($organizerUpdated->getEventId(), $placeId, $organizerUpdated->getOrganizerId());
     }
@@ -98,11 +99,7 @@ class Projector implements EventListenerInterface
         $eventEntity = $this->eventService->getEvent($organizerDeleted->getEventId());
         $event = json_decode($eventEntity);
 
-        $placeId = null;
-        if (!empty($event->location)) {
-            $idParts = explode('/', $event->location->{'@id'});
-            $placeId = array_pop($idParts);
-        }
+        $placeId = $this->getPlaceIdFromEventEvent($organizerDeleted);
 
         $this->storeRelations($organizerDeleted->getEventId(), $placeId, null);
     }
@@ -159,6 +156,22 @@ class Projector implements EventListenerInterface
         $placeId = null;
         if ($location->getCdbid()) {
             $placeId = $location->getCdbid();
+        }
+
+        return $placeId;
+    }
+
+    /**
+     * @param \CultuurNet\UDB3\Event\EventEvent $event
+     * @return string|null
+     */
+    protected function getPlaceIdFromEventEvent(EventEvent $event)
+    {
+        $placeId = null;
+
+        if (!empty($event->location)) {
+            $idParts = explode('/', $event->location->{'@id'});
+            $placeId = array_pop($idParts);
         }
 
         return $placeId;

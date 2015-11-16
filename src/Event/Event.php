@@ -36,8 +36,6 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
-use CultuurNet\UDB3\TranslationsString;
-use CultuurNet\UDB3\XmlString;
 use ValueObjects\String\String;
 
 class Event extends EventSourcedAggregateRoot

@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -1495,6 +1496,60 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             'foo',
             json_encode([
                 'name' => ['nl'=> 'Titel', 'en' => 'Title'],
+                'description' => ['nl' => 'Omschrijving']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_deletion_of_a_translation()
+    {
+        $translationDeleted = new TranslationDeleted(
+            new String('foo'),
+            new Language('en')
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $translationDeleted->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $translationDeleted,
+            DateTime::fromString($importedDate)
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel', 'en' => 'Title'],
+                'description' => ['nl' => 'Omschrijving', 'en' => 'Long long long extra long description']
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel'],
                 'description' => ['nl' => 'Omschrijving']
             ])
         );

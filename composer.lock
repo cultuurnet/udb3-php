@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3ebcb4b151fae803bf877de7d17e6494",
-    "content-hash": "eeae6ad158d81339513ac6fa9068d7f4",
+    "hash": "64041be74bf48bfd26f4afbc335a2b01",
+    "content-hash": "da719680a453f352ed1a3a0c52fdcc5c",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -506,22 +506,22 @@
         },
         {
             "name": "cultuurnet/entry",
-            "version": "dev-feature/III-482",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Entry.git",
-                "reference": "0c12006d58701d3a66afd61ab45a42b7bbd1bccd"
+                "reference": "cbe06043ac936c50301bf98394ee0bba2673b947"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Entry/zipball/0c12006d58701d3a66afd61ab45a42b7bbd1bccd",
-                "reference": "0c12006d58701d3a66afd61ab45a42b7bbd1bccd",
+                "url": "https://api.github.com/repos/cultuurnet/Entry/zipball/cbe06043ac936c50301bf98394ee0bba2673b947",
+                "reference": "cbe06043ac936c50301bf98394ee0bba2673b947",
                 "shasum": ""
             },
             "require": {
                 "cultuurnet/auth": "~1.2",
                 "cultuurnet/cdb": "~2",
-                "php": ">=5.4.0"
+                "php": ">=5.5.0"
             },
             "require-dev": {
                 "guzzle/plugin-mock": "~3.9.2",
@@ -552,7 +552,7 @@
                 }
             ],
             "description": "PHP library to access CultuurNet's Entry API",
-            "time": "2015-11-13 08:40:09"
+            "time": "2015-11-13 16:28:48"
         },
         {
             "name": "cultuurnet/search",
@@ -4035,18 +4035,9 @@
             "time": "2015-10-11 09:39:48"
         }
     ],
-    "aliases": [
-        {
-            "alias": "0.1",
-            "alias_normalized": "0.1.0.0",
-            "version": "dev-feature/III-482",
-            "package": "cultuurnet/entry"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "cultuurnet/entry": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -273,16 +273,26 @@ class HistoryProjector implements EventListenerInterface
         TranslationApplied $translationApplied,
         DomainMessage $domainMessage
     ) {
-        $logMessage = '';
-        if ($translationApplied->getTitle()->toNative() !== null) {
-            $logMessage .= "Titel vertaald ({$translationApplied->getLanguage()->getCode()})";
+        $fields = [];
+
+        if ($translationApplied->getTitle() !== null) {
+            $fields[] = 'titel';
         }
-        if ($translationApplied->getLongDescription()->toNative() !== null) {
-            if (!empty($logMessage)) {
-                $logMessage .= " & ";
-            }
-            $logMessage .= "Beschrijving vertaald ({$translationApplied->getLanguage()->getCode()})";
+        if ($translationApplied->getShortDescription() !== null) {
+            $fields[] = 'korte beschrijving';
         }
+        if ($translationApplied->getLongDescription() !== null) {
+            $fields[] = 'lange beschrijving';
+        }
+        $fieldString = ucfirst(implode(', ', $fields));
+
+        $logMessage = "{$fieldString} vertaald ({$translationApplied->getLanguage()->getCode()})";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+        if ($consumerName) {
+            $logMessage .= " via EntryAPI door consumer {$consumerName}";
+        }
+
         $this->writeHistory(
             $translationApplied->getEventId()->toNative(),
             new Log(

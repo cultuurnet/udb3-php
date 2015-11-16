@@ -54,6 +54,12 @@ class TranslationApplied implements SerializableInterface
         String $shortDescription = null,
         String $longDescription = null
     ) {
+        if (null === $title && null === $shortDescription && null === $longDescription) {
+            throw new \LogicException(
+                'At least one of the following should have a value: $title, $shortDescription, $longDescription'
+            );
+        }
+
         $this->eventId = $eventId;
         $this->language = $language;
         $this->title = $title;
@@ -66,12 +72,28 @@ class TranslationApplied implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
+        $title = null;
+        $shortDescription = null;
+        $longDescription = null;
+
+        if (isset($data['title'])) {
+            $title = new String($data['title']);
+        }
+
+        if (isset($data['short_description'])) {
+            $shortDescription = new String($data['short_description']);
+        }
+
+        if (isset($data['long_description'])) {
+            $longDescription = new String($data['long_description']);
+        }
+
         return new static(
             new String($data['event_id']),
             new Language($data['language']),
-            new String($data['title']),
-            new String($data['short_description']),
-            new String($data['long_description'])
+            $title,
+            $shortDescription,
+            $longDescription
         );
     }
 
@@ -80,13 +102,26 @@ class TranslationApplied implements SerializableInterface
      */
     public function serialize()
     {
-        return array(
+        $serialized = array(
             'event_id' => $this->eventId->toNative(),
-            'language' => $this->language->getCode(),
-            'title' => $this->title->toNative(),
-            'short_description' => $this->shortDescription->toNative(),
-            'long_description' => $this->longDescription->toNative()
+            'language' => $this->language->getCode()
         );
+
+        if ($this->title) {
+            $serialized['title'] = $this->title->toNative();
+        }
+
+        if ($this->shortDescription) {
+            $serialized['short_description'] =
+                $this->shortDescription->toNative();
+        }
+
+        if ($this->longDescription) {
+            $serialized['long_description'] = $this->longDescription->toNative(
+            );
+        }
+
+        return $serialized;
     }
 
     /**

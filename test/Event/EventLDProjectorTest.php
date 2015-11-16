@@ -16,14 +16,15 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3SilexEntryAPI\KeywordsVisiblesPair;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
@@ -1394,6 +1395,120 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
                     return $expectedDocument == $jsonDocument;
                 }
             ));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_application_of_a_translation()
+    {
+        $translationApplied = new TranslationApplied(
+            new String('foo'),
+            new Language('en'),
+            new String('Title'),
+            new String('Short description'),
+            new String('Long long long extra long description')
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $translationApplied->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $translationApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel'],
+                'description' => ['nl' => 'Omschrijving']
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel', 'en' => 'Title'],
+                'description' => ['nl' => 'Omschrijving', 'en' => 'Long long long extra long description']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_application_of_a_title_translation()
+    {
+        $translationApplied = new TranslationApplied(
+            new String('foo'),
+            new Language('en'),
+            new String('Title'),
+            null,
+            null
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $domainMessage = new DomainMessage(
+            $translationApplied->getEventId()->toNative(),
+            1,
+            new Metadata($metadata),
+            $translationApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel'],
+                'description' => ['nl' => 'Omschrijving']
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => ['nl'=> 'Titel', 'en' => 'Title'],
+                'description' => ['nl' => 'Omschrijving']
+            ])
+        );
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($initialDocument);
+
+        $this->documentRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
 
         $this->projector->handle($domainMessage);
     }

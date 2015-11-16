@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -541,6 +542,26 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $eventLd = $document->getBody();
         $eventLd->description->{$descriptionTranslated->getLanguage()->getCode(
         )} = $descriptionTranslated->getDescription();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    protected function applyTranslationApplied(
+        TranslationApplied $translationApplied
+    ) {
+        $document = $this->loadDocumentFromRepositoryByEventId($translationApplied->getEventId()->toNative());
+
+        $eventLd = $document->getBody();
+
+        if ($translationApplied->getTitle() !== null) {
+            $eventLd->name->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getTitle()->toNative();
+        }
+
+        if ($translationApplied->getLongDescription() !== null) {
+            $eventLd->description->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getLongDescription()->toNative();
+        }
 
         $this->repository->save($document->withBody($eventLd));
     }

@@ -24,6 +24,7 @@ use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -34,7 +35,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\XmlString;
+use CultuurNet\UDB3\Translation;
 use ValueObjects\String\String;
 
 class Event extends EventSourcedAggregateRoot
@@ -45,6 +46,11 @@ class Event extends EventSourcedAggregateRoot
      * @var LabelCollection
      */
     protected $labels;
+
+    /**
+     * @var Translation[]
+     */
+    protected $translations = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -163,11 +169,42 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param Language $language
+     * @param String|null $title
+     * @param String|null $shortDescription
+     * @param String|null $longDescription
+     */
+    public function applyTranslation(
+        Language $language,
+        String $title = null,
+        String $shortDescription = null,
+        String $longDescription = null
+    ) {
+        $this->apply(
+            new TranslationApplied(
+                new String($this->eventId),
+                $language,
+                $title,
+                $shortDescription,
+                $longDescription
+            )
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
     {
         return $this->eventId;
+    }
+
+    /**
+     * @return Translation[]
+     */
+    public function getTranslations()
+    {
+        return $this->translations;
     }
 
     /**
@@ -420,6 +457,27 @@ class Event extends EventSourcedAggregateRoot
         LabelsMerged $labelsMerged
     ) {
         $this->labels = $this->labels->merge($labelsMerged->getLabels());
+    }
+
+    protected function applyTranslationApplied(
+        TranslationApplied $translationApplied
+    ) {
+        $this->eventId = $translationApplied->getEventId()->toNative();
+
+        $language = $translationApplied->getLanguage()->getCode();
+        $translation = new Translation(
+            $translationApplied->getLanguage(),
+            $translationApplied->getTitle(),
+            $translationApplied->getShortdescription(),
+            $translationApplied->getLongdescription()
+        );
+
+        if (!array_key_exists($language, $this->translations)) {
+            $this->translations[$language] = $translation;
+        } else {
+            $newTranslation = $this->translations[$language]->mergeTranslation($translation);
+            $this->translations[$language] = $newTranslation;
+        }
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

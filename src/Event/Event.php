@@ -201,6 +201,9 @@ class Event extends EventSourcedAggregateRoot
         return $this->eventId;
     }
 
+    /**
+     * @return Translation[]
+     */
     public function getTranslations()
     {
         return $this->translations;

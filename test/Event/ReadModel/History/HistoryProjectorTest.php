@@ -495,7 +495,8 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->historyProjector->handle($domainMessage);
 
-        $logMessage = 'Titel vertaald (en) & Beschrijving vertaald (en)';
+        $logMessage =
+            'Titel, korte beschrijving, lange beschrijving vertaald (en) via EntryAPI door consumer "UiTDatabank"';
 
         $this->assertHistoryOfEvent(
             self::EVENT_ID_2,

@@ -498,8 +498,6 @@ class Event extends EventSourcedAggregateRoot
     protected function applyTranslationDeleted(
         TranslationDeleted $translationDeleted
     ) {
-        $this->eventId = $translationDeleted->getEventId()->toNative();
-
         $language = $translationDeleted->getLanguage()->getCode();
 
         if (array_key_exists($language, $this->translations)) {

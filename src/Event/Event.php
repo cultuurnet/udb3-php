@@ -198,6 +198,10 @@ class Event extends EventSourcedAggregateRoot
     public function deleteTranslation(
         Language $language
     ) {
+        if (!array_key_exists($language->getCode(), $this->translations)) {
+            return;
+        }
+
         $this->apply(
             new TranslationDeleted(
                 new String($this->eventId),

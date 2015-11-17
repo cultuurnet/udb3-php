@@ -7,11 +7,12 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EventXmlString;
-use CultuurNet\UDB3SilexEntryAPI\KeywordsVisiblesPair;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\Translation;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\String\String;
 
@@ -245,6 +246,25 @@ class EventTest extends PHPUnit_Framework_TestCase
             'Argument $labels should contain at least one label'
         );
 
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String(
+                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+            )
+        );
+
+        $event->mergeLabels(new LabelCollection());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_a_new_translation_applied()
+    {
         $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
         $event = Event::createFromCdbXml(
             new String('someId'),
@@ -252,6 +272,119 @@ class EventTest extends PHPUnit_Framework_TestCase
             new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
         );
 
-        $event->mergeLabels(new LabelCollection());
+        $event->applyTranslation(
+            new Language('fr'),
+            new String('Dizorkestra en concert'),
+            new String('Concert Dizôrkestra, un groupe qui.'),
+            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+        );
+
+        $this->assertEquals(
+            array(
+                'fr' => new Translation(
+                    new Language('fr'),
+                    new String('Dizorkestra en concert'),
+                    new String('Concert Dizôrkestra, un groupe qui.'),
+                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                ),
+            ),
+            $event->getTranslations()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_an_existing_translation_updated()
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String(
+                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+            )
+        );
+
+        $event->applyTranslation(
+            new Language('fr'),
+            new String('Dizorkestra en concert'),
+            new String('Concert Dizôrkestra, un groupe qui.'),
+            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+        );
+
+        $this->assertEquals(
+            array(
+                'fr' => new Translation(
+                    new Language('fr'),
+                    new String('Dizorkestra en concert'),
+                    new String('Concert Dizôrkestra, un groupe qui.'),
+                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                ),
+            ),
+            $event->getTranslations()
+        );
+
+        $event->applyTranslation(
+            new Language('fr'),
+            new String('Nicorkestra en concert'),
+            new String('Concert Nicôrkestra, un groupe qui.'),
+            new String('Concert Nicôrkestra, un groupe qui se montre inventif.')
+        );
+
+        $this->assertEquals(
+            array(
+                'fr' => new Translation(
+                    new Language('fr'),
+                    new String('Nicorkestra en concert'),
+                    new String('Concert Nicôrkestra, un groupe qui.'),
+                    new String('Concert Nicôrkestra, un groupe qui se montre inventif.')
+                ),
+            ),
+            $event->getTranslations()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_a_translation_deleted()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $event->applyTranslation(
+            new Language('fr'),
+            new String('Dizorkestra en concert'),
+            new String('Concert Dizôrkestra, un groupe qui.'),
+            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+        );
+
+        $this->assertEquals(
+            array(
+                'fr' => new Translation(
+                    new Language('fr'),
+                    new String('Dizorkestra en concert'),
+                    new String('Concert Dizôrkestra, un groupe qui.'),
+                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                ),
+            ),
+            $event->getTranslations()
+        );
+
+        $event->deleteTranslation(
+            new Language('fr')
+        );
+
+        $this->assertEquals(
+            array(),
+            $event->getTranslations()
+        );
     }
 }

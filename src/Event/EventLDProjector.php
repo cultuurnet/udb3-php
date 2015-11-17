@@ -29,6 +29,8 @@ use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -541,6 +543,44 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $eventLd = $document->getBody();
         $eventLd->description->{$descriptionTranslated->getLanguage()->getCode(
         )} = $descriptionTranslated->getDescription();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    protected function applyTranslationApplied(
+        TranslationApplied $translationApplied
+    ) {
+        $document = $this->loadDocumentFromRepositoryByEventId($translationApplied->getEventId()->toNative());
+
+        $eventLd = $document->getBody();
+
+        if ($translationApplied->getTitle() !== null) {
+            $eventLd->name->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getTitle()->toNative();
+        }
+
+        if ($translationApplied->getLongDescription() !== null) {
+            $eventLd->description->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getLongDescription()->toNative();
+        }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the translation deleted event to the event repository.
+     * @param TranslationDeleted $translationDeleted
+     */
+    protected function applyTranslationDeleted(
+        TranslationDeleted $translationDeleted
+    ) {
+        $document = $this->loadDocumentFromRepositoryByEventId($translationDeleted->getEventId()->toNative());
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->name->{$translationDeleted->getLanguage()->getCode()});
+
+        unset($eventLd->description->{$translationDeleted->getLanguage()->getCode()});
 
         $this->repository->save($document->withBody($eventLd));
     }

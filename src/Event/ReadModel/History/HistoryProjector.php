@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -300,6 +301,34 @@ class HistoryProjector implements EventListenerInterface
                     $domainMessage->getRecordedOn()
                 ),
                 new String($logMessage),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    /**
+     * @param TranslationDeleted $translationDeleted
+     * @param DomainMessage $domainMessage
+     */
+    private function applyTranslationDeleted(
+        TranslationDeleted $translationDeleted,
+        DomainMessage $domainMessage
+    ) {
+        $message = "Vertaling verwijderd ({$translationDeleted->getLanguage()})";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        if ($consumerName) {
+            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
+        }
+
+        $this->writeHistory(
+            $translationDeleted->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($message),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

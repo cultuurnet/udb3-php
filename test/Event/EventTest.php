@@ -7,14 +7,12 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EventXmlString;
-use CultuurNet\UDB3SilexEntryAPI\KeywordsVisiblesPair;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
-use CultuurNet\UDB3\TranslationsString;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\String\String;
 

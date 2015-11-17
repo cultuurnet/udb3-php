@@ -109,7 +109,11 @@ class BackwardsCompatiblePayloadSerializerFactory
                 $labelsArray = array();
 
                 foreach ($keywords as $key => $keyword) {
-                    $labelsArray[] = new Label($keyword, $visibles[$key]);
+                    $visible = 'true' === $visibles[$key];
+                    $labelsArray[] = new Label(
+                        $keyword,
+                        $visible
+                    );
                 }
 
                 $labels = array_map(

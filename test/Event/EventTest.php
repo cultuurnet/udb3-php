@@ -10,6 +10,8 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
+use Cultuurnet\UDB3\Link;
+use CultuurNet\UDB3\LinkType;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
@@ -385,6 +387,45 @@ class EventTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(),
             $event->getTranslations()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_a_link_added()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $event->addLink(
+            new Language('fr'),
+            new String('http://cultuurnet.be'),
+            new LinkType('roadmap'),
+            null,
+            null,
+            null,
+            null
+        );
+
+        $this->assertEquals(
+            array(
+                'fr' => [
+                        new Link(
+                            new String('http://cultuurnet.be'),
+                            new LinkType('roadmap'),
+                            null,
+                            null,
+                            null,
+                            null
+                        ),
+                    ]
+            ),
+            $event->getLinks()
         );
     }
 }

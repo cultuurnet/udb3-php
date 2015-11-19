@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\LinkAdded;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -33,6 +34,8 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Link;
+use CultuurNet\UDB3\LinkType;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
@@ -52,6 +55,11 @@ class Event extends EventSourcedAggregateRoot
      * @var Translation[]
      */
     protected $translations = [];
+
+    /**
+     * @var Link[]
+     */
+    protected $links;
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -211,6 +219,38 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param Language $language
+     * @param String $link
+     * @param LinkType $linkType
+     * @param String|null $title
+     * @param String|null $copyright
+     * @param String|null $subbrand
+     * @param String|null $description
+     */
+    public function addLink(
+        Language $language,
+        String $link,
+        LinkType $linkType,
+        String $title = null,
+        String $copyright = null,
+        String $subbrand = null,
+        String $description = null
+    ) {
+        $this->apply(
+            new LinkAdded(
+                new String($this->eventId),
+                $language,
+                $link,
+                $linkType,
+                $title,
+                $copyright,
+                $subbrand,
+                $description
+            )
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -232,6 +272,14 @@ class Event extends EventSourcedAggregateRoot
     public function getLabels()
     {
         return $this->labels;
+    }
+
+    /**
+     * @return Link[]
+     */
+    public function getLinks()
+    {
+        return $this->links;
     }
 
     /**
@@ -507,6 +555,22 @@ class Event extends EventSourcedAggregateRoot
         if (array_key_exists($language, $this->translations)) {
             unset($this->translations[$language]);
         }
+    }
+
+    protected function applyLinkAdded(
+        LinkAdded $linkAdded
+    ) {
+        $language = $linkAdded->getLanguage()->getCode();
+
+        $link = new Link(
+            $linkAdded->getLink(),
+            $linkAdded->getLinkType(),
+            $linkAdded->getCopyright(),
+            $linkAdded->getSubbrand(),
+            $linkAdded->getDescription()
+        );
+
+        $this->links[$language][] = $link;
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

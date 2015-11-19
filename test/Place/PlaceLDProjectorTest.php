@@ -73,8 +73,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->organizerService,
-            $this->getMock(EventBusInterface::class)
+            $this->organizerService
         );
 
     }

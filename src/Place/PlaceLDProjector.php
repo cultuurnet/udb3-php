@@ -12,6 +12,7 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventHandling\EventListenerInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
@@ -22,6 +23,7 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\OrganizerService;
@@ -45,8 +47,9 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Theme;
 
-class PlaceLDProjector extends ActorLDProjector
+class PlaceLDProjector implements EventListenerInterface
 {
+    use DelegateEventHandlingToSpecificMethodTrait;
 
     /**
      * @var DocumentRepositoryInterface
@@ -81,13 +84,11 @@ class PlaceLDProjector extends ActorLDProjector
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EntityServiceInterface $organizerService,
-        EventBusInterface $eventBus
+        EntityServiceInterface $organizerService
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
-        $this->eventBus = $eventBus;
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter();
     }
@@ -113,27 +114,6 @@ class PlaceLDProjector extends ActorLDProjector
         );
 
         $this->repository->save($document->withBody($actorLd));
-
-        $this->publishJSONLDUpdated(
-            $actorImportedFromUDB2->getActorId()
-        );
-    }
-
-    protected function publishJSONLDUpdated($id)
-    {
-        $generator = new Version4Generator();
-        $events = [
-            DomainMessage::recordNow(
-                $generator->generate(),
-                1,
-                new Metadata(),
-                new PlaceProjectedToJSONLD($id)
-            )
-        ];
-
-        $this->eventBus->publish(
-            new DomainEventStream($events)
-        );
     }
 
     /**
@@ -458,7 +438,6 @@ class PlaceLDProjector extends ActorLDProjector
      */
     public function organizerJSONLD($organizerId)
     {
-
         try {
             $organizerJSONLD = $this->organizerService->getEntity(
                 $organizerId

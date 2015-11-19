@@ -8,7 +8,6 @@
 
 namespace test\Event\Events;
 
-
 use CultuurNet\UDB3\Event\Events\LinkAdded;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LinkType;

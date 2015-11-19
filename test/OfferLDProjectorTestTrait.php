@@ -407,13 +407,9 @@ trait OfferLDProjectorTestTrait
             ->willReturn($initialDocument);
 
         $this->documentRepository
-            ->expects(($this->once()))
+            ->expects($this->once())
             ->method('save')
-            ->with($this->callback(
-                function (JsonDocument $jsonDocument) use ($expectedDocument) {
-                    return $expectedDocument == $jsonDocument;
-                }
-            ));
+            ->with($expectedDocument);
 
         $this->projector->applyOrganizerUpdated($organizerUpdated);
     }
@@ -459,13 +455,9 @@ trait OfferLDProjectorTestTrait
             ->willReturn($initialDocument);
 
         $this->documentRepository
-            ->expects(($this->once()))
+            ->expects($this->once())
             ->method('save')
-            ->with($this->callback(
-                function (JsonDocument $jsonDocument) use ($expectedDocument) {
-                    return $expectedDocument == $jsonDocument;
-                }
-            ));
+            ->with($expectedDocument);
 
         $this->projector->applyOrganizerUpdated($organizerUpdated);
     }

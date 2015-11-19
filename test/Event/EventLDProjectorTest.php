@@ -157,6 +157,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
+        $jsonLD->modified = '2015-01-20T13:25:21+01:00';
 
         $expectedDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);
@@ -235,6 +236,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
+        $jsonLD->modified = '2015-01-20T13:25:21+01:00';
 
         $expectedDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);
@@ -317,6 +319,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
+        $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->creator = $expectedCreator;
 
         $expectedDocument = (new JsonDocument($eventId))
@@ -437,6 +440,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
+        $jsonLD->modified = '2015-01-20T13:25:21+01:00';
 
         $expectedDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);

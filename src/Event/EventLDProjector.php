@@ -378,6 +378,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             DateTime::FORMAT_STRING,
             $recordedOn
         )->format('c');
+        $jsonLD->modified = $jsonLD->created;
 
         $metaData = $domainMessage->getMetadata()->serialize();
         if (isset($metaData['user_email'])) {

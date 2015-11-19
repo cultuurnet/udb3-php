@@ -13,11 +13,11 @@ class OrganizerUpdatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'event_id' => 'event-123',
-                    'organizerId' => 'place-456',
+                    'organizerId' => 'organizer-456',
                 ],
                 new OrganizerUpdated(
                     'event-123',
-                    'place-456'
+                    'organizer-456'
                 ),
             ]
         ];

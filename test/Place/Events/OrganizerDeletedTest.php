@@ -51,4 +51,3 @@ class OrganizerDeletedTest extends \PHPUnit_Framework_TestCase
         );
     }
 }
-

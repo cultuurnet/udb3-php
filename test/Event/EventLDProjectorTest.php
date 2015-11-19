@@ -271,8 +271,12 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
 
     /**
      * @test
+     * @dataProvider eventCreatorDataProvider
+     *
+     * @param Metadata $metadata
+     * @param string $expectedCreator
      */
-    public function it_handles_new_events_with_creator()
+    public function it_handles_new_events_with_creator(Metadata $metadata, $expectedCreator)
     {
         $uuidGenerator = new Version4Generator();
         $eventId = $uuidGenerator->generate();
@@ -313,7 +317,7 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ]
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
-        $jsonLD->creator = '1 (Tester)';
+        $jsonLD->creator = $expectedCreator;
 
         $expectedDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);
@@ -337,19 +341,40 @@ class EventLDProjectorTest extends CdbXMLProjectorTestBase
             ->method('save')
             ->with($expectedDocument);
 
-        $metadata = array(
-          'user_id' => '1',
-          'user_nick' => 'Tester'
-        );
         $this->projector->handle(
             new DomainMessage(
                 1,
                 1,
-                new Metadata($metadata),
+                $metadata,
                 $eventCreated,
                 DateTime::fromString('2015-01-20T13:25:21+01:00')
             )
         );
+    }
+
+    public function eventCreatorDataProvider()
+    {
+        return [
+            [
+                new Metadata(
+                    [
+                        'user_email' => 'foo@bar.com',
+                        'user_nick' => 'foo',
+                        'user_id' => '123',
+                    ]
+                ),
+                'foo@bar.com',
+            ],
+            [
+                new Metadata(
+                    [
+                        'user_nick' => 'foo',
+                        'user_id' => '123',
+                    ]
+                ),
+                'foo',
+            ],
+        ];
     }
 
     /**

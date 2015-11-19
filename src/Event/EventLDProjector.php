@@ -380,8 +380,10 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         )->format('c');
 
         $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
-            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        if (isset($metaData['user_email'])) {
+            $jsonLD->creator = $metaData['user_email'];
+        } elseif (isset($metaData['user_nick'])) {
+            $jsonLD->creator = $metaData['user_nick'];
         }
 
         $this->repository->save($document->withBody($jsonLD));

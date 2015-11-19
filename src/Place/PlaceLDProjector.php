@@ -310,7 +310,6 @@ class PlaceLDProjector extends ActorLDProjector
      */
     public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
-
         $document = $this->loadPlaceDocumentFromRepository($organizerUpdated);
 
         $placeLd = $document->getBody();
@@ -328,7 +327,6 @@ class PlaceLDProjector extends ActorLDProjector
      */
     public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
-
         $document = $this->loadPlaceDocumentFromRepository($organizerDeleted);
 
         $placeLd = $document->getBody();

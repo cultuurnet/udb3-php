@@ -22,14 +22,14 @@ trait DBALTestConnectionTrait
         $availableDrivers = PDO::getAvailableDrivers();
         if (!in_array('sqlite', $availableDrivers)) {
             $this->markTestSkipped(
-              'PDO sqlite driver is required to run this test.'
+                'PDO sqlite driver is required to run this test.'
             );
         }
 
         $this->connection = DriverManager::getConnection(
-          [
-            'url' => 'sqlite:///:memory:',
-          ]
+            [
+                'url' => 'sqlite:///:memory:',
+            ]
         );
     }
 

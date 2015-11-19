@@ -298,19 +298,19 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $organizerUpdatedEvent = new OrganizerUpdated($eventId, $organizerId);
 
         $this->repository
-          ->expects($this->once())
-          ->method('storeOrganizer')
-          ->with(
-            $this->equalTo($eventId),
-            $this->equalTo($organizerId)
-          );
+            ->expects($this->once())
+            ->method('storeOrganizer')
+            ->with(
+                $this->equalTo($eventId),
+                $this->equalTo($organizerId)
+            );
 
         $domainMessage = new DomainMessage(
-          $organizerUpdatedEvent->getEventId(),
-          1,
-          new Metadata(),
-          $organizerUpdatedEvent,
-          DateTime::now()
+            $organizerUpdatedEvent->getEventId(),
+            1,
+            new Metadata(),
+            $organizerUpdatedEvent,
+            DateTime::now()
         );
 
         $this->projector->handle($domainMessage);
@@ -326,19 +326,19 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $organizerDeletedEvent = new OrganizerDeleted($eventId, $organizerId);
 
         $this->repository
-          ->expects($this->once())
-          ->method('storeOrganizer')
-          ->with(
-            $this->equalTo($eventId),
-            null
-          );
+            ->expects($this->once())
+            ->method('storeOrganizer')
+            ->with(
+                $this->equalTo($eventId),
+                null
+            );
 
         $domainMessage = new DomainMessage(
-          $organizerDeletedEvent->getEventId(),
-          1,
-          new Metadata(),
-          $organizerDeletedEvent,
-          DateTime::now()
+            $organizerDeletedEvent->getEventId(),
+            1,
+            new Metadata(),
+            $organizerDeletedEvent,
+            DateTime::now()
         );
 
         $this->projector->handle($domainMessage);

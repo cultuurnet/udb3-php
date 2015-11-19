@@ -20,6 +20,11 @@ interface RepositoryInterface
      */
     public function storeOrganizer($eventId, $organizerId);
 
+    /**
+     * @param string $eventId
+     */
+    public function removeOrganizer($eventId);
+
     public function getEventsLocatedAtPlace($placeId);
 
     public function getEventsOrganizedByOrganizer($organizerId);

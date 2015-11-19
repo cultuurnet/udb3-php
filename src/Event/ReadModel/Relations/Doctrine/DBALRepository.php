@@ -39,18 +39,41 @@ class DBALRepository implements RepositoryInterface
         $this->connection->commit();
     }
 
-    private function prepareInsertStatement()
+    public function storeOrganizer($eventId, $organizerId)
+    {
+        $this->connection->beginTransaction();
+
+        // ignore place so it does not get overwritten
+        $insert = $this->prepareInsertStatement(true);
+        $insert->bindValue('event', $eventId);
+        // add an empty place reference incase a new relation has to be created
+        $insert->bindValue('place', null);
+        $insert->bindValue('organizer', $organizerId);
+        $insert->execute();
+
+        $this->connection->commit();
+    }
+
+    /**
+     * @param boolean|null $ignorePlace
+     * @return \Doctrine\DBAL\Driver\Statement
+     */
+    private function prepareInsertStatement($ignorePlace = null)
     {
         $table = $this->connection->quoteIdentifier($this->tableName);
-        return $this->connection->prepare(
-            "INSERT INTO {$table} SET
+        $statement =
+          "INSERT INTO {$table} SET
               event = :event,
               place = :place,
               organizer = :organizer
             ON DUPLICATE KEY UPDATE
-              place = :place,
-              organizer=:organizer"
-        );
+              organizer = :organizer";
+
+        if ($ignorePlace) {
+            $statement = $statement . ", place = :place";
+        }
+
+        return $this->connection->prepare($statement);
     }
 
     public function getEventsLocatedAtPlace($placeId)

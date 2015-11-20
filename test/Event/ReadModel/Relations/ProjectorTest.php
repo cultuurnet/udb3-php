@@ -13,6 +13,8 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
 use ValueObjects\String\String;
@@ -281,6 +283,62 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Metadata(),
             $eventUpdatedFromCdbXml,
             DateTime::fromString($importedDate)
+        );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_the_organizer_relation_when_the_organizer_of_an_event_is_updated()
+    {
+        $eventId = 'event-id';
+        $organizerId = 'organizer-id';
+        $organizerUpdatedEvent = new OrganizerUpdated($eventId, $organizerId);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('storeOrganizer')
+            ->with(
+                $this->equalTo($eventId),
+                $this->equalTo($organizerId)
+            );
+
+        $domainMessage = new DomainMessage(
+            $organizerUpdatedEvent->getEventId(),
+            1,
+            new Metadata(),
+            $organizerUpdatedEvent,
+            DateTime::now()
+        );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_the_organizer_relation_when_the_organizer_is_removed_from_an_event()
+    {
+        $eventId = 'event-id';
+        $organizerId = 'organizer-id';
+        $organizerDeletedEvent = new OrganizerDeleted($eventId, $organizerId);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('storeOrganizer')
+            ->with(
+                $this->equalTo($eventId),
+                null
+            );
+
+        $domainMessage = new DomainMessage(
+            $organizerDeletedEvent->getEventId(),
+            1,
+            new Metadata(),
+            $organizerDeletedEvent,
+            DateTime::now()
         );
 
         $this->projector->handle($domainMessage);

@@ -39,6 +39,96 @@ class DBALRepository implements RepositoryInterface
         $this->connection->commit();
     }
 
+    public function removeOrganizer($eventId)
+    {
+        $transaction = function ($connection) use ($eventId) {
+            if ($this->eventHasRelations($connection, $eventId)) {
+                $this->updateEventOrganizerRelation($connection, $eventId, null);
+            }
+        };
+
+        $this->connection->transactional($transaction);
+    }
+
+    public function storeOrganizer($eventId, $organizerId)
+    {
+        $transaction = function ($connection) use ($eventId, $organizerId) {
+            if ($this->eventHasRelations($connection, $eventId)) {
+                $this->updateEventOrganizerRelation($connection, $eventId, $organizerId);
+            } else {
+                $this->createEventOrganizerRelation($connection, $eventId, $organizerId);
+            }
+        };
+
+        $this->connection->transactional($transaction);
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $eventId
+     * @param string $organizerId
+     */
+    private function createEventOrganizerRelation(
+        Connection $connection,
+        $eventId,
+        $organizerId
+    ) {
+        $q = $connection
+            ->createQueryBuilder()
+            ->insert($this->tableName)
+            ->values([
+                'event' => ':event_id',
+                'organizer' => ':organizer_id'
+            ])
+            ->setParameter('event_id', $eventId)
+            ->setParameter('organizer_id', $organizerId);
+
+        $q->execute();
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $eventId
+     * @param string $organizerId
+     */
+    private function updateEventOrganizerRelation(
+        Connection $connection,
+        $eventId,
+        $organizerId
+    ) {
+        $q = $connection
+            ->createQueryBuilder()
+            ->update($this->tableName)
+            ->where('event = :event_id')
+            ->set('organizer', ':organizer_id')
+            ->setParameter('event_id', $eventId)
+            ->setParameter('organizer_id', $organizerId);
+
+        $q->execute();
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $id
+     * @return bool
+     */
+    private function eventHasRelations(
+        Connection $connection,
+        $id
+    ) {
+        $q = $connection->createQueryBuilder();
+
+        $q->select('1')
+            ->from($this->tableName, 'relation')
+            ->where('relation.event = :event_id')
+            ->setParameter('event_id', $id);
+
+        $result = $q->execute();
+        $relations = $result->fetchAll();
+
+        return count($relations) > 0;
+    }
+
     private function prepareInsertStatement()
     {
         $table = $this->connection->quoteIdentifier($this->tableName);

@@ -9,9 +9,6 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\EventEvent;
 
-/**
- * Description of DescriptionUpdated
- */
 class OrganizerUpdated extends EventEvent
 {
     use \CultuurNet\UDB3\OrganizerUpdatedTrait;
@@ -31,6 +28,6 @@ class OrganizerUpdated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['place_id'], $data['organizerId']);
+        return new static($data['event_id'], $data['organizerId']);
     }
 }

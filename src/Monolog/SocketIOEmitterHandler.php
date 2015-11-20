@@ -36,8 +36,8 @@ class SocketIOEmitterHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $data = $record['context'];
-        $event = $record['message'];
+        $event = $record['formatted']['message'];
+        $data = $record['formatted']['context'];
 
         $this->emitter->emit($event, $data);
     }

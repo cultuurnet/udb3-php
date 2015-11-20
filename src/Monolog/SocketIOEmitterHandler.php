@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Monolog;
 
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use SocketIO\Emitter;
@@ -40,5 +42,13 @@ class SocketIOEmitterHandler extends AbstractProcessingHandler
         $data = $record['formatted']['context'];
 
         $this->emitter->emit($event, $data);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getDefaultFormatter()
+    {
+        return new NormalizerFormatter();
     }
 }

@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Label as Label;
+use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
@@ -67,7 +68,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         // do a pre query to test if the query is valid and check the item count
         try {
             $preQueryResult = $this->searchService->search($query, 1, 0);
-            $totalItemCount = $preQueryResult['totalItems'];
+            $totalItemCount = $preQueryResult->getTotalItems()->toNative();
         } catch (ClientErrorResponseException $e) {
             if ($this->logger) {
                 $this->logger->error(
@@ -112,7 +113,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
                 // Iterate the results of the current page and get their IDs
                 // by stripping them from the json-LD representation
-                foreach ($results['member'] as $event) {
+                foreach ($results->getItems() as $event) {
                     $expoId = explode('/', $event['@id']);
                     $eventId = array_pop($expoId);
 

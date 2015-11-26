@@ -120,12 +120,25 @@ class HTMLEventFormatter
             reset($event->description)
         );
 
-        $formattedEvent['address'] = [
-            'name' => $event->location->name,
-            'street' => $event->location->address->streetAddress,
-            'postcode' => $event->location->address->postalCode,
-            'municipality' => $event->location->address->addressLocality,
-        ];
+        $address = [];
+
+        if (property_exists($event, 'location')) {
+            if (property_exists($event->location, 'name')) {
+                $address['name'] = $event->location->name;
+            }
+
+            if (property_exists($event->location, 'address')) {
+                $address += [
+                    'street' => $event->location->address->streetAddress,
+                    'postcode' => $event->location->address->postalCode,
+                    'municipality' => $event->location->address->addressLocality,
+                ];
+            }
+        }
+
+        if (!empty($address)) {
+            $formattedEvent['address'] = $address;
+        }
 
         if (isset($event->bookingInfo)) {
             $firstPrice = reset($event->bookingInfo);

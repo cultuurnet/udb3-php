@@ -137,6 +137,57 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutImage);
     }
 
+    public function locationVariationsDataProvider()
+    {
+        $expectedFormattedEvent = [
+            'type' => 'Cursus of workshop',
+            'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+            'description' => 'De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken...',
+            'price' => 'Gratis',
+            'brands' => array(),
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+        ];
+
+        return [
+            'without location' => [
+                'event_without_location.json',
+                $expectedFormattedEvent
+            ],
+            'without location address' => [
+                'event_without_location_address.json',
+                $expectedFormattedEvent + [
+                    'address' => [
+                        'name' => 'Cultuurcentrum De Kruisboog',
+                    ]
+                ]
+            ],
+            'without location name' => [
+                'event_without_location_name.json',
+                $expectedFormattedEvent + [
+                    'address' => [
+                        'street' => 'Sint-Jorisplein 20 ',
+                        'postcode' => '3300',
+                        'municipality' => 'Tienen',
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider locationVariationsDataProvider
+     * @param string $sample
+     * @param array $expectedFormattedEvent
+     */
+    public function it_gracefully_handles_events_without_or_with_partial_location(
+        $sample,
+        array $expectedFormattedEvent
+    ) {
+        $eventWithoutImage = $this->getFormattedEventFromJSONFile($sample);
+        $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutImage);
+    }
+
     /**
      * @test
      */

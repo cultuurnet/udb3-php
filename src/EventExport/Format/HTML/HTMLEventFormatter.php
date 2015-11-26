@@ -111,7 +111,9 @@ class HTMLEventFormatter
         }
 
         $type = EventType::fromJSONLDEvent($eventString);
-        $formattedEvent['type'] = $type->getLabel();
+        if ($type) {
+            $formattedEvent['type'] = $type->getLabel();
+        }
 
         $formattedEvent['title'] = reset($event->name);
         $formattedEvent['description'] = $this->filters->filter(

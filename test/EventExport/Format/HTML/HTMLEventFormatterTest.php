@@ -57,7 +57,13 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
      */
     protected function assertEventFormatting($expected, $actual)
     {
-        $this->assertLessThanOrEqual(300, mb_strlen($actual['description']));
+        if (isset($actual['description'])) {
+            $this->assertLessThanOrEqual(
+                300,
+                mb_strlen($actual['description'])
+            );
+        }
+
         $this->assertEquals($expected, $actual);
     }
 
@@ -112,6 +118,28 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
             'dates' => 'van 01/09/14 tot 29/06/15',
         ];
         $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutBookingInfo);
+    }
+
+    /**
+     * @test
+     */
+    public function it_gracefully_handles_events_without_description()
+    {
+        $eventWithoutDescription = $this->getFormattedEventFromJSONFile('event_without_description.json');
+        $expectedFormattedEvent = [
+            'type' => 'Cursus of workshop',
+            'title' => 'Koran, kaliefen en kruistochten - De fundamenten van de islam',
+            'address' => [
+                'name' => 'Cultuurcentrum De Kruisboog',
+                'street' => 'Sint-Jorisplein 20 ',
+                'postcode' => '3300',
+                'municipality' => 'Tienen',
+            ],
+            'price' => 'Gratis',
+            'brands' => array(),
+            'dates' => 'ma 02/03/15 van 13:30 tot 16:30  ma 09/03/15 van 13:30 tot 16:30  ma 16/03/15 van 13:30 tot 16:30  ma 23/03/15 van 13:30 tot 16:30  ma 30/03/15 van 13:30 tot 16:30 ',
+        ];
+        $this->assertEventFormatting($expectedFormattedEvent, $eventWithoutDescription);
     }
 
     /**

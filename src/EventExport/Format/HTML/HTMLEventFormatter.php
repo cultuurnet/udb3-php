@@ -116,9 +116,12 @@ class HTMLEventFormatter
         }
 
         $formattedEvent['title'] = reset($event->name);
-        $formattedEvent['description'] = $this->filters->filter(
-            reset($event->description)
-        );
+
+        if (property_exists($event, 'description')) {
+            $formattedEvent['description'] = $this->filters->filter(
+                reset($event->description)
+            );
+        }
 
         $address = [];
 

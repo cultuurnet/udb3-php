@@ -157,6 +157,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             );
 
+        $this->setExpectedException(ClientErrorResponseException::class);
+
         $this->scenario
             ->when(new LabelQuery('---fsdfs', new Label('foo')))
             ->then(

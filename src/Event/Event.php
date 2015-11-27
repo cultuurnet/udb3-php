@@ -289,6 +289,20 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param EventUpdatedFromUDB2 $eventUpdated
+     */
+    protected function applyEventUpdatedFromUDB2(
+        EventUpdatedFromUDB2 $eventUpdated
+    ) {
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventUpdated->getCdbXmlNamespaceUri(),
+            $eventUpdated->getCdbXml()
+        );
+
+        $this->setLabelsFromUDB2Event($udb2Event);
+    }
+
+    /**
      * @param Language $language
      * @param string $title
      */

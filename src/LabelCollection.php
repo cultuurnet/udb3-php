@@ -37,13 +37,13 @@ class LabelCollection implements \Countable
      */
     public function with(Label $label)
     {
-        if ($this->contains($label)) {
-            throw new \RuntimeException('Label "' . $label . '" is already present in collection.');
+        if (!$this->contains($label)) {
+            $labels = array_merge($this->labels, [$label]);
+        } else {
+            $labels = $this->labels;
         }
 
-        $newLabels = array_merge($this->labels, [$label]);
-
-        return new LabelCollection($newLabels);
+        return new LabelCollection($labels);
     }
 
     /**

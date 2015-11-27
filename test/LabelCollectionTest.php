@@ -37,16 +37,15 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_create_a_new_collection_with_a_keyword_already_contained_in_the_current_collection()
+    public function it_ignores_keywords_already_contained_in_the_current_collection()
     {
-        $labels = new LabelCollection(
+        $existingCollection = new LabelCollection(
             [
                 new Label('keyword 1'),
             ]
         );
 
-        $this->setExpectedException(\RuntimeException::class);
-
-        $labels->with(new Label('keyword 1'));
+        $unchangedCollection = $existingCollection->with(new Label('keyword 1'));
+        $this->assertEquals($existingCollection, $unchangedCollection);
     }
 }

@@ -5,7 +5,13 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
@@ -16,8 +22,18 @@ use CultuurNet\UDB3\Translation;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\String\String;
 
-class EventTest extends PHPUnit_Framework_TestCase
+class EventTest extends AggregateRootScenarioTestCase
 {
+    const NS_CDBXML_3_3 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
+
+    /**
+     * @inheritdoc
+     */
+    protected function getAggregateRootClass()
+    {
+        return Event::class;
+    }
+
     /**
      * @var Event
      */
@@ -25,11 +41,20 @@ class EventTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->event = Event::create(
             'foo',
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Location(
+                'LOCATION-ABC-123',
+                '$name',
+                '$country',
+                '$locality',
+                '$postalcode',
+                '$street'
+            ),
             new Calendar('permanent', '', '')
         );
     }
@@ -97,30 +122,6 @@ class EventTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_unlabels_in_a_case_insensitive_way()
-    {
-        $this->event->label(new Label('foo'));
-
-        $this->assertEquals(
-            new LabelCollection(
-                [
-                    new Label('foo')
-                ]
-            ),
-            $this->event->getLabels()
-        );
-
-        $this->event->unlabel(new Label('Foo'));
-
-        $this->assertEquals(
-            new LabelCollection(),
-            $this->event->getLabels()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_can_be_imported_from_udb2_cdbxml()
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/EventTest.cdbxml.xml');
@@ -152,11 +153,15 @@ class EventTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_be_created_from_cdbxml()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+            new String(
+                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+            )
         );
 
         $expectedLabels = [
@@ -175,18 +180,26 @@ class EventTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_be_updated_from_cdbxml()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+            new String(
+                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+            )
         );
 
-        $cdbXmlEdited = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords_edited.xml');
+        $cdbXmlEdited = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords_edited.xml'
+        );
         $event->updateFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXmlEdited),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+            new String(
+                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+            )
         );
 
         $expectedLabels = [
@@ -200,6 +213,180 @@ class EventTest extends PHPUnit_Framework_TestCase
             new LabelCollection($expectedLabels),
             $event->getLabels()
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function unlabelDataProvider()
+    {
+        $label = new Label('foo');
+
+        $id = '004aea08-e13d-48c9-b9eb-a18f20e6d44e';
+        $ns = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3');
+        $cdbXml = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e.xml');
+        $cdbXmlWithFooKeyword = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e_additional_keyword.xml');
+
+        $eventImportedFromUdb2 = new EventImportedFromUDB2(
+            $id,
+            $cdbXml,
+            $ns
+        );
+
+        return [
+            'label added by udb3' => [
+                $id,
+                $label,
+                [
+                    $eventImportedFromUdb2,
+                    new EventWasLabelled(
+                        $id,
+                        $label
+                    ),
+                ]
+            ],
+            'label added by update from udb2' => [
+                $id,
+                $label,
+                [
+                    $eventImportedFromUdb2,
+                    new EventUpdatedFromUDB2(
+                        $id,
+                        $cdbXmlWithFooKeyword,
+                        $ns
+                    ),
+                ]
+            ],
+            'label merged through Entry API' => [
+                $id,
+                $label,
+                [
+                    $eventImportedFromUdb2,
+                    new LabelsMerged(
+                        new String($id),
+                        new LabelCollection(
+                            [
+                                $label
+                            ]
+                        )
+                    ),
+                ]
+            ],
+            'label with different casing' => [
+                $id,
+                $label,
+                [
+                    $eventImportedFromUdb2,
+                    new EventWasLabelled(
+                        $id,
+                        new Label('fOO')
+                    ),
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider unlabelDataProvider
+     * @param string $id
+     * @param Label $label
+     * @param array $givens
+     */
+    public function it_can_be_unlabelled(
+        $id,
+        Label $label,
+        array $givens
+    ) {
+        $this->scenario
+            ->given($givens)
+            ->when(
+                function (Event $event) use ($label) {
+                    $event->unlabel($label);
+                }
+            )
+            ->then(
+                [
+                    new Unlabelled($id, $label)
+                ]
+            );
+    }
+
+    /**
+     * @return array
+     */
+    public function unlabelIgnoredDataProvider()
+    {
+        $label = new Label('foo');
+
+        $id = '004aea08-e13d-48c9-b9eb-a18f20e6d44e';
+        $ns = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3');
+        $cdbXml = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e.xml');
+        $cdbXmlWithFooKeyword = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e_additional_keyword.xml');
+
+        $eventImportedFromUdb2 = new EventImportedFromUDB2(
+            $id,
+            $cdbXml,
+            $ns
+        );
+
+        return [
+            'label not present in imported udb2 cdbxml' => [
+                $label,
+                [
+                    $eventImportedFromUdb2,
+                ]
+            ],
+            'label previously removed by an update from udb2' => [
+                $label,
+                [
+                    new EventImportedFromUDB2(
+                        $id,
+                        $cdbXmlWithFooKeyword,
+                        $ns
+                    ),
+                    new EventUpdatedFromUDB2(
+                        $id,
+                        $cdbXml,
+                        $ns
+                    ),
+                ]
+            ],
+            'label previously removed' => [
+                $label,
+                [
+                    $eventImportedFromUdb2,
+                    new EventWasLabelled(
+                        $id,
+                        $label
+                    ),
+                    new Unlabelled(
+                        $id,
+                        $label
+                    )
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider unlabelIgnoredDataProvider
+     * @param Label $label
+     * @param array $givens
+     */
+    public function it_silently_ignores_unlabel_request_if_label_is_not_present(
+        Label $label,
+        array $givens
+    ) {
+        $this->scenario
+            ->given($givens)
+            ->when(
+                function (Event $event) use ($label) {
+                    $event->unlabel($label);
+                }
+            )
+            ->then([]);
     }
 
     /**
@@ -289,6 +476,17 @@ class EventTest extends PHPUnit_Framework_TestCase
                 ),
             ),
             $event->getTranslations()
+        );
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     */
+    protected function getSample($file)
+    {
+        return file_get_contents(
+            __DIR__ . '/samples/' . $file
         );
     }
 

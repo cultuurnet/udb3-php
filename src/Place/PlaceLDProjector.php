@@ -8,14 +8,9 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
-use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\EventListenerInterface;
-use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
@@ -47,6 +42,10 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Theme;
 
+/**
+ * Projects state changes on Place entities to a JSON-LD read model in a
+ * document repository.
+ */
 class PlaceLDProjector implements EventListenerInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
@@ -96,7 +95,7 @@ class PlaceLDProjector implements EventListenerInterface
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      */
-    public function applyPlaceImportedFromUDB2(
+    protected function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $actorImportedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -107,8 +106,7 @@ class PlaceLDProjector implements EventListenerInterface
         $document = $this->newDocument($actorImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
 
-        $cdbXMLImporter = new CdbXMLImporter();
-        $actorLd = $cdbXMLImporter->documentWithCdbXML(
+        $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
             $actorLd,
             $udb2Actor
         );
@@ -136,7 +134,7 @@ class PlaceLDProjector implements EventListenerInterface
     /**
      * @param PlaceCreated $placeCreated
      */
-    public function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
+    protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
         $document = $this->newDocument($placeCreated->getPlaceId());
 
@@ -179,7 +177,7 @@ class PlaceLDProjector implements EventListenerInterface
     /**
      * @param PlaceDeleted $placeDeleted
      */
-    public function applyPlaceDeleted(PlaceDeleted $placeDeleted)
+    protected function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
         $this->repository->remove($placeDeleted->getPlaceId());
     }
@@ -187,7 +185,7 @@ class PlaceLDProjector implements EventListenerInterface
     /**
      * Apply the major info updated command to the projector.
      */
-    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($majorInfoUpdated);
@@ -222,7 +220,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the description updated event to the place repository.
      * @param DescriptionUpdated $descriptionUpdated
      */
-    public function applyDescriptionUpdated(
+    protected function applyDescriptionUpdated(
         DescriptionUpdated $descriptionUpdated
     ) {
 
@@ -241,7 +239,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the booking info updated event to the place repository.
      * @param BookingInfoUpdated $bookingInfoUpdated
      */
-    public function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
@@ -257,7 +255,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the typical age range updated event to the place repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
-    public function applyTypicalAgeRangeUpdated(
+    protected function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated
     ) {
         $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeUpdated);
@@ -272,7 +270,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the typical age range deleted event to the place repository.
      * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
      */
-    public function applyTypicalAgeRangeDeleted(
+    protected function applyTypicalAgeRangeDeleted(
         TypicalAgeRangeDeleted $typicalAgeRangeDeleted
     ) {
         $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeDeleted);
@@ -288,7 +286,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the organizer updated event to the place repository.
      * @param OrganizerUpdated $organizerUpdated
      */
-    public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
         $document = $this->loadPlaceDocumentFromRepository($organizerUpdated);
 
@@ -305,7 +303,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the organizer delete event to the place repository.
      * @param OrganizerDeleted $organizerDeleted
      */
-    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
         $document = $this->loadPlaceDocumentFromRepository($organizerDeleted);
 
@@ -320,7 +318,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the contact point updated event to the place repository.
      * @param ContactPointUpdated $contactPointUpdated
      */
-    public function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($contactPointUpdated);
@@ -335,7 +333,7 @@ class PlaceLDProjector implements EventListenerInterface
      * Apply the facilitiesupdated event to the place repository.
      * @param FacilitiesUpdated $facilitiesUpdated
      */
-    public function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
+    protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
@@ -368,7 +366,7 @@ class PlaceLDProjector implements EventListenerInterface
      *
      * @param ImageAdded $imageAdded
      */
-    public function applyImageAdded(ImageAdded $imageAdded)
+    protected function applyImageAdded(ImageAdded $imageAdded)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($imageAdded);
@@ -386,7 +384,7 @@ class PlaceLDProjector implements EventListenerInterface
      *
      * @param ImageUpdated $imageUpdated
      */
-    public function applyImageUpdated(ImageUpdated $imageUpdated)
+    protected function applyImageUpdated(ImageUpdated $imageUpdated)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($imageUpdated);
@@ -403,7 +401,7 @@ class PlaceLDProjector implements EventListenerInterface
      *
      * @param ImageDeleted $imageDeleted
      */
-    public function applyImageDeleted(ImageDeleted $imageDeleted)
+    protected function applyImageDeleted(ImageDeleted $imageDeleted)
     {
 
         $document = $this->loadPlaceDocumentFromRepository($imageDeleted);
@@ -436,7 +434,7 @@ class PlaceLDProjector implements EventListenerInterface
     /**
      * Get the organizer jsonLD.
      */
-    public function organizerJSONLD($organizerId)
+    protected function organizerJSONLD($organizerId)
     {
         try {
             $organizerJSONLD = $this->organizerService->getEntity(

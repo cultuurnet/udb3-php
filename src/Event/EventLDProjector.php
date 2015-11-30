@@ -192,7 +192,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */
-    public function applyEventImportedFromUDB2(
+    protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $this->applyEventCdbXml(
@@ -520,6 +520,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $labels = isset($eventLd->labels) ? $eventLd->labels : [];
 
         $currentCollection = LabelCollection::fromStrings($labels);
+
         $newLabels = $labelsMerged->getLabels();
 
         $eventLd->labels = $currentCollection->merge($newLabels)->toStrings();

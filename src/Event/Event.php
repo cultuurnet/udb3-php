@@ -293,14 +293,14 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param EventCdbXMLInterface $eventUpdated
+     * @param EventCdbXMLInterface $eventCdbXML
      */
     protected function setUDB2Data(
-        EventCdbXMLInterface $eventUpdated
+        EventCdbXMLInterface $eventCdbXML
     ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventUpdated->getCdbXmlNamespaceUri(),
-            $eventUpdated->getCdbXml()
+            $eventCdbXML->getCdbXmlNamespaceUri(),
+            $eventCdbXML->getCdbXml()
         );
 
         $this->setLabelsFromUDB2Event($udb2Event);

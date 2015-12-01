@@ -24,6 +24,7 @@ use ValueObjects\String\String;
 
 class EventTest extends AggregateRootScenarioTestCase
 {
+    const NS_CDBXML_3_2 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
     const NS_CDBXML_3_3 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
     /**
@@ -128,7 +129,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event = Event::importFromUDB2(
             'someId',
             $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+            self::NS_CDBXML_3_2
         );
 
         $expectedLabels = [
@@ -159,9 +160,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String(
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
-            )
+            new String(self::NS_CDBXML_3_3)
         );
 
         $expectedLabels = [
@@ -186,9 +185,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String(
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
-            )
+            new String(self::NS_CDBXML_3_3)
         );
 
         $cdbXmlEdited = file_get_contents(
@@ -197,9 +194,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event->updateFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXmlEdited),
-            new String(
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
-            )
+            new String(self::NS_CDBXML_3_3)
         );
 
         $expectedLabels = [
@@ -223,7 +218,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $label = new Label('foo');
 
         $id = '004aea08-e13d-48c9-b9eb-a18f20e6d44e';
-        $ns = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3');
+        $ns = self::NS_CDBXML_3_3;
         $cdbXml = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e.xml');
         $cdbXmlWithFooKeyword = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e_additional_keyword.xml');
 
@@ -320,7 +315,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $label = new Label('foo');
 
         $id = '004aea08-e13d-48c9-b9eb-a18f20e6d44e';
-        $ns = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3');
+        $ns = self::NS_CDBXML_3_3;
         $cdbXml = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e.xml');
         $cdbXmlWithFooKeyword = $this->getSample('event_004aea08-e13d-48c9-b9eb-a18f20e6d44e_additional_keyword.xml');
 
@@ -398,7 +393,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+            new String(self::NS_CDBXML_3_3)
         );
 
         $labels = new LabelCollection(
@@ -440,7 +435,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new String('someId'),
             new EventXmlString($cdbXml),
             new String(
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+                self::NS_CDBXML_3_3
             )
         );
 
@@ -456,7 +451,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+            new String(self::NS_CDBXML_3_3)
         );
 
         $event->applyTranslation(
@@ -502,7 +497,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new String('someId'),
             new EventXmlString($cdbXml),
             new String(
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+                self::NS_CDBXML_3_3
             )
         );
 
@@ -554,7 +549,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+            new String(self::NS_CDBXML_3_3)
         );
 
         $event->applyTranslation(

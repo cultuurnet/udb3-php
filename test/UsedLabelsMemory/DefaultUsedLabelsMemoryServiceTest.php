@@ -5,11 +5,9 @@
 
 namespace CultuurNet\UDB3\UsedLabelsMemory;
 
-use Broadway\Domain\DomainEventStream;
 use Broadway\EventHandling\SimpleEventBus;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
 
@@ -91,13 +89,11 @@ class DefaultUsedLabelsMemoryServiceTest extends \PHPUnit_Framework_TestCase
     public function it_gives_me_the_memory_of_a_particular_user()
     {
         $userId = 3;
+        $otherUserId = 5;
 
         $this->service->rememberLabelUsed($userId, new Label('foo'));
         $this->service->rememberLabelUsed($userId, new Label('bar'));
-
-        $expectedUsedLabelsMemory = UsedLabelsMemory::create($userId);
-        $expectedUsedLabelsMemory->labelUsed(new Label('foo'));
-        $expectedUsedLabelsMemory->labelUsed(new Label('bar'));
+        $this->service->rememberLabelUsed($otherUserId, new Label('lorem'));
 
         $usedLabelsMemory = $this->service->getMemory($userId);
 

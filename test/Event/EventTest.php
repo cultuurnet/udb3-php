@@ -125,7 +125,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_imported_from_udb2_cdbxml()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/EventTest.cdbxml.xml');
+        $cdbXml = $this->getSample('EventTest.cdbxml.xml');
+
         $event = Event::importFromUDB2(
             'someId',
             $cdbXml,
@@ -154,9 +155,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_created_from_cdbxml()
     {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
-        );
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
@@ -179,18 +179,16 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_updated_from_cdbxml()
     {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
-        );
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
             new String(self::NS_CDBXML_3_3)
         );
 
-        $cdbXmlEdited = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords_edited.xml'
-        );
+        $cdbXmlEdited = $this->getSample('event_entryapi_valid_with_keywords_edited.xml');
+
         $event->updateFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXmlEdited),
@@ -389,7 +387,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_have_labels_merged()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
@@ -423,14 +422,13 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_requires_at_least_one_label_when_merging_labels()
     {
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
         $this->setExpectedException(
             \InvalidArgumentException::class,
             'Argument $labels should contain at least one label'
         );
 
-        $cdbXml = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
-        );
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
@@ -447,7 +445,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_have_a_new_translation_applied()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
@@ -475,24 +474,12 @@ class EventTest extends AggregateRootScenarioTestCase
     }
 
     /**
-     * @param string $file
-     * @return string
-     */
-    protected function getSample($file)
-    {
-        return file_get_contents(
-            __DIR__ . '/samples/' . $file
-        );
-    }
-
-    /**
      * @test
      */
     public function it_can_have_an_existing_translation_updated()
     {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
-        );
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
@@ -545,7 +532,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_have_a_translation_deleted()
     {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+        
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),
@@ -578,6 +566,17 @@ class EventTest extends AggregateRootScenarioTestCase
         $this->assertEquals(
             array(),
             $event->getTranslations()
+        );
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     */
+    protected function getSample($file)
+    {
+        return file_get_contents(
+            __DIR__ . '/samples/' . $file
         );
     }
 }

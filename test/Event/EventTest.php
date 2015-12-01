@@ -533,7 +533,7 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_can_have_a_translation_deleted()
     {
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        
+
         $event = Event::createFromCdbXml(
             new String('someId'),
             new EventXmlString($cdbXml),

@@ -53,6 +53,13 @@ use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use ValueObjects\String\String;
 
+/**
+ * Projects state changes on Event entities to a JSON-LD read model in a
+ * document repository.
+ *
+ * Implements PlaceServiceInterface and OrganizerServiceInterface to do a double
+ * dispatch with CdbXMLImporter.
+ */
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
@@ -192,7 +199,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */
-    public function applyEventImportedFromUDB2(
+    protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $this->applyEventCdbXml(
@@ -205,7 +212,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventUpdatedFromUDB2 $eventUpdatedFromUDB2
      */
-    public function applyEventUpdatedFromUDB2(
+    protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2
     ) {
         $this->applyEventCdbXml(
@@ -393,7 +400,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventDeleted $eventDeleted
      */
-    public function applyEventDeleted(EventDeleted $eventDeleted)
+    protected function applyEventDeleted(EventDeleted $eventDeleted)
     {
         $this->repository->remove($eventDeleted->getEventId());
     }
@@ -401,7 +408,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * Apply the major info updated command to the projector.
      */
-    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($majorInfoUpdated);
@@ -434,6 +441,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     }
 
+    /**
+     * @inheritdoc
+     */
     public function placeJSONLD($placeId)
     {
         try {
@@ -450,6 +460,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function organizerJSONLD($organizerId)
     {
 
@@ -470,7 +483,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventWasLabelled $eventWasLabelled
      */
-    public function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
+    protected function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
     {
         $document = $this->loadDocumentFromRepository($eventWasLabelled);
 
@@ -485,7 +498,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->repository->save($document->withBody($eventLd));
     }
 
-    public function applyUnlabelled(Unlabelled $unlabelled)
+    protected function applyUnlabelled(Unlabelled $unlabelled)
     {
         $document = $this->loadDocumentFromRepository($unlabelled);
 
@@ -520,6 +533,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $labels = isset($eventLd->labels) ? $eventLd->labels : [];
 
         $currentCollection = LabelCollection::fromStrings($labels);
+
         $newLabels = $labelsMerged->getLabels();
 
         $eventLd->labels = $currentCollection->merge($newLabels)->toStrings();
@@ -592,7 +606,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the description updated event to the event repository.
      * @param DescriptionUpdated $descriptionUpdated
      */
-    public function applyDescriptionUpdated(
+    protected function applyDescriptionUpdated(
         DescriptionUpdated $descriptionUpdated
     ) {
         $document = $this->loadDocumentFromRepository($descriptionUpdated);
@@ -610,7 +624,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the typical age range updated event to the event repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
-    public function applyTypicalAgeRangeUpdated(
+    protected function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated
     ) {
         $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
@@ -625,7 +639,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the typical age range deleted event to the event repository.
      * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
      */
-    public function applyTypicalAgeRangeDeleted(
+    protected function applyTypicalAgeRangeDeleted(
         TypicalAgeRangeDeleted $typicalAgeRangeDeleted
     ) {
         $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
@@ -641,7 +655,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the organizer updated event to the event repository.
      * @param OrganizerUpdated $organizerUpdated
      */
-    public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($organizerUpdated);
@@ -659,7 +673,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the organizer delete event to the event repository.
      * @param OrganizerDeleted $organizerDeleted
      */
-    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
 
         $document = $this->loadDocumentFromRepository($organizerDeleted);
@@ -675,7 +689,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the contact info updated event to the event repository.
      * @param ContactPointUpdated $contactPointUpdated
      */
-    public function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($contactPointUpdated);
@@ -690,7 +704,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the booking info updated event to the event repository.
      * @param BookingInfoUpdated $bookingInfoUpdated
      */
-    public function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
@@ -707,7 +721,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param ImageAdded $imageAdded
      */
-    public function applyImageAdded(ImageAdded $imageAdded)
+    protected function applyImageAdded(ImageAdded $imageAdded)
     {
 
         $document = $this->loadDocumentFromRepository($imageAdded);
@@ -725,7 +739,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param ImageUpdated $imageUpdated
      */
-    public function applyImageUpdated(ImageUpdated $imageUpdated)
+    protected function applyImageUpdated(ImageUpdated $imageUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($imageUpdated);
@@ -743,7 +757,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param ImageDeleted $imageDeleted
      */
-    public function applyImageDeleted(ImageDeleted $imageDeleted)
+    protected function applyImageDeleted(ImageDeleted $imageDeleted)
     {
 
         $document = $this->loadDocumentFromRepository($imageDeleted);

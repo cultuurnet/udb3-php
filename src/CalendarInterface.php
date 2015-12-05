@@ -1,27 +1,44 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\CalendarBase.
- */
-
 namespace CultuurNet\UDB3;
 
-use Broadway\Serializer\SerializableInterface;
-
 /**
- * Abstract base class for calendars.
+ * Interface for calendars.
  */
-interface CalendarInterface extends SerializableInterface
+interface CalendarInterface
 {
-
+    /**
+     * Get current calendar type.
+     *
+     * @return string
+     */
     public function getType();
 
+    /**
+     * Get the start date.
+     *
+     * @return string
+     */
     public function getStartDate();
 
+    /**
+     * Get the end date.
+     *
+     * @return string
+     */
     public function getEndDate();
 
+    /**
+     * Get the opening hours.
+     *
+     * @return array
+     */
     public function getOpeningHours();
 
+    /**
+     * Get timestamps.
+     *
+     * @return Timestamp[]
+     */
     public function getTimestamps();
 }

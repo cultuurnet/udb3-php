@@ -405,7 +405,7 @@ class EventTest extends PHPUnit_Framework_TestCase
         $event->addLink(
             new Language('fr'),
             new String('http://cultuurnet.be'),
-            new LinkType('roadmap'),
+            LinkType::COLLABORATION(),
             null,
             null,
             null,
@@ -417,7 +417,7 @@ class EventTest extends PHPUnit_Framework_TestCase
                 'fr' => [
                         new Link(
                             new String('http://cultuurnet.be'),
-                            new LinkType('roadmap'),
+                            LinkType::COLLABORATION(),
                             null,
                             null,
                             null,

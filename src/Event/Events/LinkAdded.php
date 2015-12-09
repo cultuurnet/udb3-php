@@ -105,7 +105,7 @@ class LinkAdded implements SerializableInterface
             new String($data['event_id']),
             new Language($data['language']),
             new String($data['link']),
-            new LinkType($data['link_type']),
+            LinkType::get($data['link_type']),
             $title,
             $copyright,
             $subbrand,

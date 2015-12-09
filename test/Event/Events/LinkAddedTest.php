@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolas
- * Date: 19/11/15
- * Time: 11:01
- */
 
 namespace test\Event\Events;
 
@@ -23,7 +17,7 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
                     'event_id' => 'foo',
                     'language' => 'en',
                     'link' => 'link en',
-                    'link_type' => 'roadmap',
+                    'link_type' => 'collaboration',
                     'title' => 'title',
                     'copyright' => 'copyright',
                     'sub_brand' => 'sub brand',
@@ -33,7 +27,7 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
                     new String('foo'),
                     new Language('en'),
                     new String('link en'),
-                    new LinkType('roadmap'),
+                    LinkType::COLLABORATION(),
                     new String('title'),
                     new String('copyright'),
                     new String('sub brand'),
@@ -45,7 +39,7 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
                     'event_id' => 'bar',
                     'language' => 'fr',
                     'link' => 'link fr',
-                    'link_type' => 'roadmap',
+                    'link_type' => 'collaboration',
                     'title' => 'title fr',
                     'copyright' => 'copyright fr',
                     'sub_brand' => 'sub brand fr',
@@ -55,7 +49,7 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
                     new String('bar'),
                     new Language('fr'),
                     new String('link fr'),
-                    new LinkType('roadmap'),
+                    LinkType::COLLABORATION(),
                     new String('title fr'),
                     new String('copyright fr'),
                     new String('sub brand fr'),
@@ -67,13 +61,13 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
                     'event_id' => 'foo',
                     'language' => 'en',
                     'link' => 'link en',
-                    'link_type' => 'roadmap'
+                    'link_type' => 'collaboration'
                 ],
                 new LinkAdded(
                     new String('foo'),
                     new Language('en'),
                     new String('link en'),
-                    new LinkType('roadmap'),
+                    LinkType::COLLABORATION(),
                     null,
                     null,
                     null,
@@ -87,7 +81,7 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param array $expectedSerializedValue
-     * @param TranslationDeleted $translationDeleted
+     * @param LinkAdded $linkAdded
      */
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
@@ -103,7 +97,7 @@ class LinkAddedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param array $serializedValue
-     * @param TranslationDeleted $expectedTranslationDeleted
+     * @param LinkAdded $expectedLinkAdded
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,

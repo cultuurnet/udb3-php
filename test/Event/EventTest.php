@@ -1,22 +1,21 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CollaborationData\Description;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use Cultuurnet\UDB3\Link;
-use CultuurNet\UDB3\LinkType;
+use CultuurNet\UDB3\CollaborationData\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class EventTest extends PHPUnit_Framework_TestCase
 {
@@ -393,7 +392,7 @@ class EventTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_have_a_link_added()
+    public function it_can_have_collaboration_data_added()
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
         $event = Event::createFromCdbXml(
@@ -402,30 +401,34 @@ class EventTest extends PHPUnit_Framework_TestCase
             new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
         );
 
-        $event->addLink(
+        $event->addCollaborationData(
             new Language('fr'),
-            new String('http://cultuurnet.be'),
-            LinkType::COLLABORATION(),
-            null,
-            null,
-            null,
-            null
+            new String('sub brand fr'),
+            new Description('{"text":"Lorem ipsum"}'),
+            new String('title fr'),
+            new String('copyright fr'),
+            Url::fromNative('http://google.com')
         );
 
         $this->assertEquals(
-            array(
+            [
                 'fr' => [
-                        new Link(
-                            new String('http://cultuurnet.be'),
-                            LinkType::COLLABORATION(),
-                            null,
-                            null,
-                            null,
-                            null
-                        ),
-                    ]
-            ),
-            $event->getLinks()
+                    (new CollaborationData(
+                        new String('sub brand fr'),
+                        new Description('{"text":"Lorem ipsum"}')
+                    ))
+                        ->withTitle(
+                            new String('title fr')
+                        )
+                        ->withCopyright(
+                            new String('copyright fr')
+                        )
+                        ->withUrl(
+                            Url::fromNative('http://google.com')
+                        )
+                ]
+            ],
+            $event->getCollaborationData()
         );
     }
 }

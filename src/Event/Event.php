@@ -21,7 +21,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\LinkAdded;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -34,13 +34,14 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Link;
-use CultuurNet\UDB3\LinkType;
+use CultuurNet\UDB3\CollaborationData\Description;
+use CultuurNet\UDB3\CollaborationData\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -57,9 +58,9 @@ class Event extends EventSourcedAggregateRoot
     protected $translations = [];
 
     /**
-     * @var Link[]
+     * @var CollaborationData[]
      */
-    protected $links;
+    protected $collaborationData;
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -220,34 +221,43 @@ class Event extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param String $link
-     * @param LinkType $linkType
+     * @param String $subbrand
+     * @param Description $description
      * @param String|null $title
      * @param String|null $copyright
-     * @param String|null $subbrand
-     * @param String|null $description
+     * @param Url|null $url
      */
-    public function addLink(
+    public function addCollaborationData(
         Language $language,
-        String $link,
-        LinkType $linkType,
+        String $subbrand,
+        Description $description,
         String $title = null,
         String $copyright = null,
-        String $subbrand = null,
-        String $description = null
+        Url $url = null
     ) {
-        $this->apply(
-            new LinkAdded(
-                new String($this->eventId),
-                $language,
-                $link,
-                $linkType,
-                $title,
-                $copyright,
-                $subbrand,
-                $description
-            )
+        $collaborationDataAdded = new CollaborationDataAdded(
+            new String($this->eventId),
+            $language,
+            $subbrand,
+            $description
         );
+
+        if (!is_null($title)) {
+            $collaborationDataAdded = $collaborationDataAdded
+                ->withTitle($title);
+        }
+
+        if (!is_null($copyright)) {
+            $collaborationDataAdded = $collaborationDataAdded
+                ->withCopyright($copyright);
+        }
+
+        if (!is_null($url)) {
+            $collaborationDataAdded = $collaborationDataAdded
+                ->withUrl($url);
+        }
+
+        $this->apply($collaborationDataAdded);
     }
 
     /**
@@ -275,11 +285,11 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return Link[]
+     * @return CollaborationData[]
      */
-    public function getLinks()
+    public function getCollaborationData()
     {
-        return $this->links;
+        return $this->collaborationData;
     }
 
     /**
@@ -557,20 +567,32 @@ class Event extends EventSourcedAggregateRoot
         }
     }
 
-    protected function applyLinkAdded(
-        LinkAdded $linkAdded
+    protected function applyCollaborationDataAdded(
+        CollaborationDataAdded $collaborationDataAdded
     ) {
-        $language = $linkAdded->getLanguage()->getCode();
+        $language = $collaborationDataAdded->getLanguage()->getCode();
 
-        $link = new Link(
-            $linkAdded->getLink(),
-            $linkAdded->getLinkType(),
-            $linkAdded->getCopyright(),
-            $linkAdded->getSubbrand(),
-            $linkAdded->getDescription()
+        $collaborationData = new CollaborationData(
+            $collaborationDataAdded->getSubbrand(),
+            $collaborationDataAdded->getDescription()
         );
 
-        $this->links[$language][] = $link;
+        if (!is_null($collaborationDataAdded->getTitle())) {
+            $collaborationData = $collaborationData
+                ->withTitle($collaborationDataAdded->getTitle());
+        }
+
+        if (!is_null($collaborationDataAdded->getCopyright())) {
+            $collaborationData = $collaborationData
+                ->withCopyright($collaborationDataAdded->getCopyright());
+        }
+
+        if (!is_null($collaborationDataAdded->getUrl())) {
+            $collaborationData = $collaborationData
+                ->withUrl($collaborationDataAdded->getUrl());
+        }
+
+        $this->collaborationData[$language][] = $collaborationData;
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

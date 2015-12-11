@@ -51,7 +51,8 @@ class CollaborationData implements SerializableInterface
     /**
      * @param String $subBrand
      */
-    public function __construct(String $subBrand) {
+    public function __construct(String $subBrand)
+    {
         $this->subBrand = $subBrand;
     }
 

@@ -10,12 +10,12 @@ class CollaborationData
     /**
      * @var String
      */
-    protected $subbrand;
+    protected $subBrand;
 
     /**
-     * @var Description
+     * @var String
      */
-    protected $description;
+    protected $text;
 
     /**
      * @var String
@@ -28,20 +28,51 @@ class CollaborationData
     protected $copyright;
 
     /**
-     * @var
+     * @var String
      */
-    protected $url;
+    protected $keyword;
 
     /**
-     * @param String $subbrand
-     * @param Description $description
+     * @var String
+     */
+    protected $image;
+
+    /**
+     * @var String
+     */
+    protected $article;
+
+    /**
+     * @var Url
+     */
+    protected $link;
+
+    /**
+     * @param String $subBrand
+     * @param String $text
      */
     public function __construct(
-        String $subbrand,
-        Description $description
+        String $subBrand,
+        String $text
     ) {
-        $this->subbrand = $subbrand;
-        $this->description = $description;
+        $this->subBrand = $subBrand;
+        $this->text = $text;
+    }
+
+    /**
+     * @return String|null
+     */
+    public function getSubBrand()
+    {
+        return $this->subBrand;
+    }
+
+    /**
+     * @return String|null
+     */
+    public function getText()
+    {
+        return $this->text;
     }
 
     /**
@@ -56,6 +87,14 @@ class CollaborationData
     }
 
     /**
+     * @return String|null
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
      * @param String $copyright
      * @return static
      */
@@ -67,41 +106,6 @@ class CollaborationData
     }
 
     /**
-     * @param Url $url
-     * @return static
-     */
-    public function withUrl(Url $url)
-    {
-        $c = clone $this;
-        $c->url = $url;
-        return $c;
-    }
-
-    /**
-     * @return String|null
-     */
-    public function getSubbrand()
-    {
-        return $this->subbrand;
-    }
-
-    /**
-     * @return Description|null
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @return String|null
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
      * @return String|null
      */
     public function getCopyright()
@@ -110,10 +114,78 @@ class CollaborationData
     }
 
     /**
+     * @param String $keyword
+     * @return static
+     */
+    public function withKeyword(String $keyword)
+    {
+        $c = clone $this;
+        $c->keyword = $keyword;
+        return $c;
+    }
+
+    /**
+     * @return String|null
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
+    /**
+     * @param String $article
+     * @return static
+     */
+    public function withArticle(String $article)
+    {
+        $c = clone $this;
+        $c->article = $article;
+        return $c;
+    }
+
+    /**
+     * @return String|null
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param String $image
+     * @return static
+     */
+    public function withImage(String $image)
+    {
+        $c = clone $this;
+        $c->image = $image;
+        return $c;
+    }
+
+    /**
+     * @return String
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param Url $link
+     * @return static
+     */
+    public function withLink(Url $link)
+    {
+        $c = clone $this;
+        $c->link = $link;
+        return $c;
+    }
+
+    /**
      * @return Url
      */
-    public function getUrl()
+    public function getLink()
     {
-        return $this->url;
+        return $this->link;
     }
 }

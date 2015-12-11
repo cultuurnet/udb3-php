@@ -34,14 +34,12 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData\Description;
 use CultuurNet\UDB3\CollaborationData\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\String\String;
-use ValueObjects\Web\Url;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -58,7 +56,7 @@ class Event extends EventSourcedAggregateRoot
     protected $translations = [];
 
     /**
-     * @var CollaborationData[]
+     * @var \CultuurNet\UDB3\CollaborationData\CollaborationData[]
      */
     protected $collaborationData;
 
@@ -221,41 +219,17 @@ class Event extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param String $subbrand
-     * @param Description $description
-     * @param String|null $title
-     * @param String|null $copyright
-     * @param Url|null $url
+     * @param CollaborationData $collaborationData
      */
     public function addCollaborationData(
         Language $language,
-        String $subbrand,
-        Description $description,
-        String $title = null,
-        String $copyright = null,
-        Url $url = null
+        CollaborationData $collaborationData
     ) {
         $collaborationDataAdded = new CollaborationDataAdded(
             new String($this->eventId),
             $language,
-            $subbrand,
-            $description
+            $collaborationData
         );
-
-        if (!is_null($title)) {
-            $collaborationDataAdded = $collaborationDataAdded
-                ->withTitle($title);
-        }
-
-        if (!is_null($copyright)) {
-            $collaborationDataAdded = $collaborationDataAdded
-                ->withCopyright($copyright);
-        }
-
-        if (!is_null($url)) {
-            $collaborationDataAdded = $collaborationDataAdded
-                ->withUrl($url);
-        }
 
         $this->apply($collaborationDataAdded);
     }
@@ -285,7 +259,7 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return CollaborationData[]
+     * @return \CultuurNet\UDB3\CollaborationData\CollaborationData[]
      */
     public function getCollaborationData()
     {
@@ -571,28 +545,7 @@ class Event extends EventSourcedAggregateRoot
         CollaborationDataAdded $collaborationDataAdded
     ) {
         $language = $collaborationDataAdded->getLanguage()->getCode();
-
-        $collaborationData = new CollaborationData(
-            $collaborationDataAdded->getSubbrand(),
-            $collaborationDataAdded->getDescription()
-        );
-
-        if (!is_null($collaborationDataAdded->getTitle())) {
-            $collaborationData = $collaborationData
-                ->withTitle($collaborationDataAdded->getTitle());
-        }
-
-        if (!is_null($collaborationDataAdded->getCopyright())) {
-            $collaborationData = $collaborationData
-                ->withCopyright($collaborationDataAdded->getCopyright());
-        }
-
-        if (!is_null($collaborationDataAdded->getUrl())) {
-            $collaborationData = $collaborationData
-                ->withUrl($collaborationDataAdded->getUrl());
-        }
-
-        $this->collaborationData[$language][] = $collaborationData;
+        $this->collaborationData[$language][] = $collaborationDataAdded->getCollaborationData();
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

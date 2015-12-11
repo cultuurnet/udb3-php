@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\CollaborationData\CollaborationData;
+use CultuurNet\UDB3\CollaborationData\CollaborationDataPropertiesTrait;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData\Description;
 use CultuurNet\UDB3\Link\LinkType;
@@ -22,141 +24,23 @@ final class CollaborationDataAdded implements SerializableInterface
     protected $language;
 
     /**
-     * @var Url|null
+     * @var CollaborationData
      */
-    protected $url;
-
-    /**
-     * @var String|null
-     */
-    protected $title;
-
-    /**
-     * @var String|null
-     */
-    protected $copyright;
-
-    /**
-     * @var String
-     */
-    protected $subbrand;
-
-    /**
-     * @var Description
-     */
-    protected $description;
+    protected $collaborationData;
 
     /**
      * @param String $eventId
      * @param Language $language
-     * @param String $subbrand
-     * @param Description $description
+     * @param CollaborationData $collaborationData
      */
     public function __construct(
         String $eventId,
         Language $language,
-        String $subbrand,
-        Description $description
+        CollaborationData $collaborationData
     ) {
         $this->eventId = $eventId;
         $this->language = $language;
-        $this->subbrand = $subbrand;
-        $this->description = $description;
-    }
-
-    /**
-     * @param String $title
-     * @return static
-     */
-    public function withTitle(String $title)
-    {
-        $c = clone $this;
-        $c->title = $title;
-        return $c;
-    }
-
-    /**
-     * @param String $copyright
-     * @return static
-     */
-    public function withCopyright(String $copyright)
-    {
-        $c = clone $this;
-        $c->copyright = $copyright;
-        return $c;
-    }
-
-    /**
-     * @param Url $url
-     * @return static
-     */
-    public function withUrl(Url $url)
-    {
-        $c = clone $this;
-        $c->url = $url;
-        return $c;
-    }
-
-    /**
-     * @param array $data
-     * @return static The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        $added = new CollaborationDataAdded(
-            new String($data['event_id']),
-            new Language($data['language']),
-            new String($data['sub_brand']),
-            new Description($data['description'])
-        );
-
-        if (isset($data['title'])) {
-            $added = $added->withTitle(
-                new String($data['title'])
-            );
-        }
-
-        if (isset($data['copyright'])) {
-            $added = $added->withCopyright(
-                new String($data['copyright'])
-            );
-        }
-
-        if (isset($data['link'])) {
-            $added = $added->withUrl(
-                Url::fromNative($data['link'])
-            );
-        }
-
-        return $added;
-    }
-
-    /**
-     * @return array
-     */
-    public function serialize()
-    {
-        $serialized = array(
-            'event_id' => $this->eventId->toNative(),
-            'language' => $this->language->getCode(),
-            'link_type' => 'collaboration',
-            'sub_brand' => $this->subbrand->toNative(),
-            'description' => $this->description->toNative(),
-        );
-
-        if ($this->title) {
-            $serialized['title'] = (string) $this->title;
-        }
-
-        if ($this->copyright) {
-            $serialized['copyright'] = (string) $this->copyright;
-        }
-
-        if ($this->url) {
-            $serialized['link'] = (string) $this->url;
-        }
-
-        return $serialized;
+        $this->collaborationData = $collaborationData;
     }
 
     /**
@@ -176,42 +60,110 @@ final class CollaborationDataAdded implements SerializableInterface
     }
 
     /**
-     * @return Url
+     * @return CollaborationData
      */
-    public function getUrl()
+    public function getCollaborationData()
     {
-        return $this->url;
+        return $this->collaborationData;
     }
 
     /**
-     * @return String|null
+     * @param array $data
+     * @return static The object instance
      */
-    public function getTitle()
+    public static function deserialize(array $data)
     {
-        return $this->title;
+        $description = json_decode($data['description']);
+
+        if (is_null($description)) {
+            throw new \InvalidArgumentException('Description is not valid JSON.');
+        }
+
+        $collaborationData = new CollaborationData(
+            new String($data['sub_brand']),
+            new String($description['text'])
+        );
+
+        if (isset($data['title'])) {
+            $collaborationData = $collaborationData
+                ->withTitle(
+                    new String($data['title'])
+                );
+        }
+
+        if (isset($data['copyright'])) {
+            $collaborationData = $collaborationData
+                ->withCopyright(
+                    new String($data['copyright'])
+                );
+        }
+
+        if (isset($data['link'])) {
+            $collaborationData = $collaborationData
+                ->withLink(
+                    Url::fromNative($data['link'])
+                );
+        }
+
+        if (isset($description['keyword'])) {
+            $collaborationData = $collaborationData
+                ->withKeyword(
+                    new String($data['keyword'])
+                );
+        }
+
+        if (isset($description['image'])) {
+            $collaborationData = $collaborationData
+                ->withImage(
+                    new String($data['image'])
+                );
+        }
+
+        if (isset($description['article'])) {
+            $collaborationData = $collaborationData
+                ->withArticle(
+                    new String($data['article'])
+                );
+        }
+
+        $added = new CollaborationDataAdded(
+            new String($data['event_id']),
+            new Language($data['language']),
+            $collaborationData
+        );
+
+        return $added;
     }
 
     /**
-     * @return String|null
+     * @return array
      */
-    public function getCopyright()
+    public function serialize()
     {
-        return $this->copyright;
-    }
+        $description = [
+            'text' => (string) $this->collaborationData->getText(),
+            'keyword' => (string) $this->collaborationData->getKeyword(),
+            'image' => (string) $this->collaborationData->getImage(),
+            'article' => (string) $this->collaborationData->getArticle(),
+        ];
 
-    /**
-     * @return String|null
-     */
-    public function getSubbrand()
-    {
-        return $this->subbrand;
-    }
+        $description = json_encode(
+            array_filter($description, 'strlen')
+        );
 
-    /**
-     * @return Description|null
-     */
-    public function getDescription()
-    {
-        return $this->description;
+        $serialized = array(
+            'event_id' => (string) $this->eventId,
+            'language' => $this->language->getCode(),
+            'link' => (string) $this->collaborationData->getLink(),
+            'link_type' => 'collaboration',
+            'sub_brand' => (string) $this->collaborationData->getSubBrand(),
+            'description' => $description,
+            'title' => (string) $this->collaborationData->getTitle(),
+            'copyright' => (string) $this->collaborationData->getCopyright(),
+        );
+
+        $serialized = array_filter($serialized, 'strlen');
+
+        return $serialized;
     }
 }

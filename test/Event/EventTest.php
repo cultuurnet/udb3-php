@@ -423,7 +423,7 @@ class EventTest extends PHPUnit_Framework_TestCase
                         ->withCopyright(
                             new String('copyright fr')
                         )
-                        ->withUrl(
+                        ->withLink(
                             Url::fromNative('http://google.com')
                         )
                 ]

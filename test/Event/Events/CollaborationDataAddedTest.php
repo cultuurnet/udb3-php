@@ -2,105 +2,66 @@
 
 namespace test\Event\Events;
 
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData\Description;
 use ValueObjects\String\String;
-use ValueObjects\Web\Url;
 
 class CollaborationDataAddedTest extends \PHPUnit_Framework_TestCase
 {
     public function serializationDataProvider()
     {
-        $descriptionEn = json_encode(
-            [
-                'keyword' => 'Lorem',
-                'text' => 'description EN',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum'
-            ]
-        );
+        $enCollaborationData = [
+            'subBrand' => 'sub brand',
+            'title' => 'title',
+            'text' => 'description EN',
+            'copyright' => 'copyright',
+            'keyword' => 'Lorem',
+            'image' => '/image.en.png',
+            'article' => 'Ipsum',
+            'link' => 'http://google.com',
+        ];
 
-        $descriptionFr = json_encode(
-            [
-                'keyword' => 'Lorèm',
-                'text' => 'description FR',
-                'image' => '/image.fr.png',
-                'article' => 'Ipsume'
-            ]
-        );
+        $frCollaborationData = [
+            'subBrand' => 'sub brand fr',
+            'title' => 'title fr',
+            'text' => 'text fr',
+            'copyright' => 'copyright fr',
+            'keyword' => 'Lorèm',
+            'image' => '/image.fr.png',
+            'article' => 'Ipsume',
+            'link' => 'http://google.fr',
+        ];
 
         return [
             // English.
             [
                 [
-                    'event_id' => 'foo',
+                    'eventId' => 'foo',
                     'language' => 'en',
-                    'sub_brand' => 'sub brand',
-                    'description' => $descriptionEn,
-                    'title' => 'title',
-                    'copyright' => 'copyright',
-                    'link' => 'http://google.com',
-                    'link_type' => 'collaboration',
-                ],
-                (new CollaborationDataAdded(
-                    new String('foo'),
-                    new Language('en'),
-                    new String('sub brand'),
-                    new Description($descriptionEn)
-                ))
-                    ->withTitle(
-                        new String('title')
-                    )
-                    ->withCopyright(
-                        new String('copyright')
-                    )
-                    ->withUrl(
-                        Url::fromNative('http://google.com')
-                    ),
-            ],
-            // French.
-            [
-                [
-                    'event_id' => 'bar',
-                    'language' => 'fr',
-                    'sub_brand' => 'sub brand fr',
-                    'description' => $descriptionFr,
-                    'title' => 'title fr',
-                    'copyright' => 'copyright fr',
-                    'link' => 'http://google.fr',
-                    'link_type' => 'collaboration',
-                ],
-                (new CollaborationDataAdded(
-                    new String('bar'),
-                    new Language('fr'),
-                    new String('sub brand fr'),
-                    new Description($descriptionFr)
-                ))
-                    ->withTitle(
-                        new String('title fr')
-                    )
-                    ->withCopyright(
-                        new String('copyright fr')
-                    )
-                    ->withUrl(
-                        Url::fromNative('http://google.fr')
-                    ),
-            ],
-            // Without optional parameters.
-            'english optional parameters' => [
-                [
-                    'event_id' => 'foo',
-                    'language' => 'en',
-                    'sub_brand' => 'sub brand',
-                    'description' => $descriptionEn,
-                    'link_type' => 'collaboration',
+                    'collaborationData' => $enCollaborationData,
                 ],
                 new CollaborationDataAdded(
                     new String('foo'),
                     new Language('en'),
-                    new String('sub brand'),
-                    new Description($descriptionEn)
+                    CollaborationData::deserialize(
+                        $enCollaborationData
+                    )
+                ),
+            ],
+            // French.
+            [
+                [
+                    'eventId' => 'bar',
+                    'language' => 'fr',
+                    'collaborationData' => $frCollaborationData,
+                ],
+                new CollaborationDataAdded(
+                    new String('bar'),
+                    new Language('fr'),
+                    CollaborationData::deserialize(
+                        $frCollaborationData
+                    )
                 ),
             ],
         ];

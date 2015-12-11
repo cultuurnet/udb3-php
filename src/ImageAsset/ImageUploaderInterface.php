@@ -22,5 +22,4 @@ interface ImageUploaderInterface
      *  path to upload directory
      */
     public function getUploadDirectory();
-
 }

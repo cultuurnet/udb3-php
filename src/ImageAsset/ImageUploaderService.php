@@ -83,14 +83,11 @@ class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderIn
         return $this->imageDirectory;
     }
 
-    public function handleUploadImage(UploadImage $uploadImage) {
-        var_dump('moving uploaded file to image assets folder');
-        var_dump($uploadImage);
-
+    public function handleUploadImage(UploadImage $uploadImage)
+    {
         $extensionGuesser = ExtensionGuesser::getInstance();
         $fileName = (string) $uploadImage->getFileId().'.'.$extensionGuesser->guess($uploadImage->getFileType());
 
         rename($this->uploadDirectory.'/'.$fileName, $this->imageDirectory.'/'.$fileName);
     }
-
 }

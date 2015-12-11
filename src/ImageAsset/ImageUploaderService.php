@@ -5,13 +5,19 @@ namespace CultuurNet\UDB3\ImageAsset;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
-class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderInterface
+class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var UuidGeneratorInterface
      */
@@ -42,6 +48,7 @@ class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderIn
         $this->commandBus = $commandBus;
         $this->uploadDirectory = $uploadDirectory;
         $this->imageDirectory = $imageDirectory;
+        $this->setLogger(new NullLogger());
     }
 
     /**
@@ -85,9 +92,13 @@ class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderIn
 
     public function handleUploadImage(UploadImage $uploadImage)
     {
+        $fileId = (string) $uploadImage->getFileId();
         $extensionGuesser = ExtensionGuesser::getInstance();
-        $fileName = (string) $uploadImage->getFileId().'.'.$extensionGuesser->guess($uploadImage->getFileType());
+        $fileName = $fileId.'.'.$extensionGuesser->guess($uploadImage->getFileType());
 
         rename($this->uploadDirectory.'/'.$fileName, $this->imageDirectory.'/'.$fileName);
+
+        $jobInfo = ['file_id' => $fileId];
+        $this->logger->info('job_info', $jobInfo);
     }
 }

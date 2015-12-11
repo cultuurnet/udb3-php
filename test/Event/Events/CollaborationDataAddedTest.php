@@ -9,6 +9,28 @@ use ValueObjects\String\String;
 
 class CollaborationDataAddedTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @test
+     */
+    public function it_returns_its_properties()
+    {
+        $eventId = new String('foo');
+        $lang = new Language('en');
+        $data = new CollaborationData(
+            new String('sub brand')
+        );
+
+        $added = new CollaborationDataAdded(
+            $eventId,
+            $lang,
+            $data
+        );
+
+        $this->assertEquals($eventId, $added->getEventId());
+        $this->assertEquals($lang, $added->getLanguage());
+        $this->assertEquals($data, $added->getCollaborationData());
+    }
+
     public function serializationDataProvider()
     {
         $enCollaborationData = [

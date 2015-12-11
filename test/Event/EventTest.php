@@ -9,7 +9,7 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData\CollaborationData;
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
@@ -401,33 +401,26 @@ class EventTest extends PHPUnit_Framework_TestCase
             new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
         );
 
+        $collaborationData = CollaborationData::deserialize(
+            [
+                'subBrand' => 'sub brand',
+                'title' => 'title',
+                'text' => 'description EN',
+                'copyright' => 'copyright',
+                'keyword' => 'Lorem',
+                'image' => '/image.en.png',
+                'article' => 'Ipsum',
+                'link' => 'http://google.com',
+            ]
+        );
+
         $event->addCollaborationData(
             new Language('fr'),
-            new String('sub brand fr'),
-            new Description('{"text":"Lorem ipsum"}'),
-            new String('title fr'),
-            new String('copyright fr'),
-            Url::fromNative('http://google.com')
+            $collaborationData
         );
 
         $this->assertEquals(
-            [
-                'fr' => [
-                    (new CollaborationData(
-                        new String('sub brand fr'),
-                        new Description('{"text":"Lorem ipsum"}')
-                    ))
-                        ->withTitle(
-                            new String('title fr')
-                        )
-                        ->withCopyright(
-                            new String('copyright fr')
-                        )
-                        ->withLink(
-                            Url::fromNative('http://google.com')
-                        )
-                ]
-            ],
+            ['fr' => [$collaborationData]],
             $event->getCollaborationData()
         );
     }

@@ -34,7 +34,7 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData\CollaborationData;
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Title;
@@ -56,7 +56,7 @@ class Event extends EventSourcedAggregateRoot
     protected $translations = [];
 
     /**
-     * @var \CultuurNet\UDB3\CollaborationData\CollaborationData[]
+     * @var \CultuurNet\UDB3\CollaborationData[]
      */
     protected $collaborationData;
 
@@ -219,7 +219,7 @@ class Event extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param CollaborationData $collaborationData
+     * @param \CultuurNet\UDB3\CollaborationData $collaborationData
      */
     public function addCollaborationData(
         Language $language,
@@ -259,7 +259,7 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return \CultuurNet\UDB3\CollaborationData\CollaborationData[]
+     * @return \CultuurNet\UDB3\CollaborationData[]
      */
     public function getCollaborationData()
     {

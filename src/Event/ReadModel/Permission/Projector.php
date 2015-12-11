@@ -6,12 +6,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\String\String;
-use ValueObjects\Web\EmailAddress;
 
 class Projector implements EventListenerInterface
 {
@@ -91,6 +90,19 @@ class Projector implements EventListenerInterface
 
         $this->permissionRepository->markEventEditableByUser(
             $eventCreatedFromCdbXml->getEventId(),
+            $ownerId
+        );
+    }
+
+    protected function applyEventCreated(
+        EventCreated $eventCreated,
+        DomainMessage $domainMessage
+    ) {
+        $metadata = $domainMessage->getMetadata()->serialize();
+        $ownerId = new String($metadata['user_id']);
+
+        $this->permissionRepository->markEventEditableByUser(
+            new String($eventCreated->getEventId()),
             $ownerId
         );
     }

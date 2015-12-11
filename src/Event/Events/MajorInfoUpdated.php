@@ -87,7 +87,7 @@ class MajorInfoUpdated extends EventEvent
     }
 
     /**
-     * @return CalendarBase
+     * @return CalendarInterface
      */
     public function getCalendar()
     {

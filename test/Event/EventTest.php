@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CollaborationData\Description;
+use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
@@ -419,8 +420,126 @@ class EventTest extends PHPUnit_Framework_TestCase
             $collaborationData
         );
 
+        $secondCollaborationData = CollaborationData::deserialize(
+            [
+                'subBrand' => 'sub brand',
+                'title' => 'title 2',
+                'text' => 'description EN',
+                'copyright' => 'copyright',
+                'keyword' => 'Lorem',
+                'image' => '/image.en.png',
+                'article' => 'Ipsum',
+                'link' => 'http://google.com',
+            ]
+        );
+
+        $event->addCollaborationData(
+            new Language('fr'),
+            $secondCollaborationData
+        );
+
         $this->assertEquals(
-            ['fr' => [$collaborationData]],
+            [
+                'fr' => CollaborationDataCollection::fromArray(
+                    [
+                        $collaborationData,
+                        $secondCollaborationData
+                    ]
+                ),
+            ],
+            $event->getCollaborationData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_collaboration_data_twice_for_the_same_language()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $collaborationData = CollaborationData::deserialize(
+            [
+                'subBrand' => 'sub brand',
+                'title' => 'title',
+                'text' => 'description EN',
+                'copyright' => 'copyright',
+                'keyword' => 'Lorem',
+                'image' => '/image.en.png',
+                'article' => 'Ipsum',
+                'link' => 'http://google.com',
+            ]
+        );
+
+        $event->addCollaborationData(
+            new Language('fr'),
+            $collaborationData
+        );
+
+        $event->addCollaborationData(
+            new Language('fr'),
+            $collaborationData
+        );
+
+        $this->assertEquals(
+            [
+                'fr' => CollaborationDataCollection::fromArray(
+                    [$collaborationData]
+                )
+            ],
+            $event->getCollaborationData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_collaboration_data_twice_for_different_languages()
+    {
+        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+        );
+
+        $collaborationData = CollaborationData::deserialize(
+            [
+                'subBrand' => 'sub brand',
+                'title' => 'title',
+                'text' => 'description EN',
+                'copyright' => 'copyright',
+                'keyword' => 'Lorem',
+                'image' => '/image.en.png',
+                'article' => 'Ipsum',
+                'link' => 'http://google.com',
+            ]
+        );
+
+        $event->addCollaborationData(
+            new Language('fr'),
+            $collaborationData
+        );
+
+        $event->addCollaborationData(
+            new Language('en'),
+            $collaborationData
+        );
+
+        $this->assertEquals(
+            [
+                'fr' => CollaborationDataCollection::fromArray(
+                    [$collaborationData]
+                ),
+                'en' => CollaborationDataCollection::fromArray(
+                    [$collaborationData]
+                ),
+            ],
             $event->getCollaborationData()
         );
     }

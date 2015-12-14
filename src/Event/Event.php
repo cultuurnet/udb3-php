@@ -6,6 +6,7 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
@@ -56,7 +57,8 @@ class Event extends EventSourcedAggregateRoot
     protected $translations = [];
 
     /**
-     * @var \CultuurNet\UDB3\CollaborationData[]
+     * @var CollaborationDataCollection[]
+     *   Array of different collections, keyed by language.
      */
     protected $collaborationData;
 
@@ -545,7 +547,18 @@ class Event extends EventSourcedAggregateRoot
         CollaborationDataAdded $collaborationDataAdded
     ) {
         $language = $collaborationDataAdded->getLanguage()->getCode();
-        $this->collaborationData[$language][] = $collaborationDataAdded->getCollaborationData();
+        $collaborationData = $collaborationDataAdded->getCollaborationData();
+
+        if (!isset($this->collaborationData[$language])) {
+            $this->collaborationData[$language] = new CollaborationDataCollection();
+        }
+
+        if ($this->collaborationData[$language]->contains($collaborationData)) {
+            return;
+        }
+
+        $this->collaborationData[$language] = $this->collaborationData[$language]
+            ->with($collaborationData);
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

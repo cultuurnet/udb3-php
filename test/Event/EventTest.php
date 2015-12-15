@@ -63,6 +63,32 @@ class EventTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_throws_an_error_when_creating_an_event_with_a_non_string_eventid()
+    {
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'Expected eventId to be a string, received integer'
+        );
+
+        $event = Event::create(
+            101,
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location(
+                'LOCATION-ABC-123',
+                '$name',
+                '$country',
+                '$locality',
+                '$postalcode',
+                '$street'
+            ),
+            new Calendar('permanent', '', '')
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_can_be_tagged_with_multiple_labels()
     {
         $this->event->label(new Label('foo'));
@@ -556,6 +582,34 @@ class EventTest extends AggregateRootScenarioTestCase
                     new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
                 ),
             ),
+            $event->getTranslations()
+        );
+
+        $event->deleteTranslation(
+            new Language('fr')
+        );
+
+        $this->assertEquals(
+            array(),
+            $event->getTranslations()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_a_translation_deleted_when_no_translation_exists()
+    {
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+
+        $event = Event::createFromCdbXml(
+            new String('someId'),
+            new EventXmlString($cdbXml),
+            new String(self::NS_CDBXML_3_3)
+        );
+
+        $this->assertEquals(
+            array(),
             $event->getTranslations()
         );
 

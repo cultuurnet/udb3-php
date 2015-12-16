@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
@@ -46,7 +47,11 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                 [
                     'event_id' => 'test 456',
                     'title' => 'title',
-                    'theme' => null,
+                    'theme' => array(
+                        'id' => 'themeid',
+                        'label' => 'theme_label',
+                        'domain' => 'theme'
+                    ),
                     'location' => array(
                         'cdbid' => 'cdbid',
                         'name' => 'Repeteerkot',
@@ -84,7 +89,8 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     new Calendar(
                         'permanent'
-                    )
+                    ),
+                    new Theme('themeid', 'theme_label')
                 ),
             ],
         ];

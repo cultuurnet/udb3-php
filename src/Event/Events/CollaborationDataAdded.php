@@ -4,12 +4,8 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\CollaborationData;
-use CultuurNet\UDB3\CollaborationData\CollaborationDataPropertiesTrait;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData\Description;
-use CultuurNet\UDB3\Link\LinkType;
 use ValueObjects\String\String;
-use ValueObjects\Web\Url;
 
 final class CollaborationDataAdded implements SerializableInterface
 {

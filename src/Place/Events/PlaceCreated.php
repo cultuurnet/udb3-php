@@ -88,7 +88,7 @@ class PlaceCreated extends PlaceEvent
     }
 
     /**
-     * @return CalendarBase
+     * @return CalendarInterface
      */
     public function getCalendar()
     {

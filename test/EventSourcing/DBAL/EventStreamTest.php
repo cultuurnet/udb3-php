@@ -14,12 +14,14 @@ use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\DBALEventStore;
 use Broadway\Serializer\SerializableInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
-use Doctrine\DBAL\DriverManager;
-use PDO;
+use CultuurNet\UDB3\DBALTestConnectionTrait;
+
 use PHPUnit_Framework_TestCase;
 
 class EventStreamTest extends PHPUnit_Framework_TestCase
 {
+    use DBALTestConnectionTrait;
+
     /**
      * @var DBALEventStore
      */
@@ -32,35 +34,18 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('PDO')) {
-            $this->markTestSkipped('PDO is required to run this test.');
-        }
-
-        $availableDrivers = PDO::getAvailableDrivers();
-        if (!in_array('sqlite', $availableDrivers)) {
-            $this->markTestSkipped(
-                'PDO sqlite driver is required to run this test.'
-            );
-        }
-
-        $connection = DriverManager::getConnection(
-            [
-                'url' => 'sqlite:///:memory:',
-            ]
-        );
-
         $table = 'events';
         $payloadSerializer = new SimpleInterfaceSerializer();
         $metadataSerializer = new SimpleInterfaceSerializer();
 
         $this->eventStore = new DBALEventStore(
-            $connection,
+            $this->getConnection(),
             $payloadSerializer,
             $metadataSerializer,
             $table
         );
 
-        $schemaManager = $connection->getSchemaManager();
+        $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
         $schemaManager->createTable(
@@ -68,7 +53,7 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
         );
 
         $this->eventStream = new EventStream(
-            $connection,
+            $this->getConnection(),
             $payloadSerializer,
             $metadataSerializer,
             $table

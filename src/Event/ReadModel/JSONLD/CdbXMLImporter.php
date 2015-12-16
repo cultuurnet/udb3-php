@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
@@ -175,8 +176,11 @@ class CdbXMLImporter
         // JSON-encoding the array will result in an object.
         $labels = array_values($labels);
 
-        if ($labels) {
-            $jsonLD->labels = $labels;
+        // Create a label collection to get rid of duplicates.
+        $labelCollection = LabelCollection::fromStrings($labels);
+
+        if (count($labelCollection) > 0) {
+            $jsonLD->labels = $labelCollection->toStrings();
         }
     }
 

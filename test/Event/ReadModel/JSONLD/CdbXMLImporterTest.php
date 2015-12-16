@@ -305,4 +305,14 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityStarts']);
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityEnds']);
     }
+
+    /**
+     * @test
+     */
+    public function it_does_not_include_duplicate_labels()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_duplicate_labels.cdbxml.xml');
+
+        $this->assertEquals(['enkel'], $jsonEvent->labels);
+    }
 }

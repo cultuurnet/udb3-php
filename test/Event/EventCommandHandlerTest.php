@@ -20,10 +20,12 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use PHPUnit_Framework_MockObject_MockObject;
+use ValueObjects\Number\Integer;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -127,12 +129,10 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 $this->returnCallback(
                     function ($query, $limit, $start) use ($events) {
                         $pageEvents = array_slice($events, $start, $limit);
+                        $totalItemCount = new Integer(count($events));
+                        $results = new Results($pageEvents, $totalItemCount);
 
-                        return [
-                            'member' => $pageEvents,
-                            'totalItems' => count($events),
-                            'itemsPerPage' => $limit
-                        ];
+                        return $results;
                     }
                 )
             );
@@ -156,6 +156,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     new ClientErrorResponseException()
                 )
             );
+
+        $this->setExpectedException(ClientErrorResponseException::class);
 
         $this->scenario
             ->when(new LabelQuery('---fsdfs', new Label('foo')))

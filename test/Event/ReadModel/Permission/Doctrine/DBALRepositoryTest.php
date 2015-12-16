@@ -5,12 +5,13 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\Permission\Doctrine;
 
-use Doctrine\DBAL\DriverManager;
+use CultuurNet\UDB3\DBALTestConnectionTrait;
 use ValueObjects\String\String;
-use PDO;
 
 class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 {
+    use DBALTestConnectionTrait;
+
     /**
      * @var DBALRepository
      */
@@ -18,32 +19,15 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('PDO')) {
-            $this->markTestSkipped('PDO is required to run this test.');
-        }
-
-        $availableDrivers = PDO::getAvailableDrivers();
-        if (!in_array('sqlite', $availableDrivers)) {
-            $this->markTestSkipped(
-                'PDO sqlite driver is required to run this test.'
-            );
-        }
-
-        $connection = DriverManager::getConnection(
-            [
-                'url' => 'sqlite:///:memory:',
-            ]
-        );
-
         $table = new String('event_permission');
 
         (new SchemaConfigurator($table))->configure(
-            $connection->getSchemaManager()
+            $this->getConnection()->getSchemaManager()
         );
 
         $this->repository = new DBALRepository(
             $table,
-            $connection
+            $this->getConnection()
         );
     }
 

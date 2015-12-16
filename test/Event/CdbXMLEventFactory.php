@@ -5,22 +5,38 @@ namespace CultuurNet\UDB3\Event;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 
-abstract class CdbXMLProjectorTestBase extends \PHPUnit_Framework_TestCase
+class CdbXMLEventFactory
 {
     /**
-     * @param $fileName
+     * @var string
+     */
+    private $samplesPath;
+
+    /**
+     * @param string|null $samplesPath
+     */
+    public function __construct($samplesPath = null)
+    {
+        if (null === $samplesPath) {
+            $samplesPath = __DIR__;
+        }
+        $this->samplesPath = $samplesPath;
+    }
+
+    /**
+     * @param string $fileName
      * @return EventImportedFromUDB2
      */
-    protected function eventImportedFromUDB2($fileName)
+    public function eventImportedFromUDB2($fileName)
     {
         return $this->eventFromFile($fileName, EventImportedFromUDB2::class);
     }
 
     /**
-     * @param $fileName
+     * @param string $fileName
      * @return EventUpdatedFromUDB2
      */
-    protected function eventUpdatedFromUDB2($fileName)
+    public function eventUpdatedFromUDB2($fileName)
     {
         return $this->eventFromFile($fileName, EventUpdatedFromUDB2::class);
     }
@@ -31,7 +47,7 @@ abstract class CdbXMLProjectorTestBase extends \PHPUnit_Framework_TestCase
      */
     private function eventFromFile($fileName, $eventClass)
     {
-        $cdbXml = file_get_contents(__DIR__ . '/' . $fileName);
+        $cdbXml = file_get_contents($this->samplesPath . '/' . $fileName);
 
         $event = new $eventClass(
             'someId',

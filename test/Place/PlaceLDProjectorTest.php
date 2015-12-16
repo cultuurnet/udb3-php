@@ -5,16 +5,15 @@ namespace CultuurNet\UDB3\Place;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\EventHandling\EventBusInterface;
-use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -24,14 +23,10 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
 use stdClass;
 
-class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
+class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 {
-
-    use \CultuurNet\UDB3\OfferLDProjectorTestTrait;
-
     /**
      * @var PlaceLDProjector
      */
@@ -48,22 +43,12 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
     private $iriGenerator;
 
     /**
-     * @var OrganizerService|PHPUnit_Framework_MockObject_MockObject
+     * @inheritdoc
      */
-    private $organizerService;
-
     public function setUp()
     {
+        parent::setUp();
 
-        $this->organizerService = $this->getMock(
-            OrganizerService::class,
-            array(),
-            array(),
-            '',
-            false
-        );
-
-        $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->iriGenerator = new CallableIriGenerator(
             function ($id) {
                 return 'http://example.com/entity/' . $id;
@@ -73,12 +58,14 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->organizerService,
-            $this->getMock(EventBusInterface::class)
+            $this->organizerService
         );
-
     }
 
+    /**
+     * @param string $fileName
+     * @return PlaceImportedFromUDB2
+     */
     private function placeImportedFromUDB2($fileName)
     {
         $cdbXml = file_get_contents(
@@ -98,8 +85,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_handles_new_places_without_theme()
     {
-        $uuidGenerator = new Version4Generator();
-        $id = $uuidGenerator->generate();
+        $id = 'foo';
         $created = '2015-01-20T13:25:21+01:00';
 
         $placeCreated = new PlaceCreated(
@@ -114,7 +100,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
         $jsonLD->name = 'some representative title';
-        $jsonLD->address = [
+        $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
           'postalCode' => '$postalCode',
@@ -122,7 +108,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
-            [
+            (object)[
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
@@ -130,21 +116,16 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $jsonLD->created = $created;
 
-        $expectedDocument = (new JsonDocument($id))
-            ->withBody($jsonLD);
+        $body = $this->project(
+            $placeCreated,
+            $id,
+            null,
+            DateTime::fromString($created)
+        );
 
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($expectedDocument);
-
-        $this->projector->handle(
-            new DomainMessage(
-                1,
-                1,
-                new Metadata(),
-                $placeCreated,
-                DateTime::fromString($created)
-            )
+        $this->assertEquals(
+            $jsonLD,
+            $body
         );
     }
 
@@ -153,8 +134,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_handles_new_places_with_theme()
     {
-        $uuidGenerator = new Version4Generator();
-        $id = $uuidGenerator->generate();
+        $id = 'bar';
         $created = '2015-01-20T13:25:21+01:00';
 
         $placeCreated = new PlaceCreated(
@@ -170,7 +150,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
         $jsonLD->name = 'some representative title';
-        $jsonLD->address = [
+        $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
           'postalCode' => '$postalCode',
@@ -178,12 +158,12 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
-            [
+            (object)[
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
             ],
-            [
+            (object)[
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
@@ -191,21 +171,16 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $jsonLD->created = $created;
 
-        $expectedDocument = (new JsonDocument($id))
-            ->withBody($jsonLD);
+        $body = $this->project(
+            $placeCreated,
+            $id,
+            null,
+            DateTime::fromString($created)
+        );
 
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($expectedDocument);
-
-        $this->projector->handle(
-            new DomainMessage(
-                1,
-                1,
-                new Metadata(),
-                $placeCreated,
-                DateTime::fromString($created)
-            )
+        $this->assertEquals(
+            $jsonLD,
+            $body
         );
     }
 
@@ -214,8 +189,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_handles_new_places_with_creator()
     {
-        $uuidGenerator = new Version4Generator();
-        $id = $uuidGenerator->generate();
+        $id = 'foo';
         $created = '2015-01-20T13:25:21+01:00';
 
         $placeCreated = new PlaceCreated(
@@ -230,7 +204,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
         $jsonLD->name = 'some representative title';
-        $jsonLD->address = [
+        $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
           'postalCode' => '$postalCode',
@@ -238,7 +212,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
-            [
+            (object)[
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
@@ -247,25 +221,17 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $jsonLD->created = $created;
         $jsonLD->creator = '1 (Tester)';
 
-        $expectedDocument = (new JsonDocument($id))
-            ->withBody($jsonLD);
-
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($expectedDocument);
-
-        $metadata = array(
-          'user_id' => '1',
-          'user_nick' => 'Tester'
+        $metadata = new Metadata(
+            [
+                'user_id' => '1',
+                'user_nick' => 'Tester'
+            ]
         );
-        $this->projector->handle(
-            new DomainMessage(
-                1,
-                1,
-                new Metadata($metadata),
-                $placeCreated,
-                DateTime::fromString($created)
-            )
+        $this->project(
+            $placeCreated,
+            $id,
+            $metadata,
+            DateTime::fromString($created)
         );
     }
 
@@ -276,14 +242,9 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
     {
         $event = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
 
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($this->callback(function (JsonDocument $document) {
-                $body = $document->getBody();
-                return !property_exists($body, 'image');
-            }));
+        $body = $this->project($event, $event->getActorId());
 
-        $this->projector->applyPlaceImportedFromUDB2($event);
+        $this->assertObjectNotHasAttribute('image', $body);
     }
 
     /**
@@ -293,20 +254,12 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
     {
         $event = $this->placeImportedFromUDB2('place_with_image.cdbxml.xml');
 
-        $this->documentRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with(
-                $this->callback(
-                    function (JsonDocument $jsonDocument) {
-                        $body = $jsonDocument->getBody();
+        $body = $this->project($event, $event->getActorId());
 
-                        return $body->image === '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg';
-                    }
-                )
-            );
-
-        $this->projector->applyPlaceImportedFromUDB2($event);
+        $this->assertEquals(
+            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
+            $body->image
+        );
     }
 
     /**
@@ -331,20 +284,12 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
     {
         $event = $this->placeImportedFromUDB2($fileName);
 
-        $this->documentRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with(
-                $this->callback(
-                    function (JsonDocument $jsonDocument) use ($expectedDescription) {
-                        $body = $jsonDocument->getBody();
+        $body = $this->project($event, $event->getActorId());
 
-                        return $body->description === $expectedDescription;
-                    }
-                )
-            );
-
-        $this->projector->applyPlaceImportedFromUDB2($event);
+        $this->assertEquals(
+            $expectedDescription,
+            $body->description
+        );
     }
 
     /**
@@ -352,7 +297,6 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_projects_the_updating_of_major_info()
     {
-
         $id = 'foo';
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
@@ -364,7 +308,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $jsonLD = new stdClass();
         $jsonLD->id = $id;
         $jsonLD->name = 'some representative title';
-        $jsonLD->address = [
+        $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
           'postalCode' => '$postalCode',
@@ -372,7 +316,7 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
-            [
+            (object)[
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
@@ -382,10 +326,12 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
 
+        $this->documentRepository->save($initialDocument);
+
         $expectedJsonLD = new stdClass();
         $expectedJsonLD->id = $id;
         $expectedJsonLD->name = 'new title';
-        $expectedJsonLD->address = [
+        $expectedJsonLD->address = (object)[
           'addressCountry' => '$newCountry',
           'addressLocality' => '$newLocality',
           'postalCode' => '$newPostalCode',
@@ -393,12 +339,12 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         ];
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->terms = [
-            [
+            (object)[
                 'id' => '0.50.4.0.1',
                 'label' => 'concertnew',
                 'domain' => 'eventtype',
             ],
-            [
+            (object)[
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
@@ -407,26 +353,8 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
 
-        $expectedDocument = (new JsonDocument('foo'))
-            ->withBody($expectedJsonLD);
-
-        $this->documentRepository
-            ->expects($this->once())
-            ->method('get')
-            ->with($id)
-            ->willReturn($initialDocument);
-
-        $this->documentRepository
-            ->expects(($this->once()))
-            ->method('save')
-            ->with($this->callback(
-                function (JsonDocument $jsonDocument) use ($expectedDocument) {
-                    return $expectedDocument == $jsonDocument;
-                }
-            ));
-
-        $this->projector->applyMajorInfoUpdated($majorInfoUpdated);
-
+        $body = $this->project($majorInfoUpdated, $majorInfoUpdated->getPlaceId());
+        $this->assertEquals($expectedJsonLD, $body);
     }
 
     /**
@@ -456,40 +384,25 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
             ])
         );
 
-        $expectedDocument = new JsonDocument(
-            $id,
-            json_encode([
-                'terms' => [
-                    [
-                        'id' => 'facility1',
-                        'label' => 'facility label',
-                        'domain' => 'facility',
-                    ],
-                    [
-                        'id' => 'facility2',
-                        'label' => 'facility label2',
-                        'domain' => 'facility',
-                    ]
+        $this->documentRepository->save($initialDocument);
+
+        $expectedBody = (object)[
+            'terms' => [
+                (object)[
+                    'id' => 'facility1',
+                    'label' => 'facility label',
+                    'domain' => 'facility',
+                ],
+                (object)[
+                    'id' => 'facility2',
+                    'label' => 'facility label2',
+                    'domain' => 'facility',
                 ]
-            ])
-        );
+            ]
+        ];
 
-        $this->documentRepository
-            ->expects($this->once())
-            ->method('get')
-            ->with($id)
-            ->willReturn($initialDocument);
-
-        $this->documentRepository
-            ->expects(($this->once()))
-            ->method('save')
-            ->with($this->callback(
-                function (JsonDocument $jsonDocument) use ($expectedDocument) {
-                    return $expectedDocument == $jsonDocument;
-                }
-            ));
-
-        $this->projector->applyFacilitiesUpdated($facilitiesUpdated);
+        $body = $this->project($facilitiesUpdated, $id);
+        $this->assertEquals($expectedBody, $body);
     }
 
     /**
@@ -497,14 +410,21 @@ class PlaceLDProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_deletes_places()
     {
-
         $id = 'foo';
-        $this->documentRepository->expects($this->once())
-            ->method('remove')
-            ->with($id);
 
         $placeDeleted = new PlaceDeleted($id);
-        $this->projector->applyPlaceDeleted($placeDeleted);
 
+        $this->projector->handle(
+            DomainMessage::recordNow(
+                $id,
+                2,
+                new Metadata(),
+                $placeDeleted
+            )
+        );
+
+        $this->setExpectedException(DocumentGoneException::class);
+
+        $this->documentRepository->get($id);
     }
 }

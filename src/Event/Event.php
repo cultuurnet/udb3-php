@@ -11,6 +11,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -313,10 +314,27 @@ class Event extends EventSourcedAggregateRoot
         EventImportedFromUDB2 $eventImported
     ) {
         $this->eventId = $eventImported->getEventId();
+        $this->setUDB2Data($eventImported);
+    }
 
+    /**
+     * @param EventUpdatedFromUDB2 $eventUpdated
+     */
+    protected function applyEventUpdatedFromUDB2(
+        EventUpdatedFromUDB2 $eventUpdated
+    ) {
+        $this->setUDB2Data($eventUpdated);
+    }
+
+    /**
+     * @param EventCdbXMLInterface $eventCdbXML
+     */
+    protected function setUDB2Data(
+        EventCdbXMLInterface $eventCdbXML
+    ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventImported->getCdbXmlNamespaceUri(),
-            $eventImported->getCdbXml()
+            $eventCdbXML->getCdbXmlNamespaceUri(),
+            $eventCdbXML->getCdbXml()
         );
 
         $this->setLabelsFromUDB2Event($udb2Event);

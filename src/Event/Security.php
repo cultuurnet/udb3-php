@@ -39,19 +39,39 @@ class Security implements SecurityInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function allowsUpdates(String $eventId)
+    {
+        return $this->currentUiTIDUserCanEditEvent($eventId);
+    }
+
+    /**
      * @param String $eventId
      * @return bool
      */
     private function currentUiTIDUserCanEditEvent(String $eventId)
     {
         $token = $this->tokenStorage->getToken();
+
+        if (!$token) {
+            return false;
+        }
+
         $user = $token->getUser();
-        if (!$user instanceof User) {
+
+        if ($user instanceof User) {
+            $userId = new String($user->getUid());
+        } else if ($user instanceof \CultuurNet\UiTIDProvider\User\User) {
+            $userId = new String($user->id);
+        }
+
+        if (!isset($userId)) {
             return false;
         }
 
         $editableEvents = $this->permissionRepository->getEditableEvents(
-            new String($user->getUid())
+            $userId
         );
 
         return in_array($eventId, $editableEvents);

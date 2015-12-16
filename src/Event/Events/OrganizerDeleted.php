@@ -31,6 +31,6 @@ class OrganizerDeleted extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['place_id'], $data['organizerId']);
+        return new static($data['event_id'], $data['organizerId']);
     }
 }

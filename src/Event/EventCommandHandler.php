@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Label as Label;
+use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
@@ -62,78 +63,56 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     public function handleLabelQuery(LabelQuery $labelQuery)
     {
         $query = $labelQuery->getQuery();
-        $totalItemCount = 0;
 
         // do a pre query to test if the query is valid and check the item count
-        try {
-            $preQueryResult = $this->searchService->search($query, 1, 0);
-            $totalItemCount = $preQueryResult['totalItems'];
-        } catch (ClientErrorResponseException $e) {
-            if ($this->logger) {
-                $this->logger->error(
-                    'query_was_not_labelled',
-                    array(
-                        'query' => $query,
-                        'error' => $e->getMessage(),
-                        'exception_class' => get_class($e),
-                    )
-                );
-            }
+        $preQueryResult = $this->searchService->search($query, 1, 0);
+        $totalItemCount = $preQueryResult->getTotalItems()->toNative();
+
+        if (0 === $totalItemCount) {
+            return;
         }
 
-        if ($totalItemCount < 1) {
-            if ($this->logger) {
-                $this->logger->error(
-                    'query_was_not_labelled',
-                    array(
-                        'query' => $query,
-                        'error' => "query did not return any results"
-                    )
-                );
-            }
-        } else {
-            // change this pageSize value to increase or decrease the page size;
-            $pageSize = 10;
-            $pageCount = ceil($totalItemCount / $pageSize);
-            $pageCounter = 0;
-            $labelledEventIds = [];
+        // change this pageSize value to increase or decrease the page size;
+        $pageSize = 10;
+        $pageCount = ceil($totalItemCount / $pageSize);
+        $pageCounter = 0;
+        $labelledEventIds = [];
 
-            //Page querying the search service;
-            while ($pageCounter < $pageCount) {
-                $start = $pageCounter * $pageSize;
-                // Sort ascending by creation date to make sure we get a quite consistent paging.
-                $sort = 'creationdate asc';
-                $results = $this->searchService->search(
-                    $query,
-                    $pageSize,
-                    $start,
-                    $sort
-                );
+        //Page querying the search service;
+        while ($pageCounter < $pageCount) {
+            $start = $pageCounter * $pageSize;
+            // Sort ascending by creation date to make sure we get a quite consistent paging.
+            $sort = 'creationdate asc';
+            $results = $this->searchService->search(
+                $query,
+                $pageSize,
+                $start,
+                $sort
+            );
 
-                // Iterate the results of the current page and get their IDs
-                // by stripping them from the json-LD representation
-                foreach ($results['member'] as $event) {
-                    $expoId = explode('/', $event['@id']);
-                    $eventId = array_pop($expoId);
+            // Iterate the results of the current page and get their IDs
+            // by stripping them from the json-LD representation
+            foreach ($results->getItems() as $event) {
+                $expoId = explode('/', $event['@id']);
+                $eventId = array_pop($expoId);
 
-                    if (!array_key_exists($eventId, $labelledEventIds)) {
-                        $labelledEventIds[$eventId] = $pageCounter;
+                if (!array_key_exists($eventId, $labelledEventIds)) {
+                    $labelledEventIds[$eventId] = $pageCounter;
 
-                        $this->labelEvent($labelQuery->getLabel(), $eventId);
-                    } else {
-                        if ($this->logger) {
-                            $this->logger->error(
-                                'query_duplicate_event',
-                                array(
-                                    'query' => $query,
-                                    'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$labelledEventIds[$eventId]}"
-                                )
-                            );
-                        }
+                    $this->labelEvent($labelQuery->getLabel(), $eventId);
+                } else {
+                    if ($this->logger) {
+                        $this->logger->error(
+                            'query_duplicate_event',
+                            array(
+                                'query' => $query,
+                                'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$labelledEventIds[$eventId]}"
+                            )
+                        );
                     }
                 }
-                ++$pageCounter;
-            };
+            }
+            ++$pageCounter;
         };
     }
 

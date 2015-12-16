@@ -14,4 +14,12 @@ interface SecurityInterface
      * @return boolean
      */
     public function allowsUpdateWithCdbXml(String $eventId);
+
+    /**
+     * Returns if the event allows updates through the UDB3 core APIs.
+     *
+     * @param String $eventId
+     * @return boolean
+     */
+    public function allowsUpdates(String $eventId);
 }

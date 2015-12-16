@@ -221,7 +221,7 @@ class CollaborationData implements SerializableInterface
         /* @var CollaborationData $collaboration */
         $collaboration = new static(
             new String($data['subBrand']),
-            new String(isset($data['plaintext']) ? $data['plaintext'] : '')
+            new String(isset($data['plainText']) ? $data['plainText'] : '')
         );
 
         if (isset($data['title'])) {

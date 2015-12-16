@@ -48,11 +48,19 @@ class MajorInfoUpdated extends EventEvent
     /**
      * @param string $eventId
      * @param Title $title
-     * @param string $location
+     * @param EventType $eventType
+     * @param Location $location
      * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    ) {
         parent::__construct($eventId);
 
         $this->title = $title;

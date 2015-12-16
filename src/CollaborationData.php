@@ -220,7 +220,8 @@ class CollaborationData implements SerializableInterface
     {
         /* @var CollaborationData $collaboration */
         $collaboration = new static(
-            new String($data['subBrand'])
+            new String($data['subBrand']),
+            new String(isset($data['plaintext']) ? $data['plaintext'] : '')
         );
 
         if (isset($data['title'])) {
@@ -268,6 +269,7 @@ class CollaborationData implements SerializableInterface
     {
         $data = [
             'subBrand' => (string) $this->subBrand,
+            'plainText' => (string) $this->plainText,
             'title' => (string) $this->title,
             'text' => (string) $this->text,
             'copyright' => (string) $this->copyright,

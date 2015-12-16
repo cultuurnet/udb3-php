@@ -4,9 +4,9 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CollaborationData\Description;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
@@ -577,11 +577,7 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_can_have_collaboration_data_added()
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
-        $event = Event::createFromCdbXml(
-            new String('someId'),
-            new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
-        );
+        $french = new Language('fr');
 
         $collaborationData = CollaborationData::deserialize(
             [
@@ -594,11 +590,6 @@ class EventTest extends AggregateRootScenarioTestCase
                 'article' => 'Ipsum',
                 'link' => 'http://google.com',
             ]
-        );
-
-        $event->addCollaborationData(
-            new Language('fr'),
-            $collaborationData
         );
 
         $secondCollaborationData = CollaborationData::deserialize(
@@ -614,22 +605,44 @@ class EventTest extends AggregateRootScenarioTestCase
             ]
         );
 
-        $event->addCollaborationData(
-            new Language('fr'),
-            $secondCollaborationData
-        );
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        new String('someId'),
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    )
+                ]
+            )
+            ->when(
+                function (Event $event) use ($french, $collaborationData, $secondCollaborationData) {
+                    $event->addCollaborationData(
+                        $french,
+                        $collaborationData
+                    );
 
-        $this->assertEquals(
-            [
-                'fr' => CollaborationDataCollection::fromArray(
-                    [
-                        $collaborationData,
+                    $event->addCollaborationData(
+                        $french,
                         $secondCollaborationData
-                    ]
-                ),
-            ],
-            $event->getCollaborationData()
-        );
+                    );
+                }
+            )
+            ->then(
+                [
+                    new CollaborationDataAdded(
+                        new String('someId'),
+                        $french,
+                        $collaborationData
+                    ),
+                    new CollaborationDataAdded(
+                        new String('someId'),
+                        $french,
+                        $secondCollaborationData
+                    ),
+                ]
+            );
     }
 
     /**
@@ -638,11 +651,10 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_does_not_add_collaboration_data_twice_for_the_same_language()
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
-        $event = Event::createFromCdbXml(
-            new String('someId'),
-            new EventXmlString($cdbXml),
-            new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
-        );
+
+        $eventId = new String('someId');
+
+        $french = new Language('fr');
 
         $collaborationData = CollaborationData::deserialize(
             [
@@ -657,24 +669,31 @@ class EventTest extends AggregateRootScenarioTestCase
             ]
         );
 
-        $event->addCollaborationData(
-            new Language('fr'),
-            $collaborationData
-        );
-
-        $event->addCollaborationData(
-            new Language('fr'),
-            $collaborationData
-        );
-
-        $this->assertEquals(
-            [
-                'fr' => CollaborationDataCollection::fromArray(
-                    [$collaborationData]
-                )
-            ],
-            $event->getCollaborationData()
-        );
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        $eventId,
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $french,
+                        $collaborationData
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($french, $collaborationData) {
+                    $event->addCollaborationData(
+                        $french,
+                        $collaborationData
+                    );
+                }
+            )
+            ->then([]);
     }
 
     /**
@@ -685,13 +704,11 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = file_get_contents(
             __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
         );
-        $event = Event::createFromCdbXml(
-            new String('someId'),
-            new EventXmlString($cdbXml),
-            new String(
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
-            )
-        );
+
+        $french = new Language('fr');
+        $english = new Language('en');
+
+        $eventId = new String('someId');
 
         $collaborationData = CollaborationData::deserialize(
             [
@@ -706,27 +723,39 @@ class EventTest extends AggregateRootScenarioTestCase
             ]
         );
 
-        $event->addCollaborationData(
-            new Language('fr'),
-            $collaborationData
-        );
-
-        $event->addCollaborationData(
-            new Language('en'),
-            $collaborationData
-        );
-
-        $this->assertEquals(
-            [
-                'fr' => CollaborationDataCollection::fromArray(
-                    [$collaborationData]
-                ),
-                'en' => CollaborationDataCollection::fromArray(
-                    [$collaborationData]
-                ),
-            ],
-            $event->getCollaborationData()
-        );
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        $eventId,
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $french,
+                        $collaborationData
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($english, $collaborationData) {
+                    $event->addCollaborationData(
+                        $english,
+                        $collaborationData
+                    );
+                }
+            )
+            ->then(
+                [
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $english,
+                        $collaborationData
+                    ),
+                ]
+            );
     }
 
     /**

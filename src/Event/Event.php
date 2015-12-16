@@ -222,12 +222,34 @@ class Event extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
+     * @param CollaborationData $collaborationData
+     * @return bool
+     */
+    protected function isSameCollaborationDataAlreadyPresent(
+        Language $language,
+        CollaborationData $collaborationData
+    ) {
+        if (!isset($this->collaborationData[$language->getCode()])) {
+            return false;
+        }
+
+        $languageCollaborationData = $this->collaborationData[$language->getCode()];
+
+        return $languageCollaborationData->contains($collaborationData);
+    }
+
+    /**
+     * @param Language $language
      * @param \CultuurNet\UDB3\CollaborationData $collaborationData
      */
     public function addCollaborationData(
         Language $language,
         CollaborationData $collaborationData
     ) {
+        if ($this->isSameCollaborationDataAlreadyPresent($language, $collaborationData)) {
+            return;
+        }
+
         $collaborationDataAdded = new CollaborationDataAdded(
             new String($this->eventId),
             $language,
@@ -259,14 +281,6 @@ class Event extends EventSourcedAggregateRoot
     public function getLabels()
     {
         return $this->labels;
-    }
-
-    /**
-     * @return \CultuurNet\UDB3\CollaborationData[]
-     */
-    public function getCollaborationData()
-    {
-        return $this->collaborationData;
     }
 
     /**

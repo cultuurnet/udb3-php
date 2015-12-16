@@ -16,6 +16,11 @@ class CollaborationData implements SerializableInterface
     /**
      * @var String
      */
+    protected $plainText;
+
+    /**
+     * @var String
+     */
     protected $title;
 
     /**
@@ -50,10 +55,12 @@ class CollaborationData implements SerializableInterface
 
     /**
      * @param String $subBrand
+     * @param String $plainText
      */
-    public function __construct(String $subBrand)
+    public function __construct(String $subBrand, String $plainText)
     {
         $this->subBrand = $subBrand;
+        $this->plainText = $plainText;
     }
 
     /**
@@ -62,6 +69,14 @@ class CollaborationData implements SerializableInterface
     public function getSubBrand()
     {
         return $this->subBrand;
+    }
+
+    /**
+     * @return String
+     */
+    public function getPlainText()
+    {
+        return $this->plainText;
     }
 
     /**

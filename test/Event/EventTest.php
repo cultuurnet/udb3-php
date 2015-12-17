@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CollaborationDataCollection;
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\CollaborationDataRemoved;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -16,13 +17,10 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\String\String;
-use ValueObjects\Web\Url;
 
 class EventTest extends AggregateRootScenarioTestCase
 {
@@ -756,6 +754,131 @@ class EventTest extends AggregateRootScenarioTestCase
                     ),
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_have_its_collaboration_data_removed()
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
+
+        $french = new Language('fr');
+        $english = new Language('en');
+
+        $eventId = new String('someId');
+
+        $collaborationData = CollaborationData::deserialize(
+            [
+                'subBrand' => 'sub brand',
+                'title' => 'title',
+                'text' => 'description EN',
+                'copyright' => 'copyright',
+                'keyword' => 'Lorem',
+                'image' => '/image.en.png',
+                'article' => 'Ipsum',
+                'link' => 'http://google.com',
+            ]
+        );
+
+        $this->scenario
+            ->withAggregateId($eventId->toNative())
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        $eventId,
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $french,
+                        $collaborationData
+                    ),
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $english,
+                        $collaborationData
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($french, $collaborationData) {
+                    $event->removeCollaborationData($french, $collaborationData);
+                }
+            )
+            ->then(
+                [
+                    new CollaborationDataRemoved(
+                        $eventId,
+                        $french,
+                        $collaborationData
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_register_removal_of_collaboration_data_that_was_already_removed()
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
+
+        $french = new Language('fr');
+        $english = new Language('en');
+
+        $eventId = new String('someId');
+
+        $collaborationData = CollaborationData::deserialize(
+            [
+                'subBrand' => 'sub brand',
+                'title' => 'title',
+                'text' => 'description EN',
+                'copyright' => 'copyright',
+                'keyword' => 'Lorem',
+                'image' => '/image.en.png',
+                'article' => 'Ipsum',
+                'link' => 'http://google.com',
+            ]
+        );
+
+        $this->scenario
+            ->withAggregateId($eventId->toNative())
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        $eventId,
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $french,
+                        $collaborationData
+                    ),
+                    new CollaborationDataAdded(
+                        $eventId,
+                        $english,
+                        $collaborationData
+                    ),
+                    new CollaborationDataRemoved(
+                        $eventId,
+                        $french,
+                        $collaborationData
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($french, $collaborationData) {
+                    $event->removeCollaborationData($french, $collaborationData);
+                }
+            )
+            ->then([]);
     }
 
     /**

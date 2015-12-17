@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CollaborationDataRemoved;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
@@ -257,6 +258,27 @@ class Event extends EventSourcedAggregateRoot
         );
 
         $this->apply($collaborationDataAdded);
+    }
+
+    /**
+     * @param Language $language
+     * @param CollaborationData $collaborationData
+     */
+    public function removeCollaborationData(
+        Language $language,
+        CollaborationData $collaborationData
+    ) {
+        if (!$this->isSameCollaborationDataAlreadyPresent($language, $collaborationData)) {
+            return;
+        }
+
+        $collaborationDataRemoved = new CollaborationDataRemoved(
+            new String($this->eventId),
+            $language,
+            $collaborationData
+        );
+
+        $this->apply($collaborationDataRemoved);
     }
 
     /**
@@ -591,6 +613,22 @@ class Event extends EventSourcedAggregateRoot
 
         $this->collaborationData[$language] = $this->collaborationData[$language]
             ->with($collaborationData);
+    }
+
+    protected function applyCollaborationDataRemoved(
+        CollaborationDataRemoved $collaborationDataRemoved
+    ) {
+        $language = $collaborationDataRemoved->getLanguage()->getCode();
+        $collaborationData = $collaborationDataRemoved->getCollaborationData();
+
+        if (!isset($this->collaborationData[$language]) ||
+            !$this->collaborationData[$language]->contains($collaborationData)
+        ) {
+            return;
+        }
+
+        $this->collaborationData[$language] =
+            $this->collaborationData[$language]->without($collaborationData);
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

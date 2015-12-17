@@ -13,6 +13,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
@@ -220,7 +221,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $thumbnailUrl = Url::fromNative('http://foo.bar');
         $description = String::fromNative('Some description.');
         $copyrightHolder = String::fromNative('Dirk Dirkington');
-        $type = '$type';
+        $type = new MIMEType('image/png');
 
         $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder);
         $mediaObject->setUrl($url);
@@ -233,8 +234,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $expectedBody = (object)[
             'mediaObject' => [
                 (object)[
-                    '@type' => $type,
-                    'url' => $url,
+                    '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:MediaObject',
+                    'contentUrl' => $url,
                     'thumbnailUrl' => $thumbnailUrl,
                     'description' => $description,
                     'copyrightHolder' => $copyrightHolder
@@ -257,7 +259,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $thumbnailUrl = Url::fromNative('http://foo.bar');
         $description = String::fromNative('Some description.');
         $copyrightHolder = String::fromNative('Dirk Dirkington');
-        $type = '$type';
+        $type = new MIMEType('image/png');
 
         $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder);
         $mediaObject->setUrl($url);
@@ -269,8 +271,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
             json_encode([
                 'mediaObject' => [
                     [
-                        '@type' => 'oldtype',
-                        'url' => 'oldUrl',
+                        '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:MediaObject',
+                        'contentUrl' => 'oldUrl',
                         'thumbnailUrl' => 'oldthumbnailUrl',
                         'description' => 'olddescription',
                         'copyrightHolder' => 'oldcopyrightHolder'
@@ -283,8 +286,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $expectedBody = (object)[
             'mediaObject' => [
                 (object)[
-                    '@type' => $type,
-                    'url' => $url,
+                    '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:MediaObject',
+                    'contentUrl' => $url,
                     'thumbnailUrl' => $thumbnailUrl,
                     'description' => $description,
                     'copyrightHolder' => $copyrightHolder
@@ -311,25 +315,28 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
             json_encode([
                 'mediaObject' => [
                     [
-                      '@type' => 'oldtype',
-                      'url' => 'oldUrl',
-                      'thumbnailUrl' => 'oldthumbnailUrl',
-                      'description' => 'olddescription',
-                      'copyrightHolder' => 'oldcopyrightHolder'
+                        '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:MediaObject',
+                        'contentUrl' => 'oldUrl',
+                        'thumbnailUrl' => 'oldthumbnailUrl',
+                        'description' => 'olddescription',
+                        'copyrightHolder' => 'oldcopyrightHolder'
                     ],
                     [
-                      '@type' => 'deleteType',
-                      'url' => 'deleteUrl',
-                      'thumbnailUrl' => 'deleteThumbnail',
-                      'description' => 'deleteDescription',
-                      'copyrightHolder' => 'deleteCopyrightHolder'
+                        '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:MediaObject',
+                        'contentUrl' => 'deleteUrl',
+                        'thumbnailUrl' => 'deleteThumbnail',
+                        'description' => 'deleteDescription',
+                        'copyrightHolder' => 'deleteCopyrightHolder'
                     ],
                     [
-                      '@type' => 'lasttype',
-                      'url' => 'lestUrl',
-                      'thumbnailUrl' => 'lastThumbnailUrl',
-                      'description' => 'lastDescription',
-                      'copyrightHolder' => 'lastCopyrightHolder'
+                        '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:MediaObject',
+                        'contentUrl' => 'lestUrl',
+                        'thumbnailUrl' => 'lastThumbnailUrl',
+                        'description' => 'lastDescription',
+                        'copyrightHolder' => 'lastCopyrightHolder'
                     ]
                 ]
             ])
@@ -340,18 +347,20 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $expectedBody = (object)[
             'mediaObject' => [
                 (object)[
-                  '@type' => 'oldtype',
-                  'url' => 'oldUrl',
-                  'thumbnailUrl' => 'oldthumbnailUrl',
-                  'description' => 'olddescription',
-                  'copyrightHolder' => 'oldcopyrightHolder'
+                    '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:MediaObject',
+                    'contentUrl' => 'oldUrl',
+                    'thumbnailUrl' => 'oldthumbnailUrl',
+                    'description' => 'olddescription',
+                    'copyrightHolder' => 'oldcopyrightHolder'
                 ],
                 (object)[
-                  '@type' => 'lasttype',
-                  'url' => 'lestUrl',
-                  'thumbnailUrl' => 'lastThumbnailUrl',
-                  'description' => 'lastDescription',
-                  'copyrightHolder' => 'lastCopyrightHolder'
+                    '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:MediaObject',
+                    'contentUrl' => 'lestUrl',
+                    'thumbnailUrl' => 'lastThumbnailUrl',
+                    'description' => 'lastDescription',
+                    'copyrightHolder' => 'lastCopyrightHolder'
                 ]
             ]
         ];

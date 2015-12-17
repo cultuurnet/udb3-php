@@ -559,7 +559,8 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             new String(self::EVENT_ID_2),
             new Language('en'),
             new CollaborationData(
-                new String('sub-brand-foo')
+                new String('sub-brand-foo'),
+                new String('plain text')
             )
         );
 

@@ -15,6 +15,11 @@ class CollaborationDataTest extends \PHPUnit_Framework_TestCase
     /**
      * @var String
      */
+    private $plainText;
+
+    /**
+     * @var String
+     */
     private $title;
 
     /**
@@ -70,6 +75,7 @@ class CollaborationDataTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->subBrand = new String('De Fabeltjeskrant');
+        $this->plainText = new String('Mijnheer de Uil');
         $this->title = new String('Collaborated title');
         $this->text = new String('Collaborated text');
         $this->copyright = new String('Copyright De Fabeltjeskrant');
@@ -79,11 +85,13 @@ class CollaborationDataTest extends \PHPUnit_Framework_TestCase
         $this->link = Url::fromNative('http://fabeltjes.krant/10-things-you-did-not-know');
 
         $this->minimalCollaboration = new CollaborationData(
-            $this->subBrand
+            $this->subBrand,
+            $this->plainText
         );
 
         $this->minimalCollaborationSerialized = [
             'subBrand' => 'De Fabeltjeskrant',
+            'plainText' => 'Mijnheer de Uil',
         ];
 
         $this->completeCollaboration = $this->minimalCollaboration
@@ -97,6 +105,7 @@ class CollaborationDataTest extends \PHPUnit_Framework_TestCase
 
         $this->completeCollaborationSerialized = [
             'subBrand' => 'De Fabeltjeskrant',
+            'plainText' => 'Mijnheer de Uil',
             'title' => 'Collaborated title',
             'text' => 'Collaborated text',
             'copyright' => 'Copyright De Fabeltjeskrant',
@@ -113,6 +122,7 @@ class CollaborationDataTest extends \PHPUnit_Framework_TestCase
     public function it_returns_its_properties_or_null()
     {
         $this->assertEquals($this->subBrand, $this->minimalCollaboration->getSubBrand());
+        $this->assertEquals($this->plainText, $this->minimalCollaboration->getPlainText());
         $this->assertNull($this->minimalCollaboration->getTitle());
         $this->assertNull($this->minimalCollaboration->getText());
         $this->assertNull($this->minimalCollaboration->getCopyright());
@@ -122,6 +132,7 @@ class CollaborationDataTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->minimalCollaboration->getLink());
 
         $this->assertEquals($this->subBrand, $this->completeCollaboration->getSubBrand());
+        $this->assertEquals($this->plainText, $this->completeCollaboration->getPlainText());
         $this->assertEquals($this->title, $this->completeCollaboration->getTitle());
         $this->assertEquals($this->text, $this->completeCollaboration->getText());
         $this->assertEquals($this->copyright, $this->completeCollaboration->getCopyright());

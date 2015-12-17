@@ -17,7 +17,8 @@ class CollaborationDataAddedTest extends \PHPUnit_Framework_TestCase
         $eventId = new String('foo');
         $lang = new Language('en');
         $data = new CollaborationData(
-            new String('sub brand')
+            new String('sub brand'),
+            new String('plain text')
         );
 
         $added = new CollaborationDataAdded(

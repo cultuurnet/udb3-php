@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\MediaObject;
 
 /**
  * Provides a command to add an image to the place.

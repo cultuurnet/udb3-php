@@ -12,7 +12,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
+use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 /**
  * Base test  case class for testing common Offer JSON-LD projector
@@ -211,13 +215,15 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     public function it_projects_the_adding_of_an_image()
     {
         $id = 'foo';
-        $url = '$url';
-        $thumbnailUrl = '$thumbnailUrl';
-        $description = '$description';
-        $copyrightHolder = '$copyrightHolder';
+        $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $url = Url::fromNative('http://foo.bar');
+        $thumbnailUrl = Url::fromNative('http://foo.bar');
+        $description = String::fromNative('Some description.');
+        $copyrightHolder = String::fromNative('Dirk Dirkington');
         $type = '$type';
 
-        $mediaObject = new MediaObject($url, $thumbnailUrl, $description, $copyrightHolder, '', $type);
+        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder);
+        $mediaObject->setUrl($url);
         $eventClass = $this->getEventClass('ImageAdded');
         $imageAdded = new $eventClass($id, $mediaObject);
 
@@ -246,14 +252,15 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     public function it_projects_the_editing_of_an_image()
     {
         $id = 'foo';
-        $url = '$url';
-        $internalId = '$internalId';
-        $thumbnailUrl = '$thumbnailUrl';
-        $description = '$description';
-        $copyrightHolder = '$copyrightHolder';
+        $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $url = Url::fromNative('http://foo.bar');
+        $thumbnailUrl = Url::fromNative('http://foo.bar');
+        $description = String::fromNative('Some description.');
+        $copyrightHolder = String::fromNative('Dirk Dirkington');
         $type = '$type';
 
-        $mediaObject = new MediaObject($url, $thumbnailUrl, $description, $copyrightHolder, $internalId, $type);
+        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder);
+        $mediaObject->setUrl($url);
         $eventClass = $this->getEventClass('ImageUpdated');
         $imageUpdated = new $eventClass($id, 0, $mediaObject);
 

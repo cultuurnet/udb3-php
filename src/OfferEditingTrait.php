@@ -7,6 +7,8 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\MediaObject;
+
 /**
  * Trait that contains all major editing methods for Offers.
  */

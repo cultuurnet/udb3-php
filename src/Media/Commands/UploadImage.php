@@ -1,7 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\ImageAsset;
+namespace CultuurNet\UDB3\Media\Commands;
 
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
@@ -25,24 +26,24 @@ class UploadImage
     protected $copyrightHolder;
 
     /**
-     * @var string
+     * @var MIMEType
      */
-    protected $fileType;
+    protected $mimeType;
 
     public function __construct(
         UUID $fileId,
-        $fileType,
+        MIMEType $mimeType,
         String $description,
         String $copyrightHolder
     ) {
         $this->fileId = $fileId;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
-        $this->fileType = $fileType;
+        $this->mimeType = $mimeType;
     }
 
     /**
-     * @return Uuid
+     * @return UUID
      */
     public function getFileId()
     {
@@ -66,10 +67,10 @@ class UploadImage
     }
 
     /**
-     * @return string
+     * @return MIMEType
      */
-    public function getFileType()
+    public function getMimeType()
     {
-        return $this->fileType;
+        return $this->mimeType;
     }
 }

@@ -1,10 +1,13 @@
 <?php
 
-namespace CultuurNet\UDB3\ImageAsset;
+namespace CultuurNet\UDB3\Media;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Media\Commands\UploadImage;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
+use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -14,10 +17,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
-class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderInterface, LoggerAwareInterface
+class ImageUploaderService implements ImageUploaderInterface
 {
-    use LoggerAwareTrait;
-
     /**
      * @var UuidGeneratorInterface
      */
@@ -34,21 +35,20 @@ class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderIn
     protected $uploadDirectory;
 
     /**
-     * @var string
+     * @var FilesystemInterface
      */
-    protected $imageDirectory;
+    protected $filesystem;
 
     public function __construct(
         UuidGeneratorInterface $uuidGenerator,
         CommandBusInterface $commandBus,
-        $uploadDirectory,
-        $imageDirectory
+        FilesystemInterface $filesystem,
+        $uploadDirectory
     ) {
         $this->uuidGenerator = $uuidGenerator;
         $this->commandBus = $commandBus;
+        $this->filesystem = $filesystem;
         $this->uploadDirectory = $uploadDirectory;
-        $this->imageDirectory = $imageDirectory;
-        $this->setLogger(new NullLogger());
     }
 
     /**
@@ -56,21 +56,27 @@ class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderIn
      */
     public function upload(UploadedFile $file, String $description, String $copyrightHolder)
     {
-        $fileId = new UUID($this->uuidGenerator->generate());
+        if (!$file->isValid()) {
+            throw new \InvalidArgumentException('The file did not upload correctly.');
+        }
 
         $fileType = $file->getMimeType();
 
         if (!$fileType) {
             throw new \InvalidArgumentException('The type of the uploaded file can not be guessed.');
+        } else {
+            $mimeType = MIMEType::fromNative($fileType);
         }
 
-        $file->move(
-            $this->getUploadDirectory(),
-            $fileId.'.'.$file->guessExtension()
-        );
+        $fileId = new UUID($this->uuidGenerator->generate());
+        $fileName = $fileId.'.'.$file->guessExtension();
+        $destination = $this->getUploadDirectory().'/'.$fileName;
+        $stream = fopen($file->getRealPath(), 'r+');
+        $this->filesystem->writeStream($destination, $stream);
+        fclose($stream);
 
         return $this->commandBus->dispatch(
-            new UploadImage($fileId, $fileType, $description, $copyrightHolder)
+            new UploadImage($fileId, $mimeType, $description, $copyrightHolder)
         );
     }
 
@@ -80,25 +86,5 @@ class ImageUploaderService extends Udb3CommandHandler implements ImageUploaderIn
     public function getUploadDirectory()
     {
         return $this->uploadDirectory;
-    }
-
-    /**
-     * @return string
-     */
-    public function getImageDirectory()
-    {
-        return $this->imageDirectory;
-    }
-
-    public function handleUploadImage(UploadImage $uploadImage)
-    {
-        $fileId = (string) $uploadImage->getFileId();
-        $extensionGuesser = ExtensionGuesser::getInstance();
-        $fileName = $fileId.'.'.$extensionGuesser->guess($uploadImage->getFileType());
-
-        rename($this->uploadDirectory.'/'.$fileName, $this->imageDirectory.'/'.$fileName);
-
-        $jobInfo = ['file_id' => $fileId];
-        $this->logger->info('job_info', $jobInfo);
     }
 }

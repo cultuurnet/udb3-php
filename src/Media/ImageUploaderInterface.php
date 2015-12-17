@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\ImageAsset;
+namespace CultuurNet\UDB3\Media;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\String\String;

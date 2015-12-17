@@ -8,7 +8,7 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\EventEvent;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\MediaObject;
 
 /**
  * Provides an ImageAdded event.

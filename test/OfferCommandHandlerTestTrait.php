@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\MediaObject;
 use ReflectionObject;
 
 /**

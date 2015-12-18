@@ -33,6 +33,12 @@ class ImageUploaderService implements ImageUploaderInterface
      */
     protected $filesystem;
 
+    /**
+     * @param UuidGeneratorInterface $uuidGenerator
+     * @param CommandBusInterface $commandBus
+     * @param FilesystemInterface $filesystem
+     * @param $uploadDirectory
+     */
     public function __construct(
         UuidGeneratorInterface $uuidGenerator,
         CommandBusInterface $commandBus,
@@ -58,9 +64,9 @@ class ImageUploaderService implements ImageUploaderInterface
 
         if (!$fileType) {
             throw new \InvalidArgumentException('The type of the uploaded file can not be guessed.');
-        } else {
-            $mimeType = MIMEType::fromNative($fileType);
         }
+
+        $mimeType = MIMEType::fromNative($fileType);
 
         $fileId = new UUID($this->uuidGenerator->generate());
         $fileName = $fileId.'.'.$file->guessExtension();

@@ -590,7 +590,10 @@ class Event extends EventSourcedAggregateRoot
         }
 
         $this->collaborationData[$language] = $this->collaborationData[$language]
-            ->with($collaborationData);
+            ->withKey(
+                $collaborationData->getSubBrand()->toNative(),
+                $collaborationData
+            );
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

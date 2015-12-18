@@ -59,6 +59,13 @@ class MediaObject extends EventSourcedAggregateRoot implements SerializableInter
      */
     protected $copyrightHolder;
 
+    /**
+     * @param UUID $fileId
+     * @param MIMEType $fileType
+     * @param String $description
+     * @param String $copyrightHolder
+     * @return MediaObject
+     */
     public static function create(UUID $fileId, MIMEType $fileType, String $description, String $copyrightHolder)
     {
         $mediaObject = new self();

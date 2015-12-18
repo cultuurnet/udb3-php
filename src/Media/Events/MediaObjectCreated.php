@@ -29,6 +29,12 @@ class MediaObjectCreated implements SerializableInterface
      */
     protected $copyrightHolder;
 
+    /**
+     * @param UUID $fileId
+     * @param MIMEType $fileType
+     * @param String $description
+     * @param String $copyrightHolder
+     */
     public function __construct(
         UUID $fileId,
         MIMEType $fileType,

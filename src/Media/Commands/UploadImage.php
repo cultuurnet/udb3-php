@@ -3,8 +3,6 @@
 namespace CultuurNet\UDB3\Media\Commands;
 
 use CultuurNet\UDB3\Media\Properties\MIMEType;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
@@ -30,6 +28,12 @@ class UploadImage
      */
     protected $mimeType;
 
+    /**
+     * @param UUID $fileId
+     * @param MIMEType $mimeType
+     * @param String $description
+     * @param String $copyrightHolder
+     */
     public function __construct(
         UUID $fileId,
         MIMEType $mimeType,

@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Iri\CallableIriGeneratorTest;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\MIMEType;

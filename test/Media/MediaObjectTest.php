@@ -2,12 +2,56 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
-class MediaObjectTest extends \PHPUnit_Framework_TestCase
+class MediaObjectTest extends AggregateRootScenarioTestCase
 {
+    /**
+     * @inheritdoc
+     */
+    protected function getAggregateRootClass()
+    {
+        return MediaObject::class;
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_created()
+    {
+        $fileId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $fileType = new MIMEType('image/png');
+        $description = String::fromNative('sexy ladies without clothes');
+        $copyrightHolder = String::fromNative('Bart Ramakers');
+
+        $this->scenario
+            ->withAggregateId($fileId->toNative())
+            ->when(
+                function () use ($fileId, $fileType, $description, $copyrightHolder) {
+                    return MediaObject::create(
+                        $fileId,
+                        $fileType,
+                        $description,
+                        $copyrightHolder
+                    );
+                }
+            )
+            ->then(
+                [
+                    new MediaObjectCreated(
+                        $fileId,
+                        $fileType,
+                        $description,
+                        $copyrightHolder
+                    ),
+                ]
+            );
+    }
+
     /**
      * @test
      */

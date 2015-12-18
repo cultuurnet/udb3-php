@@ -69,8 +69,8 @@ class ImageUploaderService implements ImageUploaderInterface
         $mimeType = MIMEType::fromNative($fileType);
 
         $fileId = new UUID($this->uuidGenerator->generate());
-        $fileName = $fileId.'.'.$file->guessExtension();
-        $destination = $this->getUploadDirectory().'/'.$fileName;
+        $fileName = $fileId . '.' . $file->guessExtension();
+        $destination = $this->getUploadDirectory() . '/' . $fileName;
         $stream = fopen($file->getRealPath(), 'r+');
         $this->filesystem->writeStream($destination, $stream);
         fclose($stream);

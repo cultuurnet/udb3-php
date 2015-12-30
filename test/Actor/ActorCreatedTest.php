@@ -39,7 +39,7 @@ class ActorCreatedTest extends \PHPUnit_Framework_TestCase
     public function serializationDataProvider()
     {
         return [
-            'unlabelled' => [
+            'actorCreated' => [
                 [
                     'actor_id' => 'actor_id',
                 ],

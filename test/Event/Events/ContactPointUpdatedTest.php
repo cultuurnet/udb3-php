@@ -26,7 +26,7 @@ class ContactPointUpdatedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param array $serializedValue
-     * @param TypicalAgeRangeUpdated $expectedTypicalAgeRangeUpdated
+     * @param ContactPointUpdated $expectedContactPointUpdated
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,

@@ -12,6 +12,7 @@ interface MediaManagerInterface extends CommandHandlerInterface
 {
     /**
      * @param UUID $fileId
+     * @throws MediaObjectNotFoundException
      * @return MediaObject
      */
     public function get(UUID $fileId);
@@ -34,6 +35,7 @@ interface MediaManagerInterface extends CommandHandlerInterface
         UUID $fileId,
         MIMEType $mimeType,
         String $description,
-        String $copyrightHolder
+        String $copyrightHolder,
+        String $extension
     );
 }

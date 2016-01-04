@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -115,7 +116,13 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
      */
     public function get(UUID $fileId)
     {
-        $mediaObject = $this->repository->load((string) $fileId);
+        try {
+            $mediaObject = $this->repository->load((string) $fileId);
+        } catch (AggregateNotFoundException $e) {
+            throw new MediaObjectNotFoundException(
+                sprintf("Media object with id '%s' not found", $fileId), 0, $e
+            );
+        }
         $mediaObject->setUrl($this->generateUrl($mediaObject));
 
         return $mediaObject;

@@ -11,6 +11,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
@@ -324,6 +325,33 @@ class HistoryProjector implements EventListenerInterface
 
         $this->writeHistory(
             $translationDeleted->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($message),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    /**
+     * @param CollaborationDataAdded $collaborationDataAdded
+     * @param DomainMessage $domainMessage
+     */
+    private function applyCollaborationDataAdded(
+        CollaborationDataAdded $collaborationDataAdded,
+        DomainMessage $domainMessage
+    ) {
+        $message = sprintf(
+            'Collaboration data toegevoegd (%s) voor sub brand "%s" via EntryAPI door consumer "%s"',
+            $collaborationDataAdded->getLanguage(),
+            $collaborationDataAdded->getCollaborationData()->getSubBrand(),
+            $this->getConsumerFromMetadata($domainMessage->getMetadata())
+        );
+
+        $this->writeHistory(
+            $collaborationDataAdded->getEventId()->toNative(),
             new Log(
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()

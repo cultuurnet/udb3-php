@@ -12,6 +12,6 @@ class SimplePathGenerator implements PathGeneratorInterface
      */
     public function path(UUID $fileId, String $extension)
     {
-        return (string) $fileId . '.' . (string) $extension;
+        return (string)$fileId . '.' . (string)$extension;
     }
 }

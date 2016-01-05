@@ -76,7 +76,13 @@ class ImageUploaderService implements ImageUploaderInterface
         fclose($stream);
 
         return $this->commandBus->dispatch(
-            new UploadImage($fileId, $mimeType, $description, $copyrightHolder)
+            new UploadImage(
+                $fileId,
+                $mimeType,
+                $description,
+                $copyrightHolder,
+                new String($destination)
+            )
         );
     }
 

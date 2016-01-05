@@ -30,6 +30,11 @@ class MediaObjectCreated implements SerializableInterface
     protected $copyrightHolder;
 
     /**
+     * @var String
+     */
+    protected $extension;
+
+    /**
      * @param UUID $fileId
      * @param MIMEType $fileType
      * @param String $description
@@ -39,12 +44,14 @@ class MediaObjectCreated implements SerializableInterface
         UUID $fileId,
         MIMEType $fileType,
         String $description,
-        String $copyrightHolder
+        String $copyrightHolder,
+        String $extension
     ) {
         $this->fileId = $fileId;
         $this->mimeType = $fileType;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
+        $this->extension = $extension;
     }
 
     /**
@@ -80,6 +87,14 @@ class MediaObjectCreated implements SerializableInterface
     }
 
     /**
+     * @return String
+     */
+    public function getExtension()
+    {
+        return $this->extension;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
@@ -89,6 +104,7 @@ class MediaObjectCreated implements SerializableInterface
             'mime_type' => $this->getMimeType()->toNative(),
             'description' => $this->getDescription()->toNative(),
             'copyright_holder' => $this->getCopyrightHolder()->toNative(),
+            'extension' => $this->getExtension()->toNative()
         );
     }
 
@@ -101,7 +117,8 @@ class MediaObjectCreated implements SerializableInterface
             new UUID($data['file_id']),
             new MIMEType($data['mime_type']),
             new String($data['description']),
-            new String($data['copyright_holder'])
+            new String($data['copyright_holder']),
+            new String($data['extension'])
         );
     }
 }

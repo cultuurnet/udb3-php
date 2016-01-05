@@ -45,13 +45,15 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
                     'file_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
                     'mime_type' => 'image/png',
                     'description' => 'sexy ladies without clothes',
-                    'copyright_holder' => 'Bart Ramakers'
+                    'copyright_holder' => 'Bart Ramakers',
+                    'extension' => 'png'
                 ],
                 new MediaObjectCreated(
                     new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
                     new MIMEType('image/png'),
-                    String::fromNative('sexy ladies without clothes'),
-                    String::fromNative('Bart Ramakers')
+                    new String('sexy ladies without clothes'),
+                    new String('Bart Ramakers'),
+                    new String('png')
                 )
             ]
         ];

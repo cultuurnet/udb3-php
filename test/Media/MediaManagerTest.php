@@ -30,9 +30,9 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
     protected $iriGenerator;
 
     /**
-     * @var string
+     * @var PathGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $uploadDirectory = '/uploads';
+    protected $pathGenerator;
 
     /**
      * @var string
@@ -48,13 +48,14 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->repository = $this->getMock(RepositoryInterface::class);
         $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->pathGenerator = $this->getMock(PathGeneratorInterface::class);
         $this->filesystem = $this->getMock(FilesystemInterface::class);
 
         $this->mediaManager = new MediaManager(
             $this->iriGenerator,
+            $this->pathGenerator,
             $this->repository,
             $this->filesystem,
-            $this->uploadDirectory,
             $this->mediaDirectory
         );
     }
@@ -68,7 +69,8 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
             String::fromNative('description'),
-            String::fromNative('copyright')
+            String::fromNative('copyright'),
+            String::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
         $logger = $this->getMock(LoggerInterface::class);
@@ -94,8 +96,14 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
             String::fromNative('description'),
-            String::fromNative('copyright')
+            String::fromNative('copyright'),
+            String::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
+
+        $this->pathGenerator
+            ->expects($this->once())
+            ->method('path')
+            ->willReturn('de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
         $this->filesystem
             ->expects($this->once())

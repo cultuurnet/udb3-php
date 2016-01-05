@@ -58,10 +58,11 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
     public function it_should_keep_track_of_media_object_meta_data()
     {
         $mediaObject = MediaObject::create(
-            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            String::fromNative('sexy ladies without clothes'),
-            String::fromNative('Bart Ramakers')
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            new String('png')
         );
 
         $this->assertEquals(
@@ -70,17 +71,17 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
         );
 
         $this->assertEquals(
-            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             $mediaObject->getFileId()
         );
 
         $this->assertEquals(
-            String::fromNative('sexy ladies without clothes'),
+            new String('sexy ladies without clothes'),
             $mediaObject->getDescription()
         );
 
         $this->assertEquals(
-            String::fromNative('Bart Ramakers'),
+            new String('Bart Ramakers'),
             $mediaObject->getCopyrightHolder()
         );
     }

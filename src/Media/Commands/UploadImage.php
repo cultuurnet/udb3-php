@@ -29,21 +29,28 @@ class UploadImage
     protected $mimeType;
 
     /**
+     * @var String
+     */
+    protected $filePath;
+    /**
      * @param UUID $fileId
      * @param MIMEType $mimeType
      * @param String $description
      * @param String $copyrightHolder
+     * @param String $filePath
      */
     public function __construct(
         UUID $fileId,
         MIMEType $mimeType,
         String $description,
-        String $copyrightHolder
+        String $copyrightHolder,
+        String $filePath
     ) {
         $this->fileId = $fileId;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
         $this->mimeType = $mimeType;
+        $this->filePath = $filePath;
     }
 
     /**
@@ -76,5 +83,13 @@ class UploadImage
     public function getMimeType()
     {
         return $this->mimeType;
+    }
+
+    /**
+     * @return String
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
     }
 }

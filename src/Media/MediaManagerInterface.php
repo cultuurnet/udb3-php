@@ -34,6 +34,7 @@ interface MediaManagerInterface extends CommandHandlerInterface
         UUID $fileId,
         MIMEType $mimeType,
         String $description,
-        String $copyrightHolder
+        String $copyrightHolder,
+        String $extension
     );
 }

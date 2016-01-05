@@ -222,8 +222,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $description = String::fromNative('Some description.');
         $copyrightHolder = String::fromNative('Dirk Dirkington');
         $type = new MIMEType('image/png');
+        $extension = new String('png');
 
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder);
+        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $extension);
         $mediaObject->setUrl($url);
         $eventClass = $this->getEventClass('ImageAdded');
         $imageAdded = new $eventClass($id, $mediaObject);
@@ -260,8 +261,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $description = String::fromNative('Some description.');
         $copyrightHolder = String::fromNative('Dirk Dirkington');
         $type = new MIMEType('image/png');
+        $extension = new String('png');
 
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder);
+        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $extension);
         $mediaObject->setUrl($url);
         $eventClass = $this->getEventClass('ImageUpdated');
         $imageUpdated = new $eventClass($id, 0, $mediaObject);

@@ -23,20 +23,22 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_created()
     {
-        $fileId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $fileId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
         $fileType = new MIMEType('image/png');
-        $description = String::fromNative('sexy ladies without clothes');
-        $copyrightHolder = String::fromNative('Bart Ramakers');
+        $description = new String('sexy ladies without clothes');
+        $copyrightHolder = new String('Bart Ramakers');
+        $extension = new String('png');
 
         $this->scenario
             ->withAggregateId($fileId->toNative())
             ->when(
-                function () use ($fileId, $fileType, $description, $copyrightHolder) {
+                function () use ($fileId, $fileType, $description, $copyrightHolder, $extension) {
                     return MediaObject::create(
                         $fileId,
                         $fileType,
                         $description,
-                        $copyrightHolder
+                        $copyrightHolder,
+                        $extension
                     );
                 }
             )
@@ -46,7 +48,8 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
                         $fileId,
                         $fileType,
                         $description,
-                        $copyrightHolder
+                        $copyrightHolder,
+                        $extension
                     ),
                 ]
             );

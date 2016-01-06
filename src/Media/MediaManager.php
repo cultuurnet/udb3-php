@@ -32,11 +32,6 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
     protected $mediaDirectory;
 
     /**
-     * @var string
-     */
-    protected $uploadDirectory;
-
-    /**
      * @var RepositoryInterface
      */
     protected $repository;
@@ -46,16 +41,21 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
      */
     protected $filesystem;
 
+    /**
+     * @var PathGeneratorInterface
+     */
+    protected $pathGenerator;
+
     public function __construct(
         IriGeneratorInterface $iriGenerator,
+        PathGeneratorInterface $pathGenerator,
         RepositoryInterface $repository,
         FilesystemInterface $filesystem,
-        $uploadDirectory,
         $mediaDirectory
     ) {
         $this->iriGenerator = $iriGenerator;
+        $this->pathGenerator = $pathGenerator;
         $this->mediaDirectory = $mediaDirectory;
-        $this->uploadDirectory = $uploadDirectory;
         $this->filesystem = $filesystem;
         $this->repository = $repository;
 
@@ -66,9 +66,20 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
     /**
      * {@inheritdoc}
      */
-    public function create(UUID $fileId, MIMEType $fileType, String $description, String $copyrightHolder)
-    {
-        $mediaObject = MediaObject::create($fileId, $fileType, $description, $copyrightHolder);
+    public function create(
+        UUID $fileId,
+        MIMEType $fileType,
+        String $description,
+        String $copyrightHolder,
+        String $extension
+    ) {
+        $mediaObject = MediaObject::create(
+            $fileId,
+            $fileType,
+            $description,
+            $copyrightHolder,
+            $extension
+        );
 
         $this->repository->save($mediaObject);
 
@@ -80,8 +91,12 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         $extensionGuesser = ExtensionGuesser::getInstance();
         $fileExtension = $extensionGuesser->guess((string) $mediaObject->getMimeType());
         $fileId = $mediaObject->getFileId();
+        $filePath = $this->pathGenerator->path(
+            $mediaObject->getFileId(),
+            new String($fileExtension)
+        );
 
-        return Url::fromNative($this->iriGenerator->iri($fileId.'.'.$fileExtension));
+        return Url::fromNative($this->iriGenerator->iri($filePath));
     }
 
     /**
@@ -89,25 +104,26 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
      */
     public function handleUploadImage(UploadImage $uploadImage)
     {
-        $fileId = $uploadImage->getFileId();
-        $mimeType = $uploadImage->getMimeType();
-        $extensionGuesser = ExtensionGuesser::getInstance();
-        $extension = $extensionGuesser->guess((string) $mimeType);
-        $fileName = (string) $uploadImage->getFileId().'.'.$extension;
-
-        $this->filesystem->rename(
-            $this->uploadDirectory.'/'.$fileName,
-            $this->mediaDirectory.'/'.$fileName
+        $pathParts = explode('/', $uploadImage->getFilePath());
+        $fileName = array_pop($pathParts);
+        $fileNameParts = explode('.', $fileName);
+        $extension = String::fromNative(array_pop($fileNameParts));
+        $destination = $this->mediaDirectory . '/' . $this->pathGenerator->path(
+            $uploadImage->getFileId(),
+            $extension
         );
+
+        $this->filesystem->rename($uploadImage->getFilePath(), $destination);
 
         $this->create(
-            $fileId,
-            $mimeType,
+            $uploadImage->getFileId(),
+            $uploadImage->getMimeType(),
             $uploadImage->getDescription(),
-            $uploadImage->getCopyrightHolder()
+            $uploadImage->getCopyrightHolder(),
+            $extension
         );
 
-        $jobInfo = ['file_id' => (string) $fileId];
+        $jobInfo = ['file_id' => (string) $uploadImage->getFileId()];
         $this->logger->info('job_info', $jobInfo);
     }
 

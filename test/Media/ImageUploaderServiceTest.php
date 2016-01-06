@@ -3,10 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\CommandHandling\SimpleCommandBus;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use League\Flysystem\Adapter\NullAdapter;
-use League\Flysystem\AdapterInterface;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\String\String;

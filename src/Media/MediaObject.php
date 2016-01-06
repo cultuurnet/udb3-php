@@ -14,7 +14,7 @@ use ValueObjects\Web\Url;
 /**
  * MediaObjects for UDB3.
  */
-class MediaObject extends EventSourcedAggregateRoot implements SerializableInterface, JsonLdSerializableInterface
+class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializableInterface
 {
 
     /**
@@ -59,10 +59,38 @@ class MediaObject extends EventSourcedAggregateRoot implements SerializableInter
      */
     protected $copyrightHolder;
 
-    public static function create(UUID $fileId, MIMEType $fileType, String $description, String $copyrightHolder)
-    {
+    /**
+     * The extension of the media object file.
+     * @var string
+     */
+    protected $extension;
+
+    /**
+     * @param UUID $fileId
+     * @param MIMEType $fileType
+     * @param String $description
+     * @param String $copyrightHolder
+     * @param String $extension
+     *
+     * @return MediaObject
+     */
+    public static function create(
+        UUID $fileId,
+        MIMEType $fileType,
+        String $description,
+        String $copyrightHolder,
+        String $extension
+    ) {
         $mediaObject = new self();
-        $mediaObject->apply(new MediaObjectCreated($fileId, $fileType, $description, $copyrightHolder));
+        $mediaObject->apply(
+            new MediaObjectCreated(
+                $fileId,
+                $fileType,
+                $description,
+                $copyrightHolder,
+                $extension
+            )
+        );
 
         return $mediaObject;
     }
@@ -81,6 +109,7 @@ class MediaObject extends EventSourcedAggregateRoot implements SerializableInter
         $this->mimeType = $mediaObjectCreated->getMimeType();
         $this->description = $mediaObjectCreated->getDescription();
         $this->copyrightHolder = $mediaObjectCreated->getCopyrightHolder();
+        $this->extension = $mediaObjectCreated->getExtension();
     }
 
     /**
@@ -132,26 +161,11 @@ class MediaObject extends EventSourcedAggregateRoot implements SerializableInter
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public static function deserialize(array $data)
+    public function getExtension()
     {
-        return new static($data['url'], $data['mime_type'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['file_id'], $type);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
-    {
-        return [
-            'mime_type' => $this->mimeType,
-            'url' => (string) $this->url,
-            'thumbnail_url' => (string) $this->thumbnailUrl,
-            'description' => (string) $this->description,
-            'copyright_holder' => (string) $this->copyrightHolder,
-            'file_id' => (string) $this->fileId,
-        ];
+        return $this->extension;
     }
 
     /**

@@ -3,8 +3,6 @@
 namespace CultuurNet\UDB3\Media\Commands;
 
 use CultuurNet\UDB3\Media\Properties\MIMEType;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
@@ -30,16 +28,29 @@ class UploadImage
      */
     protected $mimeType;
 
+    /**
+     * @var String
+     */
+    protected $filePath;
+    /**
+     * @param UUID $fileId
+     * @param MIMEType $mimeType
+     * @param String $description
+     * @param String $copyrightHolder
+     * @param String $filePath
+     */
     public function __construct(
         UUID $fileId,
         MIMEType $mimeType,
         String $description,
-        String $copyrightHolder
+        String $copyrightHolder,
+        String $filePath
     ) {
         $this->fileId = $fileId;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
         $this->mimeType = $mimeType;
+        $this->filePath = $filePath;
     }
 
     /**
@@ -72,5 +83,13 @@ class UploadImage
     public function getMimeType()
     {
         return $this->mimeType;
+    }
+
+    /**
+     * @return String
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
     }
 }

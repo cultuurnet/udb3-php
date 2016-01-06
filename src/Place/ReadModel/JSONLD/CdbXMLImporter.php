@@ -5,12 +5,27 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
+
 /**
  * Takes care of importing actors in the CdbXML format (UDB2) that represent
  * a place, into a UDB3 JSON-LD document.
  */
 class CdbXMLImporter
 {
+    /**
+     * @var CdbXMLItemBaseImporter
+     */
+    private $cdbXMLItemBaseImporter;
+
+    /**
+     * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
+     */
+    public function __construct(CdbXMLItemBaseImporter $dbXMLItemBaseImporter)
+    {
+        $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
+    }
+
     /**
      * Imports a UDB2 organizer actor into a UDB3 JSON-LD document.
      *
@@ -52,6 +67,10 @@ class CdbXMLImporter
         }
 
         $jsonLD->name = $detail->getTitle();
+
+        $this->cdbXMLItemBaseImporter->importPublicationInfo($actor, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importAvailable($actor, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importExternalId($actor, $jsonLD);
 
         // Address
         $contact_cdb = $actor->getContactInfo();

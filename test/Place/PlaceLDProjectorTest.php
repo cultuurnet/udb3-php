@@ -115,6 +115,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
         $jsonLD->created = $created;
+        $jsonLD->modified = $created;
 
         $body = $this->project(
             $placeCreated,
@@ -170,6 +171,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
         $jsonLD->created = $created;
+        $jsonLD->modified = $created;
 
         $body = $this->project(
             $placeCreated,
@@ -219,6 +221,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
         $jsonLD->created = $created;
+        $jsonLD->modified = $created;
         $jsonLD->creator = '1 (Tester)';
 
         $metadata = new Metadata(

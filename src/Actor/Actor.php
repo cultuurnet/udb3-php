@@ -28,23 +28,6 @@ class Actor extends EventSourcedAggregateRoot
     protected $labels = array();
 
     /**
-     * Factory method to create a new actor.
-     *
-     * @param string $actorId
-     *   The actor id.
-     *
-     * @return Actor
-     */
-    public static function create($actorId)
-    {
-        $class = get_called_class();
-        $actor = new $class;
-        $actor->apply(new ActorCreated($actorId));
-
-        return $actor;
-    }
-
-    /**
      * Import from UDB2.
      *
      * @param string $actorId

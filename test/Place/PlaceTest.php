@@ -10,6 +10,7 @@ namespace CultuurNet\UDB3\Place;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 
 class PlaceTest extends AggregateRootScenarioTestCase
 {
@@ -41,7 +42,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->when(function () use ($cdbXml) {
-                return Place::importFromUDB2(
+                return Place::importFromUDB2Actor(
                     '318F2ACB-F612-6F75-0037C9C29F44087A',
                     $cdbXml,
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
@@ -50,6 +51,32 @@ class PlaceTest extends AggregateRootScenarioTestCase
             ->then([
                 new PlaceImportedFromUDB2(
                     '318F2ACB-F612-6F75-0037C9C29F44087A',
+                    $cdbXml,
+                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                )
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_from_udb2_events()
+    {
+        $cdbXml = $this->getCdbXML(
+            '/event_with_cdb_externalid.cdbxml.xml'
+        );
+
+        $this->scenario
+            ->when(function () use ($cdbXml) {
+                return Place::importFromUDB2Event(
+                    '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
+                    $cdbXml,
+                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                );
+            })
+            ->then([
+                new PlaceImportedFromUDB2Event(
+                    '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
                     $cdbXml,
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                 )

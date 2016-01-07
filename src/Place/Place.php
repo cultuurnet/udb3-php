@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
@@ -223,7 +224,7 @@ class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInt
      * @return Actor
      *   The actor.
      */
-    public static function importFromUDB2(
+    public static function importFromUDB2Actor(
         $actorId,
         $cdbXml,
         $cdbXmlNamespaceUri
@@ -232,6 +233,36 @@ class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInt
         $place->apply(
             new PlaceImportedFromUDB2(
                 $actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
+
+        return $place;
+    }
+
+    /**
+     * Import from UDB2.
+     *
+     * @param string $placeId
+     *   The actor id.
+     * @param string $cdbXml
+     *   The cdb xml.
+     * @param string $cdbXmlNamespaceUri
+     *   The cdb xml namespace uri.
+     *
+     * @return Actor
+     *   The actor.
+     */
+    public static function importFromUDB2Event(
+        $placeId,
+        $cdbXml,
+        $cdbXmlNamespaceUri
+    ) {
+        $place = new static();
+        $place->apply(
+            new PlaceImportedFromUDB2Event(
+                $placeId,
                 $cdbXml,
                 $cdbXmlNamespaceUri
             )

@@ -32,6 +32,17 @@
         </phpcodesniffer>
     </target>
 
+    <target name="coding-standards-strict">
+        <phpcodesniffer
+                standard="phpcs-ruleset.xml"
+                format="full"
+                allowedFileExtensions="php"
+                haltonerror="true"
+                haltonwarning="true">
+            <fileset refid="php"/>
+        </phpcodesniffer>
+    </target>
+
     <target name="docs">
         <exec passthru="true" command="apigen generate --source src --destination docs/api --title='UDB3 PHP library'" />
     </target>

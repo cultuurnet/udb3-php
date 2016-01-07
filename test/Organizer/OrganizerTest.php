@@ -23,7 +23,8 @@ class OrganizerTest extends AggregateRootScenarioTestCase
         return Organizer::class;
     }
 
-    private function getCdbXML($filename) {
+    private function getCdbXML($filename)
+    {
         return file_get_contents(
             __DIR__ . $filename
         );

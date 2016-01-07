@@ -23,7 +23,8 @@ class PlaceTest extends AggregateRootScenarioTestCase
         return Place::class;
     }
 
-    private function getCdbXML($filename) {
+    private function getCdbXML($filename)
+    {
         return file_get_contents(
             __DIR__ . $filename
         );

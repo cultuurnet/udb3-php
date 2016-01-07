@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
@@ -36,7 +37,7 @@ use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
 
-class Place extends Actor implements UpdateableWithCdbXmlInterface
+class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
     /**
      * The actor id.
@@ -242,7 +243,7 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
     public function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImported
     ) {
-        $this->applyActorImportedFromUDB2($placeImported);
+        $this->actorId = $placeImported->getActorId();
     }
 
     /**

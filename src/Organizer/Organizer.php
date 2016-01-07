@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -16,7 +17,7 @@ use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Title;
 use ValueObjects\String\String;
 
-class Organizer extends Actor implements UpdateableWithCdbXmlInterface
+class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
     /**
      * The actor id.
@@ -98,7 +99,7 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
     public function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImported
     ) {
-        $this->applyActorImportedFromUDB2($organizerImported);
+        $this->actorId = $organizerImported->getActorId();
     }
 
     /**

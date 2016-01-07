@@ -26,7 +26,8 @@
                 standard="phpcs-ruleset.xml"
                 format="full"
                 allowedFileExtensions="php"
-                haltonerror="true">
+                haltonerror="true"
+                showWarnings="false">
             <fileset refid="php"/>
         </phpcodesniffer>
     </target>

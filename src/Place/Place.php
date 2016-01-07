@@ -8,7 +8,6 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;

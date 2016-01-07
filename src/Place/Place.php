@@ -276,6 +276,12 @@ class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInt
         $this->actorId = $placeImported->getActorId();
     }
 
+    public function applyPlaceImportedFromUDB2Event(
+        PlaceImportedFromUDB2Event $placeImported
+    ) {
+        $this->actorId = $placeImported->getActorId();
+    }
+
     /**
      * @inheritdoc
      */

@@ -38,6 +38,20 @@ use ValueObjects\String\String;
 
 class Place extends Actor implements UpdateableWithCdbXmlInterface
 {
+    /**
+     * The actor id.
+     *
+     * @var string
+     */
+    protected $actorId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAggregateRootId()
+    {
+        return $this->actorId;
+    }
 
     /**
      * Factory method to create a new Place.

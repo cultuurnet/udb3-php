@@ -19,6 +19,21 @@ use ValueObjects\String\String;
 class Organizer extends Actor implements UpdateableWithCdbXmlInterface
 {
     /**
+     * The actor id.
+     *
+     * @var string
+     */
+    protected $actorId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAggregateRootId()
+    {
+        return $this->actorId;
+    }
+
+    /**
      * Import from UDB2.
      *
      * @param string $actorId

@@ -11,14 +11,9 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Label;
 
-class Actor extends EventSourcedAggregateRoot
+abstract class Actor extends EventSourcedAggregateRoot
 {
-    /**
-     * The actor id.
-     *
-     * @var string
-     */
-    protected $actorId;
+
 
     /**
      * The labels.
@@ -58,13 +53,7 @@ class Actor extends EventSourcedAggregateRoot
         return $actor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAggregateRootId()
-    {
-        return $this->actorId;
-    }
+
 
     /**
      * Apply actor imported from UDB2.

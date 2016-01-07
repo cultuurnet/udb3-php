@@ -13,47 +13,12 @@ use CultuurNet\UDB3\Label;
 
 abstract class Actor extends EventSourcedAggregateRoot
 {
-
-
     /**
      * The labels.
      *
      * @var array
      */
     protected $labels = array();
-
-    /**
-     * Import from UDB2.
-     *
-     * @param string $actorId
-     *   The actor id.
-     * @param string $cdbXml
-     *   The cdb xml.
-     * @param string $cdbXmlNamespaceUri
-     *   The cdb xml namespace uri.
-     *
-     * @return Actor
-     *   The actor.
-     */
-    public static function importFromUDB2(
-        $actorId,
-        $cdbXml,
-        $cdbXmlNamespaceUri
-    ) {
-        $class = get_called_class();
-        $actor = new $class;
-        $actor->apply(
-            new ActorImportedFromUDB2(
-                $actorId,
-                $cdbXml,
-                $cdbXmlNamespaceUri
-            )
-        );
-
-        return $actor;
-    }
-
-
 
     /**
      * Apply actor imported from UDB2.

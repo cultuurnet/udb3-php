@@ -39,6 +39,11 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
                 function ($item) {
                     return 'http://example.com/event/' . $item;
                 }
+            ),
+            new CallableIriGenerator(
+                function ($item) {
+                    return 'http://example.com/place/' . $item;
+                }
             )
         );
     }

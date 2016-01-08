@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\SearchAPI2;
 
@@ -21,20 +18,28 @@ class ResultSetPullParser
     protected $xmlReader;
 
     /**
-     * @var \CultuurNet\UDB3\Iri\IriGeneratorInterface
+     * @var IriGeneratorInterface
      */
-    protected $iriGenerator;
+    protected $eventIriGenerator;
+
+    /**
+     * @var IriGeneratorInterface
+     */
+    protected $placeIriGenerator;
 
     /**
      * @param \XMLReader $xmlReader
-     * @param \CultuurNet\UDB3\Iri\IriGeneratorInterface $iriGenerator
+     * @param IriGeneratorInterface $eventIriGenerator
+     * @param IriGeneratorInterface $placeIriGenerator
      */
     public function __construct(
         \XMLReader $xmlReader,
-        IriGeneratorInterface $iriGenerator
+        IriGeneratorInterface $eventIriGenerator,
+        IriGeneratorInterface $placeIriGenerator
     ) {
         $this->xmlReader = $xmlReader;
-        $this->iriGenerator = $iriGenerator;
+        $this->eventIriGenerator = $eventIriGenerator;
+        $this->placeIriGenerator = $placeIriGenerator;
     }
 
     /**
@@ -54,17 +59,34 @@ class ResultSetPullParser
 
         $r->xml($cdbxml);
 
+        $currentEventCdbId = null;
+        $currentEventIsUdb3Place = false;
+
         while ($r->read()) {
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'nofrecords') {
                 $totalItems = new Integer((int)$r->readString());
             }
 
             if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
-                $items[] = array(
-                    '@id' => $this->iriGenerator->iri(
-                        $r->getAttribute('cdbid')
-                    ),
-                );
+                $currentEventCdbId = $r->getAttribute('cdbid');
+            }
+
+            if ($r->nodeType == $r::ELEMENT && $r->localName == 'keyword') {
+                $keyword = $r->readString();
+                $currentEventIsUdb3Place = strcasecmp('udb3 place', $keyword) == 0;
+            }
+
+            if ($r->nodeType == $r::END_ELEMENT && $r->localName == 'event') {
+                $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
+
+                if (!is_null($currentEventCdbId)) {
+                    $items[] = array(
+                        '@id' => $iriGenerator->iri($currentEventCdbId),
+                    );
+                }
+
+                $currentEventCdbId = null;
+                $currentEventIsUdb3Place = false;
             }
         }
 

@@ -82,6 +82,7 @@ class ResultSetPullParser
                 if (!is_null($currentEventCdbId)) {
                     $items[] = array(
                         '@id' => $iriGenerator->iri($currentEventCdbId),
+                        '@type' => $currentEventIsUdb3Place ? 'Place' : 'Event',
                     );
                 }
 

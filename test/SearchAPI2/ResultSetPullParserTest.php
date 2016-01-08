@@ -78,14 +78,38 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
 
         $expectedResultSet = new Results(
             [
-                ['@id' => 'event/590174eb-5577-4b49-8bc2-4b619a948c56'],
-                ['@id' => 'place/9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'],
-                ['@id' => 'event/d9725327-cbec-4bb8-bc56-9f3f7761b716'],
-                ['@id' => 'event/70d24706-6e23-406c-9b54-445f5249ae6b'],
-                ['@id' => 'event/2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'],
-                ['@id' => 'event/409cca2b-d5bb-4f53-9312-de22bdbbcbb2'],
-                ['@id' => 'event/40836aa3-9fcb-4672-8f69-6394fc0873f2'],
-                ['@id' => 'place/ee08000a-ccfa-4675-93ef-a0dc02ae1be4'],
+                [
+                    '@id' => 'event/590174eb-5577-4b49-8bc2-4b619a948c56',
+                    '@type' => 'Event',
+                ],
+                [
+                    '@id' => 'place/9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c',
+                    '@type' => 'Place',
+                ],
+                [
+                    '@id' => 'event/d9725327-cbec-4bb8-bc56-9f3f7761b716',
+                    '@type' => 'Event',
+                ],
+                [
+                    '@id' => 'event/70d24706-6e23-406c-9b54-445f5249ae6b',
+                    '@type' => 'Event',
+                ],
+                [
+                    '@id' => 'event/2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45',
+                    '@type' => 'Event',
+                ],
+                [
+                    '@id' => 'event/409cca2b-d5bb-4f53-9312-de22bdbbcbb2',
+                    '@type' => 'Event',
+                ],
+                [
+                    '@id' => 'event/40836aa3-9fcb-4672-8f69-6394fc0873f2',
+                    '@type' => 'Event',
+                ],
+                [
+                    '@id' => 'place/ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
+                    '@type' => 'Place',
+                ],
             ],
             new Integer(1820)
         );

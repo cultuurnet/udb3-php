@@ -43,6 +43,7 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -51,6 +52,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
+use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\String\String;
 
 /**
@@ -100,24 +102,32 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     protected $cdbXMLImporter;
 
     /**
+     * @var SerializerInterface
+     */
+    protected $mediaObjectSerializer;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
      * @param PlaceService $placeService
      * @param OrganizerService $organizerService
+     * @param SerializerInterface $mediaObjectSerializer
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EventServiceInterface $eventService,
         PlaceService $placeService,
-        OrganizerService $organizerService
+        OrganizerService $organizerService,
+        SerializerInterface $mediaObjectSerializer
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->placeService = $placeService;
         $this->eventService = $eventService;
+        $this->mediaObjectSerializer = $mediaObjectSerializer;
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter();
@@ -723,15 +733,18 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      */
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
-
         $document = $this->loadDocumentFromRepository($imageAdded);
 
         $eventLd = $document->getBody();
         $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-        $eventLd->mediaObject[] = $imageAdded->getMediaObject()->toJsonLd();
+
+        $imageData = $this->mediaObjectSerializer->serialize(
+            $imageAdded->getMediaObject(),
+            'json-ld'
+        );
+        $eventLd->mediaObject[] = $imageData;
 
         $this->repository->save($document->withBody($eventLd));
-
     }
 
     /**
@@ -746,7 +759,11 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
         $eventLd = $document->getBody();
         $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-        $eventLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
+        $imageData = $this->mediaObjectSerializer->serialize(
+            $imageUpdated->getMediaObject(),
+            'json-ld'
+        );
+        $eventLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageData;
 
         $this->repository->save($document->withBody($eventLd));
 

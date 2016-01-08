@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class MediaObjectTest extends AggregateRootScenarioTestCase
 {
@@ -27,18 +28,18 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
         $fileType = new MIMEType('image/png');
         $description = new String('sexy ladies without clothes');
         $copyrightHolder = new String('Bart Ramakers');
-        $extension = new String('png');
+        $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
         $this->scenario
             ->withAggregateId($fileId->toNative())
             ->when(
-                function () use ($fileId, $fileType, $description, $copyrightHolder, $extension) {
+                function () use ($fileId, $fileType, $description, $copyrightHolder, $location) {
                     return MediaObject::create(
                         $fileId,
                         $fileType,
                         $description,
                         $copyrightHolder,
-                        $extension
+                        $location
                     );
                 }
             )
@@ -49,7 +50,7 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
                         $fileType,
                         $description,
                         $copyrightHolder,
-                        $extension
+                        $location
                     ),
                 ]
             );
@@ -65,7 +66,7 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new String('sexy ladies without clothes'),
             new String('Bart Ramakers'),
-            new String('png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
         $this->assertEquals(
@@ -75,7 +76,7 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
 
         $this->assertEquals(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
-            $mediaObject->getFileId()
+            $mediaObject->getMediaObjectId()
         );
 
         $this->assertEquals(

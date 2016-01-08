@@ -217,15 +217,12 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $url = Url::fromNative('http://foo.bar');
-        $thumbnailUrl = Url::fromNative('http://foo.bar');
         $description = String::fromNative('Some description.');
         $copyrightHolder = String::fromNative('Dirk Dirkington');
         $type = new MIMEType('image/png');
-        $extension = new String('png');
+        $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $extension);
-        $mediaObject->setUrl($url);
+        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $location);
         $eventClass = $this->getEventClass('ImageAdded');
         $imageAdded = new $eventClass($id, $mediaObject);
 
@@ -235,12 +232,12 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $expectedBody = (object)[
             'mediaObject' => [
                 (object)[
-                    '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
-                    '@type' => 'schema:MediaObject',
-                    'contentUrl' => $url,
-                    'thumbnailUrl' => $thumbnailUrl,
-                    'description' => $description,
-                    'copyrightHolder' => $copyrightHolder
+                    '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:ImageObject',
+                    'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'description' => (string) $description,
+                    'copyrightHolder' => (string) $copyrightHolder
                 ]
             ]
         ];
@@ -256,15 +253,12 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $url = Url::fromNative('http://foo.bar');
-        $thumbnailUrl = Url::fromNative('http://foo.bar');
         $description = String::fromNative('Some description.');
         $copyrightHolder = String::fromNative('Dirk Dirkington');
         $type = new MIMEType('image/png');
-        $extension = new String('png');
+        $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $extension);
-        $mediaObject->setUrl($url);
+        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $location);
         $eventClass = $this->getEventClass('ImageUpdated');
         $imageUpdated = new $eventClass($id, 0, $mediaObject);
 
@@ -273,8 +267,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
             json_encode([
                 'mediaObject' => [
                     [
-                        '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
-                        '@type' => 'schema:MediaObject',
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:ImageObject',
                         'contentUrl' => 'oldUrl',
                         'thumbnailUrl' => 'oldthumbnailUrl',
                         'description' => 'olddescription',
@@ -288,12 +282,12 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $expectedBody = (object)[
             'mediaObject' => [
                 (object)[
-                    '@id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
-                    '@type' => 'schema:MediaObject',
-                    'contentUrl' => $url,
-                    'thumbnailUrl' => $thumbnailUrl,
-                    'description' => $description,
-                    'copyrightHolder' => $copyrightHolder
+                    '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:ImageObject',
+                    'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'description' => (string) $description,
+                    'copyrightHolder' => (string) $copyrightHolder
                 ]
             ]
         ];

@@ -76,6 +76,11 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMock(LoggerInterface::class);
         $this->mediaManager->setLogger($logger);
 
+        $this->iriGenerator
+            ->expects($this->once())
+            ->method('iri')
+            ->willReturn('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
+
         $logger
             ->expects($this->once())
             ->method('info')
@@ -104,6 +109,11 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('path')
             ->willReturn('de305d54-75b4-431b-adb2-eb6b9e546014.png');
+
+        $this->iriGenerator
+            ->expects($this->once())
+            ->method('iri')
+            ->willReturn('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
         $this->filesystem
             ->expects($this->once())

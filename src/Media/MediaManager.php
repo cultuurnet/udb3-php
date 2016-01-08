@@ -67,36 +67,23 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
      * {@inheritdoc}
      */
     public function create(
-        UUID $fileId,
+        UUID $id,
         MIMEType $fileType,
         String $description,
         String $copyrightHolder,
-        String $extension
+        Url $sourceLocation
     ) {
         $mediaObject = MediaObject::create(
-            $fileId,
+            $id,
             $fileType,
             $description,
             $copyrightHolder,
-            $extension
+            $sourceLocation
         );
 
         $this->repository->save($mediaObject);
 
         return $mediaObject;
-    }
-
-    private function generateUrl(MediaObject $mediaObject)
-    {
-        $extensionGuesser = ExtensionGuesser::getInstance();
-        $fileExtension = $extensionGuesser->guess((string) $mediaObject->getMimeType());
-        $fileId = $mediaObject->getFileId();
-        $filePath = $this->pathGenerator->path(
-            $mediaObject->getFileId(),
-            new String($fileExtension)
-        );
-
-        return Url::fromNative($this->iriGenerator->iri($filePath));
     }
 
     /**
@@ -108,19 +95,24 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         $fileName = array_pop($pathParts);
         $fileNameParts = explode('.', $fileName);
         $extension = String::fromNative(array_pop($fileNameParts));
-        $destination = $this->mediaDirectory . '/' . $this->pathGenerator->path(
+        $destinationPath = $this->pathGenerator->path(
             $uploadImage->getFileId(),
             $extension
         );
 
-        $this->filesystem->rename($uploadImage->getFilePath(), $destination);
+        $destinationIri = $this->iriGenerator->iri($destinationPath);
+
+        $this->filesystem->rename(
+            $uploadImage->getFilePath(),
+            $this->mediaDirectory . '/' . $destinationPath
+        );
 
         $this->create(
             $uploadImage->getFileId(),
             $uploadImage->getMimeType(),
             $uploadImage->getDescription(),
             $uploadImage->getCopyrightHolder(),
-            $extension
+            Url::fromNative($destinationIri)
         );
 
         $jobInfo = ['file_id' => (string) $uploadImage->getFileId()];
@@ -136,10 +128,11 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
             $mediaObject = $this->repository->load((string) $fileId);
         } catch (AggregateNotFoundException $e) {
             throw new MediaObjectNotFoundException(
-                sprintf("Media object with id '%s' not found", $fileId), 0, $e
+                sprintf("Media object with id '%s' not found", $fileId),
+                0,
+                $e
             );
         }
-        $mediaObject->setUrl($this->generateUrl($mediaObject));
 
         return $mediaObject;
     }

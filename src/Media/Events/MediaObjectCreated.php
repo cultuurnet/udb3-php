@@ -6,13 +6,14 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class MediaObjectCreated implements SerializableInterface
 {
     /**
      * @var UUID
      */
-    protected $fileId;
+    protected $mediaObjectId;
 
     /**
      * @var MIMEType
@@ -30,36 +31,38 @@ class MediaObjectCreated implements SerializableInterface
     protected $copyrightHolder;
 
     /**
-     * @var String
+     * @var Url
      */
-    protected $extension;
+    protected $sourceLocation;
 
     /**
-     * @param UUID $fileId
+     * MediaObjectCreated constructor.
+     * @param UUID $id
      * @param MIMEType $fileType
-     * @param String $description
-     * @param String $copyrightHolder
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
+     * @param Url $sourceLocation
      */
     public function __construct(
-        UUID $fileId,
+        UUID $id,
         MIMEType $fileType,
         String $description,
         String $copyrightHolder,
-        String $extension
+        Url $sourceLocation
     ) {
-        $this->fileId = $fileId;
+        $this->mediaObjectId = $id;
         $this->mimeType = $fileType;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
-        $this->extension = $extension;
+        $this->sourceLocation = $sourceLocation;
     }
 
     /**
      * @return UUID
      */
-    public function getFileId()
+    public function getMediaObjectId()
     {
-        return $this->fileId;
+        return $this->mediaObjectId;
     }
 
     /**
@@ -87,11 +90,11 @@ class MediaObjectCreated implements SerializableInterface
     }
 
     /**
-     * @return String
+     * @return Url
      */
-    public function getExtension()
+    public function getSourceLocation()
     {
-        return $this->extension;
+        return $this->sourceLocation;
     }
 
     /**
@@ -100,15 +103,17 @@ class MediaObjectCreated implements SerializableInterface
     public function serialize()
     {
         return array(
-            'file_id' => $this->getFileId()->toNative(),
+            'file_id' => $this->getMediaObjectId()->toNative(),
             'mime_type' => $this->getMimeType()->toNative(),
             'description' => $this->getDescription()->toNative(),
             'copyright_holder' => $this->getCopyrightHolder()->toNative(),
-            'extension' => $this->getExtension()->toNative()
+            'source_location' => (string) $this->getSourceLocation()
         );
     }
 
     /**
+     * @param array $data
+     *
      * @return MediaObjectCreated The object instance
      */
     public static function deserialize(array $data)
@@ -118,7 +123,7 @@ class MediaObjectCreated implements SerializableInterface
             new MIMEType($data['mime_type']),
             new String($data['description']),
             new String($data['copyright_holder']),
-            new String($data['extension'])
+            Url::fromNative($data['source_location'])
         );
     }
 }

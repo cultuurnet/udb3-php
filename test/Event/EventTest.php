@@ -17,10 +17,15 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
+use Guzzle\Tests\Http\DuplicateAggregatorTest;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class EventTest extends AggregateRootScenarioTestCase
 {
@@ -567,6 +572,26 @@ class EventTest extends AggregateRootScenarioTestCase
             array(),
             $event->getTranslations()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_add_duplicate_images()
+    {
+        $image = MediaObject::create(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $expectedMediaObjects = [$image];
+
+        $this->event->addImage($image);
+        $this->event->addImage($image);
+
+        $this->assertEquals($expectedMediaObjects, $this->event->getMediaObjects());
     }
 
     /**

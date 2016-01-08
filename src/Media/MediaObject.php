@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Media;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\JsonLdSerializableInterface;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
@@ -14,9 +13,8 @@ use ValueObjects\Web\Url;
 /**
  * MediaObjects for UDB3.
  */
-class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializableInterface
+class MediaObject extends EventSourcedAggregateRoot implements SerializableInterface
 {
-
     /**
      * Mime type of the media object.
      *
@@ -25,28 +23,14 @@ class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializabl
     protected $mimeType;
 
     /**
-     * File id.
+     * The id of the media object.
      *
      * @var UUID
      */
-    protected $fileId;
+    protected $mediaObjectId;
 
     /**
-     * Url to the media object.
-     *
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * Url to the thumbnail for the media object.
-     *
-     * @var string
-     */
-    protected $thumbnailUrl;
-
-    /**
-     * Description of the mediaobject.
+     * Description of the media object.
      *
      * @var string
      */
@@ -60,35 +44,35 @@ class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializabl
     protected $copyrightHolder;
 
     /**
-     * The extension of the media object file.
-     * @var string
+     * The URL where the source file can be found.
+     * @var Url
      */
-    protected $extension;
+    protected $sourceLocation;
 
     /**
-     * @param UUID $fileId
-     * @param MIMEType $fileType
-     * @param String $description
-     * @param String $copyrightHolder
-     * @param String $extension
+     * @param UUID $id
+     * @param MIMEType $mimeType
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
+     * @param Url $sourceLocation
      *
      * @return MediaObject
      */
     public static function create(
-        UUID $fileId,
-        MIMEType $fileType,
+        UUID $id,
+        MIMEType $mimeType,
         String $description,
         String $copyrightHolder,
-        String $extension
+        Url $sourceLocation
     ) {
         $mediaObject = new self();
         $mediaObject->apply(
             new MediaObjectCreated(
-                $fileId,
-                $fileType,
+                $id,
+                $mimeType,
                 $description,
                 $copyrightHolder,
-                $extension
+                $sourceLocation
             )
         );
 
@@ -100,32 +84,16 @@ class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializabl
      */
     public function getAggregateRootId()
     {
-        return $this->fileId;
+        return $this->mediaObjectId;
     }
 
     protected function applyMediaObjectCreated(MediaObjectCreated $mediaObjectCreated)
     {
-        $this->fileId = $mediaObjectCreated->getFileId();
+        $this->mediaObjectId = $mediaObjectCreated->getMediaObjectId();
         $this->mimeType = $mediaObjectCreated->getMimeType();
         $this->description = $mediaObjectCreated->getDescription();
         $this->copyrightHolder = $mediaObjectCreated->getCopyrightHolder();
-        $this->extension = $mediaObjectCreated->getExtension();
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * @return string
-     */
-    public function getThumbnailUrl()
-    {
-        return $this->thumbnailUrl;
+        $this->sourceLocation = $mediaObjectCreated->getSourceLocation();
     }
 
     /**
@@ -145,11 +113,11 @@ class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializabl
     }
 
     /**
-     * @return string
+     * @return UUID
      */
-    public function getFileId()
+    public function getMediaObjectId()
     {
-        return $this->fileId;
+        return $this->mediaObjectId;
     }
 
     /**
@@ -161,36 +129,49 @@ class MediaObject extends EventSourcedAggregateRoot implements JsonLdSerializabl
     }
 
     /**
-     * @return string
+     * @return Url
      */
-    public function getExtension()
+    public function getSourceLocation()
     {
-        return $this->extension;
+        return $this->sourceLocation;
     }
 
     /**
      * {@inheritdoc}
-     * TODO: This should probably be moved to a projector
      */
-    public function toJsonLd()
+    public static function deserialize(array $data)
     {
-        $jsonLd = [
-            // TODO: use an iri generator to generate a proper id
-            '@id' => (string) $this->getFileId(),
-            // TODO: base type off of MIME
-            '@type' => 'schema:MediaObject',
-            'contentUrl' => (string) $this->url,
-            'thumbnailUrl' => (string) $this->thumbnailUrl,
-            'description' => (string) $this->description,
-            'copyrightHolder' => (string) $this->copyrightHolder,
-        ];
-
-        return $jsonLd;
+        return new static(
+            new UUID($data['media_object_id']),
+            new MIMEType($data['mime_type']),
+            new String($data['description']),
+            new String($data['copyright_holder']),
+            Url::fromNative($data['source_location'])
+        );
     }
 
-    public function setUrl(Url $url)
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
-        $this->url = $url;
-        $this->thumbnailUrl = $url;
+        return [
+            'media_object_id' => (string) $this->getMediaObjectId(),
+            'mime_type' => $this->getMimeType(),
+            'description' => (string) $this->getDescription(),
+            'copyright_holder' => (string) $this->getCopyrightHolder(),
+            'source_location' => (string) $this->getSourceLocation()
+        ];
+    }
+
+    /**
+     * @param MediaObject $mediaObject
+     * @return bool
+     */
+    public function equalsTo(MediaObject $mediaObject)
+    {
+        return $this
+            ->getMediaObjectId()
+            ->sameValueAs($mediaObject->getMediaObjectId());
     }
 }

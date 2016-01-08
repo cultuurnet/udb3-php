@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Place;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use Broadway\Serializer\SerializerInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
@@ -13,6 +14,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
@@ -43,6 +45,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $iriGenerator;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * @inheritdoc
      */
     public function setUp()
@@ -55,10 +62,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             }
         );
 
+        $this->serializer = new MediaObjectSerializer($this->iriGenerator);
+
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->organizerService
+            $this->organizerService,
+            $this->serializer
         );
     }
 

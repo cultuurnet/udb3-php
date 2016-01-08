@@ -54,6 +54,11 @@ class Event extends EventSourcedAggregateRoot
      */
     protected $translations = [];
 
+    /**
+     * @var MediaObject[]
+     */
+    protected $mediaObjects = [];
+
     const MAIN_LANGUAGE_CODE = 'nl';
 
     public function __construct()
@@ -236,6 +241,14 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
+     * @return MediaObject[]
+     */
+    public function getMediaObjects()
+    {
+        return $this->mediaObjects;
+    }
+
+    /**
      * @param Label $label
      */
     public function label(Label $label)
@@ -391,10 +404,20 @@ class Event extends EventSourcedAggregateRoot
      * Add a new image.
      *
      * @param MediaObject $mediaObject
+     * @throws DuplicateMediaObjectException
      */
     public function addImage(MediaObject $mediaObject)
     {
-        $this->apply(new ImageAdded($this->eventId, $mediaObject));
+        $duplicateMediaObject = array_filter(
+            $this->getMediaObjects(),
+            function ($existingMediaObject) use ($mediaObject) {
+                return $mediaObject->equalsTo($existingMediaObject);
+            }
+        );
+
+        if (empty($duplicateMediaObject)) {
+            $this->apply(new ImageAdded($this->eventId, $mediaObject));
+        }
     }
 
     /**
@@ -536,5 +559,10 @@ class Event extends EventSourcedAggregateRoot
                 $cdbXmlNamespaceUri
             )
         );
+    }
+
+    protected function applyImageAdded(ImageAdded $imageAdded)
+    {
+        $this->mediaObjects[] = $imageAdded->getMediaObject();
     }
 }

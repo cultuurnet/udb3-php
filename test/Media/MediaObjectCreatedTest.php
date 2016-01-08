@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -46,14 +47,14 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
                     'mime_type' => 'image/png',
                     'description' => 'sexy ladies without clothes',
                     'copyright_holder' => 'Bart Ramakers',
-                    'extension' => 'png'
+                    'source_location' => 'http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png'
                 ],
                 new MediaObjectCreated(
                     new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
                     new MIMEType('image/png'),
                     new String('sexy ladies without clothes'),
                     new String('Bart Ramakers'),
-                    new String('png')
+                    Url::fromNative('http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png')
                 )
             ]
         ];

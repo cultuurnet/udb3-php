@@ -4,16 +4,23 @@ namespace CultuurNet\UDB3\SearchAPI2\Filters;
 
 use CultuurNet\Search\Parameter\FilterQuery;
 
-class UDB3Place implements SearchFilterInterface
+abstract class DoesNotHaveKeyword implements SearchFilterInterface
 {
     /**
      * @var FilterQuery
      */
     protected $filterQuery;
 
-    public function __construct()
+    public function __construct($keyword)
     {
-        $this->filterQuery = new FilterQuery('!keywords: "udb3 place"');
+        $keyword = (string) $keyword;
+
+        $this->filterQuery = new FilterQuery(
+            sprintf(
+                '!keywords: "%s"',
+                $keyword
+            )
+        );
     }
 
     /**

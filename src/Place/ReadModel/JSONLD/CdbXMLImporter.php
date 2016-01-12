@@ -29,24 +29,24 @@ class CdbXMLImporter
     /**
      * Imports a UDB2 organizer actor into a UDB3 JSON-LD document.
      *
-     * @param \stdClass $base
+     * @param \stdClass                   $base
      *   The JSON-LD document object to start from.
-     * @param \CultureFeed_Cdb_Item_Actor $actor
-     *   The actor data from UDB2 to import.
+     * @param \CultureFeed_Cdb_Item_Base $item
+     *   The event/actor data from UDB2 to import.
      *
      * @return \stdClass
      *   A new JSON-LD document object with the UDB2 actor data merged in.
      */
     public function documentWithCdbXML(
         $base,
-        \CultureFeed_Cdb_Item_Actor $actor
+        \CultureFeed_Cdb_Item_Base $item
     ) {
         $jsonLD = clone $base;
         
         $detail = null;
 
         /** @var \CultureFeed_Cdb_Data_ActorDetail[] $details */
-        $details = $actor->getDetails();
+        $details = $item->getDetails();
 
         foreach ($details as $languageDetail) {
             // The first language detail found will be used to retrieve
@@ -68,12 +68,12 @@ class CdbXMLImporter
 
         $jsonLD->name = $detail->getTitle();
 
-        $this->cdbXMLItemBaseImporter->importPublicationInfo($actor, $jsonLD);
-        $this->cdbXMLItemBaseImporter->importAvailable($actor, $jsonLD);
-        $this->cdbXMLItemBaseImporter->importExternalId($actor, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importPublicationInfo($item, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importAvailable($item, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importExternalId($item, $jsonLD);
 
         // Address
-        $contact_cdb = $actor->getContactInfo();
+        $contact_cdb = $item->getContactInfo();
         if ($contact_cdb) {
             $addresses = $contact_cdb->getAddresses();
 
@@ -121,7 +121,16 @@ class CdbXMLImporter
             $jsonLD->image = $image->getHLink();
         }
 
-        $this->importTerms($actor, $jsonLD);
+        $this->importTerms($item, $jsonLD);
+
+        return $jsonLD;
+    }
+
+    public function eventDocumentWithCdbXML(
+        $base,
+        \CultureFeed_Cdb_Item_Base $item
+    ) {
+        $jsonLD = $this->documentWithCdbXML($base, $item);
 
         return $jsonLD;
     }
@@ -130,7 +139,7 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Item_Actor $actor
      * @param \stdClass $jsonLD
      */
-    private function importTerms(\CultureFeed_Cdb_Item_Actor $actor, $jsonLD)
+    private function importTerms(\CultureFeed_Cdb_Item_Base $actor, $jsonLD)
     {
         $themeBlacklist = [];
         $categories = array();

@@ -1,0 +1,65 @@
+<cdb:event xmlns:cdb="http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL"
+           availablefrom="2015-09-02T15:58:35" availableto="2100-01-01T00:00:00" cdbid="764066ab-826f-48c2-897d-a329ebce953f" createdby="britt.van.nieuwenhuyze@oost-vlaanderen.be" creationdate="2015-09-02T15:58:35" externalid="CDB:764066ab-826f-48c2-897d-a329ebce953f" isparent="false" lastupdated="2015-09-02T16:00:08" lastupdatedby="britt.van.nieuwenhuyze@oost-vlaanderen.be" pctcomplete="55" published="true" publisher="05adc17187c3fb34857375c73cce9add" owner="Invoerders Algemeen " private="false" validator="UiTdatabank Validatoren" weight="1" relevancy="3.9497814178466797" wfstatus="readyforvalidation">
+    <cdb:activities>
+        <cdb:activity count="0" type="like"/>
+        <cdb:activity count="0" type="attend"/>
+        <cdb:activity count="0" type="comment"/>
+        <cdb:activity count="0" type="recommend"/>
+        <cdb:activity count="0" type="facebook_share"/>
+        <cdb:activity count="0" type="review"/>
+    </cdb:activities>
+    <cdb:calendar>
+        <cdb:permanentopeningtimes>
+            <cdb:permanent/>
+        </cdb:permanentopeningtimes>
+    </cdb:calendar>
+    <cdb:categories>
+        <cdb:category catid="reg.365" type="flanderstouristregion">Vlaamse Ardennen</cdb:category>
+        <cdb:category catid="reg.1428" type="flandersregion">9620 Velzeke-Ruddershove (Zottegem)</cdb:category>
+        <cdb:category catid="GnPFp9uvOUyqhOckIFMKmg" type="eventtype">Museum of galerij</cdb:category>
+    </cdb:categories>
+    <cdb:comments/>
+    <cdb:contactinfo>
+        <cdb:address>
+            <cdb:physical>
+                <cdb:city>Velzeke-Ruddershove</cdb:city>
+                <cdb:country>BE</cdb:country>
+                <cdb:gis>
+                    <cdb:xcoordinate>3.780328</cdb:xcoordinate>
+                    <cdb:ycoordinate>50.884007</cdb:ycoordinate>
+                </cdb:gis>
+                <cdb:housenr>2</cdb:housenr>
+                <cdb:street>Doolbosweg</cdb:street>
+                <cdb:zipcode>9620</cdb:zipcode>
+            </cdb:physical>
+        </cdb:address>
+    </cdb:contactinfo>
+    <cdb:eventdetails>
+        <cdb:eventdetail lang="nl">
+            <cdb:calendarsummary/>
+            <cdb:longdescription>
+                Het wordt heet in Velzeke waar vuur, glas en ovens centraal staan. Op zaterdag draait de unieke houtgestookte Romeinse glasoven op volle temperatuur. Kom kijken naar de niet te missen demonstraties van een schare internationale glasblazers die hun kunnen demonstreren. Wanneer we op zondag alle ovens aansteken, wordt het een vurige bedoening en gaan we koken, stoken, roken, bakken en roosteren. Bezoek de Romeinse kampen en geniet van een heus spektakel bij de militaire shows en gladiatorengevechten. Ook zijn er opnieuw demonstraties glasblazen. Op beide dagen kan je in het museum terecht om een gratis rondleiding mee te pikken. Neem replica's van onze collectie in handen en laat je terugvoeren in de tijd! Onze gidsen hijsen je in de uitrusting van een Romeinse soldaat, of paradeer je liever rond als een elegante Romeinse dame? Alle activiteiten zijn gratis en toegankelijk voor het hele gezin.<p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/vuur-vakmanschap-en/764066ab-826f-48c2-897d-a329ebce953f">UiTinVlaanderen.be</a></p>
+            </cdb:longdescription>
+            <cdb:title>Vuur, vakmanschap en</cdb:title>
+        </cdb:eventdetail>
+    </cdb:eventdetails>
+    <cdb:keywords>
+        <cdb:keyword>UDB3 place</cdb:keyword>
+    </cdb:keywords>
+    <cdb:location>
+        <cdb:address>
+            <cdb:physical>
+                <cdb:city>Velzeke-Ruddershove</cdb:city>
+                <cdb:country>BE</cdb:country>
+                <cdb:gis>
+                    <cdb:xcoordinate>3.780328</cdb:xcoordinate>
+                    <cdb:ycoordinate>50.884007</cdb:ycoordinate>
+                </cdb:gis>
+                <cdb:housenr>2</cdb:housenr>
+                <cdb:street>Doolbosweg</cdb:street>
+                <cdb:zipcode>9620</cdb:zipcode>
+            </cdb:physical>
+        </cdb:address>
+        <cdb:label>Vuur, vakmanschap en</cdb:label>
+    </cdb:location>
+</cdb:event>

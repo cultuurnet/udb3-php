@@ -45,11 +45,10 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->eventIriGenerator
-            ->expects($this->exactly(6))
+            ->expects($this->exactly(5))
             ->method('iri')
             ->withConsecutive(
                 ['590174eb-5577-4b49-8bc2-4b619a948c56'],
-                ['d9725327-cbec-4bb8-bc56-9f3f7761b716'],
                 ['70d24706-6e23-406c-9b54-445f5249ae6b'],
                 ['2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'],
                 ['409cca2b-d5bb-4f53-9312-de22bdbbcbb2'],
@@ -62,10 +61,11 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->placeIriGenerator
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('iri')
             ->withConsecutive(
                 ['9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'],
+                ['d9725327-cbec-4bb8-bc56-9f3f7761b716'],
                 ['ee08000a-ccfa-4675-93ef-a0dc02ae1be4']
             )
             ->willReturnCallback(
@@ -87,8 +87,8 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
                     '@type' => 'Place',
                 ],
                 [
-                    '@id' => 'event/d9725327-cbec-4bb8-bc56-9f3f7761b716',
-                    '@type' => 'Event',
+                    '@id' => 'place/d9725327-cbec-4bb8-bc56-9f3f7761b716',
+                    '@type' => 'Place',
                 ],
                 [
                     '@id' => 'event/70d24706-6e23-406c-9b54-445f5249ae6b',

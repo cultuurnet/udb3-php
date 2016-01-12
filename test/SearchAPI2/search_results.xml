@@ -248,6 +248,10 @@
         <cdb:languages>
             <cdb:language type="spoken">Frans</cdb:language>
         </cdb:languages>
+        <cdb:keywords>
+            <cdb:keyword>UDB3 place</cdb:keyword>
+            <cdb:keyword>some other keyword that might reset the UDB3 place state</cdb:keyword>
+        </cdb:keywords>
         <cdb:location>
             <cdb:address>
                 <cdb:physical>

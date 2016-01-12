@@ -71,7 +71,7 @@ class ResultSetPullParser
                 $currentEventCdbId = $r->getAttribute('cdbid');
             }
 
-            if ($r->nodeType == $r::ELEMENT && $r->localName == 'keyword') {
+            if ($r->nodeType == $r::ELEMENT && $r->localName == 'keyword' && !$currentEventIsUdb3Place) {
                 $keyword = $r->readString();
                 $currentEventIsUdb3Place = strcasecmp('udb3 place', $keyword) == 0;
             }

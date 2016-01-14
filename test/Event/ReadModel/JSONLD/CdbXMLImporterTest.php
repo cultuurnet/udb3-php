@@ -4,6 +4,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -32,13 +33,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->importer = new CdbXMLImporter();
+        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter());
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
         $this->slugger = $this->getMock(SluggerInterface::class);
         date_default_timezone_set('Europe/Brussels');
     }
 
+    /**
+     * @param string $fileName
+     * @return \stdClass
+     */
     private function createJsonEventFromCdbXml($fileName)
     {
         $cdbXml = file_get_contents(

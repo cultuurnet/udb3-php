@@ -5,23 +5,22 @@
  * Contains \Cultuurnet\UDB3\Place\PlaceLDProjector.
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
@@ -35,8 +34,10 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
@@ -61,7 +62,7 @@ class PlaceLDProjector implements EventListenerInterface
     protected $iriGenerator;
 
     /**
-     * @var OrganizerService
+     * @var EntityServiceInterface
      */
     protected $organizerService;
 
@@ -78,7 +79,7 @@ class PlaceLDProjector implements EventListenerInterface
     /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
-     * @param OrganizerServiceInterface $organiserService
+     * @param EntityServiceInterface $organizerService
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -89,11 +90,13 @@ class PlaceLDProjector implements EventListenerInterface
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->slugger = new CulturefeedSlugger();
-        $this->cdbXMLImporter = new CdbXMLImporter();
+        $this->cdbXMLImporter = new CdbXMLImporter(
+            new CdbXMLItemBaseImporter()
+        );
     }
 
     /**
-     * @param ActorImportedFromUDB2 $actorImportedFromUDB2
+     * @param PlaceImportedFromUDB2 $actorImportedFromUDB2
      */
     protected function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $actorImportedFromUDB2
@@ -112,6 +115,29 @@ class PlaceLDProjector implements EventListenerInterface
         );
 
         $this->repository->save($document->withBody($actorLd));
+    }
+
+
+    /**
+     * @param PlaceImportedFromUDB2Event $eventImportedFromUDB2
+     */
+    protected function applyPlaceImportedFromUDB2Event(
+        PlaceImportedFromUDB2Event $eventImportedFromUDB2
+    ) {
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $eventImportedFromUDB2->getCdbXml()
+        );
+
+        $document = $this->newDocument($eventImportedFromUDB2->getActorId());
+        $eventLD = $document->getBody();
+
+        $eventLD = $this->cdbXMLImporter->eventDocumentWithCdbXML(
+            $eventLD,
+            $udb2Event
+        );
+
+        $this->repository->save($document->withBody($eventLD));
     }
 
     /**
@@ -133,6 +159,7 @@ class PlaceLDProjector implements EventListenerInterface
 
     /**
      * @param PlaceCreated $placeCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
@@ -166,9 +193,13 @@ class PlaceLDProjector implements EventListenerInterface
             $recordedOn
         )->format('c');
 
+        $jsonLD->modified = $jsonLD->created;
+
         $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
-            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        if (isset($metaData['user_email'])) {
+            $jsonLD->creator = $metaData['user_email'];
+        } elseif (isset($metaData['user_nick'])) {
+            $jsonLD->creator = $metaData['user_nick'];
         }
 
         $this->repository->save($document->withBody($jsonLD));
@@ -184,6 +215,7 @@ class PlaceLDProjector implements EventListenerInterface
 
     /**
      * Apply the major info updated command to the projector.
+     * @param MajorInfoUpdated $majorInfoUpdated
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
@@ -433,6 +465,8 @@ class PlaceLDProjector implements EventListenerInterface
 
     /**
      * Get the organizer jsonLD.
+     * @param string $organizerId
+     * @return array
      */
     protected function organizerJSONLD($organizerId)
     {

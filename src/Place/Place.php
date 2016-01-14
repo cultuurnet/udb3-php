@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\Place;
 
-use CultuurNet\UDB3\Actor\Actor;
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
@@ -28,6 +28,7 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
@@ -36,8 +37,22 @@ use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
 
-class Place extends Actor implements UpdateableWithCdbXmlInterface
+class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
+    /**
+     * The actor id.
+     *
+     * @var string
+     */
+    protected $actorId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAggregateRootId()
+    {
+        return $this->actorId;
+    }
 
     /**
      * Factory method to create a new Place.
@@ -208,7 +223,7 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
      * @return Actor
      *   The actor.
      */
-    public static function importFromUDB2(
+    public static function importFromUDB2Actor(
         $actorId,
         $cdbXml,
         $cdbXmlNamespaceUri
@@ -225,10 +240,46 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
+    /**
+     * Import from UDB2.
+     *
+     * @param string $placeId
+     *   The actor id.
+     * @param string $cdbXml
+     *   The cdb xml.
+     * @param string $cdbXmlNamespaceUri
+     *   The cdb xml namespace uri.
+     *
+     * @return Actor
+     *   The actor.
+     */
+    public static function importFromUDB2Event(
+        $placeId,
+        $cdbXml,
+        $cdbXmlNamespaceUri
+    ) {
+        $place = new static();
+        $place->apply(
+            new PlaceImportedFromUDB2Event(
+                $placeId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
+
+        return $place;
+    }
+
     public function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImported
     ) {
-        $this->applyActorImportedFromUDB2($placeImported);
+        $this->actorId = $placeImported->getActorId();
+    }
+
+    public function applyPlaceImportedFromUDB2Event(
+        PlaceImportedFromUDB2Event $placeImported
+    ) {
+        $this->actorId = $placeImported->getActorId();
     }
 
     /**

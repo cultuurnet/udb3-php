@@ -59,7 +59,7 @@ class MajorInfoUpdated extends EventEvent
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null
     ) {
         parent::__construct($eventId);
 
@@ -87,7 +87,7 @@ class MajorInfoUpdated extends EventEvent
     }
 
     /**
-     * @return Theme
+     * @return Theme|null
      */
     public function getTheme()
     {

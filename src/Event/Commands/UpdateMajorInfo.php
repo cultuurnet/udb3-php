@@ -56,7 +56,7 @@ class UpdateMajorInfo
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
-     * @param null $theme
+     * @param Theme|null $theme
      */
     public function __construct(
         $eventId,
@@ -64,7 +64,7 @@ class UpdateMajorInfo
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null
     ) {
         $this->id = $eventId;
         $this->title = $title;
@@ -99,7 +99,7 @@ class UpdateMajorInfo
     }
 
     /**
-     * @return Theme | null
+     * @return Theme|null
      */
     public function getTheme()
     {

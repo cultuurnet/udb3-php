@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 
 class UpdateContactPointTest extends \PHPUnit_Framework_TestCase
 {

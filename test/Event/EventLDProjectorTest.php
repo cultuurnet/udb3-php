@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
@@ -524,7 +525,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     public function it_adds_a_media_object_when_an_image_is_added_to_the_event()
     {
         $eventId = 'event-1';
-        $mediaObject = MediaObject::create(
+        $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
             new String('sexy ladies without clothes'),
@@ -542,7 +543,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
-        $imageAddedEvent = new ImageAdded($eventId, $mediaObject);
+        $imageAddedEvent = new ImageAdded($eventId, $image);
         $eventBody = $this->project($imageAddedEvent, $eventId);
 
         $this->assertEquals(

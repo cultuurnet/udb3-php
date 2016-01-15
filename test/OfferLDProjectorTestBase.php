@@ -12,6 +12,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -222,9 +223,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $location);
+        $image = new Image($imageId, $type, $description, $copyrightHolder, $location);
         $eventClass = $this->getEventClass('ImageAdded');
-        $imageAdded = new $eventClass($id, $mediaObject);
+        $imageAdded = new $eventClass($id, $image);
 
         $initialDocument = new JsonDocument($id);
         $this->documentRepository->save($initialDocument);

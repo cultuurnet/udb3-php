@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Image;
 
 /**
  * Provides a command to add an image to the event.
@@ -19,11 +19,11 @@ class AddImage
 
     /**
      * @param string $id
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function __construct($id, MediaObject $mediaObject)
+    public function __construct($id, Image $image)
     {
         $this->id = $id;
-        $this->mediaObject = $mediaObject;
+        $this->image = $image;
     }
 }

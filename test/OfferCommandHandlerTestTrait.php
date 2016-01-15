@@ -7,8 +7,13 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ReflectionObject;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 /**
  * Provides a trait to test commands that are applicable for all UDB3 offer types
@@ -109,7 +114,13 @@ trait OfferCommandHandlerTestTrait
     public function it_can_add_an_image_to_an_offer()
     {
         $id = '1';
-        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $image = new Image(
+            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            String::fromNative('Some description.'),
+            String::fromNative('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
         $commandClass = $this->getCommandClass('AddImage');
         $eventClass = $this->getEventClass('ImageAdded');
 
@@ -119,9 +130,9 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $mediaObject)
+                new $commandClass($id, $image)
             )
-            ->then([new $eventClass($id, $mediaObject)]);
+            ->then([new $eventClass($id, $image)]);
     }
 
     /**

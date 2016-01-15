@@ -14,6 +14,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
@@ -144,11 +145,11 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
     /**
      * Add a new image.
      *
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function addImage(MediaObject $mediaObject)
+    public function addImage(Image $image)
     {
-        $this->apply(new ImageAdded($this->actorId, $mediaObject));
+        $this->apply(new ImageAdded($this->actorId, $image));
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
@@ -10,6 +11,7 @@ use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class MediaManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -124,5 +126,64 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->mediaManager->handleUploadImage($command);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_retrieve_an_image_by_id()
+    {
+        $id = 'de305d54-75b4-431b-adb2-eb6b9e546014';
+        $fileType = new MIMEType('image/png');
+        $description = new String('sexy ladies without clothes');
+        $copyrightHolder = new String('Bart Ramakers');
+        $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
+
+        $mediaObject = MediaObject::create(
+            new UUID($id),
+            $fileType,
+            $description,
+            $copyrightHolder,
+            $location
+        );
+
+        $this->repository
+            ->expects($this->once())
+            ->method('load')
+            ->with($id)
+            ->willReturn($mediaObject);
+
+        $image = $this->mediaManager->getImage(new UUID($id));
+
+        $expectedImage = new Image(
+            new UUID($id),
+            $fileType,
+            $description,
+            $copyrightHolder,
+            $location
+        );
+
+        $this->assertEquals($expectedImage, $image);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_an_exception_when_a_media_object_is_not_found()
+    {
+        $id = 'de305d54-75b4-431b-adb2-eb6b9e546014';
+
+        $this->repository
+            ->expects($this->once())
+            ->method('load')
+            ->with($id)
+            ->willThrowException(new AggregateNotFoundException());
+
+        $this->setExpectedException(
+            MediaObjectNotFoundException::class,
+            "Media object with id '" . $id . "' not found"
+        );
+
+        $this->mediaManager->get(new UUID($id));
     }
 }

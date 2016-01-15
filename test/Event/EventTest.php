@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
@@ -579,14 +580,14 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_should_not_add_duplicate_images()
     {
-        $image = MediaObject::create(
+        $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
             new String('sexy ladies without clothes'),
             new String('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
-        $expectedMediaObjects = [$image];
+        $expectedMediaObjects = [new UUID('de305d54-75b4-431b-adb2-eb6b9e546014')];
 
         $this->event->addImage($image);
         $this->event->addImage($image);

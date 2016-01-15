@@ -35,10 +35,14 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -55,7 +59,7 @@ class Event extends EventSourcedAggregateRoot
     protected $translations = [];
 
     /**
-     * @var MediaObject[]
+     * @var UUID[]
      */
     protected $mediaObjects = [];
 
@@ -241,7 +245,7 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return MediaObject[]
+     * @return UUID[]
      */
     public function getMediaObjects()
     {
@@ -403,20 +407,22 @@ class Event extends EventSourcedAggregateRoot
     /**
      * Add a new image.
      *
-     * @param MediaObject $mediaObject
+     * @param Image $image
      * @throws DuplicateMediaObjectException
      */
-    public function addImage(MediaObject $mediaObject)
+    public function addImage(Image $image)
     {
         $duplicateMediaObject = array_filter(
             $this->getMediaObjects(),
-            function ($existingMediaObject) use ($mediaObject) {
-                return $mediaObject->equalsTo($existingMediaObject);
+            function ($existingMediaObjectId) use ($image) {
+                return $image
+                    ->getMediaObjectId()
+                    ->sameValueAs($existingMediaObjectId);
             }
         );
 
         if (empty($duplicateMediaObject)) {
-            $this->apply(new ImageAdded($this->eventId, $mediaObject));
+            $this->apply(new ImageAdded($this->eventId, $image));
         }
     }
 
@@ -563,6 +569,6 @@ class Event extends EventSourcedAggregateRoot
 
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
-        $this->mediaObjects[] = $imageAdded->getMediaObject();
+        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
     }
 }

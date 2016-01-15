@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Place\PlaceEvent;
 
 /**
@@ -18,13 +18,13 @@ class ImageAdded extends PlaceEvent
     use \CultuurNet\UDB3\ImageAddedTrait;
 
     /**
-     * @param string $id
-     * @param MediaObject $mediaObject
+     * @param string $placeId
+     * @param Image $image
      */
-    public function __construct($id, $mediaObject)
+    public function __construct($placeId, Image $image)
     {
-        parent::__construct($id);
-        $this->mediaObject = $mediaObject;
+        parent::__construct($placeId);
+        $this->image = $image;
     }
 
     /**
@@ -32,6 +32,6 @@ class ImageAdded extends PlaceEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['place_id'], MediaObject::deserialize($data['media_object']));
+        return new static($data['place_id'], Image::deserialize($data['image']));
     }
 }

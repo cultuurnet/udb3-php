@@ -34,7 +34,7 @@ class MediaObjectSerializer implements SerializerInterface
         };
 
         $normalizedData = [
-            '@id' => (string) $this->generateId($mediaObject),
+            '@id' => $this->iriGenerator->iri($mediaObject->getMediaObjectId()),
             '@type' => $this->serializeMimeType($mediaObject->getMimeType()),
             'contentUrl' => (string) $mediaObject->getSourceLocation(),
             'thumbnailUrl' => (string) $mediaObject->getSourceLocation(),
@@ -45,20 +45,13 @@ class MediaObjectSerializer implements SerializerInterface
         return $normalizedData;
     }
 
-    private function generateId(MediaObject $mediaObject)
-    {
-        $id = (string) $mediaObject->getMediaObjectId();
-
-        return Url::fromNative($this->iriGenerator->iri($id));
-    }
-
     public function serializeMimeType(MIMEType $mimeType)
     {
         $typeParts = explode('/', (string) $mimeType);
         $type = array_shift($typeParts);
 
         if ($type !== 'image') {
-            throw new UnsupportedException('Unsupported MIME-type, only images are allowed');
+            throw new UnsupportedException('Unsupported MIME-type, only images are allowed.');
         }
 
         return 'schema:ImageObject';
@@ -66,6 +59,6 @@ class MediaObjectSerializer implements SerializerInterface
 
     public function deserialize($data, $type, $format, array $context = array())
     {
-        throw new \Exception('deserialization currently not supported');
+        throw new \Exception('Deserialization currently not supported.');
     }
 }

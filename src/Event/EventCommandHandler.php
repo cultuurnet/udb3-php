@@ -308,7 +308,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         $event = $this->eventRepository->load($addImage->getId());
 
         $event->addImage(
-            $addImage->getMediaObject()
+            $addImage->getImage()
         );
 
         $this->eventRepository->save($event);

@@ -738,10 +738,8 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $eventLd = $document->getBody();
         $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
 
-        $imageData = $this->mediaObjectSerializer->serialize(
-            $imageAdded->getMediaObject(),
-            'json-ld'
-        );
+        $imageData = $this->mediaObjectSerializer
+            ->serialize($imageAdded->getImage(), 'json-ld');
         $eventLd->mediaObject[] = $imageData;
 
         $this->repository->save($document->withBody($eventLd));

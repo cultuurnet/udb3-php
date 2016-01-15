@@ -384,7 +384,7 @@ class PlaceLDProjector implements EventListenerInterface
         $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
 
         $imageData = $this->mediaObjectSerializer->serialize(
-            $imageAdded->getMediaObject(),
+            $imageAdded->getImage(),
             'json-ld'
         );
         $placeLd->mediaObject[] = $imageData;

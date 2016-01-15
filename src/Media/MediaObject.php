@@ -13,7 +13,7 @@ use ValueObjects\Web\Url;
 /**
  * MediaObjects for UDB3.
  */
-class MediaObject extends EventSourcedAggregateRoot implements SerializableInterface
+class MediaObject extends EventSourcedAggregateRoot
 {
     /**
      * Mime type of the media object.
@@ -134,44 +134,5 @@ class MediaObject extends EventSourcedAggregateRoot implements SerializableInter
     public function getSourceLocation()
     {
         return $this->sourceLocation;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
-    {
-        return new static(
-            new UUID($data['media_object_id']),
-            new MIMEType($data['mime_type']),
-            new String($data['description']),
-            new String($data['copyright_holder']),
-            Url::fromNative($data['source_location'])
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
-    {
-        return [
-            'media_object_id' => (string) $this->getMediaObjectId(),
-            'mime_type' => $this->getMimeType(),
-            'description' => (string) $this->getDescription(),
-            'copyright_holder' => (string) $this->getCopyrightHolder(),
-            'source_location' => (string) $this->getSourceLocation()
-        ];
-    }
-
-    /**
-     * @param MediaObject $mediaObject
-     * @return bool
-     */
-    public function equalsTo(MediaObject $mediaObject)
-    {
-        return $this
-            ->getMediaObjectId()
-            ->sameValueAs($mediaObject->getMediaObjectId());
     }
 }

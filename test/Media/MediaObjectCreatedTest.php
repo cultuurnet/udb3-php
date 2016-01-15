@@ -43,7 +43,7 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
         return [
             'creationEvent' => [
                 [
-                    'file_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+                    'media_object_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
                     'mime_type' => 'image/png',
                     'description' => 'sexy ladies without clothes',
                     'copyright_holder' => 'Bart Ramakers',

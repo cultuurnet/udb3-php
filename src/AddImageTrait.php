@@ -7,6 +7,8 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\Image;
+
 /**
  * Provides a trait for adding image commands.
  */
@@ -20,10 +22,10 @@ trait AddImageTrait
     protected $id;
 
     /**
-     * The mediaObject
-     * @var MediaObject
+     * The image
+     * @var Image
      */
-    protected $mediaObject;
+    protected $image;
 
     /**
      * @return string
@@ -34,10 +36,10 @@ trait AddImageTrait
     }
 
     /**
-     * @return MediaObject
+     * @return Image
      */
-    function getMediaObject()
+    function getImage()
     {
-        return $this->mediaObject;
+        return $this->image;
     }
 }

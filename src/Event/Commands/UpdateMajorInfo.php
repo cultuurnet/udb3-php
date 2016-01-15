@@ -50,13 +50,22 @@ class UpdateMajorInfo
     private $calendar;
 
     /**
-     * @param string $eventId
+     * UpdateMajorInfo constructor.
+     * @param $eventId
      * @param Title $title
-     * @param string $location
+     * @param EventType $eventType
+     * @param Location $location
      * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         $this->id = $eventId;
         $this->title = $title;
         $this->eventType = $eventType;
@@ -90,7 +99,7 @@ class UpdateMajorInfo
     }
 
     /**
-     * @return Theme | null
+     * @return Theme|null
      */
     public function getTheme()
     {

@@ -6,6 +6,7 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
@@ -22,6 +23,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -34,6 +36,7 @@ use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
@@ -57,6 +60,12 @@ class Event extends EventSourcedAggregateRoot
      * @var Translation[]
      */
     protected $translations = [];
+
+    /**
+     * @var CollaborationDataCollection[]
+     *   Array of different collections, keyed by language.
+     */
+    protected $collaborationData;
 
     /**
      * @var UUID[]
@@ -218,6 +227,45 @@ class Event extends EventSourcedAggregateRoot
                 $language
             )
         );
+    }
+
+    /**
+     * @param Language $language
+     * @param CollaborationData $collaborationData
+     * @return bool
+     */
+    protected function isSameCollaborationDataAlreadyPresent(
+        Language $language,
+        CollaborationData $collaborationData
+    ) {
+        if (!isset($this->collaborationData[$language->getCode()])) {
+            return false;
+        }
+
+        $languageCollaborationData = $this->collaborationData[$language->getCode()];
+
+        return $languageCollaborationData->contains($collaborationData);
+    }
+
+    /**
+     * @param Language $language
+     * @param \CultuurNet\UDB3\CollaborationData $collaborationData
+     */
+    public function addCollaborationData(
+        Language $language,
+        CollaborationData $collaborationData
+    ) {
+        if ($this->isSameCollaborationDataAlreadyPresent($language, $collaborationData)) {
+            return;
+        }
+
+        $collaborationDataAdded = new CollaborationDataAdded(
+            new String($this->eventId),
+            $language,
+            $collaborationData
+        );
+
+        $this->apply($collaborationDataAdded);
     }
 
     /**
@@ -554,6 +602,27 @@ class Event extends EventSourcedAggregateRoot
         if (array_key_exists($language, $this->translations)) {
             unset($this->translations[$language]);
         }
+    }
+
+    protected function applyCollaborationDataAdded(
+        CollaborationDataAdded $collaborationDataAdded
+    ) {
+        $language = $collaborationDataAdded->getLanguage()->getCode();
+        $collaborationData = $collaborationDataAdded->getCollaborationData();
+
+        if (!isset($this->collaborationData[$language])) {
+            $this->collaborationData[$language] = new CollaborationDataCollection();
+        }
+
+        if ($this->collaborationData[$language]->contains($collaborationData)) {
+            return;
+        }
+
+        $this->collaborationData[$language] = $this->collaborationData[$language]
+            ->withKey(
+                $collaborationData->getSubBrand()->toNative(),
+                $collaborationData
+            );
     }
 
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)

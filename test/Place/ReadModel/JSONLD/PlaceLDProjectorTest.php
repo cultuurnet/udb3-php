@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
@@ -21,6 +21,8 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\ReadModel\JSONLD\PlaceLDProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -48,6 +50,18 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      * @var SerializerInterface
      */
     private $serializer;
+
+    /**
+     * Constructs a test case with the given name.
+     *
+     * @param string $name
+     * @param array  $data
+     * @param string $dataName
+     */
+    public function __construct($name = null, array $data = array(), $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName, 'CultuurNet\\UDB3\\Place');
+    }
 
     /**
      * @inheritdoc
@@ -125,6 +139,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
         $jsonLD->created = $created;
+        $jsonLD->modified = $created;
 
         $body = $this->project(
             $placeCreated,
@@ -180,6 +195,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
         $jsonLD->created = $created;
+        $jsonLD->modified = $created;
 
         $body = $this->project(
             $placeCreated,
@@ -229,6 +245,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
         $jsonLD->created = $created;
+        $jsonLD->modified = $created;
         $jsonLD->creator = '1 (Tester)';
 
         $metadata = new Metadata(
@@ -270,6 +287,27 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
             $body->image
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_place_events_from_udb2()
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/event.xml'
+        );
+        $event = new PlaceImportedFromUDB2Event(
+            '764066ab-826f-48c2-897d-a329ebce953f',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+        );
+
+        $body = $this->project($event, $event->getActorId());
+
+        $this->assertEquals('Invoerders Algemeen ', $body->publisher);
+        $this->assertEquals('Vuur, vakmanschap en', $body->name);
+        $this->assertContains('764066ab-826f-48c2-897d-a329ebce953f', $body->{'@id'});
     }
 
     /**

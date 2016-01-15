@@ -43,6 +43,7 @@ use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
@@ -130,7 +131,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->mediaObjectSerializer = $mediaObjectSerializer;
 
         $this->slugger = new CulturefeedSlugger();
-        $this->cdbXMLImporter = new CdbXMLImporter();
+        $this->cdbXMLImporter = new CdbXMLImporter(new CdbXMLItemBaseImporter());
     }
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)

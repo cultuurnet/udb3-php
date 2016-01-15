@@ -7,13 +7,12 @@
 
 namespace CultuurNet\UDB3;
 
-use CultuurNet\UDB3\Timestamp;
-use CultuurNet\UDB3\CalendarInterface;
+use Broadway\Serializer\SerializableInterface;
 
 /**
  * a Calendar for events and places.
  */
-class Calendar implements CalendarInterface, JsonLdSerializableInterface
+class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
 
     /**
@@ -67,8 +66,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get current calendar type.
-     * @return string
+     * @inheritdoc
      */
     public function getType()
     {
@@ -100,7 +98,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get the start date
+     * @inheritdoc
      */
     public function getStartDate()
     {
@@ -116,7 +114,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get the opening hours
+     * @inheritdoc
      */
     public function getOpeningHours()
     {
@@ -124,8 +122,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get the Timestamps
-     * @return type
+     * @inheritdoc
      */
     public function getTimestamps()
     {
@@ -137,7 +134,6 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
      */
     public function toJsonLd()
     {
-
         $jsonLd = [];
 
         $startDate = $this->getStartDate();
@@ -188,6 +184,5 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
         }
 
         return $jsonLd;
-
     }
 }

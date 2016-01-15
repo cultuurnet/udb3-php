@@ -83,6 +83,18 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $serializer;
 
     /**
+     * Constructs a test case with the given name.
+     *
+     * @param string $name
+     * @param array  $data
+     * @param string $dataName
+     */
+    public function __construct($name = null, array $data = array(), $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName, 'CultuurNet\\UDB3\\Event');
+    }
+
+    /**
      * @inheritdoc
      */
     protected function setUp()

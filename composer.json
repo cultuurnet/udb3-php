@@ -13,6 +13,7 @@
     }
   ],
   "require": {
+    "2dotstwice/collection": "~1.1",
     "cultuurnet/calendar-summary": "~1.0.2",
     "gridonic/princexml-php": "~1.1.1",
     "rase/socket.io-emitter": "0.6.1",
@@ -21,7 +22,7 @@
     "cultuurnet/auth": "~1.2",
     "cultuurnet/search": "~1.1",
     "cultuurnet/entry": "~0.1",
-    "cultuurnet/cdb": "~2.1",
+    "cultuurnet/cdb": "~2.1.2",
     "cultuurnet/deserializer": "~0.1",
     "cultuurnet/clock": "~0.1",
     "broadway/broadway": "~0.5.2",

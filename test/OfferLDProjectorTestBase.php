@@ -37,9 +37,21 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     protected $projector;
 
     /**
+     * @var string
+     */
+    protected $eventNamespace;
+
+    /**
      * @var OrganizerService|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $organizerService;
+
+    public function __construct($name, array $data, $dataName, $eventNamespace)
+    {
+        parent::__construct($name, $data, $dataName);
+
+        $this->eventNamespace = $eventNamespace;
+    }
 
     /**
      * Get the namespaced classname of the event to create.
@@ -49,8 +61,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
      */
     private function getEventClass($className)
     {
-        $reflection = new \ReflectionObject($this);
-        return $reflection->getNamespaceName() . '\\Events\\' . $className;
+        return $this->eventNamespace . '\\Events\\' . $className;
     }
 
     /**

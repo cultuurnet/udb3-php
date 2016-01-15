@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Place;
 
-use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteImage;
+use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteTypicalAgeRange;
@@ -17,29 +18,34 @@ use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Place\Place;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
 /**
  * Commandhandler for places.
  */
-class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
+class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
     /**
-     * @var RepositoryInterface
+     * Handle the add label command.
+     *
+     * @param AddLabel $addLabel
      */
-    protected $placeRepository;
+    public function handleAddLabel(AddLabel $addLabel)
+    {
+        $this->handleAbstractAddLabel($addLabel);
+    }
 
     /**
-     * @param RepositoryInterface $placeRepository
+     * Handle the delete label command.
+     *
+     * @param DeleteLabel $deleteLabel
      */
-    public function __construct(
-        RepositoryInterface $placeRepository
-    ) {
-        $this->placeRepository = $placeRepository;
+    public function handleDeleteLabel(DeleteLabel $deleteLabel)
+    {
+        $this->handleAbstractDeleteLabel($deleteLabel);
     }
 
     /**
@@ -49,13 +55,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateDescription->getId());
+        $place = $this->repository->load($updateDescription->getId());
 
         $place->updateDescription(
             $updateDescription->getDescription()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -66,13 +72,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateTypicalAgeRange->getId());
+        $place = $this->repository->load($updateTypicalAgeRange->getId());
 
         $place->updateTypicalAgeRange(
             $updateTypicalAgeRange->getTypicalAgeRange()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -83,11 +89,11 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($deleteTypicalAgeRange->getId());
+        $place = $this->repository->load($deleteTypicalAgeRange->getId());
 
         $place->deleteTypicalAgeRange();
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -97,13 +103,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
     {
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateOrganizer->getId());
+        $place = $this->repository->load($updateOrganizer->getId());
 
         $place->updateOrganizer(
             $updateOrganizer->getOrganizerId()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -114,13 +120,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($deleteOrganizer->getId());
+        $place = $this->repository->load($deleteOrganizer->getId());
 
         $place->deleteOrganizer(
             $deleteOrganizer->getOrganizerId()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -131,13 +137,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateContactPoint->getId());
+        $place = $this->repository->load($updateContactPoint->getId());
 
         $place->updateContactPoint(
             $updateContactPoint->getContactPoint()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -148,13 +154,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateFacilities->getId());
+        $place = $this->repository->load($updateFacilities->getId());
 
         $place->updateFacilities(
             $updateFacilities->getFacilities()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
     }
 
     /**
@@ -164,13 +170,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateBookingInfo->getId());
+        $place = $this->repository->load($updateBookingInfo->getId());
 
         $place->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -183,13 +189,13 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($addImage->getId());
+        $place = $this->repository->load($addImage->getId());
 
         $place->addImage(
             $addImage->getMediaObject()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -201,14 +207,14 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateImage->getId());
+        $place = $this->repository->load($updateImage->getId());
 
         $place->updateImage(
             $updateImage->getIndexToUpdate(),
             $updateImage->getMediaObject()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -220,14 +226,14 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($deleteImage->getId());
+        $place = $this->repository->load($deleteImage->getId());
 
         $place->deleteImage(
             $deleteImage->getIndexToDelete(),
             $deleteImage->getInternalId()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -238,7 +244,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateMajorInfo->getId());
+        $place = $this->repository->load($updateMajorInfo->getId());
 
         $place->updateMajorInfo(
             $updateMajorInfo->getTitle(),
@@ -248,7 +254,7 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
             $updateMajorInfo->getTheme()
         );
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 
@@ -259,10 +265,10 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->placeRepository->load($deletePlace->getId());
+        $place = $this->repository->load($deletePlace->getId());
         $place->deletePlace();
 
-        $this->placeRepository->save($place);
+        $this->repository->save($place);
 
     }
 }

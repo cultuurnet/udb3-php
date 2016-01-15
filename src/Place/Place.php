@@ -1,20 +1,16 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Place\Place.
- */
-
 namespace CultuurNet\UDB3\Place;
 
-use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
@@ -22,6 +18,8 @@ use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageDeleted;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
+use CultuurNet\UDB3\Place\Events\LabelAdded;
+use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -35,9 +33,8 @@ use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
-use ValueObjects\String\String;
 
-class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
+class Place extends Offer implements UpdateableWithCdbXmlInterface
 {
     /**
      * The actor id.
@@ -294,5 +291,23 @@ class Place extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInt
                 $cdbXmlNamespaceUri
             )
         );
+    }
+
+    /**
+     * @param Label $label
+     * @return LabelAdded
+     */
+    protected function createLabelAddedEvent(Label $label)
+    {
+        return new LabelAdded($this->actorId, $label);
+    }
+
+    /**
+     * @param Label $label
+     * @return LabelDeleted
+     */
+    protected function createLabelDeletedEvent(Label $label)
+    {
+        return new LabelDeleted($this->actorId, $label);
     }
 }

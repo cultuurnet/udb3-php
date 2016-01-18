@@ -60,13 +60,19 @@ class ImageUploaderService implements ImageUploaderInterface
             throw new \InvalidArgumentException('The file did not upload correctly.');
         }
 
-        $fileType = $file->getMimeType();
+        $mimeTypeString = $file->getMimeType();
 
-        if (!$fileType) {
+        if (!$mimeTypeString) {
             throw new \InvalidArgumentException('The type of the uploaded file can not be guessed.');
         }
 
-        $mimeType = MIMEType::fromNative($fileType);
+        $fileTypeParts = explode('/', $mimeTypeString);
+        $fileType = array_shift($fileTypeParts);
+        if ($fileType !== 'image') {
+            throw new \InvalidArgumentException('The uploaded file is not an image.');
+        }
+
+        $mimeType = MIMEType::fromNative($mimeTypeString);
 
         $fileId = new UUID($this->uuidGenerator->generate());
         $fileName = $fileId . '.' . $file->guessExtension();

@@ -49,9 +49,31 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function it_should_check_the_integrity_and_extension_when_uploading_files()
+    /**
+     * @test
+     */
+    public function it_should_throw_an_exception_if_the_uploaded_file_is_not_an_image()
     {
+        $description = new String('file description');
+        $copyrightHolder = new String('Dude Man');
+        $file = $this->getMockFile();
 
+        $file
+            ->expects($this->once())
+            ->method('isValid')
+            ->willReturn(true);
+
+        $file
+            ->expects($this->once())
+            ->method('getMimeType')
+            ->willReturn('video/avi');
+
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'The uploaded file is not an image.'
+        );
+
+        $this->uploader->upload($file, $description, $copyrightHolder);
     }
 
     /**

@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Offer\Events\MockLabelAdded;
-use CultuurNet\UDB3\Offer\Events\MockLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\LabelAdded;
+use CultuurNet\UDB3\Offer\Events\LabelDeleted;
 
 class MockOffer extends Offer
 {
@@ -24,20 +24,20 @@ class MockOffer extends Offer
 
     /**
      * @param Label $label
-     * @return MockLabelAdded
+     * @return LabelAdded
      */
     protected function createLabelAddedEvent(Label $label)
     {
-        return MockLabelAdded::class;
+        return new LabelAdded($this->id, $label);
     }
 
     /**
      * @param Label $label
-     * @return MockLabelDeleted
+     * @return LabelDeleted
      */
     protected function createLabelDeletedEvent(Label $label)
     {
-        return MockLabelDeleted::class;
+        return new LabelDeleted($this->id, $label);
     }
 
     /**

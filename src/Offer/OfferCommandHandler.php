@@ -2,20 +2,12 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 
-/**
- * Abstract because it needs a concrete implementation that handles implementations
- * of the abstract commands using the protected methods provided here.
- *
- * @todo Instead of extending Udb3CommandHandler, perhaps create a new
- *   implementation of CommandHandlerInterface which does not rely on the class
- *   name of each first method parameter to figure out which method to call.
- */
-abstract class OfferCommandHandler extends Udb3CommandHandler
+abstract class OfferCommandHandler implements CommandHandlerInterface
 {
     /**
      * @var RepositoryInterface
@@ -31,20 +23,59 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
-     * Makes it easier to type-hint to Offer.
-     *
-     * @param string $id
-     * @return Offer
+     * {@inheritdoc}
      */
-    private function load($id)
+    public function handle($command)
     {
-        return $this->repository->load($id);
+        $commandName = get_class($command);
+        $commandHandlers = $this->getCommandHandlers();
+
+        if (isset($commandHandlers[$commandName])) {
+            $handler = $commandHandlers[$commandName];
+            call_user_func(array($this, $handler), $command);
+        }
     }
+
+    /**
+     * @return string[]
+     *   An associative array of commands and their handler methods.
+     */
+    private function getCommandHandlers()
+    {
+        $commands = [];
+
+        foreach (get_class_methods($this) as $method) {
+            $matches = [];
+            if (preg_match('/^handle(.+)$/', $method, $matches)) {
+                $command = $matches[1];
+                $classNameMethod = 'get' . $command . 'ClassName';
+
+                if (!method_exists($this, $classNameMethod)) {
+                    continue;
+                }
+
+                $commandFullClassName = call_user_func(array($this, $classNameMethod));
+                $commands[$commandFullClassName] = $method;
+            }
+        }
+
+        return $commands;
+    }
+
+    /**
+     * @return string
+     */
+    abstract protected function getAddLabelClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDeleteLabelClassName();
 
     /**
      * @param AbstractAddLabel $addLabel
      */
-    protected function handleAbstractAddLabel(AbstractAddLabel $addLabel)
+    private function handleAddLabel(AbstractAddLabel $addLabel)
     {
         $offer = $this->load($addLabel->getItemId());
         $offer->addLabel($addLabel->getLabel());
@@ -54,10 +85,21 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @param AbstractDeleteLabel $deleteLabel
      */
-    protected function handleAbstractDeleteLabel(AbstractDeleteLabel $deleteLabel)
+    private function handleDeleteLabel(AbstractDeleteLabel $deleteLabel)
     {
         $offer = $this->load($deleteLabel->getItemId());
         $offer->deleteLabel($deleteLabel->getLabel());
         $this->repository->save($offer);
+    }
+
+    /**
+     * Makes it easier to type-hint to Offer.
+     *
+     * @param string $id
+     * @return Offer
+     */
+    private function load($id)
+    {
+        return $this->repository->load($id);
     }
 }

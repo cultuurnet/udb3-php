@@ -28,24 +28,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * Handle the add label command.
-     *
-     * @param AddLabel $addLabel
-     */
-    public function handleAddLabel(AddLabel $addLabel)
+    protected function getAddLabelClassName()
     {
-        $this->handleAbstractAddLabel($addLabel);
+        return AddLabel::class;
     }
 
-    /**
-     * Handle the delete label command.
-     *
-     * @param DeleteLabel $deleteLabel
-     */
-    public function handleDeleteLabel(DeleteLabel $deleteLabel)
+    protected function getDeleteLabelClassName()
     {
-        $this->handleAbstractDeleteLabel($deleteLabel);
+        return DeleteLabel::class;
     }
 
     /**

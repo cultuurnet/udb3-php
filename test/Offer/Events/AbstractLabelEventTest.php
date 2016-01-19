@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolas
- * Date: 19/01/16
- * Time: 14:22
- */
 
 namespace CultuurNet\UDB3\Offer\Events;
-
 
 use CultuurNet\UDB3\Label;
 

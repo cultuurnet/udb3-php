@@ -16,6 +16,14 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $labels;
 
     /**
+     * Offer constructor.
+     */
+    public function __construct()
+    {
+        $this->labels = new LabelCollection();
+    }
+
+    /**
      * @return LabelCollection
      */
     public function getLabels()

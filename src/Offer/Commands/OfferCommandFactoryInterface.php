@@ -11,12 +11,12 @@ interface OfferCommandFactoryInterface
      * @param Label $label
      * @return AbstractAddLabel
      */
-    public static function createAddLabelCommand($id, Label $label);
+    public function createAddLabelCommand($id, Label $label);
 
     /**
      * @param $id
      * @param Label $label
      * @return AbstractDeleteLabel
      */
-    public static function createDeleteLabelCommand($id, Label $label);
+    public function createDeleteLabelCommand($id, Label $label);
 }

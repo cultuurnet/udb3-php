@@ -13,22 +13,22 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @var CommandBusInterface
      */
-    private $commandBus;
+    protected $commandBus;
 
     /**
      * @var UuidGeneratorInterface
      */
-    private $uuidGenerator;
+    protected $uuidGenerator;
 
     /**
      * @var RepositoryInterface
      */
-    private $offerRepository;
+    protected $offerRepository;
 
     /**
      * @var OfferCommandFactoryInterface
      */
-    private $commandFactory;
+    protected $commandFactory;
 
     /**
      * @param CommandBusInterface $commandBus

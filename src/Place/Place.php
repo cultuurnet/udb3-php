@@ -65,7 +65,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
-     * @return Event
+     * @return self
      */
     public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {

@@ -2,12 +2,12 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 
-abstract class OfferCommandHandler implements CommandHandlerInterface
+abstract class OfferCommandHandler extends Udb3CommandHandler
 {
     /**
      * @var RepositoryInterface
@@ -33,6 +33,8 @@ abstract class OfferCommandHandler implements CommandHandlerInterface
         if (isset($commandHandlers[$commandName])) {
             $handler = $commandHandlers[$commandName];
             call_user_func(array($this, $handler), $command);
+        } else {
+            parent::handle($command);
         }
     }
 

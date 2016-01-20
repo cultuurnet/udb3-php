@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Offer;
@@ -15,12 +16,11 @@ class Item extends Offer
     protected $id;
 
     /**
-     * @param mixed $id
+     * @param ItemCreated $created
      */
-    public function __construct($id)
+    protected function applyItemCreated(ItemCreated $created)
     {
-        parent::__construct();
-        $this->id = $id;
+        $this->id = $created->getItemId();
     }
 
     /**

@@ -6,7 +6,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
-use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
@@ -388,10 +388,10 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
     }
 
-    public function handleApplyLabel(ApplyLabel $label)
+    public function handleApplyLabel(AddLabel $label)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($label->getEventId());
+        $event = $this->eventRepository->load($label->getItemId());
         $event->label($label->getLabel());
 
         $this->eventRepository->save($event);

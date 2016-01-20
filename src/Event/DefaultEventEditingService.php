@@ -9,7 +9,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
@@ -133,7 +133,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
-            new ApplyLabel($eventId, $label)
+            new AddLabel($eventId, $label)
         );
     }
 

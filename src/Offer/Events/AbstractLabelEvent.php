@@ -5,13 +5,8 @@ namespace CultuurNet\UDB3\Offer\Events;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Label;
 
-abstract class AbstractLabelEvent implements SerializableInterface
+abstract class AbstractLabelEvent extends AbstractEvent implements SerializableInterface
 {
-    /**
-     * @var string
-     */
-    protected $itemId;
-
     /**
      * @var Label
      */
@@ -19,16 +14,8 @@ abstract class AbstractLabelEvent implements SerializableInterface
 
     public function __construct($itemId, Label $label)
     {
-        $this->itemId = $itemId;
+        parent::__construct($itemId);
         $this->label = $label;
-    }
-
-    /**
-     * @return string
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
     }
 
     /**
@@ -44,8 +31,7 @@ abstract class AbstractLabelEvent implements SerializableInterface
      */
     public function serialize()
     {
-        return array(
-            'item_id' => $this->itemId,
+        return parent::serialize() + array(
             'label' => (string) $this->label,
         );
     }
@@ -56,6 +42,9 @@ abstract class AbstractLabelEvent implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static($data['item_id'], new Label($data['label']));
+        return new static(
+            $data['item_id'],
+            new Label($data['label'])
+        );
     }
 }

@@ -21,10 +21,10 @@ class OfferTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->offer = new Item('foo');
-        $this->labels = new LabelCollection();
-        $this->labels->with(new Label('test'));
-        $this->labels->with(new Label('label'));
-        $this->labels->with(new Label('cultuurnet'));
+        $this->labels = (new LabelCollection())
+            ->with(new Label('test'))
+            ->with(new Label('label'))
+            ->with(new Label('cultuurnet'));
     }
 
     /**
@@ -49,11 +49,12 @@ class OfferTest extends \PHPUnit_Framework_TestCase
         $this->offer->addLabel(new Label('test'));
         $this->offer->addLabel(new Label('label'));
         $this->offer->addLabel(new Label('cultuurnet'));
-        $this->offer->deleteLabel(new Label('label'));
 
-        $expectedLabels = new LabelCollection();
-        $expectedLabels->with(new Label('test'));
-        $expectedLabels->with(new Label('cultuurnet'));
+        $this->offer->deleteLabel(new Label('cultuurnet'));
+
+        $expectedLabels = (new LabelCollection())
+            ->with(new Label('test'))
+            ->with(new Label('label'));
 
         $this->assertEquals($expectedLabels, $this->offer->getLabels());
     }

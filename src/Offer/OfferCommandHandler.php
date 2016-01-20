@@ -52,12 +52,10 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
                 $command = $matches[1];
                 $classNameMethod = 'get' . $command . 'ClassName';
 
-                if (!method_exists($this, $classNameMethod)) {
-                    continue;
+                if (method_exists($this, $classNameMethod)) {
+                    $commandFullClassName = call_user_func(array($this, $classNameMethod));
+                    $commands[$commandFullClassName] = $method;
                 }
-
-                $commandFullClassName = call_user_func(array($this, $classNameMethod));
-                $commands[$commandFullClassName] = $method;
             }
         }
 

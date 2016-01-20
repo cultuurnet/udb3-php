@@ -4,11 +4,12 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Offer\Item\Item;
 
 class OfferTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var MockOffer
+     * @var Item
      */
     protected $offer;
 
@@ -19,7 +20,7 @@ class OfferTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->offer = new MockOffer('foo');
+        $this->offer = new Item('foo');
         $this->labels = new LabelCollection();
         $this->labels->with(new Label('test'));
         $this->labels->with(new Label('label'));

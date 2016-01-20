@@ -6,7 +6,6 @@ use CultuurNet\UDB3\Label;
 
 class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var AbstractLabelCommand|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -26,6 +25,7 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->itemId = 'Foo';
         $this->label = new Label('LabelTest');
+
         $this->labelCommand = $this->getMockForAbstractClass(
             AbstractLabelCommand::class,
             array($this->itemId, $this->label)

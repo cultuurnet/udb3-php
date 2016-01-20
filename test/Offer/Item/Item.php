@@ -1,12 +1,13 @@
 <?php
 
-namespace CultuurNet\UDB3\Offer;
+namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Offer\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
+use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Offer;
 
-class MockOffer extends Offer
+class Item extends Offer
 {
     /**
      * @var mixed

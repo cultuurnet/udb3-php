@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 
 class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +26,7 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->itemId = 'Foo';
         $this->label = new Label('LabelTest');
-        $this->labelEvent = new MockAbstractLabelEvent($this->itemId, $this->label);
+        $this->labelEvent = new LabelAdded($this->itemId, $this->label);
     }
 
     /**
@@ -35,7 +36,7 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLabel = new Label('LabelTest');
-        $expectedLabelEvent = new MockAbstractLabelEvent($expectedItemId, $expectedLabel);
+        $expectedLabelEvent = new LabelAdded($expectedItemId, $expectedLabel);
 
         $this->assertEquals($expectedLabelEvent, $this->labelEvent);
     }
@@ -58,10 +59,12 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
+     * @param $expectedSerializedValue
+     * @param LabelAdded $abstractLabelEvent
      */
     public function it_can_be_serialized_to_an_array(
         $expectedSerializedValue,
-        MockAbstractLabelEvent $abstractLabelEvent
+        LabelAdded $abstractLabelEvent
     ) {
         $this->assertEquals(
             $expectedSerializedValue,
@@ -72,17 +75,22 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
+     * @param $serializedValue
+     * @param LabelAdded $expectedAbstractLabelEvent
      */
     public function it_can_deserialize_an_array(
         $serializedValue,
-        MockAbstractLabelEvent $expectedAbstractLabelEvent
+        LabelAdded $expectedAbstractLabelEvent
     ) {
         $this->assertEquals(
             $expectedAbstractLabelEvent,
-            MockAbstractLabelEvent::deserialize($serializedValue)
+            LabelAdded::deserialize($serializedValue)
         );
     }
 
+    /**
+     * @return array
+     */
     public function serializationDataProvider()
     {
         return [
@@ -91,7 +99,7 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
                     'item_id' => 'madId',
                     'label' => 'label123',
                 ],
-                new MockAbstractLabelEvent(
+                new LabelAdded(
                     'madId',
                     new Label('label123')
                 ),

@@ -13,6 +13,8 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
 
 interface PlaceEditingServiceInterface
 {
@@ -115,11 +117,12 @@ interface PlaceEditingServiceInterface
     /**
      * Update an image of the place.
      *
-     * @param string $id
-     * @parma int $indexToEdit
-     * @param MediaObject $mediaObject
+     * @param $id
+     * @param Image $image
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject);
+    public function updateImage($id, Image $image, String $description, String $copyrightHolder);
 
     /**
      * Delete an image of the place.

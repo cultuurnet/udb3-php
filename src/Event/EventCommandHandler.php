@@ -321,17 +321,12 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
      */
     public function handleUpdateImage(UpdateImage $updateImage)
     {
-
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateImage->getId());
+        $event = $this->eventRepository->load($updateImage->getItemId());
 
-        $event->updateImage(
-            $updateImage->getIndexToUpdate(),
-            $updateImage->getMediaObject()
-        );
+        $event->updateImage($updateImage);
 
         $this->eventRepository->save($event);
-
     }
 
     /**

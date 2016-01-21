@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
@@ -12,11 +12,13 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
+use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
@@ -34,16 +36,19 @@ use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
+use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -61,25 +66,9 @@ use ValueObjects\String\String;
  * Implements PlaceServiceInterface and OrganizerServiceInterface to do a double
  * dispatch with CdbXMLImporter.
  */
-class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
+class EventLDProjector extends OfferLDProjector implements EventListenerInterface, PlaceServiceInterface,
+ OrganizerServiceInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
-
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    protected $repository;
-
-    /**
-     * @var IriGeneratorInterface
-     */
-    protected $iriGenerator;
-
-    /**
-     * @var OrganizerService
-     */
-    protected $organizerService;
-
     /**
      * @var PlaceService
      */
@@ -89,16 +78,6 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * @var EventServiceInterface
      */
     protected $eventService;
-
-    /**
-     * @var SluggerInterface
-     */
-    protected $slugger;
-
-    /**
-     * @var CdbXMLImporter
-     */
-    protected $cdbXMLImporter;
 
     /**
      * @param DocumentRepositoryInterface $repository
@@ -114,14 +93,14 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         PlaceService $placeService,
         OrganizerService $organizerService
     ) {
-        $this->repository = $repository;
-        $this->iriGenerator = $iriGenerator;
-        $this->organizerService = $organizerService;
+        parent::__construct(
+            $repository,
+            $iriGenerator,
+            $organizerService
+        );
+
         $this->placeService = $placeService;
         $this->eventService = $eventService;
-
-        $this->slugger = new CulturefeedSlugger();
-        $this->cdbXMLImporter = new CdbXMLImporter(new CdbXMLItemBaseImporter());
     }
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
@@ -482,47 +461,6 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * @param EventWasLabelled $eventWasLabelled
-     */
-    protected function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
-    {
-        $document = $this->loadDocumentFromRepository($eventWasLabelled);
-
-        $eventLd = $document->getBody();
-
-        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
-        $label = (string) $eventWasLabelled->getLabel();
-
-        $labels[] = $label;
-        $eventLd->labels = array_unique($labels);
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    protected function applyUnlabelled(Unlabelled $unlabelled)
-    {
-        $document = $this->loadDocumentFromRepository($unlabelled);
-
-        $eventLd = $document->getBody();
-
-        if (is_array($eventLd->labels)) {
-            $eventLd->labels = array_filter(
-                $eventLd->labels,
-                function ($label) use ($unlabelled) {
-                    return !$unlabelled->getLabel()->equals(
-                        new Label($label)
-                    );
-                }
-            );
-            // Ensure array keys start with 0 so json_encode() does encode it
-            // as an array and not as an object.
-            $eventLd->labels = array_values($eventLd->labels);
-        }
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
      * @param LabelsMerged $labelsMerged
      */
     protected function applyLabelsMerged(LabelsMerged $labelsMerged)
@@ -843,5 +781,21 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         if (isset($properties['consumer']['name'])) {
             return new String($properties['consumer']['name']);
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLabelAddedClassName()
+    {
+        return EventWasLabelled::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLabelDeletedClassName()
+    {
+        return Unlabelled::class;
     }
 }

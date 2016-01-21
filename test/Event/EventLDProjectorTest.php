@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\EventLDProjector;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;

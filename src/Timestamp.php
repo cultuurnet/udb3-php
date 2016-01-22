@@ -26,8 +26,8 @@ class Timestamp
     /**
      * Constructor
      *
-     * @param type $startDate
-     * @param type $endDate
+     * @param string $startDate
+     * @param string $endDate
      */
     public function __construct($startDate, $endDate)
     {

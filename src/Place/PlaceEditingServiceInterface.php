@@ -10,6 +10,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 interface PlaceEditingServiceInterface
@@ -22,11 +23,11 @@ interface PlaceEditingServiceInterface
      * @param EventType $eventType
      * @param Address $address
      * @param CalendarBase $calendar
-     * @param Theme/null $theme
+     * @param Theme|null $theme
      *
      * @return string $eventId
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null);
+    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
 
     /**
      * @param string $id
@@ -114,7 +115,7 @@ interface PlaceEditingServiceInterface
      * Update an image of the place.
      *
      * @param string $id
-     * @parma int $indexToEdit
+     * @param int $indexToEdit
      * @param MediaObject $mediaObject
      */
     public function updateImage($id, $indexToEdit, MediaObject $mediaObject);

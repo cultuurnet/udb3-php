@@ -11,9 +11,15 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -66,6 +72,46 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
+    private function applyEventCreatedFromCdbXml(
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        $this->writeHistory(
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String(
+                    'Aangemaakt via EntryAPI door consumer "' . $consumerName . '"'
+                ),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    private function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        $this->writeHistory(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String(
+                    'Geüpdatet via EntryAPI door consumer "' . $consumerName . '"'
+                ),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
     /**
      * @param DateTime $date
      * @return \DateTime
@@ -105,12 +151,29 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
+    /**
+     * @param Metadata $metadata
+     * @return String|null
+     */
     private function getAuthorFromMetadata(Metadata $metadata)
     {
         $properties = $metadata->serialize();
 
         if (isset($properties['user_nick'])) {
             return new String($properties['user_nick']);
+        }
+    }
+
+    /**
+     * @param Metadata $metadata
+     * @return String|null
+     */
+    private function getConsumerFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['consumer']['name'])) {
+            return new String($properties['consumer']['name']);
         }
     }
 
@@ -142,6 +205,42 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
+    /**
+     * @param LabelsMerged $labelsMerged
+     * @param DomainMessage $domainMessage
+     */
+    private function applyLabelsMerged(
+        LabelsMerged $labelsMerged,
+        DomainMessage $domainMessage
+    ) {
+        $labels = $labelsMerged->getLabels()->toStrings();
+        // Quote labels.
+        $quotedLabels = array_map(
+            function ($label) {
+                return "'{$label}'";
+            },
+            $labels
+        );
+        $quotedLabelsString = implode(', ', $quotedLabels);
+
+        $message = "Labels {$quotedLabelsString} toegepast";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        if ($consumerName) {
+            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
+        }
+
+        $this->writeHistory(
+            $labelsMerged->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
+                new String($message),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
     private function applyTitleTranslated(
         TitleTranslated $titleTranslated,
         DomainMessage $domainMessage
@@ -167,6 +266,97 @@ class HistoryProjector implements EventListenerInterface
                     $domainMessage->getRecordedOn()
                 ),
                 new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    private function applyTranslationApplied(
+        TranslationApplied $translationApplied,
+        DomainMessage $domainMessage
+    ) {
+        $fields = [];
+
+        if ($translationApplied->getTitle() !== null) {
+            $fields[] = 'titel';
+        }
+        if ($translationApplied->getShortDescription() !== null) {
+            $fields[] = 'korte beschrijving';
+        }
+        if ($translationApplied->getLongDescription() !== null) {
+            $fields[] = 'lange beschrijving';
+        }
+        $fieldString = ucfirst(implode(', ', $fields));
+
+        $logMessage = "{$fieldString} vertaald ({$translationApplied->getLanguage()->getCode()})";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+        if ($consumerName) {
+            $logMessage .= " via EntryAPI door consumer \"{$consumerName}\"";
+        }
+
+        $this->writeHistory(
+            $translationApplied->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($logMessage),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    /**
+     * @param TranslationDeleted $translationDeleted
+     * @param DomainMessage $domainMessage
+     */
+    private function applyTranslationDeleted(
+        TranslationDeleted $translationDeleted,
+        DomainMessage $domainMessage
+    ) {
+        $message = "Vertaling verwijderd ({$translationDeleted->getLanguage()})";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        if ($consumerName) {
+            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
+        }
+
+        $this->writeHistory(
+            $translationDeleted->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($message),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    /**
+     * @param CollaborationDataAdded $collaborationDataAdded
+     * @param DomainMessage $domainMessage
+     */
+    private function applyCollaborationDataAdded(
+        CollaborationDataAdded $collaborationDataAdded,
+        DomainMessage $domainMessage
+    ) {
+        $message = sprintf(
+            'Collaboration data toegevoegd (%s) voor sub brand "%s" via EntryAPI door consumer "%s"',
+            $collaborationDataAdded->getLanguage(),
+            $collaborationDataAdded->getCollaborationData()->getSubBrand(),
+            $this->getConsumerFromMetadata($domainMessage->getMetadata())
+        );
+
+        $this->writeHistory(
+            $collaborationDataAdded->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($message),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

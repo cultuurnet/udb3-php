@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Variations\Model\EventVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -13,12 +14,12 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
-use Doctrine\DBAL\DriverManager;
-use PDO;
 use PHPUnit_Framework_TestCase;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {
+    use DBALTestConnectionTrait;
+
     /**
      * @var DBALRepository
      */
@@ -46,29 +47,12 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('PDO')) {
-            $this->markTestSkipped('PDO is required to run this test.');
-        }
-
-        $availableDrivers = PDO::getAvailableDrivers();
-        if (!in_array('sqlite', $availableDrivers)) {
-            $this->markTestSkipped(
-                'PDO sqlite driver is required to run this test.'
-            );
-        }
-
-        $connection = DriverManager::getConnection(
-            [
-                'url' => 'sqlite:///:memory:',
-            ]
-        );
-
         $this->repository = new DBALRepository(
-            $connection,
+            $this->getConnection(),
             new ExpressionFactory()
         );
 
-        $schemaManager = $connection->getSchemaManager();
+        $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
         $schemaManager->createTable(

@@ -81,7 +81,7 @@ class EventExportService implements EventExportServiceInterface
                 1,
                 0
             );
-            $totalItemCount = $preQueryResult['totalItems'];
+            $totalItemCount = $preQueryResult->getTotalItems()->toNative();
         } catch (ClientErrorResponseException $e) {
             if ($logger) {
                 $logger->error(
@@ -233,7 +233,7 @@ class EventExportService implements EventExportServiceInterface
 
             // Iterate the results of the current page and get their IDs
             // by stripping them from the json-LD representation
-            foreach ($results['member'] as $event) {
+            foreach ($results->getItems() as $event) {
                 $expoId = explode('/', $event['@id']);
                 $eventId = array_pop($expoId);
 

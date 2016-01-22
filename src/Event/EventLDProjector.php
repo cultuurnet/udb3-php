@@ -7,24 +7,30 @@ namespace CultuurNet\UDB3\Event;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
@@ -36,6 +42,8 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -44,7 +52,15 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
+use ValueObjects\String\String;
 
+/**
+ * Projects state changes on Event entities to a JSON-LD read model in a
+ * document repository.
+ *
+ * Implements PlaceServiceInterface and OrganizerServiceInterface to do a double
+ * dispatch with CdbXMLImporter.
+ */
 class EventLDProjector implements EventListenerInterface, PlaceServiceInterface, OrganizerServiceInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
@@ -105,7 +121,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->eventService = $eventService;
 
         $this->slugger = new CulturefeedSlugger();
-        $this->cdbXMLImporter = new CdbXMLImporter();
+        $this->cdbXMLImporter = new CdbXMLImporter(new CdbXMLItemBaseImporter());
     }
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
@@ -184,7 +200,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      */
-    public function applyEventImportedFromUDB2(
+    protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $this->applyEventCdbXml(
@@ -197,7 +213,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventUpdatedFromUDB2 $eventUpdatedFromUDB2
      */
-    public function applyEventUpdatedFromUDB2(
+    protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2
     ) {
         $this->applyEventCdbXml(
@@ -205,6 +221,96 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $eventUpdatedFromUDB2->getCdbXml()
         );
+    }
+
+    /**
+     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventCreatedFromCdbXml(
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $cdbXmlNamespaceUri = $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
+        $cdbXml = $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString();
+        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
+
+        $this->applyEventFromCdbXml(
+            $eventId,
+            $cdbXmlNamespaceUri,
+            $cdbXml,
+            $domainMessage
+        );
+    }
+
+    /**
+     * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $cdbXmlNamespaceUri = $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
+        $cdbXml = $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString();
+        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
+
+        $this->applyEventFromCdbXml(
+            $eventId,
+            $cdbXmlNamespaceUri,
+            $cdbXml,
+            $domainMessage
+        );
+    }
+
+    /**
+     * Helper function to save JSONLD document from entryapi cdbxml.
+     *
+     * @param string $eventId
+     * @param string $cdbXmlNamespaceUri
+     * @param string $cdbXml
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventFromCdbXml(
+        $eventId,
+        $cdbXmlNamespaceUri,
+        $cdbXml,
+        $domainMessage
+    ) {
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $cdbXmlNamespaceUri,
+            $cdbXml
+        );
+
+        $document = $this->newDocument($eventId);
+        $eventLd = $document->getBody();
+
+        $eventLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $eventLd,
+            $udb2Event,
+            $this,
+            $this,
+            $this->slugger
+        );
+
+        // Add creation date and update date from metadata.
+        $eventCreationDate = $domainMessage->getRecordedOn();
+
+        $eventCreationString = $eventCreationDate->toString();
+        $eventCreationDateTime = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $eventCreationString
+        );
+        $eventLd->created = $eventCreationDateTime->format('c');
+        $eventLd->modified = $eventCreationDateTime->format('c');
+
+        // Add creator.
+        $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+
+        // Add publisher, which is the consumer name.
+        $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
+
+        $this->repository->save($document->withBody($eventLd));
     }
 
     /**
@@ -280,10 +386,13 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             DateTime::FORMAT_STRING,
             $recordedOn
         )->format('c');
+        $jsonLD->modified = $jsonLD->created;
 
         $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
-            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        if (isset($metaData['user_email'])) {
+            $jsonLD->creator = $metaData['user_email'];
+        } elseif (isset($metaData['user_nick'])) {
+            $jsonLD->creator = $metaData['user_nick'];
         }
 
         $this->repository->save($document->withBody($jsonLD));
@@ -292,7 +401,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventDeleted $eventDeleted
      */
-    public function applyEventDeleted(EventDeleted $eventDeleted)
+    protected function applyEventDeleted(EventDeleted $eventDeleted)
     {
         $this->repository->remove($eventDeleted->getEventId());
     }
@@ -300,7 +409,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * Apply the major info updated command to the projector.
      */
-    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($majorInfoUpdated);
@@ -333,6 +442,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
 
     }
 
+    /**
+     * @inheritdoc
+     */
     public function placeJSONLD($placeId)
     {
         try {
@@ -349,6 +461,9 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function organizerJSONLD($organizerId)
     {
 
@@ -369,7 +484,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     /**
      * @param EventWasLabelled $eventWasLabelled
      */
-    public function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
+    protected function applyEventWasLabelled(EventWasLabelled $eventWasLabelled)
     {
         $document = $this->loadDocumentFromRepository($eventWasLabelled);
 
@@ -384,7 +499,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->repository->save($document->withBody($eventLd));
     }
 
-    public function applyUnlabelled(Unlabelled $unlabelled)
+    protected function applyUnlabelled(Unlabelled $unlabelled)
     {
         $document = $this->loadDocumentFromRepository($unlabelled);
 
@@ -403,6 +518,26 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             // as an array and not as an object.
             $eventLd->labels = array_values($eventLd->labels);
         }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * @param LabelsMerged $labelsMerged
+     */
+    protected function applyLabelsMerged(LabelsMerged $labelsMerged)
+    {
+        $document = $this->loadDocumentFromRepositoryByEventId($labelsMerged->getEventId()->toNative());
+
+        $eventLd = $document->getBody();
+
+        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
+
+        $currentCollection = LabelCollection::fromStrings($labels);
+
+        $newLabels = $labelsMerged->getLabels();
+
+        $eventLd->labels = $currentCollection->merge($newLabels)->toStrings();
 
         $this->repository->save($document->withBody($eventLd));
     }
@@ -430,11 +565,49 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $this->repository->save($document->withBody($eventLd));
     }
 
+    protected function applyTranslationApplied(
+        TranslationApplied $translationApplied
+    ) {
+        $document = $this->loadDocumentFromRepositoryByEventId($translationApplied->getEventId()->toNative());
+
+        $eventLd = $document->getBody();
+
+        if ($translationApplied->getTitle() !== null) {
+            $eventLd->name->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getTitle()->toNative();
+        }
+
+        if ($translationApplied->getLongDescription() !== null) {
+            $eventLd->description->{$translationApplied->getLanguage()->getCode(
+            )} = $translationApplied->getLongDescription()->toNative();
+        }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Apply the translation deleted event to the event repository.
+     * @param TranslationDeleted $translationDeleted
+     */
+    protected function applyTranslationDeleted(
+        TranslationDeleted $translationDeleted
+    ) {
+        $document = $this->loadDocumentFromRepositoryByEventId($translationDeleted->getEventId()->toNative());
+
+        $eventLd = $document->getBody();
+
+        unset($eventLd->name->{$translationDeleted->getLanguage()->getCode()});
+
+        unset($eventLd->description->{$translationDeleted->getLanguage()->getCode()});
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
     /**
      * Apply the description updated event to the event repository.
      * @param DescriptionUpdated $descriptionUpdated
      */
-    public function applyDescriptionUpdated(
+    protected function applyDescriptionUpdated(
         DescriptionUpdated $descriptionUpdated
     ) {
         $document = $this->loadDocumentFromRepository($descriptionUpdated);
@@ -452,7 +625,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the typical age range updated event to the event repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
-    public function applyTypicalAgeRangeUpdated(
+    protected function applyTypicalAgeRangeUpdated(
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated
     ) {
         $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
@@ -467,7 +640,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the typical age range deleted event to the event repository.
      * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
      */
-    public function applyTypicalAgeRangeDeleted(
+    protected function applyTypicalAgeRangeDeleted(
         TypicalAgeRangeDeleted $typicalAgeRangeDeleted
     ) {
         $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
@@ -483,7 +656,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the organizer updated event to the event repository.
      * @param OrganizerUpdated $organizerUpdated
      */
-    public function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
+    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($organizerUpdated);
@@ -501,7 +674,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the organizer delete event to the event repository.
      * @param OrganizerDeleted $organizerDeleted
      */
-    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
 
         $document = $this->loadDocumentFromRepository($organizerDeleted);
@@ -517,7 +690,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the contact info updated event to the event repository.
      * @param ContactPointUpdated $contactPointUpdated
      */
-    public function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($contactPointUpdated);
@@ -532,7 +705,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      * Apply the booking info updated event to the event repository.
      * @param BookingInfoUpdated $bookingInfoUpdated
      */
-    public function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
+    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
@@ -549,7 +722,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param ImageAdded $imageAdded
      */
-    public function applyImageAdded(ImageAdded $imageAdded)
+    protected function applyImageAdded(ImageAdded $imageAdded)
     {
 
         $document = $this->loadDocumentFromRepository($imageAdded);
@@ -567,7 +740,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param ImageUpdated $imageUpdated
      */
-    public function applyImageUpdated(ImageUpdated $imageUpdated)
+    protected function applyImageUpdated(ImageUpdated $imageUpdated)
     {
 
         $document = $this->loadDocumentFromRepository($imageUpdated);
@@ -585,7 +758,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param ImageDeleted $imageDeleted
      */
-    public function applyImageDeleted(ImageDeleted $imageDeleted)
+    protected function applyImageDeleted(ImageDeleted $imageDeleted)
     {
 
         $document = $this->loadDocumentFromRepository($imageDeleted);
@@ -652,5 +825,23 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     public function addDescriptionFilter(StringFilterInterface $filter)
     {
         $this->cdbXMLImporter->addDescriptionFilter($filter);
+    }
+
+    private function getAuthorFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['user_nick'])) {
+            return new String($properties['user_nick']);
+        }
+    }
+
+    private function getConsumerFromMetadata(Metadata $metadata)
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['consumer']['name'])) {
+            return new String($properties['consumer']['name']);
+        }
     }
 }

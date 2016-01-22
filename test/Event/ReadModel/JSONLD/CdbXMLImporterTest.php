@@ -4,6 +4,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -32,13 +33,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->importer = new CdbXMLImporter();
+        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter());
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
         $this->slugger = $this->getMock(SluggerInterface::class);
         date_default_timezone_set('Europe/Brussels');
     }
 
+    /**
+     * @param string $fileName
+     * @return \stdClass
+     */
     private function createJsonEventFromCdbXml($fileName)
     {
         $cdbXml = file_get_contents(
@@ -304,5 +309,15 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityStarts']);
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityEnds']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_include_duplicate_labels()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_duplicate_labels.cdbxml.xml');
+
+        $this->assertEquals(['enkel'], $jsonEvent->labels);
     }
 }

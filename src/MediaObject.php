@@ -24,7 +24,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     /**
      * Internal file id.
      */
-     protected $internalId;
+    protected $internalId;
 
     /**
      * Url to the media object.

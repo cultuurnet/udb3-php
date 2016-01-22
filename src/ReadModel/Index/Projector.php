@@ -49,11 +49,11 @@ class Projector implements EventListenerInterface
      */
     protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $eventImportedFromUDB2)
     {
-
         $eventId = $eventImportedFromUDB2->getEventId();
         $userId = ''; // imported = no uid.
-        $name = '';
         $postalCode = '';
+        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
+        $detail = null;
 
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
@@ -62,26 +62,29 @@ class Projector implements EventListenerInterface
 
         $details = $udb2Event->getDetails();
         foreach ($details as $languageDetail) {
-            $language = $languageDetail->getLanguage();
+            // The first language detail found will be used.
+            $detail = $languageDetail;
+            break;
+        }
 
-            // The first language detail found will be used to retrieve
-            // properties from which in UDB3 are not any longer considered
-            // to be language specific.
-            if (!isset($detail)) {
-                $detail = $languageDetail;
-            }
+        $name = trim($detail->getTitle());
 
-            $name = $languageDetail->getTitle();
+        // Ignore items without a name. They might occur in UDB2 although this
+        // is not considered normal.
+        if (empty($name)) {
+            return;
         }
 
         $contact_cdb = $udb2Event->getContactInfo();
         if ($contact_cdb) {
             $addresses = $contact_cdb->getAddresses();
 
+            /** @var \CultureFeed_Cdb_Data_Address $address */
             foreach ($addresses as $address) {
-                $address = $address->getPhysicalAddress();
-                if ($address) {
-                    $postalCode = $address->getZip();
+                /** @var \CultureFeed_Cdb_Data_Address_PhysicalAddress $physicalAddress */
+                $physicalAddress = $address->getPhysicalAddress();
+                if ($physicalAddress) {
+                    $postalCode = $physicalAddress->getZip();
                 }
             }
         }
@@ -105,7 +108,8 @@ class Projector implements EventListenerInterface
 
         $placeId = $placeImportedFromUDB2->getActorId();
         $userId = ''; // imported = no uid.
-        $name = '';
+        /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
+        $detail = null;
         $postalCode = '';
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -115,26 +119,28 @@ class Projector implements EventListenerInterface
 
         $details = $udb2Actor->getDetails();
         foreach ($details as $languageDetail) {
-            $language = $languageDetail->getLanguage();
+            // The first language detail found will be used.
+            $detail = $languageDetail;
+            break;
+        }
 
-            // The first language detail found will be used to retrieve
-            // properties from which in UDB3 are not any longer considered
-            // to be language specific.
-            if (!isset($detail)) {
-                $detail = $languageDetail;
-            }
+        $name = trim($detail->getTitle());
 
-            $name = $languageDetail->getTitle();
+        // Ignore items without a name. They might occur in UDB2 although this
+        // is not considered normal.
+        if (empty($name)) {
+            return;
         }
 
         $contact_cdb = $udb2Actor->getContactInfo();
         if ($contact_cdb) {
             $addresses = $contact_cdb->getAddresses();
 
+            /** @var \CultureFeed_Cdb_Data_Address $address */
             foreach ($addresses as $address) {
-                $address = $address->getPhysicalAddress();
-                if ($address) {
-                    $postalCode = $address->getZip();
+                $physicalAddress = $address->getPhysicalAddress();
+                if ($physicalAddress) {
+                    $postalCode = $physicalAddress->getZip();
                 }
             }
         }
@@ -146,7 +152,7 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($placeId, EntityTYpe::PLACE(), $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($placeId, EntityType::PLACE(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**
@@ -207,7 +213,8 @@ class Projector implements EventListenerInterface
 
         $organizerId = $organizerImportedFromUDB2->getActorId();
         $userId = ''; // imported = no uid.
-        $name = '';
+        /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
+        $detail = null;
         $postalCode = '';
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -216,18 +223,18 @@ class Projector implements EventListenerInterface
         );
 
         $details = $udb2Actor->getDetails();
-        /** @var \CultureFeed_Cdb_Data_ActorDetail $languageDetail */
         foreach ($details as $languageDetail) {
-            $language = $languageDetail->getLanguage();
+            // The first language detail found will be used.
+            $detail = $languageDetail;
+            break;
+        }
 
-            // The first language detail found will be used to retrieve
-            // properties from which in UDB3 are not any longer considered
-            // to be language specific.
-            if (!isset($detail)) {
-                $detail = $languageDetail;
-            }
+        $name = trim($detail->getTitle());
 
-            $name = $languageDetail->getTitle();
+        // Ignore items without a name. They might occur in UDB2 although this
+        // is not considered normal.
+        if (empty($name)) {
+            return;
         }
 
         $dateString = $udb2Actor->getCreationDate();
@@ -237,7 +244,7 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($organizerId, EntityTYpe::ORGANIZER(), $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($organizerId, EntityType::ORGANIZER(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**

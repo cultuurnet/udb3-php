@@ -141,12 +141,14 @@ class OrganizerLDProjector extends ActorLDProjector
     protected function publishJSONLDUpdated($id)
     {
         $generator = new Version4Generator();
-        $events[] = DomainMessage::recordNow(
-            $generator->generate(),
-            1,
-            new Metadata(),
-            new OrganizerProjectedToJSONLD($id)
-        );
+        $events = [
+            DomainMessage::recordNow(
+                $generator->generate(),
+                1,
+                new Metadata(),
+                new OrganizerProjectedToJSONLD($id)
+            )
+        ];
 
         $this->eventBus->publish(
             new DomainEventStream($events)

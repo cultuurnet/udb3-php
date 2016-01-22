@@ -306,7 +306,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             );
 
         $domainMessage = new DomainMessage(
-            $organizerUpdatedEvent->getEventId(),
+            $organizerUpdatedEvent->getItemId(),
             1,
             new Metadata(),
             $organizerUpdatedEvent,
@@ -334,7 +334,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             );
 
         $domainMessage = new DomainMessage(
-            $organizerDeletedEvent->getEventId(),
+            $organizerDeletedEvent->getItemId(),
             1,
             new Metadata(),
             $organizerDeletedEvent,

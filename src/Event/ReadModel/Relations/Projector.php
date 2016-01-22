@@ -75,7 +75,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
-        $this->repository->storeOrganizer($organizerUpdated->getEventId(), $organizerUpdated->getOrganizerId());
+        $this->repository->storeOrganizer($organizerUpdated->getItemId(), $organizerUpdated->getOrganizerId());
     }
 
     /**
@@ -83,7 +83,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
-        $this->repository->storeOrganizer($organizerDeleted->getEventId(), null);
+        $this->repository->storeOrganizer($organizerDeleted->getItemId(), null);
     }
 
     protected function storeRelations($eventId, $placeId, $organizerId)

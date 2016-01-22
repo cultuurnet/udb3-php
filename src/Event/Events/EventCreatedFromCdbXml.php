@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolas
- * Date: 07/10/15
- * Time: 11:25
- */
 
 namespace CultuurNet\UDB3\Event\Events;
 

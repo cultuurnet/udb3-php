@@ -1,12 +1,13 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -17,8 +18,8 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\EventLDProjector;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
@@ -1087,7 +1088,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_creates_events_from_cdbxml()
     {
-        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
 
         $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
             new String('foo'),
@@ -1111,7 +1112,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             DateTime::fromString($importedDate)
         );
 
-        $expectedJsonLD = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid_expected.json');
+        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
 
         $this->projector->handle($domainMessage);
 
@@ -1128,7 +1129,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_updates_events_from_cdbxml()
     {
-        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
 
         $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
             new String('foo'),
@@ -1152,7 +1153,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             DateTime::fromString($importedDate)
         );
 
-        $expectedJsonLD = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid_expected.json');
+        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
 
         $this->projector->handle($domainMessage);
 

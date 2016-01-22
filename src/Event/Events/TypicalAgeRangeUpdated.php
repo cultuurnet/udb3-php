@@ -1,18 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Event for typical age range updates.
  */
-class TypicalAgeRangeUpdated extends EventEvent
+class TypicalAgeRangeUpdated extends AbstractEvent
 {
 
     use \CultuurNet\UDB3\TypicalAgeRangeUpdatedTrait;

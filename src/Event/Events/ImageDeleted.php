@@ -1,19 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\ImageDeleted.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Provides an ImageDeleted event.
  */
-class ImageDeleted extends EventEvent
+class ImageDeleted extends AbstractEvent
 {
     use \CultuurNet\UDB3\ImageDeletedTrait;
 

@@ -1,19 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\ContactPointUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Event when contactPoint was updated
  */
-class ContactPointUpdated extends EventEvent
+class ContactPointUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\ContactPointUpdatedTrait;
 

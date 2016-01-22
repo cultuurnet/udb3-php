@@ -711,47 +711,6 @@ class EventLDProjector extends OfferLDProjector implements EventListenerInterfac
 
     }
 
-    /**
-     * @param string $id
-     * @return JsonDocument
-     */
-    protected function newDocument($id)
-    {
-        $document = new JsonDocument($id);
-
-        $eventLd = $document->getBody();
-        $eventLd->{'@id'} = $this->iriGenerator->iri($id);
-
-        // @todo provide Event-LD context here relative to the base URI
-        $eventLd->{'@context'} = '/api/1.0/event.jsonld';
-
-        return $document->withBody($eventLd);
-    }
-
-    /**
-     * @param EventEvent $event
-     * @return JsonDocument
-     */
-    protected function loadDocumentFromRepository(EventEvent $event)
-    {
-        return $this->loadDocumentFromRepositoryByEventId($event->getEventId());
-    }
-
-    /**
-     * @param string $eventId
-     * @return JsonDocument
-     */
-    protected function loadDocumentFromRepositoryByEventId($eventId)
-    {
-        $document = $this->repository->get($eventId);
-
-        if (!$document) {
-            return $this->newDocument($eventId);
-        }
-
-        return $document;
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);

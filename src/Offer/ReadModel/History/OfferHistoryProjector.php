@@ -51,7 +51,7 @@ abstract class OfferHistoryProjector
      * @return string[]
      *   An associative array of commands and their handler methods.
      */
-    private function getEventHandlers()
+    protected function getEventHandlers()
     {
         $events = [];
 
@@ -86,7 +86,7 @@ abstract class OfferHistoryProjector
      * @param AbstractLabelAdded $labelAdded
      * @param DomainMessage $domainMessage
      */
-    private function applyLabelAdded(
+    protected function applyLabelAdded(
         AbstractLabelAdded $labelAdded,
         DomainMessage $domainMessage
     ) {
@@ -104,7 +104,7 @@ abstract class OfferHistoryProjector
      * @param AbstractLabelDeleted $labelDeleted
      * @param DomainMessage $domainMessage
      */
-    private function applyLabelDeleted(
+    protected function applyLabelDeleted(
         AbstractLabelDeleted $labelDeleted,
         DomainMessage $domainMessage
     ) {
@@ -122,7 +122,7 @@ abstract class OfferHistoryProjector
      * @param DateTime $date
      * @return \DateTime
      */
-    private function domainMessageDateToNativeDate(DateTime $date)
+    protected function domainMessageDateToNativeDate(DateTime $date)
     {
         $dateString = $date->toString();
         return \DateTime::createFromFormat(
@@ -135,7 +135,7 @@ abstract class OfferHistoryProjector
      * @param $dateString
      * @return \DateTime
      */
-    private function dateFromUdb2DateString($dateString)
+    protected function dateFromUdb2DateString($dateString)
     {
         return \DateTime::createFromFormat(
             'Y-m-d?H:i:s',
@@ -148,7 +148,7 @@ abstract class OfferHistoryProjector
      * @param Metadata $metadata
      * @return String|null
      */
-    private function getAuthorFromMetadata(Metadata $metadata)
+    protected function getAuthorFromMetadata(Metadata $metadata)
     {
         $properties = $metadata->serialize();
 
@@ -161,7 +161,7 @@ abstract class OfferHistoryProjector
      * @param Metadata $metadata
      * @return String|null
      */
-    private function getConsumerFromMetadata(Metadata $metadata)
+    protected function getConsumerFromMetadata(Metadata $metadata)
     {
         $properties = $metadata->serialize();
 
@@ -174,7 +174,7 @@ abstract class OfferHistoryProjector
      * @param string $eventId
      * @return JsonDocument
      */
-    private function loadDocumentFromRepositoryByEventId($eventId)
+    protected function loadDocumentFromRepositoryByEventId($eventId)
     {
         $historyDocument = $this->documentRepository->get($eventId);
 

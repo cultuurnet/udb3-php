@@ -764,10 +764,12 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $updatedMediaObjects = [];
 
         foreach ($eventLd->mediaObject as $mediaObject) {
-            $mediaObjectMatches = (strpos(
+            $mediaObjectMatches = (
+                strpos(
                     $mediaObject->{'@id'},
                     (string)$imageUpdated->getMediaObjectId()
-                ) > 0);
+                ) > 0
+            );
 
             if ($mediaObjectMatches) {
                 $mediaObject->description = (string)$imageUpdated->getDescription();

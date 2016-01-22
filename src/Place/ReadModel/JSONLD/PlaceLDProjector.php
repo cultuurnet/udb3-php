@@ -447,10 +447,12 @@ class PlaceLDProjector implements EventListenerInterface
         $updatedMediaObjects = [];
 
         foreach ($placeLd->mediaObject as $mediaObject) {
-            $mediaObjectMatches = (strpos(
+            $mediaObjectMatches = (
+                strpos(
                     $mediaObject->{'@id'},
                     (string)$imageUpdated->getMediaObjectId()
-                ) > 0);
+                ) > 0
+            );
 
             if ($mediaObjectMatches) {
                 $mediaObject->description = (string)$imageUpdated->getDescription();

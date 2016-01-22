@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Label as Label;
+use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -31,7 +32,7 @@ use Psr\Log\LoggerAwareTrait;
 /**
  * Commandhandler for events
  */
-class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
+class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -388,21 +389,19 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
 
     }
 
-    public function handleApplyLabel(AddLabel $label)
+    /**
+     * @return string
+     */
+    protected function getAddLabelClassName()
     {
-        /** @var Event $event */
-        $event = $this->eventRepository->load($label->getItemId());
-        $event->label($label->getLabel());
-
-        $this->eventRepository->save($event);
+        return AddLabel::class;
     }
 
-    public function handleUnlabel(Unlabel $label)
+    /**
+     * @return string
+     */
+    protected function getDeleteLabelClassName()
     {
-        /** @var Event $event */
-        $event = $this->eventRepository->load($label->getEventId());
-        $event->unlabel($label->getLabel());
-
-        $this->eventRepository->save($event);
+        return Unlabel::class;
     }
 }

@@ -27,6 +27,6 @@ class ContactPointUpdated extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], ContactPoint::deserialize($data['contactPoint']));
+        return new static($data['item_id'], ContactPoint::deserialize($data['contactPoint']));
     }
 }

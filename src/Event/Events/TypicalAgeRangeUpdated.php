@@ -27,6 +27,6 @@ class TypicalAgeRangeUpdated extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['typicalAgeRange']);
+        return new static($data['item_id'], $data['typicalAgeRange']);
     }
 }

@@ -26,6 +26,6 @@ class BookingInfoUpdated extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], \CultuurNet\UDB3\BookingInfo::deserialize($data['bookingInfo']));
+        return new static($data['item_id'], \CultuurNet\UDB3\BookingInfo::deserialize($data['bookingInfo']));
     }
 }

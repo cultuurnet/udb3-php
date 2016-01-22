@@ -140,7 +140,7 @@ class MajorInfoUpdated extends AbstractEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-            $data['event_id'],
+            $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Location::deserialize($data['location']),

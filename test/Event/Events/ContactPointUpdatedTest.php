@@ -43,7 +43,7 @@ class ContactPointUpdatedTest extends \PHPUnit_Framework_TestCase
         return [
             'contactPointUpdated' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                     'contactPoint' => [
                         'phone' => [
                             '0123456789',

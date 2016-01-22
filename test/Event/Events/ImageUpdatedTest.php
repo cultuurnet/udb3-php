@@ -44,7 +44,7 @@ class ImageUpdatedTest extends \PHPUnit_Framework_TestCase
         return [
             'imageUpdated' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                     'index_to_update' => 'indexToUpdate',
                     'media_object' => [
                         'type' => '',

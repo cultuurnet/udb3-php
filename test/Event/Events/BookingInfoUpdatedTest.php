@@ -43,7 +43,7 @@ class BookingInfoUpdatedTest extends \PHPUnit_Framework_TestCase
         return [
             'bookingInfoUpdated' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                     'bookingInfo' => [
                         'phone' => '0123456789',
                         'email' => 'foo@bar.com',

@@ -21,7 +21,7 @@ class EventWasLabelledTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(SerializableInterface::class, $labelsMerged);
 
         $expectedSerializedEvent = [
-            'event_id' => 'foo',
+            'item_id' => 'foo',
             'label' => 'label 1',
         ];
 
@@ -37,7 +37,7 @@ class EventWasLabelledTest extends \PHPUnit_Framework_TestCase
     public function it_can_deserialize_an_array()
     {
         $serializedEvent = [
-            'event_id' => 'foo',
+            'item_id' => 'foo',
             'label' => 'label 1',
         ];
 

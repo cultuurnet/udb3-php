@@ -43,7 +43,7 @@ class TypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
         return [
             'typical age range' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                     'typicalAgeRange' => '3-12'
                 ],
                 new TypicalAgeRangeUpdated(

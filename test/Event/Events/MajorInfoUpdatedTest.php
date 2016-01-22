@@ -45,7 +45,7 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
         return [
             'event' => [
                 [
-                    'event_id' => 'test 456',
+                    'item_id' => 'test 456',
                     'title' => 'title',
                     'theme' => array(
                         'id' => 'themeid',

@@ -43,7 +43,7 @@ class UnlabelledTest extends \PHPUnit_Framework_TestCase
         return [
             'unlabelled' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                     'label' => 'Label1'
                 ],
                 new Unlabelled(

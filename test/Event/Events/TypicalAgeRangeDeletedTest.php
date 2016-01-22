@@ -43,7 +43,7 @@ class TypicalAgeRangeDeletedTest extends \PHPUnit_Framework_TestCase
         return [
             'typical age range' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                 ],
                 new TypicalAgeRangeDeleted(
                     'foo'

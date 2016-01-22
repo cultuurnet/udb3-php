@@ -281,7 +281,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $taggedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $eventWasTagged->getEventId(),
+            $eventWasTagged->getItemId(),
             2,
             new Metadata(['user_nick' => 'Jan Janssen']),
             $eventWasTagged,
@@ -324,7 +324,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $tagErasedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $tagErased->getEventId(),
+            $tagErased->getItemId(),
             2,
             new Metadata(['user_nick' => 'Jan Janssen']),
             $tagErased,

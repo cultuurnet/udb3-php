@@ -24,24 +24,14 @@ use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\String\String;
 
-class HistoryProjector implements EventListenerInterface
+class HistoryProjector extends OfferHistoryProjector implements EventListenerInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
 
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    private $documentRepository;
-
-    public function __construct(DocumentRepositoryInterface $documentRepository)
-    {
-        $this->documentRepository = $documentRepository;
-    }
-
-    private function applyEventImportedFromUDB2(
+    protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2,
         DomainMessage $domainMessage
     ) {
@@ -72,7 +62,7 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function applyEventCreatedFromCdbXml(
+    protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml,
         DomainMessage $domainMessage
     ) {
@@ -92,7 +82,7 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function applyEventUpdatedFromCdbXml(
+    protected function applyEventUpdatedFromCdbXml(
         EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
         DomainMessage $domainMessage
     ) {
@@ -112,33 +102,7 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    /**
-     * @param DateTime $date
-     * @return \DateTime
-     */
-    private function domainMessageDateToNativeDate(DateTime $date)
-    {
-        $dateString = $date->toString();
-        return \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $dateString
-        );
-    }
-
-    /**
-     * @param $dateString
-     * @return \DateTime
-     */
-    private function dateFromUdb2DateString($dateString)
-    {
-        return \DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $dateString,
-            new \DateTimeZone('Europe/Brussels')
-        );
-    }
-
-    private function applyEventUpdatedFromUDB2(
+    protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2,
         DomainMessage $domainMessage
     ) {
@@ -152,64 +116,10 @@ class HistoryProjector implements EventListenerInterface
     }
 
     /**
-     * @param Metadata $metadata
-     * @return String|null
-     */
-    private function getAuthorFromMetadata(Metadata $metadata)
-    {
-        $properties = $metadata->serialize();
-
-        if (isset($properties['user_nick'])) {
-            return new String($properties['user_nick']);
-        }
-    }
-
-    /**
-     * @param Metadata $metadata
-     * @return String|null
-     */
-    private function getConsumerFromMetadata(Metadata $metadata)
-    {
-        $properties = $metadata->serialize();
-
-        if (isset($properties['consumer']['name'])) {
-            return new String($properties['consumer']['name']);
-        }
-    }
-
-    private function applyEventWasLabelled(
-        EventWasLabelled $eventWasLabelled,
-        DomainMessage $domainMessage
-    ) {
-        $this->writeHistory(
-            $eventWasLabelled->getEventId(),
-            new Log(
-                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$eventWasLabelled->getLabel()}' toegepast"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
-
-    private function applyUnlabelled(
-        Unlabelled $unlabelled,
-        DomainMessage $domainMessage
-    ) {
-        $this->writeHistory(
-            $unlabelled->getEventId(),
-            new Log(
-                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$unlabelled->getLabel()}' verwijderd"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
-
-    /**
      * @param LabelsMerged $labelsMerged
      * @param DomainMessage $domainMessage
      */
-    private function applyLabelsMerged(
+    protected function applyLabelsMerged(
         LabelsMerged $labelsMerged,
         DomainMessage $domainMessage
     ) {
@@ -241,7 +151,7 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function applyTitleTranslated(
+    protected function applyTitleTranslated(
         TitleTranslated $titleTranslated,
         DomainMessage $domainMessage
     ) {
@@ -255,7 +165,7 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function applyDescriptionTranslated(
+    protected function applyDescriptionTranslated(
         DescriptionTranslated $descriptionTranslated,
         DomainMessage $domainMessage
     ) {
@@ -271,7 +181,7 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function applyTranslationApplied(
+    protected function applyTranslationApplied(
         TranslationApplied $translationApplied,
         DomainMessage $domainMessage
     ) {
@@ -311,7 +221,7 @@ class HistoryProjector implements EventListenerInterface
      * @param TranslationDeleted $translationDeleted
      * @param DomainMessage $domainMessage
      */
-    private function applyTranslationDeleted(
+    protected function applyTranslationDeleted(
         TranslationDeleted $translationDeleted,
         DomainMessage $domainMessage
     ) {
@@ -339,7 +249,7 @@ class HistoryProjector implements EventListenerInterface
      * @param CollaborationDataAdded $collaborationDataAdded
      * @param DomainMessage $domainMessage
      */
-    private function applyCollaborationDataAdded(
+    protected function applyCollaborationDataAdded(
         CollaborationDataAdded $collaborationDataAdded,
         DomainMessage $domainMessage
     ) {
@@ -363,41 +273,18 @@ class HistoryProjector implements EventListenerInterface
     }
 
     /**
-     * @param string $eventId
-     * @return JsonDocument
+     * @return string
      */
-    private function loadDocumentFromRepositoryByEventId($eventId)
+    protected function getLabelAddedClassName()
     {
-        $historyDocument = $this->documentRepository->get($eventId);
-
-        if (!$historyDocument) {
-            $historyDocument = new JsonDocument($eventId, '[]');
-        }
-
-        return $historyDocument;
+        return EventWasLabelled::class;
     }
 
     /**
-     * @param string $eventId
-     * @param Log[]|Log $logs
+     * @return string
      */
-    protected function writeHistory($eventId, $logs)
+    protected function getLabelDeletedClassName()
     {
-        $historyDocument = $this->loadDocumentFromRepositoryByEventId($eventId);
-
-        $history = $historyDocument->getBody();
-
-        if (!is_array($logs)) {
-            $logs = [$logs];
-        }
-
-        // Append most recent one to the top.
-        foreach ($logs as $log) {
-            array_unshift($history, $log);
-        }
-
-        $this->documentRepository->save(
-            $historyDocument->withBody($history)
-        );
+        return Unlabelled::class;
     }
 }

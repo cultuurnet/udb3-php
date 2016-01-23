@@ -115,7 +115,7 @@ interface PlaceEditingServiceInterface
      * Update an image of the place.
      *
      * @param string $id
-     * @parma int $indexToEdit
+     * @param int $indexToEdit
      * @param MediaObject $mediaObject
      */
     public function updateImage($id, $indexToEdit, MediaObject $mediaObject);

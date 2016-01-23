@@ -43,6 +43,11 @@ class EventExportService implements EventExportServiceInterface
     protected $mailer;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param SearchServiceInterface $searchService
      * @param UuidGeneratorInterface $uuidGenerator
@@ -61,7 +66,7 @@ class EventExportService implements EventExportServiceInterface
         $this->eventService = $eventService;
         $this->searchService = $searchService;
         $this->uuidGenerator = $uuidGenerator;
-        $this->publicDirectory = realpath($publicDirectory);
+        $this->publicDirectory = $publicDirectory;
         $this->iriGenerator = $iriGenerator;
         $this->mailer = $mailer;
     }
@@ -114,10 +119,9 @@ class EventExportService implements EventExportServiceInterface
         }
 
         try {
-            $tmpPath = tempnam(
-                sys_get_temp_dir(),
-                $this->uuidGenerator->generate()
-            );
+            $tmpDir = sys_get_temp_dir();
+            $tmpFileName = $this->uuidGenerator->generate();
+            $tmpPath = "{$tmpDir}/{$tmpFileName}";
 
             // $events are keyed here by the authoritative event ID.
             if ($selection) {
@@ -135,13 +139,13 @@ class EventExportService implements EventExportServiceInterface
 
             $finalPath = $this->getFinalFilePath($fileFormat, $tmpPath);
 
-            $moved = rename($tmpPath, $finalPath);
+            $moved = copy($tmpPath, $finalPath);
+            unlink($tmpPath);
 
             if (!$moved) {
                 throw new \RuntimeException(
-                    'Unable to move export file to public directory ' . realpath(
-                        $this->publicDirectory
-                    )
+                    'Unable to move export file to public directory ' .
+                    $this->publicDirectory
                 );
             }
 

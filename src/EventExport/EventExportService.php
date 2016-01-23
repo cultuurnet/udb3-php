@@ -252,8 +252,7 @@ class EventExportService implements EventExportServiceInterface
 
                     try {
                         $event = $this->eventService->getEvent($eventId);
-                    }
-                    catch (EventNotFoundException $e) {
+                    } catch (EventNotFoundException $e) {
                         $logger->error(
                             $e->getMessage(),
                             [

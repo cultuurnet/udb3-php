@@ -80,6 +80,9 @@ class EventExportService implements EventExportServiceInterface
         LoggerInterface $logger = null,
         $selection = null
     ) {
+        if (!$logger instanceof LoggerInterface) {
+            $logger = new NullLogger();
+        }
 
         // do a pre query to test if the query is valid and check the item count
         try {
@@ -90,16 +93,14 @@ class EventExportService implements EventExportServiceInterface
             );
             $totalItemCount = $preQueryResult->getTotalItems()->toNative();
         } catch (ClientErrorResponseException $e) {
-            if ($logger) {
-                $logger->error(
-                    'not_exported',
-                    array(
-                        'query' => (string)$query,
-                        'error' => $e->getMessage(),
-                        'exception_class' => get_class($e),
-                    )
-                );
-            }
+            $logger->error(
+                'not_exported',
+                array(
+                    'query' => (string)$query,
+                    'error' => $e->getMessage(),
+                    'exception_class' => get_class($e),
+                )
+            );
 
             throw ($e);
         }
@@ -107,15 +108,13 @@ class EventExportService implements EventExportServiceInterface
         print($totalItemCount) . PHP_EOL;
 
         if ($totalItemCount < 1) {
-            if ($logger) {
-                $logger->error(
-                    'not_exported',
-                    array(
-                        'query' => (string)$query,
-                        'error' => "query did not return any results"
-                    )
-                );
-            }
+            $logger->error(
+                'not_exported',
+                array(
+                    'query' => (string)$query,
+                    'error' => "query did not return any results"
+                )
+            );
 
             return false;
         }
@@ -155,14 +154,12 @@ class EventExportService implements EventExportServiceInterface
                 basename($finalPath)
             );
 
-            if ($logger) {
-                $logger->info(
-                    'job_info',
-                    [
-                        'location' => $finalUrl,
-                    ]
-                );
-            }
+            $logger->info(
+                'job_info',
+                [
+                    'location' => $finalUrl,
+                ]
+            );
 
             if ($address) {
                 $this->notifyByMail($address, $finalUrl);
@@ -211,18 +208,14 @@ class EventExportService implements EventExportServiceInterface
     /**
      * Generator that yields each unique search result.
      *
-     * @param $totalItemCount
-     * @param $query
-     * @param LoggerInterface|null $logger
+     * @param int $totalItemCount
+     * @param string|object $query
+     * @param LoggerInterface $logger
      *
      * @return \Generator
      */
-    private function search($totalItemCount, $query, LoggerInterface $logger = null)
+    private function search($totalItemCount, $query, LoggerInterface $logger)
     {
-        if (!$logger instanceof LoggerInterface) {
-            $logger = new NullLogger();
-        }
-
         // change this pageSize value to increase or decrease the page size;
         $pageSize = 10;
         $pageCount = ceil($totalItemCount / $pageSize);
@@ -266,15 +259,13 @@ class EventExportService implements EventExportServiceInterface
 
                     yield $eventId => $event;
                 } else {
-                    if ($logger) {
-                        $logger->error(
-                            'query_duplicate_event',
-                            array(
-                                'query' => $query,
-                                'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$exportedEventIds[$eventId]}"
-                            )
-                        );
-                    }
+                    $logger->error(
+                        'query_duplicate_event',
+                        array(
+                            'query' => $query,
+                            'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$exportedEventIds[$eventId]}"
+                        )
+                    );
                 }
             }
             ++$pageCounter;

@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
+use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\Results;
@@ -16,6 +17,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
 use PHPUnit_Framework_TestCase;
 use Psr\Log\LoggerInterface;
+use Traversable;
 use ValueObjects\Number\Integer;
 
 class EventExportServiceTest extends PHPUnit_Framework_TestCase
@@ -72,17 +74,6 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     {
         $this->publicDirectory = vfsStream::setup('exampleDir');
         $this->eventService = $this->getMock(EventServiceInterface::class);
-        $this->eventService->expects($this->any())
-            ->method('getEvent')
-            ->willReturnCallback(
-                function ($eventId) {
-                    return [
-                        '@id' => 'http://example.com/event/' . $eventId,
-                        '@type' => 'Event',
-                        'foo' => 'bar',
-                    ];
-                }
-            );
 
         $this->searchService = $this->getMock(SearchServiceInterface::class);
         $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
@@ -145,23 +136,18 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * @param string $fileNameExtension
+     *
+     * @return FileFormatInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function it_exports_events_to_a_file()
+    private function getFileFormat($fileNameExtension)
     {
-        $exportUuid = 'abc';
-        $this->uuidGenerator->expects($this->any())
-            ->method('generate')
-            ->willReturn($exportUuid);
-
-        $exportExtension = 'txt';
         /** @var FileFormatInterface|\PHPUnit_Framework_MockObject_MockObject $fileFormat */
         $fileFormat = $this->getMock(FileFormatInterface::class);
+
         $fileFormat->expects($this->any())
             ->method('getFileNameExtension')
-            ->willReturn($exportExtension);
-
-        $expectedExportFileName = 'abc.txt';
+            ->willReturn($fileNameExtension);
 
         $fileWriter = $this->getMock(FileWriterInterface::class);
         $fileFormat->expects($this->any())
@@ -173,11 +159,47 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $fileWriter->expects($this->once())
             ->method('write')
             ->willReturnCallback(
-                function ($tmpPath, $events) {
+                function ($tmpPath, Traversable $events) {
                     $contents = json_encode(iterator_to_array($events));
                     file_put_contents($tmpPath, $contents);
                 }
             );
+
+        return $fileFormat;
+    }
+
+    private function forceUuidGeneratorToReturn($uuid)
+    {
+        $this->uuidGenerator->expects($this->any())
+            ->method('generate')
+            ->willReturn($uuid);
+    }
+
+    /**
+     * @test
+     */
+    public function it_exports_events_to_a_file()
+    {
+        $this->eventService->expects($this->any())
+            ->method('getEvent')
+            ->willReturnCallback(
+                function ($eventId) {
+                    return [
+                        '@id' => 'http://example.com/event/' . $eventId,
+                        '@type' => 'Event',
+                        'foo' => 'bar',
+                    ];
+                }
+            );
+
+        $exportUuid = 'abc';
+        $this->forceUuidGeneratorToReturn($exportUuid);
+
+        $exportExtension = 'txt';
+
+        $fileFormat = $this->getFileFormat($exportExtension);
+
+        $expectedExportFileName = 'abc.txt';
 
         $query = new EventExportQuery('city:Leuven');
         $logger = $this->getMock(LoggerInterface::class);
@@ -208,6 +230,25 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     public function it_sends_an_email_with_a_link_to_the_export_if_address_is_provided()
     {
         $this->markTestIncomplete();
+    }
+
+    /**
+     * @param array $results
+     * @param array $without
+     * @return array
+     */
+    private function searchResultsWithout($results, $without)
+    {
+        $newResults = [];
+        foreach ($results as $offerId => $result) {
+            if (in_array($offerId, $without)) {
+                continue;
+            }
+
+            $newResults[$offerId] = $result;
+        }
+
+        return $newResults;
     }
 
     /**

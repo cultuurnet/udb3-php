@@ -218,7 +218,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         /** @var vfsStreamFile $file */
         $file = $this->publicDirectory->getChild($expectedExportFileName);
 
-        $this->assertEquals(
+        $this->assertJsonStringEqualsJsonString(
             json_encode($this->searchResultsDetails),
             $file->getContent()
         );
@@ -256,6 +256,53 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
      */
     public function it_ignores_items_that_can_not_be_found_by_the_event_service()
     {
-        $this->markTestIncomplete();
+        $unavailableEventIds = [17];
+        $expectedDetails = $this->searchResultsWithout(
+            $this->searchResultsDetails,
+            $unavailableEventIds
+        );
+
+        $this->assertArrayNotHasKey($unavailableEventIds[0], $expectedDetails);
+
+        $this->eventService->expects($this->any())
+            ->method('getEvent')
+            ->willReturnCallback(
+                function ($eventId) use ($unavailableEventIds) {
+                    if (in_array($eventId, $unavailableEventIds)) {
+                        throw new EventNotFoundException(
+                            "Event with cdbid {$eventId} could not be found via Entry API."
+                        );
+                    }
+
+                    return [
+                        '@id' => 'http://example.com/event/' . $eventId,
+                        '@type' => 'Event',
+                        'foo' => 'bar',
+                    ];
+                }
+            );
+
+        $query = new EventExportQuery('city:Leuven');
+
+        $exportUuid = 'abc';
+        $this->forceUuidGeneratorToReturn($exportUuid);
+
+        $exportExtension = 'txt';
+        $fileFormat = $this->getFileFormat($exportExtension);
+
+        $expectedExportFileName = 'abc.txt';
+
+        $this->eventExportService->exportEvents(
+            $fileFormat,
+            $query
+        );
+
+        /** @var vfsStreamFile $file */
+        $file = $this->publicDirectory->getChild($expectedExportFileName);
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expectedDetails),
+            $file->getContent()
+        );
     }
 }

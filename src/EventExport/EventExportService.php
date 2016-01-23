@@ -7,11 +7,13 @@ namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
+use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use ValueObjects\Web\EmailAddress;
 
 class EventExportService implements EventExportServiceInterface
@@ -217,6 +219,10 @@ class EventExportService implements EventExportServiceInterface
      */
     private function search($totalItemCount, $query, LoggerInterface $logger = null)
     {
+        if (!$logger instanceof LoggerInterface) {
+            $logger = new NullLogger();
+        }
+
         // change this pageSize value to increase or decrease the page size;
         $pageSize = 10;
         $pageCount = ceil($totalItemCount / $pageSize);
@@ -244,7 +250,20 @@ class EventExportService implements EventExportServiceInterface
                 if (!array_key_exists($eventId, $exportedEventIds)) {
                     $exportedEventIds[$eventId] = $pageCounter;
 
-                    $event = $this->eventService->getEvent($eventId);
+                    try {
+                        $event = $this->eventService->getEvent($eventId);
+                    }
+                    catch (EventNotFoundException $e) {
+                        $logger->error(
+                            $e->getMessage(),
+                            [
+                                'query' => $query,
+                                'exception' => $e,
+                            ]
+                        );
+
+                        continue;
+                    }
 
                     yield $eventId => $event;
                 } else {

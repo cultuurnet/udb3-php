@@ -1428,10 +1428,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
 
+        $xml = file_get_contents(__DIR__ . '/samples/event_with_photo.cdbxml.xml');
+
         $eventUpdatedFromUDB2 = new EventUpdatedFromUDB2(
-            'someId',
+            'foo',
             $xml,
-            self::CDBXML_NAMESPACE
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
         );
 
         return [

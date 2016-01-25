@@ -19,6 +19,7 @@ use PHPUnit_Framework_TestCase;
 use Psr\Log\LoggerInterface;
 use Traversable;
 use ValueObjects\Number\Integer;
+use ValueObjects\Web\EmailAddress;
 
 class EventExportServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -229,7 +230,58 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
      */
     public function it_sends_an_email_with_a_link_to_the_export_if_address_is_provided()
     {
-        $this->markTestIncomplete();
+        $this->eventService->expects($this->any())
+            ->method('getEvent')
+            ->willReturnCallback(
+                function ($eventId) {
+                    return [
+                        '@id' => 'http://example.com/event/' . $eventId,
+                        '@type' => 'Event',
+                        'foo' => 'bar',
+                    ];
+                }
+            );
+
+        $exportUuid = 'abc';
+        $this->forceUuidGeneratorToReturn($exportUuid);
+
+        $exportExtension = 'txt';
+
+        $fileFormat = $this->getFileFormat($exportExtension);
+
+        $expectedExportFileName = 'abc.txt';
+
+        $query = new EventExportQuery('city:Leuven');
+
+        $to = new EmailAddress('foo@example.com');
+
+        $exportIriBase = 'http://example.com/export/';
+
+        $createIri = function ($item) use ($exportIriBase) {
+            return $exportIriBase . $item;
+        };
+
+        $this->iriGenerator->expects($this->once())
+            ->method('iri')
+            ->with($expectedExportFileName)
+            ->willReturnCallback($createIri);
+
+        $expectedUrl = $createIri($expectedExportFileName);
+
+        $this->mailer->expects($this->once())
+            ->method('sendNotificationMail')
+            ->with(
+                $to,
+                new EventExportResult(
+                    $expectedUrl
+                )
+            );
+
+        $this->eventExportService->exportEvents(
+            $fileFormat,
+            $query,
+            $to
+        );
     }
 
     /**

@@ -320,6 +320,13 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         // Add publisher, which is the consumer name.
         $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
 
+        // Because we can not properly track media coming from UDB2 we simply
+        // ignore it and give priority to content added through UDB3.
+        $media = $this->UDB3Media($eventId);
+        if (!empty($media)) {
+            $eventLd->mediaObject = $media;
+        }
+
         $this->repository->save($document->withBody($eventLd));
     }
 
@@ -349,7 +356,37 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             $this->slugger
         );
 
+        // Because we can not properly track media coming from UDB2 we simply
+        // ignore it and give priority to content added through UDB3.
+        $media = $this->UDB3Media($eventId);
+        if (!empty($media)) {
+            $eventLd->mediaObject = $media;
+        }
+
         $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * Return the media of an event if it already exists.
+     *
+     * @param $eventId
+     *  The id of the event.
+     * 
+     * @return array
+     *  A list of media objects.
+     */
+    private function UDB3Media($eventId) {
+        $document = $this->loadDocumentFromRepositoryByEventId($eventId);
+        $media = [];
+        
+        if ($document) {
+            $item = $document->getBody();
+            // At the moment we do not include any media coming from UDB2.
+            // If the mediaObject property contains data it's coming from UDB3.
+            $item->mediaObject = isset($item->mediaObject) ? $item->mediaObject : [];
+        }
+
+        return $media;
     }
 
     /**

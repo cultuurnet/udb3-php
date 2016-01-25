@@ -371,11 +371,12 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      *
      * @param $eventId
      *  The id of the event.
-     * 
+     *
      * @return array
      *  A list of media objects.
      */
-    private function UDB3Media($eventId) {
+    private function UDB3Media($eventId)
+    {
         $document = $this->loadDocumentFromRepositoryByEventId($eventId);
         $media = [];
         

@@ -399,4 +399,53 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             $file->getContent()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_logs_items_that_can_not_be_found_by_the_event_service()
+    {
+        $unavailableEventIds = [4, 7, 16];
+
+        $this->setUpEventService($unavailableEventIds);
+
+        $query = new EventExportQuery('city:Leuven');
+
+        $exportUuid = 'abc';
+        $this->forceUuidGeneratorToReturn($exportUuid);
+
+        $exportExtension = 'txt';
+        $fileFormat = $this->getFileFormat($exportExtension);
+
+        $logger = $this->getMock(LoggerInterface::class);
+        $expectedLogContextCallback = function ($context) use ($query) {
+            return
+                $context['query'] == $query &&
+                $context['exception'] instanceof EventNotFoundException;
+        };
+
+        $logger->expects($this->exactly(3))
+            ->method('error')
+            ->withConsecutive(
+                [
+                    $this->equalTo('Event with cdbid 4 could not be found via Entry API.'),
+                    $this->callback($expectedLogContextCallback),
+                ],
+                [
+                    $this->equalTo('Event with cdbid 7 could not be found via Entry API.'),
+                    $this->callback($expectedLogContextCallback),
+                ],
+                [
+                    $this->equalTo('Event with cdbid 16 could not be found via Entry API.'),
+                    $this->callback($expectedLogContextCallback),
+                ]
+            );
+
+        $this->eventExportService->exportEvents(
+            $fileFormat,
+            $query,
+            null,
+            $logger
+        );
+    }
 }

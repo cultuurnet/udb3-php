@@ -205,6 +205,9 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $query = new EventExportQuery('city:Leuven');
         $logger = $this->getMock(LoggerInterface::class);
 
+        $this->mailer->expects($this->never())
+            ->method('sendNotificationMail');
+
         $this->eventExportService->exportEvents(
             $fileFormat,
             $query,

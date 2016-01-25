@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Place\PlaceEvent;
 
 /**

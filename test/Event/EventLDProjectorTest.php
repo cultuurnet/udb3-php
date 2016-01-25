@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
@@ -26,6 +27,10 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -37,7 +42,11 @@ use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase
 {
@@ -67,6 +76,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      * @var EventLDProjector
      */
     protected $projector;
+
+    /**
+     * @var Serializer|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $serializer;
 
     /**
      * Constructs a test case with the given name.
@@ -107,12 +121,15 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             }
         );
 
+        $this->serializer = new MediaObjectSerializer($this->iriGenerator);
+
         $this->projector = new EventLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->eventService,
             $this->placeService,
-            $this->organizerService
+            $this->organizerService,
+            $this->serializer
         );
     }
 
@@ -511,6 +528,39 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $this->assertEquals(
             '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
             $body->image
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_media_object_when_an_image_is_added_to_the_event()
+    {
+        $eventId = 'event-1';
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $expectedMediaObjects = [
+            (object) [
+                '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'description' => 'sexy ladies without clothes',
+                'copyrightHolder' => 'Bart Ramakers'
+            ]
+        ];
+
+        $imageAddedEvent = new ImageAdded($eventId, $image);
+        $eventBody = $this->project($imageAddedEvent, $eventId);
+
+        $this->assertEquals(
+            $expectedMediaObjects,
+            $eventBody->mediaObject
         );
     }
 

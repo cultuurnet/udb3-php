@@ -9,7 +9,8 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
@@ -107,9 +108,9 @@ interface PlaceEditingServiceInterface
      * Add an image to the place.
      *
      * @param string $id
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function addImage($id, MediaObject $mediaObject);
+    public function addImage($id, Image $image);
 
     /**
      * Update an image of the place.

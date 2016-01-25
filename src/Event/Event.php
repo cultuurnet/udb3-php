@@ -38,10 +38,14 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class Event extends EventSourcedAggregateRoot
 {
@@ -62,6 +66,11 @@ class Event extends EventSourcedAggregateRoot
      *   Array of different collections, keyed by language.
      */
     protected $collaborationData;
+
+    /**
+     * @var UUID[]
+     */
+    protected $mediaObjects = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -284,6 +293,14 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
+     * @return UUID[]
+     */
+    public function getMediaObjects()
+    {
+        return $this->mediaObjects;
+    }
+
+    /**
      * @param Label $label
      */
     public function label(Label $label)
@@ -438,11 +455,23 @@ class Event extends EventSourcedAggregateRoot
     /**
      * Add a new image.
      *
-     * @param MediaObject $mediaObject
+     * @param Image $image
+     * @throws DuplicateMediaObjectException
      */
-    public function addImage(MediaObject $mediaObject)
+    public function addImage(Image $image)
     {
-        $this->apply(new ImageAdded($this->eventId, $mediaObject));
+        $duplicateMediaObject = array_filter(
+            $this->getMediaObjects(),
+            function ($existingMediaObjectId) use ($image) {
+                return $image
+                    ->getMediaObjectId()
+                    ->sameValueAs($existingMediaObjectId);
+            }
+        );
+
+        if (empty($duplicateMediaObject)) {
+            $this->apply(new ImageAdded($this->eventId, $image));
+        }
     }
 
     /**
@@ -605,5 +634,10 @@ class Event extends EventSourcedAggregateRoot
                 $cdbXmlNamespaceUri
             )
         );
+    }
+
+    protected function applyImageAdded(ImageAdded $imageAdded)
+    {
+        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
     }
 }

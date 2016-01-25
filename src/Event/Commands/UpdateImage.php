@@ -7,7 +7,7 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\MediaObject;
 
 /**
  * Provides a command to update an image of the event.

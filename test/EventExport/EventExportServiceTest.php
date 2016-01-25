@@ -256,13 +256,15 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
      */
     public function it_ignores_items_that_can_not_be_found_by_the_event_service()
     {
-        $unavailableEventIds = [17];
+        $unavailableEventIds = [3, 6, 17];
         $expectedDetails = $this->searchResultsWithout(
             $this->searchResultsDetails,
             $unavailableEventIds
         );
 
-        $this->assertArrayNotHasKey($unavailableEventIds[0], $expectedDetails);
+        foreach ($unavailableEventIds as $unavailableEventId) {
+            $this->assertArrayNotHasKey($unavailableEventId, $expectedDetails);
+        }
 
         $this->eventService->expects($this->any())
             ->method('getEvent')

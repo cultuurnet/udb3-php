@@ -245,6 +245,55 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_logs_the_url_of_the_exported_file()
+    {
+        $this->setUpEventService();
+
+        $exportUuid = 'abc';
+        $this->forceUuidGeneratorToReturn($exportUuid);
+
+        $exportExtension = 'txt';
+
+        $fileFormat = $this->getFileFormat($exportExtension);
+
+        $expectedExportFileName = 'abc.txt';
+
+        $query = new EventExportQuery('city:Leuven');
+        $logger = $this->getMock(LoggerInterface::class);
+
+        $exportIriBase = 'http://example.com/export/';
+
+        $createIri = function ($item) use ($exportIriBase) {
+            return $exportIriBase . $item;
+        };
+
+        $expectedExportUrl = $createIri($expectedExportFileName);
+
+        $this->iriGenerator->expects($this->once())
+            ->method('iri')
+            ->with($expectedExportFileName)
+            ->willReturnCallback($createIri);
+
+        $logger->expects($this->once())
+            ->method('info')
+            ->with(
+                'job_info',
+                [
+                    'location' => $expectedExportUrl,
+                ]
+            );
+
+        $this->eventExportService->exportEvents(
+            $fileFormat,
+            $query,
+            null,
+            $logger
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_sends_an_email_with_a_link_to_the_export_if_address_is_provided()
     {
         $this->setUpEventService();

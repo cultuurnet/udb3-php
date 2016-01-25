@@ -81,6 +81,8 @@ class PullParsingSearchService implements SearchServiceInterface
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);
         $typeParam = new Parameter\FilterQuery('type:event');
+        // fetch all private and non-private events
+        $privateParam = new Parameter\FilterQuery('private:*');
 
         $params = array(
             $qParam,
@@ -88,6 +90,7 @@ class PullParsingSearchService implements SearchServiceInterface
             $limitParam,
             $startParam,
             $typeParam,
+            $privateParam
         );
 
         if ($sort) {

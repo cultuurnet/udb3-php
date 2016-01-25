@@ -204,6 +204,7 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
                             new Rows(30),
                             new Start(0),
                             new FilterQuery('type:event'),
+                            new FilterQuery('private:*')
                         ]
                     ),
                 ],
@@ -215,6 +216,7 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
                             new Rows(20),
                             new Start(0),
                             new FilterQuery('type:event'),
+                            new FilterQuery('private:*')
                         ]
                     ),
                 ],
@@ -226,6 +228,7 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
                             new Rows(20),
                             new Start(40),
                             new FilterQuery('type:event'),
+                            new FilterQuery('private:*')
                         ]
                     ),
                 ],
@@ -237,6 +240,7 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
                             new Rows(10),
                             new Start(20),
                             new FilterQuery('type:event'),
+                            new FilterQuery('private:*'),
                             new Parameter('sort', 'lastupdated desc'),
                         ]
                     ),

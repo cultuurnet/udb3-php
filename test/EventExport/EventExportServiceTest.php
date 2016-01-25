@@ -137,6 +137,30 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param array $unavailableEventIds
+     */
+    private function setUpEventService(array $unavailableEventIds = [])
+    {
+        $this->eventService->expects($this->any())
+            ->method('getEvent')
+            ->willReturnCallback(
+                function ($eventId) use ($unavailableEventIds) {
+                    if (in_array($eventId, $unavailableEventIds)) {
+                        throw new EventNotFoundException(
+                            "Event with cdbid {$eventId} could not be found via Entry API."
+                        );
+                    }
+
+                    return [
+                        '@id' => 'http://example.com/event/' . $eventId,
+                        '@type' => 'Event',
+                        'foo' => 'bar',
+                    ];
+                }
+            );
+    }
+
+    /**
      * @param string $fileNameExtension
      *
      * @return FileFormatInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -181,17 +205,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
      */
     public function it_exports_events_to_a_file()
     {
-        $this->eventService->expects($this->any())
-            ->method('getEvent')
-            ->willReturnCallback(
-                function ($eventId) {
-                    return [
-                        '@id' => 'http://example.com/event/' . $eventId,
-                        '@type' => 'Event',
-                        'foo' => 'bar',
-                    ];
-                }
-            );
+        $this->setUpEventService();
 
         $exportUuid = 'abc';
         $this->forceUuidGeneratorToReturn($exportUuid);
@@ -233,17 +247,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
      */
     public function it_sends_an_email_with_a_link_to_the_export_if_address_is_provided()
     {
-        $this->eventService->expects($this->any())
-            ->method('getEvent')
-            ->willReturnCallback(
-                function ($eventId) {
-                    return [
-                        '@id' => 'http://example.com/event/' . $eventId,
-                        '@type' => 'Event',
-                        'foo' => 'bar',
-                    ];
-                }
-            );
+        $this->setUpEventService();
 
         $exportUuid = 'abc';
         $this->forceUuidGeneratorToReturn($exportUuid);
@@ -321,23 +325,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             $this->assertArrayNotHasKey($unavailableEventId, $expectedDetails);
         }
 
-        $this->eventService->expects($this->any())
-            ->method('getEvent')
-            ->willReturnCallback(
-                function ($eventId) use ($unavailableEventIds) {
-                    if (in_array($eventId, $unavailableEventIds)) {
-                        throw new EventNotFoundException(
-                            "Event with cdbid {$eventId} could not be found via Entry API."
-                        );
-                    }
-
-                    return [
-                        '@id' => 'http://example.com/event/' . $eventId,
-                        '@type' => 'Event',
-                        'foo' => 'bar',
-                    ];
-                }
-            );
+        $this->setUpEventService($unavailableEventIds);
 
         $query = new EventExportQuery('city:Leuven');
 

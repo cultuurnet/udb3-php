@@ -3,7 +3,7 @@
 namespace test\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Label;
 
 class EventWasLabelledTest extends \PHPUnit_Framework_TestCase
@@ -13,7 +13,7 @@ class EventWasLabelledTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_serialized_to_an_array()
     {
-        $labelsMerged = new EventWasLabelled(
+        $labelsMerged = new LabelAdded(
             'foo',
             new Label('label 1')
         );
@@ -41,14 +41,14 @@ class EventWasLabelledTest extends \PHPUnit_Framework_TestCase
             'label' => 'label 1',
         ];
 
-        $expectedEventWasLabelled = new EventWasLabelled(
+        $expectedEventWasLabelled = new LabelAdded(
             'foo',
             new Label('label 1')
         );
 
         $this->assertEquals(
             $expectedEventWasLabelled,
-            EventWasLabelled::deserialize($serializedEvent)
+            LabelAdded::deserialize($serializedEvent)
         );
     }
 }

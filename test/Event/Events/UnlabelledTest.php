@@ -14,7 +14,7 @@ class UnlabelledTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
-        Unlabelled $unlabelled
+        LabelDeleted $unlabelled
     ) {
         $this->assertEquals(
             $expectedSerializedValue,
@@ -30,11 +30,11 @@ class UnlabelledTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
-        Unlabelled $expectedUnlabelled
+        LabelDeleted $expectedUnlabelled
     ) {
         $this->assertEquals(
             $expectedUnlabelled,
-            Unlabelled::deserialize($serializedValue)
+            LabelDeleted::deserialize($serializedValue)
         );
     }
 
@@ -46,7 +46,7 @@ class UnlabelledTest extends \PHPUnit_Framework_TestCase
                     'item_id' => 'foo',
                     'label' => 'Label1'
                 ],
-                new Unlabelled(
+                new LabelDeleted(
                     'foo',
                     new Label('Label1')
                 ),

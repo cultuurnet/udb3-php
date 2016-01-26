@@ -9,6 +9,6 @@ use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 
-final class Unlabelled extends AbstractLabelDeleted
+final class LabelDeleted extends AbstractLabelDeleted
 {
 }

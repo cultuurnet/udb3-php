@@ -12,12 +12,12 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -685,7 +685,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_projects_the_addition_of_a_label()
     {
-        $eventWasLabelled = new EventWasLabelled(
+        $eventWasLabelled = new LabelAdded(
             'foo',
             new Label('label B')
         );
@@ -721,7 +721,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $eventWasUnlabelled = new Unlabelled(
+        $eventWasUnlabelled = new LabelDeleted(
             'foo',
             new Label('label B')
         );
@@ -748,7 +748,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $eventWasLabelled = new EventWasLabelled(
+        $eventWasLabelled = new LabelAdded(
             'foo',
             new Label('label B')
         );

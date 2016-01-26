@@ -15,11 +15,11 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Event\TitleTranslated;
@@ -273,7 +273,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_eventWasTagged()
     {
-        $eventWasTagged = new EventWasLabelled(
+        $eventWasTagged = new LabelAdded(
             self::EVENT_ID_1,
             new Label('foo')
         );
@@ -316,7 +316,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_tagErased()
     {
-        $tagErased = new Unlabelled(
+        $tagErased = new LabelDeleted(
             self::EVENT_ID_1,
             new Label('foo')
         );

@@ -18,7 +18,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
@@ -31,7 +31,7 @@ use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
@@ -39,18 +39,16 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\String\String;
 
-class Event extends EventSourcedAggregateRoot
+class Event extends Offer
 {
     protected $eventId;
-
-    /**
-     * @var LabelCollection
-     */
-    protected $labels;
 
     /**
      * @var Translation[]
@@ -67,7 +65,7 @@ class Event extends EventSourcedAggregateRoot
 
     public function __construct()
     {
-        $this->resetLabels();
+        parent::__construct();
     }
 
     /**
@@ -76,13 +74,19 @@ class Event extends EventSourcedAggregateRoot
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
-     * @param CalendarBase $calendar
+     * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
      * @return Event
      */
-    public static function create($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public static function create(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    ) {
         if (!is_string($eventId)) {
             throw new \InvalidArgumentException(
                 'Expected eventId to be a string, received ' . gettype($eventId)
@@ -275,53 +279,9 @@ class Event extends EventSourcedAggregateRoot
         return $this->translations;
     }
 
-    /**
-     * @return LabelCollection
-     */
-    public function getLabels()
-    {
-        return $this->labels;
-    }
-
-    /**
-     * @param Label $label
-     */
-    public function label(Label $label)
-    {
-        if (!$this->labels->contains($label)) {
-            $this->apply(new EventWasLabelled($this->eventId, $label));
-        }
-    }
-
-    /**
-     * @param Label $label
-     */
-    public function unlabel(Label $label)
-    {
-        if ($this->labels->contains($label)) {
-            $this->apply(new Unlabelled($this->eventId, $label));
-        }
-    }
-
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
-    }
-
-    protected function applyEventWasLabelled(EventWasLabelled $eventLabelled)
-    {
-        $newLabel = $eventLabelled->getLabel();
-
-        if (!$this->labels->contains($newLabel)) {
-            $this->labels = $this->labels->with($newLabel);
-        }
-    }
-
-    protected function applyUnlabelled(Unlabelled $unlabelled)
-    {
-        $removedLabel = $unlabelled->getLabel();
-
-        $this->labels = $this->labels->without($removedLabel);
     }
 
     protected function applyEventImportedFromUDB2(
@@ -476,8 +436,13 @@ class Event extends EventSourcedAggregateRoot
      * @param CalendarInterface $calendar
      * @param type $theme
      */
-    public function updateMajorInfo(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function updateMajorInfo(
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
     }
 
@@ -505,11 +470,6 @@ class Event extends EventSourcedAggregateRoot
                 );
             }
         }
-    }
-
-    protected function resetLabels()
-    {
-        $this->labels = new LabelCollection();
     }
 
     protected function applyEventCreatedFromCdbXml(
@@ -605,5 +565,23 @@ class Event extends EventSourcedAggregateRoot
                 $cdbXmlNamespaceUri
             )
         );
+    }
+
+    /**
+     * @param Label $label
+     * @return AbstractLabelAdded
+     */
+    protected function createLabelAddedEvent(Label $label)
+    {
+        return new LabelAdded($this->eventId, $label);
+    }
+
+    /**
+     * @param Label $label
+     * @return AbstractLabelDeleted
+     */
+    protected function createLabelDeletedEvent(Label $label)
+    {
+        return new LabelDeleted($this->eventId, $label);
     }
 }

@@ -7,6 +7,6 @@ use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 
-class EventWasLabelled extends AbstractLabelAdded
+class LabelAdded extends AbstractLabelAdded
 {
 }

@@ -16,11 +16,11 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -277,7 +277,7 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
      */
     protected function getLabelAddedClassName()
     {
-        return EventWasLabelled::class;
+        return LabelAdded::class;
     }
 
     /**
@@ -285,6 +285,6 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
      */
     protected function getLabelDeletedClassName()
     {
-        return Unlabelled::class;
+        return LabelDeleted::class;
     }
 }

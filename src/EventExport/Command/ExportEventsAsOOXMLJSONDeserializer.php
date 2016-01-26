@@ -10,7 +10,7 @@ class ExportEventsAsOOXMLJSONDeserializer extends ExportEventsJSONDeserializer
     /**
      * {@inheritdoc}
      */
-    function createCommand(
+    protected function createCommand(
         EventExportQuery $query,
         EmailAddress $address = null,
         $selection = null,

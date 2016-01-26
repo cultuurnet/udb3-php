@@ -37,11 +37,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     use LoggerAwareTrait;
 
     /**
-     * @var RepositoryInterface
-     */
-    protected $eventRepository;
-
-    /**
      * @var SearchServiceInterface
      */
     protected $searchService;
@@ -50,7 +45,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         RepositoryInterface $eventRepository,
         SearchServiceInterface $searchService
     ) {
-        $this->eventRepository = $eventRepository;
+        parent::__construct($eventRepository);
         $this->searchService = $searchService;
     }
 
@@ -126,10 +121,10 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     private function labelEvent(Label $label, $eventId)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($eventId);
-        $event->label($label);
+        $event = $this->repository->load($eventId);
+        $event->addLabel($label);
         try {
-            $this->eventRepository->save($event);
+            $this->repository->save($event);
 
             if ($this->logger) {
                 $this->logger->info(
@@ -156,14 +151,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     public function handleTranslateTitle(TranslateTitle $translateTitle)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($translateTitle->getId());
+        $event = $this->repository->load($translateTitle->getId());
 
         $event->translateTitle(
             $translateTitle->getLanguage(),
             $translateTitle->getTitle()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
     }
 
     public function handleTranslateDescription(
@@ -171,14 +166,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     ) {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($translateDescription->getId());
+        $event = $this->repository->load($translateDescription->getId());
 
         $event->translateDescription(
             $translateDescription->getLanguage(),
             $translateDescription->getDescription()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
     }
 
     /**
@@ -188,13 +183,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateDescription->getId());
+        $event = $this->repository->load($updateDescription->getId());
 
         $event->updateDescription(
             $updateDescription->getDescription()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -205,13 +200,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateTypicalAgeRange->getId());
+        $event = $this->repository->load($updateTypicalAgeRange->getId());
 
         $event->updateTypicalAgeRange(
             $updateTypicalAgeRange->getTypicalAgeRange()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -222,11 +217,11 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteTypicalAgeRange->getId());
+        $event = $this->repository->load($deleteTypicalAgeRange->getId());
 
         $event->deleteTypicalAgeRange();
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -237,13 +232,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateOrganizer->getId());
+        $event = $this->repository->load($updateOrganizer->getId());
 
         $event->updateOrganizer(
             $updateOrganizer->getOrganizerId()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -254,13 +249,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteOrganizer->getId());
+        $event = $this->repository->load($deleteOrganizer->getId());
 
         $event->deleteOrganizer(
             $deleteOrganizer->getOrganizerId()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -271,13 +266,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateContactPoint->getId());
+        $event = $this->repository->load($updateContactPoint->getId());
 
         $event->updateContactPoint(
             $updateContactPoint->getContactPoint()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -288,13 +283,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateBookingInfo->getId());
+        $event = $this->repository->load($updateBookingInfo->getId());
 
         $event->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -306,13 +301,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($addImage->getId());
+        $event = $this->repository->load($addImage->getId());
 
         $event->addImage(
             $addImage->getMediaObject()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -324,14 +319,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateImage->getId());
+        $event = $this->repository->load($updateImage->getId());
 
         $event->updateImage(
             $updateImage->getIndexToUpdate(),
             $updateImage->getMediaObject()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -343,14 +338,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteImage->getId());
+        $event = $this->repository->load($deleteImage->getId());
 
         $event->deleteImage(
             $deleteImage->getIndexToDelete(),
             $deleteImage->getInternalId()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -361,7 +356,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateMajorInfo->getId());
+        $event = $this->repository->load($updateMajorInfo->getId());
 
         $event->updateMajorInfo(
             $updateMajorInfo->getTitle(),
@@ -371,7 +366,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
             $updateMajorInfo->getTheme()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -382,10 +377,10 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteEvent->getId());
+        $event = $this->repository->load($deleteEvent->getId());
         $event->deleteEvent();
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 

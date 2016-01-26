@@ -14,9 +14,9 @@ use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
@@ -90,8 +90,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when(new LabelEvents($ids, new Label('awesome')))
             ->then(
                 [
-                    new EventWasLabelled($ids[0], new Label('awesome')),
-                    new EventWasLabelled($ids[1], new Label('awesome'))
+                    new LabelAdded($ids[0], new Label('awesome')),
+                    new LabelAdded($ids[1], new Label('awesome'))
                 ]
             );
     }
@@ -111,7 +111,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 '@id' => 'http://example.com/event/' . $eventId,
             );
 
-            $expectedSourcedEvents[] = new EventWasLabelled($eventId, new Label('foo'));
+            $expectedSourcedEvents[] = new LabelAdded($eventId, new Label('foo'));
 
             $this->scenario
                 ->withAggregateId($i)
@@ -218,7 +218,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [$this->factorOfferCreated($id)]
             )
             ->when(new AddLabel($id, new Label('foo')))
-            ->then([new EventWasLabelled($id, new Label('foo'))]);
+            ->then([new LabelAdded($id, new Label('foo'))]);
     }
 
     /**
@@ -232,11 +232,11 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new EventWasLabelled($id, new Label('foo'))
+                    new LabelAdded($id, new Label('foo'))
                 ]
             )
             ->when(new Unlabel($id, new Label('foo')))
-            ->then([new Unlabelled($id, new Label('foo'))]);
+            ->then([new LabelDeleted($id, new Label('foo'))]);
     }
 
     /**
@@ -265,8 +265,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new EventWasLabelled($id, new Label('foo')),
-                    new Unlabelled($id, new Label('foo'))
+                    new LabelAdded($id, new Label('foo')),
+                    new LabelDeleted($id, new Label('foo'))
                 ]
             )
             ->when(new Unlabel($id, new Label('foo')))

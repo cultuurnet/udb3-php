@@ -1,12 +1,12 @@
 <?php
 
-namespace test\Event\Events;
+namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Label;
 
-class EventWasLabelledTest extends \PHPUnit_Framework_TestCase
+class LabelAddedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test

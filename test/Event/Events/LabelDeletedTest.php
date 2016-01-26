@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Label;
 
-class UnlabelledTest extends \PHPUnit_Framework_TestCase
+class LabelDeletedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test

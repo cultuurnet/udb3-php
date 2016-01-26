@@ -20,7 +20,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function __construct()
     {
-        $this->labels = new LabelCollection();
+        $this->resetLabels();
     }
 
     /**
@@ -75,6 +75,11 @@ abstract class Offer extends EventSourcedAggregateRoot
         $this->labels = $this->labels->without(
             $labelDeleted->getLabel()
         );
+    }
+
+    protected function resetLabels()
+    {
+        $this->labels = new LabelCollection();
     }
 
     /**

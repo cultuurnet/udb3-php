@@ -8,6 +8,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -474,15 +475,18 @@ class Event extends EventSourcedAggregateRoot
         }
     }
 
+
     /**
-     * Update an image.
-     *
-     * @param int $indexToUpdate
-     * @param MediaObject $mediaObject
+     * @param UpdateImage $updateImageCommand
      */
-    public function updateImage($indexToUpdate, MediaObject $mediaObject)
+    public function updateImage(UpdateImage $updateImageCommand)
     {
-        $this->apply(new ImageUpdated($this->eventId, $indexToUpdate, $mediaObject));
+        $this->apply(new ImageUpdated(
+            $updateImageCommand->getItemId(),
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
+        ));
     }
 
     /**

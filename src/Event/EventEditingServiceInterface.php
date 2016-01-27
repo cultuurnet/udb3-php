@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Title;
+use ValueObjects\String\String;
 
 interface EventEditingServiceInterface
 {
@@ -95,11 +96,20 @@ interface EventEditingServiceInterface
     /**
      * Update an image of the event.
      *
-     * @param string $id
-     * @parma int $indexToEdit
-     * @param MediaObject $mediaObject
+     * @param $id
+     * @param Image $image
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
+     *
+     * @return string
+     *  The command id for this task.
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject);
+    public function updateImage(
+        $id,
+        Image $image,
+        String $description,
+        String $copyrightHolder
+    );
 
     /**
      * Delete an image of the event.

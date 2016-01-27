@@ -199,17 +199,12 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
      */
     public function handleUpdateImage(UpdateImage $updateImage)
     {
-
         /** @var Place $place */
-        $place = $this->placeRepository->load($updateImage->getId());
+        $place = $this->placeRepository->load($updateImage->getItemId());
 
-        $place->updateImage(
-            $updateImage->getIndexToUpdate(),
-            $updateImage->getMediaObject()
-        );
+        $place->updateImage($updateImage);
 
         $this->placeRepository->save($place);
-
     }
 
     /**

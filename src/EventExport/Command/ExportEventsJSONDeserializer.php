@@ -11,7 +11,7 @@ use ValueObjects\Web\EmailAddress;
 abstract class ExportEventsJSONDeserializer extends JSONDeserializer
 {
     /**
-     * @param \ValueObjects\String\String $data
+     * @param String $data
      * @return ExportEvents
      */
     public function deserialize(String $data)

@@ -5,6 +5,6 @@ namespace CultuurNet\UDB3\Event\Commands;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 
-class Unlabel extends AbstractDeleteLabel
+class DeleteLabel extends AbstractDeleteLabel
 {
 }

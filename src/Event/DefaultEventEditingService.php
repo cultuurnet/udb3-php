@@ -11,7 +11,7 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -148,7 +148,7 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
-            new Unlabel($eventId, $label)
+            new DeleteLabel($eventId, $label)
         );
     }
 

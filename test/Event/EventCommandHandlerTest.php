@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -235,7 +235,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelAdded($id, new Label('foo'))
                 ]
             )
-            ->when(new Unlabel($id, new Label('foo')))
+            ->when(new DeleteLabel($id, new Label('foo')))
             ->then([new LabelDeleted($id, new Label('foo'))]);
     }
 
@@ -250,7 +250,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new Unlabel($id, new Label('foo')))
+            ->when(new DeleteLabel($id, new Label('foo')))
             ->then([]);
     }
 
@@ -269,7 +269,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelDeleted($id, new Label('foo'))
                 ]
             )
-            ->when(new Unlabel($id, new Label('foo')))
+            ->when(new DeleteLabel($id, new Label('foo')))
             ->then([]);
     }
 

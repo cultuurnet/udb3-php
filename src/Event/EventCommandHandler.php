@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
@@ -391,6 +391,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
      */
     protected function getDeleteLabelClassName()
     {
-        return Unlabel::class;
+        return DeleteLabel::class;
     }
 }

@@ -735,7 +735,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_projects_the_addition_of_a_label()
     {
-        $eventWasLabelled = new LabelAdded(
+        $labelAdded = new LabelAdded(
             'foo',
             new Label('label B')
         );
@@ -749,7 +749,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($eventWasLabelled, 'foo');
+        $body = $this->project($labelAdded, 'foo');
 
         $this->assertEquals(
             ['label A', 'label B'],
@@ -771,12 +771,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $eventWasUnlabelled = new LabelDeleted(
+        $labelDeleted = new LabelDeleted(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($eventWasUnlabelled, 'foo');
+        $body = $this->project($labelDeleted, 'foo');
 
         $this->assertEquals(
             ['label A', 'label C'],
@@ -798,12 +798,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $eventWasLabelled = new LabelAdded(
+        $labelAdded = new LabelAdded(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($eventWasLabelled, 'foo');
+        $body = $this->project($labelAdded, 'foo');
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';

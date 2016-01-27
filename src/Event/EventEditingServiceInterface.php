@@ -11,8 +11,10 @@ use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Title;
+use ValueObjects\String\String;
 
 interface EventEditingServiceInterface
 {
@@ -87,18 +89,27 @@ interface EventEditingServiceInterface
      * Add an image to the event.
      *
      * @param string $id
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function addImage($id, MediaObject $mediaObject);
+    public function addImage($id, Image $image);
 
     /**
      * Update an image of the event.
      *
-     * @param string $id
-     * @parma int $indexToEdit
-     * @param MediaObject $mediaObject
+     * @param $id
+     * @param Image $image
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
+     *
+     * @return string
+     *  The command id for this task.
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject);
+    public function updateImage(
+        $id,
+        Image $image,
+        String $description,
+        String $copyrightHolder
+    );
 
     /**
      * Delete an image of the event.

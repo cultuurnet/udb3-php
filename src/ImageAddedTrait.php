@@ -7,24 +7,25 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\Image;
+
 /**
  * Trait for the ImageAdded events.
  */
 trait ImageAddedTrait
 {
-
     /**
      * The added media object.
-     * @var MediaObject
+     * @var Image
      */
-    protected $mediaObject;
+    protected $image;
 
     /**
-     * @return MediaObject
+     * @return Image
      */
-    public function getMediaObject()
+    public function getImage()
     {
-        return $this->mediaObject;
+        return $this->image;
     }
 
     /**
@@ -33,7 +34,7 @@ trait ImageAddedTrait
     public function serialize()
     {
         return parent::serialize() + array(
-            'media_object' => $this->mediaObject->serialize(),
+            'image' => $this->image->serialize(),
         );
     }
 }

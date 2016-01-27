@@ -304,7 +304,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         $event = $this->repository->load($addImage->getId());
 
         $event->addImage(
-            $addImage->getMediaObject()
+            $addImage->getImage()
         );
 
         $this->repository->save($event);
@@ -317,17 +317,11 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
      */
     public function handleUpdateImage(UpdateImage $updateImage)
     {
-
         /** @var Event $event */
-        $event = $this->repository->load($updateImage->getId());
-
-        $event->updateImage(
-            $updateImage->getIndexToUpdate(),
-            $updateImage->getMediaObject()
-        );
+        $event = $this->repository->load($updateImage->getItemId());
+        $event->updateImage($updateImage);
 
         $this->repository->save($event);
-
     }
 
     /**

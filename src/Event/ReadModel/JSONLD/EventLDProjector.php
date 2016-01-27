@@ -49,6 +49,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
+use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -57,6 +58,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
+use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\String\String;
 
 /**
@@ -80,18 +82,25 @@ class EventLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected $eventService;
 
     /**
+     * @var SerializerInterface
+     */
+    protected $mediaObjectSerializer;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
      * @param PlaceService $placeService
      * @param OrganizerService $organizerService
+     * @param SerializerInterface $mediaObjectSerializer
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EventServiceInterface $eventService,
         PlaceService $placeService,
-        OrganizerService $organizerService
+        OrganizerService $organizerService,
+        SerializerInterface $mediaObjectSerializer
     ) {
         parent::__construct(
             $repository,
@@ -101,6 +110,10 @@ class EventLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $this->placeService = $placeService;
         $this->eventService = $eventService;
+        $this->mediaObjectSerializer = $mediaObjectSerializer;
+
+        $this->slugger = new CulturefeedSlugger();
+        $this->cdbXMLImporter = new CdbXMLImporter(new CdbXMLItemBaseImporter());
     }
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
@@ -662,15 +675,16 @@ class EventLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
-
         $document = $this->loadDocumentFromRepository($imageAdded);
 
         $eventLd = $document->getBody();
         $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-        $eventLd->mediaObject[] = $imageAdded->getMediaObject()->toJsonLd();
+
+        $imageData = $this->mediaObjectSerializer
+            ->serialize($imageAdded->getImage(), 'json-ld');
+        $eventLd->mediaObject[] = $imageData;
 
         $this->repository->save($document->withBody($eventLd));
-
     }
 
     /**
@@ -680,15 +694,37 @@ class EventLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyImageUpdated(ImageUpdated $imageUpdated)
     {
-
-        $document = $this->loadDocumentFromRepository($imageUpdated);
+        $document = $this->loadDocumentFromRepositoryByEventId($imageUpdated->getItemId());
 
         $eventLd = $document->getBody();
-        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-        $eventLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
+
+        if (!isset($eventLd->mediaObject)) {
+            throw new \Exception('The image to update could not be found.');
+        }
+
+        $updatedMediaObjects = [];
+
+        foreach ($eventLd->mediaObject as $mediaObject) {
+            $mediaObjectMatches = (
+                strpos(
+                    $mediaObject->{'@id'},
+                    (string)$imageUpdated->getMediaObjectId()
+                ) > 0
+            );
+
+            if ($mediaObjectMatches) {
+                $mediaObject->description = (string)$imageUpdated->getDescription();
+                $mediaObject->copyrightHolder = (string)$imageUpdated->getCopyrightHolder();
+
+                $updatedMediaObjects[] = $mediaObject;
+            }
+        };
+
+        if (empty($updatedMediaObjects)) {
+            throw new \Exception('The image to update could not be found.');
+        }
 
         $this->repository->save($document->withBody($eventLd));
-
     }
 
     /**

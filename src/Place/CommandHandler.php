@@ -182,7 +182,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
         $place = $this->repository->load($addImage->getId());
 
         $place->addImage(
-            $addImage->getMediaObject()
+            $addImage->getImage()
         );
 
         $this->repository->save($place);
@@ -195,17 +195,11 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
      */
     public function handleUpdateImage(UpdateImage $updateImage)
     {
-
         /** @var Place $place */
-        $place = $this->repository->load($updateImage->getId());
-
-        $place->updateImage(
-            $updateImage->getIndexToUpdate(),
-            $updateImage->getMediaObject()
-        );
+        $place = $this->repository->load($updateImage->getItemId());
+        $place->updateImage($updateImage);
 
         $this->repository->save($place);
-
     }
 
     /**

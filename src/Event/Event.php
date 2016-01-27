@@ -8,6 +8,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -38,13 +39,17 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Offer;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class Event extends Offer
 {
@@ -60,6 +65,11 @@ class Event extends Offer
      *   Array of different collections, keyed by language.
      */
     protected $collaborationData;
+
+    /**
+     * @var UUID[]
+     */
+    protected $mediaObjects = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -279,6 +289,14 @@ class Event extends Offer
         return $this->translations;
     }
 
+    /**
+     * @return UUID[]
+     */
+    public function getMediaObjects()
+    {
+        return $this->mediaObjects;
+    }
+
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
@@ -398,22 +416,37 @@ class Event extends Offer
     /**
      * Add a new image.
      *
-     * @param MediaObject $mediaObject
+     * @param Image $image
+     * @throws DuplicateMediaObjectException
      */
-    public function addImage(MediaObject $mediaObject)
+    public function addImage(Image $image)
     {
-        $this->apply(new ImageAdded($this->eventId, $mediaObject));
+        $duplicateMediaObject = array_filter(
+            $this->getMediaObjects(),
+            function ($existingMediaObjectId) use ($image) {
+                return $image
+                    ->getMediaObjectId()
+                    ->sameValueAs($existingMediaObjectId);
+            }
+        );
+
+        if (empty($duplicateMediaObject)) {
+            $this->apply(new ImageAdded($this->eventId, $image));
+        }
     }
 
+
     /**
-     * Update an image.
-     *
-     * @param int $indexToUpdate
-     * @param MediaObject $mediaObject
+     * @param UpdateImage $updateImageCommand
      */
-    public function updateImage($indexToUpdate, MediaObject $mediaObject)
+    public function updateImage(UpdateImage $updateImageCommand)
     {
-        $this->apply(new ImageUpdated($this->eventId, $indexToUpdate, $mediaObject));
+        $this->apply(new ImageUpdated(
+            $updateImageCommand->getItemId(),
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
+        ));
     }
 
     /**
@@ -583,5 +616,10 @@ class Event extends Offer
     protected function createLabelDeletedEvent(Label $label)
     {
         return new LabelDeleted($this->eventId, $label);
+    }
+
+    protected function applyImageAdded(ImageAdded $imageAdded)
+    {
+        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
     }
 }

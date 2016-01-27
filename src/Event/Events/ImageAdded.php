@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
@@ -14,12 +14,12 @@ class ImageAdded extends AbstractEvent
 
     /**
      * @param string $id
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function __construct($id, $mediaObject)
+    public function __construct($id, Image $image)
     {
         parent::__construct($id);
-        $this->mediaObject = $mediaObject;
+        $this->image = $image;
     }
 
     /**
@@ -27,6 +27,6 @@ class ImageAdded extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], MediaObject::deserialize($data['media_object']));
+        return new static($data['event_id'], Image::deserialize($data['image']));
     }
 }

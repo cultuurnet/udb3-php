@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**

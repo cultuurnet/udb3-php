@@ -9,8 +9,10 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\MediaObject;
 use CultuurNet\UDB3\Offer\Offer;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
@@ -156,22 +158,24 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * Add a new image.
      *
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function addImage(MediaObject $mediaObject)
+    public function addImage(Image $image)
     {
-        $this->apply(new ImageAdded($this->actorId, $mediaObject));
+        $this->apply(new ImageAdded($this->actorId, $image));
     }
 
     /**
-     * Update an image.
-     *
-     * @param int $indexToUpdate
-     * @param MediaObject $mediaObject
+     * @param UpdateImage $updateImageCommand
      */
-    public function updateImage($indexToUpdate, MediaObject $mediaObject)
+    public function updateImage(UpdateImage $updateImageCommand)
     {
-        $this->apply(new ImageUpdated($this->actorId, $indexToUpdate, $mediaObject));
+        $this->apply(new ImageUpdated(
+            $updateImageCommand->getItemId(),
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
+        ));
     }
 
     /**

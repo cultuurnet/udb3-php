@@ -42,6 +42,7 @@ use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Theme;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Projects state changes on Place entities to a JSON-LD read model in a
@@ -77,18 +78,26 @@ class PlaceLDProjector implements EventListenerInterface
     protected $cdbXMLImporter;
 
     /**
+     * @var SerializerInterface
+     */
+    protected $mediaObjectSerializer;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
+     * @param SerializerInterface $mediaObjectSerializer
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EntityServiceInterface $organizerService
+        EntityServiceInterface $organizerService,
+        SerializerInterface $mediaObjectSerializer
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
+        $this->mediaObjectSerializer = $mediaObjectSerializer;
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter()
@@ -130,14 +139,14 @@ class PlaceLDProjector implements EventListenerInterface
         );
 
         $document = $this->newDocument($eventImportedFromUDB2->getActorId());
-        $eventLD = $document->getBody();
+        $placeLd = $document->getBody();
 
-        $eventLD = $this->cdbXMLImporter->eventDocumentWithCdbXML(
-            $eventLD,
+        $placeLd = $this->cdbXMLImporter->eventDocumentWithCdbXML(
+            $placeLd,
             $udb2Event
         );
 
-        $this->repository->save($document->withBody($eventLD));
+        $this->repository->save($document->withBody($placeLd));
     }
 
     /**
@@ -292,10 +301,10 @@ class PlaceLDProjector implements EventListenerInterface
     ) {
         $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeUpdated);
 
-        $eventLd = $document->getBody();
-        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+        $placeLd = $document->getBody();
+        $placeLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
 
-        $this->repository->save($document->withBody($eventLd));
+        $this->repository->save($document->withBody($placeLd));
     }
 
     /**
@@ -307,11 +316,11 @@ class PlaceLDProjector implements EventListenerInterface
     ) {
         $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeDeleted);
 
-        $eventLd = $document->getBody();
+        $placeLd = $document->getBody();
 
-        unset($eventLd->typicalAgeRange);
+        unset($placeLd->typicalAgeRange);
 
-        $this->repository->save($document->withBody($eventLd));
+        $this->repository->save($document->withBody($placeLd));
     }
 
     /**
@@ -405,7 +414,12 @@ class PlaceLDProjector implements EventListenerInterface
 
         $placeLd = $document->getBody();
         $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
-        $placeLd->mediaObject[] = $imageAdded->getMediaObject()->toJsonLd();
+
+        $imageData = $this->mediaObjectSerializer->serialize(
+            $imageAdded->getImage(),
+            'json-ld'
+        );
+        $placeLd->mediaObject[] = $imageData;
 
         $this->repository->save($document->withBody($placeLd));
 
@@ -418,12 +432,39 @@ class PlaceLDProjector implements EventListenerInterface
      */
     protected function applyImageUpdated(ImageUpdated $imageUpdated)
     {
+        $document = $this->repository->get($imageUpdated->getItemId());
 
-        $document = $this->loadPlaceDocumentFromRepository($imageUpdated);
+        if (!$document) {
+            return $this->newDocument($imageUpdated->getItemId());
+        }
 
         $placeLd = $document->getBody();
-        $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
-        $placeLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageUpdated->getMediaObject()->toJsonLd();
+
+        if (!isset($placeLd->mediaObject)) {
+            throw new \Exception('The image to update could not be found.');
+        }
+
+        $updatedMediaObjects = [];
+
+        foreach ($placeLd->mediaObject as $mediaObject) {
+            $mediaObjectMatches = (
+                strpos(
+                    $mediaObject->{'@id'},
+                    (string)$imageUpdated->getMediaObjectId()
+                ) > 0
+            );
+
+            if ($mediaObjectMatches) {
+                $mediaObject->description = (string)$imageUpdated->getDescription();
+                $mediaObject->copyrightHolder = (string)$imageUpdated->getCopyrightHolder();
+
+                $updatedMediaObjects[] = $mediaObject;
+            }
+        };
+
+        if (empty($updatedMediaObjects)) {
+            throw new \Exception('The image to update could not be found.');
+        }
 
         $this->repository->save($document->withBody($placeLd));
     }

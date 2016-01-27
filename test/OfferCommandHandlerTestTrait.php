@@ -160,23 +160,34 @@ trait OfferCommandHandlerTestTrait
     /**
      * @test
      */
-    public function it_can_add_update_an_image_of_an_offer()
+    public function it_can_update_an_image_of_an_offer()
     {
-        $id = '1';
-        $index = 1;
-        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $itemId = '1';
+        $mediaObjectId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $description = new String('A description.');
+        $copyrightHolder = new String('Dirk');
         $commandClass = $this->getCommandClass('UpdateImage');
         $eventClass = $this->getEventClass('ImageUpdated');
 
         $this->scenario
-            ->withAggregateId($id)
+            ->withAggregateId($itemId)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [$this->factorOfferCreated($itemId)]
             )
             ->when(
-                new $commandClass($id, $index, $mediaObject)
+                new $commandClass(
+                    $itemId,
+                    $mediaObjectId,
+                    $description,
+                    $copyrightHolder
+                )
             )
-            ->then([new $eventClass($id, $index, $mediaObject)]);
+            ->then([new $eventClass(
+                $itemId,
+                $mediaObjectId,
+                $description,
+                $copyrightHolder
+            )]);
     }
 
     /**

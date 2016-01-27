@@ -791,19 +791,37 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
      */
     protected function applyImageUpdated(ImageUpdated $imageUpdated)
     {
-
-        $document = $this->loadDocumentFromRepository($imageUpdated);
+        $document = $this->loadDocumentFromRepositoryByEventId($imageUpdated->getItemId());
 
         $eventLd = $document->getBody();
-        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-        $imageData = $this->mediaObjectSerializer->serialize(
-            $imageUpdated->getMediaObject(),
-            'json-ld'
-        );
-        $eventLd->mediaObject[$imageUpdated->getIndexToUpdate()] = $imageData;
+
+        if (!isset($eventLd->mediaObject)) {
+            throw new \Exception('The image to update could not be found.');
+        }
+
+        $updatedMediaObjects = [];
+
+        foreach ($eventLd->mediaObject as $mediaObject) {
+            $mediaObjectMatches = (
+                strpos(
+                    $mediaObject->{'@id'},
+                    (string)$imageUpdated->getMediaObjectId()
+                ) > 0
+            );
+
+            if ($mediaObjectMatches) {
+                $mediaObject->description = (string)$imageUpdated->getDescription();
+                $mediaObject->copyrightHolder = (string)$imageUpdated->getCopyrightHolder();
+
+                $updatedMediaObjects[] = $mediaObject;
+            }
+        };
+
+        if (empty($updatedMediaObjects)) {
+            throw new \Exception('The image to update could not be found.');
+        }
 
         $this->repository->save($document->withBody($eventLd));
-
     }
 
     /**

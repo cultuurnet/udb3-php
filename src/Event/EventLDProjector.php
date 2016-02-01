@@ -12,11 +12,11 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
@@ -44,7 +44,6 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
-use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -213,7 +212,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
-        $this->applyEventCdbXml(
+        $this->applyEventCdbXmlFromUDB2(
             $eventImportedFromUDB2->getEventId(),
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
             $eventImportedFromUDB2->getCdbXml()
@@ -226,7 +225,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2
     ) {
-        $this->applyEventCdbXml(
+        $this->applyEventCdbXmlFromUDB2(
             $eventUpdatedFromUDB2->getEventId(),
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $eventUpdatedFromUDB2->getCdbXml()
@@ -287,48 +286,86 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         $cdbXml,
         $domainMessage
     ) {
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $cdbXmlNamespaceUri,
-            $cdbXml
+        $this->saveNewDocument(
+            $eventId,
+            function (\stdClass $eventLd) use ($eventId, $cdbXmlNamespaceUri, $cdbXml, $domainMessage) {
+                $eventLd = $this->projectEventCdbXmlToObject(
+                    $eventLd,
+                    $eventId,
+                    $cdbXmlNamespaceUri,
+                    $cdbXml
+                );
+
+                // Add creation date and update date from metadata.
+                $eventCreationDate = $domainMessage->getRecordedOn();
+
+                $eventCreationString = $eventCreationDate->toString();
+                $eventCreationDateTime = \DateTime::createFromFormat(
+                    DateTime::FORMAT_STRING,
+                    $eventCreationString
+                );
+                $eventLd->created = $eventCreationDateTime->format('c');
+                $eventLd->modified = $eventCreationDateTime->format('c');
+
+                // Add creator.
+                $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+
+                // Add publisher, which is the consumer name.
+                $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
+
+                return $eventLd;
+            }
         );
-
-        $document = $this->newDocument($eventId);
-        $eventLd = $document->getBody();
-
-        $eventLd = $this->cdbXMLImporter->documentWithCdbXML(
-            $eventLd,
-            $udb2Event,
-            $this,
-            $this,
-            $this->slugger
-        );
-
-        // Add creation date and update date from metadata.
-        $eventCreationDate = $domainMessage->getRecordedOn();
-
-        $eventCreationString = $eventCreationDate->toString();
-        $eventCreationDateTime = \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $eventCreationString
-        );
-        $eventLd->created = $eventCreationDateTime->format('c');
-        $eventLd->modified = $eventCreationDateTime->format('c');
-
-        // Add creator.
-        $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
-
-        // Add publisher, which is the consumer name.
-        $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
-
-        $this->repository->save($document->withBody($eventLd));
     }
 
     /**
      * @param string $eventId
+     * @param callable $fn
+     */
+    protected function saveNewDocument($eventId, callable $fn)
+    {
+        $document = $this
+            ->newDocument($eventId)
+            ->apply($fn);
+
+        $this->repository->save($document);
+    }
+
+    /**
+     * Helper function to save a JSON-LD document from cdbxml coming from UDB2.
+     *
+     * @param string $eventId
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
      */
-    protected function applyEventCdbXml(
+    protected function applyEventCdbXmlFromUDB2(
+        $eventId,
+        $cdbXmlNamespaceUri,
+        $cdbXml
+    ) {
+        $this->saveNewDocument(
+            $eventId,
+            function (\stdClass $eventLd) use ($cdbXmlNamespaceUri, $eventId, $cdbXml) {
+                return $this->projectEventCdbXmlToObject(
+                    $eventLd,
+                    $eventId,
+                    $cdbXmlNamespaceUri,
+                    $cdbXml
+                ) ;
+            }
+        );
+    }
+
+    /**
+     * @param \stdClass $jsonLd
+     * @param string $eventId
+     * @param string $cdbXmlNamespaceUri
+     * @param string $cdbXml
+     *
+     * @return \stdClass
+     */
+    protected function projectEventCdbXmlToObject(
+        \stdClass $jsonLd,
         $eventId,
         $cdbXmlNamespaceUri,
         $cdbXml
@@ -338,18 +375,46 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
             $cdbXml
         );
 
-        $document = $this->newDocument($eventId);
-        $eventLd = $document->getBody();
-
-        $eventLd = $this->cdbXMLImporter->documentWithCdbXML(
-            $eventLd,
+        $jsonLd = $this->cdbXMLImporter->documentWithCdbXML(
+            $jsonLd,
             $udb2Event,
             $this,
             $this,
             $this->slugger
         );
 
-        $this->repository->save($document->withBody($eventLd));
+        // Because we can not properly track media coming from UDB2 we simply
+        // ignore it and give priority to content added through UDB3.
+        $media = $this->UDB3Media($eventId);
+        if (!empty($media)) {
+            $jsonLd->mediaObject = $media;
+        }
+
+        return $jsonLd;
+    }
+
+    /**
+     * Return the media of an event if it already exists.
+     *
+     * @param $eventId
+     *  The id of the event.
+     *
+     * @return array
+     *  A list of media objects.
+     */
+    private function UDB3Media($eventId)
+    {
+        $document = $this->loadDocumentFromRepositoryByEventId($eventId);
+        $media = [];
+        
+        if ($document) {
+            $item = $document->getBody();
+            // At the moment we do not include any media coming from UDB2.
+            // If the mediaObject property contains data it's coming from UDB3.
+            $item->mediaObject = isset($item->mediaObject) ? $item->mediaObject : [];
+        }
+
+        return $media;
     }
 
     /**
@@ -360,52 +425,55 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         EventCreated $eventCreated,
         DomainMessage $domainMessage
     ) {
-        $document = $this->newDocument($eventCreated->getEventId());
-
-        $jsonLD = $document->getBody();
-
-        $jsonLD->{'@id'} = $this->iriGenerator->iri(
-            $eventCreated->getEventId()
-        );
-        $jsonLD->name['nl'] = $eventCreated->getTitle();
-        $jsonLD->location = array(
-          '@type' => 'Place',
-        ) + (array)$this->placeJSONLD($eventCreated->getLocation()->getCdbid());
-
-        $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
-        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
-
-        // Same as.
-        $jsonLD->sameAs = $this->generateSameAs(
+        $this->saveNewDocument(
             $eventCreated->getEventId(),
-            reset($jsonLD->name)
+            function (\stdClass $jsonLD) use ($eventCreated, $domainMessage) {
+                $jsonLD->{'@id'} = $this->iriGenerator->iri(
+                    $eventCreated->getEventId()
+                );
+                $jsonLD->name['nl'] = $eventCreated->getTitle();
+                $jsonLD->location = array(
+                        '@type' => 'Place',
+                    ) + (array)$this->placeJSONLD(
+                        $eventCreated->getLocation()->getCdbid()
+                    );
+
+                $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
+                $jsonLD = (object)array_merge((array)$jsonLD, $calendarJsonLD);
+
+                // Same as.
+                $jsonLD->sameAs = $this->generateSameAs(
+                    $eventCreated->getEventId(),
+                    reset($jsonLD->name)
+                );
+
+                $eventType = $eventCreated->getEventType();
+                $jsonLD->terms = [
+                    $eventType->toJsonLd()
+                ];
+
+                $theme = $eventCreated->getTheme();
+                if (!empty($theme)) {
+                    $jsonLD->terms[] = $theme->toJsonLd();
+                }
+
+                $recordedOn = $domainMessage->getRecordedOn()->toString();
+                $jsonLD->created = \DateTime::createFromFormat(
+                    DateTime::FORMAT_STRING,
+                    $recordedOn
+                )->format('c');
+                $jsonLD->modified = $jsonLD->created;
+
+                $metaData = $domainMessage->getMetadata()->serialize();
+                if (isset($metaData['user_email'])) {
+                    $jsonLD->creator = $metaData['user_email'];
+                } elseif (isset($metaData['user_nick'])) {
+                    $jsonLD->creator = $metaData['user_nick'];
+                }
+
+                return $jsonLD;
+            }
         );
-
-        $eventType = $eventCreated->getEventType();
-        $jsonLD->terms = [
-            $eventType->toJsonLd()
-        ];
-
-        $theme = $eventCreated->getTheme();
-        if (!empty($theme)) {
-            $jsonLD->terms[] = $theme->toJsonLd();
-        }
-
-        $recordedOn = $domainMessage->getRecordedOn()->toString();
-        $jsonLD->created = \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $recordedOn
-        )->format('c');
-        $jsonLD->modified = $jsonLD->created;
-
-        $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_email'])) {
-            $jsonLD->creator = $metaData['user_email'];
-        } elseif (isset($metaData['user_nick'])) {
-            $jsonLD->creator = $metaData['user_nick'];
-        }
-
-        $this->repository->save($document->withBody($jsonLD));
     }
 
     /**

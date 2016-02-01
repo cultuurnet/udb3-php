@@ -44,4 +44,14 @@ class JsonDocument implements ReadModelInterface
     {
         return new self($this->id, json_encode($body));
     }
+
+    /**
+     * @param callable $fn
+     * @return
+     */
+    public function apply(callable $fn)
+    {
+        $body = $fn($this->getBody());
+        return $this->withBody($body);
+    }
 }

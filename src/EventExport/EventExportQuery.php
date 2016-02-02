@@ -17,7 +17,7 @@ class EventExportQuery extends TrimmedString
         parent::__construct($value);
 
         if ($this->isEmpty()) {
-            throw new \RuntimeException('Query can not be empty');
+            throw new \InvalidArgumentException('Query can not be empty');
         }
     }
 }

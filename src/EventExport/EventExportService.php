@@ -126,7 +126,7 @@ class EventExportService implements EventExportServiceInterface
             throw ($e);
         }
 
-        print($totalItemCount) . PHP_EOL;
+        $logger->debug($totalItemCount, array('query' => (string)$query));
 
         if ($totalItemCount < 1) {
             $logger->error(

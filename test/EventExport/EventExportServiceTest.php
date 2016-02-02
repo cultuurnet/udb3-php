@@ -402,29 +402,27 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider exportParametersDataProvider
      */
-    public function it_logs_items_that_can_not_be_found_by_the_event_service()
-    {
+    public function it_logs_items_that_can_not_be_found_by_the_event_service(
+        $fileFormat,
+        $query,
+        $selection
+    ) {
         $unavailableEventIds = [4, 7, 16];
 
         $this->setUpEventService($unavailableEventIds);
 
-        $query = new EventExportQuery('city:Leuven');
-
         $exportUuid = 'abc';
         $this->forceUuidGeneratorToReturn($exportUuid);
 
-        $exportExtension = 'txt';
-        $fileFormat = $this->getFileFormat($exportExtension);
-
         $logger = $this->getMock(LoggerInterface::class);
-        $expectedLogContextCallback = function ($context) use ($query) {
-            return
-                $context['query'] == $query &&
-                $context['exception'] instanceof EventNotFoundException;
+        $expectedLogContextCallback = function ($context) {
+            return $context['exception'] instanceof EventNotFoundException;
         };
 
-        $logger->expects($this->exactly(3))
+        $logger
+            ->expects($this->exactly(3))
             ->method('error')
             ->withConsecutive(
                 [
@@ -445,7 +443,24 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             $fileFormat,
             $query,
             null,
-            $logger
+            $logger,
+            $selection
         );
+    }
+
+    public function exportParametersDataProvider()
+    {
+        return [
+            [
+                "fileFormat" => $this->getFileFormat('txt'),
+                "query" => new EventExportQuery('city:Leuven'),
+                "selection" => ['4','7','16']
+            ],
+            [
+                "fileFormat" => $this->getFileFormat('txt'),
+                "query" => new EventExportQuery('city:Leuven'),
+                "selection" => null
+            ]
+        ];
     }
 }

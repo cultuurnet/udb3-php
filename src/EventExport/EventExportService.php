@@ -73,6 +73,27 @@ class EventExportService implements EventExportServiceInterface
         $this->mailer = $mailer;
     }
 
+    /**
+     * @param FileFormatInterface $fileFormat
+     *  The file format of the exported file.
+     *
+     * @param EventExportQuery $query
+     *  The query that will be exported.
+     *  A query has to be specified even if you are exporting a selection of events.
+     *
+     * @param EmailAddress|null $address
+     *  An optional email address that will receive an email containing the exported file.
+     *
+     * @param LoggerInterface|null $logger
+     *  An optional logger that reports unknown events and empty exports.
+     *
+     * @param string[]|null $selection
+     *  A selection of items that will be included in the export.
+     *  When left empty the whole query will export.
+     *
+     * @return bool|string
+     *  The destination url of the export file or false if no events were found.
+     */
     public function exportEvents(
         FileFormatInterface $fileFormat,
         EventExportQuery $query,
@@ -125,8 +146,8 @@ class EventExportService implements EventExportServiceInterface
             $tmpPath = "{$tmpDir}/{$tmpFileName}";
 
             // $events are keyed here by the authoritative event ID.
-            if ($selection) {
-                $events = $this->getEventsAsJSONLD($selection);
+            if (is_array($selection)) {
+                $events = $this->getEventsAsJSONLD($selection, $logger);
             } else {
                 $events = $this->search(
                     $totalItemCount,
@@ -179,13 +200,46 @@ class EventExportService implements EventExportServiceInterface
      * Get all events formatted as JSON-LD.
      *
      * @param \Traversable $events
+     * @param LoggerInterface $logger
      * @return \Generator
      */
-    private function getEventsAsJSONLD($events)
+    private function getEventsAsJSONLD($events, LoggerInterface $logger)
     {
         foreach ($events as $eventId) {
-            yield $eventId => $this->eventService->getEvent($eventId);
+            $event = $this->getEvent($eventId, $logger);
+
+            if ($event) {
+                yield $eventId => $event;
+            }
         }
+    }
+
+    /**
+     * @param string $id
+     *   A string uniquely identifying an event.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return array|null
+     *   An event array or null if the event was not found.
+     */
+    private function getEvent($id, LoggerInterface $logger)
+    {
+        try {
+            $event = $this->eventService->getEvent($id);
+        } catch (EventNotFoundException $e) {
+            $logger->error(
+                $e->getMessage(),
+                [
+                    'eventId' => $id,
+                    'exception' => $e,
+                ]
+            );
+
+            $event = null;
+        }
+
+        return $event;
     }
 
     /**
@@ -243,21 +297,11 @@ class EventExportService implements EventExportServiceInterface
                 if (!array_key_exists($eventId, $exportedEventIds)) {
                     $exportedEventIds[$eventId] = $pageCounter;
 
-                    try {
-                        $event = $this->eventService->getEvent($eventId);
-                    } catch (EventNotFoundException $e) {
-                        $logger->error(
-                            $e->getMessage(),
-                            [
-                                'query' => $query,
-                                'exception' => $e,
-                            ]
-                        );
+                    $event = $this->getEvent($eventId, $logger);
 
-                        continue;
+                    if ($event) {
+                        yield $eventId => $event;
                     }
-
-                    yield $eventId => $event;
                 } else {
                     $logger->error(
                         'query_duplicate_event',

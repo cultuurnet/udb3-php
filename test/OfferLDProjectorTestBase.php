@@ -272,7 +272,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
 
         $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $location);
         $eventClass = $this->getEventClass('ImageUpdated');
-        $imageUpdated = new $eventClass($id, 0, $mediaObject);
+        $imageUpdated = new $eventClass($id, $imageId, $description, $copyrightHolder);
 
         $initialDocument = new JsonDocument(
             $id,
@@ -281,8 +281,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     [
                         '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
                         '@type' => 'schema:ImageObject',
-                        'contentUrl' => 'oldUrl',
-                        'thumbnailUrl' => 'oldthumbnailUrl',
+                        'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'olddescription',
                         'copyrightHolder' => 'oldcopyrightHolder'
                     ]

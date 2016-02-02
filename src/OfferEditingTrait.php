@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
+use ValueObjects\String\String;
 
 /**
  * Trait that contains all major editing methods for Offers.
@@ -153,17 +154,24 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject)
-    {
-
+    public function updateImage(
+        $id,
+        Image $image,
+        String $description,
+        String $copyrightHolder
+    ) {
         $this->guardId($id);
 
         $commandClass = $this->getCommandClass('UpdateImage');
 
         return $this->commandBus->dispatch(
-            new $commandClass($id, $indexToEdit, $mediaObject)
+            new $commandClass(
+                $id,
+                $image->getMediaObjectId(),
+                $description,
+                $copyrightHolder
+            )
         );
-
     }
 
     /**

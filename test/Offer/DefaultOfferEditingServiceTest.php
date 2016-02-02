@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
@@ -23,7 +24,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $uuidGenerator;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $offerRepository;
 
@@ -51,7 +52,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus = $this->getMock(CommandBusInterface::class);
         $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $this->offerRepository = $this->getMock(RepositoryInterface::class);
+        $this->offerRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
 
         $this->addLabelCommand = $this->getMockForAbstractClass(
@@ -78,7 +79,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_add_a_label()
     {
         $this->offerRepository->expects($this->once())
-            ->method('load')
+            ->method('get')
             ->with('foo');
 
         $this->commandFactory->expects($this->once())
@@ -98,7 +99,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_delete_a_label()
     {
         $this->offerRepository->expects($this->once())
-            ->method('load')
+            ->method('get')
             ->with('foo');
 
         $this->commandFactory->expects($this->once())

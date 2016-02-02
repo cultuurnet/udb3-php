@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
@@ -13,6 +10,7 @@ use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
@@ -20,12 +18,15 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 
-class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
+class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface,
+ OfferEditingInterface
 {
 
     use \CultuurNet\UDB3\OfferEditingTrait;
@@ -41,21 +42,6 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
     protected $eventVariationService;
 
     /**
-     * @var CommandBusInterface
-     */
-    protected $commandBus;
-
-    /**
-     * @var UuidGeneratorInterface
-     */
-    protected $uuidGenerator;
-
-    /**
-     * @var RepositoryInterface
-     */
-    protected $eventRepository;
-
-    /**
      * @var PlaceService
      */
     protected $places;
@@ -69,13 +55,12 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
         EventServiceInterface $eventService,
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $eventRepository,
-        PlaceService $placeService
+        DocumentRepositoryInterface $eventRepository,
+        PlaceService $placeService,
+        OfferCommandFactoryInterface $commandFactory
     ) {
+        parent::__construct($commandBus, $uuidGenerator, $eventRepository, $commandFactory);
         $this->eventService = $eventService;
-        $this->commandBus = $commandBus;
-        $this->uuidGenerator = $uuidGenerator;
-        $this->eventRepository = $eventRepository;
         $this->places = $placeService;
     }
 
@@ -105,51 +90,11 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
         );
     }
 
-    /**
-     * @param string $id
-     * @throws EventNotFoundException
-     */
-    public function guardId($id)
-    {
-        // This validates if the eventId is valid.
-        $this->eventService->getEvent($id);
-    }
-
     protected function guardTranslationLanguage(Language $language)
     {
         if (!LanguageCanBeTranslatedToSpecification::isSatisfiedBy($language)) {
             throw new InvalidTranslationLanguageException($language);
         }
-    }
-
-    /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function label($eventId, Label $label)
-    {
-        $this->guardId($eventId);
-
-        return $this->commandBus->dispatch(
-            new AddLabel($eventId, $label)
-        );
-    }
-
-    /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function unlabel($eventId, Label $label)
-    {
-        $this->guardId($eventId);
-
-        return $this->commandBus->dispatch(
-            new DeleteLabel($eventId, $label)
-        );
     }
 
     /**

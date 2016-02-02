@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 
@@ -21,7 +22,7 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     protected $uuidGenerator;
 
     /**
-     * @var RepositoryInterface
+     * @var DocumentRepositoryInterface
      */
     protected $offerRepository;
 
@@ -33,13 +34,13 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $offerRepository
+     * @param DocumentRepositoryInterface $offerRepository
      * @param OfferCommandFactoryInterface $commandFactory
      */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $offerRepository,
+        DocumentRepositoryInterface $offerRepository,
         OfferCommandFactoryInterface $commandFactory
     ) {
         $this->commandBus = $commandBus;
@@ -85,8 +86,8 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param string $id
      */
-    private function guardId($id)
+    public function guardId($id)
     {
-        $this->offerRepository->load($id);
+        $this->offerRepository->get($id);
     }
 }

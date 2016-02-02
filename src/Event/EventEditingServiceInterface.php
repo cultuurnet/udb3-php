@@ -121,22 +121,6 @@ interface EventEditingServiceInterface
     public function deleteImage($id, $indexToDelete, $internalId = '');
 
     /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function label($eventId, Label $label);
-
-    /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function unlabel($eventId, Label $label);
-
-    /**
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location

@@ -6,8 +6,11 @@ use Broadway\Repository\AggregateNotFoundException;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\OfferEditingInterface;
+use CultuurNet\UDB3\Place\Commands\AddLabel;
+use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
@@ -69,16 +72,5 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
         return $this->commandBus->dispatch(
             new UpdateFacilities($id, $facilities)
         );
-    }
-
-    /**
-     * @param string $id
-     * @throws AggregateNotFoundException
-     * @return Place
-     */
-    public function guardId($id)
-    {
-        // This validates if the id is valid.
-        return $this->offerRepository->load($id);
     }
 }

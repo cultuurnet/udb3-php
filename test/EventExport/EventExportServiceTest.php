@@ -113,7 +113,8 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             $this->searchResultsDetails
         );
 
-        $this->searchService->expects($this->exactly(3))
+        $this->searchService
+            ->expects($this->any())
             ->method('search')
             ->withConsecutive(
                 [$this->anything(), 1, 0],

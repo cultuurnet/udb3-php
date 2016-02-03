@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
@@ -1363,5 +1364,101 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ],
             $body
         );
+    }
+
+    /**
+     * @test
+     * @dataProvider eventUpdateDataProvider
+     */
+    public function it_prioritizes_udb3_media_when_updating_an_event(
+        $documentWithUDB3Media,
+        $domainMessage,
+        $expectedMediaObjects
+    ) {
+        $this->documentRepository->save($documentWithUDB3Media);
+
+        $this->projector->handle($domainMessage);
+
+        $this->assertEquals(
+            $expectedMediaObjects,
+            $this->documentRepository->get('someId')->getBody()->mediaObject
+        );
+    }
+
+    public function eventUpdateDataProvider()
+    {
+        $documentWithUDB3Media = new JsonDocument(
+            'someId',
+            json_encode([
+                'mediaObject' => [
+                    [
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:ImageObject',
+                        'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'description' => 'sexy ladies without clothes',
+                        'copyrightHolder' => 'Bart Ramakers'
+                    ]
+                ]
+            ])
+        );
+
+        $expectedMediaObjects = [
+            (object) [
+                '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'description' => 'sexy ladies without clothes',
+                'copyrightHolder' => 'Bart Ramakers'
+            ]
+        ];
+
+        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+
+        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
+            new String('foo'),
+            new EventXmlString($xml),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = array();
+        $metadata['user_nick'] = 'Jantest';
+        $metadata['consumer']['name'] = 'UiTDatabank';
+
+        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
+
+        $eventUpdatedFromUDB2 = new EventUpdatedFromUDB2(
+            'foo',
+            file_get_contents(__DIR__ . '/samples/event_with_photo.cdbxml.xml'),
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return [
+            'entryapi' => [
+                $documentWithUDB3Media,
+                new DomainMessage(
+                    $eventId,
+                    1,
+                    new Metadata($metadata),
+                    $eventUpdatedFromCdbXml,
+                    DateTime::fromString($importedDate)
+                ),
+                $expectedMediaObjects
+            ],
+            'udb2' => [
+                $documentWithUDB3Media,
+                new DomainMessage(
+                    $eventId,
+                    1,
+                    new Metadata($metadata),
+                    $eventUpdatedFromUDB2,
+                    DateTime::fromString($importedDate)
+                ),
+                $expectedMediaObjects
+            ]
+        ];
     }
 }

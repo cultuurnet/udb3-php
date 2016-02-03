@@ -25,8 +25,9 @@ use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 
-class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface,
- OfferEditingInterface
+class DefaultEventEditingService extends DefaultOfferEditingService implements
+    EventEditingServiceInterface,
+    OfferEditingInterface
 {
 
     use \CultuurNet\UDB3\OfferEditingTrait;

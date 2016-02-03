@@ -68,8 +68,10 @@ use ValueObjects\String\String;
  * Implements PlaceServiceInterface and OrganizerServiceInterface to do a double
  * dispatch with CdbXMLImporter.
  */
-class EventLDProjector extends OfferLDProjector implements EventListenerInterface, PlaceServiceInterface,
- OrganizerServiceInterface
+class EventLDProjector extends OfferLDProjector implements
+    EventListenerInterface,
+    PlaceServiceInterface,
+    OrganizerServiceInterface
 {
     /**
      * @var PlaceService

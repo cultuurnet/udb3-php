@@ -58,7 +58,7 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     {
         $this->guardId($id);
 
-        $this->commandBus->dispatch(
+        return $this->commandBus->dispatch(
             $this->commandFactory->createAddLabelCommand(
                 $id,
                 $label
@@ -75,7 +75,7 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     {
         $this->guardId($id);
 
-        $this->commandBus->dispatch(
+        return $this->commandBus->dispatch(
             $this->commandFactory->createDeleteLabelCommand(
                 $id,
                 $label

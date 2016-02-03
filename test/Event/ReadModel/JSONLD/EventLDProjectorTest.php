@@ -1414,7 +1414,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
-        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
 
         $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
             new String('foo'),
@@ -1432,7 +1432,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventUpdatedFromUDB2 = new EventUpdatedFromUDB2(
             'foo',
-            file_get_contents(__DIR__ . '/samples/event_with_photo.cdbxml.xml'),
+            file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml'),
             'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
         );
 

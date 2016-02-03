@@ -8,7 +8,6 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ReflectionObject;
 use ValueObjects\Identity\UUID;
@@ -138,13 +137,18 @@ trait OfferCommandHandlerTestTrait
     /**
      * @test
      */
-    public function it_can_add_delete_an_image_of_an_offer()
+    public function it_can_remove_an_image_from_an_offer()
     {
         $id = '1';
-        $indexToDelete = 1;
-        $internalId = '1';
-        $commandClass = $this->getCommandClass('DeleteImage');
-        $eventClass = $this->getEventClass('ImageDeleted');
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $commandClass = $this->getCommandClass('RemoveImage');
+        $eventClass = $this->getEventClass('ImageRemoved');
 
         $this->scenario
             ->withAggregateId($id)
@@ -152,9 +156,9 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $indexToDelete, $internalId)
+                new $commandClass($id, $image)
             )
-            ->then([new $eventClass($id, $indexToDelete, $internalId)]);
+            ->then([new $eventClass($id, $image)]);
     }
 
     /**

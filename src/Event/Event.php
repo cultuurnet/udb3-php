@@ -21,7 +21,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
-use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
@@ -490,14 +490,13 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * Delete an image.
+     * Remove an image.
      *
-     * @param int $indexToDelete
-     * @param mixed int|string $internalId
+     * @param Image $image
      */
-    public function deleteImage($indexToDelete, $internalId)
+    public function removeImage(Image $image)
     {
-        $this->apply(new ImageDeleted($this->eventId, $indexToDelete, $internalId));
+        $this->apply(new ImageRemoved($this->eventId, $image));
     }
 
     /**
@@ -643,5 +642,13 @@ class Event extends EventSourcedAggregateRoot
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
         $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+    }
+
+    protected function applyImageRemoved(ImageRemoved $imageRemoved)
+    {
+        $this->mediaObjects = array_diff(
+            $this->mediaObjects,
+            [$imageRemoved->getImage()->getMediaObjectId()]
+        );
     }
 }

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Place;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
-use CultuurNet\UDB3\Place\Commands\DeleteImage;
+use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteTypicalAgeRange;
@@ -17,7 +17,6 @@ use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Place\Place;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -208,22 +207,17 @@ class CommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Handle a delete image command.
-     * @param DeleteImage $deleteImage
+     * Handle a remove image command.
+     * @param RemoveImage $removeImage
      */
-    public function handleDeleteImage(DeleteImage $deleteImage)
+    public function handleRemoveImage(RemoveImage $removeImage)
     {
-
         /** @var Place $place */
-        $place = $this->placeRepository->load($deleteImage->getId());
+        $place = $this->placeRepository->load($removeImage->getItemId());
 
-        $place->deleteImage(
-            $deleteImage->getIndexToDelete(),
-            $deleteImage->getInternalId()
-        );
+        $place->removeImage($removeImage->getImage());
 
         $this->placeRepository->save($place);
-
     }
 
     /**

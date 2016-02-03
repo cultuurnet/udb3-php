@@ -48,6 +48,11 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     private $deleteLabelCommand;
 
+    /**
+     * @var string
+     */
+    private $expectedCommandId;
+
     public function setUp()
     {
         $this->commandBus = $this->getMock(CommandBusInterface::class);
@@ -71,6 +76,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->offerRepository,
             $this->commandFactory
         );
+
+        $this->expectedCommandId = '123456';
     }
 
     /**
@@ -88,9 +95,12 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->addLabelCommand);
 
         $this->commandBus->expects($this->once())
-            ->method('dispatch');
+            ->method('dispatch')
+            ->willReturn($this->expectedCommandId);
 
-        $this->offerEditingService->addLabel('foo', new Label('label1'));
+        $commandId = $this->offerEditingService->addLabel('foo', new Label('label1'));
+
+        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -108,8 +118,11 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->addLabelCommand);
 
         $this->commandBus->expects($this->once())
-            ->method('dispatch');
+            ->method('dispatch')
+            ->willReturn($this->expectedCommandId);
 
-        $this->offerEditingService->deleteLabel('foo', new Label('label1'));
+        $commandId = $this->offerEditingService->deleteLabel('foo', new Label('label1'));
+
+        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 }

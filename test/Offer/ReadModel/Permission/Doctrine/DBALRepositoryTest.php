@@ -3,11 +3,9 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Place\ReadModel\Permission\Doctrine;
+namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine\DBALRepository;
-use CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine\SchemaConfigurator;
 use ValueObjects\String\String;
 
 class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -21,8 +19,8 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $table = new String('place_permission');
-        $idField = new String('place_id');
+        $table = new String('event_permission');
+        $idField = new String('event_id');
 
         (new SchemaConfigurator($table, $idField))->configure(
             $this->getConnection()->getSchemaManager()
@@ -38,7 +36,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_add_and_query_place_permissions()
+    public function it_can_add_and_query_offer_permissions()
     {
         $johnDoe = new String('abc');
         $editableByJohnDoe = [
@@ -82,9 +80,9 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
      * @param string $key
      * @param String $userId
      */
-    private function markEditable(String $placeId, $key, String $userId)
+    private function markEditable(String $eventId, $key, String $userId)
     {
-        $this->repository->markOfferEditableByUser($placeId, $userId);
+        $this->repository->markOfferEditableByUser($eventId, $userId);
     }
 
     /**

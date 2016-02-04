@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
@@ -79,7 +80,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($userId);
 
         $this->repository->expects($this->once())
-            ->method('markPlaceEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 new String('318F2ACB-F612-6F75-0037C9C29F44087A'),
                 $userId
@@ -114,7 +115,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn(null);
 
         $this->repository->expects($this->never())
-            ->method('markPlaceEditableByUser');
+            ->method('markOfferEditableByUser');
 
         $this->projector->handle($msg);
     }
@@ -147,7 +148,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($userId);
 
         $this->repository->expects($this->once())
-            ->method('markPlaceEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 new String('7914ed2d-9f28-4946-b9bd-ae8f7a4aea11'),
                 $userId
@@ -182,7 +183,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn(null);
 
         $this->repository->expects($this->never())
-            ->method('markPlaceEditableByUser');
+            ->method('markOfferEditableByUser');
 
         $this->projector->handle($msg);
     }
@@ -213,7 +214,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->repository->expects($this->once())
-            ->method('markPlaceEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 $placeId,
                 $userId

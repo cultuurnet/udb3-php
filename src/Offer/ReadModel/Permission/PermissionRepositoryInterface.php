@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\ReadModel\Permission;
+namespace CultuurNet\UDB3\Offer\ReadModel\Permission;
 
 use ValueObjects\String\String;
 
@@ -11,5 +11,5 @@ interface PermissionRepositoryInterface
      * @param String $uitId
      * @return void
      */
-    public function markEventEditableByUser(String $eventId, String $uitId);
+    public function markOfferEditableByUser(String $offerId, String $uitId);
 }

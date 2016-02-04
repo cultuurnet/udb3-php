@@ -8,11 +8,11 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\Permission\Doctrine;
 
-use CultuurNet\UDB3\Place\ReadModel\Permission\PermissionQueryInterface;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
-use CultuurNet\UDB3\Place\ReadModel\Permission\PermissionRepositoryInterface;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use ValueObjects\String\String;
 
 class DBALRepository implements PermissionRepositoryInterface, PermissionQueryInterface
@@ -35,7 +35,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     /**
      * @inheritdoc
      */
-    public function getEditablePlaces(String $uitId)
+    public function getEditableOffers(String $uitId)
     {
         $q = $this->connection->createQueryBuilder();
         $q->select('place_id')
@@ -56,7 +56,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     /**
      * @inheritdoc
      */
-    public function markPlaceEditableByUser(String $placeId, String $uitId)
+    public function markOfferEditableByUser(String $placeId, String $uitId)
     {
         try {
             $this->connection->insert(

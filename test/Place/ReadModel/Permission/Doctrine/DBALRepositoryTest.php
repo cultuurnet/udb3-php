@@ -51,12 +51,12 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [],
-            $this->repository->getEditablePlaces($johnDoe)
+            $this->repository->getEditableOffers($johnDoe)
         );
 
         $this->assertEquals(
             [],
-            $this->repository->getEditablePlaces($janeDoe)
+            $this->repository->getEditableOffers($janeDoe)
         );
 
         array_walk($editableByJohnDoe, [$this, 'markEditable'], $johnDoe);
@@ -64,12 +64,12 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $editableByJohnDoe,
-            $this->repository->getEditablePlaces($johnDoe)
+            $this->repository->getEditableOffers($johnDoe)
         );
 
         $this->assertEquals(
             $editableByJaneDoe,
-            $this->repository->getEditablePlaces($janeDoe)
+            $this->repository->getEditableOffers($janeDoe)
         );
     }
 
@@ -80,7 +80,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     private function markEditable(String $placeId, $key, String $userId)
     {
-        $this->repository->markPlaceEditableByUser($placeId, $userId);
+        $this->repository->markOfferEditableByUser($placeId, $userId);
     }
 
     /**
@@ -97,11 +97,11 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         array_walk($editableByJohnDoe, [$this, 'markEditable'], $johnDoe);
 
-        $this->repository->markPlaceEditableByUser(new String('456'), $johnDoe);
+        $this->repository->markOfferEditableByUser(new String('456'), $johnDoe);
 
         $this->assertEquals(
             $editableByJohnDoe,
-            $this->repository->getEditablePlaces($johnDoe)
+            $this->repository->getEditableOffers($johnDoe)
         );
     }
 }

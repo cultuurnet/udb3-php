@@ -7,6 +7,7 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -54,7 +55,7 @@ class Projector implements EventListenerInterface
                 return;
             }
 
-            $this->permissionRepository->markPlaceEditableByUser(
+            $this->permissionRepository->markOfferEditableByUser(
                 new String($placeImportedFromUDB2->getActorId()),
                 $ownerId
             );
@@ -80,7 +81,7 @@ class Projector implements EventListenerInterface
                 return;
             }
 
-            $this->permissionRepository->markPlaceEditableByUser(
+            $this->permissionRepository->markOfferEditableByUser(
                 new String($placeImportedFromUDB2->getActorId()),
                 $ownerId
             );
@@ -94,7 +95,7 @@ class Projector implements EventListenerInterface
         $metadata = $domainMessage->getMetadata()->serialize();
         $ownerId = new String($metadata['user_id']);
 
-        $this->permissionRepository->markPlaceEditableByUser(
+        $this->permissionRepository->markOfferEditableByUser(
             new String($placeCreated->getPlaceId()),
             $ownerId
         );

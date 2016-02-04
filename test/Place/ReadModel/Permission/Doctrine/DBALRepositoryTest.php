@@ -34,7 +34,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_add_and_query_event_permissions()
+    public function it_can_add_and_query_place_permissions()
     {
         $johnDoe = new String('abc');
         $editableByJohnDoe = [

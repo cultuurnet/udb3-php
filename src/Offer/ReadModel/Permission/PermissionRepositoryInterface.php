@@ -7,7 +7,7 @@ use ValueObjects\String\String;
 interface PermissionRepositoryInterface
 {
     /**
-     * @param String $eventId
+     * @param String $offerId
      * @param String $uitId
      * @return void
      */

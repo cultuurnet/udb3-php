@@ -47,7 +47,7 @@ class Security implements SecurityInterface
     }
 
     /**
-     * @param String $eventId
+     * @param String $offerId
      * @return bool
      */
     private function currentUiTIDUserCanEditOffer(String $offerId)

@@ -17,6 +17,11 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     protected $tableName;
 
     /**
+     * @var StringLiteral
+     */
+    protected $idField;
+
+    /**
      * @param StringLiteral $tableName
      * @param StringLiteral $idField
      */

@@ -6,7 +6,7 @@
  * Time: 14:04
  */
 
-namespace CultuurNet\UDB3\Event\ReadModel\Permission\Doctrine;
+namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Doctrine\DBAL\Connection;
@@ -25,11 +25,13 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     /**
      * @param String $tableName
      * @param Connection $connection
+     * @param String $idField
      */
-    public function __construct(String $tableName, Connection $connection)
+    public function __construct(String $tableName, Connection $connection, String $idField)
     {
         $this->tableName = $tableName;
         $this->connection = $connection;
+        $this->idField = $idField;
     }
 
     /**
@@ -38,7 +40,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     public function getEditableOffers(String $uitId)
     {
         $q = $this->connection->createQueryBuilder();
-        $q->select('event_id')
+        $q->select($this->idField->toNative())
             ->from($this->tableName->toNative())
             ->where('user_id = :userId')
             ->setParameter(':userId', $uitId->toNative());
@@ -62,7 +64,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
             $this->connection->insert(
                 $this->tableName->toNative(),
                 [
-                    'event_id' => $eventId->toNative(),
+                    $this->idField->toNative() => $eventId->toNative(),
                     'user_id' => $uitId->toNative()
                 ]
             );

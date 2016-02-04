@@ -6,6 +6,8 @@
 namespace CultuurNet\UDB3\Place\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine\DBALRepository;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine\SchemaConfigurator;
 use ValueObjects\String\String;
 
 class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -20,14 +22,16 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $table = new String('place_permission');
+        $idField = new String('place_id');
 
-        (new SchemaConfigurator($table))->configure(
+        (new SchemaConfigurator($table, $idField))->configure(
             $this->getConnection()->getSchemaManager()
         );
 
         $this->repository = new DBALRepository(
             $table,
-            $this->getConnection()
+            $this->getConnection(),
+            $idField
         );
     }
 

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Place\ReadModel\Permission\Doctrine;
+namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\Doctrine\DBAL\SchemaConfiguratorInterface;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
@@ -18,10 +18,12 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
 
     /**
      * @param StringLiteral $tableName
+     * @param StringLiteral $idField
      */
-    public function __construct(StringLiteral $tableName)
+    public function __construct(StringLiteral $tableName, StringLiteral $idField)
     {
         $this->tableName = $tableName;
+        $this->idField = $idField;
     }
 
     /**
@@ -33,7 +35,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
         $table = $schema->createTable($this->tableName->toNative());
 
         $table->addColumn(
-            'place_id',
+            $this->idField->toNative(),
             'guid',
             array('length' => 36, 'notnull' => true)
         );
@@ -43,7 +45,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             array('length' => 36, 'notnull' => true)
         );
 
-        $table->setPrimaryKey(['place_id', 'user_id']);
+        $table->setPrimaryKey([$this->idField->toNative(), 'user_id']);
 
         $schemaManager->createTable($table);
     }

@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\SymfonySecurityOAuthUitid\User;
-use CultuurNet\UDB3\Event\SecurityInterface;
+use CultuurNet\UDB3\Offer\SecurityInterface;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use ValueObjects\String\String;

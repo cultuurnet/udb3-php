@@ -3,10 +3,9 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\SymfonySecurityOAuthUitid\User;
-use CultuurNet\UDB3\Offer\SecurityInterface;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use ValueObjects\String\String;
@@ -34,24 +33,24 @@ class Security implements SecurityInterface
     /**
      * @inheritdoc
      */
-    public function allowsUpdateWithCdbXml(String $eventId)
+    public function allowsUpdateWithCdbXml(String $offerId)
     {
-        return $this->currentUiTIDUserCanEditPlace($eventId);
+        return $this->currentUiTIDUserCanEditOffer($offerId);
     }
 
     /**
      * @inheritdoc
      */
-    public function allowsUpdates(String $eventId)
+    public function allowsUpdates(String $offerId)
     {
-        return $this->currentUiTIDUserCanEditPlace($eventId);
+        return $this->currentUiTIDUserCanEditOffer($offerId);
     }
 
     /**
-     * @param String $placeId
+     * @param String $eventId
      * @return bool
      */
-    private function currentUiTIDUserCanEditPlace(String $placeId)
+    private function currentUiTIDUserCanEditOffer(String $offerId)
     {
         $token = $this->tokenStorage->getToken();
 
@@ -75,6 +74,6 @@ class Security implements SecurityInterface
             $userId
         );
 
-        return in_array($placeId, $editableEvents);
+        return in_array($offerId, $editableEvents);
     }
 }

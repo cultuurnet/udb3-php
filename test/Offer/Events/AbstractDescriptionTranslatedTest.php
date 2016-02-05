@@ -2,15 +2,17 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
+
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use ValueObjects\String\String;
 
-class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
+class AbstractDescriptionTranslatedTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var AbstractPropertyTranslatedEvent|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractDescriptionTranslated
      */
-    protected $propertyTranslatedEvent;
+    protected $descriptionTranslatedEvent;
 
     /**
      * @var string
@@ -25,13 +27,14 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     /**
      * @var String
      */
-    protected $title;
+    protected $description;
 
     public function setUp()
     {
         $this->itemId = 'Foo';
         $this->language = new Language('en');
-        $this->propertyTranslatedEvent = new MockAbstractPropertyTranslatedEvent($this->itemId, $this->language);
+        $this->description = new String('Description');
+        $this->descriptionTranslatedEvent = new DescriptionTranslated($this->itemId, $this->language, $this->description);
     }
 
     /**
@@ -41,12 +44,14 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
-        $expectedTranslateEvent = new MockAbstractPropertyTranslatedEvent(
+        $expectedDescription = new String('Description');
+        $expectedDescriptionTranslated = new DescriptionTranslated(
             $expectedItemId,
-            $expectedLanguage
+            $expectedLanguage,
+            $expectedDescription
         );
 
-        $this->assertEquals($expectedTranslateEvent, $this->propertyTranslatedEvent);
+        $this->assertEquals($expectedDescriptionTranslated, $this->descriptionTranslatedEvent);
     }
 
     /**
@@ -56,27 +61,30 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
+        $expectedDescription = new String('Description');
 
-        $itemId = $this->propertyTranslatedEvent->getItemId();
-        $language = $this->propertyTranslatedEvent->getLanguage();
+        $itemId = $this->descriptionTranslatedEvent->getItemId();
+        $language = $this->descriptionTranslatedEvent->getLanguage();
+        $description = $this->descriptionTranslatedEvent->getDescription();
 
         $this->assertEquals($expectedItemId, $itemId);
         $this->assertEquals($expectedLanguage, $language);
+        $this->assertEquals($expectedDescription, $description);
     }
 
     /**
      * @test
      * @dataProvider serializationDataProvider
      * @param $expectedSerializedValue
-     * @param MockAbstractPropertyTranslatedEvent $propertyTranslatedEvent
+     * @param DescriptionTranslated $descriptionTranslated
      */
     public function it_can_be_serialized_to_an_array(
         $expectedSerializedValue,
-        MockAbstractPropertyTranslatedEvent $propertyTranslatedEvent
+        DescriptionTranslated $descriptionTranslated
     ) {
         $this->assertEquals(
             $expectedSerializedValue,
-            $propertyTranslatedEvent->serialize()
+            $descriptionTranslated->serialize()
         );
     }
 
@@ -84,15 +92,15 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param $serializedValue
-     * @param MockAbstractPropertyTranslatedEvent $expectedPropertyTranslatedEvent
+     * @param DescriptionTranslated $expectedDescriptionTranslated
      */
     public function it_can_deserialize_an_array(
         $serializedValue,
-        MockAbstractPropertyTranslatedEvent $expectedPropertyTranslatedEvent
+        DescriptionTranslated $expectedDescriptionTranslated
     ) {
         $this->assertEquals(
-            $expectedPropertyTranslatedEvent,
-            MockAbstractPropertyTranslatedEvent::deserialize($serializedValue)
+            $expectedDescriptionTranslated,
+            DescriptionTranslated::deserialize($serializedValue)
         );
     }
 
@@ -102,14 +110,16 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     public function serializationDataProvider()
     {
         return [
-            'abstractPropertyTranslatedEvent' => [
+            'abstractDescriptionTranslated' => [
                 [
                     'item_id' => 'madId',
                     'language' => 'en',
+                    'description' => 'Description',
                 ],
-                new MockAbstractPropertyTranslatedEvent(
+                new DescriptionTranslated(
                     'madId',
-                    new Language('en')
+                    new Language('en'),
+                    new String('Description')
                 ),
             ],
         ];

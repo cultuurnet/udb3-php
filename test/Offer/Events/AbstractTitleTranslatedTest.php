@@ -2,15 +2,17 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
+
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use ValueObjects\String\String;
 
-class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
+class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var AbstractPropertyTranslatedEvent|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractTitleTranslated
      */
-    protected $propertyTranslatedEvent;
+    protected $titleTranslatedEvent;
 
     /**
      * @var string
@@ -31,7 +33,8 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->itemId = 'Foo';
         $this->language = new Language('en');
-        $this->propertyTranslatedEvent = new MockAbstractPropertyTranslatedEvent($this->itemId, $this->language);
+        $this->title = new String('Title');
+        $this->titleTranslatedEvent = new TitleTranslated($this->itemId, $this->language, $this->title);
     }
 
     /**
@@ -41,12 +44,14 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
-        $expectedTranslateEvent = new MockAbstractPropertyTranslatedEvent(
+        $expectedTitle = new String('Title');
+        $expectedTitleTranslated = new TitleTranslated(
             $expectedItemId,
-            $expectedLanguage
+            $expectedLanguage,
+            $expectedTitle
         );
 
-        $this->assertEquals($expectedTranslateEvent, $this->propertyTranslatedEvent);
+        $this->assertEquals($expectedTitleTranslated, $this->titleTranslatedEvent);
     }
 
     /**
@@ -56,27 +61,30 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
+        $expectedTitle = new String('Title');
 
-        $itemId = $this->propertyTranslatedEvent->getItemId();
-        $language = $this->propertyTranslatedEvent->getLanguage();
+        $itemId = $this->titleTranslatedEvent->getItemId();
+        $language = $this->titleTranslatedEvent->getLanguage();
+        $title = $this->titleTranslatedEvent->getTitle();
 
         $this->assertEquals($expectedItemId, $itemId);
         $this->assertEquals($expectedLanguage, $language);
+        $this->assertEquals($expectedTitle, $title);
     }
 
     /**
      * @test
      * @dataProvider serializationDataProvider
      * @param $expectedSerializedValue
-     * @param MockAbstractPropertyTranslatedEvent $propertyTranslatedEvent
+     * @param TitleTranslated $titleTranslated
      */
     public function it_can_be_serialized_to_an_array(
         $expectedSerializedValue,
-        MockAbstractPropertyTranslatedEvent $propertyTranslatedEvent
+        TitleTranslated $titleTranslated
     ) {
         $this->assertEquals(
             $expectedSerializedValue,
-            $propertyTranslatedEvent->serialize()
+            $titleTranslated->serialize()
         );
     }
 
@@ -84,15 +92,15 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param $serializedValue
-     * @param MockAbstractPropertyTranslatedEvent $expectedPropertyTranslatedEvent
+     * @param TitleTranslated $expectedTitleTranslated
      */
     public function it_can_deserialize_an_array(
         $serializedValue,
-        MockAbstractPropertyTranslatedEvent $expectedPropertyTranslatedEvent
+        TitleTranslated $expectedTitleTranslated
     ) {
         $this->assertEquals(
-            $expectedPropertyTranslatedEvent,
-            MockAbstractPropertyTranslatedEvent::deserialize($serializedValue)
+            $expectedTitleTranslated,
+            TitleTranslated::deserialize($serializedValue)
         );
     }
 
@@ -102,14 +110,16 @@ class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
     public function serializationDataProvider()
     {
         return [
-            'abstractPropertyTranslatedEvent' => [
+            'abstractTitleTranslated' => [
                 [
                     'item_id' => 'madId',
                     'language' => 'en',
+                    'title' => 'Title',
                 ],
-                new MockAbstractPropertyTranslatedEvent(
+                new TitleTranslated(
                     'madId',
-                    new Language('en')
+                    new Language('en'),
+                    new String('Title')
                 ),
             ],
         ];

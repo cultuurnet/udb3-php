@@ -925,12 +925,34 @@ class EventTest extends AggregateRootScenarioTestCase
             new String('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
-        $expectedMediaObjects = [new UUID('de305d54-75b4-431b-adb2-eb6b9e546014')];
 
-        $this->event->addImage($image);
-        $this->event->addImage($image);
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
 
-        $this->assertEquals($expectedMediaObjects, $this->event->getMediaObjects());
+        $this->scenario
+            ->withAggregateId('foo')
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        new String('foo'),
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                    new ImageAdded(
+                        'foo',
+                        $image
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($image) {
+                    $event->addImage(
+                        $image
+                    );
+                }
+            )
+            ->then([]);
     }
 
     /**

@@ -294,14 +294,6 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return UUID[]
-     */
-    public function getMediaObjects()
-    {
-        return $this->mediaObjects;
-    }
-
-    /**
      * @param Label $label
      */
     public function label(Label $label)
@@ -454,15 +446,12 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * Add a new image.
-     *
-     * @param Image $image
-     * @throws DuplicateMediaObjectException
+     * @return boolean
      */
-    public function addImage(Image $image)
+    private function containsImage(Image $image)
     {
-        $duplicateMediaObject = array_filter(
-            $this->getMediaObjects(),
+        $equalImages = array_filter(
+            $this->mediaObjects,
             function ($existingMediaObjectId) use ($image) {
                 return $image
                     ->getMediaObjectId()
@@ -470,11 +459,20 @@ class Event extends EventSourcedAggregateRoot
             }
         );
 
-        if (empty($duplicateMediaObject)) {
+        return !empty($equalImages);
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        if (!$this->containsImage($image)) {
             $this->apply(new ImageAdded($this->eventId, $image));
         }
     }
-
 
     /**
      * @param UpdateImage $updateImageCommand
@@ -496,7 +494,9 @@ class Event extends EventSourcedAggregateRoot
      */
     public function removeImage(Image $image)
     {
-        $this->apply(new ImageRemoved($this->eventId, $image));
+        if ($this->containsImage($image)) {
+            $this->apply(new ImageRemoved($this->eventId, $image));
+        }
     }
 
     /**

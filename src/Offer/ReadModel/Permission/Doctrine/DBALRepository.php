@@ -6,13 +6,13 @@
  * Time: 14:04
  */
 
-namespace CultuurNet\UDB3\Event\ReadModel\Permission\Doctrine;
+namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
-use CultuurNet\UDB3\Event\ReadModel\Permission\PermissionQueryInterface;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
-use CultuurNet\UDB3\Event\ReadModel\Permission\PermissionRepositoryInterface;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use ValueObjects\String\String;
 
 class DBALRepository implements PermissionRepositoryInterface, PermissionQueryInterface
@@ -23,22 +23,34 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     protected $connection;
 
     /**
+     * @var String
+     */
+    protected $idField;
+
+    /**
+     * @var String
+     */
+    protected $tableName;
+
+    /**
      * @param String $tableName
      * @param Connection $connection
+     * @param String $idField
      */
-    public function __construct(String $tableName, Connection $connection)
+    public function __construct(String $tableName, Connection $connection, String $idField)
     {
         $this->tableName = $tableName;
         $this->connection = $connection;
+        $this->idField = $idField;
     }
 
     /**
      * @inheritdoc
      */
-    public function getEditableEvents(String $uitId)
+    public function getEditableOffers(String $uitId)
     {
         $q = $this->connection->createQueryBuilder();
-        $q->select('event_id')
+        $q->select($this->idField->toNative())
             ->from($this->tableName->toNative())
             ->where('user_id = :userId')
             ->setParameter(':userId', $uitId->toNative());
@@ -56,13 +68,13 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     /**
      * @inheritdoc
      */
-    public function markEventEditableByUser(String $eventId, String $uitId)
+    public function markOfferEditableByUser(String $eventId, String $uitId)
     {
         try {
             $this->connection->insert(
                 $this->tableName->toNative(),
                 [
-                    'event_id' => $eventId->toNative(),
+                    $this->idField->toNative() => $eventId->toNative(),
                     'user_id' => $uitId->toNative()
                 ]
             );

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Event\ReadModel\Permission\Doctrine;
+namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use ValueObjects\String\String;
@@ -20,21 +20,23 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $table = new String('event_permission');
+        $idField = new String('event_id');
 
-        (new SchemaConfigurator($table))->configure(
+        (new SchemaConfigurator($table, $idField))->configure(
             $this->getConnection()->getSchemaManager()
         );
 
         $this->repository = new DBALRepository(
             $table,
-            $this->getConnection()
+            $this->getConnection(),
+            $idField
         );
     }
 
     /**
      * @test
      */
-    public function it_can_add_and_query_event_permissions()
+    public function it_can_add_and_query_offer_permissions()
     {
         $johnDoe = new String('abc');
         $editableByJohnDoe = [
@@ -51,12 +53,12 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [],
-            $this->repository->getEditableEvents($johnDoe)
+            $this->repository->getEditableOffers($johnDoe)
         );
 
         $this->assertEquals(
             [],
-            $this->repository->getEditableEvents($janeDoe)
+            $this->repository->getEditableOffers($janeDoe)
         );
 
         array_walk($editableByJohnDoe, [$this, 'markEditable'], $johnDoe);
@@ -64,12 +66,12 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $editableByJohnDoe,
-            $this->repository->getEditableEvents($johnDoe)
+            $this->repository->getEditableOffers($johnDoe)
         );
 
         $this->assertEquals(
             $editableByJaneDoe,
-            $this->repository->getEditableEvents($janeDoe)
+            $this->repository->getEditableOffers($janeDoe)
         );
     }
 
@@ -80,7 +82,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     private function markEditable(String $eventId, $key, String $userId)
     {
-        $this->repository->markEventEditableByUser($eventId, $userId);
+        $this->repository->markOfferEditableByUser($eventId, $userId);
     }
 
     /**
@@ -97,11 +99,11 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         array_walk($editableByJohnDoe, [$this, 'markEditable'], $johnDoe);
 
-        $this->repository->markEventEditableByUser(new String('456'), $johnDoe);
+        $this->repository->markOfferEditableByUser(new String('456'), $johnDoe);
 
         $this->assertEquals(
             $editableByJohnDoe,
-            $this->repository->getEditableEvents($johnDoe)
+            $this->repository->getEditableOffers($johnDoe)
         );
     }
 }

@@ -1,16 +1,17 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\ReadModel\Permission;
+namespace CultuurNet\UDB3\Place\ReadModel\Permission;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
-use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use ValueObjects\String\String;
 
 class Projector implements EventListenerInterface
@@ -35,12 +36,38 @@ class Projector implements EventListenerInterface
         $this->permissionRepository = $permissionRepository;
     }
 
-    protected function applyEventImportedFromUDB2(
-        EventImportedFromUDB2 $eventImportedFromUDB2
+    protected function applyPlaceImportedFromUDB2(
+        PlaceImportedFromUDB2 $placeImportedFromUDB2
+    ) {
+        $cdbActor = ActorItemFactory::createActorFromCdbXml(
+            $placeImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $placeImportedFromUDB2->getCdbXml()
+        );
+
+        $createdByIdentifier = $cdbActor->getCreatedBy();
+
+        if ($createdByIdentifier) {
+            $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
+                new String($createdByIdentifier)
+            );
+
+            if (!$ownerId) {
+                return;
+            }
+
+            $this->permissionRepository->markOfferEditableByUser(
+                new String($placeImportedFromUDB2->getActorId()),
+                $ownerId
+            );
+        }
+    }
+
+    protected function applyPlaceImportedFromUDB2Event(
+        PlaceImportedFromUDB2Event $placeImportedFromUDB2
     ) {
         $cdbEvent = EventItemFactory::createEventFromCdbXml(
-            $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $eventImportedFromUDB2->getCdbXml()
+            $placeImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $placeImportedFromUDB2->getCdbXml()
         );
 
         $createdByIdentifier = $cdbEvent->getCreatedBy();
@@ -55,55 +82,21 @@ class Projector implements EventListenerInterface
             }
 
             $this->permissionRepository->markOfferEditableByUser(
-                new String($eventImportedFromUDB2->getEventId()),
+                new String($placeImportedFromUDB2->getActorId()),
                 $ownerId
             );
         }
     }
 
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $cdbEvent = EventItemFactory::createEventFromCdbXml(
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $createdByIdentifier = $cdbEvent->getCreatedBy();
-
-        // By default the owner is the user who was authenticated when creating
-        // the event.
-        $metadata = $domainMessage->getMetadata()->serialize();
-        $ownerId = new String($metadata['user_id']);
-
-        // If createdby is supplied, consider the user identified by createdby
-        // as the owner.
-        if ($createdByIdentifier) {
-            $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
-                new String($createdByIdentifier)
-            );
-        }
-
-        if (!$ownerId) {
-            return;
-        }
-
-        $this->permissionRepository->markOfferEditableByUser(
-            $eventCreatedFromCdbXml->getEventId(),
-            $ownerId
-        );
-    }
-
-    protected function applyEventCreated(
-        EventCreated $eventCreated,
+    protected function applyPlaceCreated(
+        PlaceCreated $placeCreated,
         DomainMessage $domainMessage
     ) {
         $metadata = $domainMessage->getMetadata()->serialize();
         $ownerId = new String($metadata['user_id']);
 
         $this->permissionRepository->markOfferEditableByUser(
-            new String($eventCreated->getEventId()),
+            new String($placeCreated->getPlaceId()),
             $ownerId
         );
     }

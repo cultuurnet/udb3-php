@@ -6,6 +6,8 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
+use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 
 abstract class OfferCommandHandler extends Udb3CommandHandler
 {
@@ -73,6 +75,16 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     abstract protected function getDeleteLabelClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getTranslateTitleClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTranslateDescriptionClassName();
+
+    /**
      * @param AbstractAddLabel $addLabel
      */
     private function handleAddLabel(AbstractAddLabel $addLabel)
@@ -89,6 +101,26 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($deleteLabel->getItemId());
         $offer->deleteLabel($deleteLabel->getLabel());
+        $this->repository->save($offer);
+    }
+
+    /**
+     * @param AbstractTranslateTitle $translateTitle
+     */
+    private function handleTranslateTitle(AbstractTranslateTitle $translateTitle)
+    {
+        $offer = $this->load($translateTitle->getItemId());
+        $offer->translateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
+        $this->repository->save($offer);
+    }
+
+    /**
+     * @param AbstractTranslateDescription $translateDescription
+     */
+    private function handleTranslateDescription(AbstractTranslateDescription $translateDescription)
+    {
+        $offer = $this->load($translateDescription->getItemId());
+        $offer->translateDescription($translateDescription->getLanguage(), $translateDescription->getDescription());
         $this->repository->save($offer);
     }
 

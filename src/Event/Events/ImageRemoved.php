@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Offer\ImageRemoveTrait;
 
 /**
- * Provides an ImageDeleted event.
+ * Provides an ImageRemoved event.
  */
 class ImageRemoved extends EventEvent
 {

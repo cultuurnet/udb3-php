@@ -5,8 +5,13 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Translation;
+use ValueObjects\String\String;
 
 abstract class Offer extends EventSourcedAggregateRoot
 {
@@ -56,6 +61,28 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param Language $language
+     * @param String $title
+     */
+    public function translateTitle(Language $language, String $title)
+    {
+        $this->apply(
+            $this->createTitleTranslatedEvent($language, $title)
+        );
+    }
+
+    /**
+     * @param Language $language
+     * @param String $description
+     */
+    public function translateDescription(Language $language, String $description)
+    {
+        $this->apply(
+            $this->createDescriptionTranslatedEvent($language, $description)
+        );
+    }
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
@@ -93,4 +120,18 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractLabelDeleted
      */
     abstract protected function createLabelDeletedEvent(Label $label);
+
+    /**
+     * @param Language $language
+     * @param String $title
+     * @return AbstractTitleTranslated
+     */
+    abstract protected function createTitleTranslatedEvent(Language $language, String $title);
+
+    /**
+     * @param Language $language
+     * @param String $description
+     * @return AbstractDescriptionTranslated
+     */
+    abstract protected function createDescriptionTranslatedEvent(Language $language, String $description);
 }

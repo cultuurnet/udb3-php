@@ -566,12 +566,35 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
     }
 
-    /**
-     * @test
-     */
-    public function it_should_remove_the_media_object_of_an_image()
+    public function mediaObjectDataProvider()
     {
         $eventId = 'event-1';
+
+        $initialJsonStructure = [
+            'image' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
+        ];
+
+        $initialJsonStructureWithMedia = $initialJsonStructure + [
+            'mediaObject' => [
+                [
+                    '@id' => 'http://example.com/entity/de305d54-ddde-eddd-adb2-eb6b9e546014',
+                    '@type' => 'schema:ImageObject',
+                    'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
+                    'thumbnailUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
+                    'description' => 'my best pokerface',
+                    'copyrightHolder' => 'Hans Langucci'
+                ],
+                [
+                    '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:ImageObject',
+                    'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'description' => 'sexy ladies without clothes',
+                    'copyrightHolder' => 'Bart Ramakers'
+                ]
+            ]
+        ];
+
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
@@ -579,30 +602,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new String('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
-        $initialDocument = new JsonDocument(
-            $eventId,
-            json_encode([
-                'image' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
-                'mediaObject' => [
-                    [
-                        '@id' => 'http://example.com/entity/de305d54-ddde-eddd-adb2-eb6b9e546014',
-                        '@type' => 'schema:ImageObject',
-                        'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
-                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
-                        'description' => 'my best pokerface',
-                        'copyrightHolder' => 'Hans Langucci'
-                    ],
-                    [
-                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
-                        '@type' => 'schema:ImageObject',
-                        'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
-                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
-                        'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
-            ])
-        );
+
         $expectedProjection = (object) [
             'image' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
             'mediaObject' => [
@@ -617,9 +617,35 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
+        return [
+            'initial document with media' => [
+                new JsonDocument(
+                    $eventId,
+                    json_encode($initialJsonStructureWithMedia)
+                ),
+                $image,
+                $expectedProjection,
+            ],
+            'initial document without media' => [
+                new JsonDocument(
+                    $eventId,
+                    json_encode($initialJsonStructure)
+                ),
+                $image,
+                (object) $initialJsonStructure,
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider mediaObjectDataProvider
+     */
+    public function it_should_remove_the_media_object_of_an_image(JsonDocument $initialDocument, Image $image, $expectedProjection)
+    {
         $this->documentRepository->save($initialDocument);
-        $imageRemovedEvent = new ImageRemoved($eventId, $image);
-        $eventBody = $this->project($imageRemovedEvent, $eventId);
+        $imageRemovedEvent = new ImageRemoved($initialDocument->getId(), $image);
+        $eventBody = $this->project($imageRemovedEvent, $initialDocument->getId());
 
         $this->assertEquals(
             $expectedProjection,

@@ -9,11 +9,13 @@ use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteImage;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\TranslateDescription;
+use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
@@ -146,34 +148,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
                 );
             }
         }
-    }
-
-    public function handleTranslateTitle(TranslateTitle $translateTitle)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($translateTitle->getId());
-
-        $event->translateTitle(
-            $translateTitle->getLanguage(),
-            $translateTitle->getTitle()
-        );
-
-        $this->repository->save($event);
-    }
-
-    public function handleTranslateDescription(
-        TranslateDescription $translateDescription
-    ) {
-
-        /** @var Event $event */
-        $event = $this->repository->load($translateDescription->getId());
-
-        $event->translateDescription(
-            $translateDescription->getLanguage(),
-            $translateDescription->getDescription()
-        );
-
-        $this->repository->save($event);
     }
 
     /**
@@ -392,5 +366,21 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateTitleClassName()
+    {
+        return TranslateTitle::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateDescriptionClassName()
+    {
+        return TranslateDescription::class;
     }
 }

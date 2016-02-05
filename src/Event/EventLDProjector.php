@@ -23,7 +23,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
-use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
@@ -406,7 +406,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     {
         $document = $this->loadDocumentFromRepositoryByEventId($eventId);
         $media = [];
-        
+
         if ($document) {
             $item = $document->getBody();
             // At the moment we do not include any media coming from UDB2.
@@ -855,23 +855,56 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
     }
 
     /**
-     * Apply the imageDeleted event to the event repository.
-     *
-     * @param ImageDeleted $imageDeleted
+     * @param ImageRemoved $imageRemoved
      */
-    protected function applyImageDeleted(ImageDeleted $imageDeleted)
+    protected function applyImageRemoved(ImageRemoved $imageRemoved)
     {
-
-        $document = $this->loadDocumentFromRepository($imageDeleted);
+        $document = $this->loadDocumentFromRepositoryByEventId(
+            $imageRemoved->getItemId()
+        );
 
         $eventLd = $document->getBody();
-        unset($eventLd->mediaObject[$imageDeleted->getIndexToDelete()]);
 
-        // Generate new numeric keys.
-        $eventLd->mediaObject = array_values($eventLd->mediaObject);
+        // Nothing to remove if there are no media objects!
+        if (!isset($eventLd->mediaObject)) {
+            return;
+        }
+
+        $imageId = (string) $imageRemoved->getImage()->getMediaObjectId();
+
+        /**
+         * Matches any object that is not the removed image.
+         *
+         * @param Object $mediaObject
+         *  An existing projection of a media object.
+         *
+         * @return bool
+         *  Returns true when the media object does not match the image to remove.
+         */
+        $shouldNotBeRemoved = function ($mediaObject) use ($imageId) {
+            $containsId = !!strpos($mediaObject->{'@id'}, $imageId);
+            return !$containsId;
+        };
+
+        // Remove any media objects that match the image.
+        $filteredMediaObjects = array_filter(
+            $eventLd->mediaObject,
+            $shouldNotBeRemoved
+        );
+
+        // Unset the main image if it matches the removed image
+        if (isset($eventLd->image) && strpos($eventLd->{'image'}, $imageId)) {
+            unset($eventLd->{"image"});
+        }
+
+        // If no media objects are left remove the attribute.
+        if (empty($filteredMediaObjects)) {
+            unset($eventLd->{"mediaObject"});
+        } else {
+            $eventLd->mediaObject = array_values($filteredMediaObjects);
+        }
 
         $this->repository->save($document->withBody($eventLd));
-
     }
 
     /**

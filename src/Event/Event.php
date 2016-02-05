@@ -21,7 +21,7 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
-use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
@@ -294,14 +294,6 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return UUID[]
-     */
-    public function getMediaObjects()
-    {
-        return $this->mediaObjects;
-    }
-
-    /**
      * @param Label $label
      */
     public function label(Label $label)
@@ -454,15 +446,12 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * Add a new image.
-     *
-     * @param Image $image
-     * @throws DuplicateMediaObjectException
+     * @return boolean
      */
-    public function addImage(Image $image)
+    private function containsImage(Image $image)
     {
-        $duplicateMediaObject = array_filter(
-            $this->getMediaObjects(),
+        $equalImages = array_filter(
+            $this->mediaObjects,
             function ($existingMediaObjectId) use ($image) {
                 return $image
                     ->getMediaObjectId()
@@ -470,11 +459,20 @@ class Event extends EventSourcedAggregateRoot
             }
         );
 
-        if (empty($duplicateMediaObject)) {
+        return !empty($equalImages);
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        if (!$this->containsImage($image)) {
             $this->apply(new ImageAdded($this->eventId, $image));
         }
     }
-
 
     /**
      * @param UpdateImage $updateImageCommand
@@ -490,14 +488,15 @@ class Event extends EventSourcedAggregateRoot
     }
 
     /**
-     * Delete an image.
+     * Remove an image.
      *
-     * @param int $indexToDelete
-     * @param mixed int|string $internalId
+     * @param Image $image
      */
-    public function deleteImage($indexToDelete, $internalId)
+    public function removeImage(Image $image)
     {
-        $this->apply(new ImageDeleted($this->eventId, $indexToDelete, $internalId));
+        if ($this->containsImage($image)) {
+            $this->apply(new ImageRemoved($this->eventId, $image));
+        }
     }
 
     /**
@@ -643,5 +642,13 @@ class Event extends EventSourcedAggregateRoot
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
         $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+    }
+
+    protected function applyImageRemoved(ImageRemoved $imageRemoved)
+    {
+        $this->mediaObjects = array_diff(
+            $this->mediaObjects,
+            [$imageRemoved->getImage()->getMediaObjectId()]
+        );
     }
 }

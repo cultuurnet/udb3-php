@@ -6,11 +6,14 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -19,32 +22,33 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageDeleted;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
-use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
@@ -333,26 +337,6 @@ class Event extends Offer
     }
 
     /**
-     * @param Language $language
-     * @param string $title
-     */
-    public function translateTitle(Language $language, $title)
-    {
-        $this->apply(new TitleTranslated($this->eventId, $language, $title));
-    }
-
-    /**
-     * @param Language $language
-     * @param string $description
-     */
-    public function translateDescription(Language $language, $description)
-    {
-        $this->apply(
-            new DescriptionTranslated($this->eventId, $language, $description)
-        );
-    }
-
-    /**
      * @param string $description
      */
     public function updateDescription($description)
@@ -621,5 +605,25 @@ class Event extends Offer
     protected function applyImageAdded(ImageAdded $imageAdded)
     {
         $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+    }
+
+    /**
+     * @param Language $language
+     * @param String $title
+     * @return AbstractTitleTranslated
+     */
+    protected function createTitleTranslatedEvent(Language $language, String $title)
+    {
+        return new TitleTranslated($this->eventId, $language, $title);
+    }
+
+    /**
+     * @param Language $language
+     * @param String $description
+     * @return AbstractDescriptionTranslated
+     */
+    protected function createDescriptionTranslatedEvent(Language $language, String $description)
+    {
+        return new DescriptionTranslated($this->eventId, $language, $description);
     }
 }

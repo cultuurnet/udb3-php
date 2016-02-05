@@ -160,7 +160,6 @@ trait OfferCommandHandlerTestTrait
                 ]
             )
             ->when(
-
                 new $commandClass($id, $image)
             )
             ->then([new $eventClass($id, $image)]);

@@ -65,32 +65,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
         $this->places = $placeService;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function translateTitle($eventId, Language $language, $title)
-    {
-        $this->guardId($eventId);
-        $this->guardTranslationLanguage($language);
-
-        return $this->commandBus->dispatch(
-            new TranslateTitle($eventId, $language, $title)
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function translateDescription($eventId, Language $language, $description)
-    {
-        $this->guardId($eventId);
-        $this->guardTranslationLanguage($language);
-
-        return $this->commandBus->dispatch(
-            new TranslateDescription($eventId, $language, $description)
-        );
-    }
-
     protected function guardTranslationLanguage(Language $language)
     {
         if (!LanguageCanBeTranslatedToSpecification::isSatisfiedBy($language)) {

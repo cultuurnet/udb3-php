@@ -16,6 +16,7 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PlaceService;
+use ValueObjects\String\String;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -95,7 +96,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->translateTitle(
             $id,
             new Language('nl'),
-            'new title'
+            new String('new title')
         );
     }
 
@@ -113,7 +114,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->translateDescription(
             $id,
             new Language('nl'),
-            'new description'
+            new String('new description')
         );
     }
 

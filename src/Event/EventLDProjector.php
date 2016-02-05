@@ -901,7 +901,7 @@ class EventLDProjector implements EventListenerInterface, PlaceServiceInterface,
         if (empty($filteredMediaObjects)) {
             unset($eventLd->{"mediaObject"});
         } else {
-            $eventLd->mediaObject = $filteredMediaObjects;
+            $eventLd->mediaObject = array_values($filteredMediaObjects);
         }
 
         $this->repository->save($document->withBody($eventLd));

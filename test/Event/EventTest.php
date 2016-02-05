@@ -5,10 +5,13 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\Unlabelled;
 use CultuurNet\UDB3\EventXmlString;
@@ -928,6 +931,93 @@ class EventTest extends AggregateRootScenarioTestCase
         $this->event->addImage($image);
 
         $this->assertEquals($expectedMediaObjects, $this->event->getMediaObjects());
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_images()
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
+
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+
+        $this->scenario
+            ->withAggregateId('foo')
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        new String('foo'),
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                    new ImageAdded(
+                        'foo',
+                        $image
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($image) {
+                    $event->removeImage(
+                        $image
+                    );
+                }
+            )
+            ->then(
+                [
+                    new ImageRemoved(
+                        'foo',
+                        $image
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_silently_ignores_an_image_removal_request_when_image_is_not_present()
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
+        );
+
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+
+        $this->scenario
+            ->withAggregateId('foo')
+            ->given(
+                [
+                    new EventCreatedFromCdbXml(
+                        new String('foo'),
+                        new EventXmlString($cdbXml),
+                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    ),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($image) {
+                    $event->removeImage(
+                        $image
+                    );
+                }
+            )
+            ->then([]);
     }
 
     /**

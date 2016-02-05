@@ -11,13 +11,17 @@ use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
+use ValueObjects\String\String;
 
 class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -209,5 +213,87 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $body
         );
 
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_translation_of_the_title()
+    {
+        $titleTranslated = new TitleTranslated(
+            'foo',
+            new Language('en'),
+            new String('English title')
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => [
+                    'nl'=> 'Titel'
+                ],
+                'description' => [
+                    'nl' => 'Omschrijving'
+                ],
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $body = $this->project($titleTranslated, 'foo');
+
+        $this->assertEquals(
+            (object)[
+                'name' => (object)[
+                    'nl'=> 'Titel',
+                    'en' => 'English title'
+                ],
+                'description' => (object)[
+                    'nl' => 'Omschrijving'
+                ],
+            ],
+            $body
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_translation_of_the_description()
+    {
+        $descriptionTranslated = new DescriptionTranslated(
+            'foo',
+            new Language('en'),
+            new String('English description')
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'name' => [
+                    'nl'=> 'Titel'
+                ],
+                'description' => [
+                    'nl' => 'Omschrijving'
+                ],
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $body = $this->project($descriptionTranslated, 'foo');
+
+        $this->assertEquals(
+            (object)[
+                'name' => (object)[
+                    'nl'=> 'Titel',
+                ],
+                'description' => (object)[
+                    'nl' => 'Omschrijving',
+                    'en' => 'English description',
+                ],
+            ],
+            $body
+        );
     }
 }

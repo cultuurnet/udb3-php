@@ -576,7 +576,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $initialJsonStructureWithMedia = $initialJsonStructure + [
             'mediaObject' => [
-                [
+                (object) [
                     '@id' => 'http://example.com/entity/de305d54-ddde-eddd-adb2-eb6b9e546014',
                     '@type' => 'schema:ImageObject',
                     'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
@@ -584,7 +584,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     'description' => 'my best pokerface',
                     'copyrightHolder' => 'Hans Langucci'
                 ],
-                [
+                (object) [
                     '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
                     '@type' => 'schema:ImageObject',
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
@@ -595,15 +595,27 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
-        $image = new Image(
+        $image1 = new Image(
+            new UUID('de305d54-ddde-eddd-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('my best pokerface'),
+            new String('Hans Langucci'),
+            Url::fromNative(
+                'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png'
+            )
+        );
+
+        $image2 = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
             new String('sexy ladies without clothes'),
             new String('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative(
+                'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'
+            )
         );
 
-        $expectedProjection = (object) [
+        $expectedWithoutLastImage = (object) [
             'image' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
             'mediaObject' => [
                 (object) [
@@ -617,21 +629,43 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
+        $expectedWithoutFirstImage = (object) [
+            'mediaObject' => [
+                (object) [
+                    '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                    '@type' => 'schema:ImageObject',
+                    'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'description' => 'sexy ladies without clothes',
+                    'copyrightHolder' => 'Bart Ramakers'
+                ]
+            ]
+        ];
+
+
         return [
-            'initial document with media' => [
+            'document with 2 images, last image gets removed' => [
                 new JsonDocument(
                     $eventId,
-                    json_encode($initialJsonStructureWithMedia)
+                    json_encode((object) $initialJsonStructureWithMedia)
                 ),
-                $image,
-                $expectedProjection,
+                $image2,
+                $expectedWithoutLastImage,
             ],
-            'initial document without media' => [
+            'document with 2 images, first image gets removed' => [
                 new JsonDocument(
                     $eventId,
-                    json_encode($initialJsonStructure)
+                    json_encode((object) $initialJsonStructureWithMedia)
                 ),
-                $image,
+                $image1,
+                $expectedWithoutFirstImage,
+            ],
+            'document without media' => [
+                new JsonDocument(
+                    $eventId,
+                    json_encode((object) $initialJsonStructure)
+                ),
+                $image1,
                 (object) $initialJsonStructure,
             ]
         ];

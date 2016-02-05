@@ -147,15 +147,20 @@ trait OfferCommandHandlerTestTrait
             new String('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
+        $imageAddedEventClass = $this->getEventClass('ImageAdded');
         $commandClass = $this->getCommandClass('RemoveImage');
         $eventClass = $this->getEventClass('ImageRemoved');
 
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [
+                    $this->factorOfferCreated($id),
+                    new $imageAddedEventClass($id, $image),
+                ]
             )
             ->when(
+
                 new $commandClass($id, $image)
             )
             ->then([new $eventClass($id, $image)]);

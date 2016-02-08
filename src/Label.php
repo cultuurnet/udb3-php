@@ -13,7 +13,7 @@ class Label extends Keyword
     {
         if (!is_string($value)) {
             throw new \InvalidArgumentException(
-                'Value for argument $value should a string, got a value of type ' . gettype($value)
+                'Value for argument $value should be a string, got a value of type ' . gettype($value)
             );
         }
 

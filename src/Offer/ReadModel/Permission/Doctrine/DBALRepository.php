@@ -34,8 +34,14 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
 
     /**
      * @param String $tableName
+     *  The name of the table where the permissions are stored.
+     *
      * @param Connection $connection
+     *  A database connection.
+     *
      * @param String $idField
+     *  The name of the column that holds the offer identifier.
+     *
      */
     public function __construct(String $tableName, Connection $connection, String $idField)
     {

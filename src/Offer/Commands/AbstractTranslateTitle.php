@@ -15,7 +15,7 @@ abstract class AbstractTranslateTitle extends AbstractTranslatePropertyCommand
     /**
      * @param string $itemId
      * @param Language $language
-     * @param string $title
+     * @param String $title
      */
     public function __construct($itemId, Language $language, String $title)
     {

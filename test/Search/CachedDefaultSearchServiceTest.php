@@ -7,7 +7,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\SimpleEventBus;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Label;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
@@ -289,7 +289,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_rebuilds_the_cache_when_an_event_is_altered()
     {
-        $event = new EventWasLabelled(
+        $event = new LabelAdded(
             '02139bf4-6c09-4d05-9368-9b72d8b2307f',
             new Label('label')
         );

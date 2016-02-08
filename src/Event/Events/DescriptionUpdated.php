@@ -1,18 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\DescriptionUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Provides a DescriptionUpdated event.
  */
-class DescriptionUpdated extends EventEvent
+class DescriptionUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\DescriptionUpdatedTrait;
 

@@ -1,25 +1,27 @@
 <?php
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventXmlString;
@@ -929,7 +931,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_projects_the_addition_of_a_label()
     {
-        $eventWasLabelled = new EventWasLabelled(
+        $labelAdded = new LabelAdded(
             'foo',
             new Label('label B')
         );
@@ -943,7 +945,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($eventWasLabelled, 'foo');
+        $body = $this->project($labelAdded, 'foo');
 
         $this->assertEquals(
             ['label A', 'label B'],
@@ -965,12 +967,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $eventWasUnlabelled = new Unlabelled(
+        $labelDeleted = new LabelDeleted(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($eventWasUnlabelled, 'foo');
+        $body = $this->project($labelDeleted, 'foo');
 
         $this->assertEquals(
             ['label A', 'label C'],
@@ -992,12 +994,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $eventWasLabelled = new EventWasLabelled(
+        $labelAdded = new LabelAdded(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($eventWasLabelled, 'foo');
+        $body = $this->project($labelAdded, 'foo');
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';
@@ -1332,7 +1334,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_creates_events_from_cdbxml()
     {
-        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
 
         $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
             new String('foo'),
@@ -1356,7 +1358,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             DateTime::fromString($importedDate)
         );
 
-        $expectedJsonLD = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid_expected.json');
+        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
 
         $this->projector->handle($domainMessage);
 
@@ -1373,7 +1375,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_updates_events_from_cdbxml()
     {
-        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
 
         $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
             new String('foo'),
@@ -1397,7 +1399,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             DateTime::fromString($importedDate)
         );
 
-        $expectedJsonLD = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid_expected.json');
+        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
 
         $this->projector->handle($domainMessage);
 
@@ -1607,7 +1609,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
-        $xml = file_get_contents(__DIR__ . '/ReadModel/JSONLD/event_entryapi_valid.xml');
+        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
 
         $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
             new String('foo'),
@@ -1625,7 +1627,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventUpdatedFromUDB2 = new EventUpdatedFromUDB2(
             'foo',
-            file_get_contents(__DIR__ . '/samples/event_with_photo.cdbxml.xml'),
+            file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml'),
             'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
         );
 

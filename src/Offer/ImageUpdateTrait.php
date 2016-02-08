@@ -11,12 +11,6 @@ use ValueObjects\String\String;
 trait ImageUpdateTrait
 {
     /**
-     * The id of the item that has its image updated.
-     * @var int
-     */
-    protected $itemId;
-
-    /**
      * The id of the media object that the new information applies to.
      * @var UUID
      */

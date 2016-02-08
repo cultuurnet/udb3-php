@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Search\Cache;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Label;
 use Predis\ClientInterface;
 
@@ -109,7 +109,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
         $this->search->expects($this->never())
             ->method('warmUpCache');
 
-        $payload = new EventWasLabelled(
+        $payload = new LabelAdded(
             'xyz-123',
             new Label('test')
         );

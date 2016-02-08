@@ -10,4 +10,10 @@ use CultuurNet\UDB3\Offer\ImageUpdateTrait;
 class UpdateImage
 {
     use ImageUpdateTrait;
+
+    /**
+     * The id of the item that has its image updated.
+     * @var int
+     */
+    protected $itemId;
 }

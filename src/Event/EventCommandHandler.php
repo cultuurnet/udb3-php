@@ -6,14 +6,14 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
-use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Label as Label;
+use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -31,14 +32,9 @@ use Psr\Log\LoggerAwareTrait;
 /**
  * Commandhandler for events
  */
-class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
+class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
-
-    /**
-     * @var RepositoryInterface
-     */
-    protected $eventRepository;
 
     /**
      * @var SearchServiceInterface
@@ -49,7 +45,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
         RepositoryInterface $eventRepository,
         SearchServiceInterface $searchService
     ) {
-        $this->eventRepository = $eventRepository;
+        parent::__construct($eventRepository);
         $this->searchService = $searchService;
     }
 
@@ -125,10 +121,10 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     private function labelEvent(Label $label, $eventId)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($eventId);
-        $event->label($label);
+        $event = $this->repository->load($eventId);
+        $event->addLabel($label);
         try {
-            $this->eventRepository->save($event);
+            $this->repository->save($event);
 
             if ($this->logger) {
                 $this->logger->info(
@@ -155,14 +151,14 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     public function handleTranslateTitle(TranslateTitle $translateTitle)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($translateTitle->getId());
+        $event = $this->repository->load($translateTitle->getId());
 
         $event->translateTitle(
             $translateTitle->getLanguage(),
             $translateTitle->getTitle()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
     }
 
     public function handleTranslateDescription(
@@ -170,14 +166,14 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     ) {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($translateDescription->getId());
+        $event = $this->repository->load($translateDescription->getId());
 
         $event->translateDescription(
             $translateDescription->getLanguage(),
             $translateDescription->getDescription()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
     }
 
     /**
@@ -187,13 +183,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateDescription->getId());
+        $event = $this->repository->load($updateDescription->getId());
 
         $event->updateDescription(
             $updateDescription->getDescription()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -204,13 +200,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateTypicalAgeRange->getId());
+        $event = $this->repository->load($updateTypicalAgeRange->getId());
 
         $event->updateTypicalAgeRange(
             $updateTypicalAgeRange->getTypicalAgeRange()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -221,11 +217,11 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteTypicalAgeRange->getId());
+        $event = $this->repository->load($deleteTypicalAgeRange->getId());
 
         $event->deleteTypicalAgeRange();
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -236,13 +232,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateOrganizer->getId());
+        $event = $this->repository->load($updateOrganizer->getId());
 
         $event->updateOrganizer(
             $updateOrganizer->getOrganizerId()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -253,13 +249,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteOrganizer->getId());
+        $event = $this->repository->load($deleteOrganizer->getId());
 
         $event->deleteOrganizer(
             $deleteOrganizer->getOrganizerId()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -270,13 +266,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateContactPoint->getId());
+        $event = $this->repository->load($updateContactPoint->getId());
 
         $event->updateContactPoint(
             $updateContactPoint->getContactPoint()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -287,13 +283,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateBookingInfo->getId());
+        $event = $this->repository->load($updateBookingInfo->getId());
 
         $event->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -305,13 +301,13 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($addImage->getId());
+        $event = $this->repository->load($addImage->getId());
 
         $event->addImage(
             $addImage->getImage()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -322,11 +318,10 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     public function handleUpdateImage(UpdateImage $updateImage)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateImage->getItemId());
-
+        $event = $this->repository->load($updateImage->getItemId());
         $event->updateImage($updateImage);
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
     }
 
     /**
@@ -336,11 +331,11 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     public function handleRemoveImage(RemoveImage $removeImage)
     {
         /** @var Event $event */
-        $event = $this->eventRepository->load($removeImage->getItemId());
+        $event = $this->repository->load($removeImage->getItemId());
 
         $event->removeImage($removeImage->getImage());
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
     }
 
     /**
@@ -350,7 +345,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($updateMajorInfo->getId());
+        $event = $this->repository->load($updateMajorInfo->getId());
 
         $event->updateMajorInfo(
             $updateMajorInfo->getTitle(),
@@ -360,7 +355,7 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
             $updateMajorInfo->getTheme()
         );
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
@@ -371,28 +366,26 @@ class EventCommandHandler extends Udb3CommandHandler implements LoggerAwareInter
     {
 
         /** @var Event $event */
-        $event = $this->eventRepository->load($deleteEvent->getId());
+        $event = $this->repository->load($deleteEvent->getId());
         $event->deleteEvent();
 
-        $this->eventRepository->save($event);
+        $this->repository->save($event);
 
     }
 
-    public function handleApplyLabel(ApplyLabel $label)
+    /**
+     * @return string
+     */
+    protected function getAddLabelClassName()
     {
-        /** @var Event $event */
-        $event = $this->eventRepository->load($label->getEventId());
-        $event->label($label->getLabel());
-
-        $this->eventRepository->save($event);
+        return AddLabel::class;
     }
 
-    public function handleUnlabel(Unlabel $label)
+    /**
+     * @return string
+     */
+    protected function getDeleteLabelClassName()
     {
-        /** @var Event $event */
-        $event = $this->eventRepository->load($label->getEventId());
-        $event->unlabel($label->getLabel());
-
-        $this->eventRepository->save($event);
+        return DeleteLabel::class;
     }
 }

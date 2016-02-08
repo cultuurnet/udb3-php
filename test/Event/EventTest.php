@@ -9,11 +9,11 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
@@ -100,14 +100,14 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_tagged_with_multiple_labels()
     {
-        $this->event->label(new Label('foo'));
+        $this->event->addLabel(new Label('foo'));
 
         $this->assertEquals(
             (new LabelCollection())->with(new Label('foo')),
             $this->event->getLabels()
         );
 
-        $this->event->label(new Label('bar'));
+        $this->event->addLabel(new Label('bar'));
 
         $this->assertEquals(
             new LabelCollection(
@@ -125,8 +125,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_only_applies_the_same_tag_once()
     {
-        $this->event->label(new Label('foo'));
-        $this->event->label(new Label('foo'));
+        $this->event->addLabel(new Label('foo'));
+        $this->event->addLabel(new Label('foo'));
 
         $this->assertEquals(
             (new LabelCollection())->with(new Label('foo')),
@@ -139,10 +139,10 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_does_not_add_similar_labels_with_different_letter_casing()
     {
-        $this->event->label(new Label('Foo'));
-        $this->event->label(new Label('foo'));
-        $this->event->label(new Label('België'));
-        $this->event->label(new Label('BelgiË'));
+        $this->event->addLabel(new Label('Foo'));
+        $this->event->addLabel(new Label('foo'));
+        $this->event->addLabel(new Label('België'));
+        $this->event->addLabel(new Label('BelgiË'));
 
         $expectedLabels = [
             new Label('Foo'),
@@ -267,7 +267,7 @@ class EventTest extends AggregateRootScenarioTestCase
                 $label,
                 [
                     $eventImportedFromUdb2,
-                    new EventWasLabelled(
+                    new LabelAdded(
                         $id,
                         $label
                     ),
@@ -305,7 +305,7 @@ class EventTest extends AggregateRootScenarioTestCase
                 $label,
                 [
                     $eventImportedFromUdb2,
-                    new EventWasLabelled(
+                    new LabelAdded(
                         $id,
                         new Label('fOO')
                     ),
@@ -330,12 +330,12 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given($givens)
             ->when(
                 function (Event $event) use ($label) {
-                    $event->unlabel($label);
+                    $event->deleteLabel($label);
                 }
             )
             ->then(
                 [
-                    new Unlabelled($id, $label)
+                    new LabelDeleted($id, $label)
                 ]
             );
     }
@@ -384,11 +384,11 @@ class EventTest extends AggregateRootScenarioTestCase
                 $label,
                 [
                     $eventImportedFromUdb2,
-                    new EventWasLabelled(
+                    new LabelAdded(
                         $id,
                         $label
                     ),
-                    new Unlabelled(
+                    new LabelDeleted(
                         $id,
                         $label
                     )
@@ -411,7 +411,7 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given($givens)
             ->when(
                 function (Event $event) use ($label) {
-                    $event->unlabel($label);
+                    $event->deleteLabel($label);
                 }
             )
             ->then([]);

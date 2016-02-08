@@ -6,18 +6,21 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PlaceService;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var EventEditingServiceInterface
+     * @var DefaultEventEditingService
      */
     protected $eventEditingService;
 
@@ -32,9 +35,19 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     protected $commandBus;
 
     /**
-     * @var UuidGeneratorInterface
+     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $uuidGenerator;
+
+    /**
+     * @var OfferCommandFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $commandFactory;
+
+    /**
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $repository;
 
     public function setUp()
     {
@@ -46,8 +59,10 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             UuidGeneratorInterface::class
         );
 
-        /** @var RepositoryInterface $repository */
-        $repository = $this->getMock(RepositoryInterface::class);
+        $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
+
+        /** @var DocumentRepositoryInterface $repository */
+        $this->repository = $this->getMock(DocumentRepositoryInterface::class);
         /** @var PlaceService $placeService */
         $placeService = $this->getMock(
             PlaceService::class,
@@ -60,8 +75,9 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->eventService,
             $this->commandBus,
             $this->uuidGenerator,
-            $repository,
-            $placeService
+            $this->repository,
+            $placeService,
+            $this->commandFactory
         );
     }
 
@@ -72,7 +88,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(EventNotFoundException::class);
+        $this->setExpectedException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -90,7 +106,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(EventNotFoundException::class);
+        $this->setExpectedException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -108,11 +124,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(EventNotFoundException::class);
+        $this->setExpectedException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->label($id, new Label('foo'));
+        $this->eventEditingService->addLabel($id, new Label('foo'));
     }
 
     /**
@@ -122,18 +138,18 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(EventNotFoundException::class);
+        $this->setExpectedException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->unlabel($id, new Label('foo'));
+        $this->eventEditingService->deleteLabel($id, new Label('foo'));
     }
 
     private function setUpEventNotFound($id)
     {
-        $this->eventService->expects($this->once())
-            ->method('getEvent')
+        $this->repository->expects($this->once())
+            ->method('get')
             ->with($id)
-            ->willThrowException(new EventNotFoundException());
+            ->willThrowException(new DocumentGoneException());
     }
 }

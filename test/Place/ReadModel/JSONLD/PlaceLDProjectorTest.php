@@ -14,9 +14,12 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\LabelAdded;
+use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -474,5 +477,91 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->setExpectedException(DocumentGoneException::class);
 
         $this->documentRepository->get($id);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_addition_of_a_label()
+    {
+        $labelAdded = new LabelAdded(
+            'foo',
+            new Label('label B')
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A']
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $body = $this->project($labelAdded, 'foo');
+
+        $this->assertEquals(
+            ['label A', 'label B'],
+            $body->labels
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_removal_of_a_label()
+    {
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A', 'label B', 'label C']
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $labelDeleted = new LabelDeleted(
+            'foo',
+            new Label('label B')
+        );
+
+        $body = $this->project($labelDeleted, 'foo');
+
+        $this->assertEquals(
+            ['label A', 'label C'],
+            $body->labels
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_addition_of_a_label_to_a_place_without_existing_labels()
+    {
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'bar' => 'stool'
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $labelAdded = new LabelAdded(
+            'foo',
+            new Label('label B')
+        );
+
+        $body = $this->project($labelAdded, 'foo');
+
+        $expectedBody = new stdClass();
+        $expectedBody->bar = 'stool';
+        $expectedBody->labels = ['label B'];
+
+        $this->assertEquals(
+            $expectedBody,
+            $body
+        );
+
     }
 }

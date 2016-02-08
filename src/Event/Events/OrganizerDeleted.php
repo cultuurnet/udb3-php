@@ -1,18 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\OrganizerDeleted.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Organizer deleted event
  */
-class OrganizerDeleted extends EventEvent
+class OrganizerDeleted extends AbstractEvent
 {
     use \CultuurNet\UDB3\OrganizerDeletedTrait;
 
@@ -31,6 +26,6 @@ class OrganizerDeleted extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['organizerId']);
+        return new static($data['item_id'], $data['organizerId']);
     }
 }

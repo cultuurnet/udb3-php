@@ -1,18 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\BookingInfoUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Description of DescriptionUpdated
  */
-class BookingInfoUpdated extends EventEvent
+class BookingInfoUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\BookingInfoUpdatedTrait;
 
@@ -31,6 +26,6 @@ class BookingInfoUpdated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], \CultuurNet\UDB3\BookingInfo::deserialize($data['bookingInfo']));
+        return new static($data['item_id'], \CultuurNet\UDB3\BookingInfo::deserialize($data['bookingInfo']));
     }
 }

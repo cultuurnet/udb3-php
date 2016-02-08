@@ -1,19 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\ImageAdded.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Provides an ImageAdded event.
  */
-class ImageAdded extends EventEvent
+class ImageAdded extends AbstractEvent
 {
     use \CultuurNet\UDB3\ImageAddedTrait;
 

@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
@@ -63,7 +63,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\EventWasTagged',
             function (array $serializedObject) {
-                $serializedObject['class'] = EventWasLabelled::class;
+                $serializedObject['class'] = LabelAdded::class;
 
                 $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
                 unset($serializedObject['payload']['keyword']);
@@ -75,7 +75,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\TagErased',
             function (array $serializedObject) {
-                $serializedObject['class'] = Event\Events\Unlabelled::class;
+                $serializedObject['class'] = Event\Events\LabelDeleted::class;
 
                 $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
                 unset($serializedObject['payload']['keyword']);

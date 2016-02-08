@@ -11,13 +11,14 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends EventEvent
+class MajorInfoUpdated extends AbstractEvent
 {
 
     /**
@@ -139,7 +140,7 @@ class MajorInfoUpdated extends EventEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-            $data['event_id'],
+            $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Location::deserialize($data['location']),

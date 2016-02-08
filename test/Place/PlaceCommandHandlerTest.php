@@ -9,11 +9,16 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Place\CommandHandler;
+use CultuurNet\UDB3\Place\Commands\AddLabel;
+use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\LabelAdded;
+use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -119,5 +124,72 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 new DeletePlace($id)
             )
             ->then([new PlaceDeleted($id)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_label_a_place()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new AddLabel($id, new Label('foo')))
+            ->then([new LabelAdded($id, new Label('foo'))]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_unlabel_a_place()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                    new LabelAdded($id, new Label('foo'))
+                ]
+            )
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([new LabelDeleted($id, new Label('foo'))]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_a_label_that_is_not_present_on_a_place()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_a_label_from_a_place_that_has_been_unlabelled_already()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                    new LabelAdded($id, new Label('foo')),
+                    new LabelDeleted($id, new Label('foo'))
+                ]
+            )
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([]);
     }
 }

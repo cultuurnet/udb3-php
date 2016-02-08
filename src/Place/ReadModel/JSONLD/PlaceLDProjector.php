@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Place\PlaceLDProjector.
- */
-
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
@@ -21,6 +16,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
@@ -28,6 +24,8 @@ use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageDeleted;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
+use CultuurNet\UDB3\Place\Events\LabelAdded;
+use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -48,35 +46,8 @@ use Symfony\Component\Serializer\SerializerInterface;
  * Projects state changes on Place entities to a JSON-LD read model in a
  * document repository.
  */
-class PlaceLDProjector implements EventListenerInterface
+class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
-
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    protected $repository;
-
-    /**
-     * @var IriGeneratorInterface
-     */
-    protected $iriGenerator;
-
-    /**
-     * @var EntityServiceInterface
-     */
-    protected $organizerService;
-
-    /**
-     * @var SluggerInterface
-     */
-    protected $slugger;
-
-    /**
-     * @var CdbXMLImporter
-     */
-    protected $cdbXMLImporter;
-
     /**
      * @var SerializerInterface
      */
@@ -94,9 +65,12 @@ class PlaceLDProjector implements EventListenerInterface
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer
     ) {
-        $this->repository = $repository;
-        $this->iriGenerator = $iriGenerator;
-        $this->organizerService = $organizerService;
+        parent::__construct(
+            $repository,
+            $iriGenerator,
+            $organizerService
+        );
+
         $this->mediaObjectSerializer = $mediaObjectSerializer;
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter(
@@ -523,5 +497,21 @@ class PlaceLDProjector implements EventListenerInterface
                 '@id' => $this->organizerService->iri($organizerId)
             );
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLabelAddedClassName()
+    {
+        return LabelAdded::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLabelDeletedClassName()
+    {
+        return LabelDeleted::class;
     }
 }

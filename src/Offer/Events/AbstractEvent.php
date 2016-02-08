@@ -9,6 +9,10 @@ abstract class AbstractEvent
      */
     protected $itemId;
 
+    /**
+     * @param $itemId
+     *  The id of the item that is the subject of the event.
+     */
     public function __construct($itemId)
     {
         $this->itemId = $itemId;

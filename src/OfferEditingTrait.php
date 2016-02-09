@@ -175,17 +175,22 @@ trait OfferEditingTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param $id
+     *  Id of the offer to remove the image from.
+     *
+     * @param Image $image
+     *  The image that should be removed.
+     *
+     * @return mixed
      */
-    public function deleteImage($id, $indexToDelete, $internalId = '')
+    public function removeImage($id, Image $image)
     {
-
         $this->guardId($id);
 
-        $commandClass = $this->getCommandClass('DeleteImage');
+        $commandClass = $this->getCommandClass('RemoveImage');
 
         return $this->commandBus->dispatch(
-            new $commandClass($id, $indexToDelete, $internalId)
+            new $commandClass($id, $image)
         );
 
     }

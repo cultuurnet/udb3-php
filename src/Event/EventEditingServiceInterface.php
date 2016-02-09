@@ -92,13 +92,12 @@ interface EventEditingServiceInterface
     );
 
     /**
-     * Delete an image of the event.
+     * Remove an image from an event.
      *
      * @param string $id
-     * @param int $indexToDelete
-     * @param mixed int|string $interalId
+     * @param Image $image
      */
-    public function deleteImage($id, $indexToDelete, $internalId = '');
+    public function removeImage($id, Image $image);
 
     /**
      * @param Title $title

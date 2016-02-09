@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageDeleted;
+use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
@@ -183,14 +184,13 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Delet an image.
+     * Remove an image.
      *
-     * @param int $indexToDelete
-     * @param mixed int|string $internalId
+     * @param Image $image
      */
-    public function deleteImage($indexToDelete, $internalId)
+    public function removeImage(Image $image)
     {
-        $this->apply(new ImageDeleted($this->actorId, $indexToDelete, $internalId));
+        $this->apply(new ImageRemoved($this->actorId, $image));
     }
 
     /**

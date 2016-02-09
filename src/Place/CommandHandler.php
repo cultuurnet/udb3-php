@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteImage;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
@@ -221,22 +222,17 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Handle a delete image command.
-     * @param DeleteImage $deleteImage
+     * Handle a remove image command.
+     * @param RemoveImage $removeImage
      */
-    public function handleDeleteImage(DeleteImage $deleteImage)
+    public function handleRemoveImage(RemoveImage $removeImage)
     {
-
         /** @var Place $place */
-        $place = $this->repository->load($deleteImage->getId());
+        $place = $this->repository->load($removeImage->getItemId());
 
-        $place->deleteImage(
-            $deleteImage->getIndexToDelete(),
-            $deleteImage->getInternalId()
-        );
+        $place->removeImage($removeImage->getImage());
 
         $this->repository->save($place);
-
     }
 
     /**

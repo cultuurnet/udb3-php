@@ -125,10 +125,10 @@ interface PlaceEditingServiceInterface
     public function updateImage($id, Image $image, String $description, String $copyrightHolder);
 
     /**
-     * Delete an image of the place.
+     * Remove an image from the place.
      *
      * @param string $id
-     * @parma int $indexToDelete
+     * @param Image $image
      */
-    public function deleteImage($id, $indexToDelete, $internalId = '');
+    public function removeImage($id, Image $image);
 }

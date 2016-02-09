@@ -16,6 +16,13 @@ abstract class AbstractLabelCommand
      */
     protected $label;
 
+    /**
+     * @param $itemId
+     *  The id of the item that is targeted by the command.
+     *
+     * @param Label $label
+     *  The label that is used in the command.
+     */
     public function __construct($itemId, Label $label)
     {
         $this->label = $label;

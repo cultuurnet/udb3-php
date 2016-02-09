@@ -7,7 +7,7 @@ use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Language;
 use ValueObjects\String\String;
 
-final class CollaborationDataAdded implements SerializableInterface
+class CollaborationDataAdded implements SerializableInterface
 {
     /**
      * @var String

@@ -23,7 +23,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
-use CultuurNet\UDB3\Event\Events\ImageDeleted;
+use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
@@ -398,15 +398,12 @@ class Event extends Offer
     }
 
     /**
-     * Add a new image.
-     *
-     * @param Image $image
-     * @throws DuplicateMediaObjectException
+     * @return boolean
      */
-    public function addImage(Image $image)
+    private function containsImage(Image $image)
     {
-        $duplicateMediaObject = array_filter(
-            $this->getMediaObjects(),
+        $equalImages = array_filter(
+            $this->mediaObjects,
             function ($existingMediaObjectId) use ($image) {
                 return $image
                     ->getMediaObjectId()
@@ -414,11 +411,20 @@ class Event extends Offer
             }
         );
 
-        if (empty($duplicateMediaObject)) {
+        return !empty($equalImages);
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        if (!$this->containsImage($image)) {
             $this->apply(new ImageAdded($this->eventId, $image));
         }
     }
-
 
     /**
      * @param UpdateImage $updateImageCommand
@@ -434,14 +440,15 @@ class Event extends Offer
     }
 
     /**
-     * Delete an image.
+     * Remove an image.
      *
-     * @param int $indexToDelete
-     * @param mixed int|string $internalId
+     * @param Image $image
      */
-    public function deleteImage($indexToDelete, $internalId)
+    public function removeImage(Image $image)
     {
-        $this->apply(new ImageDeleted($this->eventId, $indexToDelete, $internalId));
+        if ($this->containsImage($image)) {
+            $this->apply(new ImageRemoved($this->eventId, $image));
+        }
     }
 
     /**
@@ -625,5 +632,13 @@ class Event extends Offer
     protected function createDescriptionTranslatedEvent(Language $language, String $description)
     {
         return new DescriptionTranslated($this->eventId, $language, $description);
+    }
+
+    protected function applyImageRemoved(ImageRemoved $imageRemoved)
+    {
+        $this->mediaObjects = array_diff(
+            $this->mediaObjects,
+            [$imageRemoved->getImage()->getMediaObjectId()]
+        );
     }
 }

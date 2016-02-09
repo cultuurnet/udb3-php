@@ -12,6 +12,12 @@ abstract class AbstractLabelEvent extends AbstractEvent implements SerializableI
      */
     protected $label;
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param Label $label
+     *  The label that is involved in the event.
+     */
     public function __construct($itemId, Label $label)
     {
         parent::__construct($itemId);

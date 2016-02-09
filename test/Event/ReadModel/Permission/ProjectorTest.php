@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
 use ValueObjects\String\String;
 
@@ -75,7 +76,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($userId);
 
         $this->repository->expects($this->once())
-            ->method('markEventEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 new String('dcd1ef37-0608-4824-afe3-99124feda64b'),
                 $userId
@@ -110,7 +111,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn(null);
 
         $this->repository->expects($this->never())
-            ->method('markEventEditableByUser');
+            ->method('markOfferEditableByUser');
 
         $this->projector->handle($msg);
     }
@@ -155,7 +156,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($userId);
 
         $this->repository->expects($this->once())
-            ->method('markEventEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 $eventId,
                 $userId
@@ -202,7 +203,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn(null);
 
         $this->repository->expects($this->never())
-            ->method('markEventEditableByUser');
+            ->method('markOfferEditableByUser');
 
         $this->projector->handle($msg);
     }
@@ -246,7 +247,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('resolveCreatedByToUserId');
 
         $this->repository->expects($this->once())
-            ->method('markEventEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 $eventId,
                 $userIdWhileSubmittingCdbXml
@@ -281,7 +282,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->repository->expects($this->once())
-            ->method('markEventEditableByUser')
+            ->method('markOfferEditableByUser')
             ->with(
                 $eventId,
                 $userId

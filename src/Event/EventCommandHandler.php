@@ -8,8 +8,8 @@ use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\DeleteImage;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
@@ -299,22 +299,17 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     }
 
     /**
-     * Handle a delete image command.
-     * @param DeleteImage $deleteImage
+     * Handle a remove image command.
+     * @param RemoveImage $removeImage
      */
-    public function handleDeleteImage(DeleteImage $deleteImage)
+    public function handleRemoveImage(RemoveImage $removeImage)
     {
-
         /** @var Event $event */
-        $event = $this->repository->load($deleteImage->getId());
+        $event = $this->repository->load($removeImage->getItemId());
 
-        $event->deleteImage(
-            $deleteImage->getIndexToDelete(),
-            $deleteImage->getInternalId()
-        );
+        $event->removeImage($removeImage->getImage());
 
         $this->repository->save($event);
-
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Place\Events;
 
-class DescriptionTranslated
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+
+class DescriptionTranslated extends AbstractDescriptionTranslated
 {
 }

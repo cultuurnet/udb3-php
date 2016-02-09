@@ -586,7 +586,7 @@ class Event extends Offer
 
     /**
      * @param Label $label
-     * @return AbstractLabelAdded
+     * @return LabelAdded
      */
     protected function createLabelAddedEvent(Label $label)
     {
@@ -595,7 +595,7 @@ class Event extends Offer
 
     /**
      * @param Label $label
-     * @return AbstractLabelDeleted
+     * @return LabelDeleted
      */
     protected function createLabelDeletedEvent(Label $label)
     {
@@ -610,7 +610,7 @@ class Event extends Offer
     /**
      * @param Language $language
      * @param String $title
-     * @return AbstractTitleTranslated
+     * @return TitleTranslated
      */
     protected function createTitleTranslatedEvent(Language $language, String $title)
     {
@@ -620,7 +620,7 @@ class Event extends Offer
     /**
      * @param Language $language
      * @param String $description
-     * @return AbstractDescriptionTranslated
+     * @return DescriptionTranslated
      */
     protected function createDescriptionTranslatedEvent(Language $language, String $description)
     {

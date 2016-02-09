@@ -10,8 +10,6 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
-use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
@@ -324,7 +322,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * @param Language $language
      * @param String $title
-     * @return AbstractTitleTranslated
+     * @return TitleTranslated
      */
     protected function createTitleTranslatedEvent(Language $language, String $title)
     {
@@ -334,7 +332,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * @param Language $language
      * @param String $description
-     * @return AbstractDescriptionTranslated
+     * @return DescriptionTranslated
      */
     protected function createDescriptionTranslatedEvent(Language $language, String $description)
     {

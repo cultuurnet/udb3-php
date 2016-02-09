@@ -34,7 +34,7 @@ class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
     public function serialize()
     {
         $value = parent::serialize() + array(
-                'title' => $this->title,
+                'title' => $this->title->toNative(),
             );
 
         return $value;

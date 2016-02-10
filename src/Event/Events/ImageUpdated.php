@@ -13,4 +13,5 @@ use ValueObjects\String\String;
 class ImageUpdated extends AbstractEvent
 {
     use ImageUpdateTrait;
+    use BackwardsCompatibleEventTrait;
 }

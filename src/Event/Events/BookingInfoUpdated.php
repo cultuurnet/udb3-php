@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 class BookingInfoUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\BookingInfoUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

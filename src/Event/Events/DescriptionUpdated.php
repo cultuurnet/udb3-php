@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 class DescriptionUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\DescriptionUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

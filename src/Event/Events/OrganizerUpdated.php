@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 class OrganizerUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\OrganizerUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

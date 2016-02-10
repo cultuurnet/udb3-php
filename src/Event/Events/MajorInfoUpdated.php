@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Title;
  */
 class MajorInfoUpdated extends AbstractEvent
 {
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @var Title

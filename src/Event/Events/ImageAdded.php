@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 class ImageAdded extends AbstractEvent
 {
     use \CultuurNet\UDB3\ImageAddedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

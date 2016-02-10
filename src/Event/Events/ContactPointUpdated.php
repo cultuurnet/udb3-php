@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 class ContactPointUpdated extends AbstractEvent
 {
     use \CultuurNet\UDB3\ContactPointUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

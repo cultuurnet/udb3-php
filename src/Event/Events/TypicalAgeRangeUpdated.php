@@ -9,8 +9,8 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
  */
 class TypicalAgeRangeUpdated extends AbstractEvent
 {
-
     use \CultuurNet\UDB3\TypicalAgeRangeUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

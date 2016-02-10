@@ -9,5 +9,5 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
  */
 class TypicalAgeRangeDeleted extends AbstractEvent
 {
-
+    use BackwardsCompatibleEventTrait;
 }

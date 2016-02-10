@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 class OrganizerDeleted extends AbstractEvent
 {
     use \CultuurNet\UDB3\OrganizerDeletedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

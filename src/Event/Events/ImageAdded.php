@@ -2,13 +2,14 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Provides an ImageAdded event.
  */
-class ImageAdded extends AbstractEvent
+class ImageAdded extends AbstractEvent implements SerializableInterface
 {
     use \CultuurNet\UDB3\ImageAddedTrait;
     use BackwardsCompatibleEventTrait;

@@ -2,15 +2,16 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Event for typical age range updates.
  */
-class TypicalAgeRangeUpdated extends AbstractEvent
+class TypicalAgeRangeUpdated extends AbstractEvent implements SerializableInterface
 {
-
     use \CultuurNet\UDB3\TypicalAgeRangeUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

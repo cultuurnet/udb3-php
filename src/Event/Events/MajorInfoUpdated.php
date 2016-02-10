@@ -6,6 +6,7 @@
  */
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
@@ -18,8 +19,9 @@ use CultuurNet\UDB3\Title;
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends AbstractEvent
+class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
 {
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @var Title

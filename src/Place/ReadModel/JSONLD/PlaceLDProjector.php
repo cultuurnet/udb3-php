@@ -210,7 +210,9 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
 
         $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
-        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
+        // replace instead of merge to make sure we replace a full array
+        // with an empty one if necessary
+        $jsonLD = (object) array_replace((array) $jsonLD, $calendarJsonLD);
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {

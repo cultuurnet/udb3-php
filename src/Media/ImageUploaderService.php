@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Media;
 
-use Assert\Assertion;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\Entry\Number;

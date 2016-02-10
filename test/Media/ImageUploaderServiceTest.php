@@ -268,7 +268,6 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
      */
     private function getMockImage($imageSize)
     {
-        // Use a virtual file that and store its
         $fileDirectory = vfsStream::setup('files');
         $file = vfsStream::newFile('my-image.jpg')
             ->withContent(new LargeFileContent($imageSize))

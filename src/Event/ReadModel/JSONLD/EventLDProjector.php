@@ -481,8 +481,13 @@ class EventLDProjector extends OfferLDProjector implements
         ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
 
         $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
-        // replace instead of merge to make sure we replace a full array
-        // with an empty one if necessary
+        // in case the openinghours weren't empty before, remove them
+        $aJsonLD = (array) $jsonLD;
+        if (isset( $aJsonLD) && !isset($calendarJsonLD['openingHours'])) {
+            unset($aJsonLD['openingHours']);
+            $jsonLD = (object) $aJsonLD;
+        }
+        // sync calendar :)
         $jsonLD = (object) array_replace((array) $jsonLD, $calendarJsonLD);
 
         // Remove old theme and event type.

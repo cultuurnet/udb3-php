@@ -169,8 +169,6 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         // Permanent - "altijd open".
         // Permanent - with openingtimes
         $openingHours = $this->getOpeningHours();
-        // in case the opening houres were just emptied, return an empty array
-        $jsonLd['openingHours'] = array();
         if (!empty($openingHours)) {
             $jsonLd['openingHours'] = array();
             foreach ($openingHours as $openingHour) {

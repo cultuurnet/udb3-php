@@ -212,7 +212,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
         // in case the openinghours weren't empty before, remove them
         $aJsonLD = (array) $jsonLD;
-        if (isset( $aJsonLD) && !isset($calendarJsonLD['openingHours'])) {
+        if (isset($aJsonLD) && !isset($calendarJsonLD['openingHours'])) {
             unset($aJsonLD['openingHours']);
             $jsonLD = (object) $aJsonLD;
         }

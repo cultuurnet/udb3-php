@@ -200,6 +200,9 @@ abstract class OfferLDProjector
         $eventLd = $document->getBody();
         $languageCode = $descriptionTranslated->getLanguage()->getCode();
         $description = $descriptionTranslated->getDescription()->toNative();
+        if (empty($eventLd->description)) {
+            $eventLd->description = new \stdClass();
+        }
         $eventLd->description->{$languageCode} = $description;
 
         $this->repository->save($document->withBody($eventLd));

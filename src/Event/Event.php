@@ -39,6 +39,7 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Offer;
@@ -65,11 +66,6 @@ class Event extends Offer
      *   Array of different collections, keyed by language.
      */
     protected $collaborationData;
-
-    /**
-     * @var UUID[]
-     */
-    protected $mediaObjects = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -414,60 +410,6 @@ class Event extends Offer
     }
 
     /**
-     * @return boolean
-     */
-    private function containsImage(Image $image)
-    {
-        $equalImages = array_filter(
-            $this->mediaObjects,
-            function ($existingMediaObjectId) use ($image) {
-                return $image
-                    ->getMediaObjectId()
-                    ->sameValueAs($existingMediaObjectId);
-            }
-        );
-
-        return !empty($equalImages);
-    }
-
-    /**
-     * Add a new image.
-     *
-     * @param Image $image
-     */
-    public function addImage(Image $image)
-    {
-        if (!$this->containsImage($image)) {
-            $this->apply(new ImageAdded($this->eventId, $image));
-        }
-    }
-
-    /**
-     * @param UpdateImage $updateImageCommand
-     */
-    public function updateImage(UpdateImage $updateImageCommand)
-    {
-        $this->apply(new ImageUpdated(
-            $updateImageCommand->getItemId(),
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
-        ));
-    }
-
-    /**
-     * Remove an image.
-     *
-     * @param Image $image
-     */
-    public function removeImage(Image $image)
-    {
-        if ($this->containsImage($image)) {
-            $this->apply(new ImageRemoved($this->eventId, $image));
-        }
-    }
-
-    /**
      * Update the major info.
      *
      * @param Title $title
@@ -625,16 +567,24 @@ class Event extends Offer
         return new LabelDeleted($this->eventId, $label);
     }
 
-    protected function applyImageAdded(ImageAdded $imageAdded)
+    protected function createImageAddedEvent(Image $image)
     {
-        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+        return new ImageAdded($this->eventId, $image);
     }
 
-    protected function applyImageRemoved(ImageRemoved $imageRemoved)
+    protected function createImageRemovedEvent(Image $image)
     {
-        $this->mediaObjects = array_diff(
-            $this->mediaObjects,
-            [$imageRemoved->getImage()->getMediaObjectId()]
+        return new ImageRemoved($this->eventId, $image);
+    }
+
+    protected function createImageUpdatedEvent(
+        AbstractUpdateImage $updateImageCommand
+    ) {
+        return new ImageUpdated(
+            $this->eventId,
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
         );
     }
 }

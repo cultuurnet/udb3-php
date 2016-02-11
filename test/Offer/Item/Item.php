@@ -3,10 +3,18 @@
 namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Offer;
+use Offer\Item\Events\ImageAdded;
+use Offer\Item\Events\ImageRemoved;
+use Offer\Item\Events\ImageUpdated;
 
 class Item extends Offer
 {
@@ -40,6 +48,28 @@ class Item extends Offer
     {
         return new LabelDeleted($this->id, $label);
     }
+
+    protected function createImageAddedEvent(Image $image)
+    {
+        return new ImageAdded($this->id, $image);
+    }
+
+    protected function createImageRemovedEvent(Image $image)
+    {
+        return new ImageRemoved($this->id, $image);
+    }
+
+    protected function createImageUpdatedEvent(
+        AbstractUpdateImage $updateImageCommand
+    ) {
+        return new ImageUpdated(
+            $this->id,
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
+        );
+    }
+
 
     /**
      * @return mixed

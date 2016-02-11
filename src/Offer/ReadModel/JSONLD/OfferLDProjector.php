@@ -10,11 +10,16 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 abstract class OfferLDProjector
 {
@@ -48,14 +53,21 @@ abstract class OfferLDProjector
     protected $cdbXMLImporter;
 
     /**
+     * @var SerializerInterface
+     */
+    protected $mediaObjectSerializer;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
+     * @param SerializerInterface $mediaObjectSerializer
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EntityServiceInterface $organizerService
+        EntityServiceInterface $organizerService,
+        SerializerInterface $mediaObjectSerializer
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
@@ -64,6 +76,7 @@ abstract class OfferLDProjector
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter()
         );
+        $this->mediaObjectSerializer = $mediaObjectSerializer;
     }
 
     /**
@@ -120,21 +133,36 @@ abstract class OfferLDProjector
     abstract protected function getLabelDeletedClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getImageAddedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImageRemovedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImageUpdatedClassName();
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
     {
         $document = $this->loadDocumentFromRepository($labelAdded);
 
-        $eventLd = $document->getBody();
+        $offerLd = $document->getBody();
 
-        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
+        $labels = isset($offerLd->labels) ? $offerLd->labels : [];
         $label = (string) $labelAdded->getLabel();
 
         $labels[] = $label;
-        $eventLd->labels = array_unique($labels);
+        $offerLd->labels = array_unique($labels);
 
-        $this->repository->save($document->withBody($eventLd));
+        $this->repository->save($document->withBody($offerLd));
     }
 
     /**
@@ -144,11 +172,11 @@ abstract class OfferLDProjector
     {
         $document = $this->loadDocumentFromRepository($deleteLabel);
 
-        $eventLd = $document->getBody();
+        $offerLd = $document->getBody();
 
-        if (is_array($eventLd->labels)) {
-            $eventLd->labels = array_filter(
-                $eventLd->labels,
+        if (is_array($offerLd->labels)) {
+            $offerLd->labels = array_filter(
+                $offerLd->labels,
                 function ($label) use ($deleteLabel) {
                     return !$deleteLabel->getLabel()->equals(
                         new Label($label)
@@ -157,10 +185,120 @@ abstract class OfferLDProjector
             );
             // Ensure array keys start with 0 so json_encode() does encode it
             // as an array and not as an object.
-            $eventLd->labels = array_values($eventLd->labels);
+            $offerLd->labels = array_values($offerLd->labels);
         }
 
-        $this->repository->save($document->withBody($eventLd));
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the imageAdded event to the event repository.
+     *
+     * @param AbstractImageAdded $imageAdded
+     */
+    protected function applyImageAdded(AbstractImageAdded $imageAdded)
+    {
+        $document = $this->loadDocumentFromRepository($imageAdded);
+
+        $offerLd = $document->getBody();
+        $offerLd->mediaObject = isset($offerLd->mediaObject) ? $offerLd->mediaObject : [];
+
+        $imageData = $this->mediaObjectSerializer
+            ->serialize($imageAdded->getImage(), 'json-ld');
+        $offerLd->mediaObject[] = $imageData;
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the ImageUpdated event to the event repository.
+     *
+     * @param AbstractImageUpdated $imageUpdated
+     */
+    protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($imageUpdated);
+
+        $offerLd = $document->getBody();
+
+        if (!isset($offerLd->mediaObject)) {
+            throw new \Exception('The image to update could not be found.');
+        }
+
+        $updatedMediaObjects = [];
+
+        foreach ($offerLd->mediaObject as $mediaObject) {
+            $mediaObjectMatches = (
+                strpos(
+                    $mediaObject->{'@id'},
+                    (string)$imageUpdated->getMediaObjectId()
+                ) > 0
+            );
+
+            if ($mediaObjectMatches) {
+                $mediaObject->description = (string)$imageUpdated->getDescription();
+                $mediaObject->copyrightHolder = (string)$imageUpdated->getCopyrightHolder();
+
+                $updatedMediaObjects[] = $mediaObject;
+            }
+        };
+
+        if (empty($updatedMediaObjects)) {
+            throw new \Exception('The image to update could not be found.');
+        }
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractRemoveImage $imageRemoved
+     */
+    protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
+    {
+        $document = $this->loadDocumentFromRepository($imageRemoved);
+
+        $offerLd = $document->getBody();
+
+        // Nothing to remove if there are no media objects!
+        if (!isset($offerLd->mediaObject)) {
+            return;
+        }
+
+        $imageId = (string) $imageRemoved->getImage()->getMediaObjectId();
+
+        /**
+         * Matches any object that is not the removed image.
+         *
+         * @param Object $mediaObject
+         *  An existing projection of a media object.
+         *
+         * @return bool
+         *  Returns true when the media object does not match the image to remove.
+         */
+        $shouldNotBeRemoved = function ($mediaObject) use ($imageId) {
+            $containsId = !!strpos($mediaObject->{'@id'}, $imageId);
+            return !$containsId;
+        };
+
+        // Remove any media objects that match the image.
+        $filteredMediaObjects = array_filter(
+            $offerLd->mediaObject,
+            $shouldNotBeRemoved
+        );
+
+        // Unset the main image if it matches the removed image
+        if (isset($offerLd->image) && strpos($offerLd->{'image'}, $imageId)) {
+            unset($offerLd->{"image"});
+        }
+
+        // If no media objects are left remove the attribute.
+        if (empty($filteredMediaObjects)) {
+            unset($offerLd->{"mediaObject"});
+        } else {
+            $offerLd->mediaObject = array_values($filteredMediaObjects);
+        }
+
+        $this->repository->save($document->withBody($offerLd));
     }
 
     /**
@@ -171,13 +309,13 @@ abstract class OfferLDProjector
     {
         $document = new JsonDocument($id);
 
-        $eventLd = $document->getBody();
-        $eventLd->{'@id'} = $this->iriGenerator->iri($id);
+        $offerLd = $document->getBody();
+        $offerLd->{'@id'} = $this->iriGenerator->iri($id);
 
         // @todo provide Event-LD context here relative to the base URI
-        $eventLd->{'@context'} = '/api/1.0/event.jsonld';
+        $offerLd->{'@context'} = '/api/1.0/event.jsonld';
 
-        return $document->withBody($eventLd);
+        return $document->withBody($offerLd);
     }
 
     /**

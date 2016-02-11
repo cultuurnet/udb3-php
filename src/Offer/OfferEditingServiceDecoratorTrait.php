@@ -17,7 +17,7 @@ trait OfferEditingServiceDecoratorTrait
      */
     public function addLabel($id, Label $label)
     {
-        $this->getDecoratedEditingService()
+        return $this->getDecoratedEditingService()
             ->addLabel($id, $label);
     }
 
@@ -27,7 +27,7 @@ trait OfferEditingServiceDecoratorTrait
      */
     public function deleteLabel($id, Label $label)
     {
-        $this->getDecoratedEditingService()
+        return $this->getDecoratedEditingService()
             ->deleteLabel($id, $label);
     }
 }

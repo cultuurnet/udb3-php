@@ -54,11 +54,13 @@ class OfferEditingServiceWithLabelMemory implements OfferEditingServiceInterface
      */
     public function addLabel($id, Label $label)
     {
-        $this->addLabelViaDecoratee($id, $label);
+        $commandId = $this->addLabelViaDecoratee($id, $label);
 
         $this->labelMemoryService->rememberLabelUsed(
             $this->user->id,
             $label
         );
+
+        return $commandId;
     }
 }

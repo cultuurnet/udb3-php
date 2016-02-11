@@ -198,8 +198,9 @@ abstract class OfferLDProjector
         $document = $this->loadDocumentFromRepository($descriptionTranslated);
 
         $eventLd = $document->getBody();
-        $eventLd->description->{$descriptionTranslated->getLanguage()->getCode(
-        )} = $descriptionTranslated->getDescription()->toNative();
+        $languageCode = $descriptionTranslated->getLanguage()->getCode();
+        $description = $descriptionTranslated->getDescription()->toNative();
+        $eventLd->description->{$languageCode} = $description;
 
         $this->repository->save($document->withBody($eventLd));
     }

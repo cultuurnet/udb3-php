@@ -63,10 +63,10 @@ class CdbXMLImporter
         ];
         $descriptions = array_filter($descriptions);
         if (count($descriptions) > 0) {
-            $jsonLD->description = implode('<br/>', $descriptions);
+            $jsonLD->description->nl = implode('<br/>', $descriptions);
         }
 
-        $jsonLD->name = $detail->getTitle();
+        $jsonLD->name->nl = $detail->getTitle();
 
         $this->cdbXMLItemBaseImporter->importPublicationInfo($item, $jsonLD);
         $this->cdbXMLItemBaseImporter->importAvailable($item, $jsonLD);

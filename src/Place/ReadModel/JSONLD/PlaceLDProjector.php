@@ -155,7 +155,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $placeCreated->getPlaceId()
         );
-        $jsonLD->name = $placeCreated->getTitle();
+        $jsonLD->name->nl = $placeCreated->getTitle();
 
         $jsonLD->address = $placeCreated->getAddress()->toJsonLd();
 
@@ -208,7 +208,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $document = $this->loadPlaceDocumentFromRepository($majorInfoUpdated);
         $jsonLD = $document->getBody();
 
-        $jsonLD->name = $majorInfoUpdated->getTitle();
+        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
         $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
 
         $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();

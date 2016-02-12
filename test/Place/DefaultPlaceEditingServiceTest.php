@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Place;
 
-
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;

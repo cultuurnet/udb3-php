@@ -2,11 +2,16 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\AggregateNotFoundException;
+use Broadway\Repository\RepositoryInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
@@ -24,6 +29,28 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
     use \CultuurNet\UDB3\OfferEditingTrait;
 
     /**
+     * @var RepositoryInterface
+     */
+    protected $placeRepository;
+
+    public function __construct(
+        CommandBusInterface $commandBus,
+        UuidGeneratorInterface $uuidGenerator,
+        DocumentRepositoryInterface $offerRepository,
+        OfferCommandFactoryInterface $commandFactory,
+        RepositoryInterface $placeRepository
+    ) {
+        parent::__construct(
+            $commandBus,
+            $uuidGenerator,
+            $offerRepository,
+            $commandFactory
+        );
+
+        $this->placeRepository = $placeRepository;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
@@ -32,7 +59,7 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
 
         $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
 
-        $this->offerRepository->save($place);
+        $this->placeRepository->save($place);
 
         return $id;
     }

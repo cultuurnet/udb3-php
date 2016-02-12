@@ -31,23 +31,23 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
     /**
      * @var RepositoryInterface
      */
-    protected $placeRepository;
+    protected $writeRepository;
 
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        DocumentRepositoryInterface $offerRepository,
+        DocumentRepositoryInterface $readRepository,
         OfferCommandFactoryInterface $commandFactory,
-        RepositoryInterface $placeRepository
+        RepositoryInterface $writeRepository
     ) {
         parent::__construct(
             $commandBus,
             $uuidGenerator,
-            $offerRepository,
+            $readRepository,
             $commandFactory
         );
 
-        $this->placeRepository = $placeRepository;
+        $this->writeRepository = $writeRepository;
     }
 
     /**
@@ -59,7 +59,7 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
 
         $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
 
-        $this->placeRepository->save($place);
+        $this->writeRepository->save($place);
 
         return $id;
     }

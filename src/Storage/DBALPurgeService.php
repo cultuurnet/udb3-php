@@ -26,10 +26,9 @@ class DBALPurgeService implements PurgeServiceInterface
      * @param string $tableName
      */
     public function __construct(
-         $connection,
-         $tableName
-    )
-    {
+        $connection,
+        $tableName
+    ) {
         $this->connection = $connection;
 
         $this->tableName = $tableName;

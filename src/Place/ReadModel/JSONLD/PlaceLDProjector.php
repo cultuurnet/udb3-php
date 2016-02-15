@@ -155,6 +155,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $placeCreated->getPlaceId()
         );
+
+        if (empty($jsonLD->name)) {
+            $jsonLD->name = new \stdClass();
+        }
+
         $jsonLD->name->nl = $placeCreated->getTitle();
 
         $jsonLD->address = $placeCreated->getAddress()->toJsonLd();

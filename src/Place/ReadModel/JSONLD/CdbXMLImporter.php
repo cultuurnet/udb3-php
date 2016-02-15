@@ -57,6 +57,12 @@ class CdbXMLImporter
             }
         }
 
+        // make sure the description is an object as well before trying to add
+        // translations
+        if (empty($jsonLD->description)) {
+            $jsonLD->description = new \stdClass();
+        }
+
         $descriptions = [
             trim($detail->getShortDescription()),
             trim($detail->getLongDescription())
@@ -66,6 +72,11 @@ class CdbXMLImporter
             $jsonLD->description->nl = implode('<br/>', $descriptions);
         }
 
+        // make sure the name is an object as well before trying to add
+        // translations
+        if (empty($jsonLD->name)) {
+            $jsonLD->name = new \stdClass();
+        }
         $jsonLD->name->nl = $detail->getTitle();
 
         $this->cdbXMLItemBaseImporter->importPublicationInfo($item, $jsonLD);

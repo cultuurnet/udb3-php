@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventNotFoundException;
@@ -14,9 +15,11 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PlaceService;
 use ValueObjects\String\String;
+use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +51,12 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $repository;
+    protected $readRepository;
+
+    /**
+     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $writeRepository;
 
     public function setUp()
     {
@@ -63,7 +71,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
 
         /** @var DocumentRepositoryInterface $repository */
-        $this->repository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->readRepository = $this->getMock(DocumentRepositoryInterface::class);
         /** @var PlaceService $placeService */
         $placeService = $this->getMock(
             PlaceService::class,
@@ -72,13 +80,17 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             '',
             false
         );
+
+        $this->writeRepository = $this->getMock(RepositoryInterface::class);
+
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
             $this->commandBus,
             $this->uuidGenerator,
-            $this->repository,
+            $this->readRepository,
             $placeService,
-            $this->commandFactory
+            $this->commandFactory,
+            $this->writeRepository
         );
     }
 
@@ -146,9 +158,34 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->deleteLabel($id, new Label('foo'));
     }
 
+    /**
+     * @test
+     */
+    public function it_can_create_a_new_event()
+    {
+        $eventId = 'generated-uuid';
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
+        $calendar = new Calendar('permanent', '', '');
+        $theme = null;
+
+        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $this->writeRepository->expects($this->once())
+            ->method('save')
+            ->with($event);
+
+        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+    }
+
     private function setUpEventNotFound($id)
     {
-        $this->repository->expects($this->once())
+        $this->readRepository->expects($this->once())
             ->method('get')
             ->with($id)
             ->willThrowException(new DocumentGoneException());

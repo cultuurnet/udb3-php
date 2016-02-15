@@ -48,6 +48,11 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
     protected $places;
 
     /**
+     * @var RepositoryInterface
+     */
+    protected $writeRepository;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
@@ -56,13 +61,15 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
         EventServiceInterface $eventService,
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        DocumentRepositoryInterface $eventRepository,
+        DocumentRepositoryInterface $readRepository,
         PlaceService $placeService,
-        OfferCommandFactoryInterface $commandFactory
+        OfferCommandFactoryInterface $commandFactory,
+        RepositoryInterface $writeRepository
     ) {
-        parent::__construct($commandBus, $uuidGenerator, $eventRepository, $commandFactory);
+        parent::__construct($commandBus, $uuidGenerator, $readRepository, $commandFactory);
         $this->eventService = $eventService;
         $this->places = $placeService;
+        $this->writeRepository = $writeRepository;
     }
 
     protected function guardTranslationLanguage(Language $language)
@@ -81,7 +88,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
 
         $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
 
-        $this->eventRepository->save($event);
+        $this->writeRepository->save($event);
 
         return $eventId;
     }

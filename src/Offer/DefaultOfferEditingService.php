@@ -26,7 +26,7 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @var DocumentRepositoryInterface
      */
-    protected $offerRepository;
+    protected $readRepository;
 
     /**
      * @var OfferCommandFactoryInterface
@@ -36,18 +36,18 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
-     * @param DocumentRepositoryInterface $offerRepository
+     * @param DocumentRepositoryInterface $readRepository
      * @param OfferCommandFactoryInterface $commandFactory
      */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        DocumentRepositoryInterface $offerRepository,
+        DocumentRepositoryInterface $readRepository,
         OfferCommandFactoryInterface $commandFactory
     ) {
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
-        $this->offerRepository = $offerRepository;
+        $this->readRepository = $readRepository;
         $this->commandFactory = $commandFactory;
     }
 
@@ -128,6 +128,6 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
      */
     public function guardId($id)
     {
-        $this->offerRepository->get($id);
+        $this->readRepository->get($id);
     }
 }

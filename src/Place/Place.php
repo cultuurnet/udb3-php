@@ -255,7 +255,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param string $cdbXmlNamespaceUri
      *   The cdb xml namespace uri.
      *
-     * @return Actor
+     * @return Place
      *   The actor.
      */
     public static function importFromUDB2Event(

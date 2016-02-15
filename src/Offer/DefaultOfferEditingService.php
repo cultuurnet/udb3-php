@@ -34,7 +34,7 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
-     * @param DocumentRepositoryInterface $offerRepository
+     * @param DocumentRepositoryInterface $readRepository
      * @param OfferCommandFactoryInterface $commandFactory
      */
     public function __construct(

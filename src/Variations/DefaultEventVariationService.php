@@ -5,14 +5,14 @@ namespace CultuurNet\UDB3\Variations;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class DefaultEventVariationService implements EventVariationServiceInterface
+class DefaultEventVariationService implements OfferVariationServiceInterface
 {
     /**
      * @var RepositoryInterface
@@ -44,13 +44,13 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createEventVariation(
+    public function createOfferVariation(
         Url $eventUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
-        $variation = EventVariation::create(
+        $variation = OfferVariation::create(
             new Id($this->uuidGenerator->generate()),
             $eventUrl,
             $ownerId,
@@ -68,7 +68,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
      */
     public function editDescription(Id $id, Description $description)
     {
-        /** @var EventVariation $variation */
+        /** @var OfferVariation $variation */
         $variation = $this->eventVariationRepository->load((string) $id);
 
         $variation->editDescription($description);
@@ -79,7 +79,7 @@ class DefaultEventVariationService implements EventVariationServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteEventVariation(Id $id)
+    public function deleteOfferVariation(Id $id)
     {
         /** @var EventVariation $variation */
         $variation = $this->eventVariationRepository->load((string) $id);

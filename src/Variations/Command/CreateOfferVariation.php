@@ -3,15 +3,14 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Variations\Model\Events;
+namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
-use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariationCreated extends EventVariationEvent
+class CreateOfferVariation
 {
     /**
      * @var OwnerId
@@ -31,25 +30,21 @@ class EventVariationCreated extends EventVariationEvent
     /**
      * @var Url
      */
-    private $eventUrl;
+    private $offerUrl;
 
     /**
-     * @param Id $id
      * @param Url $eventUrl
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
      */
     public function __construct(
-        Id $id,
-        Url $eventUrl,
+        Url $offerUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
-        parent::__construct($id);
-
-        $this->eventUrl = $eventUrl;
+        $this->offerUrl = $offerUrl;
         $this->ownerId = $ownerId;
         $this->purpose = $purpose;
         $this->description = $description;
@@ -66,9 +61,9 @@ class EventVariationCreated extends EventVariationEvent
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOfferUrl()
     {
-        return $this->eventUrl;
+        return $this->offerUrl;
     }
 
     /**
@@ -85,33 +80,5 @@ class EventVariationCreated extends EventVariationEvent
     public function getPurpose()
     {
         return $this->purpose;
-    }
-
-    /**
-     * @return array
-     */
-    public function serialize()
-    {
-        return parent::serialize() + array(
-            'event_url' => (string) $this->getEventUrl(),
-            'owner_id' => (string) $this->getOwnerId(),
-            'purpose' => (string) $this->getPurpose(),
-            'description' => (string) $this->getDescription()
-        );
-    }
-
-    /**
-     * @inheritdoc
-     * @return static
-     */
-    public static function deserialize(array $data)
-    {
-        return new static(
-            new Id($data['id']),
-            new Url($data['event_url']),
-            new OwnerId($data['owner_id']),
-            new Purpose($data['purpose']),
-            new Description($data['description'])
-        );
     }
 }

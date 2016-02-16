@@ -9,7 +9,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -23,7 +23,7 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_created_with_a_factory_method()
     {
-        $eventVariation = EventVariation::create(
+        $eventVariation = OfferVariation::create(
             new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
@@ -33,7 +33,7 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertUncommittedEventsEquals(
             [
-                new EventVariationCreated(
+                new OfferVariationCreated(
                     new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
                     new Url('//beta.uitdatabank.be/event/xyz'),
                     new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
@@ -57,7 +57,7 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
     {
         $id = new Id('29d6d973-ca78-4561-b593-631502c74a8c');
 
-        $eventVariation = EventVariation::create(
+        $eventVariation = OfferVariation::create(
             $id,
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
@@ -93,7 +93,7 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_deleted()
     {
-        $eventVariation = EventVariation::create(
+        $eventVariation = OfferVariation::create(
             new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),

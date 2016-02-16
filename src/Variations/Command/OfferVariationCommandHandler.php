@@ -1,16 +1,13 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Command;
 
 use Broadway\CommandHandling\CommandHandler;
-use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
+use CultuurNet\UDB3\Variations\OfferVariationServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class EventVariationCommandHandler extends CommandHandler implements LoggerAwareInterface
+class OfferVariationCommandHandler extends CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -20,16 +17,16 @@ class EventVariationCommandHandler extends CommandHandler implements LoggerAware
     private $variationService;
 
     public function __construct(
-        EventVariationServiceInterface $variationService
+        OfferVariationServiceInterface $variationService
     ) {
         $this->variationService = $variationService;
     }
 
     protected function handleCreateEventVariation(
-        CreateEventVariation $createEventVariation
+        CreateOfferVariation $createEventVariation
     ) {
-        $variation = $this->variationService->createEventVariation(
-            $createEventVariation->getEventUrl(),
+        $variation = $this->variationService->createOfferVariation(
+            $createEventVariation->getOfferUrl(),
             $createEventVariation->getOwnerId(),
             $createEventVariation->getPurpose(),
             $createEventVariation->getDescription()
@@ -62,9 +59,9 @@ class EventVariationCommandHandler extends CommandHandler implements LoggerAware
         }
     }
 
-    protected function handleDeleteEventVariation(DeleteEventVariation $deleteEventVariation)
+    protected function handleDeleteEventVariation(DeleteOfferVariation $deleteEventVariation)
     {
-        $this->variationService->deleteEventVariation($deleteEventVariation->getId());
+        $this->variationService->deleteOfferVariation($deleteEventVariation->getId());
 
         if ($this->logger) {
             $this->logger->info(

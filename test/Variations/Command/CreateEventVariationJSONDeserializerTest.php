@@ -20,7 +20,7 @@ class CreateEventVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
 
     public function setUp()
     {
-        $this->deserializer = new CreateEventVariationJSONDeserializer();
+        $this->deserializer = new CreateOfferVariationJSONDeserializer();
     }
 
     /**
@@ -57,7 +57,7 @@ class CreateEventVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
             )
         );
 
-        $expectedCommand = new CreateEventVariation(
+        $expectedCommand = new CreateOfferVariation(
             new Url('//io.uitdatabank.be/event/a0a78cd3-df53-4359-97a3-04b3680e69a4'),
             new OwnerId('86142ebb-1c7a-4afe-8257-6b986eb5ca21'),
             new Purpose('personal'),

@@ -9,8 +9,8 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -257,7 +257,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 }
             ));
 
-        $variationCreatedEvent = new EventVariationCreated(
+        $variationCreatedEvent = new OfferVariationCreated(
             new Id($variationId),
             new Url($eventUrl),
             new OwnerId('this-is-a-owner-id'),
@@ -272,7 +272,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_removes_the_jsonld_document_when_a_variation_is_removed()
     {
-        $eventVariationDeleted = new EventVariationDeleted(
+        $eventVariationDeleted = new OfferVariationDeleted(
             new Id('F9D326AD-B8E5-4F0C-AB23-7B6426133D30')
         );
 

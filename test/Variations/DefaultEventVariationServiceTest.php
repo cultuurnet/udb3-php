@@ -10,8 +10,8 @@ use Broadway\EventHandling\TraceableEventBus;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -90,7 +90,7 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                new EventVariationCreated(
+                new OfferVariationCreated(
                     new Id('19910c56-db76-4cf6-bc28-b25a7270de2e'),
                     new Url('//beta.uitdatabank.be/event/'),
                     new OwnerId('xyz'),
@@ -129,7 +129,7 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                new EventVariationDeleted($variationId)
+                new OfferVariationDeleted($variationId)
             ],
             $events
         );

@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
@@ -102,13 +102,13 @@ class Criteria
      * @param EventVariation $variation
      * @return bool
      */
-    public function isSatisfiedBy(EventVariation $variation)
+    public function isSatisfiedBy(OfferVariation $variation)
     {
         $satisfied = true;
 
         if (($this->purpose && $variation->getPurpose() != $this->purpose) ||
             ($this->ownerId && $variation->getOwnerId() != $this->ownerId) ||
-            ($this->eventUrl && $variation->getEventUrl() != $this->eventUrl)
+            ($this->eventUrl && $variation->getOfferUrl() != $this->eventUrl)
         ) {
             $satisfied = false;
         }

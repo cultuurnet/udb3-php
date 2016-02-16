@@ -12,8 +12,8 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Variations\DefaultEventVariationService;
 use CultuurNet\UDB3\Variations\EventVariationRepository;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -51,7 +51,7 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
             $this->generator
         );
 
-        $commandHandler = new EventVariationCommandHandler($eventVariationService);
+        $commandHandler = new OfferVariationCommandHandler($eventVariationService);
         $commandHandler->setLogger($this->logger);
 
         return $commandHandler;
@@ -79,7 +79,7 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->scenario
             ->withAggregateId($id)
-            ->when(new CreateEventVariation(
+            ->when(new CreateOfferVariation(
                 $eventUrl,
                 $ownerId,
                 $purpose,
@@ -87,7 +87,7 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
             ))
             ->then(
                 [
-                    new EventVariationCreated(
+                    new OfferVariationCreated(
                         new Id($id),
                         $eventUrl,
                         $ownerId,
@@ -134,8 +134,8 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId((string) $id)
             ->given([$creationEvent])
-            ->when(new DeleteEventVariation($id))
-            ->then([new EventVariationDeleted($id)]);
+            ->when(new DeleteOfferVariation($id))
+            ->then([new OfferVariationDeleted($id)]);
     }
 
     /**
@@ -143,7 +143,7 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     private function getExampleVariationCreatedEvent()
     {
-        return new EventVariationCreated(
+        return new OfferVariationCreated(
             $id = new Id(UUID::generateAsString()),
             $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98'),
             $ownerId = new OwnerId('xyz'),

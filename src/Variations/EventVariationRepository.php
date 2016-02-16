@@ -9,7 +9,7 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\EventStoreInterface;
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 
 class EventVariationRepository extends EventSourcingRepository
 {
@@ -21,7 +21,7 @@ class EventVariationRepository extends EventSourcingRepository
         parent::__construct(
             $eventStore,
             $eventBus,
-            EventVariation::class,
+            OfferVariation::class,
             new PublicConstructorAggregateFactory(),
             $eventStreamDecorators
         );
@@ -29,7 +29,7 @@ class EventVariationRepository extends EventSourcingRepository
 
     /**
      * {@inheritDoc}
-     * @return EventVariation
+     * @return OfferVariation
      * @throws AggregateDeletedException
      */
     public function load($id)

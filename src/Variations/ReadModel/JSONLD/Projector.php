@@ -9,8 +9,8 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
@@ -111,7 +111,7 @@ class Projector implements EventListenerInterface
     /**
      * @param EventVariationCreated $eventVariationCreated
      */
-    public function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
+    public function applyEventVariationCreated(OfferVariationCreated $eventVariationCreated)
     {
         // TODO: figure out how to get the event id without parsing it from the URL
         $eventUrlParts = explode('/', $eventVariationCreated->getEventUrl());
@@ -142,7 +142,7 @@ class Projector implements EventListenerInterface
     /**
      * @param EventVariationDeleted $eventVariationDeleted
      */
-    public function applyEventVariationDeleted(EventVariationDeleted $eventVariationDeleted)
+    public function applyEventVariationDeleted(OfferVariationDeleted $eventVariationDeleted)
     {
         $this->repository->remove((string)$eventVariationDeleted->getId());
     }

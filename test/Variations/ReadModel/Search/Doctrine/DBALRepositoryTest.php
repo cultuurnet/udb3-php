@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -81,7 +81,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                 foreach ($this->urls as $url) {
                     $id = new Id($uuidGenerator->generate());
 
-                    $this->variations[] = EventVariation::create(
+                    $this->variations[] = OfferVariation::create(
                         $id,
                         $url,
                         $owner,

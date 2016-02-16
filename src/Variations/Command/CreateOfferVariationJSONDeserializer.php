@@ -15,7 +15,7 @@ use JsonSchema\Validator;
 use ValueObjects\String\String;
 use stdClass;
 
-class CreateEventVariationJSONDeserializer extends JSONDeserializer
+class CreateOfferVariationJSONDeserializer extends JSONDeserializer
 {
     /**
      * @var UrlValidator[]
@@ -61,7 +61,7 @@ class CreateEventVariationJSONDeserializer extends JSONDeserializer
             $urlValidator->validateUrl($url);
         }
 
-        return new CreateEventVariation(
+        return new CreateOfferVariation(
             $url,
             new OwnerId($json->owner),
             new Purpose($json->purpose),

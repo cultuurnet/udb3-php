@@ -24,6 +24,11 @@ abstract class AbstractUpdateImage
     protected $copyrightHolder;
 
     /**
+     * @var string
+     */
+    protected $itemId;
+
+    /**
      * @param $itemId
      * @param UUID $mediaObjectId
      * @param StringLiteral $description

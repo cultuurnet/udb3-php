@@ -1,30 +1,27 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Language;
+use ValueObjects\String\String;
 
-class TitleTranslated extends PropertyTranslated
+class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
 {
     protected $title;
 
     /**
-     * @param string $id
+     * @param string $itemId
      * @param Language $language
-     * @param string $title
+     * @param String $title
      */
-    public function __construct($id, Language $language, $title)
+    public function __construct($itemId, Language $language, String $title)
     {
-        parent::__construct($id, $language);
-        $this->language = $language;
+        parent::__construct($itemId, $language);
         $this->title = $title;
     }
 
     /**
-     * @return string
+     * @return String
      */
     public function getTitle()
     {
@@ -37,8 +34,8 @@ class TitleTranslated extends PropertyTranslated
     public function serialize()
     {
         $value = parent::serialize() + array(
-            'title' => $this->title,
-        );
+                'title' => $this->title->toNative(),
+            );
 
         return $value;
     }
@@ -49,9 +46,9 @@ class TitleTranslated extends PropertyTranslated
     public static function deserialize(array $data)
     {
         return new static(
-            $data['event_id'],
+            $data['item_id'],
             new Language($data['language']),
-            $data['title']
+            new String($data['title'])
         );
     }
 }

@@ -19,26 +19,6 @@ use ValueObjects\String\String;
 interface EventEditingServiceInterface
 {
     /**
-     * @param string $eventId
-     * @param Language $language
-     * @param string $title
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function translateTitle($eventId, Language $language, $title);
-
-    /**
-     * Update the description for a language.
-     *
-     * @param string $eventId
-     * @param Language $language
-     * @param string $description
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function translateDescription($eventId, Language $language, $description);
-
-    /**
      * Update the description of an event.
      *
      * @param string $id

@@ -1,37 +1,32 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Language;
 
-abstract class TranslateProperty
+abstract class AbstractTranslatePropertyCommand
 {
     /**
      * @var string
      */
-    protected $id;
-
+    protected $itemId;
     /**
      * @var Language
      */
     protected $language;
 
-
-    public function __construct($id, Language $language)
+    public function __construct($itemId, Language $language)
     {
-        $this->id = $id;
+        $this->itemId = $itemId;
         $this->language = $language;
     }
 
     /**
      * @return string
      */
-    public function getId()
+    public function getItemId()
     {
-        return $this->id;
+        return $this->itemId;
     }
 
     /**

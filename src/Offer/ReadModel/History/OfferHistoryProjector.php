@@ -8,8 +8,10 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\History\Log;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\String\String;
 
@@ -83,6 +85,16 @@ abstract class OfferHistoryProjector
     abstract protected function getLabelDeletedClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getTitleTranslatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDescriptionTranslatedClassName();
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      * @param DomainMessage $domainMessage
      */
@@ -113,6 +125,34 @@ abstract class OfferHistoryProjector
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new String("Label '{$labelDeleted->getLabel()}' verwijderd"),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    protected function applyTitleTranslated(
+        AbstractTitleTranslated $titleTranslated,
+        DomainMessage $domainMessage
+    ) {
+        $this->writeHistory(
+            $titleTranslated->getItemId(),
+            new Log(
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
+                new String("Titel vertaald ({$titleTranslated->getLanguage()})"),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    protected function applyDescriptionTranslated(
+        AbstractDescriptionTranslated $descriptionTranslated,
+        DomainMessage $domainMessage
+    ) {
+        $this->writeHistory(
+            $descriptionTranslated->getItemId(),
+            new Log(
+                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
+                new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

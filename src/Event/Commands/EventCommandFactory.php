@@ -65,7 +65,7 @@ class EventCommandFactory implements OfferCommandFactoryInterface
      * @param StringLiteral $title
      * @return AbstractTranslateTitle
      */
-    public function createTranslateTitleCommand($id, Language $language, String $title)
+    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title)
     {
         return new TranslateTitle($id, $language, $title);
     }
@@ -76,7 +76,7 @@ class EventCommandFactory implements OfferCommandFactoryInterface
      * @param StringLiteral $description
      * @return AbstractTranslateDescription
      */
-    public function createTranslateDescriptionCommand($id, Language $language, String $description)
+    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description)
     {
         return new TranslateDescription($id, $language, $description);
     }

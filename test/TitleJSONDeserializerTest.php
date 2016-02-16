@@ -20,7 +20,7 @@ class TitleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_deserialize_a_valid_description()
+    public function it_can_deserialize_a_valid_title()
     {
         $json = new String('{"title": "Lorem ipsum"}');
         $expected = new Title("Lorem ipsum");

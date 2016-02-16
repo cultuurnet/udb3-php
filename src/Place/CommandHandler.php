@@ -10,6 +10,8 @@ use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteTypicalAgeRange;
+use CultuurNet\UDB3\Place\Commands\TranslateDescription;
+use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
@@ -51,6 +53,22 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getRemoveImageClassName()
     {
         return RemoveImage::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateTitleClassName()
+    {
+        return TranslateTitle::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateDescriptionClassName()
+    {
+        return TranslateDescription::class;
     }
 
     /**

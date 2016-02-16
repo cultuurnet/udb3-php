@@ -8,15 +8,19 @@ use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\TranslateDescription;
+use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
@@ -26,6 +30,7 @@ use CultuurNet\UDB3\Title;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Number\Integer;
+use ValueObjects\String\String;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -172,7 +177,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_title_of_an_event()
     {
         $id = '1';
-        $title = 'Voorbeeld';
+        $title = new String('Voorbeeld');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -195,7 +200,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_description_of_an_event()
     {
         $id = '1';
-        $description = 'Lorem ipsum dolor si amet...';
+        $description = new String('Lorem ipsum dolor si amet...');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)

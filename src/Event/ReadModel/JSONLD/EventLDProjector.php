@@ -9,10 +9,10 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
@@ -20,33 +20,33 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
-use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -121,7 +121,7 @@ class EventLDProjector extends OfferLDProjector implements
         );
 
         foreach ($eventIds as $eventId) {
-            $document = $this->loadDocumentFromRepositoryByEventId(
+            $document = $this->loadDocumentFromRepositoryByItemId(
                 $eventId
             );
             $eventLD = $document->getBody();
@@ -147,7 +147,7 @@ class EventLDProjector extends OfferLDProjector implements
         );
 
         foreach ($eventsLocatedAtPlace as $eventId) {
-            $document = $this->loadDocumentFromRepositoryByEventId(
+            $document = $this->loadDocumentFromRepositoryByItemId(
                 $eventId
             );
             $eventLD = $document->getBody();
@@ -381,7 +381,7 @@ class EventLDProjector extends OfferLDProjector implements
      */
     private function UDB3Media($eventId)
     {
-        $document = $this->loadDocumentFromRepositoryByEventId($eventId);
+        $document = $this->loadDocumentFromRepositoryByItemId($eventId);
         $media = [];
 
         if ($document) {
@@ -541,7 +541,7 @@ class EventLDProjector extends OfferLDProjector implements
      */
     protected function applyLabelsMerged(LabelsMerged $labelsMerged)
     {
-        $document = $this->loadDocumentFromRepositoryByEventId($labelsMerged->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByItemId($labelsMerged->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
@@ -556,33 +556,10 @@ class EventLDProjector extends OfferLDProjector implements
         $this->repository->save($document->withBody($eventLd));
     }
 
-    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
-    {
-        $document = $this->loadDocumentFromRepository($titleTranslated);
-
-        $eventLd = $document->getBody();
-        $eventLd->name->{$titleTranslated->getLanguage()->getCode(
-        )} = $titleTranslated->getTitle();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    protected function applyDescriptionTranslated(
-        DescriptionTranslated $descriptionTranslated
-    ) {
-        $document = $this->loadDocumentFromRepository($descriptionTranslated);
-
-        $eventLd = $document->getBody();
-        $eventLd->description->{$descriptionTranslated->getLanguage()->getCode(
-        )} = $descriptionTranslated->getDescription();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
     protected function applyTranslationApplied(
         TranslationApplied $translationApplied
     ) {
-        $document = $this->loadDocumentFromRepositoryByEventId($translationApplied->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByItemId($translationApplied->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
@@ -606,7 +583,7 @@ class EventLDProjector extends OfferLDProjector implements
     protected function applyTranslationDeleted(
         TranslationDeleted $translationDeleted
     ) {
-        $document = $this->loadDocumentFromRepositoryByEventId($translationDeleted->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByItemId($translationDeleted->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
@@ -800,5 +777,21 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getImageUpdatedClassName()
     {
         return ImageUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTitleTranslatedClassName()
+    {
+        return TitleTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDescriptionTranslatedClassName()
+    {
+        return DescriptionTranslated::class;
     }
 }

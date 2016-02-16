@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
+use ValueObjects\String\String as VOString;
 
 trait OfferEditingServiceDecoratorTrait
 {
@@ -29,5 +31,27 @@ trait OfferEditingServiceDecoratorTrait
     {
         return $this->getDecoratedEditingService()
             ->deleteLabel($id, $label);
+    }
+
+    /**
+     * @param $id
+     * @param Language $language
+     * @param VOString $title
+     */
+    public function translateTitle($id, Language $language, VOString $title)
+    {
+        return $this->getDecoratedEditingService()
+            ->translateTitle($id, $language, $title);
+    }
+
+    /**
+     * @param $id
+     * @param Language $language
+     * @param VOString $description
+     */
+    public function translateDescription($id, Language $language, VOString $description)
+    {
+        return $this->getDecoratedEditingService()
+            ->translateDescription($id, $language, $description);
     }
 }

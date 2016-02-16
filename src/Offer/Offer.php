@@ -7,11 +7,15 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use ValueObjects\String\String as StringLiteral;
 
 abstract class Offer extends EventSourcedAggregateRoot
 {
@@ -63,6 +67,28 @@ abstract class Offer extends EventSourcedAggregateRoot
                 $this->createLabelDeletedEvent($label)
             );
         }
+    }
+
+    /**
+     * @param Language $language
+     * @param StringLiteral $title
+     */
+    public function translateTitle(Language $language, StringLiteral $title)
+    {
+        $this->apply(
+            $this->createTitleTranslatedEvent($language, $title)
+        );
+    }
+
+    /**
+     * @param Language $language
+     * @param StringLiteral $description
+     */
+    public function translateDescription(Language $language, StringLiteral $description)
+    {
+        $this->apply(
+            $this->createDescriptionTranslatedEvent($language, $description)
+        );
     }
 
     /**
@@ -172,6 +198,20 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractLabelDeleted
      */
     abstract protected function createLabelDeletedEvent(Label $label);
+
+    /**
+     * @param Language $language
+     * @param StringLiteral $title
+     * @return AbstractTitleTranslated
+     */
+    abstract protected function createTitleTranslatedEvent(Language $language, StringLiteral $title);
+
+    /**
+     * @param Language $language
+     * @param StringLiteral $description
+     * @return AbstractDescriptionTranslated
+     */
+    abstract protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description);
 
     /**
      * @param Image $image

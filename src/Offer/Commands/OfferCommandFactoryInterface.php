@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
+use CultuurNet\UDB3\Language;
 
 interface OfferCommandFactoryInterface
 {
@@ -51,4 +52,20 @@ interface OfferCommandFactoryInterface
         StringLiteral $description,
         StringLiteral $copyrightHolder
     );
+
+    /**
+     * @param $id
+     * @param Language $language
+     * @param StringLiteral $title
+     * @return mixed
+     */
+    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title);
+
+    /**
+     * @param $id
+     * @param Language $language
+     * @param StringLiteral $description
+     * @return mixed
+     */
+    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description);
 }

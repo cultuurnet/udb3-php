@@ -3,9 +3,12 @@
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
+use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -54,5 +57,27 @@ class EventCommandFactory implements OfferCommandFactoryInterface
             $description,
             $copyrightHolder
         );
+    }
+
+    /**
+     * @param $id
+     * @param Language $language
+     * @param StringLiteral $title
+     * @return AbstractTranslateTitle
+     */
+    public function createTranslateTitleCommand($id, Language $language, String $title)
+    {
+        return new TranslateTitle($id, $language, $title);
+    }
+
+    /**
+     * @param $id
+     * @param Language $language
+     * @param StringLiteral $description
+     * @return AbstractTranslateDescription
+     */
+    public function createTranslateDescriptionCommand($id, Language $language, String $description)
+    {
+        return new TranslateDescription($id, $language, $description);
     }
 }

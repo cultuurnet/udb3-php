@@ -11,12 +11,14 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -148,6 +150,16 @@ abstract class OfferLDProjector
     abstract protected function getImageUpdatedClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getTitleTranslatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDescriptionTranslatedClassName();
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
@@ -192,7 +204,7 @@ abstract class OfferLDProjector
     }
 
     /**
-     * Apply the imageAdded event to the event repository.
+     * Apply the imageAdded event to the item repository.
      *
      * @param AbstractImageAdded $imageAdded
      */
@@ -211,7 +223,7 @@ abstract class OfferLDProjector
     }
 
     /**
-     * Apply the ImageUpdated event to the event repository.
+     * Apply the ImageUpdated event to the item repository.
      *
      * @param AbstractImageUpdated $imageUpdated
      */
@@ -302,6 +314,39 @@ abstract class OfferLDProjector
     }
 
     /**
+     * @param AbstractTitleTranslated $titleTranslated
+     */
+    protected function applyTitleTranslated(AbstractTitleTranslated $titleTranslated)
+    {
+        $document = $this->loadDocumentFromRepository($titleTranslated);
+
+        $offerLd = $document->getBody();
+        $offerLd->name->{$titleTranslated->getLanguage()->getCode(
+        )} = $titleTranslated->getTitle()->toNative();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractDescriptionTranslated $descriptionTranslated
+     */
+    protected function applyDescriptionTranslated(
+        AbstractDescriptionTranslated $descriptionTranslated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionTranslated);
+
+        $offerLd = $document->getBody();
+        $languageCode = $descriptionTranslated->getLanguage()->getCode();
+        $description = $descriptionTranslated->getDescription()->toNative();
+        if (empty($offerLd->description)) {
+            $offerLd->description = new \stdClass();
+        }
+        $offerLd->description->{$languageCode} = $description;
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
      * @param string $id
      * @return JsonDocument
      */
@@ -324,19 +369,19 @@ abstract class OfferLDProjector
      */
     protected function loadDocumentFromRepository(AbstractEvent $event)
     {
-        return $this->loadDocumentFromRepositoryByEventId($event->getItemId());
+        return $this->loadDocumentFromRepositoryByItemId($event->getItemId());
     }
 
     /**
-     * @param string $eventId
+     * @param string $itemId
      * @return JsonDocument
      */
-    protected function loadDocumentFromRepositoryByEventId($eventId)
+    protected function loadDocumentFromRepositoryByItemId($itemId)
     {
-        $document = $this->repository->get($eventId);
+        $document = $this->repository->get($itemId);
 
         if (!$document) {
-            return $this->newDocument($eventId);
+            return $this->newDocument($itemId);
         }
 
         return $document;

@@ -126,7 +126,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
@@ -177,7 +177,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
@@ -309,7 +309,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($event, $event->getActorId());
 
         $this->assertEquals('Invoerders Algemeen ', $body->publisher);
-        $this->assertEquals('Vuur, vakmanschap en', $body->name);
+        $this->assertEquals('Vuur, vakmanschap en', $body->name->nl);
         $this->assertContains('764066ab-826f-48c2-897d-a329ebce953f', $body->{'@id'});
     }
 
@@ -339,7 +339,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->assertEquals(
             $expectedDescription,
-            $body->description
+            $body->description->nl
         );
     }
 
@@ -358,7 +358,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->id = $id;
-        $jsonLD->name = 'some representative title';
+        $jsonLD->name = (object)['nl'=>'some representative title'];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',
           'addressLocality' => '$locality',
@@ -381,7 +381,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $expectedJsonLD = new stdClass();
         $expectedJsonLD->id = $id;
-        $expectedJsonLD->name = 'new title';
+        $expectedJsonLD->name = (object)['nl'=>'new title'];
         $expectedJsonLD->address = (object)[
           'addressCountry' => '$newCountry',
           'addressLocality' => '$newLocality',

@@ -36,9 +36,22 @@ class DBALPurgeService implements PurgeServiceInterface
 
     public function purgeAll()
     {
+        $this->delete();
+
+        $this->resetAutoIncrement();
+    }
+
+    private function delete()
+    {
         $queryBuilder = $this->connection->createQueryBuilder();
 
         $queryBuilder->delete($this->tableName);
         $queryBuilder->execute();
+    }
+
+    private function resetAutoIncrement()
+    {
+        $sql = 'ALTER TABLE ' . $this->tableName . ' auto_increment = 1';
+        $this->connection->exec($sql);
     }
 }

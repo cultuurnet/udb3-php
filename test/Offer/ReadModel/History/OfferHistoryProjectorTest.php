@@ -7,10 +7,14 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Offer\Item\ReadModel\History\ItemHistoryProjector;
+use ValueObjects\String\String;
 
 class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -142,6 +146,92 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2015-03-27T10:17:19+02:00',
                     'author' => 'Jan Janssen',
                     'description' => "Label 'foo' verwijderd",
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_the_translation_of_a_title()
+    {
+        $titleTranslated = new TitleTranslated(
+            self::EVENT_ID_1,
+            new Language('en'),
+            new String('English title')
+        );
+
+        $initialDocument = new JsonDocument(
+            self::EVENT_ID_1,
+            json_encode([
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $taggedDate = '2015-03-27T10:17:19.176169+02:00';
+
+        $domainMessage = new DomainMessage(
+            $titleTranslated->getItemId(),
+            2,
+            new Metadata(['user_nick' => 'Jan Janssen']),
+            $titleTranslated,
+            DateTime::fromString($taggedDate)
+        );
+
+        $this->projector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_1,
+            [
+                (object)[
+                    'date' => '2015-03-27T10:17:19+02:00',
+                    'author' => 'Jan Janssen',
+                    'description' => "Titel vertaald (en)",
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_the_translation_of_a_description()
+    {
+        $descriptionTranslated = new DescriptionTranslated(
+            self::EVENT_ID_1,
+            new Language('en'),
+            new String('English description')
+        );
+
+        $initialDocument = new JsonDocument(
+            self::EVENT_ID_1,
+            json_encode([
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $taggedDate = '2015-03-27T10:17:19.176169+02:00';
+
+        $domainMessage = new DomainMessage(
+            $descriptionTranslated->getItemId(),
+            2,
+            new Metadata(['user_nick' => 'Jan Janssen']),
+            $descriptionTranslated,
+            DateTime::fromString($taggedDate)
+        );
+
+        $this->projector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_1,
+            [
+                (object)[
+                    'date' => '2015-03-27T10:17:19+02:00',
+                    'author' => 'Jan Janssen',
+                    'description' => "Beschrijving vertaald (en)",
                 ],
             ]
         );

@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Offer\ReadModel\OfferJsonDocument;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
@@ -35,6 +36,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\PlaceEvent;
@@ -155,7 +157,12 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $placeCreated->getPlaceId()
         );
-        $jsonLD->name = $placeCreated->getTitle();
+
+        if (empty($jsonLD->name)) {
+            $jsonLD->name = new \stdClass();
+        }
+
+        $jsonLD->name->nl = $placeCreated->getTitle();
 
         $jsonLD->address = $placeCreated->getAddress()->toJsonLd();
 
@@ -210,7 +217,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->name = $majorInfoUpdated->getTitle();
+        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
         $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
 
         // Remove old theme and event type.
@@ -514,5 +521,21 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getLabelDeletedClassName()
     {
         return LabelDeleted::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTitleTranslatedClassName()
+    {
+        return TitleTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDescriptionTranslatedClassName()
+    {
+        return DescriptionTranslated::class;
     }
 }

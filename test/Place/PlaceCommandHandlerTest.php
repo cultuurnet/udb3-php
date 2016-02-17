@@ -10,21 +10,27 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\CommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
+use CultuurNet\UDB3\Place\Commands\TranslateDescription;
+use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
+use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
+use ValueObjects\String\String;
 
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -191,5 +197,45 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->when(new DeleteLabel($id, new Label('foo')))
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_the_title_of_an_event()
+    {
+        $id = '1';
+        $title = new String('Voorbeeld');
+        $language = new Language('nl');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id)
+                ]
+            )
+            ->when(new TranslateTitle($id, $language, $title))
+            ->then(
+                [
+                    new TitleTranslated($id, $language, $title)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_the_description_of_an_event()
+    {
+        $id = '1';
+        $description = new String('Lorem ipsum dolor si amet...');
+        $language = new Language('nl');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new TranslateDescription($id, $language, $description))
+            ->then([new DescriptionTranslated($id, $language, $description)]);
     }
 }

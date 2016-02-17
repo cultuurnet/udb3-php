@@ -9,8 +9,8 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
@@ -92,7 +92,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     $this->factorOfferCreated($ids[1])
                 ]
             )
-            ->when(new LabelEvents($ids, new Label('awesome')))
+            ->when(new AddLabelToMultiple($ids, new Label('awesome')))
             ->then(
                 [
                     new LabelAdded($ids[0], new Label('awesome')),
@@ -143,7 +143,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             );
 
         $this->scenario
-            ->when(new LabelQuery('*.*', new Label('foo')))
+            ->when(new AddLabelToQuery('*.*', new Label('foo')))
             ->then(
                 $expectedSourcedEvents
             );
@@ -165,7 +165,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->setExpectedException(ClientErrorResponseException::class);
 
         $this->scenario
-            ->when(new LabelQuery('---fsdfs', new Label('foo')))
+            ->when(new AddLabelToQuery('---fsdfs', new Label('foo')))
             ->then(
                 []
             );

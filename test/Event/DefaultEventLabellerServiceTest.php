@@ -4,7 +4,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Label;
@@ -56,7 +56,7 @@ class DefaultEventLabellerServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->equalTo(
-                    new LabelEvents(
+                    new AddLabelToMultiple(
                         array('event1'),
                         new Label('some-label')
                     )
@@ -90,7 +90,7 @@ class DefaultEventLabellerServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->equalTo(
-                    new LabelEvents(
+                    new AddLabelToMultiple(
                         array('event1', 'event2'),
                         new Label('some-label')
                     )

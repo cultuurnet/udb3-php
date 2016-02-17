@@ -1,31 +1,31 @@
 <?php
 
 
-namespace CultuurNet\UDB3\Event\Commands;
+namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\Entry\Keyword;
 
-class LabelEvents
+class AddLabelToMultiple
 {
     /**
      * @var array
      */
-    protected $eventIds;
+    protected $offerIds;
 
     /**
      * @var Keyword
      */
     protected $label;
 
-    public function __construct($eventIds, Keyword $label)
+    public function __construct($offerIds, Keyword $label)
     {
-        $this->eventIds = $eventIds;
+        $this->offerIds = $offerIds;
         $this->label = $label;
     }
 
-    public function getEventIds()
+    public function getOfferIds()
     {
-        return $this->eventIds;
+        return $this->offerIds;
     }
 
     /**

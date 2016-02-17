@@ -1,19 +1,19 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\Commands;
+namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\Entry\Keyword;
 
-class LabelEventsTest extends \PHPUnit_Framework_TestCase
+class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var LabelEvents
+     * @var AddLabelToMultiple
      */
-    protected $labelEvents;
+    protected $labelMultiple;
 
     public function setUp()
     {
-        $this->labelEvents = new LabelEvents(
+        $this->labelMultiple = new AddLabelToMultiple(
             array('id1', 'id2', 'id3'),
             new Keyword('testlabel')
         );
@@ -27,7 +27,7 @@ class LabelEventsTest extends \PHPUnit_Framework_TestCase
         $expectedIds = array('id1', 'id2', 'id3');
         $expectedKeyword = new Keyword('testlabel');
 
-        $this->assertEquals($expectedIds, $this->labelEvents->getEventIds());
-        $this->assertEquals($expectedKeyword, $this->labelEvents->getLabel());
+        $this->assertEquals($expectedIds, $this->labelMultiple->getOfferIds());
+        $this->assertEquals($expectedKeyword, $this->labelMultiple->getLabel());
     }
 }

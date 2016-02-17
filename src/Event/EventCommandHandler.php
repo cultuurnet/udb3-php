@@ -12,8 +12,8 @@ use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
@@ -51,14 +51,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         $this->searchService = $searchService;
     }
 
-    public function handleLabelEvents(LabelEvents $labelEvents)
+    public function handleLabelEvents(AddLabelToMultiple $labelEvents)
     {
-        foreach ($labelEvents->getEventIds() as $eventId) {
+        foreach ($labelEvents->getOfferIds() as $eventId) {
             $this->labelEvent($labelEvents->getLabel(), $eventId);
         }
     }
 
-    public function handleLabelQuery(LabelQuery $labelQuery)
+    public function handleLabelQuery(AddLabelToQuery $labelQuery)
     {
         $query = $labelQuery->getQuery();
 

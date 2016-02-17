@@ -4,8 +4,8 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Label;
 
@@ -53,7 +53,7 @@ class DefaultEventLabellerService implements EventLabellerServiceInterface
             $this->eventService->getEvent($eventId);
         }
 
-        $command = new LabelEvents($eventIds, $label);
+        $command = new AddLabelToMultiple($eventIds, $label);
         $commandId = $this->commandBus->dispatch($command);
 
         return $commandId;
@@ -68,7 +68,7 @@ class DefaultEventLabellerService implements EventLabellerServiceInterface
             throw new \InvalidArgumentException('query should not be empty');
         }
 
-        $command = new LabelQuery($query, $label);
+        $command = new AddLabelToQuery($query, $label);
         $commandId = $this->commandBus->dispatch($command);
 
         return $commandId;

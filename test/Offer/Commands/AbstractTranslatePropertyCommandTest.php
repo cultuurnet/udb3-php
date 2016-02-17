@@ -37,18 +37,10 @@ class AbstractTranslatePropertyCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_return_its_properties()
     {
-        $this->translatePropertyCommand->expects($this->any())
-            ->method('getLanguage')
-            ->willReturn(new Language('en'));
-
         $language = $this->translatePropertyCommand->getLanguage();
         $expectedLanguage = new Language('en');
 
         $this->assertEquals($expectedLanguage, $language);
-
-        $this->translatePropertyCommand->expects($this->any())
-            ->method('getItemId')
-            ->willReturn('Foo');
 
         $itemId = $this->translatePropertyCommand->getItemId();
         $expectedItemId = 'Foo';

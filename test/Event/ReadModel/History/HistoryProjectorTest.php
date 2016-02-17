@@ -9,25 +9,25 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\CollaborationData;
-use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
-use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\EventXmlString;
 use ValueObjects\String\String;
 
 class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
@@ -188,13 +188,13 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            'Titre en français'
+            new String('Titre en français')
         );
 
         $translatedDate = '2015-03-26T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $titleTranslated->getEventId(),
+            $titleTranslated->getItemId(),
             3,
             new Metadata(['user_nick' => 'JohnDoe']),
             $titleTranslated,
@@ -232,13 +232,13 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            'Signalement en français'
+            new String('Signalement en français')
         );
 
         $translatedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $descriptionTranslated->getEventId(),
+            $descriptionTranslated->getItemId(),
             3,
             new Metadata(['user_nick' => 'JaneDoe']),
             $descriptionTranslated,

@@ -9,12 +9,14 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
@@ -31,11 +33,13 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
+use ValueObjects\String\String;
 
 class Place extends Offer implements UpdateableWithCdbXmlInterface
 {
@@ -251,7 +255,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param string $cdbXmlNamespaceUri
      *   The cdb xml namespace uri.
      *
-     * @return Actor
+     * @return Place
      *   The actor.
      */
     public static function importFromUDB2Event(
@@ -313,5 +317,25 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createLabelDeletedEvent(Label $label)
     {
         return new LabelDeleted($this->actorId, $label);
+    }
+
+    /**
+     * @param Language $language
+     * @param String $title
+     * @return TitleTranslated
+     */
+    protected function createTitleTranslatedEvent(Language $language, String $title)
+    {
+        return new TitleTranslated($this->actorId, $language, $title);
+    }
+
+    /**
+     * @param Language $language
+     * @param String $description
+     * @return DescriptionTranslated
+     */
+    protected function createDescriptionTranslatedEvent(Language $language, String $description)
+    {
+        return new DescriptionTranslated($this->actorId, $language, $description);
     }
 }

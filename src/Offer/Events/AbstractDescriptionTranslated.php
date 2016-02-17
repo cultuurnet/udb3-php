@@ -1,13 +1,11 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Event;
+namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Language;
+use ValueObjects\String\String;
 
-class DescriptionTranslated extends PropertyTranslated
+class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
 {
     /**
      * @var string
@@ -15,18 +13,18 @@ class DescriptionTranslated extends PropertyTranslated
     protected $description;
 
     /**
-     * @param string $id
+     * @param string $itemId
      * @param Language $language
-     * @param string $description
+     * @param String $description
      */
-    public function __construct($id, Language $language, $description)
+    public function __construct($itemId, Language $language, String $description)
     {
-        parent::__construct($id, $language);
+        parent::__construct($itemId, $language);
         $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return String
      */
     public function getDescription()
     {
@@ -39,7 +37,7 @@ class DescriptionTranslated extends PropertyTranslated
     public function serialize()
     {
         return parent::serialize() + array(
-            'description' => $this->description,
+            'description' => $this->description->toNative(),
         );
     }
 
@@ -49,9 +47,9 @@ class DescriptionTranslated extends PropertyTranslated
     public static function deserialize(array $data)
     {
         return new static(
-            $data['event_id'],
+            $data['item_id'],
             new Language($data['language']),
-            $data['description']
+            new String($data['description'])
         );
     }
 }

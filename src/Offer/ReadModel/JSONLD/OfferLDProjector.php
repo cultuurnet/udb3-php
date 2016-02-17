@@ -10,9 +10,11 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -120,6 +122,16 @@ abstract class OfferLDProjector
     abstract protected function getLabelDeletedClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getTitleTranslatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDescriptionTranslatedClassName();
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
@@ -159,6 +171,39 @@ abstract class OfferLDProjector
             // as an array and not as an object.
             $eventLd->labels = array_values($eventLd->labels);
         }
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * @param AbstractTitleTranslated $titleTranslated
+     */
+    protected function applyTitleTranslated(AbstractTitleTranslated $titleTranslated)
+    {
+        $document = $this->loadDocumentFromRepository($titleTranslated);
+
+        $eventLd = $document->getBody();
+        $eventLd->name->{$titleTranslated->getLanguage()->getCode(
+        )} = $titleTranslated->getTitle()->toNative();
+
+        $this->repository->save($document->withBody($eventLd));
+    }
+
+    /**
+     * @param AbstractDescriptionTranslated $descriptionTranslated
+     */
+    protected function applyDescriptionTranslated(
+        AbstractDescriptionTranslated $descriptionTranslated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionTranslated);
+
+        $eventLd = $document->getBody();
+        $languageCode = $descriptionTranslated->getLanguage()->getCode();
+        $description = $descriptionTranslated->getDescription()->toNative();
+        if (empty($eventLd->description)) {
+            $eventLd->description = new \stdClass();
+        }
+        $eventLd->description->{$languageCode} = $description;
 
         $this->repository->save($document->withBody($eventLd));
     }

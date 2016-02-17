@@ -23,7 +23,7 @@ class PurgeServiceManagerTest extends PHPUnit_Framework_TestCase
     {
         $this->addReadModel_PurgeServiceInterfaces($this->purgeServiceManager);
 
-        $this->assertEquals(2, count($this->purgeServiceManager->getReadModelPurgeServices()));
+        $this->assertCount(2, $this->purgeServiceManager->getReadModelPurgeServices());
     }
 
     /**
@@ -33,7 +33,7 @@ class PurgeServiceManagerTest extends PHPUnit_Framework_TestCase
     {
         $this->addWriteModel_PurgeServiceInterfaces($this->purgeServiceManager);
 
-        $this->assertEquals(2, count($this->purgeServiceManager->getWriteModelPurgeServices()));
+        $this->assertCount(2, $this->purgeServiceManager->getWriteModelPurgeServices());
     }
 
     /**
@@ -44,8 +44,8 @@ class PurgeServiceManagerTest extends PHPUnit_Framework_TestCase
         $this->addReadModel_PurgeServiceInterfaces($this->purgeServiceManager);
         $this->addWriteModel_PurgeServiceInterfaces($this->purgeServiceManager);
 
-        $this->assertEquals(2, count($this->purgeServiceManager->getReadModelPurgeServices()));
-        $this->assertEquals(2, count($this->purgeServiceManager->getWriteModelPurgeServices()));
+        $this->assertCount(2, $this->purgeServiceManager->getReadModelPurgeServices());
+        $this->assertCount(2, $this->purgeServiceManager->getWriteModelPurgeServices());
     }
 
     /**

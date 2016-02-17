@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;

@@ -17,6 +17,8 @@ use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
+use CultuurNet\UDB3\Offer\ReadModel\OfferJsonDocument;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -209,15 +211,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
+        $document = $this
+            ->loadPlaceDocumentFromRepository($majorInfoUpdated)
+            ->apply(OfferUpdate::calendar($majorInfoUpdated->getCalendar()));
 
-        $document = $this->loadPlaceDocumentFromRepository($majorInfoUpdated);
         $jsonLD = $document->getBody();
 
         $jsonLD->name->nl = $majorInfoUpdated->getTitle();
         $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
-
-        $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
-        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {

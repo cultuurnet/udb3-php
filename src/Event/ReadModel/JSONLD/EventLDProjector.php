@@ -6,6 +6,8 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
@@ -47,6 +49,7 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
@@ -471,17 +474,16 @@ class EventLDProjector extends OfferLDProjector implements
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
+        $document = $this
+            ->loadDocumentFromRepository($majorInfoUpdated)
+            ->apply(OfferUpdate::calendar($majorInfoUpdated->getCalendar()));
 
-        $document = $this->loadDocumentFromRepository($majorInfoUpdated);
         $jsonLD = $document->getBody();
 
         $jsonLD->name->nl = $majorInfoUpdated->getTitle();
         $jsonLD->location = array(
           '@type' => 'Place',
         ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
-
-        $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
-        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {
@@ -499,7 +501,6 @@ class EventLDProjector extends OfferLDProjector implements
         }
 
         $this->repository->save($document->withBody($jsonLD));
-
     }
 
     /**

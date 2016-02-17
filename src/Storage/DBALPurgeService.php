@@ -36,7 +36,8 @@ class DBALPurgeService implements PurgeServiceInterface
 
     public function purgeAll()
     {
-        $sql = $this->connection->getDatabasePlatform()->getTruncateTableSQL($this->tableName);
+        $platform = $this->connection->getDatabasePlatform();
+        $sql = $platform->getTruncateTableSQL($this->tableName);
         $this->connection->exec($sql);
     }
 }

@@ -114,6 +114,6 @@ class DBALPurgeServiceTest extends PHPUnit_Framework_TestCase
     private function getSequence()
     {
         $this->insertPerson('test', 'test');
-        return $this->connection->lastInsertId();
+        return $this->getConnection()->lastInsertId();
     }
 }

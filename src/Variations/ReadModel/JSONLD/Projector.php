@@ -109,9 +109,9 @@ class Projector implements EventListenerInterface
     }
 
     /**
-     * @param EventVariationCreated $eventVariationCreated
+     * @param OfferVariationCreated $eventVariationCreated
      */
-    public function applyEventVariationCreated(OfferVariationCreated $eventVariationCreated)
+    public function applyOfferVariationCreated(OfferVariationCreated $eventVariationCreated)
     {
         // TODO: figure out how to get the event id without parsing it from the URL
         $eventUrlParts = explode('/', $eventVariationCreated->getEventUrl());
@@ -140,9 +140,9 @@ class Projector implements EventListenerInterface
     }
 
     /**
-     * @param EventVariationDeleted $eventVariationDeleted
+     * @param OfferVariationDeleted $eventVariationDeleted
      */
-    public function applyEventVariationDeleted(OfferVariationDeleted $eventVariationDeleted)
+    public function applyOfferVariationDeleted(OfferVariationDeleted $eventVariationDeleted)
     {
         $this->repository->remove((string)$eventVariationDeleted->getId());
     }

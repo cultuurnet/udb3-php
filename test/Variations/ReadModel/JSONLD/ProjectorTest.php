@@ -264,7 +264,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Purpose('personal'),
             new Description('The variation description')
         );
-        $this->projector->applyEventVariationCreated($variationCreatedEvent);
+        $this->projector->applyOfferVariationCreated($variationCreatedEvent);
     }
 
     /**

@@ -24,7 +24,7 @@ class Projector implements EventListenerInterface
         $this->repository = $repository;
     }
 
-    protected function applyEventVariationCreated(OfferVariationCreated $eventVariationCreated)
+    protected function applyOfferVariationCreated(OfferVariationCreated $eventVariationCreated)
     {
         $this->repository->save(
             $eventVariationCreated->getId(),
@@ -34,7 +34,7 @@ class Projector implements EventListenerInterface
         );
     }
 
-    protected function applyEventVariationDeleted(OfferVariationDeleted $eventVariationDeleted)
+    protected function applyOfferVariationDeleted(OfferVariationDeleted $eventVariationDeleted)
     {
         $this->repository->remove($eventVariationDeleted->getId());
     }

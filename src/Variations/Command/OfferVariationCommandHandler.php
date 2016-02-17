@@ -12,7 +12,7 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
     use LoggerAwareTrait;
 
     /**
-     * @var EventVariationServiceInterface
+     * @var OfferVariationServiceInterface
      */
     private $variationService;
 
@@ -22,10 +22,10 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
         $this->variationService = $variationService;
     }
 
-    protected function handleCreateEventVariation(
+    protected function handleCreateOfferVariation(
         CreateOfferVariation $createEventVariation
     ) {
-        $variation = $this->variationService->createOfferVariation(
+        $variation = $this->variationService->createEventVariation(
             $createEventVariation->getOfferUrl(),
             $createEventVariation->getOwnerId(),
             $createEventVariation->getPurpose(),
@@ -59,9 +59,9 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
         }
     }
 
-    protected function handleDeleteEventVariation(DeleteOfferVariation $deleteEventVariation)
+    protected function handleDeleteOfferVariation(DeleteOfferVariation $deleteEventVariation)
     {
-        $this->variationService->deleteOfferVariation($deleteEventVariation->getId());
+        $this->variationService->deleteEventVariation($deleteEventVariation->getId());
 
         if ($this->logger) {
             $this->logger->info(

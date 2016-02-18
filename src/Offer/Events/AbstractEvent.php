@@ -15,6 +15,12 @@ abstract class AbstractEvent
      */
     public function __construct($itemId)
     {
+        if (!is_string($itemId)) {
+            throw new \InvalidArgumentException(
+                'Expected eventId to be a string, received ' . gettype($itemId)
+            );
+        }
+
         $this->itemId = $itemId;
     }
 

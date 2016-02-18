@@ -84,11 +84,6 @@ class EventLDProjector extends OfferLDProjector implements
     protected $eventService;
 
     /**
-     * @var SerializerInterface
-     */
-    protected $mediaObjectSerializer;
-
-    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
@@ -107,12 +102,12 @@ class EventLDProjector extends OfferLDProjector implements
         parent::__construct(
             $repository,
             $iriGenerator,
-            $organizerService
+            $organizerService,
+            $mediaObjectSerializer
         );
 
         $this->placeService = $placeService;
         $this->eventService = $eventService;
-        $this->mediaObjectSerializer = $mediaObjectSerializer;
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter(new CdbXMLItemBaseImporter());
@@ -129,7 +124,7 @@ class EventLDProjector extends OfferLDProjector implements
         );
 
         foreach ($eventIds as $eventId) {
-            $document = $this->loadDocumentFromRepositoryByEventId(
+            $document = $this->loadDocumentFromRepositoryByItemId(
                 $eventId
             );
             $eventLD = $document->getBody();
@@ -155,7 +150,7 @@ class EventLDProjector extends OfferLDProjector implements
         );
 
         foreach ($eventsLocatedAtPlace as $eventId) {
-            $document = $this->loadDocumentFromRepositoryByEventId(
+            $document = $this->loadDocumentFromRepositoryByItemId(
                 $eventId
             );
             $eventLD = $document->getBody();
@@ -389,7 +384,7 @@ class EventLDProjector extends OfferLDProjector implements
      */
     private function UDB3Media($eventId)
     {
-        $document = $this->loadDocumentFromRepositoryByEventId($eventId);
+        $document = $this->loadDocumentFromRepositoryByItemId($eventId);
         $media = [];
 
         if ($document) {
@@ -547,7 +542,7 @@ class EventLDProjector extends OfferLDProjector implements
      */
     protected function applyLabelsMerged(LabelsMerged $labelsMerged)
     {
-        $document = $this->loadDocumentFromRepositoryByEventId($labelsMerged->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByItemId($labelsMerged->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
@@ -565,7 +560,7 @@ class EventLDProjector extends OfferLDProjector implements
     protected function applyTranslationApplied(
         TranslationApplied $translationApplied
     ) {
-        $document = $this->loadDocumentFromRepositoryByEventId($translationApplied->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByItemId($translationApplied->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
@@ -589,7 +584,7 @@ class EventLDProjector extends OfferLDProjector implements
     protected function applyTranslationDeleted(
         TranslationDeleted $translationDeleted
     ) {
-        $document = $this->loadDocumentFromRepositoryByEventId($translationDeleted->getEventId()->toNative());
+        $document = $this->loadDocumentFromRepositoryByItemId($translationDeleted->getEventId()->toNative());
 
         $eventLd = $document->getBody();
 
@@ -714,118 +709,6 @@ class EventLDProjector extends OfferLDProjector implements
 
     }
 
-    /**
-     * Apply the imageAdded event to the event repository.
-     *
-     * @param ImageAdded $imageAdded
-     */
-    protected function applyImageAdded(ImageAdded $imageAdded)
-    {
-        $document = $this->loadDocumentFromRepository($imageAdded);
-
-        $eventLd = $document->getBody();
-        $eventLd->mediaObject = isset($eventLd->mediaObject) ? $eventLd->mediaObject : [];
-
-        $imageData = $this->mediaObjectSerializer
-            ->serialize($imageAdded->getImage(), 'json-ld');
-        $eventLd->mediaObject[] = $imageData;
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the ImageUpdated event to the event repository.
-     *
-     * @param ImageUpdated $imageUpdated
-     */
-    protected function applyImageUpdated(ImageUpdated $imageUpdated)
-    {
-        $document = $this->loadDocumentFromRepositoryByEventId($imageUpdated->getItemId());
-
-        $eventLd = $document->getBody();
-
-        if (!isset($eventLd->mediaObject)) {
-            throw new \Exception('The image to update could not be found.');
-        }
-
-        $updatedMediaObjects = [];
-
-        foreach ($eventLd->mediaObject as $mediaObject) {
-            $mediaObjectMatches = (
-                strpos(
-                    $mediaObject->{'@id'},
-                    (string)$imageUpdated->getMediaObjectId()
-                ) > 0
-            );
-
-            if ($mediaObjectMatches) {
-                $mediaObject->description = (string)$imageUpdated->getDescription();
-                $mediaObject->copyrightHolder = (string)$imageUpdated->getCopyrightHolder();
-
-                $updatedMediaObjects[] = $mediaObject;
-            }
-        };
-
-        if (empty($updatedMediaObjects)) {
-            throw new \Exception('The image to update could not be found.');
-        }
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * @param ImageRemoved $imageRemoved
-     */
-    protected function applyImageRemoved(ImageRemoved $imageRemoved)
-    {
-        $document = $this->loadDocumentFromRepositoryByEventId(
-            $imageRemoved->getItemId()
-        );
-
-        $eventLd = $document->getBody();
-
-        // Nothing to remove if there are no media objects!
-        if (!isset($eventLd->mediaObject)) {
-            return;
-        }
-
-        $imageId = (string) $imageRemoved->getImage()->getMediaObjectId();
-
-        /**
-         * Matches any object that is not the removed image.
-         *
-         * @param Object $mediaObject
-         *  An existing projection of a media object.
-         *
-         * @return bool
-         *  Returns true when the media object does not match the image to remove.
-         */
-        $shouldNotBeRemoved = function ($mediaObject) use ($imageId) {
-            $containsId = !!strpos($mediaObject->{'@id'}, $imageId);
-            return !$containsId;
-        };
-
-        // Remove any media objects that match the image.
-        $filteredMediaObjects = array_filter(
-            $eventLd->mediaObject,
-            $shouldNotBeRemoved
-        );
-
-        // Unset the main image if it matches the removed image
-        if (isset($eventLd->image) && strpos($eventLd->{'image'}, $imageId)) {
-            unset($eventLd->{"image"});
-        }
-
-        // If no media objects are left remove the attribute.
-        if (empty($filteredMediaObjects)) {
-            unset($eventLd->{"mediaObject"});
-        } else {
-            $eventLd->mediaObject = array_values($filteredMediaObjects);
-        }
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);
@@ -871,6 +754,30 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getLabelDeletedClassName()
     {
         return LabelDeleted::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageAddedClassName()
+    {
+        return ImageAdded::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageRemovedClassName()
+    {
+        return ImageRemoved::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageUpdatedClassName()
+    {
+        return ImageUpdated::class;
     }
 
     /**

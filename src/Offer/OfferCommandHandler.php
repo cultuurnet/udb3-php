@@ -6,6 +6,9 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 
@@ -85,6 +88,21 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     abstract protected function getTranslateDescriptionClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getAddImageClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateImageClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getRemoveImageClassName();
+
+    /**
      * @param AbstractAddLabel $addLabel
      */
     private function handleAddLabel(AbstractAddLabel $addLabel)
@@ -121,6 +139,31 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($translateDescription->getItemId());
         $offer->translateDescription($translateDescription->getLanguage(), $translateDescription->getDescription());
+        $this->repository->save($offer);
+    }
+
+    /**
+     * Handle an add image command.
+     * @param AbstractAddImage $addImage
+     */
+    public function handleAddImage(AbstractAddImage $addImage)
+    {
+        $offer = $this->load($addImage->getItemId());
+        $offer->addImage($addImage->getImage());
+        $this->repository->save($offer);
+    }
+
+    public function handleRemoveImage(AbstractRemoveImage $removeImage)
+    {
+        $offer = $this->load($removeImage->getItemId());
+        $offer->removeImage($removeImage->getImage());
+        $this->repository->save($offer);
+    }
+
+    public function handleUpdateImage(AbstractUpdateImage $updateImage)
+    {
+        $offer = $this->load($updateImage->getItemId());
+        $offer->updateImage($updateImage);
         $this->repository->save($offer);
     }
 

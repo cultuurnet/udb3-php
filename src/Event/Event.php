@@ -6,11 +6,13 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -19,37 +21,32 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
-use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
-use ValueObjects\Web\Url;
+use ValueObjects\String\String as StringLiteral;
 
 class Event extends Offer
 {
@@ -65,11 +62,6 @@ class Event extends Offer
      *   Array of different collections, keyed by language.
      */
     protected $collaborationData;
-
-    /**
-     * @var UUID[]
-     */
-    protected $mediaObjects = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -133,14 +125,14 @@ class Event extends Offer
 
     /**
      * @param EventXmlString $xmlString
-     * @param String $eventId
-     * @param String $cdbXmlNamespaceUri
+     * @param StringLiteral $eventId
+     * @param StringLiteral $cdbXmlNamespaceUri
      * @return Event
      */
     public static function createFromCdbXml(
-        String $eventId,
+        StringLiteral $eventId,
         EventXmlString $xmlString,
-        String $cdbXmlNamespaceUri
+        StringLiteral $cdbXmlNamespaceUri
     ) {
         $event = new self();
         $event->apply(
@@ -155,15 +147,15 @@ class Event extends Offer
     }
 
     /**
-     * @param String $eventId
+     * @param StringLiteral $eventId
      * @param EventXmlString $xmlString
-     * @param String $cdbXmlNamespaceUri
+     * @param StringLiteral $cdbXmlNamespaceUri
      * @return Event
      */
     public function updateFromCdbXml(
-        String $eventId,
+        StringLiteral $eventId,
         EventXmlString $xmlString,
-        String $cdbXmlNamespaceUri
+        StringLiteral $cdbXmlNamespaceUri
     ) {
         $this->apply(
             new EventUpdatedFromCdbXml(
@@ -187,7 +179,7 @@ class Event extends Offer
 
         $this->apply(
             new LabelsMerged(
-                new String($this->eventId),
+                new StringLiteral($this->eventId),
                 $labels
             )
         );
@@ -195,19 +187,19 @@ class Event extends Offer
 
     /**
      * @param Language $language
-     * @param String|null $title
-     * @param String|null $shortDescription
-     * @param String|null $longDescription
+     * @param StringLiteral|null $title
+     * @param StringLiteral|null $shortDescription
+     * @param StringLiteral|null $longDescription
      */
     public function applyTranslation(
         Language $language,
-        String $title = null,
-        String $shortDescription = null,
-        String $longDescription = null
+        StringLiteral $title = null,
+        StringLiteral $shortDescription = null,
+        StringLiteral $longDescription = null
     ) {
         $this->apply(
             new TranslationApplied(
-                new String($this->eventId),
+                new StringLiteral($this->eventId),
                 $language,
                 $title,
                 $shortDescription,
@@ -228,7 +220,7 @@ class Event extends Offer
 
         $this->apply(
             new TranslationDeleted(
-                new String($this->eventId),
+                new StringLiteral($this->eventId),
                 $language
             )
         );
@@ -265,7 +257,7 @@ class Event extends Offer
         }
 
         $collaborationDataAdded = new CollaborationDataAdded(
-            new String($this->eventId),
+            new StringLiteral($this->eventId),
             $language,
             $collaborationData
         );
@@ -333,26 +325,6 @@ class Event extends Offer
     }
 
     /**
-     * @param Language $language
-     * @param string $title
-     */
-    public function translateTitle(Language $language, $title)
-    {
-        $this->apply(new TitleTranslated($this->eventId, $language, $title));
-    }
-
-    /**
-     * @param Language $language
-     * @param string $description
-     */
-    public function translateDescription(Language $language, $description)
-    {
-        $this->apply(
-            new DescriptionTranslated($this->eventId, $language, $description)
-        );
-    }
-
-    /**
      * @param string $description
      */
     public function updateDescription($description)
@@ -411,60 +383,6 @@ class Event extends Offer
     public function updateBookingInfo(BookingInfo $bookingInfo)
     {
         $this->apply(new BookingInfoUpdated($this->eventId, $bookingInfo));
-    }
-
-    /**
-     * @return boolean
-     */
-    private function containsImage(Image $image)
-    {
-        $equalImages = array_filter(
-            $this->mediaObjects,
-            function ($existingMediaObjectId) use ($image) {
-                return $image
-                    ->getMediaObjectId()
-                    ->sameValueAs($existingMediaObjectId);
-            }
-        );
-
-        return !empty($equalImages);
-    }
-
-    /**
-     * Add a new image.
-     *
-     * @param Image $image
-     */
-    public function addImage(Image $image)
-    {
-        if (!$this->containsImage($image)) {
-            $this->apply(new ImageAdded($this->eventId, $image));
-        }
-    }
-
-    /**
-     * @param UpdateImage $updateImageCommand
-     */
-    public function updateImage(UpdateImage $updateImageCommand)
-    {
-        $this->apply(new ImageUpdated(
-            $updateImageCommand->getItemId(),
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
-        ));
-    }
-
-    /**
-     * Remove an image.
-     *
-     * @param Image $image
-     */
-    public function removeImage(Image $image)
-    {
-        if ($this->containsImage($image)) {
-            $this->apply(new ImageRemoved($this->eventId, $image));
-        }
     }
 
     /**
@@ -609,7 +527,7 @@ class Event extends Offer
 
     /**
      * @param Label $label
-     * @return AbstractLabelAdded
+     * @return LabelAdded
      */
     protected function createLabelAddedEvent(Label $label)
     {
@@ -618,23 +536,51 @@ class Event extends Offer
 
     /**
      * @param Label $label
-     * @return AbstractLabelDeleted
+     * @return LabelDeleted
      */
     protected function createLabelDeletedEvent(Label $label)
     {
         return new LabelDeleted($this->eventId, $label);
     }
 
-    protected function applyImageAdded(ImageAdded $imageAdded)
+    protected function createImageAddedEvent(Image $image)
     {
-        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+        return new ImageAdded($this->eventId, $image);
     }
 
-    protected function applyImageRemoved(ImageRemoved $imageRemoved)
+    protected function createImageRemovedEvent(Image $image)
     {
-        $this->mediaObjects = array_diff(
-            $this->mediaObjects,
-            [$imageRemoved->getImage()->getMediaObjectId()]
+        return new ImageRemoved($this->eventId, $image);
+    }
+
+    protected function createImageUpdatedEvent(
+        AbstractUpdateImage $updateImageCommand
+    ) {
+        return new ImageUpdated(
+            $this->eventId,
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
         );
+    }
+
+    /**
+     * @param Language $language
+     * @param StringLiteral $title
+     * @return TitleTranslated
+     */
+    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
+    {
+        return new TitleTranslated($this->eventId, $language, $title);
+    }
+
+    /**
+     * @param Language $language
+     * @param StringLiteral $description
+     * @return DescriptionTranslated
+     */
+    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
+    {
+        return new DescriptionTranslated($this->eventId, $language, $description);
     }
 }

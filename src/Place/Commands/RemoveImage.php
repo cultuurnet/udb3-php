@@ -2,12 +2,11 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-use CultuurNet\UDB3\Offer\ImageRemoveTrait;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 
 /**
  * Provides a command to remove an image from the place.
  */
-class RemoveImage
+class RemoveImage extends AbstractRemoveImage
 {
-    use ImageRemoveTrait;
 }

@@ -11,6 +11,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;

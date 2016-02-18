@@ -2,15 +2,11 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Media\MediaObject;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
-use CultuurNet\UDB3\Offer\ImageUpdateTrait;
-use ValueObjects\String\String;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 
 /**
  * Provides an ImageUpdated event.
  */
-class ImageUpdated extends AbstractEvent
+class ImageUpdated extends AbstractImageUpdated
 {
-    use ImageUpdateTrait;
 }

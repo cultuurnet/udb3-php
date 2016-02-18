@@ -17,12 +17,15 @@ use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
+use CultuurNet\UDB3\Offer\ReadModel\OfferJsonDocument;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
-use CultuurNet\UDB3\Place\Events\ImageDeleted;
+use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
@@ -33,6 +36,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\PlaceEvent;
@@ -49,11 +53,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
     /**
-     * @var SerializerInterface
-     */
-    protected $mediaObjectSerializer;
-
-    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
@@ -68,10 +67,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         parent::__construct(
             $repository,
             $iriGenerator,
-            $organizerService
+            $organizerService,
+            $mediaObjectSerializer
         );
 
-        $this->mediaObjectSerializer = $mediaObjectSerializer;
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter()
@@ -153,7 +152,12 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $placeCreated->getPlaceId()
         );
-        $jsonLD->name = $placeCreated->getTitle();
+
+        if (empty($jsonLD->name)) {
+            $jsonLD->name = new \stdClass();
+        }
+
+        $jsonLD->name->nl = $placeCreated->getTitle();
 
         $jsonLD->address = $placeCreated->getAddress()->toJsonLd();
 
@@ -202,15 +206,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
+        $document = $this
+            ->loadPlaceDocumentFromRepository($majorInfoUpdated)
+            ->apply(OfferUpdate::calendar($majorInfoUpdated->getCalendar()));
 
-        $document = $this->loadPlaceDocumentFromRepository($majorInfoUpdated);
         $jsonLD = $document->getBody();
 
-        $jsonLD->name = $majorInfoUpdated->getTitle();
+        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
         $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
-
-        $calendarJsonLD = $majorInfoUpdated->getCalendar()->toJsonLd();
-        $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {
@@ -377,93 +380,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the imageAdded event to the place repository.
-     *
-     * @param ImageAdded $imageAdded
-     */
-    protected function applyImageAdded(ImageAdded $imageAdded)
-    {
-
-        $document = $this->loadPlaceDocumentFromRepository($imageAdded);
-
-        $placeLd = $document->getBody();
-        $placeLd->mediaObject = isset($placeLd->mediaObject) ? $placeLd->mediaObject : [];
-
-        $imageData = $this->mediaObjectSerializer->serialize(
-            $imageAdded->getImage(),
-            'json-ld'
-        );
-        $placeLd->mediaObject[] = $imageData;
-
-        $this->repository->save($document->withBody($placeLd));
-
-    }
-
-    /**
-     * Apply the ImageUpdated event to the place repository.
-     *
-     * @param ImageUpdated $imageUpdated
-     */
-    protected function applyImageUpdated(ImageUpdated $imageUpdated)
-    {
-        $document = $this->repository->get($imageUpdated->getItemId());
-
-        if (!$document) {
-            return $this->newDocument($imageUpdated->getItemId());
-        }
-
-        $placeLd = $document->getBody();
-
-        if (!isset($placeLd->mediaObject)) {
-            throw new \Exception('The image to update could not be found.');
-        }
-
-        $updatedMediaObjects = [];
-
-        foreach ($placeLd->mediaObject as $mediaObject) {
-            $mediaObjectMatches = (
-                strpos(
-                    $mediaObject->{'@id'},
-                    (string)$imageUpdated->getMediaObjectId()
-                ) > 0
-            );
-
-            if ($mediaObjectMatches) {
-                $mediaObject->description = (string)$imageUpdated->getDescription();
-                $mediaObject->copyrightHolder = (string)$imageUpdated->getCopyrightHolder();
-
-                $updatedMediaObjects[] = $mediaObject;
-            }
-        };
-
-        if (empty($updatedMediaObjects)) {
-            throw new \Exception('The image to update could not be found.');
-        }
-
-        $this->repository->save($document->withBody($placeLd));
-    }
-
-    /**
-     * Apply the imageDeleted event to the place repository.
-     *
-     * @param ImageDeleted $imageDeleted
-     */
-    protected function applyImageDeleted(ImageDeleted $imageDeleted)
-    {
-
-        $document = $this->loadPlaceDocumentFromRepository($imageDeleted);
-
-        $placeLd = $document->getBody();
-        unset($placeLd->mediaObject[$imageDeleted->getIndexToDelete()]);
-
-        // Generate new numeric keys.
-        $placeLd->mediaObject = array_values($placeLd->mediaObject);
-
-        $this->repository->save($document->withBody($placeLd));
-
-    }
-
-    /**
      * @param PlaceEvent $place
      * @return JsonDocument
      */
@@ -513,5 +429,45 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getLabelDeletedClassName()
     {
         return LabelDeleted::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageAddedClassName()
+    {
+        return ImageAdded::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageRemovedClassName()
+    {
+        return ImageRemoved::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageUpdatedClassName()
+    {
+        return ImageUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTitleTranslatedClassName()
+    {
+        return TitleTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDescriptionTranslatedClassName()
+    {
+        return DescriptionTranslated::class;
     }
 }

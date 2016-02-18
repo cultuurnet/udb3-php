@@ -2,18 +2,11 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-use CultuurNet\UDB3\Offer\ImageUpdateTrait;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 
 /**
  * Provides a command to update an image of the place.
  */
-class UpdateImage
+class UpdateImage extends AbstractUpdateImage
 {
-    use ImageUpdateTrait;
-
-    /**
-     * The id of the item that has its image updated.
-     * @var int
-     */
-    protected $itemId;
 }

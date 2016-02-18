@@ -8,12 +8,14 @@ use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\TranslateDescription;
+use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
@@ -148,34 +150,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         }
     }
 
-    public function handleTranslateTitle(TranslateTitle $translateTitle)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($translateTitle->getId());
-
-        $event->translateTitle(
-            $translateTitle->getLanguage(),
-            $translateTitle->getTitle()
-        );
-
-        $this->repository->save($event);
-    }
-
-    public function handleTranslateDescription(
-        TranslateDescription $translateDescription
-    ) {
-
-        /** @var Event $event */
-        $event = $this->repository->load($translateDescription->getId());
-
-        $event->translateDescription(
-            $translateDescription->getLanguage(),
-            $translateDescription->getDescription()
-        );
-
-        $this->repository->save($event);
-    }
-
     /**
      * Handle an update command to update the main description.
      */
@@ -294,51 +268,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     }
 
     /**
-     * Handle an add image command.
-     * @param AddImage $addImage
-     */
-    public function handleAddImage(AddImage $addImage)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($addImage->getId());
-
-        $event->addImage(
-            $addImage->getImage()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update image command.
-     * @param UpdateImage $updateImage
-     */
-    public function handleUpdateImage(UpdateImage $updateImage)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($updateImage->getItemId());
-        $event->updateImage($updateImage);
-
-        $this->repository->save($event);
-    }
-
-    /**
-     * Handle a remove image command.
-     * @param RemoveImage $removeImage
-     */
-    public function handleRemoveImage(RemoveImage $removeImage)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($removeImage->getItemId());
-
-        $event->removeImage($removeImage->getImage());
-
-        $this->repository->save($event);
-    }
-
-    /**
      * Handle an update the major info command.
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
@@ -387,5 +316,39 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAddImageClassName()
+    {
+        return AddImage::class;
+    }
+
+    protected function getUpdateImageClassName()
+    {
+        return UpdateImage::class;
+    }
+
+    protected function getRemoveImageClassName()
+    {
+        return RemoveImage::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateTitleClassName()
+    {
+        return TranslateTitle::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateDescriptionClassName()
+    {
+        return TranslateDescription::class;
     }
 }

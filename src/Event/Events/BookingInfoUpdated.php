@@ -2,14 +2,16 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Description of DescriptionUpdated
  */
-class BookingInfoUpdated extends AbstractEvent
+class BookingInfoUpdated extends AbstractEvent implements SerializableInterface
 {
     use \CultuurNet\UDB3\BookingInfoUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

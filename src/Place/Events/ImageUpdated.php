@@ -2,13 +2,11 @@
 
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\Offer\ImageUpdateTrait;
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 
 /**
  * Provides an ImageUpdated event.
  */
-class ImageUpdated extends PlaceEvent
+class ImageUpdated extends AbstractImageUpdated
 {
-    use ImageUpdateTrait;
 }

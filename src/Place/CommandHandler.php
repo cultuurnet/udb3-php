@@ -6,11 +6,12 @@ use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
-use CultuurNet\UDB3\Place\Commands\DeleteImage;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteTypicalAgeRange;
+use CultuurNet\UDB3\Place\Commands\TranslateDescription;
+use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
@@ -37,6 +38,37 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
+    }
+
+    protected function getAddImageClassName()
+    {
+        return AddImage::class;
+    }
+
+    protected function getUpdateImageClassName()
+    {
+        return UpdateImage::class;
+    }
+
+    protected function getRemoveImageClassName()
+    {
+        return RemoveImage::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateTitleClassName()
+    {
+        return TranslateTitle::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTranslateDescriptionClassName()
+    {
+        return TranslateDescription::class;
     }
 
     /**
@@ -169,52 +201,6 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
         $this->repository->save($place);
 
-    }
-
-
-    /**
-     * Handle an add image command.
-     * @param AddImage $addImage
-     */
-    public function handleAddImage(AddImage $addImage)
-    {
-
-        /** @var Place $place */
-        $place = $this->repository->load($addImage->getId());
-
-        $place->addImage(
-            $addImage->getImage()
-        );
-
-        $this->repository->save($place);
-
-    }
-
-    /**
-     * Handle an update image command.
-     * @param UpdateImage $updateImage
-     */
-    public function handleUpdateImage(UpdateImage $updateImage)
-    {
-        /** @var Place $place */
-        $place = $this->repository->load($updateImage->getItemId());
-        $place->updateImage($updateImage);
-
-        $this->repository->save($place);
-    }
-
-    /**
-     * Handle a remove image command.
-     * @param RemoveImage $removeImage
-     */
-    public function handleRemoveImage(RemoveImage $removeImage)
-    {
-        /** @var Place $place */
-        $place = $this->repository->load($removeImage->getItemId());
-
-        $place->removeImage($removeImage->getImage());
-
-        $this->repository->save($place);
     }
 
     /**

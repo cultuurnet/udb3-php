@@ -10,19 +10,19 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -151,36 +151,6 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
         );
     }
 
-    protected function applyTitleTranslated(
-        TitleTranslated $titleTranslated,
-        DomainMessage $domainMessage
-    ) {
-        $this->writeHistory(
-            $titleTranslated->getEventId(),
-            new Log(
-                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Titel vertaald ({$titleTranslated->getLanguage()})"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
-
-    protected function applyDescriptionTranslated(
-        DescriptionTranslated $descriptionTranslated,
-        DomainMessage $domainMessage
-    ) {
-        $this->writeHistory(
-            $descriptionTranslated->getEventId(),
-            new Log(
-                $this->domainMessageDateToNativeDate(
-                    $domainMessage->getRecordedOn()
-                ),
-                new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
-
     protected function applyTranslationApplied(
         TranslationApplied $translationApplied,
         DomainMessage $domainMessage
@@ -286,5 +256,21 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
     protected function getLabelDeletedClassName()
     {
         return LabelDeleted::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTitleTranslatedClassName()
+    {
+        return TitleTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDescriptionTranslatedClassName()
+    {
+        return DescriptionTranslated::class;
     }
 }

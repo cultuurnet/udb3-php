@@ -2,11 +2,13 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class OrganizerUpdated extends AbstractEvent
+class OrganizerUpdated extends AbstractEvent implements SerializableInterface
 {
     use \CultuurNet\UDB3\OrganizerUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

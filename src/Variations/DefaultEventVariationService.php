@@ -44,7 +44,7 @@ class DefaultEventVariationService implements OfferVariationServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createOfferVariation(
+    public function createEventVariation(
         Url $eventUrl,
         OwnerId $ownerId,
         Purpose $purpose,
@@ -79,9 +79,9 @@ class DefaultEventVariationService implements OfferVariationServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteOfferVariation(Id $id)
+    public function deleteEventVariation(Id $id)
     {
-        /** @var EventVariation $variation */
+        /** @var OfferVariation $variation */
         $variation = $this->eventVariationRepository->load((string) $id);
 
         $variation->markDeleted();

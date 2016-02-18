@@ -20,7 +20,7 @@ interface OfferVariationServiceInterface
      *
      * @return OfferVariation
      */
-    public function createOfferVariation(
+    public function createEventVariation(
         Url $eventUrl,
         OwnerId $ownerId,
         Purpose $purpose,
@@ -44,5 +44,5 @@ interface OfferVariationServiceInterface
      * @throws AggregateNotFoundException
      * @throws AggregateDeletedException
      */
-    public function deleteOfferVariation(Id $id);
+    public function deleteEventVariation(Id $id);
 }

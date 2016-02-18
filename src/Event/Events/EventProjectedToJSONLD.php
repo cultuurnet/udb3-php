@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class EventProjectedToJSONLD extends EventEvent
+class EventProjectedToJSONLD extends AbstractEvent implements SerializableInterface
 {
-
 }

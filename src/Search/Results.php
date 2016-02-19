@@ -21,7 +21,7 @@ class Results
 
     /**
      * @param array $items
-     * @param Integer $totalItems
+     * @param \ValueObjects\Number\Integer $totalItems
      */
     public function __construct(array $items, Integer $totalItems)
     {
@@ -38,7 +38,7 @@ class Results
     }
 
     /**
-     * @return Integer
+     * @return \ValueObjects\Number\Integer
      */
     public function getTotalItems()
     {

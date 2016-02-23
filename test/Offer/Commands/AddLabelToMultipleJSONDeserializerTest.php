@@ -7,7 +7,6 @@ use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
-use CultuurNet\UDB3\Offer\OfferIdentifierInterface;
 use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\String\String;
 

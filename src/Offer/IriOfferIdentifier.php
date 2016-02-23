@@ -29,7 +29,15 @@ class IriOfferIdentifier implements OfferIdentifierInterface
     ) {
         $this->iri = $iri;
         $this->type = $type;
+        $this->id = $this->getIdFromIri($iri);
+    }
 
+    /**
+     * @param string $iri
+     * @return string
+     */
+    private function getIdFromIri($iri)
+    {
         // Remove any trailing slashes to be safe.
         $iri = rtrim($iri, '/');
 
@@ -37,7 +45,7 @@ class IriOfferIdentifier implements OfferIdentifierInterface
         $exploded = explode('/', $iri);
 
         // The id is the last of all the separate pieces.
-        $this->id = array_pop($exploded);
+        return array_pop($exploded);
     }
 
     /**
@@ -73,5 +81,24 @@ class IriOfferIdentifier implements OfferIdentifierInterface
             '@id' => $this->iri,
             '@type' => $this->type->toNative(),
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function serialize()
+    {
+        return json_encode($this->jsonSerialize());
+    }
+
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+        $data = json_decode($serialized, true);
+        $this->iri = $data['@id'];
+        $this->type = OfferType::fromNative($data['@type']);
+        $this->id = $this->getIdFromIri($this->iri);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Search;
 
+use CultuurNet\UDB3\Offer\OfferIdentifierInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -22,11 +23,6 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
     private $searchService;
 
     /**
-     * @var ResultIdExtractorInterface
-     */
-    private $resultIdExtractor;
-
-    /**
      * @var string
      */
     private $sorting;
@@ -38,18 +34,15 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
 
     /**
      * @param SearchServiceInterface $searchService
-     * @param ResultIdExtractorInterface $resultIdExtractor
      * @param string $sorting
      * @param int $pageSize
      */
     public function __construct(
         SearchServiceInterface $searchService,
-        ResultIdExtractorInterface $resultIdExtractor,
         $sorting = self::SORT_CREATION_DATE_ASC,
         $pageSize = 10
     ) {
         $this->searchService = $searchService;
-        $this->resultIdExtractor = $resultIdExtractor;
         $this->sorting = $sorting;
         $this->pageSize = 10;
 
@@ -117,9 +110,7 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
             $total = $results->getTotalItems()->toNative();
 
             foreach ($results->getItems() as $item) {
-                // Different search services could return different data
-                // structures, so we don't know how to get a result's id.
-                $id = $this->resultIdExtractor->extract($item);
+                $id = $item->getId();
 
                 if (!isset($ids[$id])) {
                     // Store result id with current page in case we run into

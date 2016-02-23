@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Search;
 
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferType;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Number\Integer;
 
@@ -11,11 +13,6 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
      * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $searchService;
-
-    /**
-     * @var ResultIdExtractorInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $idExtractor;
 
     /**
      * @var string
@@ -45,22 +42,12 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->searchService = $this->getMock(SearchServiceInterface::class);
-        $this->idExtractor = $this->getMock(ResultIdExtractorInterface::class);
-
-        $this->idExtractor->expects($this->any())
-            ->method('extract')
-            ->willReturnCallback(
-                function ($result) {
-                    return $result['id'];
-                }
-            );
 
         $this->sorting = ResultsGenerator::SORT_CREATION_DATE_ASC;
         $this->pageSize = 2;
 
         $this->generator = new ResultsGenerator(
             $this->searchService,
-            $this->idExtractor,
             $this->sorting,
             $this->pageSize
         );
@@ -77,7 +64,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_has_configurable_sorting_and_page_size_with_default_values()
     {
-        $generator = new ResultsGenerator($this->searchService, $this->idExtractor);
+        $generator = new ResultsGenerator($this->searchService);
 
         $this->assertEquals(ResultsGenerator::SORT_CREATION_DATE_ASC, $generator->getSorting());
         $this->assertEquals(10, $generator->getPageSize());
@@ -178,20 +165,52 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function pagedResultsDataProvider()
     {
-        // Test with both an incomplete and a complete page at the end.
-        // Test format for results differs from actual implementations for
-        // simplicity's sake.
+        $event1 = new IriOfferIdentifier(
+            'event/1',
+            OfferType::EVENT()
+        );
+
+        $event2 = new IriOfferIdentifier(
+            'event/2',
+            OfferType::EVENT()
+        );
+
+        $event3 = new IriOfferIdentifier(
+            'event/3',
+            OfferType::EVENT()
+        );
+
+        $event4 = new IriOfferIdentifier(
+            'event/4',
+            OfferType::EVENT()
+        );
+
+        $event5 = new IriOfferIdentifier(
+            'event/5',
+            OfferType::EVENT()
+        );
+
+        $event6 = new IriOfferIdentifier(
+            'event/6',
+            OfferType::EVENT()
+        );
+
+        $event7 = new IriOfferIdentifier(
+            'event/7',
+            OfferType::EVENT()
+        );
+
         return [
             [
                 // 2 results per page, 1 result.
                 2,
                 [
                     [
-                        ['id' => 1]
+                        $event1,
                     ],
                 ],
                 [
-                    ['id' => 1],
+                    $event1,
                 ],
             ],
             [
@@ -199,13 +218,13 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 2,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
+                        $event1,
+                        $event2,
                     ],
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
+                    $event1,
+                    $event2,
                 ],
             ],
             [
@@ -213,23 +232,23 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 2,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
+                        $event1,
+                        $event2,
                     ],
                     [
-                        ['id' => 3],
-                        ['id' => 4],
+                        $event3,
+                        $event4,
                     ],
                     [
-                        ['id' => 5],
+                        $event5,
                     ],
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
-                    ['id' => 3],
-                    ['id' => 4],
-                    ['id' => 5],
+                    $event1,
+                    $event2,
+                    $event3,
+                    $event4,
+                    $event5,
                 ],
             ],
             [
@@ -237,25 +256,25 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 2,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
+                        $event1,
+                        $event2,
                     ],
                     [
-                        ['id' => 3],
-                        ['id' => 4],
+                        $event3,
+                        $event4,
                     ],
                     [
-                        ['id' => 5],
-                        ['id' => 6],
+                        $event5,
+                        $event6,
                     ],
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
-                    ['id' => 3],
-                    ['id' => 4],
-                    ['id' => 5],
-                    ['id' => 6],
+                    $event1,
+                    $event2,
+                    $event3,
+                    $event4,
+                    $event5,
+                    $event6,
                 ],
             ],
             [
@@ -263,21 +282,21 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 3,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
-                        ['id' => 3],
+                        $event1,
+                        $event2,
+                        $event3,
                     ],
                     [
-                        ['id' => 4],
-                        ['id' => 5],
+                        $event4,
+                        $event5,
                     ]
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
-                    ['id' => 3],
-                    ['id' => 4],
-                    ['id' => 5],
+                    $event1,
+                    $event2,
+                    $event3,
+                    $event4,
+                    $event5,
                 ],
             ],
             [
@@ -285,23 +304,23 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 3,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
-                        ['id' => 3],
+                        $event1,
+                        $event2,
+                        $event3,
                     ],
                     [
-                        ['id' => 4],
-                        ['id' => 5],
-                        ['id' => 6],
+                        $event4,
+                        $event5,
+                        $event6,
                     ],
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
-                    ['id' => 3],
-                    ['id' => 4],
-                    ['id' => 5],
-                    ['id' => 6],
+                    $event1,
+                    $event2,
+                    $event3,
+                    $event4,
+                    $event5,
+                    $event6,
                 ],
             ],
             [
@@ -309,23 +328,23 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 5,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
-                        ['id' => 3],
-                        ['id' => 4],
-                        ['id' => 5],
+                        $event1,
+                        $event2,
+                        $event3,
+                        $event4,
+                        $event5,
                     ],
                     [
-                        ['id' => 6],
+                        $event6,
                     ]
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
-                    ['id' => 3],
-                    ['id' => 4],
-                    ['id' => 5],
-                    ['id' => 6],
+                    $event1,
+                    $event2,
+                    $event3,
+                    $event4,
+                    $event5,
+                    $event6,
                 ],
             ],
             [
@@ -333,29 +352,29 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                 3,
                 [
                     [
-                        ['id' => 1],
-                        ['id' => 2],
-                        ['id' => 1],
+                        $event1,
+                        $event2,
+                        $event1,
                     ],
                     [
-                        ['id' => 3],
-                        ['id' => 4],
-                        ['id' => 5],
+                        $event3,
+                        $event4,
+                        $event5,
                     ],
                     [
-                        ['id' => 4],
-                        ['id' => 6],
-                        ['id' => 7],
+                        $event4,
+                        $event6,
+                        $event7,
                     ]
                 ],
                 [
-                    ['id' => 1],
-                    ['id' => 2],
-                    ['id' => 3],
-                    ['id' => 4],
-                    ['id' => 5],
-                    ['id' => 6],
-                    ['id' => 7],
+                    $event1,
+                    $event2,
+                    $event3,
+                    $event4,
+                    $event5,
+                    $event6,
+                    $event7,
                 ],
                 [
                     "Found duplicate offer 1 on page 0, occurred first time on page 0.",

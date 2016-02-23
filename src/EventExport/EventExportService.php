@@ -297,6 +297,10 @@ class EventExportService implements EventExportServiceInterface
             // Iterate the results of the current page and get their IDs
             // by stripping them from the json-LD representation
             foreach ($results->getItems() as $event) {
+                // TODO: This is a bad workaround which can be removed entirely
+                // by using the ResultsGenerator here instead.
+                $event = $event->jsonSerialize();
+
                 $expoId = explode('/', $event['@id']);
                 $eventId = array_pop($expoId);
 

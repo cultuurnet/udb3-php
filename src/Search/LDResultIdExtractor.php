@@ -15,13 +15,14 @@ class LDResultIdExtractor implements ResultIdExtractorInterface
     const ID_LINK_DELIMITER = '/';
 
     /**
-     * @param array $result
-     *   A search result.
-     * @return string
-     *   The id of the search result.
+     * {@inheritdoc}
      */
-    public function extract(array $result)
+    public function extract($result)
     {
+        if (!is_array($result)) {
+            throw new \InvalidArgumentException('Result should be an array.');
+        }
+
         if (!isset($result[self::ID_LINK_KEY])) {
             throw new \LogicException(
                 sprintf(

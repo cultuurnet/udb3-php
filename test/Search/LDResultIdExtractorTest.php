@@ -51,6 +51,16 @@ class LDResultIdExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_throws_an_exception_when_the_provided_result_is_not_an_array()
+    {
+        $result = new \stdClass();
+        $this->setExpectedException(\InvalidArgumentException::class, 'Result should be an array.');
+        $this->extractor->extract($result);
+    }
+
+    /**
+     * @test
+     */
     public function it_throws_an_exception_when_a_search_result_has_no_valid_id_key()
     {
         $result = [

@@ -3,33 +3,41 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-use CultuurNet\Entry\Keyword;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 
 class AddLabelToMultiple
 {
     /**
-     * @var array
+     * @var OfferIdentifierCollection
      */
-    protected $offerIds;
+    protected $offerIdentifiers;
 
     /**
-     * @var Keyword
+     * @var Label
      */
     protected $label;
 
-    public function __construct($offerIds, Keyword $label)
+    /**
+     * @param OfferIdentifierCollection $offerIdentifiers
+     * @param Label $label
+     */
+    public function __construct(OfferIdentifierCollection $offerIdentifiers, Label $label)
     {
-        $this->offerIds = $offerIds;
+        $this->offerIdentifiers = $offerIdentifiers;
         $this->label = $label;
     }
 
-    public function getOfferIds()
+    /**
+     * @return OfferIdentifierCollection
+     */
+    public function getOfferIdentifiers()
     {
-        return $this->offerIds;
+        return $this->offerIdentifiers;
     }
 
     /**
-     * @return Keyword
+     * @return Label
      */
     public function getLabel()
     {

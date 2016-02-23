@@ -2,7 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-use CultuurNet\Entry\Keyword;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use CultuurNet\UDB3\Offer\OfferType;
 
 class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,11 +14,40 @@ class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
      */
     protected $labelMultiple;
 
+    /**
+     * @var OfferIdentifierCollection
+     */
+    protected $offerIdentifiers;
+
+    /**
+     * @var Label
+     */
+    protected $label;
+
     public function setUp()
     {
+        $this->offerIdentifiers = OfferIdentifierCollection::fromArray(
+            [
+                new IriOfferIdentifier(
+                    'event/1',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    'event/2',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    'event/3',
+                    OfferType::EVENT()
+                )
+            ]
+        );
+
+        $this->label = new Label('testlabel');
+
         $this->labelMultiple = new AddLabelToMultiple(
-            array('id1', 'id2', 'id3'),
-            new Keyword('testlabel')
+            $this->offerIdentifiers,
+            $this->label
         );
     }
 
@@ -24,10 +56,7 @@ class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_the_correct_property_values()
     {
-        $expectedIds = array('id1', 'id2', 'id3');
-        $expectedKeyword = new Keyword('testlabel');
-
-        $this->assertEquals($expectedIds, $this->labelMultiple->getOfferIds());
-        $this->assertEquals($expectedKeyword, $this->labelMultiple->getLabel());
+        $this->assertEquals($this->offerIdentifiers, $this->labelMultiple->getOfferIdentifiers());
+        $this->assertEquals($this->label, $this->labelMultiple->getLabel());
     }
 }

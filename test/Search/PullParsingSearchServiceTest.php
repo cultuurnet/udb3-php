@@ -14,6 +14,7 @@ use CultuurNet\Search\Parameter\Sort;
 use CultuurNet\Search\Parameter\Start;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface as SAPI2;
 use Guzzle\Http\Message\Response;

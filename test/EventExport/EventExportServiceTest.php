@@ -11,6 +11,7 @@ use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
@@ -125,15 +126,21 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             )
             ->willReturnOnConsecutiveCalls(
                 new Results(
-                    array_slice($this->searchResults, 0, 1),
+                    OfferIdentifierCollection::fromArray(
+                        array_slice($this->searchResults, 0, 1)
+                    ),
                     new Integer($amount)
                 ),
                 new Results(
-                    array_slice($this->searchResults, 0, 10),
+                    OfferIdentifierCollection::fromArray(
+                        array_slice($this->searchResults, 0, 10)
+                    ),
                     new Integer($amount)
                 ),
                 new Results(
-                    array_slice($this->searchResults, 10),
+                    OfferIdentifierCollection::fromArray(
+                        array_slice($this->searchResults, 10)
+                    ),
                     new Integer($amount)
                 )
             );

@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Search;
 
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Number\Integer;
@@ -134,7 +135,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                     $currentPage++;
 
                     return new Results(
-                        $pageResults,
+                        OfferIdentifierCollection::fromArray($pageResults),
                         new Integer($totalResults)
                     );
                 }

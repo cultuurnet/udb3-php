@@ -2,13 +2,14 @@
 
 namespace CultuurNet\UDB3\Search;
 
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferIdentifierInterface;
 use ValueObjects\Number\Integer;
 
 class Results
 {
     /**
-     * @var OfferIdentifierInterface[]
+     * @var OfferIdentifierCollection
      */
     private $items;
 
@@ -18,15 +19,11 @@ class Results
     private $totalItems;
 
     /**
-     * @param OfferIdentifierInterface[] $items
+     * @param OfferIdentifierCollection $items
      * @param \ValueObjects\Number\Integer $totalItems
      */
-    public function __construct(array $items, Integer $totalItems)
+    public function __construct(OfferIdentifierCollection $items, Integer $totalItems)
     {
-        foreach ($items as $item) {
-            $this->guardItemClass($item);
-        }
-
         $this->items = $items;
         $this->totalItems = $totalItems;
     }
@@ -36,7 +33,7 @@ class Results
      */
     public function getItems()
     {
-        return $this->items;
+        return $this->items->toArray();
     }
 
     /**
@@ -45,15 +42,5 @@ class Results
     public function getTotalItems()
     {
         return $this->totalItems;
-    }
-
-    /**
-     * @param mixed $item
-     */
-    private function guardItemClass($item)
-    {
-        if (!($item instanceof OfferIdentifierInterface)) {
-            throw new \InvalidArgumentException('Each result should be an OfferIdentifierInterface.');
-        }
     }
 }

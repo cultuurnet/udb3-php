@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Search;
 
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Number\Integer;
 
@@ -16,29 +17,31 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_instantiated_with_result_items_and_total()
     {
-        $items = [
-            new IriOfferIdentifier(
-                'event/1',
-                OfferType::EVENT()
-            ),
-            new IriOfferIdentifier(
-                'event/2',
-                OfferType::EVENT()
-            ),
-            new IriOfferIdentifier(
-                'event/3',
-                OfferType::EVENT()
-            ),
-            new IriOfferIdentifier(
-                'event/4',
-                OfferType::EVENT()
-            ),
-        ];
+        $items = OfferIdentifierCollection::fromArray(
+                [
+                new IriOfferIdentifier(
+                    'event/1',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    'event/2',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    'event/3',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    'event/4',
+                    OfferType::EVENT()
+                ),
+            ]
+        );
         $totalItems = new Integer(20);
 
         $results = new Results($items, $totalItems);
 
-        $this->assertEquals($items, $results->getItems());
+        $this->assertEquals($items->toArray(), $results->getItems());
         $this->assertEquals($totalItems, $results->getTotalItems());
     }
 
@@ -60,7 +63,11 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
     public function it_only_accepts_a_total_items_integer()
     {
         new Results(
-            [new IriOfferIdentifier('event/1', OfferType::EVENT())],
+            OfferIdentifierCollection::fromArray(
+                [
+                    new IriOfferIdentifier('event/1', OfferType::EVENT())
+                ]
+            ),
             'foo'
         );
     }

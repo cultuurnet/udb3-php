@@ -167,51 +167,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     }
 
     /**
-     * Handle an add image command.
-     * @param AddImage $addImage
-     */
-    public function handleAddImage(AddImage $addImage)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($addImage->getId());
-
-        $event->addImage(
-            $addImage->getImage()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update image command.
-     * @param UpdateImage $updateImage
-     */
-    public function handleUpdateImage(UpdateImage $updateImage)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($updateImage->getItemId());
-        $event->updateImage($updateImage);
-
-        $this->repository->save($event);
-    }
-
-    /**
-     * Handle a remove image command.
-     * @param RemoveImage $removeImage
-     */
-    public function handleRemoveImage(RemoveImage $removeImage)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($removeImage->getItemId());
-
-        $event->removeImage($removeImage->getImage());
-
-        $this->repository->save($event);
-    }
-
-    /**
      * Handle an update the major info command.
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
@@ -260,6 +215,24 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAddImageClassName()
+    {
+        return AddImage::class;
+    }
+
+    protected function getUpdateImageClassName()
+    {
+        return UpdateImage::class;
+    }
+
+    protected function getRemoveImageClassName()
+    {
+        return RemoveImage::class;
     }
 
     /**

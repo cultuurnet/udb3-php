@@ -9,6 +9,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use Guzzle\Common\Event;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
@@ -59,6 +60,36 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     '123-456',
                     file_get_contents(__DIR__ . '/event.xml'),
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                )
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_index_when_importing_a_place_from_udb2_event()
+    {
+        $this->repository->expects($this->once())
+            ->method('updateIndex')
+            ->with(
+                'place-lace-ace-ce',
+                EntityType::PLACE(),
+                '',
+                'stuuuk',
+                '3000',
+                new \DateTime(
+                    '2016-02-19T10:36:26+0100',
+                    new \DateTimeZone('Europe/Brussels')
+                )
+            );
+
+        $this->projector->handle(
+            $this->domainMessage(
+                new PlaceImportedFromUDB2Event(
+                    'place-lace-ace-ce',
+                    file_get_contents(__DIR__ . '/place.xml'),
+                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
                 )
             )
         );

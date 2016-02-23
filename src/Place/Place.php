@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
@@ -161,39 +162,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Add a new image.
-     *
-     * @param Image $image
-     */
-    public function addImage(Image $image)
-    {
-        $this->apply(new ImageAdded($this->actorId, $image));
-    }
-
-    /**
-     * @param UpdateImage $updateImageCommand
-     */
-    public function updateImage(UpdateImage $updateImageCommand)
-    {
-        $this->apply(new ImageUpdated(
-            $updateImageCommand->getItemId(),
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
-        ));
-    }
-
-    /**
-     * Remove an image.
-     *
-     * @param Image $image
-     */
-    public function removeImage(Image $image)
-    {
-        $this->apply(new ImageRemoved($this->actorId, $image));
-    }
-
-    /**
      * Update the major info.
      *
      * @param Title $title
@@ -317,6 +285,27 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createLabelDeletedEvent(Label $label)
     {
         return new LabelDeleted($this->actorId, $label);
+    }
+
+    protected function createImageAddedEvent(Image $image)
+    {
+        return new ImageAdded($this->actorId, $image);
+    }
+
+    protected function createImageRemovedEvent(Image $image)
+    {
+        return new ImageRemoved($this->actorId, $image);
+    }
+
+    protected function createImageUpdatedEvent(
+        AbstractUpdateImage $updateImageCommand
+    ) {
+        return new ImageUpdated(
+            $this->actorId,
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
+        );
     }
 
     /**

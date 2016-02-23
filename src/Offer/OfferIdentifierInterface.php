@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-interface OfferIdentifierInterface extends \JsonSerializable
+interface OfferIdentifierInterface extends \JsonSerializable, \Serializable
 {
     /**
      * @return string

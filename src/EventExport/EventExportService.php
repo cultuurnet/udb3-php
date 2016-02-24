@@ -268,6 +268,8 @@ class EventExportService implements EventExportServiceInterface
     /**
      * Generator that yields each unique search result.
      *
+     * @todo Replace with ResultsGenerator in III-664.
+     *
      * @param int $totalItemCount
      * @param string|object $query
      * @param LoggerInterface $logger

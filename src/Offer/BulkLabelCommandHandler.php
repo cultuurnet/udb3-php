@@ -2,15 +2,22 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
+use CultuurNet\UDB3\Variations\AggregateDeletedException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
-class BulkLabelCommandHandler extends Udb3CommandHandler
+class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var ResultsGeneratorInterface
      */
@@ -26,6 +33,8 @@ class BulkLabelCommandHandler extends Udb3CommandHandler
     ) {
         $this->resultsGenerator = $resultsGenerator;
         $this->repositories = [];
+
+        $this->setLogger(new NullLogger());
     }
 
     /**
@@ -53,7 +62,8 @@ class BulkLabelCommandHandler extends Udb3CommandHandler
             $this->label(
                 $result->getType(),
                 $result->getId(),
-                $label
+                $label,
+                AddLabelToQuery::class
             );
         }
     }
@@ -72,7 +82,8 @@ class BulkLabelCommandHandler extends Udb3CommandHandler
             $this->label(
                 $offerIdentifier->getType(),
                 $offerIdentifier->getId(),
-                $label
+                $label,
+                AddLabelToMultiple::class
             );
         }
     }
@@ -81,8 +92,10 @@ class BulkLabelCommandHandler extends Udb3CommandHandler
      * @param OfferType $type
      * @param string $id
      * @param Label $label
+     * @param string|null $originalCommandName
+     *   Original command name, for logging purposes if an entity is not found.
      */
-    private function label(OfferType $type, $id, Label $label)
+    private function label(OfferType $type, $id, Label $label, $originalCommandName = null)
     {
         $type = $type->toNative();
 
@@ -92,9 +105,21 @@ class BulkLabelCommandHandler extends Udb3CommandHandler
 
         $repository = $this->repositories[$type];
 
+        $logContext = [
+            'id' => $id,
+            'type' => $type,
+            'command' => $originalCommandName,
+        ];
+
         /* @var Offer $offer */
-        $offer = $repository->load($id);
-        $offer->addLabel($label);
-        $repository->save($offer);
+        try {
+            $offer = $repository->load($id);
+            $offer->addLabel($label);
+            $repository->save($offer);
+        } catch (AggregateNotFoundException $e) {
+            $this->logger->error('bulk_label_command_entity_not_found', $logContext);
+        } catch (AggregateDeletedException $e) {
+            $this->logger->error('bulk_label_command_entity_deleted', $logContext);
+        }
     }
 }

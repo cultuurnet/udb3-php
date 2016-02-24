@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Label;
@@ -9,6 +10,8 @@ use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
+use CultuurNet\UDB3\Variations\AggregateDeletedException;
+use Psr\Log\LoggerInterface;
 
 class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,6 +29,11 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
      * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $placeRepository;
+
+    /**
+     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $logger;
 
     /**
      * @var BulkLabelCommandHandler
@@ -66,6 +74,9 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $this->commandHandler = (new BulkLabelCommandHandler($this->resultGenerator))
             ->withRepository(OfferType::EVENT(), $this->eventRepository)
             ->withRepository(OfferType::PLACE(), $this->placeRepository);
+
+        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->commandHandler->setLogger($this->logger);
 
         $this->query = 'city:leuven';
         $this->label = new Label('foo');
@@ -145,6 +156,62 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @dataProvider aggregateExceptionDataProvider
+     *
+     * @param \Exception $exception
+     * @param string $errorMessage
+     */
+    public function it_logs_an_error_when_an_entity_is_not_found_and_continues_labelling(
+        \Exception $exception,
+        $errorMessage
+    ) {
+        // Make sure we log any attempts to label non-existing / removed events.
+        $this->eventRepository->expects($this->once())
+            ->method('load')
+            ->with(1)
+            ->willThrowException($exception);
+
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with(
+                $errorMessage,
+                [
+                    'id' => '1',
+                    'type' => 'Event',
+                    'command' => 'CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple',
+                ]
+            );
+
+        // Make sure the place is still labelled.
+        $this->expectPlaceToBeLabelledWith($this->label);
+
+        $this->commandHandler->handle(
+            new AddLabelToMultiple(
+                OfferIdentifierCollection::fromArray($this->offerIdentifiers),
+                $this->label
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function aggregateExceptionDataProvider()
+    {
+        return [
+            [
+                AggregateNotFoundException::create(1),
+                'bulk_label_command_entity_not_found',
+            ],
+            [
+                AggregateDeletedException::create(1),
+                'bulk_label_command_entity_deleted',
+            ],
+        ];
+    }
+
+    /**
      * @param Label $label
      */
     private function expectEventAndPlaceToBeLabelledWith(Label $label)
@@ -153,6 +220,9 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $this->expectPlaceToBeLabelledWith($label);
     }
 
+    /**
+     * @param Label $label
+     */
     private function expectEventToBeLabelledWith(Label $label)
     {
         $this->eventRepository->expects($this->once())
@@ -169,6 +239,9 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($this->eventMock);
     }
 
+    /**
+     * @param Label $label
+     */
     private function expectPlaceToBeLabelledWith(Label $label)
     {
         $this->placeRepository->expects($this->once())

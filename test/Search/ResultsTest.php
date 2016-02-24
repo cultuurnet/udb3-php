@@ -18,7 +18,7 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
     public function it_is_instantiated_with_result_items_and_total()
     {
         $items = OfferIdentifierCollection::fromArray(
-                [
+            [
                 new IriOfferIdentifier(
                     'event/1',
                     OfferType::EVENT()

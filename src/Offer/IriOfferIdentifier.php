@@ -75,7 +75,7 @@ class IriOfferIdentifier implements OfferIdentifierInterface
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             '@id' => $this->iri,

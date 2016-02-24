@@ -37,10 +37,10 @@ class AddLabelToMultipleJSONDeserializer extends JSONDeserializer
         $data = parent::deserialize($data);
 
         if (empty($data->label)) {
-            throw new MissingValueException('Missing property "label".');
+            throw new MissingValueException('Missing value "label".');
         }
         if (empty($data->offers)) {
-            throw new MissingValueException('Missing property "offers".');
+            throw new MissingValueException('Missing value "offers".');
         }
 
         $label = new Label($data->label);

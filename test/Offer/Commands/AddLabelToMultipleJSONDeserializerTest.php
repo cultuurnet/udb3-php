@@ -86,7 +86,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(
             MissingValueException::class,
-            'Missing property "label".'
+            'Missing value "label".'
         );
 
         $this->deserializer->deserialize($json);
@@ -101,7 +101,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(
             MissingValueException::class,
-            'Missing property "offers".'
+            'Missing value "offers".'
         );
 
         $this->deserializer->deserialize($json);

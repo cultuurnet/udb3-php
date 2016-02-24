@@ -25,6 +25,7 @@ class BulkLabelCommandHandler extends Udb3CommandHandler
         ResultsGeneratorInterface $resultsGenerator
     ) {
         $this->resultsGenerator = $resultsGenerator;
+        $this->repositories = [];
     }
 
     /**

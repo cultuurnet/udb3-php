@@ -5,13 +5,17 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
-use CultuurNet\UDB3\Translation;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 abstract class Offer extends EventSourcedAggregateRoot
 {
@@ -19,6 +23,11 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @var LabelCollection
      */
     protected $labels;
+
+    /**
+     * @var UUID[]
+     */
+    protected $mediaObjects = [];
 
     /**
      * Offer constructor.
@@ -62,9 +71,9 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param String $title
+     * @param StringLiteral $title
      */
-    public function translateTitle(Language $language, String $title)
+    public function translateTitle(Language $language, StringLiteral $title)
     {
         $this->apply(
             $this->createTitleTranslatedEvent($language, $title)
@@ -73,9 +82,9 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param String $description
+     * @param StringLiteral $description
      */
-    public function translateDescription(Language $language, String $description)
+    public function translateDescription(Language $language, StringLiteral $description)
     {
         $this->apply(
             $this->createDescriptionTranslatedEvent($language, $description)
@@ -110,6 +119,75 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param Image $image
+     * @return boolean
+     */
+    private function containsImage(Image $image)
+    {
+        $equalImages = array_filter(
+            $this->mediaObjects,
+            function ($existingMediaObjectId) use ($image) {
+                return $image
+                    ->getMediaObjectId()
+                    ->sameValueAs($existingMediaObjectId);
+            }
+        );
+
+        return !empty($equalImages);
+    }
+
+    /**
+     * Add a new image.
+     *
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        if (!$this->containsImage($image)) {
+            $this->apply(
+                $this->createImageAddedEvent($image)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractUpdateImage $updateImageCommand
+     */
+    public function updateImage(AbstractUpdateImage $updateImageCommand)
+    {
+        $this->apply(
+            $this->createImageUpdatedEvent($updateImageCommand)
+        );
+    }
+
+    /**
+     * Remove an image.
+     *
+     * @param Image $image
+     */
+    public function removeImage(Image $image)
+    {
+        if ($this->containsImage($image)) {
+            $this->apply(
+                $this->createImageRemovedEvent($image)
+            );
+        }
+    }
+
+    protected function applyImageAdded(AbstractImageAdded $imageAdded)
+    {
+        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+    }
+
+    protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
+    {
+        $this->mediaObjects = array_diff(
+            $this->mediaObjects,
+            [$imageRemoved->getImage()->getMediaObjectId()]
+        );
+    }
+
+    /**
      * @param Label $label
      * @return AbstractLabelAdded
      */
@@ -123,15 +201,35 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     /**
      * @param Language $language
-     * @param String $title
+     * @param StringLiteral $title
      * @return AbstractTitleTranslated
      */
-    abstract protected function createTitleTranslatedEvent(Language $language, String $title);
+    abstract protected function createTitleTranslatedEvent(Language $language, StringLiteral $title);
 
     /**
      * @param Language $language
-     * @param String $description
+     * @param StringLiteral $description
      * @return AbstractDescriptionTranslated
      */
-    abstract protected function createDescriptionTranslatedEvent(Language $language, String $description);
+    abstract protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description);
+
+    /**
+     * @param Image $image
+     * @return AbstractImageAdded
+     */
+    abstract protected function createImageAddedEvent(Image $image);
+
+    /**
+     * @param Image $image
+     * @return AbstractImageRemoved
+     */
+    abstract protected function createImageRemovedEvent(Image $image);
+
+    /**
+     * @param AbstractUpdateImage $updateImageCommand
+     * @return AbstractImageUpdated
+     */
+    abstract protected function createImageUpdatedEvent(
+        AbstractUpdateImage $updateImageCommand
+    );
 }

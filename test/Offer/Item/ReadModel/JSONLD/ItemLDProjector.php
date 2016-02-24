@@ -7,10 +7,12 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
+use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
+use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
+use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 
 class ItemLDProjector extends OfferLDProjector
 {
-
     /**
      * @return string
      */
@@ -25,6 +27,21 @@ class ItemLDProjector extends OfferLDProjector
     protected function getLabelDeletedClassName()
     {
         return LabelDeleted::class;
+    }
+
+    protected function getImageAddedClassName()
+    {
+        return ImageAdded::class;
+    }
+
+    protected function getImageRemovedClassName()
+    {
+        return ImageRemoved::class;
+    }
+
+    protected function getImageUpdatedClassName()
+    {
+        return ImageUpdated::class;
     }
 
     /**

@@ -24,7 +24,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
     protected $redisKey;
 
     /**
-     * @var WarmUpInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CacheHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $search;
 
@@ -35,7 +35,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->search = $this->getMock(WarmUpInterface::class);
+        $this->search = $this->getMock(CacheHandlerInterface::class);
         $this->redis = $this->getMock(ClientInterface::class, ['set', 'get']);
         $this->redisKey = 'cache-outdated';
 

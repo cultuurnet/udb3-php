@@ -26,7 +26,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @var CacheHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $search;
+    protected $cacheHandler;
 
     /**
      * @var CacheManager
@@ -35,7 +35,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->search = $this->getMock(CacheHandlerInterface::class);
+        $this->cacheHandler = $this->getMock(CacheHandlerInterface::class);
 
         // We need to explicitly tell PHPUnit to mock get() & set() because
         // they are magic methods implemented using __call(). But because
@@ -61,7 +61,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
         $this->redisKey = 'cache-outdated';
 
         $this->cacheManager = new CacheManager(
-            $this->search,
+            $this->cacheHandler,
             $this->redis,
             $this->redisKey
         );
@@ -72,10 +72,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_flag_the_cache_as_outdated()
     {
-        $this->redis->expects($this->once())
-            ->method('set')
-            ->with($this->redisKey, 1);
-
+        $this->cacheShouldBeFlaggedAsOutdated();
         $this->cacheManager->flagCacheAsOutdated();
     }
 
@@ -84,16 +81,11 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_warms_the_cache_when_it_was_flagged_as_outdated()
     {
-        $this->redis->expects($this->once())
-            ->method('get')
-            ->with($this->redisKey)
-            ->willReturn(1);
+        $this->cacheIsFlaggedAsOutdated();
 
-        $this->redis->expects($this->once())
-            ->method('set')
-            ->with($this->redisKey, 0);
+        $this->cacheShouldBeFlaggedAsFresh();
 
-        $this->search->expects($this->once())
+        $this->cacheHandler->expects($this->once())
             ->method('warmUpCache');
 
         $this->cacheManager->warmUpCacheIfNeeded();
@@ -104,15 +96,12 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_warm_the_cache_when_it_was_not_flagged_as_outdated()
     {
-        $this->redis->expects($this->once())
-            ->method('get')
-            ->with($this->redisKey)
-            ->willReturn(0);
+        $this->cacheIsFlaggedAsFresh();
 
         $this->redis->expects($this->never())
             ->method('set');
 
-        $this->search->expects($this->never())
+        $this->cacheHandler->expects($this->never())
             ->method('warmUpCache');
 
         $this->cacheManager->warmUpCacheIfNeeded();
@@ -123,11 +112,9 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_flags_the_cache_as_outdated_on_event_related_messages()
     {
-        $this->redis->expects($this->once())
-            ->method('set')
-            ->with($this->redisKey, 1);
+        $this->cacheShouldBeFlaggedAsOutdated();
 
-        $this->search->expects($this->never())
+        $this->cacheHandler->expects($this->never())
             ->method('warmUpCache');
 
         $payload = new LabelAdded(
@@ -143,5 +130,48 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->cacheManager->handle($message);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_clear_the_cache()
+    {
+        $this->cacheShouldBeFlaggedAsOutdated();
+
+        $this->cacheHandler->expects($this->once())
+            ->method('clearCache');
+
+        $this->cacheManager->clearCache();
+    }
+
+    private function cacheShouldBeFlaggedAsOutdated()
+    {
+        $this->redis->expects($this->once())
+            ->method('set')
+            ->with($this->redisKey, 1);
+    }
+
+    private function cacheShouldBeFlaggedAsFresh()
+    {
+        $this->redis->expects($this->once())
+            ->method('set')
+            ->with($this->redisKey, 0);
+    }
+
+    private function cacheIsFlaggedAsOutdated()
+    {
+        $this->redis->expects($this->once())
+            ->method('get')
+            ->with($this->redisKey)
+            ->willReturn(1);
+    }
+
+    private function cacheIsFlaggedAsFresh()
+    {
+        $this->redis->expects($this->once())
+            ->method('get')
+            ->with($this->redisKey)
+            ->willReturn(0);
     }
 }

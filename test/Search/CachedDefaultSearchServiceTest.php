@@ -428,4 +428,16 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             $this->arrayCache->fetch(CachedDefaultSearchService::CACHE_KEY)
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_clear_the_cache()
+    {
+        $this->cache->expects($this->once())
+            ->method('delete')
+            ->with(CachedDefaultSearchService::CACHE_KEY);
+
+        $this->mockCachedSearchService->clearCache();
+    }
 }

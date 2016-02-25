@@ -220,6 +220,10 @@ abstract class OfferLDProjector
             ->serialize($imageAdded->getImage(), 'json-ld');
         $offerLd->mediaObject[] = $imageData;
 
+        if (count($offerLd->mediaObject) === 1) {
+            $offerLd->image = $imageData['contentUrl'];
+        }
+
         $this->repository->save($document->withBody($offerLd));
     }
 
@@ -302,6 +306,10 @@ abstract class OfferLDProjector
         // Unset the main image if it matches the removed image
         if (isset($offerLd->image) && strpos($offerLd->{'image'}, $imageId)) {
             unset($offerLd->{"image"});
+        }
+
+        if (!isset($offerLd->image) && count($filteredMediaObjects) > 0) {
+            $offerLd->image = array_values($filteredMediaObjects)[0]->contentUrl;
         }
 
         // If no media objects are left remove the attribute.

@@ -416,6 +416,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         ];
 
         $expectedWithoutFirstImage = (object) [
+            'image' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
             'mediaObject' => [
                 (object) [
                     '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
@@ -544,5 +545,83 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $eventBody = $this->project($imageRemovedEvent, $eventId);
 
         $this->assertObjectNotHasAttribute('image', $eventBody);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_make_an_image_main_when_added_to_an_item_without_existing_ones()
+    {
+        $eventId = 'event-1';
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $initialDocument = new JsonDocument(
+            $eventId,
+            json_encode([
+                'pro' => 'jection'
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+        $imageAddedEvent = new ImageAdded($eventId, $image);
+        $eventBody = $this->project($imageAddedEvent, $eventId);
+
+        $this->assertEquals(
+            'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+            $eventBody->image
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_make_the_oldest_image_main_when_deleting_the_current_main_image()
+    {
+        $eventId = 'event-1';
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $initialDocument = new JsonDocument(
+            $eventId,
+            json_encode([
+                'image' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'mediaObject' => [
+                    [
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:ImageObject',
+                        'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'description' => 'sexy ladies without clothes',
+                        'copyrightHolder' => 'Bart Ramakers'
+                    ],
+                    [
+                        '@id' => 'http://example.com/entity/5ae74e68-20a3-4cb1-b255-8e405aa01ab9',
+                        '@type' => 'schema:ImageObject',
+                        'contentUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
+                        'thumbnailUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
+                        'description' => 'funny giphy image',
+                        'copyrightHolder' => 'Bart Ramakers'
+                    ]
+                ]
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+        $imageRemovedEvent = new ImageRemoved($eventId, $image);
+        $eventBody = $this->project($imageRemovedEvent, $eventId);
+
+        $this->assertEquals(
+            'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
+            $eventBody->image
+        );
     }
 }

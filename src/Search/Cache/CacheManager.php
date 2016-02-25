@@ -77,14 +77,14 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
 
         if ($flaggedAsOutdated) {
             if ($this->logger) {
-                $this->logger->info('cache marked as outdated, warming up again');
+                $this->logger->info('Cache marked as outdated, warming up again');
             }
 
             $this->flagCacheAsFresh();
             $this->cacheHandler->warmUpCache();
         } else {
             if ($this->logger) {
-                $this->logger->debug('cache was not marked as outdated, skipping');
+                $this->logger->info('Cache was not marked as outdated, skipping');
             }
         }
     }

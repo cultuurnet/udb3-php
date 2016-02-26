@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
@@ -234,6 +235,20 @@ class BackwardsCompatiblePayloadSerializerFactory
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             ContactPointUpdated::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         *  MAJOR INFO UPDATED
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            MajorInfoUpdated::class,
             function (array $serializedObject) {
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);

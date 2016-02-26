@@ -43,6 +43,30 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /*
+         * KEYWORDS EVENTS
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\UsedKeywordsMemory\Created',
+            function (array $serializedObject) {
+                $serializedObject['class'] = UsedLabelsMemoryCreated::class;
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
+            function (array $serializedObject) {
+                $serializedObject['class'] = LabelUsed::class;
+
+                $serializedObject = self::manipulateLabel($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /*
          * TRANSLATION EVENTS
          */
 
@@ -155,30 +179,6 @@ class BackwardsCompatiblePayloadSerializerFactory
 
                 $serializedObject['payload']['labels'] = $labels;
                 unset($serializedObject['payload']['keywords_string']);
-
-                return $serializedObject;
-            }
-        );
-
-        /*
-         * KEYWORDS EVENTS
-         */
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\UsedKeywordsMemory\Created',
-            function (array $serializedObject) {
-                $serializedObject['class'] = UsedLabelsMemoryCreated::class;
-
-                return $serializedObject;
-            }
-        );
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
-            function (array $serializedObject) {
-                $serializedObject['class'] = LabelUsed::class;
-
-                $serializedObject = self::manipulateLabel($serializedObject);
 
                 return $serializedObject;
             }

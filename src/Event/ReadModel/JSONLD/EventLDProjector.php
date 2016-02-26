@@ -28,6 +28,7 @@ use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -778,6 +779,11 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getImageUpdatedClassName()
     {
         return ImageUpdated::class;
+    }
+
+    protected function getMainImageSelectedClassName()
+    {
+        return MainImageSelected::class;
     }
 
     /**

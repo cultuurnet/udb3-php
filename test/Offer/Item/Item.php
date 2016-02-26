@@ -8,10 +8,12 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
@@ -71,6 +73,11 @@ class Item extends Offer
             $updateImageCommand->getDescription(),
             $updateImageCommand->getCopyrightHolder()
         );
+    }
+
+    protected function createMainImageSelectedEvent(Image $image)
+    {
+        return new MainImageSelected($this->id, $image);
     }
 
     /**

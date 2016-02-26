@@ -11,7 +11,6 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -19,10 +18,12 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use ValueObjects\Identity\UUID;
 
 abstract class OfferLDProjector
 {
@@ -153,6 +154,11 @@ abstract class OfferLDProjector
     /**
      * @return string
      */
+    abstract protected function getMainImageSelectedClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getTitleTranslatedClassName();
 
     /**
@@ -268,7 +274,7 @@ abstract class OfferLDProjector
     }
 
     /**
-     * @param AbstractRemoveImage $imageRemoved
+     * @param AbstractImageRemoved $imageRemoved
      */
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
     {
@@ -320,6 +326,42 @@ abstract class OfferLDProjector
         }
 
         $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractMainImageSelected $mainImageSelected
+     */
+    protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)
+    {
+        $document = $this->loadDocumentFromRepository($mainImageSelected);
+        $offerLd = $document->getBody();
+        $imageId = $mainImageSelected->getImage()->getMediaObjectId();
+        $mediaObjectMatcher = function ($matchingMediaObject, $currentMediaObject) use ($imageId) {
+            if (!$matchingMediaObject && $this->mediaObjectMatchesId($currentMediaObject, $imageId)) {
+                $matchingMediaObject = $currentMediaObject;
+            }
+
+            return $matchingMediaObject;
+        };
+        $mediaObject = array_reduce(
+            $offerLd->mediaObject,
+            $mediaObjectMatcher
+        );
+
+        $offerLd->image = $mediaObject->contentUrl;
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param Object $mediaObject
+     * @param UUID $mediaObjectId
+     *
+     * @return bool
+     */
+    protected function mediaObjectMatchesId($mediaObject, UUID $mediaObjectId)
+    {
+        return strpos($mediaObject->{'@id'}, (string) $mediaObjectId) > 0;
     }
 
     /**

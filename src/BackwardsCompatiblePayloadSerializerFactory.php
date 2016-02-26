@@ -7,12 +7,14 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
@@ -202,7 +204,7 @@ class BackwardsCompatiblePayloadSerializerFactory
          */
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\Event\Events\BookingInfoUpdated',
+            BookingInfoUpdated::class,
             function (array $serializedObject) {
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);
@@ -216,7 +218,7 @@ class BackwardsCompatiblePayloadSerializerFactory
          */
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted',
+            TypicalAgeRangeDeleted::class,
             function (array $serializedObject) {
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);

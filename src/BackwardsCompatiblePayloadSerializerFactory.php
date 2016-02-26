@@ -236,9 +236,11 @@ class BackwardsCompatiblePayloadSerializerFactory
      */
     private static function replaceEventIdWithItemId(array $serializedObject)
     {
-        $eventId = $serializedObject['payload']['event_id'];
-        $serializedObject['payload']['item_id'] = $eventId;
-        unset($serializedObject['payload']['event_id']);
+        if (isset($serializedObject['payload']['event_id'])) {
+            $eventId = $serializedObject['payload']['event_id'];
+            $serializedObject['payload']['item_id'] = $eventId;
+            unset($serializedObject['payload']['event_id']);
+        }
 
         return $serializedObject;
     }

@@ -204,7 +204,7 @@ class BackwardsCompatiblePayloadSerializerFactory
      * @param array $serializedObject
      * @return array
      */
-    public static function manipulateItemId(array $serializedObject)
+    private static function manipulateItemId(array $serializedObject)
     {
         $eventId = $serializedObject['payload']['event_id'];
         $serializedObject['payload']['item_id'] = $eventId;
@@ -217,7 +217,7 @@ class BackwardsCompatiblePayloadSerializerFactory
      * @param array $serializedObject
      * @return array
      */
-    public static function manipulateLabel(array $serializedObject)
+    private static function manipulateLabel(array $serializedObject)
     {
         $keyword = $serializedObject['payload']['keyword'];
         $serializedObject['payload']['label'] = $keyword;

@@ -282,6 +282,15 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     }
 
     /**
+     * @test
+     */
+    public function it_manipulates_the_item_id_of_event_organizer_deleted()
+    {
+        $dir = $this->sampleDir . 'serialized_event_organizer_deleted_class.json';
+        $this->checkManipulatesItemId($dir);
+    }
+
+    /**
      * @param string $dir
      */
     private function checkManipulatesItemId($dir)

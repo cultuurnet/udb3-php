@@ -8,8 +8,11 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
@@ -39,22 +42,42 @@ class BackwardsCompatiblePayloadSerializerFactory
             new SimpleInterfaceSerializer()
         );
 
+        /*
+         * TRANSLATION EVENTS
+         */
+
         $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\UsedKeywordsMemory\Created',
+            'CultuurNet\UDB3\Event\TitleTranslated',
             function (array $serializedObject) {
-                $serializedObject['class'] = UsedLabelsMemoryCreated::class;
+                $serializedObject['class'] = TitleTranslated::class;
+
+                $serializedObject = self::manipulateItemId($serializedObject);
 
                 return $serializedObject;
             }
         );
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
+            'CultuurNet\UDB3\Event\DescriptionTranslated',
             function (array $serializedObject) {
-                $serializedObject['class'] = LabelUsed::class;
+                $serializedObject['class'] = DescriptionTranslated::class;
 
-                $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
-                unset($serializedObject['payload']['keyword']);
+                $serializedObject = self::manipulateItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /*
+         * LABEL EVENTS
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\Events\EventWasLabelled',
+            function (array $serializedObject) {
+                $serializedObject['class'] = LabelAdded::class;
+
+                $serializedObject = self::manipulateItemId($serializedObject);
 
                 return $serializedObject;
             }
@@ -65,8 +88,9 @@ class BackwardsCompatiblePayloadSerializerFactory
             function (array $serializedObject) {
                 $serializedObject['class'] = LabelAdded::class;
 
-                $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
-                unset($serializedObject['payload']['keyword']);
+                $serializedObject = self::manipulateItemId($serializedObject);
+
+                $serializedObject = self::manipulateLabel($serializedObject);
 
                 return $serializedObject;
             }
@@ -75,19 +99,22 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\TagErased',
             function (array $serializedObject) {
-                $serializedObject['class'] = Event\Events\LabelDeleted::class;
+                $serializedObject['class'] = LabelDeleted::class;
 
-                $serializedObject['payload']['label'] = $serializedObject['payload']['keyword'];
-                unset($serializedObject['payload']['keyword']);
+                $serializedObject = self::manipulateItemId($serializedObject);
+
+                $serializedObject = self::manipulateLabel($serializedObject);
 
                 return $serializedObject;
             }
         );
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\Event\EventImportedFromUDB2',
+            'CultuurNet\UDB3\Event\Events\Unlabelled',
             function (array $serializedObject) {
-                $serializedObject['class'] = EventImportedFromUDB2::class;
+                $serializedObject['class'] = LabelDeleted::class;
+
+                $serializedObject = self::manipulateItemId($serializedObject);
 
                 return $serializedObject;
             }
@@ -133,6 +160,69 @@ class BackwardsCompatiblePayloadSerializerFactory
             }
         );
 
+        /*
+         * KEYWORDS EVENTS
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\UsedKeywordsMemory\Created',
+            function (array $serializedObject) {
+                $serializedObject['class'] = UsedLabelsMemoryCreated::class;
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
+            function (array $serializedObject) {
+                $serializedObject['class'] = LabelUsed::class;
+
+                $serializedObject = self::manipulateLabel($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * UBD2 IMPORT
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\EventImportedFromUDB2',
+            function (array $serializedObject) {
+                $serializedObject['class'] = EventImportedFromUDB2::class;
+
+                return $serializedObject;
+            }
+        );
+
         return $payloadManipulatingSerializer;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @return array
+     */
+    public static function manipulateItemId(array $serializedObject)
+    {
+        $eventId = $serializedObject['payload']['event_id'];
+        $serializedObject['payload']['item_id'] = $eventId;
+        unset($serializedObject['payload']['event_id']);
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @return array
+     */
+    public static function manipulateLabel(array $serializedObject)
+    {
+        $keyword = $serializedObject['payload']['keyword'];
+        $serializedObject['payload']['label'] = $keyword;
+        unset($serializedObject['payload']['keyword']);
+
+        return $serializedObject;
     }
 }

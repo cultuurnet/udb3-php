@@ -200,8 +200,23 @@ class BackwardsCompatiblePayloadSerializerFactory
         /**
          * BOOKING INFO
          */
+
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\Events\BookingInfoUpdated',
+            function (array $serializedObject) {
+
+                $serializedObject = self::manipulateItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * BOOKING INFO
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted',
             function (array $serializedObject) {
 
                 $serializedObject = self::manipulateItemId($serializedObject);

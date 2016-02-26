@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface as RelationsRepository;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
-class LocalEventService extends LocalEntityService
+class LocalEventService extends LocalEntityService implements EventServiceInterface
 {
     /**
      * @var Event\ReadModel\Relations\RepositoryInterface

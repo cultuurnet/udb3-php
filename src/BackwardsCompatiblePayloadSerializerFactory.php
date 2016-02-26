@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
@@ -214,11 +215,25 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
-         * BOOKING INFO
+         * TYPICAL AGE RANGE
          */
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             TypicalAgeRangeDeleted::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * CONTACT INFO
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            ContactPointUpdated::class,
             function (array $serializedObject) {
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);

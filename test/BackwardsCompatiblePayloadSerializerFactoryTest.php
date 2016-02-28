@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\UsedLabelsMemory\Created;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 use ValueObjects\String\String;
@@ -40,8 +41,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_event_title_translated()
     {
-        $dir = $this->sampleDir . 'serialized_event_title_translated_class.json';
-        $this->checkKnowsNewNamespace($dir, TitleTranslated::class);
+        $sampleFile = $this->sampleDir . 'serialized_event_title_translated_class.json';
+        $this->assertClass($sampleFile, TitleTranslated::class);
     }
 
     /**
@@ -49,8 +50,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_title_translated()
     {
-        $dir = $this->sampleDir . 'serialized_event_title_translated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_title_translated_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -58,8 +59,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_event_description_translated()
     {
-        $dir = $this->sampleDir . 'serialized_event_description_translated_class.json';
-        $this->checkKnowsNewNamespace($dir, DescriptionTranslated::class);
+        $sampleFile = $this->sampleDir . 'serialized_event_description_translated_class.json';
+        $this->assertClass($sampleFile, DescriptionTranslated::class);
     }
 
     /**
@@ -67,8 +68,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_description_translated()
     {
-        $dir = $this->sampleDir . 'serialized_event_description_translated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_description_translated_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -76,15 +77,15 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_event_was_labelled()
     {
-        $dir = $this->sampleDir . 'serialized_event_was_labelled_class.json';
-        $this->checkKnowsNewNamespace($dir, LabelAdded::class);
+        $sampleFile = $this->sampleDir . 'serialized_event_was_labelled_class.json';
+        $this->assertClass($sampleFile, LabelAdded::class);
 
     }
 
     public function it_manipulates_the_item_id_of_event_was_labelled()
     {
-        $dir = $this->sampleDir . 'serialized_event_was_labelled_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_was_labelled_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -92,8 +93,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_event_was_tagged()
     {
-        $dir = $this->sampleDir . 'serialized_event_was_tagged_class.json';
-        $this->checkKnowsNewNamespace($dir, LabelAdded::class);
+        $sampleFile = $this->sampleDir . 'serialized_event_was_tagged_class.json';
+        $this->assertClass($sampleFile, LabelAdded::class);
     }
 
     /**
@@ -101,8 +102,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_was_tagged()
     {
-        $dir = $this->sampleDir . 'serialized_event_was_tagged_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_was_tagged_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -110,8 +111,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_label_of_event_was_tagged()
     {
-        $dir = $this->sampleDir . 'serialized_event_was_tagged_class.json';
-        $this->checkManipulateLabel($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_was_tagged_class.json';
+        $this->assertKeywordReplacedWithLabel($sampleFile);
     }
 
     /**
@@ -119,8 +120,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_event_tag_erased()
     {
-        $dir = $this->sampleDir . 'serialized_event_tag_erased_class.json';
-        $this->checkKnowsNewNamespace($dir, LabelDeleted::class);
+        $sampleFile = $this->sampleDir . 'serialized_event_tag_erased_class.json';
+        $this->assertClass($sampleFile, LabelDeleted::class);
     }
 
     /**
@@ -128,8 +129,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_tag_erased()
     {
-        $dir = $this->sampleDir . 'serialized_event_tag_erased_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_tag_erased_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -137,8 +138,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_label_of_event_tag_erased()
     {
-        $dir = $this->sampleDir . 'serialized_event_tag_erased_class.json';
-        $this->checkManipulateLabel($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_tag_erased_class.json';
+        $this->assertKeywordReplacedWithLabel($sampleFile);
     }
 
     /**
@@ -146,8 +147,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_event_unlabelled()
     {
-        $dir = $this->sampleDir . 'serialized_event_unlabelled_class.json';
-        $this->checkKnowsNewNamespace($dir, LabelDeleted::class);
+        $sampleFile = $this->sampleDir . 'serialized_event_unlabelled_class.json';
+        $this->assertClass($sampleFile, LabelDeleted::class);
     }
 
     /**
@@ -155,8 +156,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_unlabelled()
     {
-        $dir = $this->sampleDir . 'serialized_event_unlabelled_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_unlabelled_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -192,8 +193,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_used_keywords_memory_created()
     {
-        $dir = $this->sampleDir . 'serialized_used_keywords_memory_created.json';
-        $this->checkKnowsNewNamespace($dir, Created::class);
+        $sampleFile = $this->sampleDir . 'serialized_used_keywords_memory_created.json';
+        $this->assertClass($sampleFile, Created::class);
     }
 
     /**
@@ -201,8 +202,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_knows_the_new_namespace_of_used_keywords_memory_keyword_used()
     {
-        $dir = $this->sampleDir . 'serialized_used_keyword_memory_used.json';
-        $this->checkKnowsNewNamespace($dir, LabelUsed::class);
+        $sampleFile = $this->sampleDir . 'serialized_used_keyword_memory_used.json';
+        $this->assertClass($sampleFile, LabelUsed::class);
     }
 
     /**
@@ -210,8 +211,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulated_the_label_of_used_keywords_memory_keyword_used()
     {
-        $dir = $this->sampleDir . 'serialized_used_keyword_memory_used.json';
-        $this->checkManipulateLabel($dir);
+        $sampleFile = $this->sampleDir . 'serialized_used_keyword_memory_used.json';
+        $this->assertKeywordReplacedWithLabel($sampleFile);
     }
 
     /**
@@ -232,8 +233,8 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_booking_info_updated()
     {
-        $dir = $this->sampleDir . 'serialized_event_booking_info_updated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
@@ -241,16 +242,16 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
      */
     public function it_manipulates_the_item_id_of_event_typical_age_range_deleted()
     {
-        $dir = $this->sampleDir . 'serialized_event_typical_age_range_deleted_class.json';
-        $this->checkManipulatesItemId($dir);
+        $sampleFile = $this->sampleDir . 'serialized_event_typical_age_range_deleted_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
     }
 
     /**
-     * @param string $dir
+     * @param string $sampleFile
      */
-    private function checkManipulatesItemId($dir)
+    private function assertEventIdReplacedWithItemId($sampleFile)
     {
-        $serialized = file_get_contents($dir);
+        $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
         $eventId = $decoded['payload']['event_id'];
 
@@ -264,11 +265,11 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     }
 
     /**
-     * @param string $dir
+     * @param string $sampleFile
      */
-    private function checkManipulateLabel($dir)
+    private function assertKeywordReplacedWithLabel($sampleFile)
     {
-        $serialized = file_get_contents($dir);
+        $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
         $keyword = $decoded['payload']['keyword'];
 
@@ -282,12 +283,12 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     }
 
     /**
-     * @param string $dir
+     * @param string $sampleFile
      * @param $expectedClass
      */
-    private function checkKnowsNewNamespace($dir, $expectedClass)
+    private function assertClass($sampleFile, $expectedClass)
     {
-        $serialized = file_get_contents($dir);
+        $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
 
         $newEvent = $this->serializer->deserialize($decoded);

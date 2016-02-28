@@ -8,13 +8,18 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
@@ -214,11 +219,73 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
-         * BOOKING INFO
+         * TYPICAL AGE RANGE
          */
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             TypicalAgeRangeDeleted::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            TypicalAgeRangeUpdated::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * CONTACT POINT
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            ContactPointUpdated::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         *  MAJOR INFO
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            MajorInfoUpdated::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * ORGANIZER
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            OrganizerUpdated::class,
+            function (array $serializedObject) {
+
+                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            OrganizerDeleted::class,
             function (array $serializedObject) {
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);

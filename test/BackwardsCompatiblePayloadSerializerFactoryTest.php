@@ -252,7 +252,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     public function it_manipulates_the_item_id_of_event_typical_age_range_updated()
     {
         $dir = $this->sampleDir . 'serialized_event_typical_age_range_updated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $this->assertEventIdReplacedWithItemId($dir);
     }
 
     /**
@@ -261,7 +261,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     public function it_manipulates_the_item_id_of_event_contact_point_updated()
     {
         $dir = $this->sampleDir . 'serialized_event_contact_point_updated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $this->assertEventIdReplacedWithItemId($dir);
     }
 
     /**
@@ -270,7 +270,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     public function it_manipulates_the_item_id_of_event_major_info_updated()
     {
         $dir = $this->sampleDir . 'serialized_event_major_info_updated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $this->assertEventIdReplacedWithItemId($dir);
     }
 
     /**
@@ -279,7 +279,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     public function it_manipulates_the_item_id_of_event_organizer_updated()
     {
         $dir = $this->sampleDir . 'serialized_event_organizer_updated_class.json';
-        $this->checkManipulatesItemId($dir);
+        $this->assertEventIdReplacedWithItemId($dir);
     }
 
     /**
@@ -288,7 +288,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends \PHPUnit_Framework
     public function it_manipulates_the_item_id_of_event_organizer_deleted()
     {
         $dir = $this->sampleDir . 'serialized_event_organizer_deleted_class.json';
-        $this->checkManipulatesItemId($dir);
+        $this->assertEventIdReplacedWithItemId($dir);
     }
 
     /**

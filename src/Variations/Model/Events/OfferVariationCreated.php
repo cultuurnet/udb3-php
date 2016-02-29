@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Variations\Model\Events;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
@@ -34,6 +35,11 @@ class OfferVariationCreated extends OfferVariationEvent
     private $eventUrl;
 
     /**
+     * @var OfferType
+     */
+    private $offerType;
+
+    /**
      * @param Id $id
      * @param Url $eventUrl
      * @param OwnerId $ownerId
@@ -45,7 +51,8 @@ class OfferVariationCreated extends OfferVariationEvent
         Url $eventUrl,
         OwnerId $ownerId,
         Purpose $purpose,
-        Description $description
+        Description $description,
+        OfferType $offerType
     ) {
         parent::__construct($id);
 
@@ -53,6 +60,7 @@ class OfferVariationCreated extends OfferVariationEvent
         $this->ownerId = $ownerId;
         $this->purpose = $purpose;
         $this->description = $description;
+        $this->offerType = $offerType;
     }
 
     /**
@@ -88,6 +96,14 @@ class OfferVariationCreated extends OfferVariationEvent
     }
 
     /**
+     * @return OfferType
+     */
+    public function getOfferType()
+    {
+        return $this->offerType;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
@@ -96,7 +112,8 @@ class OfferVariationCreated extends OfferVariationEvent
             'event_url' => (string) $this->getEventUrl(),
             'owner_id' => (string) $this->getOwnerId(),
             'purpose' => (string) $this->getPurpose(),
-            'description' => (string) $this->getDescription()
+            'description' => (string) $this->getDescription(),
+            'offer_type' => (string) $this->getOfferType()
         );
     }
 
@@ -111,7 +128,8 @@ class OfferVariationCreated extends OfferVariationEvent
             new Url($data['event_url']),
             new OwnerId($data['owner_id']),
             new Purpose($data['purpose']),
-            new Description($data['description'])
+            new Description($data['description']),
+            new OfferType($data['offer_type'])
         );
     }
 }

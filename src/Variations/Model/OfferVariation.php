@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
@@ -42,6 +43,11 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
     private $ownerId;
 
     /**
+     * @var OfferType
+     */
+    private $offerType;
+
+    /**
      * @var boolean
      */
     private $deleted = false;
@@ -52,6 +58,7 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
      * @param Purpose $purpose
      * @param OwnerId $ownerId
      * @param Description $description
+     * @param OfferType $offerType
      * @return static
      */
     public static function create(
@@ -59,7 +66,8 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
         Url $offerUrl,
         OwnerId $ownerId,
         Purpose $purpose,
-        Description $description
+        Description $description,
+        OfferType $offerType
     ) {
         $variation = new static();
         $variation->apply(
@@ -68,7 +76,8 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
                 $offerUrl,
                 $ownerId,
                 $purpose,
-                $description
+                $description,
+                $offerType
             )
         );
 
@@ -109,6 +118,7 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
         $this->description = $offerVariationCreated->getDescription();
         $this->ownerId = $offerVariationCreated->getOwnerId();
         $this->offerUrl = $offerVariationCreated->getEventUrl();
+        $this->offerType = $offerVariationCreated->getOfferType();
     }
 
     protected function applyOfferVariationDeleted()
@@ -170,5 +180,10 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
     public function getOfferUrl()
     {
         return $this->offerUrl;
+    }
+
+    public function getOfferType()
+    {
+        return $this->offerType;
     }
 }

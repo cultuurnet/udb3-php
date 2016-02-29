@@ -5,8 +5,11 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Properties;
 
+use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\EntityServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\UDB2\EventNotFoundException;
+use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\Variations\Command\ValidationException;
 
 class DefaultUrlValidator implements UrlValidator
@@ -22,15 +25,23 @@ class DefaultUrlValidator implements UrlValidator
     private $eventService;
 
     /**
+     * @var PlaceServiceInterface
+     */
+    private $placeService;
+
+    /**
      * @param string $regExpPattern
      * @param EventServiceInterface $eventService
+     * @param EntityServiceInterface $placeService
      */
     public function __construct(
         $regExpPattern,
-        EventServiceInterface $eventService
+        EventServiceInterface $eventService,
+        EntityServiceInterface $placeService
     ) {
         $this->regExpPattern = $regExpPattern;
         $this->eventService = $eventService;
+        $this->placeService = $placeService;
     }
 
     public function validateUrl(Url $url)
@@ -55,20 +66,38 @@ class DefaultUrlValidator implements UrlValidator
             );
         }
 
-        if (!array_key_exists('eventid', $matches)) {
+        if (!array_key_exists('offertype', $matches)) {
             throw new \RuntimeException(
-                'Regular expression pattern should capture group named "eventid"'
+                'Regular expression pattern should capture group named "offertype"'
             );
         }
 
-        $eventId = $matches['eventid'];
+        if (!array_key_exists('offerid', $matches)) {
+            throw new \RuntimeException(
+                'Regular expression pattern should capture group named "offerid"'
+            );
+        }
+
+        $offerType = $matches['offertype'];
+        $offerId = $matches['offerid'];
 
         try {
-            $this->eventService->getEvent($eventId);
+            if ($offerType == 'event') {
+                $this->eventService->getEvent($offerId);
+            } elseif ($offerType == 'place') {
+                $this->placeService->getEntity($offerId);
+            }
+
         } catch (EventNotFoundException $e) {
             throw new ValidationException(
                 [
-                    'Unable to load event. The specified URL does not seem to point to an existing event.'
+                    "Unable to load {$offerType}. The specified URL does not seem to point to an existing {$offerType}."
+                ]
+            );
+        } catch (EntityNotFoundException $e) {
+            throw new ValidationException(
+                [
+                    "Unable to load {$offerType}. The specified URL does not seem to point to an existing {$offerType}."
                 ]
             );
         }

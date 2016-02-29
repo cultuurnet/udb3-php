@@ -8,6 +8,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use ValueObjects\String\String;
 
@@ -120,6 +121,15 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
                 $language,
                 $description
             )
+        );
+    }
+
+    public function selectMainImage($id, Image $image)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createMainImageSelected($id, $image)
         );
     }
 

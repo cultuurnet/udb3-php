@@ -59,6 +59,11 @@ class EventCommandFactory implements OfferCommandFactoryInterface
         );
     }
 
+    public function createSelectMainImage($id, Image $image)
+    {
+        return new SelectMainImage($id, $image);
+    }
+
     /**
      * @param $id
      * @param Language $language

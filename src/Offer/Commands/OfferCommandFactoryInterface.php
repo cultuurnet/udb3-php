@@ -6,6 +6,8 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Commands\SelectMainImage;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 use CultuurNet\UDB3\Language;
@@ -52,6 +54,13 @@ interface OfferCommandFactoryInterface
         StringLiteral $description,
         StringLiteral $copyrightHolder
     );
+
+    /**
+     * @param $id
+     * @param Image $image
+     * @return SelectMainImage
+     */
+    public function createSelectMainImage($id, Image $image);
 
     /**
      * @param $id

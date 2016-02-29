@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use CultuurNet\UDB3\Variations\Model\Properties\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
@@ -41,7 +42,8 @@ class DBALRepository implements RepositoryInterface
         Id $variationId,
         Url $eventUrl,
         OwnerId $ownerId,
-        Purpose $purpose
+        Purpose $purpose,
+        OfferType $type
     ) {
         $this->connection->beginTransaction();
 
@@ -49,10 +51,11 @@ class DBALRepository implements RepositoryInterface
             $this->connection->quoteIdentifier($this->tableName),
             [
                 'id' => (string) $variationId,
-                'event' => (string) $eventUrl,
                 'owner' => (string) $ownerId,
                 'purpose' => (string) $purpose,
                 'inserted' => time(),
+                'offer' => (string) $eventUrl,
+                'type' => (string) $type,
             ]
         );
 
@@ -62,7 +65,7 @@ class DBALRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function countEventVariations(Criteria $criteria)
+    public function countOfferVariations(Criteria $criteria)
     {
         $q = $this->connection->createQueryBuilder();
         $q
@@ -84,7 +87,7 @@ class DBALRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getEventVariations(
+    public function getOfferVariations(
         Criteria $criteria,
         $limit = 30,
         $page = 0

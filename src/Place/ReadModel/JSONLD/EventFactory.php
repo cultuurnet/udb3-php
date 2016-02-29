@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
-use CultuurNet\UDB3\Event\ReadModel\DocumentEventFactory;
+use CultuurNet\UDB3\ReadModel\DocumentEventFactory;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\LocalEntityService.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Repository\AggregateNotFoundException;
@@ -35,6 +30,7 @@ class LocalEntityService implements EntityServiceInterface
      *
      * @param DocumentRepositoryInterface $documentRepository
      * @param RepositoryInterface $entityRepository
+     * @param IriGeneratorInterface $iriGenerator
      */
     public function __construct(
         DocumentRepositoryInterface $documentRepository,

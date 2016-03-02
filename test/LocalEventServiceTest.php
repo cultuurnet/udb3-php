@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,6 +28,11 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
     protected $eventRepository;
 
     /**
+     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $iriGenerator;
+
+    /**
      * @var \CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface||\PHPUnit_Framework_MockObject_MockObject
      */
     protected $eventRelationsRepository;
@@ -36,10 +42,21 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
         $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->eventRepository = $this->getMock(RepositoryInterface::class);
         $this->eventRelationsRepository = $this->getMock(Event\ReadModel\Relations\RepositoryInterface::class);
+
+        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->iriGenerator->expects($this->any())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($id) {
+                    return "event/{$id}";
+                }
+            );
+
         $this->eventService = new LocalEventService(
             $this->documentRepository,
             $this->eventRepository,
-            $this->eventRelationsRepository
+            $this->eventRelationsRepository,
+            $this->iriGenerator
         );
     }
 

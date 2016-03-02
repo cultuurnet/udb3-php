@@ -10,6 +10,9 @@ use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use org\bovigo\vfs\vfsStream;
@@ -94,17 +97,17 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $range = range(1, $amount);
         $this->searchResults = array_map(
             function ($i) {
-                return [
-                    '@id' => 'http://example.com/event/' . $i,
-                    '@type' => 'Event'
-                ];
+                return new IriOfferIdentifier(
+                    'http://example.com/event/' . $i,
+                    OfferType::EVENT()
+                );
             },
             $range
         );
 
         $this->searchResultsDetails = array_map(
-            function ($item) {
-                return $item + ['foo' => 'bar'];
+            function (\JsonSerializable $item) {
+                return $item->jsonSerialize() + ['foo' => 'bar'];
             },
             $this->searchResults
         );
@@ -123,15 +126,21 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             )
             ->willReturnOnConsecutiveCalls(
                 new Results(
-                    array_slice($this->searchResults, 0, 1),
+                    OfferIdentifierCollection::fromArray(
+                        array_slice($this->searchResults, 0, 1)
+                    ),
                     new Integer($amount)
                 ),
                 new Results(
-                    array_slice($this->searchResults, 0, 10),
+                    OfferIdentifierCollection::fromArray(
+                        array_slice($this->searchResults, 0, 10)
+                    ),
                     new Integer($amount)
                 ),
                 new Results(
-                    array_slice($this->searchResults, 10),
+                    OfferIdentifierCollection::fromArray(
+                        array_slice($this->searchResults, 10)
+                    ),
                     new Integer($amount)
                 )
             );

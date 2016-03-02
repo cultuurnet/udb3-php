@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3\SearchAPI2;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use ValueObjects\Number\Integer;
 
@@ -52,7 +55,7 @@ class ResultSetPullParser
      */
     public function getResultSet($cdbxml)
     {
-        $items = [];
+        $items = new OfferIdentifierCollection();
         $totalItems = null;
 
         $r = $this->xmlReader;
@@ -80,9 +83,11 @@ class ResultSetPullParser
                 $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
 
                 if (!is_null($currentEventCdbId)) {
-                    $items[] = array(
-                        '@id' => $iriGenerator->iri($currentEventCdbId),
-                        '@type' => $currentEventIsUdb3Place ? 'Place' : 'Event',
+                    $items = $items->with(
+                        new IriOfferIdentifier(
+                            $iriGenerator->iri($currentEventCdbId),
+                            $currentEventIsUdb3Place ? OfferType::PLACE() : OfferType::EVENT()
+                        )
                     );
                 }
 

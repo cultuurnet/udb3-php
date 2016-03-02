@@ -57,7 +57,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      *
      * @return UUID|null
      */
-    public function getMainImageId()
+    protected function getMainImageId()
     {
         return $this->mainImageId;
     }

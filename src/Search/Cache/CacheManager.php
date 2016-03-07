@@ -21,9 +21,9 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * @var WarmUpInterface
+     * @var CacheHandlerInterface
      */
-    private $search;
+    private $cacheHandler;
 
     /**
      * @var ClientInterface
@@ -36,16 +36,16 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
     private $redisKey;
 
     /**
-     * @param WarmUpInterface $search
+     * @param CacheHandlerInterface $cacheHandler
      * @param ClientInterface $redis
      * @param string $redisKey
      */
     public function __construct(
-        WarmUpInterface $search,
+        CacheHandlerInterface $cacheHandler,
         ClientInterface $redis,
         $redisKey = 'search-cache-outdated'
     ) {
-        $this->search = $search;
+        $this->cacheHandler = $cacheHandler;
         $this->redis = $redis;
         $this->redisKey = $redisKey;
     }
@@ -60,6 +60,14 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
         $this->redis->set($this->redisKey, 0);
     }
 
+    public function clearCache()
+    {
+        // Mark empty cache as outdated so the next warm-up doesn't think
+        // the cache is filled and up-to-date.
+        $this->flagCacheAsOutdated();
+        $this->cacheHandler->clearCache();
+    }
+
     /**
      * @return void
      */
@@ -69,14 +77,14 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
 
         if ($flaggedAsOutdated) {
             if ($this->logger) {
-                $this->logger->info('cache marked as outdated, warming up again');
+                $this->logger->info('Cache marked as outdated, warming up again');
             }
 
             $this->flagCacheAsFresh();
-            $this->search->warmUpCache();
+            $this->cacheHandler->warmUpCache();
         } else {
             if ($this->logger) {
-                $this->logger->debug('cache was not marked as outdated, skipping');
+                $this->logger->info('Cache was not marked as outdated, skipping');
             }
         }
     }

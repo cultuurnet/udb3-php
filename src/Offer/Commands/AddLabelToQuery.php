@@ -1,11 +1,11 @@
 <?php
 
 
-namespace CultuurNet\UDB3\Event\Commands;
+namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 
-class LabelQuery
+class AddLabelToQuery
 {
     /**
      * @var string

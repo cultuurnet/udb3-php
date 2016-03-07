@@ -1,19 +1,20 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\Commands;
+namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 
-class LabelQueryTest extends \PHPUnit_Framework_TestCase
+class AddLabelToQueryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var LabelQuery
+     * @var AddLabelToQuery
      */
     protected $labelQuery;
 
     public function setUp()
     {
-        $this->labelQuery = new LabelQuery(
+        $this->labelQuery = new AddLabelToQuery(
             'query',
             new Label('testlabel')
         );

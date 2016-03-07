@@ -227,16 +227,25 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         return AddImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getUpdateImageClassName()
     {
         return UpdateImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getRemoveImageClassName()
     {
         return RemoveImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getSelectMainImageClassName()
     {
         return SelectMainImage::class;

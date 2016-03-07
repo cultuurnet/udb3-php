@@ -124,6 +124,11 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         );
     }
 
+    /**
+     * @param $id
+     * @param Image $image
+     * @return string
+     */
     public function selectMainImage($id, Image $image)
     {
         $this->guardId($id);

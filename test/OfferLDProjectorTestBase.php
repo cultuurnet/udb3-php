@@ -243,6 +243,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $this->documentRepository->save($initialDocument);
 
         $expectedBody = (object)[
+            'image' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
             'mediaObject' => [
                 (object)[
                     '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',

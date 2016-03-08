@@ -73,7 +73,7 @@ class VariationDecoratedEventService implements EventServiceInterface
                 new Url($url)
             );
 
-            $variationIds = $this->searchRepository->getEventVariations(
+            $variationIds = $this->searchRepository->getOfferVariations(
                 $criteria
             );
 

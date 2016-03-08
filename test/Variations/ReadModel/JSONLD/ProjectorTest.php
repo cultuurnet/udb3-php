@@ -182,7 +182,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($event);
 
         $this->searchRepository->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->willReturn([$variationId]);
 
         $this->repository

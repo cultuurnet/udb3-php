@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
-use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 
 class EventFactoryTest extends \PHPUnit_Framework_TestCase
 {

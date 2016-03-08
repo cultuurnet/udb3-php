@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
-use CultuurNet\UDB3\Variations\Model\Properties\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
@@ -25,7 +25,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
             new Description('my custom description'),
-            new OfferType('event')
+            OfferType::fromNative('Event')
         );
 
         $this->assertEquals(
@@ -54,7 +54,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            new OfferType('event'),
+            OfferType::fromNative('Event'),
             $eventVariationCreated->getOfferType()
         );
     }
@@ -70,7 +70,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
             new Description('my custom description'),
-            new OfferType('event')
+            OfferType::fromNative('Event')
         );
 
         $serialized = $eventVariationCreated->serialize();

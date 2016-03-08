@@ -1,11 +1,10 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\Deserializer\JSONDeserializer;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactory;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
@@ -21,6 +20,16 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
      * @var UrlValidator[]
      */
     private $urlValidators = [];
+
+    /**
+     * @var IriOfferIdentifierFactory
+     */
+    private $iriOfferIdentifierFactory;
+
+    public function __construct(IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory)
+    {
+        $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
+    }
 
     /**
      * @param UrlValidator $urlValidator
@@ -56,13 +65,14 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
     private function createTypedObject(stdClass $json)
     {
         $url = new Url($json->same_as);
+        $iriOfferIdentifier = $this->iriOfferIdentifierFactory->fromIri($url->toNative());
 
         foreach ($this->urlValidators as $urlValidator) {
             $urlValidator->validateUrl($url);
         }
 
         return new CreateOfferVariation(
-            $url,
+            $iriOfferIdentifier,
             new OwnerId($json->owner),
             new Purpose($json->purpose),
             new Description($json->description)

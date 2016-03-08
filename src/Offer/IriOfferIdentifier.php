@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use CultuurNet\UDB3\Variations\Command\ValidationException;
+
 class IriOfferIdentifier implements OfferIdentifierInterface
 {
     /**
@@ -21,31 +23,17 @@ class IriOfferIdentifier implements OfferIdentifierInterface
 
     /**
      * @param string $iri
+     * @param string $id
      * @param OfferType $type
      */
     public function __construct(
         $iri,
+        $id,
         OfferType $type
     ) {
         $this->iri = $iri;
         $this->type = $type;
-        $this->id = $this->getIdFromIri($iri);
-    }
-
-    /**
-     * @param string $iri
-     * @return string
-     */
-    private function getIdFromIri($iri)
-    {
-        // Remove any trailing slashes to be safe.
-        $iri = rtrim($iri, '/');
-
-        // Split the iri into multiple pieces.
-        $exploded = explode('/', $iri);
-
-        // The id is the last of all the separate pieces.
-        return array_pop($exploded);
+        $this->id = $id;
     }
 
     /**
@@ -88,7 +76,11 @@ class IriOfferIdentifier implements OfferIdentifierInterface
      */
     public function serialize()
     {
-        return json_encode($this->jsonSerialize());
+        return [
+            'iri' => $this->iri,
+            'id' => $this->id,
+            'type' => $this->type->toNative(),
+        ];
     }
 
     /**
@@ -97,8 +89,8 @@ class IriOfferIdentifier implements OfferIdentifierInterface
     public function unserialize($serialized)
     {
         $data = json_decode($serialized, true);
-        $this->iri = $data['@id'];
-        $this->type = OfferType::fromNative($data['@type']);
-        $this->id = $this->getIdFromIri($this->iri);
+        $this->iri = $data['iri'];
+        $this->id = $data['id'];
+        $this->type = OfferType::fromNative($data['type']);
     }
 }

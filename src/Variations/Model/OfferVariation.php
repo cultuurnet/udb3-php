@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Variations\Model;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use CultuurNet\UDB3\Variations\Deleteable;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
@@ -10,7 +11,6 @@ use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
-use CultuurNet\UDB3\Variations\Model\Properties\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;

@@ -10,90 +10,57 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\EventNotFoundException;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Command\ValidationException;
 
 class DefaultUrlValidator implements UrlValidator
 {
     /**
-     * @var string
+     * @var IriOfferIdentifierFactoryInterface
      */
-    private $regExpPattern;
+    private $iriOfferIdentifierFactory;
 
     /**
-     * @var EventServiceInterface
+     * @var EntityServiceInterface[]
      */
-    private $eventService;
+    private $entityServices;
 
     /**
-     * @var PlaceServiceInterface
-     */
-    private $placeService;
-
-    /**
-     * @param string $regExpPattern
-     * @param EventServiceInterface $eventService
-     * @param EntityServiceInterface $placeService
+     * DefaultUrlValidator constructor.
+     * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      */
     public function __construct(
-        $regExpPattern,
-        EventServiceInterface $eventService,
-        EntityServiceInterface $placeService
+        IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
     ) {
-        $this->regExpPattern = $regExpPattern;
-        $this->eventService = $eventService;
-        $this->placeService = $placeService;
+        $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
+    }
+
+    /**
+     * @param OfferType $offerType
+     * @param EntityServiceInterface $entityService
+     * @return static
+     */
+    public function withEntityService(OfferType $offerType, EntityServiceInterface $entityService)
+    {
+        $c = clone $this;
+        $c->entityServices[$offerType->toNative()] = $entityService;
+        return $c;
     }
 
     public function validateUrl(Url $url)
     {
-        $match = @preg_match(
-            '@^' . $this->regExpPattern . '$@',
-            (string)$url,
-            $matches
-        );
+        $identifier = $this->iriOfferIdentifierFactory->fromIri($url->toNative());
+        $offerType = $identifier->getType();
+        $offerId = $identifier->getId();
 
-        if (false === $match) {
-            throw new \RuntimeException(
-                'Problem evaluating regular expression pattern ' . $this->regExpPattern
-            );
+        if (!isset($this->entityServices[$offerType->toNative()])) {
+            throw new \LogicException("Found no repository for type {$offerType->toNative()}.");
         }
-
-        if (0 === $match) {
-            throw new ValidationException(
-                [
-                    'The given URL can not be used. It might not be a cultural event, or no integration is provided with the system the cultural event is located at.'
-                ]
-            );
-        }
-
-        if (!array_key_exists('offertype', $matches)) {
-            throw new \RuntimeException(
-                'Regular expression pattern should capture group named "offertype"'
-            );
-        }
-
-        if (!array_key_exists('offerid', $matches)) {
-            throw new \RuntimeException(
-                'Regular expression pattern should capture group named "offerid"'
-            );
-        }
-
-        $offerType = $matches['offertype'];
-        $offerId = $matches['offerid'];
 
         try {
-            if ($offerType == 'event') {
-                $this->eventService->getEvent($offerId);
-            } elseif ($offerType == 'place') {
-                $this->placeService->getEntity($offerId);
-            }
-
-        } catch (EventNotFoundException $e) {
-            throw new ValidationException(
-                [
-                    "Unable to load {$offerType}. The specified URL does not seem to point to an existing {$offerType}."
-                ]
-            );
+            $this->entityServices[$offerType->toNative()]->getEntity($offerId);
         } catch (EntityNotFoundException $e) {
             throw new ValidationException(
                 [

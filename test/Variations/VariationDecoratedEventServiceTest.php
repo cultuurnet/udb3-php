@@ -96,7 +96,7 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -125,7 +125,7 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         $eventJsonLD = $this->eventJsonLD($eventId);
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([]);
 
@@ -159,7 +159,7 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -204,7 +204,7 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 

@@ -37,7 +37,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
-use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
@@ -875,7 +875,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->projector->handle(
             DomainMessage::recordNow(
-                $placeProjectedToJSONLD->getId(),
+                $placeProjectedToJSONLD->getItemId(),
                 0,
                 new Metadata(),
                 $placeProjectedToJSONLD

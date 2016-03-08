@@ -14,6 +14,7 @@ class OfferIdentifierCollectionTest extends \PHPUnit_Framework_TestCase
         $collection = $collection->with(
             new IriOfferIdentifier(
                 'event/1',
+                '1',
                 OfferType::EVENT()
             )
         );

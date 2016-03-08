@@ -150,7 +150,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array_slice($this->getVariationsMatching($criteria), $page * $limit, $limit),
-            $this->repository->getEventVariations($criteria, $limit, $page)
+            $this->repository->getOfferVariations($criteria, $limit, $page)
         );
     }
 
@@ -196,7 +196,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             count($this->getVariationsMatching($criteria)),
-            $this->repository->countEventVariations($criteria)
+            $this->repository->countOfferVariations($criteria)
         );
     }
 
@@ -209,10 +209,10 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             ->withOwnerId($this->owners[1])
             ->withPurpose($this->purposes[2]);
 
-        $count = $this->repository->countEventVariations($criteria);
+        $count = $this->repository->countOfferVariations($criteria);
         $this->assertEquals(10, $count);
 
-        $variationIds = $this->repository->getEventVariations($criteria);
+        $variationIds = $this->repository->getOfferVariations($criteria);
 
         $firstVariationId = array_shift($variationIds);
         $lastVariationId = array_pop($variationIds);
@@ -222,12 +222,12 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $variationIds,
-            $this->repository->getEventVariations($criteria, $count)
+            $this->repository->getOfferVariations($criteria, $count)
         );
 
         $this->assertEquals(
             $count - 2,
-            $this->repository->countEventVariations($criteria)
+            $this->repository->countOfferVariations($criteria)
         );
     }
 }

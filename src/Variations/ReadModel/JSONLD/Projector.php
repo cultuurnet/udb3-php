@@ -83,7 +83,7 @@ class Projector implements EventListenerInterface
         $searchCriteria = new Criteria();
         $eventUrl = new Url($eventDocument->getBody()->{'@id'});
         $searchCriteria = $searchCriteria->withEventUrl($eventUrl);
-        $variationIds = $this->searchRepository->getEventVariations($searchCriteria);
+        $variationIds = $this->searchRepository->getOfferVariations($searchCriteria);
 
         foreach ($variationIds as $variationId) {
             $variationDocument = $this->repository->get($variationId);

@@ -30,7 +30,7 @@ class LocalEventService extends LocalEntityService implements EventServiceInterf
     /**
      * Get a single event by its id.
      *
-     * @obsolete
+     * @deprecated
      *   Use getEntity() instead.
      *
      * @param string $id

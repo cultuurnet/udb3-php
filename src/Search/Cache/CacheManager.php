@@ -105,8 +105,17 @@ class CacheManager implements EventListenerInterface, LoggerAwareInterface
     {
         $event = $domainMessage->getPayload();
 
-        if (strpos(get_class($event), 'CultuurNet\UDB3\Event') === 0) {
-            $this->flagCacheAsOutdated();
+        $offerNamespaces = [
+            'CultuurNet\UDB3\Event',
+            'CultuurNet\UDB3\Offer',
+            'CultuurNet\UDB3\Place',
+        ];
+
+        foreach ($offerNamespaces as $offerNamespace) {
+            if (strpos(get_class($event), $offerNamespace) === 0) {
+                $this->flagCacheAsOutdated();
+                break;
+            }
         }
     }
 }

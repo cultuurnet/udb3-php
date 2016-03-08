@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\Image;
 use ValueObjects\String\String;
 
 interface OfferEditingServiceInterface
@@ -33,4 +34,13 @@ interface OfferEditingServiceInterface
      * @param String $description
      */
     public function translateDescription($id, Language $language, String $description);
+
+    /**
+     * @param $id
+     * @param Image $image
+     *
+     * @return string
+     *  The command id for this action.
+     */
+    public function selectMainImage($id, Image $image);
 }

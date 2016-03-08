@@ -7,7 +7,9 @@ namespace CultuurNet\UDB3\Search\Cache;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
+use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Label;
 use Predis\ClientInterface;
 
@@ -24,9 +26,9 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
     protected $redisKey;
 
     /**
-     * @var WarmUpInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CacheHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $search;
+    protected $cacheHandler;
 
     /**
      * @var CacheManager
@@ -35,12 +37,33 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->search = $this->getMock(WarmUpInterface::class);
-        $this->redis = $this->getMock(ClientInterface::class, ['set', 'get']);
+        $this->cacheHandler = $this->getMock(CacheHandlerInterface::class);
+
+        // We need to explicitly tell PHPUnit to mock get() & set() because
+        // they are magic methods implemented using __call(). But because
+        // PHPUnit would then only implement those two methods, we also need
+        // to define the other methods of the interface because otherwise the
+        // mock is not an actual implementation of the interface.
+        $this->redis = $this->getMock(
+            ClientInterface::class,
+            [
+                'get',
+                'set',
+                'getProfile',
+                'getOptions',
+                'connect',
+                'disconnect',
+                'getConnection',
+                'createCommand',
+                'executeCommand',
+                '__call',
+            ]
+        );
+
         $this->redisKey = 'cache-outdated';
 
         $this->cacheManager = new CacheManager(
-            $this->search,
+            $this->cacheHandler,
             $this->redis,
             $this->redisKey
         );
@@ -51,10 +74,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_flag_the_cache_as_outdated()
     {
-        $this->redis->expects($this->once())
-            ->method('set')
-            ->with($this->redisKey, 1);
-
+        $this->cacheShouldBeFlaggedAsOutdated();
         $this->cacheManager->flagCacheAsOutdated();
     }
 
@@ -63,16 +83,11 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_warms_the_cache_when_it_was_flagged_as_outdated()
     {
-        $this->redis->expects($this->once())
-            ->method('get')
-            ->with($this->redisKey)
-            ->willReturn(1);
+        $this->cacheIsFlaggedAsOutdated();
 
-        $this->redis->expects($this->once())
-            ->method('set')
-            ->with($this->redisKey, 0);
+        $this->cacheShouldBeFlaggedAsFresh();
 
-        $this->search->expects($this->once())
+        $this->cacheHandler->expects($this->once())
             ->method('warmUpCache');
 
         $this->cacheManager->warmUpCacheIfNeeded();
@@ -83,15 +98,12 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_warm_the_cache_when_it_was_not_flagged_as_outdated()
     {
-        $this->redis->expects($this->once())
-            ->method('get')
-            ->with($this->redisKey)
-            ->willReturn(0);
+        $this->cacheIsFlaggedAsFresh();
 
         $this->redis->expects($this->never())
             ->method('set');
 
-        $this->search->expects($this->never())
+        $this->cacheHandler->expects($this->never())
             ->method('warmUpCache');
 
         $this->cacheManager->warmUpCacheIfNeeded();
@@ -99,28 +111,102 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider offerRelatedMessageProvider()
+     *
+     * @param DomainMessage $message
      */
-    public function it_flags_the_cache_as_outdated_on_event_related_messages()
+    public function it_flags_the_cache_as_outdated_on_offer_related_messages(DomainMessage $message)
+    {
+        $this->cacheShouldBeFlaggedAsOutdated();
+
+        $this->cacheHandler->expects($this->never())
+            ->method('warmUpCache');
+
+        $this->cacheManager->handle($message);
+    }
+
+    /**
+     * @return array
+     */
+    public function offerRelatedMessageProvider()
+    {
+        return [
+            [
+                DomainMessage::recordNow(
+                    'foo',
+                    1,
+                    new Metadata(),
+                    new EventLabelAdded(
+                        'xyz-123',
+                        new Label('test-1')
+                    )
+                ),
+            ],
+            [
+                DomainMessage::recordNow(
+                    'bar',
+                    1,
+                    new Metadata(),
+                    new PlaceLabelAdded(
+                        'abc-456',
+                        new Label('test-2')
+                    )
+                ),
+            ],
+            [
+                DomainMessage::recordNow(
+                    'baz',
+                    1,
+                    new Metadata(),
+                    new AddLabelToQuery(
+                        'city:leuven',
+                        new Label('test-3')
+                    )
+                )
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_clear_the_cache()
+    {
+        $this->cacheShouldBeFlaggedAsOutdated();
+
+        $this->cacheHandler->expects($this->once())
+            ->method('clearCache');
+
+        $this->cacheManager->clearCache();
+    }
+
+    private function cacheShouldBeFlaggedAsOutdated()
     {
         $this->redis->expects($this->once())
             ->method('set')
             ->with($this->redisKey, 1);
+    }
 
-        $this->search->expects($this->never())
-            ->method('warmUpCache');
+    private function cacheShouldBeFlaggedAsFresh()
+    {
+        $this->redis->expects($this->once())
+            ->method('set')
+            ->with($this->redisKey, 0);
+    }
 
-        $payload = new LabelAdded(
-            'xyz-123',
-            new Label('test')
-        );
+    private function cacheIsFlaggedAsOutdated()
+    {
+        $this->redis->expects($this->once())
+            ->method('get')
+            ->with($this->redisKey)
+            ->willReturn(1);
+    }
 
-        $message = DomainMessage::recordNow(
-            'foo',
-            1,
-            new Metadata(),
-            $payload
-        );
-
-        $this->cacheManager->handle($message);
+    private function cacheIsFlaggedAsFresh()
+    {
+        $this->redis->expects($this->once())
+            ->method('get')
+            ->with($this->redisKey)
+            ->willReturn(0);
     }
 }

@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\LabelEvents;
 use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Event\Commands\SelectMainImage;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
@@ -23,11 +24,10 @@ use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
+use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Label as Label;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
-use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
-use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -49,105 +49,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     ) {
         parent::__construct($eventRepository);
         $this->searchService = $searchService;
-    }
-
-    public function handleLabelEvents(LabelEvents $labelEvents)
-    {
-        foreach ($labelEvents->getEventIds() as $eventId) {
-            $this->labelEvent($labelEvents->getLabel(), $eventId);
-        }
-    }
-
-    public function handleLabelQuery(LabelQuery $labelQuery)
-    {
-        $query = $labelQuery->getQuery();
-
-        // do a pre query to test if the query is valid and check the item count
-        $preQueryResult = $this->searchService->search($query, 1, 0);
-        $totalItemCount = $preQueryResult->getTotalItems()->toNative();
-
-        if (0 === $totalItemCount) {
-            return;
-        }
-
-        // change this pageSize value to increase or decrease the page size;
-        $pageSize = 10;
-        $pageCount = ceil($totalItemCount / $pageSize);
-        $pageCounter = 0;
-        $labelledEventIds = [];
-
-        //Page querying the search service;
-        while ($pageCounter < $pageCount) {
-            $start = $pageCounter * $pageSize;
-            // Sort ascending by creation date to make sure we get a quite consistent paging.
-            $sort = 'creationdate asc';
-            $results = $this->searchService->search(
-                $query,
-                $pageSize,
-                $start,
-                $sort
-            );
-
-            // Iterate the results of the current page and get their IDs
-            // by stripping them from the json-LD representation
-            foreach ($results->getItems() as $event) {
-                $expoId = explode('/', $event['@id']);
-                $eventId = array_pop($expoId);
-
-                if (!array_key_exists($eventId, $labelledEventIds)) {
-                    $labelledEventIds[$eventId] = $pageCounter;
-
-                    $this->labelEvent($labelQuery->getLabel(), $eventId);
-                } else {
-                    if ($this->logger) {
-                        $this->logger->error(
-                            'query_duplicate_event',
-                            array(
-                                'query' => $query,
-                                'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$labelledEventIds[$eventId]}"
-                            )
-                        );
-                    }
-                }
-            }
-            ++$pageCounter;
-        };
-    }
-
-    /**
-     * Labels a single event with a keyword.
-     *
-     * @param Label $label
-     * @param $eventId
-     */
-    private function labelEvent(Label $label, $eventId)
-    {
-        /** @var Event $event */
-        $event = $this->repository->load($eventId);
-        $event->addLabel($label);
-        try {
-            $this->repository->save($event);
-
-            if ($this->logger) {
-                $this->logger->info(
-                    'event_was_labelled',
-                    array(
-                        'event_id' => $eventId,
-                    )
-                );
-            }
-        } catch (\Exception $e) {
-            if ($this->logger) {
-                $this->logger->error(
-                    'event_was_not_labelled',
-                    array(
-                        'event_id' => $eventId,
-                        'error' => $e->getMessage(),
-                        'exception_class' => get_class($e),
-                    )
-                );
-            }
-        }
     }
 
     /**
@@ -326,14 +227,28 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         return AddImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getUpdateImageClassName()
     {
         return UpdateImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getRemoveImageClassName()
     {
         return RemoveImage::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSelectMainImageClassName()
+    {
+        return SelectMainImage::class;
     }
 
     /**

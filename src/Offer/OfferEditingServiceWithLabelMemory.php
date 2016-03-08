@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\UsedLabelsMemory\UsedLabelsMemoryServiceInterface;
 
 class OfferEditingServiceWithLabelMemory implements OfferEditingServiceInterface

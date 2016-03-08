@@ -154,6 +154,20 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
+    public function selectMainImage($id, Image $image)
+    {
+        $this->guardId($id);
+
+        $commandClass = $this->getCommandClass('SelectMainImage');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $image)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function updateImage(
         $id,
         Image $image,

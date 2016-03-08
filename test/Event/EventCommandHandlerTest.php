@@ -9,8 +9,8 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
@@ -70,105 +70,6 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
             new Calendar('permanent', '', '')
         );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_label_a_list_of_events_with_a_label()
-    {
-        $ids = ['eventId1', 'eventId2'];
-
-        $this->scenario
-            ->withAggregateId($ids[0])
-            ->given(
-                [
-                    $this->factorOfferCreated($ids[0])
-                ]
-            )
-            ->withAggregateId($ids[1])
-            ->given(
-                [
-                    $this->factorOfferCreated($ids[1])
-                ]
-            )
-            ->when(new LabelEvents($ids, new Label('awesome')))
-            ->then(
-                [
-                    new LabelAdded($ids[0], new Label('awesome')),
-                    new LabelAdded($ids[1], new Label('awesome'))
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_label_all_results_of_a_search_query()
-    {
-        $events = [];
-        $expectedSourcedEvents = [];
-        $total = 60;
-
-        for ($i = 1; $i <= $total; $i++) {
-            $eventId = (string)$i;
-            $events[] = array(
-                '@id' => 'http://example.com/event/' . $eventId,
-            );
-
-            $expectedSourcedEvents[] = new LabelAdded($eventId, new Label('foo'));
-
-            $this->scenario
-                ->withAggregateId($i)
-                ->given(
-                    [
-                        $this->factorOfferCreated($eventId)
-                    ]
-                );
-        }
-
-        $this->search->expects($this->any())
-            ->method('search')
-            ->with('*.*')
-            ->will(
-                $this->returnCallback(
-                    function ($query, $limit, $start) use ($events) {
-                        $pageEvents = array_slice($events, $start, $limit);
-                        $totalItemCount = new Integer(count($events));
-                        $results = new Results($pageEvents, $totalItemCount);
-
-                        return $results;
-                    }
-                )
-            );
-
-        $this->scenario
-            ->when(new LabelQuery('*.*', new Label('foo')))
-            ->then(
-                $expectedSourcedEvents
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_label_events_when_a_search_error_occurs()
-    {
-        $this->search->expects($this->once())
-            ->method('search')
-            ->will(
-                $this->throwException(
-                    new ClientErrorResponseException()
-                )
-            );
-
-        $this->setExpectedException(ClientErrorResponseException::class);
-
-        $this->scenario
-            ->when(new LabelQuery('---fsdfs', new Label('foo')))
-            ->then(
-                []
-            );
     }
 
     /**

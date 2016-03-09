@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Offer\OfferReadingServiceInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -25,9 +26,9 @@ class Projector implements EventListenerInterface
     protected $repository;
 
     /**
-     * @var DocumentRepositoryInterface
+     * @var OfferReadingServiceInterface
      */
-    protected $eventRepository;
+    protected $offerReadingService;
 
     /**
      * @var SearchRepositoryInterface
@@ -44,14 +45,20 @@ class Projector implements EventListenerInterface
      */
     protected $variationIriGenerator;
 
+    /**
+     * @param DocumentRepositoryInterface $repository
+     * @param OfferReadingServiceInterface $offerReadingService
+     * @param SearchRepositoryInterface $searchRepository
+     * @param IriGeneratorInterface $variationIriGenerator
+     */
     public function __construct(
         DocumentRepositoryInterface $repository,
-        DocumentRepositoryInterface $eventRepository,
+        OfferReadingServiceInterface $offerReadingService,
         SearchRepositoryInterface $searchRepository,
         IriGeneratorInterface $variationIriGenerator
     ) {
         $this->repository = $repository;
-        $this->eventRepository = $eventRepository;
+        $this->offerReadingService = $offerReadingService;
         $this->searchRepository = $searchRepository;
         $this->variationIriGenerator = $variationIriGenerator;
     }
@@ -64,7 +71,6 @@ class Projector implements EventListenerInterface
 
         $variationLD->description->$language = (string) $descriptionEdited->getDescription();
         $this->repository->save($variation->withBody($variationLD));
-
     }
 
     /**
@@ -72,7 +78,7 @@ class Projector implements EventListenerInterface
      */
     public function applyEventProjectedToJSONLD(EventProjectedToJSONLD $eventProjectedToJSONLD)
     {
-        $eventId = $eventProjectedToJSONLD->getEventId();
+        $eventId = $eventProjectedToJSONLD->getItemId();
         /** @var JsonDocument $eventDocument */
         $eventDocument = $this->eventRepository->get($eventId);
 
@@ -113,22 +119,21 @@ class Projector implements EventListenerInterface
      */
     public function applyOfferVariationCreated(OfferVariationCreated $eventVariationCreated)
     {
-        // TODO: figure out how to get the event id without parsing it from the URL
-        $eventUrlParts = explode('/', $eventVariationCreated->getOriginUrl());
-        $eventId = end($eventUrlParts);
-        $eventDocument = $this->eventRepository->get($eventId);
+        $offerDocument = $this->offerReadingService->load(
+            $eventVariationCreated->getOriginUrl()
+        );
 
         // use the up-to-date event json as a base
-        $variationLD = $eventDocument->getBody();
+        $variationLD = $offerDocument->getBody();
 
         // overwrite the description that's already set in the variation
         $variationLD->description->nl = (string)$eventVariationCreated->getDescription();
 
-        // overwrite the event url with the variation url
+        // overwrite the offer url with the variation url
         $variationLD->{'@id'} = $this->variationIriGenerator->iri($eventVariationCreated->getId());
 
         // add the original event to the list of similar entities
-        $existingSameAsEntities = $eventDocument->getBody()->sameAs;
+        $existingSameAsEntities = $offerDocument->getBody()->sameAs;
         $newSameAsEntities = array_unique(array_merge(
             $existingSameAsEntities,
             [(string)$eventVariationCreated->getOriginUrl()]

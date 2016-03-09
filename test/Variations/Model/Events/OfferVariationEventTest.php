@@ -7,14 +7,14 @@ namespace CultuurNet\UDB3\Variations\Model\Events;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
-class EventVariationEventTest extends \PHPUnit_Framework_TestCase
+class OfferVariationEventTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function it_supports_serialization()
     {
-        /** @var EventVariationEvent $event */
+        /** @var OfferVariationEvent $event */
         $event = $this->getMockForAbstractClass(
             OfferVariationEvent::class,
             [

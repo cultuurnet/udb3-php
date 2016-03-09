@@ -141,7 +141,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider keysProvider
      */
-    public function it_allows_to_search_for_event_variations_with_criteria(
+    public function it_allows_to_search_for_offer_variations_with_criteria(
         $ownerKey,
         $purposeKey,
         $urlKey
@@ -190,7 +190,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider keysProvider
      */
-    public function it_can_count_event_variations_with_criteria(
+    public function it_can_count_offer_variations_with_criteria(
         $ownerKey,
         $purposeKey,
         $urlKey

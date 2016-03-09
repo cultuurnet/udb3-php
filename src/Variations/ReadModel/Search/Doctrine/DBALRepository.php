@@ -153,11 +153,6 @@ class DBALRepository implements RepositoryInterface
             array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
-            'event',
-            'text',
-            array('notnull' => true)
-        );
-        $table->addColumn(
             'owner',
             'string',
             array('length' => 36, 'notnull' => true)
@@ -172,6 +167,22 @@ class DBALRepository implements RepositoryInterface
             'inserted',
             'integer',
             array('notnull' => true, 'unsigned' => true)
+        );
+
+        $table->addColumn(
+            'offer',
+            'text',
+            array('notnull' => true)
+        );
+
+        $table->addColumn(
+            'type',
+            'string',
+            array(
+                'length' => 100,
+                'default' => 'event',
+                'notnull' => true,
+            )
         );
 
         $table->setPrimaryKey(array('id'));

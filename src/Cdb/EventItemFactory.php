@@ -5,13 +5,17 @@
 
 namespace CultuurNet\UDB3\Cdb;
 
+use CultureFeed_Cdb_Data_Keyword;
+use CultureFeed_Cdb_Item_Event;
+use CultureFeed_Cdb_ParseException;
+
 class EventItemFactory
 {
     /**
      * @param string $namespaceUri
      * @param string $cdbXml
-     * @throws \CultureFeed_Cdb_ParseException
-     * @return \CultureFeed_Cdb_Item_Event
+     * @throws CultureFeed_Cdb_ParseException
+     * @return CultureFeed_Cdb_Item_Event
      */
     public static function createEventFromCdbXml($namespaceUri, $cdbXml)
     {
@@ -22,7 +26,7 @@ class EventItemFactory
             $namespaceUri
         );
 
-        $event = \CultureFeed_Cdb_Item_Event::parseFromCdbXml(
+        $event = CultureFeed_Cdb_Item_Event::parseFromCdbXml(
             $udb2SimpleXml
         );
 
@@ -36,17 +40,17 @@ class EventItemFactory
     }
 
     /**
-     * UDB2 contained a bug that allowed for a keyword tag to have a semicolon.
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @return \CultureFeed_Cdb_Item_Event
+     * UDB2 contained a bug that allowed for a keyword to have a semicolon.
+     * @param CultureFeed_Cdb_Item_Event $event
+     * @return CultureFeed_Cdb_Item_Event
      */
     private static function splitKeywordTagOnSemiColon(
-        \CultureFeed_Cdb_Item_Event $event
+        CultureFeed_Cdb_Item_Event $event
     ) {
         $event = clone $event;
 
         /**
-         * @var \CultureFeed_Cdb_Data_Keyword[] $keywords
+         * @var CultureFeed_Cdb_Data_Keyword[] $keywords
          */
         $keywords = $event->getKeywords(true);
 
@@ -57,7 +61,7 @@ class EventItemFactory
                 $event->deleteKeyword($keyword);
 
                 foreach ($individualKeywords as $individualKeyword) {
-                    $cultureFeed_Cdb_Data_Keyword = new \CultureFeed_Cdb_Data_Keyword(
+                    $cultureFeed_Cdb_Data_Keyword = new CultureFeed_Cdb_Data_Keyword(
                         trim($individualKeyword),
                         $keyword->isVisible()
                     );
@@ -72,11 +76,11 @@ class EventItemFactory
     }
 
     /**
-     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param CultureFeed_Cdb_Item_Event $event
      * @return bool
      */
     private static function isEventOlderThanSplitKeywordFix(
-        \CultureFeed_Cdb_Item_Event $event
+        CultureFeed_Cdb_Item_Event $event
     ) {
         return $event->getLastUpdated() < '2016-03-10T00:00:00';
     }

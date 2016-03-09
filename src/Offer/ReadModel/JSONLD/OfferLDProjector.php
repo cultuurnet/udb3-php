@@ -187,7 +187,7 @@ abstract class OfferLDProjector
 
         $offerLd = $document->getBody();
 
-        if (is_array($offerLd->labels)) {
+        if (isset($offerLd->labels) && is_array($offerLd->labels)) {
             $offerLd->labels = array_filter(
                 $offerLd->labels,
                 function ($label) use ($deleteLabel) {

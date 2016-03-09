@@ -47,8 +47,7 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
                     'Unable to find user with identifier ' . $createdByIdentifier
                 );
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error(
                 sprintf(
                     'An unexpected error occurred while resolving user with identifier %s',

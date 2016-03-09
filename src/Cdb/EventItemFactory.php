@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Cdb;
 use CultureFeed_Cdb_Data_Keyword;
 use CultureFeed_Cdb_Item_Event;
 use CultureFeed_Cdb_ParseException;
+use SimpleXMLElement;
 
 class EventItemFactory
 {
@@ -19,7 +20,7 @@ class EventItemFactory
      */
     public static function createEventFromCdbXml($namespaceUri, $cdbXml)
     {
-        $udb2SimpleXml = new \SimpleXMLElement(
+        $udb2SimpleXml = new SimpleXMLElement(
             $cdbXml,
             0,
             false,

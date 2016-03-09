@@ -19,7 +19,7 @@ abstract class AbstractEvent implements SerializableInterface
     {
         if (!is_string($itemId)) {
             throw new \InvalidArgumentException(
-                'Expected eventId to be a string, received ' . gettype($itemId)
+                'Expected itemId to be a string, received ' . gettype($itemId)
             );
         }
 

@@ -99,7 +99,7 @@ class Criteria
     }
 
     /**
-     * @param EventVariation $variation
+     * @param OfferVariation $variation
      * @return bool
      */
     public function isSatisfiedBy(OfferVariation $variation)

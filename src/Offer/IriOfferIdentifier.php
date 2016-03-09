@@ -76,11 +76,13 @@ class IriOfferIdentifier implements OfferIdentifierInterface
      */
     public function serialize()
     {
-        return [
-            'iri' => $this->iri,
-            'id' => $this->id,
-            'type' => $this->type->toNative(),
-        ];
+        return json_encode(
+            [
+                'iri' => $this->iri,
+                'id' => $this->id,
+                'type' => $this->type->toNative(),
+            ]
+        );
     }
 
     /**

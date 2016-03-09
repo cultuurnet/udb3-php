@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Variations\Model;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
@@ -28,7 +29,8 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description')
+            new Description('my custom description'),
+            OfferType::EVENT()
         );
 
         $this->assertUncommittedEventsEquals(
@@ -38,7 +40,8 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
                     new Url('//beta.uitdatabank.be/event/xyz'),
                     new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
                     new Purpose('personal'),
-                    new Description('my custom description')
+                    new Description('my custom description'),
+                    OfferType::EVENT()
                 )
             ],
             $eventVariation
@@ -62,7 +65,8 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description')
+            new Description('my custom description'),
+            OfferType::EVENT()
         );
 
         $eventVariation->getUncommittedEvents();
@@ -98,7 +102,8 @@ class EventVariationTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description')
+            new Description('my custom description'),
+            OfferType::EVENT()
         );
 
         $eventVariation->markDeleted();

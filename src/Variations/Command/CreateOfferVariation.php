@@ -1,14 +1,11 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Command;
 
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
-use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
 class CreateOfferVariation
 {
@@ -28,23 +25,23 @@ class CreateOfferVariation
     private $description;
 
     /**
-     * @var Url
+     * @var IriOfferIdentifier
      */
-    private $offerUrl;
+    private $identifier;
 
     /**
-     * @param Url $eventUrl
+     * @param IriOfferIdentifier $identifier
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
      */
     public function __construct(
-        Url $offerUrl,
+        IriOfferIdentifier $identifier,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
-        $this->offerUrl = $offerUrl;
+        $this->identifier = $identifier;
         $this->ownerId = $ownerId;
         $this->purpose = $purpose;
         $this->description = $description;
@@ -59,11 +56,11 @@ class CreateOfferVariation
     }
 
     /**
-     * @return Url
+     * @return IriOfferIdentifier
      */
-    public function getOfferUrl()
+    public function getIdentifier()
     {
-        return $this->offerUrl;
+        return $this->identifier;
     }
 
     /**

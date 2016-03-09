@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Variations;
 use Broadway\EventHandling\SimpleEventBus;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -44,7 +45,8 @@ class EventVariationRepositoryTest extends PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description')
+            new Description('my custom description'),
+            OfferType::EVENT()
         );
 
         $variation->markDeleted();

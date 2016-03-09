@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -26,7 +27,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     private $repository;
 
     /**
-     * @var EventVariation[]
+     * @var OfferVariation[]
      */
     private $variations;
 
@@ -86,14 +87,16 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                         $url,
                         $owner,
                         $purpose,
-                        new Description('description of variation ' . $id)
+                        new Description('description of variation ' . $id),
+                        OfferType::EVENT()
                     );
 
                     $this->repository->save(
                         $id,
                         $url,
                         $owner,
-                        $purpose
+                        $purpose,
+                        OfferType::EVENT()
                     );
                 }
             }

@@ -26,7 +26,7 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
         CreateOfferVariation $createEventVariation
     ) {
         $variation = $this->variationService->createEventVariation(
-            $createEventVariation->getOfferUrl(),
+            $createEventVariation->getIdentifier(),
             $createEventVariation->getOwnerId(),
             $createEventVariation->getPurpose(),
             $createEventVariation->getDescription()

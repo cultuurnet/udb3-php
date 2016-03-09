@@ -7,6 +7,7 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
@@ -262,7 +263,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Url($eventUrl),
             new OwnerId('this-is-a-owner-id'),
             new Purpose('personal'),
-            new Description('The variation description')
+            new Description('The variation description'),
+            OfferType::EVENT()
         );
         $this->projector->applyOfferVariationCreated($variationCreatedEvent);
     }

@@ -1,26 +1,31 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Command;
 
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
-use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use ValueObjects\String\String;
 
-class CreateEventVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var CreateEventVariationJSONDeserializer
+     * @var CreateOfferVariationJSONDeserializer
      */
     private $deserializer;
 
+    /**
+     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $identifierFactory;
+
     public function setUp()
     {
-        $this->deserializer = new CreateOfferVariationJSONDeserializer();
+        $this->identifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->deserializer = new CreateOfferVariationJSONDeserializer($this->identifierFactory);
     }
 
     /**
@@ -51,6 +56,17 @@ class CreateEventVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
      */
     public function it_returns_a_command()
     {
+        $identifier = new IriOfferIdentifier(
+            '//io.uitdatabank.be/event/a0a78cd3-df53-4359-97a3-04b3680e69a4',
+            'a0a78cd3-df53-4359-97a3-04b3680e69a4',
+            OfferType::EVENT()
+        );
+
+        $this->identifierFactory->expects($this->once())
+            ->method('fromIri')
+            ->with('//io.uitdatabank.be/event/a0a78cd3-df53-4359-97a3-04b3680e69a4')
+            ->willReturn($identifier);
+
         $command = $this->deserializer->deserialize(
             new String(
                 file_get_contents(__DIR__ . '/create-event-variations.json')
@@ -58,7 +74,7 @@ class CreateEventVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
         );
 
         $expectedCommand = new CreateOfferVariation(
-            new Url('//io.uitdatabank.be/event/a0a78cd3-df53-4359-97a3-04b3680e69a4'),
+            $identifier,
             new OwnerId('86142ebb-1c7a-4afe-8257-6b986eb5ca21'),
             new Purpose('personal'),
             new Description('My own personal description for this event')

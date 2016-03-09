@@ -42,7 +42,7 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
     /**
      * @inheritdoc
      *
-     * @return CreateEventVariation
+     * @return CreateOfferVariation
      */
     public function deserialize(String $data)
     {
@@ -58,14 +58,16 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
     /**
      * @param stdClass $json
      *
-     * @return CreateEventVariation
+     * @return CreateOfferVariation
      *
      * @throws ValidationException
      */
     private function createTypedObject(stdClass $json)
     {
         $url = new Url($json->same_as);
-        $iriOfferIdentifier = $this->iriOfferIdentifierFactory->fromIri($url->toNative());
+        $iriOfferIdentifier = $this->iriOfferIdentifierFactory->fromIri(
+            $url->toNative()
+        );
 
         foreach ($this->urlValidators as $urlValidator) {
             $urlValidator->validateUrl($url);

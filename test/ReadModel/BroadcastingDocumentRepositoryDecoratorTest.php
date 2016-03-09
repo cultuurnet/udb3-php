@@ -2,15 +2,8 @@
 
 namespace CultuurNet\UDB3\ReadModel;
 
-use Broadway\Domain\DomainEventStream;
-use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
-use Broadway\EventHandling\SimpleEventBusTestEvent;
-use Broadway\EventHandling\SimpleEventBusTestListener;
-use CultuurNet\UDB3\Event\ReadModel\DocumentEventFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_TestCase
 {

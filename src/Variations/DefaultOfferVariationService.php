@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Variations;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -12,7 +13,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class DefaultEventVariationService implements OfferVariationServiceInterface
+class DefaultOfferVariationService implements OfferVariationServiceInterface
 {
     /**
      * @var RepositoryInterface
@@ -45,17 +46,18 @@ class DefaultEventVariationService implements OfferVariationServiceInterface
      * {@inheritdoc}
      */
     public function createEventVariation(
-        Url $eventUrl,
+        IriOfferIdentifier $identifier,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
         $variation = OfferVariation::create(
             new Id($this->uuidGenerator->generate()),
-            $eventUrl,
+            new Url($identifier->getIri()),
             $ownerId,
             $purpose,
-            $description
+            $description,
+            $identifier->getType()
         );
 
         $this->eventVariationRepository->save($variation);

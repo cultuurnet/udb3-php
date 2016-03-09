@@ -45,6 +45,7 @@ class OfferVariationCreated extends OfferVariationEvent
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
+     * @param OfferType $offerType
      */
     public function __construct(
         Id $id,

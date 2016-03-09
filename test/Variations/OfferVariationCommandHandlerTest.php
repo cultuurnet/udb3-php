@@ -1,9 +1,6 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Variations\Command;
+namespace CultuurNet\UDB3\Variations;
 
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
@@ -11,8 +8,9 @@ use Broadway\EventStore\EventStoreInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferType;
-use CultuurNet\UDB3\Variations\DefaultOfferVariationService;
-use CultuurNet\UDB3\Variations\OfferVariationRepository;
+use CultuurNet\UDB3\Variations\Command\CreateOfferVariation;
+use CultuurNet\UDB3\Variations\Command\DeleteOfferVariation;
+use CultuurNet\UDB3\Variations\Command\EditDescription;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;

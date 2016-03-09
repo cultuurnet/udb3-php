@@ -29,7 +29,7 @@ trait DelegateEventHandlingToSpecificMethodTrait
         }
         $expectedClass = $parameter->getClass();
 
-        if (is_a($event, $expectedClass->getName())) {
+        if ($expectedClass->getName() == get_class($event)) {
             $this->$method($event, $domainMessage);
         }
     }

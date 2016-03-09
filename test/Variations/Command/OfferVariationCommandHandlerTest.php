@@ -12,7 +12,7 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\DefaultOfferVariationService;
-use CultuurNet\UDB3\Variations\EventVariationRepository;
+use CultuurNet\UDB3\Variations\OfferVariationRepository;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
@@ -49,7 +49,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected function createCommandHandler(EventStoreInterface $eventStore, EventBusInterface $eventBus)
     {
         $eventVariationService = new DefaultOfferVariationService(
-            new EventVariationRepository($eventStore, $eventBus),
+            new OfferVariationRepository($eventStore, $eventBus),
             $this->generator
         );
 

@@ -17,16 +17,16 @@ use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use PHPUnit_Framework_TestCase;
 
-class EventVariationRepositoryTest extends PHPUnit_Framework_TestCase
+class OfferVariationRepositoryTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var EventVariationRepository
+     * @var OfferVariationRepository
      */
     private $repository;
 
     public function setUp()
     {
-        $this->repository = new EventVariationRepository(
+        $this->repository = new OfferVariationRepository(
             new TraceableEventStore(
                 new InMemoryEventStore()
             ),

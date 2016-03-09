@@ -11,7 +11,7 @@ use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Variations\Model\OfferVariation;
 
-class EventVariationRepository extends EventSourcingRepository
+class OfferVariationRepository extends EventSourcingRepository
 {
     public function __construct(
         EventStoreInterface $eventStore,

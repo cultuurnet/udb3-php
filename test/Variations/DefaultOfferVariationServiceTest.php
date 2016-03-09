@@ -56,7 +56,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
             UuidGeneratorInterface::class
         );
 
-        $repository = new EventVariationRepository(
+        $repository = new OfferVariationRepository(
             $this->eventStore,
             $this->eventBus
         );

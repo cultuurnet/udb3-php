@@ -26,14 +26,10 @@ class EventItemFactory
             $namespaceUri
         );
 
-        $event = CultureFeed_Cdb_Item_Event::parseFromCdbXml(
-            $udb2SimpleXml
-        );
+        $event = CultureFeed_Cdb_Item_Event::parseFromCdbXml($udb2SimpleXml);
 
         if (self::isEventOlderThanSplitKeywordFix($event)) {
-            $event = self::splitKeywordTagOnSemiColon(
-                $event
-            );
+            $event = self::splitKeywordTagOnSemiColon($event);
         }
 
         return $event;

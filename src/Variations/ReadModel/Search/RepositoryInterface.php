@@ -44,8 +44,7 @@ interface RepositoryInterface
         Id $variationId,
         Url $eventUrl,
         OwnerId $ownerId,
-        Purpose $purpose,
-        OfferType $offerType
+        Purpose $purpose
     );
 
     public function remove(Id $variationId);

@@ -42,8 +42,7 @@ class DBALRepository implements RepositoryInterface
         Id $variationId,
         Url $eventUrl,
         OwnerId $ownerId,
-        Purpose $purpose,
-        OfferType $type
+        Purpose $purpose
     ) {
         $this->connection->beginTransaction();
 
@@ -54,8 +53,7 @@ class DBALRepository implements RepositoryInterface
                 'owner' => (string) $ownerId,
                 'purpose' => (string) $purpose,
                 'inserted' => time(),
-                'offer' => (string) $eventUrl,
-                'type' => (string) $type,
+                'origin_url' => (string) $eventUrl,
             ]
         );
 
@@ -170,19 +168,9 @@ class DBALRepository implements RepositoryInterface
         );
 
         $table->addColumn(
-            'offer',
+            'origin_url',
             'text',
             array('notnull' => true)
-        );
-
-        $table->addColumn(
-            'type',
-            'string',
-            array(
-                'length' => 100,
-                'default' => 'event',
-                'notnull' => true,
-            )
         );
 
         $table->setPrimaryKey(array('id'));

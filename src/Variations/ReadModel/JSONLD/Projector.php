@@ -114,7 +114,7 @@ class Projector implements EventListenerInterface
     public function applyOfferVariationCreated(OfferVariationCreated $eventVariationCreated)
     {
         // TODO: figure out how to get the event id without parsing it from the URL
-        $eventUrlParts = explode('/', $eventVariationCreated->getEventUrl());
+        $eventUrlParts = explode('/', $eventVariationCreated->getOriginUrl());
         $eventId = end($eventUrlParts);
         $eventDocument = $this->eventRepository->get($eventId);
 
@@ -131,7 +131,7 @@ class Projector implements EventListenerInterface
         $existingSameAsEntities = $eventDocument->getBody()->sameAs;
         $newSameAsEntities = array_unique(array_merge(
             $existingSameAsEntities,
-            [(string)$eventVariationCreated->getEventUrl()]
+            [(string)$eventVariationCreated->getOriginUrl()]
         ));
         $variationLD->sameAs = $newSameAsEntities;
 

@@ -79,11 +79,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn('19910c56-db76-4cf6-bc28-b25a7270de2e');
 
         $variation = $this->variationService->createEventVariation(
-            new IriOfferIdentifier(
-                '//beta.uitdatabank.be/event/235',
-                '235',
-                OfferType::EVENT()
-            ),
+            new Url('//beta.uitdatabank.be/event/235'),
             new OwnerId('xyz'),
             new Purpose('personal'),
             new Description('my personal description')
@@ -101,8 +97,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
                     new Url('//beta.uitdatabank.be/event/235'),
                     new OwnerId('xyz'),
                     new Purpose('personal'),
-                    new Description('my personal description'),
-                    OfferType::EVENT()
+                    new Description('my personal description')
                 )
             ],
             $this->eventStore->getEvents()
@@ -121,11 +116,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn('29910c56-db76-4cf6-bc28-b25a7270de2e');
 
         $this->variationService->createEventVariation(
-            new IriOfferIdentifier(
-                '//beta.uitdatabank.be/event/235',
-                '235',
-                OfferType::EVENT()
-            ),
+            new Url('//beta.uitdatabank.be/event/235'),
             new OwnerId('xyz'),
             new Purpose('personal'),
             new Description('my personal description')

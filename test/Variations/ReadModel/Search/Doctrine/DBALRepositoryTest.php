@@ -87,16 +87,14 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                         $url,
                         $owner,
                         $purpose,
-                        new Description('description of variation ' . $id),
-                        OfferType::EVENT()
+                        new Description('description of variation ' . $id)
                     );
 
                     $this->repository->save(
                         $id,
                         $url,
                         $owner,
-                        $purpose,
-                        OfferType::EVENT()
+                        $purpose
                     );
                 }
             }

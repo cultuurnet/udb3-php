@@ -19,7 +19,7 @@ class ExpressionFactory
         $eventUrl = $criteria->getEventUrl();
         if ($eventUrl) {
             $compositeExpression->add(
-                $exp->eq('offer', $exp->literal((string)$eventUrl))
+                $exp->eq('origin_url', $exp->literal((string)$eventUrl))
             );
         }
 

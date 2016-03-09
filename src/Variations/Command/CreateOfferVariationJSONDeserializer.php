@@ -22,16 +22,6 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
     private $urlValidators = [];
 
     /**
-     * @var IriOfferIdentifierFactory
-     */
-    private $iriOfferIdentifierFactory;
-
-    public function __construct(IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory)
-    {
-        $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
-    }
-
-    /**
      * @param UrlValidator $urlValidator
      */
     public function addUrlValidator(UrlValidator $urlValidator)
@@ -65,16 +55,13 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
     private function createTypedObject(stdClass $json)
     {
         $url = new Url($json->same_as);
-        $iriOfferIdentifier = $this->iriOfferIdentifierFactory->fromIri(
-            $url->toNative()
-        );
 
         foreach ($this->urlValidators as $urlValidator) {
             $urlValidator->validateUrl($url);
         }
 
         return new CreateOfferVariation(
-            $iriOfferIdentifier,
+            $url,
             new OwnerId($json->owner),
             new Purpose($json->purpose),
             new Description($json->description)

@@ -108,7 +108,7 @@ class Criteria
 
         if (($this->purpose && $variation->getPurpose() != $this->purpose) ||
             ($this->ownerId && $variation->getOwnerId() != $this->ownerId) ||
-            ($this->eventUrl && $variation->getOfferUrl() != $this->eventUrl)
+            ($this->eventUrl && $variation->getOriginUrl() != $this->eventUrl)
         ) {
             $satisfied = false;
         }

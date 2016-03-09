@@ -24,8 +24,7 @@ class OfferVariationCreatedTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description'),
-            OfferType::fromNative('Event')
+            new Description('my custom description')
         );
 
         $this->assertEquals(
@@ -35,7 +34,7 @@ class OfferVariationCreatedTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             new Url('//beta.uitdatabank.be/event/xyz'),
-            $eventVariationCreated->getEventUrl()
+            $eventVariationCreated->getOriginUrl()
         );
 
         $this->assertEquals(
@@ -52,11 +51,6 @@ class OfferVariationCreatedTest extends \PHPUnit_Framework_TestCase
             new Description('my custom description'),
             $eventVariationCreated->getDescription()
         );
-
-        $this->assertEquals(
-            OfferType::fromNative('Event'),
-            $eventVariationCreated->getOfferType()
-        );
     }
 
     /**
@@ -69,8 +63,7 @@ class OfferVariationCreatedTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description'),
-            OfferType::fromNative('Event')
+            new Description('my custom description')
         );
 
         $serialized = $eventVariationCreated->serialize();

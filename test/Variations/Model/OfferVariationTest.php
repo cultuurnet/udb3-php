@@ -29,8 +29,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description'),
-            OfferType::EVENT()
+            new Description('my custom description')
         );
 
         $this->assertUncommittedEventsEquals(
@@ -40,8 +39,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
                     new Url('//beta.uitdatabank.be/event/xyz'),
                     new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
                     new Purpose('personal'),
-                    new Description('my custom description'),
-                    OfferType::EVENT()
+                    new Description('my custom description')
                 )
             ],
             $eventVariation
@@ -65,8 +63,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description'),
-            OfferType::EVENT()
+            new Description('my custom description')
         );
 
         $eventVariation->getUncommittedEvents();
@@ -102,8 +99,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
             new Purpose('personal'),
-            new Description('my custom description'),
-            OfferType::EVENT()
+            new Description('my custom description')
         );
 
         $eventVariation->markDeleted();

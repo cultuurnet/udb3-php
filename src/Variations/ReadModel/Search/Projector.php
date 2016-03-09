@@ -28,10 +28,9 @@ class Projector implements EventListenerInterface
     {
         $this->repository->save(
             $eventVariationCreated->getId(),
-            $eventVariationCreated->getEventUrl(),
+            $eventVariationCreated->getOriginUrl(),
             $eventVariationCreated->getOwnerId(),
-            $eventVariationCreated->getPurpose(),
-            $eventVariationCreated->getOfferType()
+            $eventVariationCreated->getPurpose()
         );
     }
 

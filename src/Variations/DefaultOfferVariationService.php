@@ -46,18 +46,17 @@ class DefaultOfferVariationService implements OfferVariationServiceInterface
      * {@inheritdoc}
      */
     public function createEventVariation(
-        IriOfferIdentifier $identifier,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
         $variation = OfferVariation::create(
             new Id($this->uuidGenerator->generate()),
-            new Url($identifier->getIri()),
+            $originUrl,
             $ownerId,
             $purpose,
-            $description,
-            $identifier->getType()
+            $description
         );
 
         $this->eventVariationRepository->save($variation);

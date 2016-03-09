@@ -35,17 +35,12 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
     /**
      * @var Url
      */
-    private $offerUrl;
+    private $originUrl;
 
     /**
      * @var OwnerId
      */
     private $ownerId;
-
-    /**
-     * @var OfferType
-     */
-    private $offerType;
 
     /**
      * @var boolean
@@ -54,30 +49,27 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
 
     /**
      * @param Id $id
-     * @param Url $offerUrl
+     * @param Url $originUrl
      * @param Purpose $purpose
      * @param OwnerId $ownerId
      * @param Description $description
-     * @param OfferType $offerType
      * @return static
      */
     public static function create(
         Id $id,
-        Url $offerUrl,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
-        Description $description,
-        OfferType $offerType
+        Description $description
     ) {
         $variation = new static();
         $variation->apply(
             new OfferVariationCreated(
                 $id,
-                $offerUrl,
+                $originUrl,
                 $ownerId,
                 $purpose,
-                $description,
-                $offerType
+                $description
             )
         );
 
@@ -117,8 +109,7 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
         $this->purpose = $offerVariationCreated->getPurpose();
         $this->description = $offerVariationCreated->getDescription();
         $this->ownerId = $offerVariationCreated->getOwnerId();
-        $this->offerUrl = $offerVariationCreated->getEventUrl();
-        $this->offerType = $offerVariationCreated->getOfferType();
+        $this->originUrl = $offerVariationCreated->getOriginUrl();
     }
 
     protected function applyOfferVariationDeleted()
@@ -177,13 +168,8 @@ class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
     /**
      * @return Url
      */
-    public function getOfferUrl()
+    public function getOriginUrl()
     {
-        return $this->offerUrl;
-    }
-
-    public function getOfferType()
-    {
-        return $this->offerType;
+        return $this->originUrl;
     }
 }

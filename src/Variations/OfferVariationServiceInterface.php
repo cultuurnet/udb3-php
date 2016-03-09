@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\Url;
 interface OfferVariationServiceInterface
 {
     /**
-     * @param IriOfferIdentifier $identifier
+     * @param Url $originUrl
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
@@ -22,7 +22,7 @@ interface OfferVariationServiceInterface
      * @return OfferVariation
      */
     public function createEventVariation(
-        IriOfferIdentifier $identifier,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description

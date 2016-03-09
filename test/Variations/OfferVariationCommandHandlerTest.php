@@ -6,8 +6,6 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Offer\IriOfferIdentifier;
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Command\CreateOfferVariation;
 use CultuurNet\UDB3\Variations\Command\DeleteOfferVariation;
 use CultuurNet\UDB3\Variations\Command\EditDescription;
@@ -64,11 +62,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $id = UUID::generateAsString();
 
-        $identifier = new IriOfferIdentifier(
-            '//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98',
-            '5abf2278-a916-4dee-a198-94b57db66e98',
-            OfferType::EVENT()
-        );
+        $originUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
         $ownerId = new OwnerId('xyz');
         $purpose = new Purpose('personal');
         $description = new Description('my own description');
@@ -84,7 +78,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->when(new CreateOfferVariation(
-                $identifier,
+                $originUrl,
                 $ownerId,
                 $purpose,
                 $description
@@ -93,11 +87,10 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     new OfferVariationCreated(
                         new Id($id),
-                        new Url($identifier->getIri()),
+                        $originUrl,
                         $ownerId,
                         $purpose,
-                        $description,
-                        $identifier->getType()
+                        $description
                     )
                 ]
             );
@@ -153,8 +146,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98'),
             $ownerId = new OwnerId('xyz'),
             $purpose = new Purpose('personal'),
-            $description = new Description('my own description'),
-            OfferType::EVENT()
+            $description = new Description('my own description')
         );
     }
 }

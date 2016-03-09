@@ -32,36 +32,28 @@ class OfferVariationCreated extends OfferVariationEvent
     /**
      * @var Url
      */
-    private $eventUrl;
-
-    /**
-     * @var OfferType
-     */
-    private $offerType;
+    private $originUrl;
 
     /**
      * @param Id $id
-     * @param Url $eventUrl
+     * @param Url $originUrl
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
-     * @param OfferType $offerType
      */
     public function __construct(
         Id $id,
-        Url $eventUrl,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
-        Description $description,
-        OfferType $offerType
+        Description $description
     ) {
         parent::__construct($id);
 
-        $this->eventUrl = $eventUrl;
+        $this->originUrl = $originUrl;
         $this->ownerId = $ownerId;
         $this->purpose = $purpose;
         $this->description = $description;
-        $this->offerType = $offerType;
     }
 
     /**
@@ -75,9 +67,9 @@ class OfferVariationCreated extends OfferVariationEvent
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOriginUrl()
     {
-        return $this->eventUrl;
+        return $this->originUrl;
     }
 
     /**
@@ -97,24 +89,15 @@ class OfferVariationCreated extends OfferVariationEvent
     }
 
     /**
-     * @return OfferType
-     */
-    public function getOfferType()
-    {
-        return $this->offerType;
-    }
-
-    /**
      * @return array
      */
     public function serialize()
     {
         return parent::serialize() + array(
-            'event_url' => (string) $this->getEventUrl(),
+            'origin_url' => (string) $this->getOriginUrl(),
             'owner_id' => (string) $this->getOwnerId(),
             'purpose' => (string) $this->getPurpose(),
             'description' => (string) $this->getDescription(),
-            'offer_type' => (string) $this->getOfferType()
         );
     }
 
@@ -126,11 +109,10 @@ class OfferVariationCreated extends OfferVariationEvent
     {
         return new static(
             new Id($data['id']),
-            new Url($data['event_url']),
+            new Url($data['origin_url']),
             new OwnerId($data['owner_id']),
             new Purpose($data['purpose']),
-            new Description($data['description']),
-            OfferType::fromNative($data['offer_type'])
+            new Description($data['description'])
         );
     }
 }

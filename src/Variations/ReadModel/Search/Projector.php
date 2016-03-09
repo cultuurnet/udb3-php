@@ -30,7 +30,8 @@ class Projector implements EventListenerInterface
             $eventVariationCreated->getId(),
             $eventVariationCreated->getEventUrl(),
             $eventVariationCreated->getOwnerId(),
-            $eventVariationCreated->getPurpose()
+            $eventVariationCreated->getPurpose(),
+            $eventVariationCreated->getOfferType()
         );
     }
 

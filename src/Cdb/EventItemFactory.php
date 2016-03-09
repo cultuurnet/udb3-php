@@ -26,7 +26,7 @@ class EventItemFactory
             $udb2SimpleXml
         );
 
-        if (self::isEventOlderThenSplitKeywordFix($event)) {
+        if (self::isEventOlderThanSplitKeywordFix($event)) {
             $event = self::splitKeywordTagOnSemiColon(
                 $event
             );
@@ -75,7 +75,7 @@ class EventItemFactory
      * @param \CultureFeed_Cdb_Item_Event $event
      * @return bool
      */
-    private static function isEventOlderThenSplitKeywordFix(
+    private static function isEventOlderThanSplitKeywordFix(
         \CultureFeed_Cdb_Item_Event $event
     ) {
         return $event->getLastUpdated() < '2016-03-10T00:00:00';

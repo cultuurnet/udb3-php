@@ -17,7 +17,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariationTest extends \PHPUnit_Framework_TestCase
+class OfferVariationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test

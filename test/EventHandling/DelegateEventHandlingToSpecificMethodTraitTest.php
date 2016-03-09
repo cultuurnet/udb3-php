@@ -1,0 +1,120 @@
+<?php
+
+namespace CultuurNet\UDB3\EventHandling;
+
+use Broadway\Domain\DateTime;
+use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\EventHandling\Mock\MockLabelAdded;
+use CultuurNet\UDB3\EventHandling\Mock\MockLabelDeleted;
+use CultuurNet\UDB3\EventHandling\Mock\MockLabelUpdated;
+use CultuurNet\UDB3\EventHandling\Mock\MockLDProjector;
+use CultuurNet\UDB3\EventHandling\Mock\MockTitleTranslated;
+use PHPUnit_Framework_MockObject_MockObject;
+
+class DelegateEventHandlingToSpecificMethodTraitTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mockedMockLDProjector;
+
+    /**
+     * @var MockLDProjector
+     */
+    private $mockLDProjector;
+
+    protected function setUp()
+    {
+        $this->mockedMockLDProjector = $this->getMock(
+            MockLDProjector::class,
+            array(
+                'applyMockLabelAdded',
+                'applyMockLabelUpdated',
+                'applyMockLabelDeleted',
+                'applyMockTitleTranslated'
+            )
+        );
+
+        $this->mockLDProjector = $this->mockedMockLDProjector;
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_known_event()
+    {
+        $domainMessage = $this->createDomainMessage(
+            new MockLabelAdded()
+        );
+
+        $this->mockedMockLDProjector
+            ->expects($this->once())
+            ->method('applyMockLabelAdded');
+
+        $this->mockLDProjector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_handle_event_of_the_wrong_parameter_type()
+    {
+        $domainMessage = $this->createDomainMessage(
+            new MockLabelUpdated()
+        );
+
+        $this->mockedMockLDProjector
+            ->expects($this->never())
+            ->method('applyMockLabelAdded');
+
+        $this->mockLDProjector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_handle_event_when_apply_method_has_parameter_missing()
+    {
+        $domainMessage = $this->createDomainMessage(
+            new MockLabelDeleted()
+        );
+
+        $this->mockedMockLDProjector
+            ->expects($this->never())
+            ->method('applyMockLabelDeleted');
+
+        $this->mockLDProjector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_handle_abstract_event()
+    {
+        $domainMessage = $this->createDomainMessage(
+            new MockTitleTranslated()
+        );
+
+        $this->mockedMockLDProjector
+            ->expects($this->never())
+            ->method('applyMockTitleTranslated');
+
+        $this->mockLDProjector->handle($domainMessage);
+    }
+
+    /**
+     * @param $payload
+     * @return DomainMessage
+     */
+    private function createDomainMessage($payload)
+    {
+        return new DomainMessage(
+            'id',
+            1,
+            new Metadata(),
+            $payload,
+            DateTime::now()
+        );
+    }
+}

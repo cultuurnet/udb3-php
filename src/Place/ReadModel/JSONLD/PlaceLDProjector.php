@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
@@ -453,6 +454,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getImageUpdatedClassName()
     {
         return ImageUpdated::class;
+    }
+
+    protected function getMainImageSelectedClassName()
+    {
+        return MainImageSelected::class;
     }
 
     /**

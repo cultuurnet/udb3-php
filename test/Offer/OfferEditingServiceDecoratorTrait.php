@@ -3,6 +3,11 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
+use ValueObjects\Identity\UUID;
+use ValueObjects\Web\Url;
+use ValueObjects\String as StringLiteral;
 
 class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
 {
@@ -73,6 +78,19 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                     new Label('bar'),
                 ],
             ],
+            [
+                'selectMainImage',
+                [
+                    'offer-id',
+                    new Image(
+                        new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+                        new MIMEType('image/jpg'),
+                        new StringLiteral('my pic'),
+                        new StringLiteral('Dirk Dirkington'),
+                        Url::fromNative('http://foo.bar/media/my_pic.jpg')
+                    )
+                ]
+            ]
         ];
     }
 }

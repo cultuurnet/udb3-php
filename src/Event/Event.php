@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -43,6 +44,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
@@ -562,6 +564,11 @@ class Event extends Offer
             $updateImageCommand->getDescription(),
             $updateImageCommand->getCopyrightHolder()
         );
+    }
+
+    protected function createMainImageSelectedEvent(Image $image)
+    {
+        return new MainImageSelected($this->eventId, $image);
     }
 
     /**

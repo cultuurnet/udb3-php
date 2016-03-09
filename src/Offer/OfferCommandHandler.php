@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
@@ -103,6 +104,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     abstract protected function getRemoveImageClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getSelectMainImageClassName();
+
+    /**
      * @param AbstractAddLabel $addLabel
      */
     private function handleAddLabel(AbstractAddLabel $addLabel)
@@ -164,6 +170,13 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($updateImage->getItemId());
         $offer->updateImage($updateImage);
+        $this->repository->save($offer);
+    }
+
+    public function handleSelectMainImage(AbstractSelectMainImage $selectMainImage)
+    {
+        $offer = $this->load($selectMainImage->getItemId());
+        $offer->selectMainImage($selectMainImage->getImage());
         $this->repository->save($offer);
     }
 

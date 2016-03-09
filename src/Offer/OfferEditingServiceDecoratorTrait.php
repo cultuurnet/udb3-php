@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\Image;
 use ValueObjects\String\String as VOString;
 
 trait OfferEditingServiceDecoratorTrait
@@ -53,5 +54,11 @@ trait OfferEditingServiceDecoratorTrait
     {
         return $this->getDecoratedEditingService()
             ->translateDescription($id, $language, $description);
+    }
+
+    public function selectMainImage($id, Image $image)
+    {
+        return $this->getDecoratedEditingService()
+            ->selectMainImage($id, $image);
     }
 }

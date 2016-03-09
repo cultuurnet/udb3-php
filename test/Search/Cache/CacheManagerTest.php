@@ -7,7 +7,9 @@ namespace CultuurNet\UDB3\Search\Cache;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
+use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Label;
 use Predis\ClientInterface;
 
@@ -109,27 +111,60 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider offerRelatedMessageProvider()
+     *
+     * @param DomainMessage $message
      */
-    public function it_flags_the_cache_as_outdated_on_event_related_messages()
+    public function it_flags_the_cache_as_outdated_on_offer_related_messages(DomainMessage $message)
     {
         $this->cacheShouldBeFlaggedAsOutdated();
 
         $this->cacheHandler->expects($this->never())
             ->method('warmUpCache');
 
-        $payload = new LabelAdded(
-            'xyz-123',
-            new Label('test')
-        );
-
-        $message = DomainMessage::recordNow(
-            'foo',
-            1,
-            new Metadata(),
-            $payload
-        );
-
         $this->cacheManager->handle($message);
+    }
+
+    /**
+     * @return array
+     */
+    public function offerRelatedMessageProvider()
+    {
+        return [
+            [
+                DomainMessage::recordNow(
+                    'foo',
+                    1,
+                    new Metadata(),
+                    new EventLabelAdded(
+                        'xyz-123',
+                        new Label('test-1')
+                    )
+                ),
+            ],
+            [
+                DomainMessage::recordNow(
+                    'bar',
+                    1,
+                    new Metadata(),
+                    new PlaceLabelAdded(
+                        'abc-456',
+                        new Label('test-2')
+                    )
+                ),
+            ],
+            [
+                DomainMessage::recordNow(
+                    'baz',
+                    1,
+                    new Metadata(),
+                    new AddLabelToQuery(
+                        'city:leuven',
+                        new Label('test-3')
+                    )
+                )
+            ],
+        ];
     }
 
     /**

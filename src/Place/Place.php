@@ -13,8 +13,6 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
-use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -24,6 +22,7 @@ use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageDeleted;
 use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
+use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
@@ -306,6 +305,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $updateImageCommand->getDescription(),
             $updateImageCommand->getCopyrightHolder()
         );
+    }
+
+    protected function createMainImageSelectedEvent(Image $image)
+    {
+        return new MainImageSelected($this->actorId, $image);
     }
 
     /**

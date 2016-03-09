@@ -14,7 +14,9 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 abstract class Offer extends EventSourcedAggregateRoot
@@ -30,6 +32,11 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $mediaObjects = [];
 
     /**
+     * @var UUID
+     */
+    protected $mainImageId;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -43,6 +50,16 @@ abstract class Offer extends EventSourcedAggregateRoot
     public function getLabels()
     {
         return $this->labels;
+    }
+
+    /**
+     * Get the id of the main image if one is selected for this offer.
+     *
+     * @return UUID|null
+     */
+    protected function getMainImageId()
+    {
+        return $this->mainImageId;
     }
 
     /**
@@ -174,9 +191,32 @@ abstract class Offer extends EventSourcedAggregateRoot
         }
     }
 
+    /**
+     * Make an existing image of the item the main image.
+     *
+     * @param Image $image
+     */
+    public function selectMainImage(Image $image)
+    {
+        if (!$this->containsImage($image)) {
+            throw new \InvalidArgumentException('You can not select a random image to be main, it has to be added to the item.');
+        }
+
+        if ($this->mainImageId !== $image->getMediaObjectId()) {
+            $this->apply(
+                $this->createMainImageSelectedEvent($image)
+            );
+        }
+    }
+
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
-        $this->mediaObjects[] = $imageAdded->getImage()->getMediaObjectId();
+        $imageId = $imageAdded->getImage()->getMediaObjectId();
+        $this->mediaObjects[] = $imageId;
+
+        if (count($this->mediaObjects) === 1) {
+            $this->mainImageId = $imageId;
+        }
     }
 
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
@@ -185,6 +225,16 @@ abstract class Offer extends EventSourcedAggregateRoot
             $this->mediaObjects,
             [$imageRemoved->getImage()->getMediaObjectId()]
         );
+
+        $oldestImageId = reset($this->mediaObjects);
+        if ($oldestImageId) {
+            $this->mainImageId = $oldestImageId;
+        }
+    }
+
+    protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)
+    {
+        $this->mainImageId = $mainImageSelected->getImage()->getMediaObjectId();
     }
 
     /**
@@ -232,4 +282,10 @@ abstract class Offer extends EventSourcedAggregateRoot
     abstract protected function createImageUpdatedEvent(
         AbstractUpdateImage $updateImageCommand
     );
+
+    /**
+     * @param Image $image
+     * @return AbstractMainImageSelected
+     */
+    abstract protected function createMainImageSelectedEvent(Image $image);
 }

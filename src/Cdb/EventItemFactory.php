@@ -61,13 +61,11 @@ class EventItemFactory
                 $event->deleteKeyword($keyword);
 
                 foreach ($individualKeywords as $individualKeyword) {
-                    $cultureFeed_Cdb_Data_Keyword = new CultureFeed_Cdb_Data_Keyword(
+                    $newKeyword = new CultureFeed_Cdb_Data_Keyword(
                         trim($individualKeyword),
                         $keyword->isVisible()
                     );
-                    $event->addKeyword(
-                        $cultureFeed_Cdb_Data_Keyword
-                    );
+                    $event->addKeyword($newKeyword);
                 }
             }
         }

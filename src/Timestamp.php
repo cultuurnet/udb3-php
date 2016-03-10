@@ -7,10 +7,12 @@
 
 namespace CultuurNet\UDB3;
 
+use Broadway\Serializer\SerializableInterface;
+
 /**
  * Provices a class for a timestamp.
  */
-class Timestamp
+class Timestamp implements SerializableInterface
 {
 
     /**
@@ -43,5 +45,26 @@ class Timestamp
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['startDate'], $data['endDate']
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
+    {
+        return [
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+        ];
     }
 }

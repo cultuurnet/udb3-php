@@ -69,7 +69,7 @@ class VariationDecoratedEventService implements EventServiceInterface
         try {
             $url = $this->eventIriGenerator->iri($id);
 
-            $criteria = $this->baseCriteria->withEventUrl(
+            $criteria = $this->baseCriteria->withOriginUrl(
                 new Url($url)
             );
 

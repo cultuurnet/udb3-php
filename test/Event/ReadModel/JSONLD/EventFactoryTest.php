@@ -1,8 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
+namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
-use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 class EventFactoryTest extends \PHPUnit_Framework_TestCase
@@ -32,8 +32,8 @@ class EventFactoryTest extends \PHPUnit_Framework_TestCase
     public function it_converts_the_id_to_an_iri_when_creating_the_event()
     {
         $id = '1';
-        $iri = 'place/1';
-        $expectedEvent = new PlaceProjectedToJSONLD($iri);
+        $iri = 'event/1';
+        $expectedEvent = new EventProjectedToJSONLD($iri);
 
         $this->iriGenerator->expects($this->once())
             ->method('iri')

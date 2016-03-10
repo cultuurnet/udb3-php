@@ -7,7 +7,10 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
+use CultuurNet\UDB3\Offer\OfferReadingServiceInterface;
 use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
 use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
@@ -22,36 +25,6 @@ use ValueObjects\Identity\UUID;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        $this->repository = $this->getMock(
-            DocumentRepositoryInterface::class
-        );
-
-        $this->eventRepository = $this->getMock(
-            DocumentRepositoryInterface::class
-        );
-
-        $this->searchRepository = $this->getMock(
-            SearchRepositoryInterface::class
-        );
-
-        $this->eventIriGenerator = $this->getMock(
-            IriGeneratorInterface::class
-        );
-
-        $this->variationIriGenerator = $this->getMock(
-            IriGeneratorInterface::class
-        );
-
-        $this->projector = new Projector(
-            $this->repository,
-            $this->eventRepository,
-            $this->searchRepository,
-            $this->variationIriGenerator
-        );
-    }
-
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -78,9 +51,39 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     protected $searchRepository;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferReadingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $eventRepository;
+    protected $offerReadingService;
+
+    protected function setUp()
+    {
+        $this->repository = $this->getMock(
+            DocumentRepositoryInterface::class
+        );
+
+        $this->offerReadingService = $this->getMock(
+            OfferReadingServiceInterface::class
+        );
+
+        $this->searchRepository = $this->getMock(
+            SearchRepositoryInterface::class
+        );
+
+        $this->eventIriGenerator = $this->getMock(
+            IriGeneratorInterface::class
+        );
+
+        $this->variationIriGenerator = $this->getMock(
+            IriGeneratorInterface::class
+        );
+
+        $this->projector = new Projector(
+            $this->repository,
+            $this->offerReadingService,
+            $this->searchRepository,
+            $this->variationIriGenerator
+        );
+    }
 
     /**
      * @test
@@ -129,26 +132,32 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider offerProjectedToJSONLDDataProvider
+     *
+     * @param string $id
+     * @param string $iri
+     * @param AbstractEventWithIri $offerProjectedToJSONLDEvent
      */
-    public function it_updates_variations_when_the_original_event_changes()
-    {
-        $eventId = 'some-event-id';
-        $eventUrl = 'http://acme.org/event/' . $eventId;
-
+    public function it_updates_variations_when_the_original_offer_changes(
+        $id,
+        $iri,
+        AbstractEventWithIri $offerProjectedToJSONLDEvent
+    ) {
         $variationId = 'a-variation-id';
         $variationUrl = 'http://acme.org/variation/' . $variationId;
+
         $this->variationIriGenerator
             ->expects($this->atLeastOnce())
             ->method('iri')
             ->with($variationId)
             ->willReturn($variationUrl);
 
-        $event = new JsonDocument(
-            'some-event-id',
+        $offer = new JsonDocument(
+            $id,
             json_encode([
-                '@id' => $eventUrl,
+                '@id' => $iri,
                 'description' => [
-                    'nl' => 'Original event description',
+                    'nl' => 'Original offer description',
                     'fr' => 'Le french translation'
                 ],
                 'sameAs' => []
@@ -162,7 +171,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'description' => [
                     'nl' => 'The variation description'
                 ],
-                'sameAs' => [$eventUrl]
+                'sameAs' => [$iri]
             ])
         );
 
@@ -174,13 +183,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     'nl' => 'The variation description',
                     'fr' => 'Le french translation'
                 ],
-                'sameAs' => [$eventUrl]
+                'sameAs' => [$iri]
             ])
         );
 
-        $this->eventRepository->expects($this->once())
-            ->method('get')
-            ->willReturn($event);
+        $this->offerReadingService->expects($this->once())
+            ->method('load')
+            ->with($iri)
+            ->willReturn($offer);
 
         $this->searchRepository->expects($this->once())
             ->method('getOfferVariations')
@@ -191,6 +201,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with('a-variation-id')
             ->willReturn($variation);
+
         $this->repository
             ->expects($this->at(1))
             ->method('save')
@@ -200,8 +211,64 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 }
             ));
 
-        $eventProjectedEvent = new EventProjectedToJSONLD($eventId);
-        $this->projector->applyEventProjectedToJSONLD($eventProjectedEvent);
+        $this->projector->handle(
+            DomainMessage::recordNow(
+                $id,
+                0,
+                new Metadata(),
+                $offerProjectedToJSONLDEvent
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider offerProjectedToJSONLDDataProvider
+     *
+     * @param string $id
+     * @param string $iri
+     * @param AbstractEventWithIri $offerProjectedToJSONLDEvent
+     */
+    public function it_ignores_an_update_to_an_offer_if_it_can_not_load_the_offer(
+        $id,
+        $iri,
+        AbstractEventWithIri $offerProjectedToJSONLDEvent
+    ) {
+        $this->offerReadingService->expects($this->once())
+            ->method('load')
+            ->with($iri)
+            ->willReturn(false);
+
+        $this->searchRepository->expects($this->never())
+            ->method('getOfferVariations');
+
+        $this->projector->handle(
+            DomainMessage::recordNow(
+                $id,
+                0,
+                new Metadata(),
+                $offerProjectedToJSONLDEvent
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function offerProjectedToJSONLDDataProvider()
+    {
+        return [
+            [
+                'some-event-id',
+                'http://acme.org/event/some-event-id',
+                new EventProjectedToJSONLD('http://acme.org/event/some-event-id'),
+            ],
+            [
+                'some-place-id',
+                'http://acme.org/event/some-place-id',
+                new PlaceProjectedToJSONLD('http://acme.org/event/some-place-id'),
+            ],
+        ];
     }
 
     /**
@@ -244,9 +311,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ])
         );
 
-        $this->eventRepository->expects($this->once())
-            ->method('get')
-            ->with('DEF99055-FE91-4039-B96C-1238529045C5')
+        $this->offerReadingService->expects($this->once())
+            ->method('load')
+            ->with($eventUrl)
             ->willReturn($event);
 
         $this->repository

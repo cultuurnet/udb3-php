@@ -16,7 +16,7 @@ class ExpressionFactory
     ) {
         $compositeExpression = $exp->andX();
 
-        $eventUrl = $criteria->getEventUrl();
+        $eventUrl = $criteria->getOriginUrl();
         if ($eventUrl) {
             $compositeExpression->add(
                 $exp->eq('origin_url', $exp->literal((string)$eventUrl))

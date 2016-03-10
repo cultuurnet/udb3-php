@@ -51,7 +51,7 @@ class CriteriaFromParameterBagFactoryTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            (new Criteria())->withEventUrl(
+            (new Criteria())->withOriginUrl(
                 new Url('//io.uitdatabank.be/event/3A45E67A-6116-4F2F-AAD7-0B5882CF516A')
             ),
             $this->factory->createCriteriaFromParameterBag($bag)

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 
@@ -25,7 +22,7 @@ class Criteria
     /**
      * @var Url
      */
-    private $eventUrl;
+    private $originUrl;
 
     public function withOwnerId(OwnerId $ownerId)
     {
@@ -43,19 +40,19 @@ class Criteria
         return $new;
     }
 
-    public function withEventUrl(Url $eventUrl)
+    public function withOriginUrl(Url $originUrl)
     {
         $new = clone $this;
-        $new->setEventUrl($eventUrl);
+        $new->setOriginUrl($originUrl);
         return $new;
     }
 
     /**
      * @param Url $eventUrl
      */
-    private function setEventUrl(Url $eventUrl)
+    private function setOriginUrl(Url $eventUrl)
     {
-        $this->eventUrl = $eventUrl;
+        $this->originUrl = $eventUrl;
     }
 
     /**
@@ -77,9 +74,9 @@ class Criteria
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOriginUrl()
     {
-        return $this->eventUrl;
+        return $this->originUrl;
     }
 
     /**
@@ -108,7 +105,7 @@ class Criteria
 
         if (($this->purpose && $variation->getPurpose() != $this->purpose) ||
             ($this->ownerId && $variation->getOwnerId() != $this->ownerId) ||
-            ($this->eventUrl && $variation->getOriginUrl() != $this->eventUrl)
+            ($this->originUrl && $variation->getOriginUrl() != $this->originUrl)
         ) {
             $satisfied = false;
         }

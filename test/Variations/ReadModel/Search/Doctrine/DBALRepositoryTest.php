@@ -173,7 +173,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         }
 
         if (null !== $urlKey) {
-            $criteria = $criteria->withEventUrl($this->urls[$urlKey]);
+            $criteria = $criteria->withOriginUrl($this->urls[$urlKey]);
         }
 
         return $criteria;

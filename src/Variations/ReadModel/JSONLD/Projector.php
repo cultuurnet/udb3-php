@@ -5,7 +5,9 @@ namespace CultuurNet\UDB3\Variations\ReadModel\JSONLD;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\OfferReadingServiceInterface;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -78,23 +80,38 @@ class Projector implements EventListenerInterface
      */
     public function applyEventProjectedToJSONLD(EventProjectedToJSONLD $eventProjectedToJSONLD)
     {
-        $eventId = $eventProjectedToJSONLD->getItemId();
-        /** @var JsonDocument $eventDocument */
-        $eventDocument = $this->eventRepository->get($eventId);
+        $this->applyOfferProjectedToJSONLD($eventProjectedToJSONLD);
+    }
 
-        if (!$eventDocument) {
+    /**
+     * @param PlaceProjectedToJSONLD $placeProjectedToJSONLD
+     */
+    public function applyPlaceProjectedToJSONLD(PlaceProjectedToJSONLD $placeProjectedToJSONLD)
+    {
+        $this->applyOfferProjectedToJSONLD($placeProjectedToJSONLD);
+    }
+
+    /**
+     * @param AbstractEventWithIri $event
+     */
+    private function applyOfferProjectedToJSONLD(AbstractEventWithIri $event)
+    {
+        $iri = $event->getIri();
+        $document = $this->offerReadingService->load($iri);
+
+        if (!$document) {
             return;
         }
 
         $searchCriteria = new Criteria();
-        $eventUrl = new Url($eventDocument->getBody()->{'@id'});
-        $searchCriteria = $searchCriteria->withEventUrl($eventUrl);
+        $eventUrl = new Url($iri);
+        $searchCriteria = $searchCriteria->withOriginUrl($eventUrl);
         $variationIds = $this->searchRepository->getOfferVariations($searchCriteria);
 
         foreach ($variationIds as $variationId) {
             $variationDocument = $this->repository->get($variationId);
             // use the up-to-date event json as a base
-            $variationLD = $eventDocument->getBody();
+            $variationLD = $document->getBody();
 
             // overwrite the description that's already set in the variation
             $variationLD->description->nl = $variationDocument->getBody()->description->nl;

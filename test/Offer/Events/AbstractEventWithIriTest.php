@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Events;
 class AbstractEventWithIriTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var AbstractEventWithIri|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractEventWithIri
      */
     protected $event;
 
@@ -17,7 +17,7 @@ class AbstractEventWithIriTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->iri = 'event/1';
-        $this->event = $this->getMockForAbstractClass(AbstractEventWithIri::class, array($this->iri));
+        $this->event = new MockAbstractEventWithIri($this->iri);
     }
 
     /**
@@ -33,8 +33,8 @@ class AbstractEventWithIriTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_serialized()
     {
-        $serialized = serialize($this->event);
-        $deserialized = unserialize($serialized);
+        $serialized = $this->event->serialize();
+        $deserialized = MockAbstractEventWithIri::deserialize($serialized);
 
         $this->assertEquals($this->event, $deserialized);
     }

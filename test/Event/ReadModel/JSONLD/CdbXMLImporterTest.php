@@ -320,4 +320,43 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(['enkel'], $jsonEvent->labels);
     }
+
+    /**
+     * @test
+     */
+    public function it_does_import_an_event_with_semicolons_in_keywords_tag()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml(
+            'event_with_semicolon_in_keywords_tag.cdbxml.xml'
+        );
+
+        $this->assertEquals(['leren Frans', 'cursus Frans'], $jsonEvent->labels);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_import_an_event_with_semicolons_in_keyword_tag()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml(
+            'event_with_semicolon_in_keyword_tag.cdbxml.xml'
+        );
+
+        $this->assertEquals(
+            ['Franse kennis','leren Frans', 'cursus Frans'],
+            $jsonEvent->labels
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_import_a_new_event_with_semicolons_in_keyword_tag()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+
+        $this->createJsonEventFromCdbXml(
+            'event_with_semicolon_in_keyword_tag_but_too_new.cdbxml.xml'
+        );
+    }
 }

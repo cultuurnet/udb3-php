@@ -78,6 +78,10 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function serialize()
     {
+        foreach ($this->timestamps as $key => $timestamp) {
+            $this->timestamps[$key] = $timestamp->serialize();
+        }
+
         return [
           'type' => $this->getType(),
           'startDate' => $this->startDate,
@@ -92,8 +96,19 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public static function deserialize(array $data)
     {
+        foreach ($data['timestamps'] as $key => $timestamp) {
+            $data['timestamps'][$key] = new Timestamp(
+                $timestamp['startDate'],
+                $timestamp['endDate']
+            );
+        }
+
         return new static(
-            $data['type'], $data['startDate'], $data['endDate'], $data['timestamps'], $data['openingHours']
+            $data['type'],
+            $data['startDate'],
+            $data['endDate'],
+            $data['timestamps'],
+            $data['openingHours']
         );
     }
 

@@ -4,10 +4,6 @@ namespace CultuurNet\UDB3\Variations\Model\Properties;
 
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\EventNotFoundException;
-use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Command\ValidationException;
@@ -46,6 +42,9 @@ class DefaultUrlValidator implements UrlValidator
         return $c;
     }
 
+    /**
+     * @param Url $url
+     */
     public function validateUrl(Url $url)
     {
         $identifier = $this->iriOfferIdentifierFactory->fromIri($url->toNative());

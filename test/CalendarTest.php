@@ -21,11 +21,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
      */
     private $calendar;
 
-    /**
-     * @var array
-     */
-    private $calendarAsArray;
-
     public function setUp()
     {
         $timestamp1 = new Timestamp(
@@ -46,23 +41,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                 self::TIMESTAMP_1 => $timestamp1,
                 self::TIMESTAMP_2 => $timestamp2
             )
-        );
-
-        $this->calendarAsArray = array(
-            'type' => Calendar::MULTIPLE,
-            'startDate' => self::START_DATE,
-            'endDate' => self::END_DATE,
-            'timestamps' => array(
-                self::TIMESTAMP_1 => array(
-                    'startDate' => self::TIMESTAMP_1_START_DATE,
-                    'endDate' => self::TIMESTAMP_1_END_DATE,
-                ),
-                self::TIMESTAMP_2 => array(
-                    'startDate' => self::TIMESTAMP_2_START_DATE,
-                    'endDate' => self::TIMESTAMP_2_END_DATE,
-                )
-            ),
-            'openingHours' => array()
         );
     }
 
@@ -87,20 +65,14 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_serializes()
+    public function it_has_the_exact_original_state_after_serialization_and_deserialization()
     {
-        $actual = $this->calendar->serialize();
+        $serialized = $this->calendar->serialize();
+        $jsonEncoded = json_encode($serialized);
 
-        $this->assertEquals($this->calendarAsArray, $actual);
-    }
+        $jsonDecoded = json_decode($jsonEncoded, true);
+        $deserialized = Calendar::deserialize($jsonDecoded);
 
-    /**
-     * @test
-     */
-    public function it_deserializes()
-    {
-        $calendar = Calendar::deserialize($this->calendarAsArray);
-
-        $this->assertEquals($this->calendar, $calendar);
+        $this->assertEquals($this->calendar, $deserialized);
     }
 }

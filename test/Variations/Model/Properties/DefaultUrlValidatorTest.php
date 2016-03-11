@@ -62,6 +62,9 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
             ->method('getEntity')
             ->with('foo-bar');
 
+        $this->placeService->expects($this->never())
+            ->method('getEntity');
+
         $identifier = new IriOfferIdentifier(
             'https://foo.bar/event/foo-bar',
             'foo-bar',
@@ -86,6 +89,9 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
         $this->placeService->expects($this->once())
             ->method('getEntity')
             ->with('foo-bar-place');
+
+        $this->eventService->expects($this->never())
+            ->method('getEntity');
 
         $identifier = new IriOfferIdentifier(
             'https://foo.bar/place/foo-bar-place',

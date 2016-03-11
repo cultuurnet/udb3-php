@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3;
 
+use UnexpectedValueException;
+
 class CalendarTest extends \PHPUnit_Framework_TestCase
 {
     const START_DATE = '2016-03-06T10:00:00';

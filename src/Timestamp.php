@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Timestamp.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;

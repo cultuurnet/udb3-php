@@ -11,7 +11,7 @@
     "@id": "http:\/\/culudb-silex.dev:8080\/place\/61DA6E33-D632-A342-28F34D5E9E1688B3",
     "@context": "\/api\/1.0\/place.jsonld",
     "description": "De Wildeman is een gezellig gemeenschapscentrum in Herent aan de rand van leuven. Al meer dan tien jaar komen hier grote namen en lokale sterren. Theater, Muziek, Cabaret,.. De Wildeman biedt, vanop de eerste rij, cultuur aan democratische prijzen. Kortom: een gezellige avond uit!",
-    "name": "GC De Wildeman",
+    "name": {"nl": "GC De Wildeman"},
     "address": {
       "addressCountry": "BE",
       "addressLocality": "Herent",

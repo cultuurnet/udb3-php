@@ -175,7 +175,7 @@ class TabularDataEventFormatter
             'bookingInfo.price' => [
                 'name' => 'prijs',
                 'include' => function ($event) {
-                    if (property_exists($event, 'bookingInfo')) {
+                    if (property_exists($event, 'bookingInfo') && is_array($event->bookingInfo)) {
                         $first = reset($event->bookingInfo);
                         if (is_object($first) && property_exists($first, 'price')) {
                             return $first->price;
@@ -355,7 +355,7 @@ class TabularDataEventFormatter
                 'name' => 'locatie naam',
                 'include' => function ($event) {
                     if (property_exists($event, 'location') && isset($event->location->name)) {
-                        return $event->location->name;
+                        return reset($event->location->name);
                     }
                 },
                 'property' => 'location'

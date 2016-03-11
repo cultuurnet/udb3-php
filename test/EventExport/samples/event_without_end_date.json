@@ -10,7 +10,7 @@
     "@id": "http:\/\/culudb-silex.dev:8080\/place\/A871DB85-01DB-DBD3-DAF62CDB2DD7B871",
     "@context": "\/api\/1.0\/place.jsonld",
     "description": "Voor een boeiend avondje cultuur, is er in Tienen cultuurcentrum De Kruisboog. Het centrum heeft een eigen programmatie, maar staat ook open voor activiteiten van plaatselijke verenigingen.",
-    "name": "Cultuurcentrum De Kruisboog",
+    "name": {"nl": "Cultuurcentrum De Kruisboog"},
     "address": {
       "addressCountry": "BE",
       "addressLocality": "Tienen",

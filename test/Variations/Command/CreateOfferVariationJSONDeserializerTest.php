@@ -21,11 +21,6 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
     private $deserializer;
 
     /**
-     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $iriOfferIdentifierFactory;
-
-    /**
      * @var DefaultUrlValidator|\PHPUnit_Framework_MockObject_MockObject
      */
     private $defaultUrlValidator;
@@ -33,7 +28,6 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
     public function setUp()
     {
         $this->deserializer = new CreateOfferVariationJSONDeserializer();
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
         $this->defaultUrlValidator = $this->getMock(UrlValidator::class);
     }
 

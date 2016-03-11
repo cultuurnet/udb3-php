@@ -35,7 +35,11 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     public function it_has_the_exact_original_state_after_serialization_and_deserialization()
     {
         $serialized = $this->timestamp->serialize();
-        $deserialized = Timestamp::deserialize($serialized);
+        $jsonEncoded = json_encode($serialized);
+
+        $jsonDecoded = json_decode($jsonEncoded, true);
+        $deserialized = Timestamp::deserialize($jsonDecoded);
+
         $this->assertEquals($this->timestamp, $deserialized);
     }
 }

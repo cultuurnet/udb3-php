@@ -20,7 +20,8 @@ class LocalOfferReadingService implements OfferReadingServiceInterface
     /**
      * @param IriOfferIdentifierFactoryInterface
      */
-    public function __construct(IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory) {
+    public function __construct(IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory)
+    {
         $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
         $this->documentRepositories = [];
     }

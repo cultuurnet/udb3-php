@@ -72,7 +72,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
      */
     public function it_validates_calendar_type()
     {
-        $calendar = new Calendar('unknown');
+        new Calendar('unknown');
     }
 
     /**
@@ -81,7 +81,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
      */
     public function it_validates_start_date()
     {
-        $calendar = new Calendar('multiple');
+        new Calendar('multiple');
     }
 
     /**

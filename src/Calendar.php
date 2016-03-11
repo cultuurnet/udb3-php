@@ -1,16 +1,11 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Calendar.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 
 /**
- * a Calendar for events and places.
+ * Calendar for events and places.
  */
 class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
@@ -46,11 +41,23 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     const PERMANENT = "permanent";
 
     /**
-     * Constructor.
+     * @param string $calendarType
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $timestamps
+     * @param array $openingHours
      */
-    public function __construct($calendarType, $startDate = '', $endDate = '', $timestamps = array(), $openingHours = array())
-    {
-        if ($calendarType != self::PERMANENT && $calendarType != self::MULTIPLE && $calendarType != self::PERIODIC && $calendarType != self::SINGLE) {
+    public function __construct(
+        $calendarType,
+        $startDate = '',
+        $endDate = '',
+        $timestamps = array(),
+        $openingHours = array()
+    ) {
+        if ($calendarType != self::PERMANENT &&
+            $calendarType != self::MULTIPLE &&
+            $calendarType != self::PERIODIC &&
+            $calendarType != self::SINGLE) {
             throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
         }
 

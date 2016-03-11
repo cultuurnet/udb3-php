@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3;
 
-use ValueObjects\DateTime\Time;
-
 class TimestampTest extends \PHPUnit_Framework_TestCase
 {
     const START_DATE_KEY = 'startDate';
@@ -17,19 +15,9 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
      */
     private $timestamp;
 
-    /**
-     * @var array
-     */
-    private $timestampAsArray;
-
     public function setUp()
     {
         $this->timestamp = new Timestamp(self::START_DATE, self::END_DATE);
-
-        $this->timestampAsArray = array(
-            self::START_DATE_KEY => self::START_DATE,
-            self::END_DATE_KEY => self::END_DATE
-        );
     }
 
     /**
@@ -44,21 +32,10 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_deserializes()
+    public function it_has_the_exact_original_state_after_serialization_and_deserialization()
     {
-        $timestamp = Timestamp::deserialize($this->timestampAsArray);
-
-        $this->assertEquals(self::START_DATE, $timestamp->getStartDate());
-        $this->assertEquals(self::END_DATE, $timestamp->getEndDate());
-    }
-
-    /**
-     * @test
-     */
-    public function it_serializes()
-    {
-        $actual = $this->timestamp->serialize();
-
-        $this->assertEquals($this->timestampAsArray, $actual);
+        $serialized = $this->timestamp->serialize();
+        $deserialized = Timestamp::deserialize($serialized);
+        $this->assertEquals($this->timestamp, $deserialized);
     }
 }

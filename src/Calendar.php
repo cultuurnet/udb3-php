@@ -104,10 +104,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     public static function deserialize(array $data)
     {
         foreach ($data['timestamps'] as $key => $timestamp) {
-            $data['timestamps'][$key] = new Timestamp(
-                $timestamp['startDate'],
-                $timestamp['endDate']
-            );
+            $data['timestamps'][$key] = Timestamp::deserialize($timestamp);
         }
 
         return new static(

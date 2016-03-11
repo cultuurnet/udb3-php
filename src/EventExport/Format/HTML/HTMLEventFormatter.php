@@ -127,7 +127,7 @@ class HTMLEventFormatter
 
         if (property_exists($event, 'location')) {
             if (property_exists($event->location, 'name')) {
-                $address['name'] = $event->location->name;
+                $address['name'] = reset($event->location->name);
             }
 
             if (property_exists($event->location, 'address')) {
@@ -143,7 +143,7 @@ class HTMLEventFormatter
             $formattedEvent['address'] = $address;
         }
 
-        if (isset($event->bookingInfo)) {
+        if (isset($event->bookingInfo) && is_array($event->bookingInfo)) {
             $firstPrice = reset($event->bookingInfo);
             $formattedEvent['price'] = $this->priceFormatter->format($firstPrice->price);
         } else {

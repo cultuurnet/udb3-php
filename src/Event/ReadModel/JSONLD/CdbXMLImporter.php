@@ -219,7 +219,7 @@ class CdbXMLImporter
         if ($location_id) {
             $location += (array)$placeManager->placeJSONLD($location_id);
         } else {
-            $location['name'] = $location_cdb->getLabel();
+            $location['name']['nl'] = $location_cdb->getLabel();
             $address = $location_cdb->getAddress()->getPhysicalAddress();
             if ($address) {
                 $location['address'] = array(

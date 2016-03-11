@@ -57,7 +57,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_throws_an_error_when_the_offertype_index_is_not_found()
+    public function it_throws_an_error_when_the_offertype_index_is_not_found_in_the_regex()
     {
         $iriOfferIdentifierFactory = new IriOfferIdentifierFactory(
             'https?://foo\.bar/(?<offer>[event|place]+)/(?<offerid>[a-zA-Z0-9\-]+)'
@@ -76,7 +76,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_throws_an_error_when_the_offerid_index_is_not_found()
+    public function it_throws_an_error_when_the_offerid_index_is_not_found_in_the_regex()
     {
         $iriOfferIdentifierFactory = new IriOfferIdentifierFactory(
             'https?://foo\.bar/(?<offertype>[event|place]+)/(?<id>[a-zA-Z0-9\-]+)'
@@ -95,7 +95,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_a_correct_self_when_url_is_valid()
+    public function it_returns_a_correct_iri_offer_identifier_when_url_is_valid()
     {
         $iriOfferIdentifier = $this->iriOfferIdentifierFactory->fromIri(
             'https://foo.bar/place/1234'

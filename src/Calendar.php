@@ -85,13 +85,11 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function serialize()
     {
-        $serializedTimestamps = [];
-
-        array_walk(
-            $this->timestamps,
-            function (Timestamp $timestamp, $key) use (&$serializedTimestamps) {
-                $serializedTimestamps[$key] = $timestamp->serialize();
-            }
+        $serializedTimestamps = array_map(
+            function (Timestamp $timestamp) {
+                return $timestamp->serialize();
+            },
+            $this->timestamps
         );
 
         return [

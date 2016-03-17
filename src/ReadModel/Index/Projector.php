@@ -11,6 +11,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -24,6 +25,7 @@ use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use DateTime;
 use DateTimeZone;
+use ValueObjects\String\String as StringLiteral;
 
 /**
  * Logs new events / updates to an index for querying.
@@ -38,11 +40,37 @@ class Projector implements EventListenerInterface
     protected $repository;
 
     /**
+     * @var CreatedByToUserIdResolverInterface
+     */
+    protected $userIdResolver;
+
+    /**
      * @param RepositoryInterface $repository
      */
-    public function __construct(RepositoryInterface $repository)
-    {
+    public function __construct(
+        RepositoryInterface $repository,
+        CreatedByToUserIdResolverInterface $createdByToUserIdResolver
+    ) {
         $this->repository = $repository;
+        $this->userIdResolver= $createdByToUserIdResolver;
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Base $udb2Item
+     *
+     * @return null|string
+     */
+    protected function resolveUserId(\CultureFeed_Cdb_Item_Base $udb2Item)
+    {
+        $userId = null;
+        $createdByIdentifier = $udb2Item->getCreatedBy();
+        if ($createdByIdentifier) {
+            $userId = $this->userIdResolver->resolveCreatedByToUserId(
+                new StringLiteral($createdByIdentifier)
+            );
+        }
+
+        return $userId ? (string) $userId : null;
     }
 
     /**
@@ -53,12 +81,11 @@ class Projector implements EventListenerInterface
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $eventId = $eventImportedFromUDB2->getEventId();
-        $userId = ''; // imported = no uid.
-
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
             $eventImportedFromUDB2->getCdbXml()
         );
+        $userId = $this->resolveUserId($udb2Event);
 
         $this->updateIndexWithUDB2Event($eventId, EntityType::EVENT(), $userId, $udb2Event);
     }
@@ -70,12 +97,11 @@ class Projector implements EventListenerInterface
         PlaceImportedFromUDB2Event $placeImportedFromUDB2Event
     ) {
         $placeId = $placeImportedFromUDB2Event->getActorId();
-        $userId = ''; // imported = no uid.
-
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $placeImportedFromUDB2Event->getCdbXmlNamespaceUri(),
             $placeImportedFromUDB2Event->getCdbXml()
         );
+        $userId = $this->resolveUserId($udb2Event);
 
         $this->updateIndexWithUDB2Event($placeId, EntityType::PLACE(), $userId, $udb2Event);
     }
@@ -132,7 +158,7 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($itemId, $itemType, $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex($itemId, $itemType, (string) $userId, $name, $postalCode, $creationDate);
     }
 
     /**
@@ -143,7 +169,6 @@ class Projector implements EventListenerInterface
     {
 
         $placeId = $placeImportedFromUDB2->getActorId();
-        $userId = ''; // imported = no uid.
         /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
         $detail = null;
         $postalCode = '';
@@ -152,6 +177,8 @@ class Projector implements EventListenerInterface
             $placeImportedFromUDB2->getCdbXmlNamespaceUri(),
             $placeImportedFromUDB2->getCdbXml()
         );
+
+        $userId = $this->resolveUserId($udb2Actor);
 
         $details = $udb2Actor->getDetails();
         foreach ($details as $languageDetail) {
@@ -188,7 +215,14 @@ class Projector implements EventListenerInterface
             new DateTimeZone('Europe/Brussels')
         );
 
-        $this->updateIndex($placeId, EntityType::PLACE(), $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex(
+            $placeId,
+            EntityType::PLACE(),
+            $userId,
+            $name,
+            $postalCode,
+            $creationDate
+        );
     }
 
     /**
@@ -206,7 +240,14 @@ class Projector implements EventListenerInterface
 
         $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
 
-        $this->updateIndex($eventId, EntityType::EVENT(), $userId, $eventCreated->getTitle(), $location->getPostalcode(), $creationDate);
+        $this->updateIndex(
+            $eventId,
+            EntityType::EVENT(),
+            $userId,
+            $eventCreated->getTitle(),
+            $location->getPostalcode(),
+            $creationDate
+        );
     }
 
     /**
@@ -223,7 +264,14 @@ class Projector implements EventListenerInterface
         $address = $placeCreated->getAddress();
 
         $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-        $this->updateIndex($placeId, EntityType::PLACE(), $userId, $placeCreated->getTitle(), $address->getPostalcode(), $creationDate);
+        $this->updateIndex(
+            $placeId,
+            EntityType::PLACE(),
+            $userId,
+            $placeCreated->getTitle(),
+            $address->getPostalcode(),
+            $creationDate
+        );
     }
 
     /**
@@ -240,7 +288,14 @@ class Projector implements EventListenerInterface
         $addresses = $organizer->getAddresses();
         if (isset($addresses[0])) {
             $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-            $this->updateIndex($organizerId, EntityType::ORGANIZER(), $userId, $organizer->getTitle(), $addresses[0]->getPostalCode(), $creationDate);
+            $this->updateIndex(
+                $organizerId,
+                EntityType::ORGANIZER(),
+                $userId,
+                $organizer->getTitle(),
+                $addresses[0]->getPostalCode(),
+                $creationDate
+            );
         }
     }
 
@@ -248,7 +303,6 @@ class Projector implements EventListenerInterface
     {
 
         $organizerId = $organizerImportedFromUDB2->getActorId();
-        $userId = ''; // imported = no uid.
         /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
         $detail = null;
         $postalCode = '';
@@ -257,6 +311,8 @@ class Projector implements EventListenerInterface
             $organizerImportedFromUDB2->getCdbXmlNamespaceUri(),
             $organizerImportedFromUDB2->getCdbXml()
         );
+
+        $userId = $this->resolveUserId($udb2Actor);
 
         $details = $udb2Actor->getDetails();
         foreach ($details as $languageDetail) {

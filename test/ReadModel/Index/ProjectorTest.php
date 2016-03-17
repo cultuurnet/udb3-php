@@ -8,7 +8,10 @@ namespace CultuurNet\UDB3\ReadModel\Index;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use Guzzle\Common\Event;
 
@@ -20,6 +23,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $repository;
 
     /**
+     * @var CreatedByToUserIdResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $userIdResolver;
+
+    /**
      * @var Projector
      */
     private $projector;
@@ -29,9 +37,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->repository = $this->getMock(RepositoryInterface::class);
+        $this->userIdResolver = $this->getMock(CreatedByToUserIdResolverInterface::class);
 
         $this->projector = new Projector(
-            $this->repository
+            $this->repository,
+            $this->userIdResolver
         );
     }
 
@@ -40,12 +50,16 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_updates_the_index_with_events_imported_from_udb2()
     {
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->willReturn('user-id-one-two-three');
+
         $this->repository->expects($this->once())
             ->method('updateIndex')
             ->with(
                 '123-456',
                 EntityType::EVENT(),
-                '',
+                'user-id-one-two-three',
                 'GALLERY TRAEGHE exhibition Janine de Coninck \'BLACK AND WHITE\' 1 - 9 November 2014',
                 '8000',
                 new \DateTime(
@@ -70,12 +84,16 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_update_the_index_when_importing_a_place_from_udb2_event()
     {
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->willReturn('user-id-one-two-three');
+
         $this->repository->expects($this->once())
             ->method('updateIndex')
             ->with(
                 'place-lace-ace-ce',
                 EntityType::PLACE(),
-                '',
+                'user-id-one-two-three',
                 'stuuuk',
                 '3000',
                 new \DateTime(
@@ -108,6 +126,74 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 new EventImportedFromUDB2(
                     '123-456',
                     file_get_contents(__DIR__ . '/event-with-empty-title.xml'),
+                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                )
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_add_an_indexed_item_when_importing_a_place_from_udb2()
+    {
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->willReturn('user-id-one-two-three');
+
+        $this->repository->expects($this->once())
+            ->method('updateIndex')
+            ->with(
+                'place-lace-ace-ce',
+                EntityType::PLACE(),
+                'user-id-one-two-three',
+                'CC Palethe',
+                '3900',
+                new \DateTime(
+                    '2010-01-06T13:33:06+0100',
+                    new \DateTimeZone('Europe/Brussels')
+                )
+            );
+
+        $this->projector->handle(
+            $this->domainMessage(
+                new PlaceImportedFromUDB2(
+                    'place-lace-ace-ce',
+                    file_get_contents(__DIR__ . '/udb2_place.xml'),
+                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                )
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_add_an_indexed_item_when_importing_an_organizer_from_udb2()
+    {
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->willReturn('user-id-one-two-three');
+
+        $this->repository->expects($this->once())
+            ->method('updateIndex')
+            ->with(
+                'some-orga-nizer-id',
+                EntityType::ORGANIZER(),
+                'user-id-one-two-three',
+                'DE Studio',
+                '',
+                new \DateTime(
+                    '2010-01-06T13:46:00+0100',
+                    new \DateTimeZone('Europe/Brussels')
+                )
+            );
+
+        $this->projector->handle(
+            $this->domainMessage(
+                new OrganizerImportedFromUDB2(
+                    'some-orga-nizer-id',
+                    file_get_contents(__DIR__ . '/udb2_organizer.xml'),
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                 )
             )

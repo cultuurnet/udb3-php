@@ -5,16 +5,25 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\UDB3\Dashboard\DashboardItemLookupServiceInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Organizer\ReadModel\Lookup\OrganizerLookupServiceInterface;
 use CultuurNet\UDB3\Place\ReadModel\Lookup\PlaceLookupServiceInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use CultuurNet\UDB3\ReadModel\Index\RepositoryInterface;
+use CultuurNet\UDB3\Search\Results;
+use CultuurNet\UiTIDProvider\User\User;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use ValueObjects\Number\Integer;
+use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Web\Domain;
 
-class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, OrganizerLookupServiceInterface
+class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, OrganizerLookupServiceInterface, DashboardItemLookupServiceInterface
 {
     /**
      * @var Connection
@@ -222,5 +231,50 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $results = $q->execute();
 
         return $results->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    public function findByUser(User $user, Natural $limit, Natural $start)
+    {
+        $q = $this->connection->createQueryBuilder();
+        $expr = $q->expr();
+
+        $q->select('entity_id', 'entity_type')
+            ->from($this->tableName->toNative())
+            ->where(
+                $expr->andX(
+                    $expr->eq('uid', ':user_id')
+                )
+            )
+            ->setMaxResults($limit->toNative())
+            ->setFirstResult($start->toNative());
+
+        $q->setParameter('user_id', $user->id);
+
+        $results = $q->execute();
+        $offerIdentifierArray = array_map(
+            function ($resultRow) {
+                $offerIdentifier = new IriOfferIdentifier(
+                    $resultRow['entity_id'],
+                    OfferType::fromNative(ucfirst($resultRow['entity_type']))
+                );
+
+                return $offerIdentifier;
+            },
+            $results->fetchAll(\PDO::FETCH_ASSOC)
+        );
+
+        return new Results(
+            OfferIdentifierCollection::fromArray($offerIdentifierArray),
+            new Integer($results->rowCount())
+        );
+    }
+
+    public function findByUserForDomain(
+        User $user,
+        Domain $domain,
+        Natural $limit,
+        Natural $start
+    ) {
+        // TODO: Implement findByUserForDomain() method.
     }
 }

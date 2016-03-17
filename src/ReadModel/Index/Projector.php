@@ -52,7 +52,7 @@ class Projector implements EventListenerInterface
         CreatedByToUserIdResolverInterface $createdByToUserIdResolver
     ) {
         $this->repository = $repository;
-        $this->userIdResolver= $createdByToUserIdResolver;
+        $this->userIdResolver = $createdByToUserIdResolver;
     }
 
     /**
@@ -62,7 +62,6 @@ class Projector implements EventListenerInterface
      */
     protected function resolveUserId(\CultureFeed_Cdb_Item_Base $udb2Item)
     {
-        $userId = null;
         $createdByIdentifier = $udb2Item->getCreatedBy();
         if ($createdByIdentifier) {
             $userId = $this->userIdResolver->resolveCreatedByToUserId(
@@ -70,7 +69,7 @@ class Projector implements EventListenerInterface
             );
         }
 
-        return $userId ? (string) $userId : null;
+        return $userId ? (string) $userId : '';
     }
 
     /**

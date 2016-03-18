@@ -69,7 +69,7 @@ class Projector implements EventListenerInterface
             );
         }
 
-        return $userId ? (string) $userId : '';
+        return isset($userId) ? (string) $userId : '';
     }
 
     /**

@@ -18,6 +18,7 @@ use CultuurNet\UiTIDProvider\User\User;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
@@ -237,14 +238,13 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $q->expr();
+        $itemIsOwnedByUser = $expr->andX(
+            $expr->eq('uid', ':user_id')
+        );
 
         $q->select('entity_id', 'entity_type')
             ->from($this->tableName->toNative())
-            ->where(
-                $expr->andX(
-                    $expr->eq('uid', ':user_id')
-                )
-            )
+            ->where($itemIsOwnedByUser)
             ->setMaxResults($limit->toNative())
             ->setFirstResult($start->toNative());
 
@@ -263,9 +263,25 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             $results->fetchAll(\PDO::FETCH_ASSOC)
         );
 
+        $pageRowCount = $results->rowCount();
+        // We can skip an additional query to determine to total items count
+        // if the amount of rows on the first page does not reach the limit.
+        if ($start === 0 && $pageRowCount > $limit) {
+            $totalItems = $pageRowCount;
+        } else {
+            $q = $this->connection->createQueryBuilder();
+
+            $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
+                ->from($this->tableName->toNative())
+                ->where($itemIsOwnedByUser)
+                ->setParameter('user_id', $user->id)
+                ->execute()
+                ->fetchColumn(0);
+        }
+
         return new Results(
             OfferIdentifierCollection::fromArray($offerIdentifierArray),
-            new Integer($results->rowCount())
+            new Integer($totalItems)
         );
     }
 

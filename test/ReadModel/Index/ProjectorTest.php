@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use Guzzle\Common\Event;
+use ValueObjects\Web\Domain;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,7 +44,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->projector = new Projector(
             $this->repository,
-            $this->userIdResolver
+            $this->userIdResolver,
+            Domain::specifyType('omd.be'),
+            Domain::specifyType('udb.be')
         );
     }
 
@@ -64,6 +67,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'user-id-one-two-three',
                 'GALLERY TRAEGHE exhibition Janine de Coninck \'BLACK AND WHITE\' 1 - 9 November 2014',
                 '8000',
+                Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2014-09-08T09:10:16',
                     new \DateTimeZone('Europe/Brussels')
@@ -98,6 +102,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'user-id-one-two-three',
                 'stuuuk',
                 '3000',
+                Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2016-02-19T10:36:26+0100',
                     new \DateTimeZone('Europe/Brussels')
@@ -151,6 +156,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'user-id-one-two-three',
                 'CC Palethe',
                 '3900',
+                Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2010-01-06T13:33:06+0100',
                     new \DateTimeZone('Europe/Brussels')
@@ -185,6 +191,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'user-id-one-two-three',
                 'DE Studio',
                 '',
+                Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2010-01-06T13:46:00+0100',
                     new \DateTimeZone('Europe/Brussels')

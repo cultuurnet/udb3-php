@@ -65,6 +65,11 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             'text',
             array('length' => 36, 'notnull' => true)
         );
+        $table->addColumn(
+            'owning_domain',
+            'text',
+            array('length' => 36, 'notnull' => true)
+        );
 
         $schemaManager->createTable($table);
     }

@@ -10,6 +10,7 @@ use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use PHPUnit_Framework_TestCase;
 use PDO;
 use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Web\Domain;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {
@@ -101,6 +102,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'bar',
             'Test organizer abc update',
             '3020',
+            Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
 
@@ -129,6 +131,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'foo',
             'Test event xyz',
             '3020',
+            Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@0')
         );
 
@@ -141,7 +144,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'title' => 'Test event xyz',
             'zip' => '3020',
             'created' => 0,
-            'updated' => 0
+            'updated' => 0,
+            'owning_domain' => 'udb.be'
         ];
 
         $this->assertCurrentData($expectedData);

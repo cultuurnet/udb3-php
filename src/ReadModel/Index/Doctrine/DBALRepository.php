@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UiTIDProvider\User\User;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\Expression\CompositeExpression;
 use Doctrine\DBAL\Query\QueryBuilder;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
@@ -54,6 +55,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
         $this->connection->beginTransaction();
@@ -72,7 +74,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                 }
 
                 $this->setIdAndEntityType($q, $id, $entityType);
-                $this->setValues($q, $userId, $name, $postalCode, $created);
+                $this->setValues($q, $userId, $name, $postalCode, $owningDomain, $created);
 
                 $q->execute();
             } else {
@@ -90,12 +92,20 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'title' => ':title',
                             'zip' => ':zip',
                             'created' => ':created',
-                            'updated' => ':created'
+                            'updated' => ':created',
+                            'owning_domain' => ':owning_domain'
                         ]
                     );
 
                 $this->setIdAndEntityType($q, $id, $entityType);
-                $this->setValues($q, $userId, $name, $postalCode, $created);
+                $this->setValues(
+                    $q,
+                    $userId,
+                    $name,
+                    $postalCode,
+                    $owningDomain,
+                    $created
+                );
 
                 $q->execute();
             }
@@ -113,6 +123,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
      * @param string $userId
      * @param string $name
      * @param string $postalCode
+     * @param Domain $owningDomain
      * @param DateTimeInterface $created
      */
     private function setValues(
@@ -120,11 +131,13 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
         $q->setParameter('uid', $userId);
         $q->setParameter('title', $name);
         $q->setParameter('zip', $postalCode);
+        $q->setParameter('owning_domain', $owningDomain->toNative());
         if ($created instanceof DateTimeInterface) {
             $q->setParameter('created', $created->getTimestamp());
         }
@@ -247,22 +260,56 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
 
     public function findByUser(User $user, Natural $limit, Natural $start)
     {
-        $q = $this->connection->createQueryBuilder();
-        $expr = $q->expr();
+        $expr = $this->connection->getExpressionBuilder();
         $itemIsOwnedByUser = $expr->andX(
             $expr->eq('uid', ':user_id')
         );
 
-        $q->select('entity_id', 'entity_type')
+        return $this->getPagedDashboardItems(
+            $user,
+            $limit,
+            $start,
+            $itemIsOwnedByUser
+        );
+    }
+
+    public function findByUserForDomain(
+        User $user,
+        Natural $limit,
+        Natural $start,
+        Domain $owningDomain
+    ) {
+        $expr = $this->connection->getExpressionBuilder();
+        $ownedByUserForDomain = $expr->andX(
+            $expr->eq('uid', ':user_id'),
+            $expr->eq('owning_domain', $owningDomain->toNative())
+        );
+
+        return $this->getPagedDashboardItems(
+            $user,
+            $limit,
+            $start,
+            $ownedByUserForDomain
+        );
+    }
+
+    private function getPagedDashboardItems(
+        User $user,
+        Natural $limit,
+        Natural $start,
+        CompositeExpression $filterExpression
+    ) {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder->select('entity_id', 'entity_type')
             ->from($this->tableName->toNative())
-            ->where($itemIsOwnedByUser)
+            ->where($filterExpression)
             ->orderBy('updated', 'DESC')
             ->setMaxResults($limit->toNative())
             ->setFirstResult($start->toNative());
 
-        $q->setParameter('user_id', $user->id);
+        $queryBuilder->setParameter('user_id', $user->id);
 
-        $results = $q->execute();
+        $results = $queryBuilder->execute();
         $offerIdentifierArray = array_map(
             function ($resultRow) {
                 $offerIdentifier = new IriOfferIdentifier(
@@ -278,15 +325,15 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $pageRowCount = $results->rowCount();
         // We can skip an additional query to determine to total items count
         // if the amount of rows on the first page does not reach the limit.
-        if ($start === 0 && $pageRowCount > $limit) {
+        if ($queryBuilder->getFirstResult() === 0 && $pageRowCount > $queryBuilder->getMaxResults()) {
             $totalItems = $pageRowCount;
         } else {
             $q = $this->connection->createQueryBuilder();
 
             $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
                 ->from($this->tableName->toNative())
-                ->where($itemIsOwnedByUser)
-                ->setParameter('user_id', $user->id)
+                ->where($filterExpression)
+                ->setParameter('user_id', $queryBuilder->getParameter('user_id'))
                 ->execute()
                 ->fetchColumn(0);
         }
@@ -295,15 +342,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             OfferIdentifierCollection::fromArray($offerIdentifierArray),
             new Integer($totalItems)
         );
-    }
-
-    public function findByUserForDomain(
-        User $user,
-        Domain $domain,
-        Natural $limit,
-        Natural $start
-    ) {
-        // TODO: Implement findByUserForDomain() method.
     }
 
     public function setUpdateDate($id, DateTimeInterface $updated)

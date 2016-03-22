@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\ReadModel\Index;
 
 use \DateTimeInterface;
+use ValueObjects\Web\Domain;
 
 interface RepositoryInterface
 {
@@ -15,6 +16,7 @@ interface RepositoryInterface
      * @param string $userId
      * @param string $name
      * @param string $postalCode
+     * @param Domain $owningDomain
      * @param DateTimeInterface $created
      * @return void
      */
@@ -24,6 +26,7 @@ interface RepositoryInterface
         $userId,
         $name,
         $postalCode,
+        Domain $owningDomain,
         DateTimeInterface $created = null
     );
 

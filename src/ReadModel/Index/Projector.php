@@ -29,6 +29,7 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Web\Domain;
 
 /**
  * Logs new events / updates to an index for querying.
@@ -62,14 +63,28 @@ class Projector implements EventListenerInterface
     ];
 
     /**
+     * @var Domain
+     */
+    protected $localDomain;
+
+    /**
+     * @var Domain
+     */
+    protected $UDB2Domain;
+
+    /**
      * @param RepositoryInterface $repository
      */
     public function __construct(
         RepositoryInterface $repository,
-        CreatedByToUserIdResolverInterface $createdByToUserIdResolver
+        CreatedByToUserIdResolverInterface $createdByToUserIdResolver,
+        Domain $localDomain,
+        Domain $UDB2Domain
     ) {
         $this->repository = $repository;
         $this->userIdResolver = $createdByToUserIdResolver;
+        $this->localDomain = $localDomain;
+        $this->UDB2Domain = $UDB2Domain;
     }
 
     /**
@@ -206,7 +221,15 @@ class Projector implements EventListenerInterface
             $udb2Event->getCreationDate()
         );
 
-        $this->updateIndex($itemId, $itemType, (string) $userId, $name, $postalCode, $creationDate);
+        $this->updateIndex(
+            $itemId,
+            $itemType,
+            (string) $userId,
+            $name,
+            $postalCode,
+            $this->UDB2Domain,
+            $creationDate
+        );
     }
 
     /**
@@ -266,6 +289,7 @@ class Projector implements EventListenerInterface
             $userId,
             $name,
             $postalCode,
+            $this->UDB2Domain,
             $creationDate
         );
     }
@@ -291,6 +315,7 @@ class Projector implements EventListenerInterface
             $userId,
             $eventCreated->getTitle(),
             $location->getPostalcode(),
+            $this->localDomain,
             $creationDate
         );
     }
@@ -315,6 +340,7 @@ class Projector implements EventListenerInterface
             $userId,
             $placeCreated->getTitle(),
             $address->getPostalcode(),
+            $this->localDomain,
             $creationDate
         );
     }
@@ -339,6 +365,7 @@ class Projector implements EventListenerInterface
                 $userId,
                 $organizer->getTitle(),
                 $addresses[0]->getPostalCode(),
+                $this->localDomain,
                 $creationDate
             );
         }
@@ -384,6 +411,7 @@ class Projector implements EventListenerInterface
             $userId,
             $name,
             $postalCode,
+            $this->UDB2Domain,
             $creationDate
         );
     }
@@ -412,6 +440,7 @@ class Projector implements EventListenerInterface
         $userId,
         $name,
         $postalCode,
+        Domain $owningDomain,
         DateTimeInterface $creationDate = null
     ) {
         $this->repository->updateIndex(
@@ -420,6 +449,7 @@ class Projector implements EventListenerInterface
             $userId,
             $name,
             $postalCode,
+            $owningDomain,
             $creationDate
         );
     }

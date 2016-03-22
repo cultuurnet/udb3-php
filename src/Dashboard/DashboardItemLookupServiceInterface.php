@@ -32,15 +32,15 @@ interface DashboardItemLookupServiceInterface
      *   Offset to start from.
      * @param User $user
      *  The user to find dashboard items for.
-     * @param Domain $domain
+     * @param Domain $owningDomain
      *  The domain that owns the items.
      *
      * @return Results
      */
     public function findByUserForDomain(
         User $user,
-        Domain $domain,
         Natural $limit,
-        Natural $start
+        Natural $start,
+        Domain $owningDomain
     );
 }

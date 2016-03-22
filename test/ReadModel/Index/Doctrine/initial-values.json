@@ -6,6 +6,7 @@
         "title": "Test abc place",
         "zip": 3000,
         "created": 0,
+        "owning_domain": "udb.be",
         "updated": 0
     },
     {
@@ -15,6 +16,7 @@
         "title": "Test def event",
         "zip": 3000,
         "created": 0,
+        "owning_domain": "udb.be",
         "updated": 0
     },
     {
@@ -24,6 +26,7 @@
         "title": "Test ghj event",
         "zip": 3020,
         "created": 0,
+        "owning_domain": "udb.be",
         "updated": 0
     },
     {
@@ -33,6 +36,7 @@
         "title": "Test abc organizer",
         "zip": 3040,
         "created": 0,
+        "owning_domain": "udb.be",
         "updated": 0
     },
     {
@@ -42,6 +46,7 @@
         "title": "Test 123 place",
         "zip": 3000,
         "created": 0,
+        "owning_domain": "udb.be",
         "updated": 0
     }
 ]

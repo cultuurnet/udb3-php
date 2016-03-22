@@ -10,9 +10,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use Guzzle\Common\Event;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
@@ -197,6 +199,43 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                 )
             )
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider indexUpdateEventsDataProvider
+     */
+    public function it_should_set_the_update_date_when_indexed_items_change(
+        DomainMessage $domainMessage,
+        $itemId
+    ) {
+        $this->repository->expects($this->once())
+            ->method('setUpdateDate')
+            ->with($itemId, new \DateTime(self::DATETIME));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    public function indexUpdateEventsDataProvider()
+    {
+        return array(
+            array(
+                $this->domainMessage(
+                    new PlaceProjectedToJSONLD(
+                        '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                    )
+                ),
+                '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+            ),
+            array(
+                $this->domainMessage(
+                    new EventProjectedToJSONLD(
+                        '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                    )
+                ),
+                '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+            ),
         );
     }
 

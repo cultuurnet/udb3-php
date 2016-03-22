@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
+use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
@@ -23,7 +24,9 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use ValueObjects\String\String as StringLiteral;
 
@@ -32,7 +35,9 @@ use ValueObjects\String\String as StringLiteral;
  */
 class Projector implements EventListenerInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
+    use DelegateEventHandlingToSpecificMethodTrait {
+        DelegateEventHandlingToSpecificMethodTrait::handle as handleMethodSpecificEvents;
+    }
 
     /**
      * @var RepositoryInterface
@@ -45,6 +50,18 @@ class Projector implements EventListenerInterface
     protected $userIdResolver;
 
     /**
+     * A list of events that should trigger an index item update.
+     *  The key is the namespaced class name.
+     *  The value is the method the method to call to get the id of the index item.
+     *
+     * @var string[]
+     */
+    protected static $indexUpdateEvents = [
+        EventProjectedToJSONLD::class => 'getEventId',
+        PlaceProjectedToJSONLD::class => 'getId'
+    ];
+
+    /**
      * @param RepositoryInterface $repository
      */
     public function __construct(
@@ -55,6 +72,41 @@ class Projector implements EventListenerInterface
         $this->userIdResolver = $createdByToUserIdResolver;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(DomainMessage $domainMessage)
+    {
+        $this->handleIndexUpdateEvents($domainMessage);
+        $this->handleMethodSpecificEvents($domainMessage);
+    }
+
+    protected function handleIndexUpdateEvents(DomainMessage $domainMessage)
+    {
+        $event = $domainMessage->getPayload();
+        $eventName = get_class($event);
+
+        if (array_key_exists($eventName, self::$indexUpdateEvents)) {
+            $itemIdentifier = self::$indexUpdateEvents[$eventName];
+
+            if ($itemIdentifier) {
+                $this->setItemUpdateDate(
+                    $event->{$itemIdentifier}(),
+                    new DateTime($domainMessage->getRecordedOn()->toString())
+                );
+            }
+        }
+    }
+
+    /**
+     * @param string $itemId
+     * @param DateTimeInterface $dateUpdated
+     */
+    protected function setItemUpdateDate($itemId, DateTimeInterface $dateUpdated)
+    {
+        $this->repository->setUpdateDate($itemId, $dateUpdated);
+    }
+    
     /**
      * @param \CultureFeed_Cdb_Item_Base $udb2Item
      *
@@ -150,11 +202,8 @@ class Projector implements EventListenerInterface
             }
         }
 
-        $dateString = $udb2Event->getCreationDate();
-        $creationDate = DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $dateString,
-            new DateTimeZone('Europe/Brussels')
+        $creationDate = $this->dateTimeFromUDB2DateString(
+            $udb2Event->getCreationDate()
         );
 
         $this->updateIndex($itemId, $itemType, (string) $userId, $name, $postalCode, $creationDate);
@@ -207,11 +256,8 @@ class Projector implements EventListenerInterface
             }
         }
 
-        $dateString = $udb2Actor->getCreationDate();
-        $creationDate = DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $dateString,
-            new DateTimeZone('Europe/Brussels')
+        $creationDate = $this->dateTimeFromUDB2DateString(
+            $udb2Actor->getCreationDate()
         );
 
         $this->updateIndex(
@@ -328,22 +374,54 @@ class Projector implements EventListenerInterface
             return;
         }
 
-        $dateString = $udb2Actor->getCreationDate();
-        $creationDate = DateTime::createFromFormat(
+        $creationDate = $this->dateTimeFromUDB2DateString(
+            $udb2Actor->getCreationDate()
+        );
+
+        $this->updateIndex(
+            $organizerId,
+            EntityType::ORGANIZER(),
+            $userId,
+            $name,
+            $postalCode,
+            $creationDate
+        );
+    }
+
+    /**
+     * @param $dateString
+     *  A UDB2 formatted date string
+     *
+     * @return DateTimeInterface
+     */
+    protected function dateTimeFromUDB2DateString($dateString)
+    {
+        return DateTime::createFromFormat(
             'Y-m-d?H:i:s',
             $dateString,
             new DateTimeZone('Europe/Brussels')
         );
-
-        $this->updateIndex($organizerId, EntityType::ORGANIZER(), $userId, $name, $postalCode, $creationDate);
     }
 
     /**
      * Update the index
      */
-    protected function updateIndex($id, EntityType $type, $userId, $name, $postalCode, \DateTimeInterface $creationDate = null)
-    {
-        $this->repository->updateIndex($id, $type, $userId, $name, $postalCode, $creationDate);
+    protected function updateIndex(
+        $id,
+        EntityType $type,
+        $userId,
+        $name,
+        $postalCode,
+        DateTimeInterface $creationDate = null
+    ) {
+        $this->repository->updateIndex(
+            $id,
+            $type,
+            $userId,
+            $name,
+            $postalCode,
+            $creationDate
+        );
     }
 
     /**

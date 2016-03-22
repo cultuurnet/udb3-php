@@ -140,7 +140,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'foo',
             'title' => 'Test event xyz',
             'zip' => '3020',
-            'created' => 0
+            'created' => 0,
+            'updated' => 0
         ];
 
         $this->assertCurrentData($expectedData);
@@ -194,5 +195,27 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             $expectedIds,
             $this->repository->findPlacesByPostalCode('3000')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_updated_column_when_setting_the_updated_date()
+    {
+        $itemId = 'def';
+        $dateUpdated = new \DateTime();
+        $dateUpdated->setTimestamp(1171502725);
+
+        $expectedData = $this->data;
+
+        $expectedData[1] = [
+                'updated' => 1171502725,
+            ] + (array) $expectedData[1];
+
+        $expectedData[1] = (object) $expectedData[1];
+
+        $this->repository->setUpdateDate($itemId, $dateUpdated);
+
+        $this->assertCurrentData($expectedData);
     }
 }

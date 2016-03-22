@@ -18,11 +18,25 @@ interface RepositoryInterface
      * @param DateTimeInterface $created
      * @return void
      */
-    public function updateIndex($id, EntityType $entityType, $userId, $name, $postalCode, DateTimeInterface $created = null);
+    public function updateIndex(
+        $id,
+        EntityType $entityType,
+        $userId,
+        $name,
+        $postalCode,
+        DateTimeInterface $created = null
+    );
 
     /**
      * @param string$id
      * @return void
      */
     public function deleteIndex($id, EntityType $entityType);
+
+    /**
+     * @param string $id
+     * @param DateTimeInterface $updated
+     * @return void
+     */
+    public function setUpdateDate($id, DateTimeInterface $updated);
 }

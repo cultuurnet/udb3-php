@@ -18,7 +18,6 @@ use CultuurNet\UiTIDProvider\User\User;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
@@ -49,8 +48,14 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateIndex($id, EntityType $entityType, $userId, $name, $postalCode, DateTimeInterface $created = null)
-    {
+    public function updateIndex(
+        $id,
+        EntityType $entityType,
+        $userId,
+        $name,
+        $postalCode,
+        DateTimeInterface $created = null
+    ) {
         $this->connection->beginTransaction();
 
         try {
@@ -85,6 +90,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'title' => ':title',
                             'zip' => ':zip',
                             'created' => ':created',
+                            'updated' => ':created'
                         ]
                     );
 
@@ -109,8 +115,13 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
      * @param string $postalCode
      * @param DateTimeInterface $created
      */
-    private function setValues(QueryBuilder $q, $userId, $name, $postalCode, DateTimeInterface $created = null)
-    {
+    private function setValues(
+        QueryBuilder $q,
+        $userId,
+        $name,
+        $postalCode,
+        DateTimeInterface $created = null
+    ) {
         $q->setParameter('uid', $userId);
         $q->setParameter('title', $name);
         $q->setParameter('zip', $postalCode);
@@ -245,6 +256,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $q->select('entity_id', 'entity_type')
             ->from($this->tableName->toNative())
             ->where($itemIsOwnedByUser)
+            ->orderBy('updated', 'DESC')
             ->setMaxResults($limit->toNative())
             ->setFirstResult($start->toNative());
 
@@ -292,5 +304,22 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         Natural $start
     ) {
         // TODO: Implement findByUserForDomain() method.
+    }
+
+    public function setUpdateDate($id, DateTimeInterface $updated)
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $expr = $this->connection->getExpressionBuilder();
+
+        $queryBuilder
+            ->update($this->tableName->toNative())
+            ->where(
+                $expr->andX(
+                    $expr->eq('entity_id', ':entity_id')
+                )
+            )
+            ->set('updated', $updated->getTimestamp())
+            ->setParameter('entity_id', $id)
+            ->execute();
     }
 }

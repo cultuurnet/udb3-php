@@ -46,7 +46,9 @@ class OfferTest extends AggregateRootScenarioTestCase
     {
         parent::setUp();
 
-        $this->offer = new Item('foo');
+        $this->offer = new Item();
+        $this->offer->apply(new ItemCreated('foo'));
+
         $this->labels = (new LabelCollection())
             ->with(new Label('test'))
             ->with(new Label('label'))

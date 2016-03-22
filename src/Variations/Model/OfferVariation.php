@@ -1,23 +1,21 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Model;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use CultuurNet\UDB3\Variations\Deleteable;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariation extends EventSourcedAggregateRoot implements Deleteable
+class OfferVariation extends EventSourcedAggregateRoot implements Deleteable
 {
     /**
      * @var Id
@@ -37,7 +35,7 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     /**
      * @var Url
      */
-    private $eventUrl;
+    private $originUrl;
 
     /**
      * @var OwnerId
@@ -51,7 +49,7 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
 
     /**
      * @param Id $id
-     * @param Url $eventUrl
+     * @param Url $originUrl
      * @param Purpose $purpose
      * @param OwnerId $ownerId
      * @param Description $description
@@ -59,16 +57,16 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
      */
     public static function create(
         Id $id,
-        Url $eventUrl,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
         $variation = new static();
         $variation->apply(
-            new EventVariationCreated(
+            new OfferVariationCreated(
                 $id,
-                $eventUrl,
+                $originUrl,
                 $ownerId,
                 $purpose,
                 $description
@@ -105,16 +103,16 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
         $this->description = $descriptionEdited->getDescription();
     }
 
-    protected function applyEventVariationCreated(EventVariationCreated $eventVariationCreated)
+    protected function applyOfferVariationCreated(OfferVariationCreated $offerVariationCreated)
     {
-        $this->id = $eventVariationCreated->getId();
-        $this->purpose = $eventVariationCreated->getPurpose();
-        $this->description = $eventVariationCreated->getDescription();
-        $this->ownerId = $eventVariationCreated->getOwnerId();
-        $this->eventUrl = $eventVariationCreated->getEventUrl();
+        $this->id = $offerVariationCreated->getId();
+        $this->purpose = $offerVariationCreated->getPurpose();
+        $this->description = $offerVariationCreated->getDescription();
+        $this->ownerId = $offerVariationCreated->getOwnerId();
+        $this->originUrl = $offerVariationCreated->getOriginUrl();
     }
 
-    protected function applyEventVariationDeleted()
+    protected function applyOfferVariationDeleted()
     {
         $this->deleted = true;
     }
@@ -132,7 +130,7 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     public function markDeleted()
     {
         $this->guardNotDeleted();
-        $this->apply(new EventVariationDeleted($this->id));
+        $this->apply(new OfferVariationDeleted($this->id));
     }
 
     /**
@@ -170,8 +168,8 @@ class EventVariation extends EventSourcedAggregateRoot implements Deleteable
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOriginUrl()
     {
-        return $this->eventUrl;
+        return $this->originUrl;
     }
 }

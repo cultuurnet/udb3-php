@@ -1,11 +1,10 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\Deserializer\JSONDeserializer;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactory;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
@@ -15,7 +14,7 @@ use JsonSchema\Validator;
 use ValueObjects\String\String;
 use stdClass;
 
-class CreateEventVariationJSONDeserializer extends JSONDeserializer
+class CreateOfferVariationJSONDeserializer extends JSONDeserializer
 {
     /**
      * @var UrlValidator[]
@@ -33,7 +32,7 @@ class CreateEventVariationJSONDeserializer extends JSONDeserializer
     /**
      * @inheritdoc
      *
-     * @return CreateEventVariation
+     * @return CreateOfferVariation
      */
     public function deserialize(String $data)
     {
@@ -49,7 +48,7 @@ class CreateEventVariationJSONDeserializer extends JSONDeserializer
     /**
      * @param stdClass $json
      *
-     * @return CreateEventVariation
+     * @return CreateOfferVariation
      *
      * @throws ValidationException
      */
@@ -61,7 +60,7 @@ class CreateEventVariationJSONDeserializer extends JSONDeserializer
             $urlValidator->validateUrl($url);
         }
 
-        return new CreateEventVariation(
+        return new CreateOfferVariation(
             $url,
             new OwnerId($json->owner),
             new Purpose($json->purpose),

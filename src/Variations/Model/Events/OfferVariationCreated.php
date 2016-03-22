@@ -5,13 +5,14 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariationCreated extends EventVariationEvent
+class OfferVariationCreated extends OfferVariationEvent
 {
     /**
      * @var OwnerId
@@ -31,25 +32,25 @@ class EventVariationCreated extends EventVariationEvent
     /**
      * @var Url
      */
-    private $eventUrl;
+    private $originUrl;
 
     /**
      * @param Id $id
-     * @param Url $eventUrl
+     * @param Url $originUrl
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
      */
     public function __construct(
         Id $id,
-        Url $eventUrl,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
         parent::__construct($id);
 
-        $this->eventUrl = $eventUrl;
+        $this->originUrl = $originUrl;
         $this->ownerId = $ownerId;
         $this->purpose = $purpose;
         $this->description = $description;
@@ -66,9 +67,9 @@ class EventVariationCreated extends EventVariationEvent
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOriginUrl()
     {
-        return $this->eventUrl;
+        return $this->originUrl;
     }
 
     /**
@@ -93,10 +94,10 @@ class EventVariationCreated extends EventVariationEvent
     public function serialize()
     {
         return parent::serialize() + array(
-            'event_url' => (string) $this->getEventUrl(),
+            'origin_url' => (string) $this->getOriginUrl(),
             'owner_id' => (string) $this->getOwnerId(),
             'purpose' => (string) $this->getPurpose(),
-            'description' => (string) $this->getDescription()
+            'description' => (string) $this->getDescription(),
         );
     }
 
@@ -108,7 +109,7 @@ class EventVariationCreated extends EventVariationEvent
     {
         return new static(
             new Id($data['id']),
-            new Url($data['event_url']),
+            new Url($data['origin_url']),
             new OwnerId($data['owner_id']),
             new Purpose($data['purpose']),
             new Description($data['description'])

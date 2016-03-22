@@ -13,9 +13,17 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     private $deserializer;
 
+    /**
+     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $iriOfferIdentifierFactory;
+
     public function setUp()
     {
-        $this->deserializer = new IriOfferIdentifierJSONDeserializer();
+        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->deserializer = new IriOfferIdentifierJSONDeserializer(
+            $this->iriOfferIdentifierFactory
+        );
     }
 
     /**
@@ -27,8 +35,14 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 
         $expected = new IriOfferIdentifier(
             "event/1",
+            "1",
             OfferType::EVENT()
         );
+
+        $this->iriOfferIdentifierFactory->expects($this->once())
+            ->method('fromIri')
+            ->with('event/1')
+            ->willReturn($expected);
 
         $actual = $this->deserializer->deserialize($json);
 

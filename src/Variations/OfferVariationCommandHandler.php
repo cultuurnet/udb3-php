@@ -1,35 +1,35 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Variations\Command;
+namespace CultuurNet\UDB3\Variations;
 
 use Broadway\CommandHandling\CommandHandler;
-use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
+use CultuurNet\UDB3\Variations\Command\CreateOfferVariation;
+use CultuurNet\UDB3\Variations\Command\DeleteOfferVariation;
+use CultuurNet\UDB3\Variations\Command\EditDescription;
+use CultuurNet\UDB3\Variations\OfferVariationServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
-class EventVariationCommandHandler extends CommandHandler implements LoggerAwareInterface
+class OfferVariationCommandHandler extends CommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
     /**
-     * @var EventVariationServiceInterface
+     * @var OfferVariationServiceInterface
      */
     private $variationService;
 
     public function __construct(
-        EventVariationServiceInterface $variationService
+        OfferVariationServiceInterface $variationService
     ) {
         $this->variationService = $variationService;
     }
 
-    protected function handleCreateEventVariation(
-        CreateEventVariation $createEventVariation
+    protected function handleCreateOfferVariation(
+        CreateOfferVariation $createEventVariation
     ) {
         $variation = $this->variationService->createEventVariation(
-            $createEventVariation->getEventUrl(),
+            $createEventVariation->getOriginUrl(),
             $createEventVariation->getOwnerId(),
             $createEventVariation->getPurpose(),
             $createEventVariation->getDescription()
@@ -62,7 +62,7 @@ class EventVariationCommandHandler extends CommandHandler implements LoggerAware
         }
     }
 
-    protected function handleDeleteEventVariation(DeleteEventVariation $deleteEventVariation)
+    protected function handleDeleteOfferVariation(DeleteOfferVariation $deleteEventVariation)
     {
         $this->variationService->deleteEventVariation($deleteEventVariation->getId());
 

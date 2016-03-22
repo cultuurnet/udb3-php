@@ -5,20 +5,21 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
+class OfferVariationCreatedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function it_sets_property_values_on_creation()
     {
-        $eventVariationCreated = new EventVariationCreated(
+        $eventVariationCreated = new OfferVariationCreated(
             new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
@@ -33,7 +34,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             new Url('//beta.uitdatabank.be/event/xyz'),
-            $eventVariationCreated->getEventUrl()
+            $eventVariationCreated->getOriginUrl()
         );
 
         $this->assertEquals(
@@ -57,7 +58,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_supports_serialization()
     {
-        $eventVariationCreated = new EventVariationCreated(
+        $eventVariationCreated = new OfferVariationCreated(
             new Id('29d6d973-ca78-4561-b593-631502c74a8c'),
             new Url('//beta.uitdatabank.be/event/xyz'),
             new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
@@ -67,7 +68,7 @@ class EventVariationCreatedTest extends \PHPUnit_Framework_TestCase
 
         $serialized = $eventVariationCreated->serialize();
 
-        $deserialized = EventVariationCreated::deserialize($serialized);
+        $deserialized = OfferVariationCreated::deserialize($serialized);
 
         $this->assertEquals(
             $eventVariationCreated,

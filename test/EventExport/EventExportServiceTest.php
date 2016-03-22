@@ -99,6 +99,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             function ($i) {
                 return new IriOfferIdentifier(
                     'http://example.com/event/' . $i,
+                    $i,
                     OfferType::EVENT()
                 );
             },

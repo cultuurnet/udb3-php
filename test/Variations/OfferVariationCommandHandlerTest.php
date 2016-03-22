@@ -1,19 +1,17 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3\Variations\Command;
+namespace CultuurNet\UDB3\Variations;
 
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Variations\DefaultEventVariationService;
-use CultuurNet\UDB3\Variations\EventVariationRepository;
+use CultuurNet\UDB3\Variations\Command\CreateOfferVariation;
+use CultuurNet\UDB3\Variations\Command\DeleteOfferVariation;
+use CultuurNet\UDB3\Variations\Command\EditDescription;
 use CultuurNet\UDB3\Variations\Model\Events\DescriptionEdited;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -22,7 +20,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 
-class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
+class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
     /**
      * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -46,12 +44,12 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     protected function createCommandHandler(EventStoreInterface $eventStore, EventBusInterface $eventBus)
     {
-        $eventVariationService = new DefaultEventVariationService(
-            new EventVariationRepository($eventStore, $eventBus),
+        $eventVariationService = new DefaultOfferVariationService(
+            new OfferVariationRepository($eventStore, $eventBus),
             $this->generator
         );
 
-        $commandHandler = new EventVariationCommandHandler($eventVariationService);
+        $commandHandler = new OfferVariationCommandHandler($eventVariationService);
         $commandHandler->setLogger($this->logger);
 
         return $commandHandler;
@@ -64,7 +62,7 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $id = UUID::generateAsString();
 
-        $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
+        $originUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98');
         $ownerId = new OwnerId('xyz');
         $purpose = new Purpose('personal');
         $description = new Description('my own description');
@@ -79,17 +77,17 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->scenario
             ->withAggregateId($id)
-            ->when(new CreateEventVariation(
-                $eventUrl,
+            ->when(new CreateOfferVariation(
+                $originUrl,
                 $ownerId,
                 $purpose,
                 $description
             ))
             ->then(
                 [
-                    new EventVariationCreated(
+                    new OfferVariationCreated(
                         new Id($id),
-                        $eventUrl,
+                        $originUrl,
                         $ownerId,
                         $purpose,
                         $description
@@ -134,16 +132,16 @@ class EventVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId((string) $id)
             ->given([$creationEvent])
-            ->when(new DeleteEventVariation($id))
-            ->then([new EventVariationDeleted($id)]);
+            ->when(new DeleteOfferVariation($id))
+            ->then([new OfferVariationDeleted($id)]);
     }
 
     /**
-     * @return EventVariationCreated
+     * @return OfferVariationCreated
      */
     private function getExampleVariationCreatedEvent()
     {
-        return new EventVariationCreated(
+        return new OfferVariationCreated(
             $id = new Id(UUID::generateAsString()),
             $eventUrl = new Url('//beta.uitdatabank.be/event/5abf2278-a916-4dee-a198-94b57db66e98'),
             $ownerId = new OwnerId('xyz'),

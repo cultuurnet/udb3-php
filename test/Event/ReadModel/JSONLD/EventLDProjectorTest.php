@@ -12,15 +12,15 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\EventServiceInterface;
@@ -35,9 +35,12 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
-use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
@@ -87,6 +90,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $serializer;
 
     /**
+     * @var IriOfferIdentifierFactoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $iriOfferIdentifierFactory;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -127,13 +135,16 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
+        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+
         $this->projector = new EventLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->eventService,
             $this->placeService,
             $this->organizerService,
-            $this->serializer
+            $this->serializer,
+            $this->iriOfferIdentifierFactory
         );
     }
 
@@ -794,6 +805,14 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $secondEventID = '579';
 
         $placeID = '101214';
+        $placeIri = 'place/' . $placeID;
+
+        $placeIdentifier = new IriOfferIdentifier($placeIri, $placeID, OfferType::PLACE());
+
+        $this->iriOfferIdentifierFactory->expects($this->once())
+            ->method('fromIri')
+            ->with($placeIri)
+            ->willReturn($placeIdentifier);
 
         $this->eventService
             ->expects($this->once())
@@ -871,11 +890,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ],
         ];
 
-        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD($placeID);
+        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD($placeIri);
 
         $this->projector->handle(
             DomainMessage::recordNow(
-                $placeProjectedToJSONLD->getId(),
+                $placeID,
                 0,
                 new Metadata(),
                 $placeProjectedToJSONLD

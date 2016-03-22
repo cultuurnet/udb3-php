@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Variations\Model\Events;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
-abstract class EventVariationEvent implements SerializableInterface
+abstract class OfferVariationEvent implements SerializableInterface
 {
     /**
      * @var Id

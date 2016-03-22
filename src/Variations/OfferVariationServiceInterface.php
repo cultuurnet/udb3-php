@@ -3,25 +3,26 @@
 namespace CultuurNet\UDB3\Variations;
 
 use Broadway\Repository\AggregateNotFoundException;
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-interface EventVariationServiceInterface
+interface OfferVariationServiceInterface
 {
     /**
-     * @param Url $eventUrl
+     * @param Url $originUrl
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
      *
-     * @return EventVariation
+     * @return OfferVariation
      */
     public function createEventVariation(
-        Url $eventUrl,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description

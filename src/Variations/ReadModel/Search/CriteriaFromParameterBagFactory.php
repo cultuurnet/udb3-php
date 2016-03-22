@@ -33,7 +33,7 @@ class CriteriaFromParameterBagFactory
         }
 
         if ($bag->has('same_as')) {
-            $criteria = $criteria->withEventUrl(new Url(
+            $criteria = $criteria->withOriginUrl(new Url(
                 $bag->get('same_as')
             ));
         }

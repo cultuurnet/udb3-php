@@ -32,6 +32,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
                 function (String $id) {
                     return new IriOfferIdentifier(
                         "event/{$id}",
+                        $id,
                         OfferType::EVENT()
                     );
                 }
@@ -54,18 +55,21 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
                 ->with(
                     new IriOfferIdentifier(
                         'event/1',
+                        '1',
                         OfferType::EVENT()
                     )
                 )
                 ->with(
                     new IriOfferIdentifier(
                         'event/2',
+                        '2',
                         OfferType::EVENT()
                     )
                 )
                 ->with(
                     new IriOfferIdentifier(
                         'event/3',
+                        '3',
                         OfferType::EVENT()
                     )
                 ),

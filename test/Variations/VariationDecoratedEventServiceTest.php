@@ -91,12 +91,12 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -118,14 +118,14 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
     {
         $eventId = '937E901C-2E15-4F28-92EE-CD0AAFF44DB0';
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $eventJsonLD = $this->eventJsonLD($eventId);
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([]);
 
@@ -154,12 +154,12 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
 
         $eventJsonLD = $this->eventJsonLD($eventId);
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -199,12 +199,12 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         );
         $this->variationsJsonLdRepository->remove($variationId);
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 

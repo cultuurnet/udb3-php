@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
@@ -49,10 +50,10 @@ class DBALRepository implements RepositoryInterface
             $this->connection->quoteIdentifier($this->tableName),
             [
                 'id' => (string) $variationId,
-                'event' => (string) $eventUrl,
                 'owner' => (string) $ownerId,
                 'purpose' => (string) $purpose,
                 'inserted' => time(),
+                'origin_url' => (string) $eventUrl,
             ]
         );
 
@@ -62,7 +63,7 @@ class DBALRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function countEventVariations(Criteria $criteria)
+    public function countOfferVariations(Criteria $criteria)
     {
         $q = $this->connection->createQueryBuilder();
         $q
@@ -84,7 +85,7 @@ class DBALRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getEventVariations(
+    public function getOfferVariations(
         Criteria $criteria,
         $limit = 30,
         $page = 0
@@ -150,11 +151,6 @@ class DBALRepository implements RepositoryInterface
             array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
-            'event',
-            'text',
-            array('notnull' => true)
-        );
-        $table->addColumn(
             'owner',
             'string',
             array('length' => 36, 'notnull' => true)
@@ -169,6 +165,12 @@ class DBALRepository implements RepositoryInterface
             'inserted',
             'integer',
             array('notnull' => true, 'unsigned' => true)
+        );
+
+        $table->addColumn(
+            'origin_url',
+            'text',
+            array('notnull' => true)
         );
 
         $table->setPrimaryKey(array('id'));

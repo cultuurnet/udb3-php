@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Variations\Model\Events;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
-class DescriptionEdited extends EventVariationEvent
+class DescriptionEdited extends OfferVariationEvent
 {
     /**
      * @var Description

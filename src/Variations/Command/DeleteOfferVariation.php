@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 
-class DeleteEventVariation
+class DeleteOfferVariation
 {
     /**
      * @var Id

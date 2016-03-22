@@ -84,10 +84,12 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $this->offerIdentifiers = [
             1 => new IriOfferIdentifier(
                 'event/1',
+                '1',
                 OfferType::EVENT()
             ),
             2 => new IriOfferIdentifier(
                 'place/2',
+                '2',
                 OfferType::PLACE()
             ),
         ];

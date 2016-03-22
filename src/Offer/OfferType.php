@@ -12,4 +12,9 @@ class OfferType extends Enum
 {
     const EVENT = 'Event';
     const PLACE = 'Place';
+
+    public static function fromCaseInsensitiveValue($value)
+    {
+        return self::fromNative(ucfirst(strtolower($value)));
+    }
 }

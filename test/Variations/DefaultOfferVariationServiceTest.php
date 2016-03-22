@@ -10,15 +10,17 @@ use Broadway\EventHandling\TraceableEventBus;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var TraceableEventStore
@@ -36,7 +38,7 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
     private $uuidGenerator;
 
     /**
-     * @var DefaultEventVariationService
+     * @var DefaultOfferVariationService
      */
     private $variationService;
 
@@ -54,12 +56,12 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
             UuidGeneratorInterface::class
         );
 
-        $repository = new EventVariationRepository(
+        $repository = new OfferVariationRepository(
             $this->eventStore,
             $this->eventBus
         );
 
-        $this->variationService = new DefaultEventVariationService(
+        $this->variationService = new DefaultOfferVariationService(
             $repository,
             $this->uuidGenerator
         );
@@ -77,7 +79,7 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn('19910c56-db76-4cf6-bc28-b25a7270de2e');
 
         $variation = $this->variationService->createEventVariation(
-            new Url('//beta.uitdatabank.be/event/'),
+            new Url('//beta.uitdatabank.be/event/235'),
             new OwnerId('xyz'),
             new Purpose('personal'),
             new Description('my personal description')
@@ -90,9 +92,9 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                new EventVariationCreated(
+                new OfferVariationCreated(
                     new Id('19910c56-db76-4cf6-bc28-b25a7270de2e'),
-                    new Url('//beta.uitdatabank.be/event/'),
+                    new Url('//beta.uitdatabank.be/event/235'),
                     new OwnerId('xyz'),
                     new Purpose('personal'),
                     new Description('my personal description')
@@ -114,7 +116,7 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn('29910c56-db76-4cf6-bc28-b25a7270de2e');
 
         $this->variationService->createEventVariation(
-            new Url('//beta.uitdatabank.be/event/'),
+            new Url('//beta.uitdatabank.be/event/235'),
             new OwnerId('xyz'),
             new Purpose('personal'),
             new Description('my personal description')
@@ -129,7 +131,7 @@ class DefaultEventVariationServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                new EventVariationDeleted($variationId)
+                new OfferVariationDeleted($variationId)
             ],
             $events
         );

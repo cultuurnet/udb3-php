@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Command;
 
@@ -10,7 +7,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 
-class CreateEventVariation
+class CreateOfferVariation
 {
     /**
      * @var OwnerId
@@ -30,21 +27,21 @@ class CreateEventVariation
     /**
      * @var Url
      */
-    private $eventUrl;
+    private $originUrl;
 
     /**
-     * @param Url $eventUrl
+     * @param Url $originUrl
      * @param OwnerId $ownerId
      * @param Purpose $purpose
      * @param Description $description
      */
     public function __construct(
-        Url $eventUrl,
+        Url $originUrl,
         OwnerId $ownerId,
         Purpose $purpose,
         Description $description
     ) {
-        $this->eventUrl = $eventUrl;
+        $this->originUrl = $originUrl;
         $this->ownerId = $ownerId;
         $this->purpose = $purpose;
         $this->description = $description;
@@ -61,9 +58,9 @@ class CreateEventVariation
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOriginUrl()
     {
-        return $this->eventUrl;
+        return $this->originUrl;
     }
 
     /**

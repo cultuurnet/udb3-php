@@ -10,6 +10,20 @@ use ValueObjects\String\String;
 class IriOfferIdentifierJSONDeserializer implements DeserializerInterface
 {
     /**
+     * @var IriOfferIdentifierFactoryInterface
+     */
+    private $iriOfferIdentifierFactory;
+
+    /**
+     * IriOfferIdentifierJSONDeserializer constructor.
+     * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
+     */
+    public function __construct(IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory)
+    {
+        $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
+    }
+
+    /**
      * @param String $data
      * @return IriOfferIdentifier
      */
@@ -24,13 +38,13 @@ class IriOfferIdentifierJSONDeserializer implements DeserializerInterface
         if (!isset($data['@id'])) {
             throw new MissingValueException('Missing property "@id".');
         }
+        //@TODO III-826 Remove type property.
         if (!isset($data['@type'])) {
             throw new MissingValueException('Missing property "@type".');
         }
 
-        return new IriOfferIdentifier(
-            $data['@id'],
-            OfferType::fromNative($data['@type'])
+        return $this->iriOfferIdentifierFactory->fromIri(
+            $data['@id']
         );
     }
 }

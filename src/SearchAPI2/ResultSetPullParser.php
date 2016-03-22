@@ -86,6 +86,7 @@ class ResultSetPullParser
                     $items = $items->with(
                         new IriOfferIdentifier(
                             $iriGenerator->iri($currentEventCdbId),
+                            $currentEventCdbId,
                             $currentEventIsUdb3Place ? OfferType::PLACE() : OfferType::EVENT()
                         )
                     );

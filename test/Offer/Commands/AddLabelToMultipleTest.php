@@ -30,14 +30,17 @@ class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
             [
                 new IriOfferIdentifier(
                     'event/1',
+                    '1',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
                     'event/2',
+                    '2',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
                     'event/3',
+                    '3',
                     OfferType::EVENT()
                 )
             ]

@@ -48,12 +48,13 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
-use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
@@ -85,12 +86,18 @@ class EventLDProjector extends OfferLDProjector implements
     protected $eventService;
 
     /**
+     * @var IriOfferIdentifierFactoryInterface
+     */
+    protected $iriOfferIdentifierFactory;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
      * @param PlaceService $placeService
      * @param OrganizerService $organizerService
      * @param SerializerInterface $mediaObjectSerializer
+     * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -98,7 +105,8 @@ class EventLDProjector extends OfferLDProjector implements
         EventServiceInterface $eventService,
         PlaceService $placeService,
         OrganizerService $organizerService,
-        SerializerInterface $mediaObjectSerializer
+        SerializerInterface $mediaObjectSerializer,
+        IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
     ) {
         parent::__construct(
             $repository,
@@ -112,6 +120,8 @@ class EventLDProjector extends OfferLDProjector implements
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter(new CdbXMLItemBaseImporter());
+
+        $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
     }
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
@@ -142,12 +152,16 @@ class EventLDProjector extends OfferLDProjector implements
     protected function applyPlaceProjectedToJSONLD(
         PlaceProjectedToJSONLD $placeProjectedToJSONLD
     ) {
+        $identifier = $this->iriOfferIdentifierFactory->fromIri(
+            $placeProjectedToJSONLD->getIri()
+        );
+
         $eventsLocatedAtPlace = $this->eventsLocatedAtPlace(
-            $placeProjectedToJSONLD->getId()
+            $identifier->getId()
         );
 
         $placeJSONLD = $this->placeService->getEntity(
-            $placeProjectedToJSONLD->getId()
+            $identifier->getId()
         );
 
         foreach ($eventsLocatedAtPlace as $eventId) {

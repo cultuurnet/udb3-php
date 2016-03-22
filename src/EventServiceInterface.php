@@ -13,6 +13,9 @@ interface EventServiceInterface
     /**
      * Get a single event by its id.
      *
+     * @deprecated
+     *   Use EntityServiceInterface::getEntity() instead.
+     *
      * @param string $id
      *   A string uniquely identifying an event.
      *

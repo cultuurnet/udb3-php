@@ -46,7 +46,7 @@ class EditDescriptionJSONDeserializer extends JSONDeserializer
     /**
      * @param stdClass $json
      *
-     * @return CreateEventVariation
+     * @return EditDescription
      */
     private function createTypedObject(stdClass $json)
     {

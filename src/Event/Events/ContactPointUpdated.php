@@ -1,21 +1,18 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\ContactPointUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Event when contactPoint was updated
  */
-class ContactPointUpdated extends EventEvent
+class ContactPointUpdated extends AbstractEvent implements SerializableInterface
 {
     use \CultuurNet\UDB3\ContactPointUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id
@@ -32,6 +29,6 @@ class ContactPointUpdated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], ContactPoint::deserialize($data['contactPoint']));
+        return new static($data['item_id'], ContactPoint::deserialize($data['contactPoint']));
     }
 }

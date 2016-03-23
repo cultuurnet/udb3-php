@@ -1,19 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Calendar.
- */
-
 namespace CultuurNet\UDB3;
 
-use CultuurNet\UDB3\Timestamp;
-use CultuurNet\UDB3\CalendarInterface;
+use Broadway\Serializer\SerializableInterface;
 
 /**
- * a Calendar for events and places.
+ * Calendar for events and places.
  */
-class Calendar implements CalendarInterface, JsonLdSerializableInterface
+class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
 
     /**
@@ -47,11 +41,23 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     const PERMANENT = "permanent";
 
     /**
-     * Constructor.
+     * @param string $calendarType
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $timestamps
+     * @param array $openingHours
      */
-    public function __construct($calendarType, $startDate = '', $endDate = '', $timestamps = array(), $openingHours = array())
-    {
-        if ($calendarType != self::PERMANENT && $calendarType != self::MULTIPLE && $calendarType != self::PERIODIC && $calendarType != self::SINGLE) {
+    public function __construct(
+        $calendarType,
+        $startDate = '',
+        $endDate = '',
+        $timestamps = array(),
+        $openingHours = array()
+    ) {
+        if ($calendarType != self::PERMANENT &&
+            $calendarType != self::MULTIPLE &&
+            $calendarType != self::PERIODIC &&
+            $calendarType != self::SINGLE) {
             throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
         }
 
@@ -67,8 +73,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get current calendar type.
-     * @return string
+     * @inheritdoc
      */
     public function getType()
     {
@@ -80,11 +85,18 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
      */
     public function serialize()
     {
+        $serializedTimestamps = array_map(
+            function (Timestamp $timestamp) {
+                return $timestamp->serialize();
+            },
+            $this->timestamps
+        );
+
         return [
           'type' => $this->getType(),
           'startDate' => $this->startDate,
           'endDate' => $this->endDate,
-          'timestamps' => $this->timestamps,
+          'timestamps' => $serializedTimestamps,
           'openingHours' => $this->openingHours,
         ];
     }
@@ -94,13 +106,21 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
      */
     public static function deserialize(array $data)
     {
+        foreach ($data['timestamps'] as $key => $timestamp) {
+            $data['timestamps'][$key] = Timestamp::deserialize($timestamp);
+        }
+
         return new static(
-            $data['type'], $data['startDate'], $data['endDate'], $data['timestamps'], $data['openingHours']
+            $data['type'],
+            $data['startDate'],
+            $data['endDate'],
+            $data['timestamps'],
+            $data['openingHours']
         );
     }
 
     /**
-     * Get the start date
+     * @inheritdoc
      */
     public function getStartDate()
     {
@@ -116,7 +136,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get the opening hours
+     * @inheritdoc
      */
     public function getOpeningHours()
     {
@@ -124,8 +144,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
     }
 
     /**
-     * Get the Timestamps
-     * @return type
+     * @inheritdoc
      */
     public function getTimestamps()
     {
@@ -137,7 +156,6 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
      */
     public function toJsonLd()
     {
-
         $jsonLd = [];
 
         $startDate = $this->getStartDate();
@@ -188,6 +206,5 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface
         }
 
         return $jsonLd;
-
     }
 }

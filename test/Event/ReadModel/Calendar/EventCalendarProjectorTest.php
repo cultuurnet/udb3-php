@@ -13,6 +13,7 @@ use CultureFeed_Cdb_Data_Calendar_SchemeDay as SchemeDay;
 use CultureFeed_Cdb_Data_Calendar_Timestamp as Timestamp;
 use CultureFeed_Cdb_Data_Calendar_TimestampList as TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme as WeekScheme;
+use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\CdbXMLProjectorTestBase;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
@@ -21,7 +22,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use ValueObjects\DateTime\Time;
 use ValueObjects\String\String;
 
-class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
+class EventCalendarProjectorTest extends \PHPUnit_Framework_TestCase
 {
     const CDBXML_NAMESPACE_33 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
     const CDBXML_NAMESPACE_32 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
@@ -36,9 +37,14 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
      */
     protected $projector;
 
+    /**
+     * @var CdbXMLEventFactory
+     */
+    protected $cdbXMLEventFactory;
+
     public function setUp()
     {
-        parent::setUp();
+        $this->cdbXMLEventFactory = new CdbXMLEventFactory();
 
         $this->repository = $this->getMock(CalendarRepositoryInterface::class);
         $this->projector = new EventCalendarProjector($this->repository);
@@ -49,7 +55,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
      */
     public function it_saves_the_calendar_periods_from_events_imported_from_udb2()
     {
-        $event = $this->eventImportedFromUDB2('samples/event_with_calendar_periods.cdbxml.xml');
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2('samples/event_with_calendar_periods.cdbxml.xml');
         $this->repositoryExpectsCalendarToBeSaved('someId', $this->getPeriodList());
         $this->projector->applyEventImportedFromUDB2($event);
     }
@@ -59,7 +65,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
      */
     public function it_saves_the_calendar_periods_from_events_updated_from_udb2()
     {
-        $event = $this->eventUpdatedFromUDB2('samples/event_with_calendar_periods.cdbxml.xml');
+        $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2('samples/event_with_calendar_periods.cdbxml.xml');
         $this->repositoryExpectsCalendarToBeSaved('someId', $this->getPeriodList());
         $this->projector->applyEventUpdatedFromUDB2($event);
     }
@@ -69,7 +75,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
      */
     public function it_saves_the_calendar_timestamps_from_events_imported_from_udb2()
     {
-        $event = $this->eventImportedFromUDB2('samples/event_with_calendar_timestamps.cdbxml.xml');
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2('samples/event_with_calendar_timestamps.cdbxml.xml');
         $this->repositoryExpectsCalendarToBeSaved('someId', $this->getTimestampList());
         $this->projector->applyEventImportedFromUDB2($event);
     }
@@ -79,7 +85,7 @@ class EventCalendarProjectorTest extends CdbXMLProjectorTestBase
      */
     public function it_saves_the_calendar_timestamps_from_events_updated_from_udb2()
     {
-        $event = $this->eventUpdatedFromUDB2('samples/event_with_calendar_timestamps.cdbxml.xml');
+        $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2('samples/event_with_calendar_timestamps.cdbxml.xml');
         $this->repositoryExpectsCalendarToBeSaved('someId', $this->getTimestampList());
         $this->projector->applyEventUpdatedFromUDB2($event);
     }

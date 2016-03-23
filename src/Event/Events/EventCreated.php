@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\Events;
 
@@ -48,11 +45,19 @@ class EventCreated extends EventEvent
     /**
      * @param string $eventId
      * @param Title $title
-     * @param string $location
-     * @param DateTime $date
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         parent::__construct($eventId);
 
         $this->title = $title;
@@ -87,7 +92,7 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @return CalendarBase
+     * @return CalendarInterface
      */
     public function getCalendar()
     {

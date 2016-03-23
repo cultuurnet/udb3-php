@@ -7,6 +7,10 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
+use ValueObjects\String\String;
+
 /**
  * Trait that contains all major editing methods for Offers.
  */
@@ -136,46 +140,71 @@ trait OfferEditingTrait
     /**
      * {@inheritdoc}
      */
-    public function addImage($id, MediaObject $mediaObject)
+    public function addImage($id, Image $image)
     {
-
         $this->guardId($id);
 
         $commandClass = $this->getCommandClass('AddImage');
 
         return $this->commandBus->dispatch(
-            new $commandClass($id, $mediaObject)
+            new $commandClass($id, $image)
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject)
+    public function selectMainImage($id, Image $image)
     {
+        $this->guardId($id);
 
+        $commandClass = $this->getCommandClass('SelectMainImage');
+
+        return $this->commandBus->dispatch(
+            new $commandClass($id, $image)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateImage(
+        $id,
+        Image $image,
+        String $description,
+        String $copyrightHolder
+    ) {
         $this->guardId($id);
 
         $commandClass = $this->getCommandClass('UpdateImage');
 
         return $this->commandBus->dispatch(
-            new $commandClass($id, $indexToEdit, $mediaObject)
+            new $commandClass(
+                $id,
+                $image->getMediaObjectId(),
+                $description,
+                $copyrightHolder
+            )
         );
-
     }
 
     /**
-     * {@inheritdoc}
+     * @param $id
+     *  Id of the offer to remove the image from.
+     *
+     * @param Image $image
+     *  The image that should be removed.
+     *
+     * @return mixed
      */
-    public function deleteImage($id, $indexToDelete, $internalId = '')
+    public function removeImage($id, Image $image)
     {
-
         $this->guardId($id);
 
-        $commandClass = $this->getCommandClass('DeleteImage');
+        $commandClass = $this->getCommandClass('RemoveImage');
 
         return $this->commandBus->dispatch(
-            new $commandClass($id, $indexToDelete, $internalId)
+            new $commandClass($id, $image)
         );
 
     }

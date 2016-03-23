@@ -1,34 +1,39 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Place\Place.
- */
-
 namespace CultuurNet\UDB3\Place;
 
-use CultuurNet\UDB3\Actor\Actor;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Offer;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageDeleted;
+use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
+use CultuurNet\UDB3\Place\Events\MainImageSelected;
+use CultuurNet\UDB3\Place\Events\LabelAdded;
+use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Theme;
@@ -36,8 +41,22 @@ use CultuurNet\UDB3\Title;
 use Symfony\Component\EventDispatcher\Event;
 use ValueObjects\String\String;
 
-class Place extends Actor implements UpdateableWithCdbXmlInterface
+class Place extends Offer implements UpdateableWithCdbXmlInterface
 {
+    /**
+     * The actor id.
+     *
+     * @var string
+     */
+    protected $actorId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAggregateRootId()
+    {
+        return $this->actorId;
+    }
 
     /**
      * Factory method to create a new Place.
@@ -53,7 +72,7 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
      * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
-     * @return Event
+     * @return self
      */
     public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {
@@ -142,38 +161,6 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Add a new image.
-     *
-     * @param MediaObject $mediaObject
-     */
-    public function addImage(MediaObject $mediaObject)
-    {
-        $this->apply(new ImageAdded($this->actorId, $mediaObject));
-    }
-
-    /**
-     * Update an image.
-     *
-     * @param int $indexToUpdate
-     * @param MediaObject $mediaObject
-     */
-    public function updateImage($indexToUpdate, MediaObject $mediaObject)
-    {
-        $this->apply(new ImageUpdated($this->actorId, $indexToUpdate, $mediaObject));
-    }
-
-    /**
-     * Delet an image.
-     *
-     * @param int $indexToDelete
-     * @param mixed int|string $internalId
-     */
-    public function deleteImage($indexToDelete, $internalId)
-    {
-        $this->apply(new ImageDeleted($this->actorId, $indexToDelete, $internalId));
-    }
-
-    /**
      * Update the major info.
      *
      * @param Title $title
@@ -208,7 +195,7 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
      * @return Actor
      *   The actor.
      */
-    public static function importFromUDB2(
+    public static function importFromUDB2Actor(
         $actorId,
         $cdbXml,
         $cdbXmlNamespaceUri
@@ -225,10 +212,46 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
+    /**
+     * Import from UDB2.
+     *
+     * @param string $placeId
+     *   The actor id.
+     * @param string $cdbXml
+     *   The cdb xml.
+     * @param string $cdbXmlNamespaceUri
+     *   The cdb xml namespace uri.
+     *
+     * @return Place
+     *   The actor.
+     */
+    public static function importFromUDB2Event(
+        $placeId,
+        $cdbXml,
+        $cdbXmlNamespaceUri
+    ) {
+        $place = new static();
+        $place->apply(
+            new PlaceImportedFromUDB2Event(
+                $placeId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
+
+        return $place;
+    }
+
     public function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImported
     ) {
-        $this->applyActorImportedFromUDB2($placeImported);
+        $this->actorId = $placeImported->getActorId();
+    }
+
+    public function applyPlaceImportedFromUDB2Event(
+        PlaceImportedFromUDB2Event $placeImported
+    ) {
+        $this->actorId = $placeImported->getActorId();
     }
 
     /**
@@ -243,5 +266,69 @@ class Place extends Actor implements UpdateableWithCdbXmlInterface
                 $cdbXmlNamespaceUri
             )
         );
+    }
+
+    /**
+     * @param Label $label
+     * @return LabelAdded
+     */
+    protected function createLabelAddedEvent(Label $label)
+    {
+        return new LabelAdded($this->actorId, $label);
+    }
+
+    /**
+     * @param Label $label
+     * @return LabelDeleted
+     */
+    protected function createLabelDeletedEvent(Label $label)
+    {
+        return new LabelDeleted($this->actorId, $label);
+    }
+
+    protected function createImageAddedEvent(Image $image)
+    {
+        return new ImageAdded($this->actorId, $image);
+    }
+
+    protected function createImageRemovedEvent(Image $image)
+    {
+        return new ImageRemoved($this->actorId, $image);
+    }
+
+    protected function createImageUpdatedEvent(
+        AbstractUpdateImage $updateImageCommand
+    ) {
+        return new ImageUpdated(
+            $this->actorId,
+            $updateImageCommand->getMediaObjectId(),
+            $updateImageCommand->getDescription(),
+            $updateImageCommand->getCopyrightHolder()
+        );
+    }
+
+    protected function createMainImageSelectedEvent(Image $image)
+    {
+        return new MainImageSelected($this->actorId, $image);
+    }
+
+    /**
+     * @param Language $language
+     * @param String $title
+     * @return TitleTranslated
+     */
+    protected function createTitleTranslatedEvent(Language $language, String $title)
+    {
+        return new TitleTranslated($this->actorId, $language, $title);
+    }
+
+    /**
+     * @param Language $language
+     * @param String $description
+     * @return DescriptionTranslated
+     */
+    protected function createDescriptionTranslatedEvent(Language $language, String $description)
+    {
+        return new DescriptionTranslated($this->actorId, $language, $description);
     }
 }

@@ -6,19 +6,22 @@
  */
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends EventEvent
+class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
 {
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @var Title
@@ -48,11 +51,19 @@ class MajorInfoUpdated extends EventEvent
     /**
      * @param string $eventId
      * @param Title $title
-     * @param string $location
+     * @param EventType $eventType
+     * @param Location $location
      * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         parent::__construct($eventId);
 
         $this->title = $title;
@@ -79,7 +90,7 @@ class MajorInfoUpdated extends EventEvent
     }
 
     /**
-     * @return Theme
+     * @return Theme|null
      */
     public function getTheme()
     {
@@ -87,7 +98,7 @@ class MajorInfoUpdated extends EventEvent
     }
 
     /**
-     * @return CalendarBase
+     * @return CalendarInterface
      */
     public function getCalendar()
     {
@@ -131,7 +142,7 @@ class MajorInfoUpdated extends EventEvent
             $theme = Theme::deserialize($data['theme']);
         }
         return new static(
-            $data['event_id'],
+            $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Location::deserialize($data['location']),

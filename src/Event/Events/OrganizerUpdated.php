@@ -1,20 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\OrganizerUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-/**
- * Description of DescriptionUpdated
- */
-class OrganizerUpdated extends EventEvent
+class OrganizerUpdated extends AbstractEvent implements SerializableInterface
 {
     use \CultuurNet\UDB3\OrganizerUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id
@@ -31,6 +25,6 @@ class OrganizerUpdated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['place_id'], $data['organizerId']);
+        return new static($data['item_id'], $data['organizerId']);
     }
 }

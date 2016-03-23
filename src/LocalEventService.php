@@ -5,24 +5,13 @@
 
 namespace CultuurNet\UDB3;
 
-use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface as RelationsRepository;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
-class LocalEventService implements EventServiceInterface
+class LocalEventService extends LocalEntityService implements EventServiceInterface
 {
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    protected $documentRepository;
-
-    /**
-     * @var RepositoryInterface
-     */
-    protected $eventRepository;
-
     /**
      * @var Event\ReadModel\Relations\RepositoryInterface
      */
@@ -31,15 +20,18 @@ class LocalEventService implements EventServiceInterface
     public function __construct(
         DocumentRepositoryInterface $documentRepository,
         RepositoryInterface $eventRepository,
-        RelationsRepository $eventRelationsRepository
+        RelationsRepository $eventRelationsRepository,
+        IriGeneratorInterface $iriGenerator
     ) {
-        $this->documentRepository = $documentRepository;
-        $this->eventRepository = $eventRepository;
+        parent::__construct($documentRepository, $eventRepository, $iriGenerator);
         $this->eventRelationsRepository = $eventRelationsRepository;
     }
 
     /**
      * Get a single event by its id.
+     *
+     * @deprecated
+     *   Use getEntity() instead.
      *
      * @param string $id
      *   A string uniquely identifying an event.
@@ -51,29 +43,12 @@ class LocalEventService implements EventServiceInterface
      */
     public function getEvent($id)
     {
-        /** @var JsonDocument $document */
-        $document = $this->documentRepository->get($id);
-
-        if ($document) {
-            return $document->getRawBody();
-        }
-
-        // @todo subsequent load and add are necessary for UDB2 repository
-        // decorator, but this particular code should be moved over to an
-        // EventService decorator
         try {
-            $this->eventRepository->load($id);
-        } catch (AggregateNotFoundException $e) {
+            return $this->getEntity($id);
+        } catch (EntityNotFoundException $e) {
             throw new EventNotFoundException(
-                sprintf('Event with id: %s not found.', $id)
+                "Event with id: {$id} not found"
             );
-        }
-
-        /** @var JsonDocument $document */
-        $document = $this->documentRepository->get($id);
-
-        if ($document) {
-            return $document->getRawBody();
         }
     }
 

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Search;
 
@@ -29,18 +26,26 @@ class PullParsingSearchService implements SearchServiceInterface
     /**
      * @var IriGeneratorInterface
      */
-    protected $iriGenerator;
+    protected $eventIriGenerator;
 
     /**
-     * Constructs a new PullParsingSearchService
-     *
-     * @param SearchAPI2\SearchServiceInterface $search
-     * @param IriGeneratorInterface $iriGenerator
+     * @var IriGeneratorInterface
      */
-    public function __construct(SearchAPI2\SearchServiceInterface $search, IriGeneratorInterface $iriGenerator)
-    {
+    protected $placeIriGenerator;
+
+    /**
+     * @param SearchAPI2\SearchServiceInterface $search
+     * @param IriGeneratorInterface $eventIriGenerator
+     * @param IriGeneratorInterface $placeIriGenerator
+     */
+    public function __construct(
+        SearchAPI2\SearchServiceInterface $search,
+        IriGeneratorInterface $eventIriGenerator,
+        IriGeneratorInterface $placeIriGenerator
+    ) {
         $this->searchAPI2 = $search;
-        $this->iriGenerator = $iriGenerator;
+        $this->eventIriGenerator = $eventIriGenerator;
+        $this->placeIriGenerator = $placeIriGenerator;
     }
 
     /**
@@ -76,6 +81,8 @@ class PullParsingSearchService implements SearchServiceInterface
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);
         $typeParam = new Parameter\FilterQuery('type:event');
+        // fetch all private and non-private events
+        $privateParam = new Parameter\FilterQuery('private:*');
 
         $params = array(
             $qParam,
@@ -83,6 +90,7 @@ class PullParsingSearchService implements SearchServiceInterface
             $limitParam,
             $startParam,
             $typeParam,
+            $privateParam
         );
 
         if ($sort) {
@@ -102,7 +110,8 @@ class PullParsingSearchService implements SearchServiceInterface
         if (!$this->pullParser) {
             $this->pullParser = new SearchAPI2\ResultSetPullParser(
                 new \XMLReader(),
-                $this->iriGenerator
+                $this->eventIriGenerator,
+                $this->placeIriGenerator
             );
         }
         return $this->pullParser;

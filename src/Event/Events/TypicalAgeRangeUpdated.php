@@ -1,21 +1,17 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Event for typical age range updates.
  */
-class TypicalAgeRangeUpdated extends EventEvent
+class TypicalAgeRangeUpdated extends AbstractEvent implements SerializableInterface
 {
-
     use \CultuurNet\UDB3\TypicalAgeRangeUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id
@@ -32,6 +28,6 @@ class TypicalAgeRangeUpdated extends EventEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['typicalAgeRange']);
+        return new static($data['item_id'], $data['typicalAgeRange']);
     }
 }

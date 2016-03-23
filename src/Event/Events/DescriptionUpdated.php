@@ -1,20 +1,17 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\DescriptionUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 /**
  * Provides a DescriptionUpdated event.
  */
-class DescriptionUpdated extends EventEvent
+class DescriptionUpdated extends AbstractEvent implements SerializableInterface
 {
     use \CultuurNet\UDB3\DescriptionUpdatedTrait;
+    use BackwardsCompatibleEventTrait;
 
     /**
      * @param string $id

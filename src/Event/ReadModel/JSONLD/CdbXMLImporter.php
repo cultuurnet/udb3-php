@@ -5,6 +5,9 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\Cdb\DateTimeFactory;
+use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
@@ -14,6 +17,19 @@ use CultuurNet\UDB3\StringFilter\StringFilterInterface;
  */
 class CdbXMLImporter
 {
+    /**
+     * @var CdbXMLItemBaseImporter
+     */
+    private $cdbXMLItemBaseImporter;
+
+    /**
+     * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
+     */
+    public function __construct(CdbXMLItemBaseImporter $dbXMLItemBaseImporter)
+    {
+        $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
+    }
+
     /**
      * @var StringFilterInterface[]
      */
@@ -66,7 +82,7 @@ class CdbXMLImporter
             $this->importDescription($languageDetail, $jsonLD, $language);
         }
 
-        $this->importAvailable($event, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importAvailable($event, $jsonLD);
 
         $this->importPicture($detail, $jsonLD);
 
@@ -82,7 +98,7 @@ class CdbXMLImporter
 
         $this->importTerms($event, $jsonLD);
 
-        $this->importPublicationInfo($event, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importPublicationInfo($event, $jsonLD);
 
         $this->importCalendar($event, $jsonLD);
 
@@ -94,7 +110,7 @@ class CdbXMLImporter
 
         $this->importUitInVlaanderenReference($event, $slugger, $jsonLD);
 
-        $this->importExternalId($event, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importExternalId($event, $jsonLD);
 
         $this->importSeeAlso($event, $jsonLD);
 
@@ -109,19 +125,6 @@ class CdbXMLImporter
     public function addDescriptionFilter(StringFilterInterface $filter)
     {
         $this->descriptionFilters[] = $filter;
-    }
-
-    /**
-     * @param $dateString
-     * @return \DateTime
-     */
-    private function dateFromUdb2DateString($dateString)
-    {
-        return \DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $dateString,
-            new \DateTimeZone('Europe/Brussels')
-        );
     }
 
     /**
@@ -175,8 +178,11 @@ class CdbXMLImporter
         // JSON-encoding the array will result in an object.
         $labels = array_values($labels);
 
-        if ($labels) {
-            $jsonLD->labels = $labels;
+        // Create a label collection to get rid of duplicates.
+        $labelCollection = LabelCollection::fromStrings($labels);
+
+        if (count($labelCollection) > 0) {
+            $jsonLD->labels = $labelCollection->toStrings();
         }
     }
 
@@ -213,7 +219,7 @@ class CdbXMLImporter
         if ($location_id) {
             $location += (array)$placeManager->placeJSONLD($location_id);
         } else {
-            $location['name'] = $location_cdb->getLabel();
+            $location['name']['nl'] = $location_cdb->getLabel();
             $address = $location_cdb->getAddress()->getPhysicalAddress();
             if ($address) {
                 $location['address'] = array(
@@ -394,39 +400,6 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Item_Event $event
      * @param \stdClass $jsonLD
      */
-    private function importPublicationInfo(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
-    {
-        // Input info.
-        $jsonLD->creator = $event->getCreatedBy();
-
-        $eventCreationDate = $event->getCreationDate();
-
-        if (!empty($eventCreationDate)) {
-            // format using ISO-8601 with time zone designator
-            $creationDate = $this->dateFromUdb2DateString(
-                $eventCreationDate
-            );
-
-            $jsonLD->created = $creationDate->format('c');
-        }
-
-        $eventLastUpdatedDate = $event->getLastUpdated();
-
-        if (!empty($eventLastUpdatedDate)) {
-            $lastUpdatedDate = $this->dateFromUdb2DateString(
-                $eventLastUpdatedDate
-            );
-
-            $jsonLD->modified = $lastUpdatedDate->format('c');
-        }
-
-        $jsonLD->publisher = $event->getOwner();
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
     private function importCalendar(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
         // To render the front-end we make a distinction between 4 calendar types
@@ -442,7 +415,7 @@ class CdbXMLImporter
             $calendar->rewind();
             $firstCalendarItem = $calendar->current();
             $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
-            $startDate = $this->dateFromUdb2DateString($startDateString);
+            $startDate = DateTimeFactory::dateTimeFromDateString($startDateString);
 
             if (iterator_count($calendar) > 1) {
                 $periodArray = iterator_to_array($calendar);
@@ -452,7 +425,7 @@ class CdbXMLImporter
             }
 
             $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
-            $endDate = $this->dateFromUdb2DateString($endDateString);
+            $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
 
             $jsonLD->startDate = $startDate->format('c');
             $jsonLD->endDate = $endDate->format('c');
@@ -468,7 +441,7 @@ class CdbXMLImporter
                 $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
             }
 
-            $startDate = $this->dateFromUdb2DateString($dateString);
+            $startDate = DateTimeFactory::dateTimeFromDateString($dateString);
 
             if (iterator_count($calendar) > 1) {
                 $periodArray = iterator_to_array($calendar);
@@ -488,7 +461,7 @@ class CdbXMLImporter
             }
 
             if ($endDateString) {
-                $endDate = $this->dateFromUdb2DateString($endDateString);
+                $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
                 $jsonLD->endDate = $endDate->format('c');
 
                 if ($startDate->format('Ymd') != $endDate->format('Ymd')) {
@@ -554,30 +527,6 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Item_Event $event
      * @param \stdClass $jsonLD
      */
-    private function importExternalId(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
-    {
-        $externalId = $event->getExternalId();
-        if (empty($externalId)) {
-            return;
-        }
-
-        $externalIdIsCDB = (strpos($externalId, 'CDB:') === 0);
-
-        if (!property_exists($jsonLD, 'sameAs')) {
-            $jsonLD->sameAs = [];
-        }
-
-        if (!$externalIdIsCDB) {
-            if (!in_array($externalId, $jsonLD->sameAs)) {
-                array_push($jsonLD->sameAs, $externalId);
-            }
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
     private function importSeeAlso(
         \CultureFeed_Cdb_Item_Event $event,
         \stdClass $jsonLD
@@ -630,22 +579,6 @@ class CdbXMLImporter
 
         if (!in_array($reference, $jsonLD->sameAs)) {
             array_push($jsonLD->sameAs, $reference);
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
-    private function importAvailable(
-        \CultureFeed_Cdb_Item_Event $event,
-        \stdClass $jsonLD
-    ) {
-        $availableString = $event->getAvailableFrom();
-        if ($availableString) {
-            $available = $this->dateFromUdb2DateString($availableString);
-
-            $jsonLD->available = $available->format('c');
         }
     }
 }

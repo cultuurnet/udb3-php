@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Place;
 
@@ -12,46 +9,45 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\OfferEditingInterface;
+use CultuurNet\UDB3\Place\Commands\AddLabel;
+use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
+class DefaultPlaceEditingService extends DefaultOfferEditingService implements
+    PlaceEditingServiceInterface,
+    OfferEditingInterface
 {
-
     use \CultuurNet\UDB3\OfferEditingTrait;
-
-    /**
-     * @var CommandBusInterface
-     */
-    protected $commandBus;
-
-    /**
-     * @var UuidGeneratorInterface
-     */
-    protected $uuidGenerator;
 
     /**
      * @var RepositoryInterface
      */
-    protected $placeRepository;
+    protected $writeRepository;
 
-    /**
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $placeRepository
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $placeRepository
+        DocumentRepositoryInterface $readRepository,
+        OfferCommandFactoryInterface $commandFactory,
+        RepositoryInterface $writeRepository
     ) {
-        $this->commandBus = $commandBus;
-        $this->uuidGenerator = $uuidGenerator;
-        $this->placeRepository = $placeRepository;
+        parent::__construct(
+            $commandBus,
+            $uuidGenerator,
+            $readRepository,
+            $commandFactory
+        );
+
+        $this->writeRepository = $writeRepository;
     }
 
     /**
@@ -63,7 +59,7 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
 
         $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
 
-        $this->placeRepository->save($place);
+        $this->writeRepository->save($place);
 
         return $id;
     }
@@ -103,15 +99,5 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
         return $this->commandBus->dispatch(
             new UpdateFacilities($id, $facilities)
         );
-    }
-
-    /**
-     * @param string $id
-     * @throws AggregateNotFoundException
-     */
-    public function guardId($id)
-    {
-        // This validates if the id is valid.
-        return $this->placeRepository->load($id);
     }
 }

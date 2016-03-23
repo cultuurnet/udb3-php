@@ -5,24 +5,20 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
-use Doctrine\DBAL\Connection;
 use PHPUnit_Framework_TestCase;
 use PDO;
-use Doctrine\DBAL\DriverManager;
 use ValueObjects\String\String as StringLiteral;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {
+    use DBALTestConnectionTrait;
+
     /**
      * @var DBALRepository
      */
     protected $repository;
-
-    /**
-     * @var Connection
-     */
-    protected $connection;
 
     /**
      * @var StringLiteral
@@ -36,26 +32,9 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('PDO')) {
-            $this->markTestSkipped('PDO is required to run this test.');
-        }
-
-        $availableDrivers = PDO::getAvailableDrivers();
-        if (!in_array('sqlite', $availableDrivers)) {
-            $this->markTestSkipped(
-                'PDO sqlite driver is required to run this test.'
-            );
-        }
-
-        $this->connection = DriverManager::getConnection(
-            [
-                'url' => 'sqlite:///:memory:',
-            ]
-        );
-
         $this->tableName = new StringLiteral('testtable');
 
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->getConnection()->getSchemaManager();
 
         (new SchemaConfigurator($this->tableName))
             ->configure($schemaManager);
@@ -65,7 +44,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->insert($this->data);
 
         $this->repository = new DBALRepository(
-            $this->connection,
+            $this->getConnection(),
             $this->tableName
         );
     }
@@ -83,9 +62,9 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     private function insert($rows)
     {
-        $q = $this->connection->createQueryBuilder();
+        $q = $this->getConnection()->createQueryBuilder();
 
-        $schema = $this->connection->getSchemaManager()->createSchema();
+        $schema = $this->getConnection()->getSchemaManager()->createSchema();
 
         $columns = $schema
             ->getTable($this->tableName->toNative())
@@ -171,7 +150,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     {
         $expectedData = array_values($expectedData);
 
-        $results = $this->connection->executeQuery('SELECT * from ' . $this->tableName->toNative());
+        $results = $this->getConnection()->executeQuery('SELECT * from ' . $this->tableName->toNative());
 
         $actualData = $results->fetchAll(PDO::FETCH_OBJ);
 

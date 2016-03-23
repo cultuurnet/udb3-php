@@ -7,7 +7,12 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ReflectionObject;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 /**
  * Provides a trait to test commands that are applicable for all UDB3 offer types
@@ -108,7 +113,13 @@ trait OfferCommandHandlerTestTrait
     public function it_can_add_an_image_to_an_offer()
     {
         $id = '1';
-        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $image = new Image(
+            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            String::fromNative('Some description.'),
+            String::fromNative('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
         $commandClass = $this->getCommandClass('AddImage');
         $eventClass = $this->getEventClass('ImageAdded');
 
@@ -118,53 +129,73 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $mediaObject)
+                new $commandClass($id, $image)
             )
-            ->then([new $eventClass($id, $mediaObject)]);
+            ->then([new $eventClass($id, $image)]);
     }
 
     /**
      * @test
      */
-    public function it_can_add_delete_an_image_of_an_offer()
+    public function it_can_remove_an_image_from_an_offer()
     {
         $id = '1';
-        $indexToDelete = 1;
-        $internalId = '1';
-        $commandClass = $this->getCommandClass('DeleteImage');
-        $eventClass = $this->getEventClass('ImageDeleted');
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $imageAddedEventClass = $this->getEventClass('ImageAdded');
+        $commandClass = $this->getCommandClass('RemoveImage');
+        $eventClass = $this->getEventClass('ImageRemoved');
 
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [
+                    $this->factorOfferCreated($id),
+                    new $imageAddedEventClass($id, $image),
+                ]
             )
             ->when(
-                new $commandClass($id, $indexToDelete, $internalId)
+                new $commandClass($id, $image)
             )
-            ->then([new $eventClass($id, $indexToDelete, $internalId)]);
+            ->then([new $eventClass($id, $image)]);
     }
 
     /**
      * @test
      */
-    public function it_can_add_update_an_image_of_an_offer()
+    public function it_can_update_an_image_of_an_offer()
     {
-        $id = '1';
-        $index = 1;
-        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $itemId = '1';
+        $mediaObjectId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $description = new String('A description.');
+        $copyrightHolder = new String('Dirk');
         $commandClass = $this->getCommandClass('UpdateImage');
         $eventClass = $this->getEventClass('ImageUpdated');
 
         $this->scenario
-            ->withAggregateId($id)
+            ->withAggregateId($itemId)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [$this->factorOfferCreated($itemId)]
             )
             ->when(
-                new $commandClass($id, $index, $mediaObject)
+                new $commandClass(
+                    $itemId,
+                    $mediaObjectId,
+                    $description,
+                    $copyrightHolder
+                )
             )
-            ->then([new $eventClass($id, $index, $mediaObject)]);
+            ->then([new $eventClass(
+                $itemId,
+                $mediaObjectId,
+                $description,
+                $copyrightHolder
+            )]);
     }
 
     /**

@@ -9,9 +9,12 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
 
 interface PlaceEditingServiceInterface
 {
@@ -107,24 +110,25 @@ interface PlaceEditingServiceInterface
      * Add an image to the place.
      *
      * @param string $id
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function addImage($id, MediaObject $mediaObject);
+    public function addImage($id, Image $image);
 
     /**
      * Update an image of the place.
      *
-     * @param string $id
-     * @parma int $indexToEdit
-     * @param MediaObject $mediaObject
+     * @param $id
+     * @param Image $image
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject);
+    public function updateImage($id, Image $image, String $description, String $copyrightHolder);
 
     /**
-     * Delete an image of the place.
+     * Remove an image from the place.
      *
      * @param string $id
-     * @parma int $indexToDelete
+     * @param Image $image
      */
-    public function deleteImage($id, $indexToDelete, $internalId = '');
+    public function removeImage($id, Image $image);
 }

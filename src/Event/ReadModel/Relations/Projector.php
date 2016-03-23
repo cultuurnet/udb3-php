@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -15,7 +16,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\EventServiceInterface;
 
 class Projector implements EventListenerInterface
 {
@@ -26,15 +26,9 @@ class Projector implements EventListenerInterface
      */
     protected $repository;
 
-    /**
-     * @var EventServiceInterface
-     */
-    protected $eventService;
-
-    public function __construct($repository, EventServiceInterface $eventService)
+    public function __construct($repository)
     {
         $this->repository = $repository;
-        $this->eventService = $eventService;
     }
 
     protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $event)
@@ -81,12 +75,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
-        $eventEntity = $this->eventService->getEvent($organizerUpdated->getEventId());
-        $event = json_decode($eventEntity);
-
-        $placeId = !empty($event->location) ? $event->location->{'@id'}: null;
-
-        $this->storeRelations($organizerUpdated->getEventId(), $placeId, $organizerUpdated->getOrganizerId());
+        $this->repository->storeOrganizer($organizerUpdated->getItemId(), $organizerUpdated->getOrganizerId());
     }
 
     /**
@@ -94,17 +83,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
-
-        $eventEntity = $this->eventService->getEvent($organizerDeleted->getEventId());
-        $event = json_decode($eventEntity);
-
-        $placeId = null;
-        if (!empty($event->location)) {
-            $idParts = explode('/', $event->location->{'@id'});
-            $placeId = array_pop($idParts);
-        }
-
-        $this->storeRelations($organizerDeleted->getEventId(), $placeId, null);
+        $this->repository->storeOrganizer($organizerDeleted->getItemId(), null);
     }
 
     protected function storeRelations($eventId, $placeId, $organizerId)

@@ -79,12 +79,13 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
 
         $queryString = $this->getMock(QueryString::class);
         $queryString
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(6))
             ->method('add')
             ->withConsecutive(
                 ['q', 'pop'],
                 ['fq', 'type:event'],
                 ['group', 'true'],
+                ['version', '3.3'],
                 ['past', 'true'],
                 ['unavailable', 'true']
             );

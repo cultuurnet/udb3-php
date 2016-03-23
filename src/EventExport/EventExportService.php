@@ -7,11 +7,13 @@ namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
+use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use ValueObjects\Web\EmailAddress;
 
 class EventExportService implements EventExportServiceInterface
@@ -43,6 +45,11 @@ class EventExportService implements EventExportServiceInterface
     protected $mailer;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param SearchServiceInterface $searchService
      * @param UuidGeneratorInterface $uuidGenerator
@@ -61,11 +68,32 @@ class EventExportService implements EventExportServiceInterface
         $this->eventService = $eventService;
         $this->searchService = $searchService;
         $this->uuidGenerator = $uuidGenerator;
-        $this->publicDirectory = realpath($publicDirectory);
+        $this->publicDirectory = $publicDirectory;
         $this->iriGenerator = $iriGenerator;
         $this->mailer = $mailer;
     }
 
+    /**
+     * @param FileFormatInterface $fileFormat
+     *  The file format of the exported file.
+     *
+     * @param EventExportQuery $query
+     *  The query that will be exported.
+     *  A query has to be specified even if you are exporting a selection of events.
+     *
+     * @param EmailAddress|null $address
+     *  An optional email address that will receive an email containing the exported file.
+     *
+     * @param LoggerInterface|null $logger
+     *  An optional logger that reports unknown events and empty exports.
+     *
+     * @param string[]|null $selection
+     *  A selection of items that will be included in the export.
+     *  When left empty the whole query will export.
+     *
+     * @return bool|string
+     *  The destination url of the export file or false if no events were found.
+     */
     public function exportEvents(
         FileFormatInterface $fileFormat,
         EventExportQuery $query,
@@ -73,6 +101,9 @@ class EventExportService implements EventExportServiceInterface
         LoggerInterface $logger = null,
         $selection = null
     ) {
+        if (!$logger instanceof LoggerInterface) {
+            $logger = new NullLogger();
+        }
 
         // do a pre query to test if the query is valid and check the item count
         try {
@@ -83,45 +114,46 @@ class EventExportService implements EventExportServiceInterface
             );
             $totalItemCount = $preQueryResult->getTotalItems()->toNative();
         } catch (ClientErrorResponseException $e) {
-            if ($logger) {
-                $logger->error(
-                    'not_exported',
-                    array(
-                        'query' => (string)$query,
-                        'error' => $e->getMessage(),
-                        'exception_class' => get_class($e),
-                    )
-                );
-            }
+            $logger->error(
+                'not_exported',
+                array(
+                    'query' => (string)$query,
+                    'error' => $e->getMessage(),
+                    'exception_class' => get_class($e),
+                )
+            );
 
             throw ($e);
         }
 
-        print($totalItemCount) . PHP_EOL;
+        $logger->debug(
+            'total items: {totalItems}',
+            [
+                'totalItems' => $totalItemCount,
+                'query' => (string)$query,
+            ]
+        );
 
         if ($totalItemCount < 1) {
-            if ($logger) {
-                $logger->error(
-                    'not_exported',
-                    array(
-                        'query' => (string)$query,
-                        'error' => "query did not return any results"
-                    )
-                );
-            }
+            $logger->error(
+                'not_exported',
+                array(
+                    'query' => (string)$query,
+                    'error' => "query did not return any results"
+                )
+            );
 
             return false;
         }
 
         try {
-            $tmpPath = tempnam(
-                sys_get_temp_dir(),
-                $this->uuidGenerator->generate()
-            );
+            $tmpDir = sys_get_temp_dir();
+            $tmpFileName = $this->uuidGenerator->generate();
+            $tmpPath = "{$tmpDir}/{$tmpFileName}";
 
             // $events are keyed here by the authoritative event ID.
-            if ($selection) {
-                $events = $this->getEventsAsJSONLD($selection);
+            if (is_array($selection)) {
+                $events = $this->getEventsAsJSONLD($selection, $logger);
             } else {
                 $events = $this->search(
                     $totalItemCount,
@@ -135,13 +167,13 @@ class EventExportService implements EventExportServiceInterface
 
             $finalPath = $this->getFinalFilePath($fileFormat, $tmpPath);
 
-            $moved = rename($tmpPath, $finalPath);
+            $moved = copy($tmpPath, $finalPath);
+            unlink($tmpPath);
 
             if (!$moved) {
                 throw new \RuntimeException(
-                    'Unable to move export file to public directory ' . realpath(
-                        $this->publicDirectory
-                    )
+                    'Unable to move export file to public directory ' .
+                    $this->publicDirectory
                 );
             }
 
@@ -149,14 +181,12 @@ class EventExportService implements EventExportServiceInterface
                 basename($finalPath)
             );
 
-            if ($logger) {
-                $logger->info(
-                    'job_info',
-                    [
-                        'location' => $finalUrl,
-                    ]
-                );
-            }
+            $logger->info(
+                'job_info',
+                [
+                    'location' => $finalUrl,
+                ]
+            );
 
             if ($address) {
                 $this->notifyByMail($address, $finalUrl);
@@ -176,13 +206,46 @@ class EventExportService implements EventExportServiceInterface
      * Get all events formatted as JSON-LD.
      *
      * @param \Traversable $events
+     * @param LoggerInterface $logger
      * @return \Generator
      */
-    private function getEventsAsJSONLD($events)
+    private function getEventsAsJSONLD($events, LoggerInterface $logger)
     {
         foreach ($events as $eventId) {
-            yield $eventId => $this->eventService->getEvent($eventId);
+            $event = $this->getEvent($eventId, $logger);
+
+            if ($event) {
+                yield $eventId => $event;
+            }
         }
+    }
+
+    /**
+     * @param string $id
+     *   A string uniquely identifying an event.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return array|null
+     *   An event array or null if the event was not found.
+     */
+    private function getEvent($id, LoggerInterface $logger)
+    {
+        try {
+            $event = $this->eventService->getEvent($id);
+        } catch (EventNotFoundException $e) {
+            $logger->error(
+                $e->getMessage(),
+                [
+                    'eventId' => $id,
+                    'exception' => $e,
+                ]
+            );
+
+            $event = null;
+        }
+
+        return $event;
     }
 
     /**
@@ -205,13 +268,15 @@ class EventExportService implements EventExportServiceInterface
     /**
      * Generator that yields each unique search result.
      *
-     * @param $totalItemCount
-     * @param $query
-     * @param LoggerInterface|null $logger
+     * @todo Replace with ResultsGenerator in III-664.
+     *
+     * @param int $totalItemCount
+     * @param string|object $query
+     * @param LoggerInterface $logger
      *
      * @return \Generator
      */
-    private function search($totalItemCount, $query, LoggerInterface $logger = null)
+    private function search($totalItemCount, $query, LoggerInterface $logger)
     {
         // change this pageSize value to increase or decrease the page size;
         $pageSize = 10;
@@ -234,25 +299,29 @@ class EventExportService implements EventExportServiceInterface
             // Iterate the results of the current page and get their IDs
             // by stripping them from the json-LD representation
             foreach ($results->getItems() as $event) {
+                // TODO: This is a bad workaround which can be removed entirely
+                // by using the ResultsGenerator here instead.
+                $event = $event->jsonSerialize();
+
                 $expoId = explode('/', $event['@id']);
                 $eventId = array_pop($expoId);
 
                 if (!array_key_exists($eventId, $exportedEventIds)) {
                     $exportedEventIds[$eventId] = $pageCounter;
 
-                    $event = $this->eventService->getEvent($eventId);
+                    $event = $this->getEvent($eventId, $logger);
 
-                    yield $eventId => $event;
-                } else {
-                    if ($logger) {
-                        $logger->error(
-                            'query_duplicate_event',
-                            array(
-                                'query' => $query,
-                                'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$exportedEventIds[$eventId]}"
-                            )
-                        );
+                    if ($event) {
+                        yield $eventId => $event;
                     }
+                } else {
+                    $logger->error(
+                        'query_duplicate_event',
+                        array(
+                            'query' => $query,
+                            'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$exportedEventIds[$eventId]}"
+                        )
+                    );
                 }
             }
             ++$pageCounter;

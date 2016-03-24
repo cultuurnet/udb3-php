@@ -17,7 +17,7 @@ class ContentTypes
 
     /**
      * @return array
-     * 
+     *
      * @todo once we upgrade to PHP 5.6+ this can be moved to a constant.
      */
     public static function map()

@@ -6,6 +6,7 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
@@ -50,7 +51,7 @@ use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class Event extends Offer
+class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
     protected $eventId;
 
@@ -516,6 +517,9 @@ class Event extends Offer
             );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
     {
         $this->apply(

@@ -72,11 +72,24 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
     /**
      * {@inheritdoc}
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function createEvent(
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    ) {
         $eventId = $this->uuidGenerator->generate();
 
-        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
+        $event = Event::create(
+            $eventId,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme,
+            $this->publicationDate
+        );
 
         $this->writeRepository->save($event);
 

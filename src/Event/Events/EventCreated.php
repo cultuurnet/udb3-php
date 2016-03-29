@@ -116,7 +116,7 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getPublicationDate() {
         return $this->publicationDate;
@@ -155,7 +155,7 @@ class EventCreated extends EventEvent
             $theme = Theme::deserialize($data['theme']);
         }
         $publicationDate = null;
-        if (!is_null($data['publication_date'])) {
+        if (!empty($data['publication_date'])) {
             $publicationDate = DateTime::fromNativeDateTime(
                 \DateTime::createFromFormat(
                     \DateTime::ISO8601,

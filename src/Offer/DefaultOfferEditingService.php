@@ -55,6 +55,7 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         $this->uuidGenerator = $uuidGenerator;
         $this->readRepository = $readRepository;
         $this->commandFactory = $commandFactory;
+        $this->publicationDate = null;
     }
 
     /**

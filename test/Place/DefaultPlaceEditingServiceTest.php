@@ -94,4 +94,35 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->placeEditingService->createPlace($title, $eventType, $address, $calendar, $theme);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_create_a_new_place_with_a_fixed_publication_date()
+    {
+        $publicationDate = \DateTimeImmutable::createFromFormat(\DateTime::ISO8601, '2016-08-01T00:00:00+0200');
+
+        $placeId = 'generated-uuid';
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $address = new Address('$street', '$postalcode', '$locality', '$country');
+        $calendar = new Calendar('permanent', '', '');
+        $theme = null;
+
+        $place = Place::createPlace($placeId, $title, $eventType, $address, $calendar, $theme, $publicationDate);
+
+        $this->uuidGenerator->expects($this->once())
+          ->method('generate')
+          ->willReturn('generated-uuid');
+
+        $this->writeRepository->expects($this->once())
+          ->method('save')
+          ->with($place);
+
+        $editingService = $this->placeEditingService->withFixedPublicationDateForNewOffers($publicationDate);
+
+        $editingService->createPlace($title, $eventType, $address, $calendar, $theme);
+    }
+
+
 }

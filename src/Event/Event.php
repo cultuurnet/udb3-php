@@ -46,6 +46,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
@@ -80,7 +81,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
-     * @param Theme/null $theme
+     * @param Theme|null $theme
+     * @param \DateTimeImmutable|null $publicationDate
      *
      * @return Event
      */
@@ -90,15 +92,28 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null,
+        \DateTimeImmutable $publicationDate = null
     ) {
         if (!is_string($eventId)) {
             throw new \InvalidArgumentException(
                 'Expected eventId to be a string, received ' . gettype($eventId)
             );
         }
+
         $event = new self();
-        $event->apply(new EventCreated($eventId, $title, $eventType, $location, $calendar, $theme));
+
+        $event->apply(
+            new EventCreated(
+                $eventId,
+                $title,
+                $eventType,
+                $location,
+                $calendar,
+                $theme,
+                $publicationDate
+            )
+        );
 
         return $event;
     }

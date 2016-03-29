@@ -293,6 +293,15 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     }
 
     /**
+     * @test
+     */
+    public function it_replaces_event_id_with_item_id_on_event_description_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_description_updated_class.json';
+        $this->assertEventIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
      * @param string $sampleFile
      */
     private function assertEventIdReplacedWithItemId($sampleFile)

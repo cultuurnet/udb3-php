@@ -19,7 +19,6 @@ use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
-use CultuurNet\UDB3\Place\Events\ImageDeleted;
 use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\MainImageSelected;
@@ -38,7 +37,7 @@ use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use Symfony\Component\EventDispatcher\Event;
+use DateTimeImmutable;
 use ValueObjects\String\String;
 
 class Place extends Offer implements UpdateableWithCdbXmlInterface
@@ -70,14 +69,30 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param EventType $eventType
      * @param Address $address
      * @param CalendarInterface $calendar
-     * @param Theme/null $theme
+     * @param Theme|null $theme
+     * @param DateTimeImmutable|null $publicationDate
      *
      * @return self
      */
-    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
-    {
+    public static function createPlace(
+        $id,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null,
+        DateTimeImmutable $publicationDate = null
+    ) {
         $place = new self();
-        $place->apply(new PlaceCreated($id, $title, $eventType, $address, $calendar, $theme));
+        $place->apply(new PlaceCreated(
+            $id,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme,
+            $publicationDate
+        ));
 
         return $place;
     }

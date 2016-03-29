@@ -8,15 +8,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\DateTime\Date;
-use ValueObjects\DateTime\DateTime;
-use ValueObjects\DateTime\Hour;
-use ValueObjects\DateTime\Minute;
-use ValueObjects\DateTime\Month;
-use ValueObjects\DateTime\MonthDay;
-use ValueObjects\DateTime\Second;
-use ValueObjects\DateTime\Time;
-use ValueObjects\DateTime\Year;
+use DateTimeImmutable;
 
 class EventCreatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -193,7 +185,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                         'permanent'
                     ),
                     null,
-                    \DateTimeImmutable::createFromFormat(
+                    DateTimeImmutable::createFromFormat(
                         \DateTime::ISO8601,
                         '2016-08-01T00:00:00+0200'
                     )

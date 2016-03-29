@@ -117,7 +117,8 @@ class PlaceCreated extends PlaceEvent
     /**
      * @return DateTimeImmutable|null
      */
-    public function getPublicationDate() {
+    public function getPublicationDate()
+    {
         return $this->publicationDate;
     }
 

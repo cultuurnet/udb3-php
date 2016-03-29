@@ -175,7 +175,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                         'label' => 'bar',
                         'domain' => 'eventtype'
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+02:00'
+                    'publication_date' => '2016-08-01T00:00:00+0000'
                 ],
                 new EventCreated(
                     'test 456',
@@ -196,7 +196,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     new DateTime(
                         new Date(
                             new Year(2016),
-                            Month::fromNative('AUGUST'),
+                            Month::fromNative('August'),
                             new MonthDay(1)
                         ),
                         new Time(

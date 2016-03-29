@@ -193,17 +193,10 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                         'permanent'
                     ),
                     null,
-                    new DateTime(
-                        new Date(
-                            new Year(2016),
-                            Month::fromNative('August'),
-                            new MonthDay(1)
-                        ),
-                        new Time(
-                            new Hour(0),
-                            new Minute(0),
-                            new Second(0)
-                        )
+                    \DateTimeImmutable::createFromFormat(
+                        \DateTime::ISO8601,
+                        '2016-08-01T00:00:00',
+                        new \DateTimeZone('Europe/Brussels')
                     )
                 ),
             ],

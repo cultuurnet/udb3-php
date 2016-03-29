@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\DateTime\DateTime;
+use DateTimeImmutable;
 
 /**
  * Event when a place is created.
@@ -46,9 +46,9 @@ class PlaceCreated extends PlaceEvent
     private $calendar;
 
     /**
-     * @var DateTime
+     * @var DateTimeImmutable|null
      */
-    private $publicationDate;
+    private $publicationDate = null;
 
     /**
      * @param string $eventId
@@ -57,7 +57,7 @@ class PlaceCreated extends PlaceEvent
      * @param EventType $eventType
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
-     * @param DateTime|null $publicationDate
+     * @param DateTimeImmutable|null $publicationDate
      */
     public function __construct(
         $eventId,
@@ -66,7 +66,7 @@ class PlaceCreated extends PlaceEvent
         Address $address,
         CalendarInterface $calendar,
         Theme $theme = null,
-        DateTime $publicationDate = null
+        DateTimeImmutable $publicationDate = null
     ) {
         parent::__construct($eventId);
 
@@ -75,6 +75,7 @@ class PlaceCreated extends PlaceEvent
         $this->address = $address;
         $this->calendar = $calendar;
         $this->theme = $theme;
+        $this->publicationDate = $publicationDate;
     }
 
     /**
@@ -118,7 +119,7 @@ class PlaceCreated extends PlaceEvent
     }
 
     /**
-     * @return DateTime|null
+     * @return DateTimeImmutable|null
      */
     public function getPublicationDate() {
         return $this->publicationDate;
@@ -135,7 +136,7 @@ class PlaceCreated extends PlaceEvent
         }
         $publicationDate = null;
         if (!is_null($this->getPublicationDate())) {
-            $publicationDate = $this->getPublicationDate()->toNativeDateTime()->format(\DateTime::ISO8601);
+            $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
         }
         return parent::serialize() + array(
             'title' => (string) $this->getTitle(),
@@ -158,11 +159,9 @@ class PlaceCreated extends PlaceEvent
         }
         $publicationDate = null;
         if (!empty($data['publication_date'])) {
-            $publicationDate = DateTime::fromNativeDateTime(
-              \DateTime::createFromFormat(
+            $publicationDate = DateTimeImmutable::createFromFormat(
                 \DateTime::ISO8601,
                 $data['publication_date']
-              )
             );
         }
         return new static(

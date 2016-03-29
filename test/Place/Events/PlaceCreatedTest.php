@@ -169,8 +169,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     null,
                     \DateTimeImmutable::createFromFormat(
                         \DateTime::ISO8601,
-                        '2016-08-01T00:00:00',
-                        new \DateTimeZone('Europe/Brussels')
+                        '2016-08-01T00:00:00+0200'
                     )
                 ),
             ],

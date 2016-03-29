@@ -175,7 +175,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                         'label' => 'bar',
                         'domain' => 'eventtype'
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+0000'
+                    'publication_date' => '2016-08-01T00:00:00+0200'
                 ],
                 new EventCreated(
                     'test 456',
@@ -195,8 +195,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     null,
                     \DateTimeImmutable::createFromFormat(
                         \DateTime::ISO8601,
-                        '2016-08-01T00:00:00',
-                        new \DateTimeZone('Europe/Brussels')
+                        '2016-08-01T00:00:00+0200'
                     )
                 ),
             ],

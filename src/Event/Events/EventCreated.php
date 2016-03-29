@@ -9,7 +9,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\DateTime\DateTime;
+use DateTimeImmutable;
 
 /**
  * Event when an event is created.
@@ -43,9 +43,9 @@ class EventCreated extends EventEvent
     private $calendar;
 
     /**
-     * @var DateTime
+     * @var DateTimeImmutable|null
      */
-     private $publicationDate;
+     private $publicationDate = null;
 
     /**
      * @param string $eventId
@@ -54,7 +54,7 @@ class EventCreated extends EventEvent
      * @param Location $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
-     * @param DateTime|null $publicationDate
+     * @param DateTimeImmutable|null $publicationDate
      */
     public function __construct(
         $eventId,
@@ -63,7 +63,7 @@ class EventCreated extends EventEvent
         Location $location,
         CalendarInterface $calendar,
         Theme $theme = null,
-        DateTime $publicationDate = null
+        DateTimeImmutable $publicationDate = null
     ) {
         parent::__construct($eventId);
 
@@ -116,7 +116,7 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @return DateTime|null
+     * @return DateTimeImmutable|null
      */
     public function getPublicationDate() {
         return $this->publicationDate;
@@ -133,7 +133,7 @@ class EventCreated extends EventEvent
         }
         $publicationDate = null;
         if (!is_null($this->getPublicationDate())) {
-          $publicationDate = $this->getPublicationDate()->toNativeDateTime()->format(\DateTime::ISO8601);
+          $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
         }
         return parent::serialize() + array(
             'title' => (string)$this->getTitle(),
@@ -156,11 +156,9 @@ class EventCreated extends EventEvent
         }
         $publicationDate = null;
         if (!empty($data['publication_date'])) {
-            $publicationDate = DateTime::fromNativeDateTime(
-                \DateTime::createFromFormat(
-                    \DateTime::ISO8601,
-                    $data['publication_date']
-                )
+            $publicationDate = DateTimeImmutable::createFromFormat(
+                \DateTime::ISO8601,
+                $data['publication_date']
             );
         }
         return new static(

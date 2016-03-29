@@ -35,6 +35,11 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     protected $commandFactory;
 
     /**
+     * @var \DateTimeImmutable|null
+     */
+    protected $publicationDate;
+
+    /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
      * @param DocumentRepositoryInterface $readRepository
@@ -50,6 +55,18 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         $this->uuidGenerator = $uuidGenerator;
         $this->readRepository = $readRepository;
         $this->commandFactory = $commandFactory;
+    }
+
+    /**
+     * @param \DateTimeImmutable $publicationDate
+     * @return static
+     */
+    public function withFixedPublicationDateForNewOffers(
+        \DateTimeImmutable $publicationDate
+    ) {
+        $c = clone $this;
+        $c->publicationDate = $publicationDate;
+        return $c;
     }
 
     /**

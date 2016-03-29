@@ -45,7 +45,7 @@ class EventCreated extends EventEvent
     /**
      * @var DateTimeImmutable|null
      */
-     private $publicationDate = null;
+    private $publicationDate = null;
 
     /**
      * @param string $eventId
@@ -118,7 +118,8 @@ class EventCreated extends EventEvent
     /**
      * @return DateTimeImmutable|null
      */
-    public function getPublicationDate() {
+    public function getPublicationDate()
+    {
         return $this->publicationDate;
     }
 
@@ -133,7 +134,7 @@ class EventCreated extends EventEvent
         }
         $publicationDate = null;
         if (!is_null($this->getPublicationDate())) {
-          $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
+            $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
         }
         return parent::serialize() + array(
             'title' => (string)$this->getTitle(),

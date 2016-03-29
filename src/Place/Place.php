@@ -99,7 +99,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     /**
      * Apply the place created event.
-     * @param PlaceCreate $placeCreated
+     * @param PlaceCreated $placeCreated
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {

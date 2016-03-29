@@ -53,11 +53,16 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
     /**
      * {@inheritdoc}
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
-    {
+    public function createPlace(
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         $id = $this->uuidGenerator->generate();
 
-        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
+        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme, $this->publicationDate);
 
         $this->writeRepository->save($place);
 

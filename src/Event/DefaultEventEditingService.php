@@ -6,15 +6,11 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventNotFoundException;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
@@ -23,7 +19,6 @@ use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Variations\OfferVariationServiceInterface;
 
 class DefaultEventEditingService extends DefaultOfferEditingService implements
     EventEditingServiceInterface,
@@ -36,11 +31,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
      * @var EventServiceInterface
      */
     protected $eventService;
-
-    /**
-     * @var EventVariationServiceInterface
-     */
-    protected $eventVariationService;
 
     /**
      * @var PlaceService

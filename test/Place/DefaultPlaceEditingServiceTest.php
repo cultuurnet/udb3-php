@@ -123,6 +123,4 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $editingService->createPlace($title, $eventType, $address, $calendar, $theme);
     }
-
-
 }

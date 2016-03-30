@@ -294,4 +294,20 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedItems, $pagedCollection->getItems());
         $this->assertEquals(Integer::fromNative(1), $pagedCollection->getTotalItems());
     }
+
+    /**
+     * @test
+     */
+    public function it_should_return_the_total_items_when_there_are_multiple_pages_of_dashboard_items()
+    {
+        $user = $this->getMock(User::class);
+        $limit = Natural::fromNative(2);
+        $start = Natural::fromNative(0);
+
+        $user->id = 'foo';
+
+        $pagedCollection = $this->repository->findByUser($user, $limit, $start);
+
+        $this->assertEquals(Integer::fromNative(3), $pagedCollection->getTotalItems());
+    }
 }

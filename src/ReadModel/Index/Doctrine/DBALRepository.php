@@ -299,14 +299,20 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $expr = $this->connection->getExpressionBuilder();
         $ownedByUserForDomain = $expr->andX(
             $expr->eq('uid', ':user_id'),
-            $expr->eq('owning_domain', $owningDomain->toNative())
+            $expr->eq('owning_domain', ':owning_domain'),
+            $expr->orX(
+                $expr->eq('entity_type', '"event"'),
+                $expr->eq('entity_type', '"place"')
+            )
         );
+        $parameters = ['owning_domain' => $owningDomain->toNative()];
 
         return $this->getPagedDashboardItems(
             $user,
             $limit,
             $start,
-            $ownedByUserForDomain
+            $ownedByUserForDomain,
+            $parameters
         );
     }
 
@@ -314,7 +320,8 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         User $user,
         Natural $limit,
         Natural $start,
-        CompositeExpression $filterExpression
+        CompositeExpression $filterExpression,
+        $parameters = []
     ) {
         $queryBuilder = $this->connection->createQueryBuilder();
         $queryBuilder->select('entity_id', 'entity_iri', 'entity_type')
@@ -325,6 +332,11 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             ->setFirstResult($start->toNative());
 
         $queryBuilder->setParameter('user_id', $user->id);
+        foreach ($parameters as $param => $value) {
+            $queryBuilder->setParameter($param, $value);
+        }
+
+        $parameters = $queryBuilder->getParameters();
 
         $results = $queryBuilder->execute();
         $offerIdentifierArray = array_map(
@@ -351,7 +363,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
                 ->from($this->tableName->toNative())
                 ->where($filterExpression)
-                ->setParameter('user_id', $queryBuilder->getParameter('user_id'))
+                ->setParameters($parameters)
                 ->execute()
                 ->fetchColumn(0);
         }

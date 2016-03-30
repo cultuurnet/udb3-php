@@ -2,13 +2,19 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\Hydra\PagedCollection;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
-use PHPUnit_Framework_TestCase;
+use CultuurNet\UiTIDProvider\User\User;
 use PDO;
+use PHPUnit_Framework_TestCase;
+use ValueObjects\Number\Integer;
+use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Domain;
 
@@ -239,5 +245,53 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->setUpdateDate($itemId, $dateUpdated);
 
         $this->assertCurrentData($expectedData);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_return_a_list_of_paged_items_when_looking_for_user_dashboard_content()
+    {
+        $user = $this->getMock(User::class);
+        $limit = Natural::fromNative(5);
+        $start = Natural::fromNative(0);
+
+        $user->id = 'bar';
+
+        $pagedCollection = $this->repository->findByUser($user, $limit, $start);
+
+        $expectedItems = [
+            new IriOfferIdentifier('http://hello.world/something/123', '123', OfferType::PLACE()),
+        ];
+
+        $this->assertEquals($expectedItems, $pagedCollection->getItems());
+        $this->assertEquals(Integer::fromNative(1), $pagedCollection->getTotalItems());
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_return_a_list_of_paged_items_when_looking_for_user_dashboard_content_for_a_specific_domain()
+    {
+        $user = $this->getMock(User::class);
+        $limit = Natural::fromNative(5);
+        $start = Natural::fromNative(0);
+        $domain = Domain::specifyType('omd.be');
+
+        $user->id = 'foo';
+
+        $pagedCollection = $this->repository->findByUserForDomain(
+            $user,
+            $limit,
+            $start,
+            $domain
+        );
+
+        $expectedItems = [
+            new IriOfferIdentifier('http://hello.world/something/ghj', 'ghj', OfferType::EVENT()),
+        ];
+
+        $this->assertEquals($expectedItems, $pagedCollection->getItems());
+        $this->assertEquals(Integer::fromNative(1), $pagedCollection->getTotalItems());
     }
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Cdb;
 
@@ -10,8 +7,31 @@ use CultureFeed_Cdb_Item_Event;
 use CultureFeed_Cdb_ParseException;
 use SimpleXMLElement;
 
-class EventItemFactory
+class EventItemFactory implements EventItemFactoryInterface
 {
+    /**
+     * @var string
+     */
+    private $namespaceUri;
+
+    /**
+     * @param string $namespaceUri
+     */
+    public function __construct($namespaceUri)
+    {
+        $this->namespaceUri = $namespaceUri;
+    }
+
+    /**
+     * @param string $cdbXml
+     * @throws \CultureFeed_Cdb_ParseException
+     * @return \CultureFeed_Cdb_Item_Event
+     */
+    public function createFromCdbXml($cdbXml)
+    {
+        return self::createEventFromCdbXml($this->namespaceUri, $cdbXml);
+    }
+
     /**
      * @param string $namespaceUri
      * @param string $cdbXml

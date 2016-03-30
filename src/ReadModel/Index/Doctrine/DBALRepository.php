@@ -1,16 +1,14 @@
 <?php
-/**
- * @file
- */
-
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
 use CultuurNet\UDB3\Dashboard\DashboardItemLookupServiceInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Organizer\ReadModel\Lookup\OrganizerLookupServiceInterface;
 use CultuurNet\UDB3\Place\ReadModel\Lookup\PlaceLookupServiceInterface;
+use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use CultuurNet\UDB3\ReadModel\Index\RepositoryInterface;
 use CultuurNet\UDB3\Search\Results;
@@ -37,13 +35,23 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     protected $tableName;
 
     /**
+     * @var EntityIriGeneratorFactoryInterface
+     */
+    protected $iriGeneratorFactory;
+
+    /**
      * @param Connection $connection
      * @param StringLiteral $tableName
+     * @param EntityIriGeneratorFactoryInterface $iriGeneratorFactory
      */
-    public function __construct(Connection $connection, StringLiteral $tableName)
-    {
+    public function __construct(
+        Connection $connection,
+        StringLiteral $tableName,
+        EntityIriGeneratorFactoryInterface $iriGeneratorFactory
+    ) {
         $this->connection = $connection;
         $this->tableName = $tableName;
+        $this->iriGeneratorFactory = $iriGeneratorFactory;
     }
 
     /**
@@ -82,12 +90,16 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     $created = new \DateTimeImmutable('now');
                 }
 
+                $iriGenerator = $this->iriGeneratorFactory->forEntityType($entityType);
+                $iri = $iriGenerator->iri($id);
+
                 $q = $this->connection->createQueryBuilder();
                 $q->insert($this->tableName->toNative())
                     ->values(
                         [
                             'entity_id' => ':entity_id',
                             'entity_type' => ':entity_type',
+                            'entity_iri' => ':entity_iri',
                             'uid' => ':uid',
                             'title' => ':title',
                             'zip' => ':zip',
@@ -106,6 +118,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     $owningDomain,
                     $created
                 );
+                $q->setParameter('entity_iri', $iri);
 
                 $q->execute();
             }
@@ -262,7 +275,11 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     {
         $expr = $this->connection->getExpressionBuilder();
         $itemIsOwnedByUser = $expr->andX(
-            $expr->eq('uid', ':user_id')
+            $expr->eq('uid', ':user_id'),
+            $expr->orX(
+                $expr->eq('entity_type', '"event"'),
+                $expr->eq('entity_type', '"place"')
+            )
         );
 
         return $this->getPagedDashboardItems(
@@ -300,7 +317,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         CompositeExpression $filterExpression
     ) {
         $queryBuilder = $this->connection->createQueryBuilder();
-        $queryBuilder->select('entity_id', 'entity_type')
+        $queryBuilder->select('entity_id', 'entity_iri', 'entity_type')
             ->from($this->tableName->toNative())
             ->where($filterExpression)
             ->orderBy('updated', 'DESC')
@@ -313,6 +330,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $offerIdentifierArray = array_map(
             function ($resultRow) {
                 $offerIdentifier = new IriOfferIdentifier(
+                    $resultRow['entity_iri'],
                     $resultRow['entity_id'],
                     OfferType::fromNative(ucfirst($resultRow['entity_type']))
                 );

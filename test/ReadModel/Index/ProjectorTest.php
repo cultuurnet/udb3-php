@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\ReadModel\Index;
 
@@ -11,10 +8,13 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
-use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use Guzzle\Common\Event;
 use ValueObjects\Web\Domain;
 
@@ -35,18 +35,25 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $projector;
 
+    /**
+     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $iriOfferIdentifierFactory;
+
     const DATETIME = '2015-08-07T12:01:00.034024+00:00';
 
     public function setUp()
     {
         $this->repository = $this->getMock(RepositoryInterface::class);
         $this->userIdResolver = $this->getMock(CreatedByToUserIdResolverInterface::class);
+        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
 
         $this->projector = new Projector(
             $this->repository,
             $this->userIdResolver,
             Domain::specifyType('omd.be'),
-            Domain::specifyType('udb.be')
+            Domain::specifyType('udb.be'),
+            $this->iriOfferIdentifierFactory
         );
     }
 
@@ -217,6 +224,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         DomainMessage $domainMessage,
         $itemId
     ) {
+        $this->iriOfferIdentifierFactory
+            ->method('fromIri')
+            ->willReturn(new IriOfferIdentifier(
+                'http://beep.boop',
+                $itemId,
+                OfferType::EVENT()
+            ));
+
         $this->repository->expects($this->once())
             ->method('setUpdateDate')
             ->with($itemId, new \DateTime(self::DATETIME));

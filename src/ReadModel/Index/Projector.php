@@ -18,13 +18,17 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactory;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
-use CultuurNet\UDB3\Place\PlaceProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
@@ -58,8 +62,8 @@ class Projector implements EventListenerInterface
      * @var string[]
      */
     protected static $indexUpdateEvents = [
-        EventProjectedToJSONLD::class => 'getEventId',
-        PlaceProjectedToJSONLD::class => 'getId'
+        EventProjectedToJSONLD::class,
+        PlaceProjectedToJSONLD::class,
     ];
 
     /**
@@ -73,18 +77,25 @@ class Projector implements EventListenerInterface
     protected $UDB2Domain;
 
     /**
+     * @var IriOfferIdentifierFactoryInterface
+     */
+    protected $identifierFactory;
+
+    /**
      * @param RepositoryInterface $repository
      */
     public function __construct(
         RepositoryInterface $repository,
         CreatedByToUserIdResolverInterface $createdByToUserIdResolver,
         Domain $localDomain,
-        Domain $UDB2Domain
+        Domain $UDB2Domain,
+        IriOfferIdentifierFactoryInterface $identifierFactory
     ) {
         $this->repository = $repository;
         $this->userIdResolver = $createdByToUserIdResolver;
         $this->localDomain = $localDomain;
         $this->UDB2Domain = $UDB2Domain;
+        $this->identifierFactory = $identifierFactory;
     }
 
     /**
@@ -98,18 +109,15 @@ class Projector implements EventListenerInterface
 
     protected function handleIndexUpdateEvents(DomainMessage $domainMessage)
     {
+        /** @var AbstractEventWithIri $event */
         $event = $domainMessage->getPayload();
         $eventName = get_class($event);
 
-        if (array_key_exists($eventName, self::$indexUpdateEvents)) {
-            $itemIdentifier = self::$indexUpdateEvents[$eventName];
+        if (in_array($eventName, self::$indexUpdateEvents)) {
+            $identifier = $this->identifierFactory->fromIri($event->getIri());
+            $dateUpdated = new DateTime($domainMessage->getRecordedOn()->toString());
 
-            if ($itemIdentifier) {
-                $this->setItemUpdateDate(
-                    $event->{$itemIdentifier}(),
-                    new DateTime($domainMessage->getRecordedOn()->toString())
-                );
-            }
+            $this->setItemUpdateDate($identifier->getId(), $dateUpdated);
         }
     }
 

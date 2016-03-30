@@ -1,11 +1,11 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use PHPUnit_Framework_TestCase;
 use PDO;
@@ -27,6 +27,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     protected $tableName;
 
     /**
+     * @var EntityIriGeneratorFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $iriGeneratorFactory;
+
+    /**
      * @var array
      */
     protected $data;
@@ -44,9 +49,21 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->insert($this->data);
 
+        $this->iriGeneratorFactory = $this->getMock(EntityIriGeneratorFactoryInterface::class);
+        $iriGenerator = $this->getMock(IriGeneratorInterface::class);
+
+        $this->iriGeneratorFactory
+            ->method('forEntityType')
+            ->willReturn($iriGenerator);
+
+        $iriGenerator
+            ->method('iri')
+            ->willReturn('http://hello.world/something/id');
+
         $this->repository = new DBALRepository(
             $this->getConnection(),
-            $this->tableName
+            $this->tableName,
+            $this->iriGeneratorFactory
         );
     }
 
@@ -145,7 +162,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'zip' => '3020',
             'created' => 0,
             'updated' => 0,
-            'owning_domain' => 'udb.be'
+            'owning_domain' => 'udb.be',
+            'entity_iri' => 'http://hello.world/something/id',
         ];
 
         $this->assertCurrentData($expectedData);

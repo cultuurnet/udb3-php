@@ -70,6 +70,10 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             'text',
             array('length' => 36, 'notnull' => true)
         );
+        $table->addColumn(
+            'entity_iri',
+            'text'
+        );
 
         $schemaManager->createTable($table);
     }

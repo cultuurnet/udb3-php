@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\Events;
 
@@ -32,6 +29,7 @@ class ContentTypes
             EventCreatedFromCdbXml::class => 'application/vnd.cultuurnet.udb3-events.event-created-from-cdbxml+json',
             EventDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-deleted+json',
             EventImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.event-imported-from-udb2+json',
+            EventProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.event-projected-to-jsonld+json',
             EventUpdatedFromCdbXml::class => 'application/vnd.cultuurnet.udb3-events.event-updated-from_cdbxml+json',
             EventUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.event-updated-from_udb2+json',
             ImageAdded::class => 'application/vnd.cultuurnet.udb3-events.event-image-added+json',

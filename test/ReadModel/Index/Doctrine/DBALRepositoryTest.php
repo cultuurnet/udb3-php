@@ -10,7 +10,6 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
-use CultuurNet\UiTIDProvider\User\User;
 use PDO;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Number\Integer;
@@ -252,13 +251,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_a_list_of_paged_items_when_looking_for_user_dashboard_content()
     {
-        $user = $this->getMock(User::class);
         $limit = Natural::fromNative(5);
         $start = Natural::fromNative(0);
+        $userId = 'bar';
 
-        $user->id = 'bar';
-
-        $pagedCollection = $this->repository->findByUser($user, $limit, $start);
+        $pagedCollection = $this->repository->findByUser($userId, $limit, $start);
 
         $expectedItems = [
             new IriOfferIdentifier('http://hello.world/something/123', '123', OfferType::PLACE()),
@@ -273,15 +270,13 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_a_list_of_paged_items_when_looking_for_user_dashboard_content_for_a_specific_domain()
     {
-        $user = $this->getMock(User::class);
         $limit = Natural::fromNative(5);
         $start = Natural::fromNative(0);
+        $userId = 'bar';
         $domain = Domain::specifyType('omd.be');
 
-        $user->id = 'foo';
-
         $pagedCollection = $this->repository->findByUserForDomain(
-            $user,
+            $userId,
             $limit,
             $start,
             $domain
@@ -300,13 +295,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_the_total_items_when_there_are_multiple_pages_of_dashboard_items()
     {
-        $user = $this->getMock(User::class);
+        $userId = 'bar';
         $limit = Natural::fromNative(2);
         $start = Natural::fromNative(0);
 
-        $user->id = 'foo';
-
-        $pagedCollection = $this->repository->findByUser($user, $limit, $start);
+        $pagedCollection = $this->repository->findByUser($userId, $limit, $start);
 
         $this->assertEquals(Integer::fromNative(3), $pagedCollection->getTotalItems());
     }

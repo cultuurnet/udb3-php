@@ -14,13 +14,13 @@ interface DashboardItemLookupServiceInterface
      *   How many items to retrieve.
      * @param Natural $start
      *   Offset to start from.
-     * @param CultureFeed_User $user
-     *  The user to find dashboard items for.
+     * @param string $userId
+     *  The user id to find dashboard items for.
      *
      * @return Results
      */
     public function findByUser(
-        CultureFeed_User $user,
+        $userId,
         Natural $limit,
         Natural $start
     );
@@ -30,15 +30,15 @@ interface DashboardItemLookupServiceInterface
      *   How many items to retrieve.
      * @param Natural $start
      *   Offset to start from.
-     * @param CultureFeed_User $user
-     *  The user to find dashboard items for.
+     * @param string $userId
+     *  The user id to find dashboard items for.
      * @param Domain $owningDomain
      *  The domain that owns the items.
      *
      * @return Results
      */
     public function findByUserForDomain(
-        CultureFeed_User $user,
+        $userId,
         Natural $limit,
         Natural $start,
         Domain $owningDomain

@@ -271,7 +271,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         return $results->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    public function findByUser(User $user, Natural $limit, Natural $start)
+    public function findByUser($userId, Natural $limit, Natural $start)
     {
         $expr = $this->connection->getExpressionBuilder();
         $itemIsOwnedByUser = $expr->andX(
@@ -283,7 +283,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         );
 
         return $this->getPagedDashboardItems(
-            $user,
+            $userId,
             $limit,
             $start,
             $itemIsOwnedByUser
@@ -291,7 +291,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     }
 
     public function findByUserForDomain(
-        User $user,
+        $userId,
         Natural $limit,
         Natural $start,
         Domain $owningDomain
@@ -308,7 +308,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $parameters = ['owning_domain' => $owningDomain->toNative()];
 
         return $this->getPagedDashboardItems(
-            $user,
+            $userId,
             $limit,
             $start,
             $ownedByUserForDomain,
@@ -317,7 +317,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     }
 
     private function getPagedDashboardItems(
-        User $user,
+        $userId,
         Natural $limit,
         Natural $start,
         CompositeExpression $filterExpression,
@@ -331,7 +331,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             ->setMaxResults($limit->toNative())
             ->setFirstResult($start->toNative());
 
-        $queryBuilder->setParameter('user_id', $user->id);
+        $queryBuilder->setParameter('user_id', $userId);
         foreach ($parameters as $param => $value) {
             $queryBuilder->setParameter($param, $value);
         }

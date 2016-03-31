@@ -272,7 +272,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     {
         $limit = Natural::fromNative(5);
         $start = Natural::fromNative(0);
-        $userId = 'bar';
+        $userId = 'foo';
         $domain = Domain::specifyType('omd.be');
 
         $pagedCollection = $this->repository->findByUserForDomain(
@@ -295,7 +295,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_the_total_items_when_there_are_multiple_pages_of_dashboard_items()
     {
-        $userId = 'bar';
+        $userId = 'foo';
         $limit = Natural::fromNative(2);
         $start = Natural::fromNative(0);
 

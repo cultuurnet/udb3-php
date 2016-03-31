@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Dashboard;
 
+use CultureFeed_User;
 use CultuurNet\UDB3\Search\Results;
-use CultuurNet\UiTIDProvider\User\User;
 use ValueObjects\Number\Natural;
 use ValueObjects\Web\Domain;
 
@@ -14,13 +14,13 @@ interface DashboardItemLookupServiceInterface
      *   How many items to retrieve.
      * @param Natural $start
      *   Offset to start from.
-     * @param User $user
+     * @param CultureFeed_User $user
      *  The user to find dashboard items for.
      *
      * @return Results
      */
     public function findByUser(
-        User $user,
+        CultureFeed_User $user,
         Natural $limit,
         Natural $start
     );
@@ -30,7 +30,7 @@ interface DashboardItemLookupServiceInterface
      *   How many items to retrieve.
      * @param Natural $start
      *   Offset to start from.
-     * @param User $user
+     * @param CultureFeed_User $user
      *  The user to find dashboard items for.
      * @param Domain $owningDomain
      *  The domain that owns the items.
@@ -38,7 +38,7 @@ interface DashboardItemLookupServiceInterface
      * @return Results
      */
     public function findByUserForDomain(
-        User $user,
+        CultureFeed_User $user,
         Natural $limit,
         Natural $start,
         Domain $owningDomain

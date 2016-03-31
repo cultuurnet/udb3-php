@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Place\Events;
 
@@ -41,6 +38,7 @@ class ContentTypes
             PlaceDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-deleted+json',
             PlaceImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.place-imported-from-udb2-actor+json',
             PlaceImportedFromUDB2Event::class => 'application/vnd.cultuurnet.udb3-events.place-imported-from-udb2-event+json',
+            PlaceProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.place-projected-to-jsonld+json',
             PlaceUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.place-updated-from-udb2+json',
             TitleTranslated::class => 'application/vnd.cultuurnet.udb3-events.place-title-translated+json',
             TypicalAgeRangeUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-typical-age-range-updated+json',

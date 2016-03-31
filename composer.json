@@ -68,8 +68,5 @@
   },
   "provide" : {
     "ext-redis": "*"
-  },
-  "replace": {
-    "cultuurnet/udb3":"1.*"
   }
 }

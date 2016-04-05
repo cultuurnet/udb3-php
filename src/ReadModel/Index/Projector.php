@@ -467,7 +467,7 @@ class Projector implements EventListenerInterface
      */
     public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage)
     {
-        $this->repository->deleteIndex($eventDeleted->getEventId(), EntityType::EVENT());
+        $this->repository->deleteIndex($eventDeleted->getItemId(), EntityType::EVENT());
     }
 
     /**
@@ -475,6 +475,6 @@ class Projector implements EventListenerInterface
      */
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
-        $this->repository->deleteIndex($placeDeleted->getPlaceId(), EntityType::PLACE());
+        $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
     }
 }

@@ -25,9 +25,26 @@ interface RepositoryInterface
      */
     public function removeOrganizer($eventId);
 
+    /**
+     * @param string $placeId
+     *
+     * @return string[]
+     *  A list of event Ids.
+     */
     public function getEventsLocatedAtPlace($placeId);
 
+    /**
+     * @param string $organizerId
+     *
+     * @return string[]
+     *  A list of event Ids.
+     */
     public function getEventsOrganizedByOrganizer($organizerId);
 
+    /**
+     * Remove all the relations that are linked to this event.
+     *
+     * @param string $eventId
+     */
     public function removeRelations($eventId);
 }

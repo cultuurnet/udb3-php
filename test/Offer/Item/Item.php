@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
@@ -19,7 +20,7 @@ use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class Item extends Offer
 {
@@ -90,21 +91,26 @@ class Item extends Offer
 
     /**
      * @param Language $language
-     * @param String $title
+     * @param StringLiteral $title
      * @return AbstractTitleTranslated
      */
-    protected function createTitleTranslatedEvent(Language $language, String $title)
+    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
     {
         return new TitleTranslated($this->id, $language, $title);
     }
 
     /**
      * @param Language $language
-     * @param String $description
+     * @param StringLiteral $description
      * @return AbstractDescriptionTranslated
      */
-    protected function createDescriptionTranslatedEvent(Language $language, String $description)
+    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
     {
         return new DescriptionTranslated($this->id, $language, $description);
+    }
+
+    protected function createOfferDeletedEvent()
+    {
+        return new ItemDeleted();
     }
 }

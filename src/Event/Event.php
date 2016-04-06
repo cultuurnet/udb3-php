@@ -43,6 +43,7 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
@@ -423,14 +424,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Delete this item.
-     */
-    public function deleteEvent()
-    {
-        $this->apply(new EventDeleted($this->eventId));
-    }
-
-    /**
      * @param \CultureFeed_Cdb_Item_Event $udb2Event
      */
     protected function setLabelsFromUDB2Event(\CultureFeed_Cdb_Item_Event $udb2Event)
@@ -608,5 +601,10 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
     {
         return new DescriptionTranslated($this->eventId, $language, $description);
+    }
+
+    protected function createOfferDeletedEvent()
+    {
+        return new EventDeleted($this->eventId);
     }
 }

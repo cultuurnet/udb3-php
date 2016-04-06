@@ -43,7 +43,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyPlaceDeleted(PlaceDeleted $place)
     {
-        $placeId = $place->getPlaceId();
+        $placeId = $place->getItemId();
         $this->repository->removeRelations($placeId);
 
     }

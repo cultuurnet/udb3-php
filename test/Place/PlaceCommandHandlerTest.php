@@ -120,7 +120,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
      */
     public function it_can_delete_places()
     {
-        $id = '1';
+        $id = 'event-id';
         $this->scenario
             ->withAggregateId($id)
             ->given(

@@ -476,7 +476,7 @@ class EventLDProjector extends OfferLDProjector implements
      */
     protected function applyEventDeleted(EventDeleted $eventDeleted)
     {
-        $this->repository->remove($eventDeleted->getEventId());
+        $this->repository->remove($eventDeleted->getItemId());
     }
 
     /**

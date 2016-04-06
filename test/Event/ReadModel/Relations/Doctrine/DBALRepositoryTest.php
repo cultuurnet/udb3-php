@@ -151,4 +151,34 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTableData($expectedData, $this->tableName);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_remove_all_relations_for_a_given_event()
+    {
+        $existingData = [
+            (object)[
+                'event' => 'e201cea1-4a79-4834-9501-b28a92900fa1',
+                'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+            ],
+            (object)[
+                'event' => 'cd996276-7aac-40b7-8bf4-e505dbbf11bf',
+                'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+            ],
+        ];
+        $this->insertTableData($this->tableName, $existingData);
+        $eventId = 'e201cea1-4a79-4834-9501-b28a92900fa1';
+        $expectedData[] = (object)[
+            'event' => 'cd996276-7aac-40b7-8bf4-e505dbbf11bf',
+            'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
+            'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+        ];
+
+        $this->repository->removeRelations($eventId);
+
+        $this->assertTableData($expectedData, $this->tableName);
+    }
 }

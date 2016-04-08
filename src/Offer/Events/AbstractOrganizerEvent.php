@@ -37,4 +37,16 @@ abstract class AbstractOrganizerEvent extends AbstractEvent
             'organizerId' => $this->organizerId,
         );
     }
+
+    /**
+     * @param array $data
+     * @return static The object instance
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['item_id'],
+            $data['organizerId']
+        );
+    }
 }

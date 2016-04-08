@@ -27,11 +27,11 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
      * @var string
      */
     private $sampleDir;
-    
+
     public function setUp()
     {
         parent::setUp();
-        
+
         $this->serializer = BackwardsCompatiblePayloadSerializerFactory::createSerializer();
 
         $this->sampleDir = __DIR__ . '/samples/';
@@ -302,7 +302,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $eventId = $decoded['payload']['event_id'];
 
         /**
-         * @var AbstractEvent $titleTranslated
+         * @var AbstractEvent $abstractEvent
          */
         $abstractEvent = $this->serializer->deserialize($decoded);
         $itemId = $abstractEvent->getItemId();

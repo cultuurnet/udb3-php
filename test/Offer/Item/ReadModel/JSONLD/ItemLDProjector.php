@@ -6,6 +6,8 @@ use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
@@ -64,5 +66,21 @@ class ItemLDProjector extends OfferLDProjector
     protected function getDescriptionTranslatedClassName()
     {
         return DescriptionTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrganizerUpdatedClassName()
+    {
+        return OrganizerUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrganizerDeletedClassName()
+    {
+        return OrganizerDeleted::class;
     }
 }

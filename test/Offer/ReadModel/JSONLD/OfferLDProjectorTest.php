@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
@@ -21,6 +22,8 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
@@ -54,21 +57,9 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     protected $organizerService;
 
     /**
-     * @var Serializer|PHPUnit_Framework_MockObject_MockObject
+     * @var MediaObjectSerializer
      */
     protected $serializer;
-
-    /**
-     * Constructs a test case with the given name.
-     *
-     * @param string $name
-     * @param array  $data
-     * @param string $dataName
-     */
-    public function __construct($name = null, array $data = array(), $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName, 'CultuurNet\\UDB3\\Offer\\Item');
-    }
 
     /**
      * @inheritdoc
@@ -672,5 +663,112 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
             $eventBody->image
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_the_organizer()
+    {
+        $id = 'foo';
+        $organizerId = 'ORGANIZER-ABC-456';
+
+        $this->organizerService->expects($this->once())
+            ->method('getEntity')
+            ->with($organizerId)
+            ->willThrowException(new EntityNotFoundException());
+        $this->organizerService->expects($this->once())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
+
+        $organizerUpdated = new OrganizerUpdated($id, $organizerId);
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode([
+                'organizer' => [
+                    '@type' => 'Organizer',
+                    '@id' => 'http://example.com/entity/ORGANIZER-ABC-123'
+                ]
+            ])
+        );
+        $this->documentRepository->save($initialDocument);
+
+        $body = $this->project($organizerUpdated, $id);
+
+        $expectedBody = (object)[
+            'organizer' => (object)[
+                '@type' => 'Organizer',
+                '@id' => 'http://example.com/entity/' . $organizerId
+            ]
+        ];
+
+        $this->assertEquals($expectedBody, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_an_existing_organizer()
+    {
+        $id = 'foo';
+        $organizerId = 'ORGANIZER-ABC-456';
+
+        $this->organizerService->expects($this->once())
+            ->method('getEntity')
+            ->with($organizerId)
+            ->willReturnCallback(
+                function ($argument) {
+                    return json_encode(['id' => $argument, 'name' => 'name']);
+                }
+            );
+
+        $organizerUpdated = new OrganizerUpdated($id, $organizerId);
+
+        $initialDocument = new JsonDocument($id);
+        $this->documentRepository->save($initialDocument);
+
+        $expectedBody = (object)[
+            'organizer' => (object)[
+                '@type' => 'Organizer',
+                'id' => $organizerId,
+                'name' => 'name',
+            ]
+        ];
+
+        $body = $this->project($organizerUpdated, $id);
+
+        $this->assertEquals($expectedBody, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_deleting_of_the_organizer()
+    {
+        $id = 'foo';
+        $organizerId = 'ORGANIZER-ABC-123';
+
+        $organizerDeleted = new OrganizerDeleted($id, $organizerId);
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode([
+                'organizer' => [
+                    '@type' => 'Organizer',
+                    '@id' => 'http://example.com/entity/' . $organizerId
+                ]
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $body = $this->project($organizerDeleted, $id);
+
+        $this->assertEquals(new \stdClass(), $body);
     }
 }

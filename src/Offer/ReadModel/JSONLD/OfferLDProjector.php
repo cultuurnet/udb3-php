@@ -5,9 +5,11 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CulturefeedSlugger;
+use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
+use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -15,6 +17,8 @@ use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
@@ -25,7 +29,7 @@ use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
 
-abstract class OfferLDProjector
+abstract class OfferLDProjector implements OrganizerServiceInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait {
         DelegateEventHandlingToSpecificMethodTrait::handle as handleUnknownEvents;
@@ -165,6 +169,16 @@ abstract class OfferLDProjector
      * @return string
      */
     abstract protected function getDescriptionTranslatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getOrganizerUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getOrganizerDeletedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -398,6 +412,38 @@ abstract class OfferLDProjector
     }
 
     /**
+     * Apply the organizer updated event to the place repository.
+     * @param AbstractOrganizerUpdated $organizerUpdated
+     */
+    protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($organizerUpdated);
+
+        $offerLd = $document->getBody();
+
+        $offerLd->organizer = array(
+                '@type' => 'Organizer',
+            ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the organizer delete event to the place repository.
+     * @param AbstractOrganizerDeleted $organizerDeleted
+     */
+    protected function applyOrganizerDeleted(AbstractOrganizerDeleted $organizerDeleted)
+    {
+        $document = $this->loadDocumentFromRepository($organizerDeleted);
+
+        $offerLd = $document->getBody();
+
+        unset($offerLd->organizer);
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
      * @param string $id
      * @return JsonDocument
      */
@@ -436,5 +482,24 @@ abstract class OfferLDProjector
         }
 
         return $document;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function organizerJSONLD($organizerId)
+    {
+        try {
+            $organizerJSONLD = $this->organizerService->getEntity(
+                $organizerId
+            );
+
+            return json_decode($organizerJSONLD);
+        } catch (EntityNotFoundException $e) {
+            // In case the place can not be found at the moment, just add its ID
+            return array(
+                '@id' => $this->organizerService->iri($organizerId)
+            );
+        }
     }
 }

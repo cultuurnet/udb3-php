@@ -3,10 +3,35 @@
 namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Title;
 
 class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @test
+     */
+    public function it_throws_an_exception_if_an_address_of_an_incorrect_type_is_provided()
+    {
+        $id = '123';
+        $title = new Title('Test');
+
+        $addresses = [
+            new \stdClass(),
+        ];
+
+        $phones = ['12345678'];
+        $emails = ['foo@bar.com'];
+        $urls = ['http://bar.com'];
+
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'Argument should be of type Address, stdClass given.'
+        );
+
+        new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls);
+    }
+
     /**
      * @test
      * @dataProvider serializationDataProvider

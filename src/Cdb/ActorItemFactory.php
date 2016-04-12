@@ -42,6 +42,11 @@ class ActorItemFactory implements ActorItemFactoryInterface
             $namespaceUri
         );
 
+        // The actor might be wrapped in a <cdbxml> tag.
+        if ($udb2SimpleXml->getName() == 'cdbxml' && isset($udb2SimpleXml->actor)) {
+            $udb2SimpleXml = $udb2SimpleXml->actor;
+        }
+
         return \CultureFeed_Cdb_Item_Actor::parseFromCdbXml(
             $udb2SimpleXml
         );

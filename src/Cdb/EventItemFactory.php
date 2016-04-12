@@ -47,6 +47,11 @@ class EventItemFactory implements EventItemFactoryInterface
             $namespaceUri
         );
 
+        // The event might be wrapped in a <cdbxml> tag.
+        if ($udb2SimpleXml->getName() == 'cdbxml' && isset($udb2SimpleXml->event)) {
+            $udb2SimpleXml = $udb2SimpleXml->event;
+        }
+
         $event = CultureFeed_Cdb_Item_Event::parseFromCdbXml($udb2SimpleXml);
 
         if (self::isEventOlderThanSplitKeywordFix($event)) {

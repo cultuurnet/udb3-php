@@ -235,12 +235,10 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
      */
     public function handleDeletePlace(DeletePlace $deletePlace)
     {
-
         /** @var Place $place */
         $place = $this->repository->load($deletePlace->getId());
-        $place->deletePlace();
+        $place->delete();
 
         $this->repository->save($place);
-
     }
 }

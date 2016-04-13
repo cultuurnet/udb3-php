@@ -1,16 +1,16 @@
 <?php
 
-namespace test\Event\Events;
+namespace test\Place\Events;
 
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 
-class EventCreatedTest extends \PHPUnit_Framework_TestCase
+class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -18,11 +18,11 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
-        EventCreated $eventCreated
+        PlaceCreated $placeCreated
     ) {
         $this->assertEquals(
             $expectedSerializedValue,
-            $eventCreated->serialize()
+            $placeCreated->serialize()
         );
     }
 
@@ -32,11 +32,11 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
-        EventCreated $expectedEventCreated
+        PlaceCreated $expectedPlaceCreated
     ) {
         $this->assertEquals(
-            $expectedEventCreated,
-            EventCreated::deserialize($serializedValue)
+            $expectedPlaceCreated,
+            PlaceCreated::deserialize($serializedValue)
         );
     }
 
@@ -45,18 +45,14 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 [
-                    'event_id' => 'test 456',
+                    'place_id' => 'test 456',
                     'title' => 'title',
                     'theme' => null,
-                    'location' => array(
-                        'cdbid' => 'cdbid',
-                        'name' => 'Repeteerkot',
-                        'address' => array(
-                            'addressCountry' => 'Belgium',
-                            'addressLocality' => 'Zottegem',
-                            'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
-                        ),
+                    'address' => array(
+                        'streetAddress' => 'De straat',
+                        'postalCode' => '9620',
+                        'locality' => 'Zottegem',
+                        'country' => 'Belgium',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -72,17 +68,15 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'publication_date' => null
                 ],
-                new EventCreated(
+                new PlaceCreated(
                     'test 456',
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
-                    new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
+                    new Address(
+                        'De straat',
                         '9620',
-                        'De straat'
+                        'Zottegem',
+                        'Belgium'
                     ),
                     new Calendar(
                         'permanent'
@@ -91,22 +85,18 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 [
-                    'event_id' => 'test 456',
+                    'place_id' => 'test 456',
                     'title' => 'title',
                     'theme' => [
                         'id' => '123',
                         'label' => 'foo',
                         'domain' => 'theme',
                     ],
-                    'location' => array(
-                        'cdbid' => 'cdbid',
-                        'name' => 'Repeteerkot',
-                        'address' => array(
-                            'addressCountry' => 'Belgium',
-                            'addressLocality' => 'Zottegem',
-                            'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
-                        ),
+                    'address' => array(
+                        'streetAddress' => 'De straat',
+                        'postalCode' => '9620',
+                        'locality' => 'Zottegem',
+                        'country' => 'Belgium',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -122,17 +112,15 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'publication_date' => null
                 ],
-                new EventCreated(
+                new PlaceCreated(
                     'test 456',
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
-                    new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
+                    new Address(
+                        'De straat',
                         '9620',
-                        'De straat'
+                        'Zottegem',
+                        'Belgium'
                     ),
                     new Calendar(
                         'permanent'
@@ -142,18 +130,14 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 [
-                    'event_id' => 'test 456',
+                    'place_id' => 'test 456',
                     'title' => 'title',
                     'theme' => null,
-                    'location' => array(
-                        'cdbid' => 'cdbid',
-                        'name' => 'Repeteerkot',
-                        'address' => array(
-                            'addressCountry' => 'Belgium',
-                            'addressLocality' => 'Zottegem',
-                            'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
-                        ),
+                    'address' => array(
+                        'streetAddress' => 'De straat',
+                        'postalCode' => '9620',
+                        'locality' => 'Zottegem',
+                        'country' => 'Belgium',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -169,23 +153,21 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'publication_date' => '2016-08-01T00:00:00+0200'
                 ],
-                new EventCreated(
+                new PlaceCreated(
                     'test 456',
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
-                    new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
+                    new Address(
+                        'De straat',
                         '9620',
-                        'De straat'
+                        'Zottegem',
+                        'Belgium'
                     ),
                     new Calendar(
                         'permanent'
                     ),
                     null,
-                    DateTimeImmutable::createFromFormat(
+                    \DateTimeImmutable::createFromFormat(
                         \DateTime::ISO8601,
                         '2016-08-01T00:00:00+0200'
                     )

@@ -182,7 +182,12 @@ class DBALRepository implements RepositoryInterface
 
     public function removeRelations($eventId)
     {
-      // @todo implement this for non-drupal.
+        $q = $this->connection->createQueryBuilder();
+        $q->delete($this->tableName)
+          ->where('event = ?')
+          ->setParameter(0, $eventId);
+
+        $q->execute();
     }
 
     /**

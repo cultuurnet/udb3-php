@@ -28,6 +28,6 @@ class DescriptionUpdated extends AbstractEvent implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static($data['event_id'], $data['description']);
+        return new static($data['item_id'], $data['description']);
     }
 }

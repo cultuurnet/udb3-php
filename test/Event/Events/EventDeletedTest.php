@@ -43,7 +43,7 @@ class EventDeletedTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             \InvalidArgumentException::class,
-            'Expected eventId to be a string, received integer'
+            'Expected itemId to be a string, received integer'
         );
         new EventDeleted(4);
     }
@@ -53,9 +53,9 @@ class EventDeletedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_return_its_id()
     {
-        $eventEvent = new EventDeleted('testmefoo');
-        $expectedEventEventId = 'testmefoo';
-        $this->assertEquals($expectedEventEventId, $eventEvent->getEventId());
+        $domainEvent = new EventDeleted('testmefoo');
+        $expectedEventId = 'testmefoo';
+        $this->assertEquals($expectedEventId, $domainEvent->getItemId());
     }
 
     public function serializationDataProvider()
@@ -63,7 +63,7 @@ class EventDeletedTest extends \PHPUnit_Framework_TestCase
         return [
             'eventDeleted' => [
                 [
-                    'event_id' => 'foo',
+                    'item_id' => 'foo',
                 ],
                 new EventDeleted(
                     'foo'

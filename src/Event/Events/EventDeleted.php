@@ -1,25 +1,12 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\EventDeleted.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 
 /**
  * Provides an EventDeleted event.
  */
-class EventDeleted extends EventEvent
+class EventDeleted extends AbstractOfferDeleted
 {
-
-    /**
-     * @param string $id
-     */
-    public function __construct($id)
-    {
-        parent::__construct($id);
-    }
 }

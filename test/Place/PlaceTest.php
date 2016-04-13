@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nick
- * Date: 07/01/16
- * Time: 11:48
- */
 
 namespace CultuurNet\UDB3\Place;
 

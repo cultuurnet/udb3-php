@@ -6,6 +6,7 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
@@ -42,15 +43,17 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class Event extends Offer
+class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
     protected $eventId;
 
@@ -79,7 +82,8 @@ class Event extends Offer
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
-     * @param Theme/null $theme
+     * @param Theme|null $theme
+     * @param \DateTimeImmutable|null $publicationDate
      *
      * @return Event
      */
@@ -89,15 +93,28 @@ class Event extends Offer
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null,
+        \DateTimeImmutable $publicationDate = null
     ) {
         if (!is_string($eventId)) {
             throw new \InvalidArgumentException(
                 'Expected eventId to be a string, received ' . gettype($eventId)
             );
         }
+
         $event = new self();
-        $event->apply(new EventCreated($eventId, $title, $eventType, $location, $calendar, $theme));
+
+        $event->apply(
+            new EventCreated(
+                $eventId,
+                $title,
+                $eventType,
+                $location,
+                $calendar,
+                $theme,
+                $publicationDate
+            )
+        );
 
         return $event;
     }
@@ -407,14 +424,6 @@ class Event extends Offer
     }
 
     /**
-     * Delete this item.
-     */
-    public function deleteEvent()
-    {
-        $this->apply(new EventDeleted($this->eventId));
-    }
-
-    /**
      * @param \CultureFeed_Cdb_Item_Event $udb2Event
      */
     protected function setLabelsFromUDB2Event(\CultureFeed_Cdb_Item_Event $udb2Event)
@@ -516,6 +525,9 @@ class Event extends Offer
             );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
     {
         $this->apply(
@@ -589,5 +601,10 @@ class Event extends Offer
     protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
     {
         return new DescriptionTranslated($this->eventId, $language, $description);
+    }
+
+    protected function createOfferDeletedEvent()
+    {
+        return new EventDeleted($this->eventId);
     }
 }

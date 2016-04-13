@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
@@ -209,6 +210,16 @@ abstract class Offer extends EventSourcedAggregateRoot
         }
     }
 
+    /**
+     * Delete the offer.
+     */
+    public function delete()
+    {
+        $this->apply(
+            $this->createOfferDeletedEvent()
+        );
+    }
+
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
         $imageId = $imageAdded->getImage()->getMediaObjectId();
@@ -288,4 +299,9 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractMainImageSelected
      */
     abstract protected function createMainImageSelectedEvent(Image $image);
+
+    /**
+     * @return AbstractOfferDeleted
+     */
+    abstract protected function createOfferDeletedEvent();
 }

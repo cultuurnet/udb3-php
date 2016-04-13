@@ -197,7 +197,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
 
         /** @var Event $event */
         $event = $this->repository->load($deleteEvent->getId());
-        $event->deleteEvent();
+        $event->delete();
 
         $this->repository->save($event);
 

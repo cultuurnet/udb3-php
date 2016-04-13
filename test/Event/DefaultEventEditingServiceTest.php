@@ -183,6 +183,41 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
     }
 
+    /**
+     * @test
+     */
+    public function it_can_create_a_new_event_with_a_fixed_publication_date()
+    {
+        $eventId = 'generated-uuid';
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
+        $calendar = new Calendar('permanent', '', '');
+        $theme = null;
+        $publicationDate = \DateTimeImmutable::createFromFormat(
+            \DateTime::ISO8601,
+            '2016-08-01T00:00:00+0000'
+        );
+
+        $this->eventEditingService = $this->eventEditingService
+            ->withFixedPublicationDateForNewOffers($publicationDate);
+
+        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme, $publicationDate);
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $this->writeRepository->expects($this->once())
+            ->method('save')
+            ->with($event);
+
+        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+    }
+
+    /**
+     * @param mixed $id
+     */
     private function setUpEventNotFound($id)
     {
         $this->readRepository->expects($this->once())

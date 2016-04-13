@@ -19,7 +19,6 @@ use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
-use CultuurNet\UDB3\Place\Events\ImageDeleted;
 use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\MainImageSelected;
@@ -38,8 +37,8 @@ use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use Symfony\Component\EventDispatcher\Event;
-use ValueObjects\String\String;
+use DateTimeImmutable;
+use ValueObjects\String\String as StringLiteral;
 
 class Place extends Offer implements UpdateableWithCdbXmlInterface
 {
@@ -65,26 +64,42 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * normal behavior for create is taken by the legacy udb2 logic.
      * The PlaceImportedFromUDB2 could be a superclass of Place.
      *
-     * @param String $id
+     * @param string $id
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
      * @param CalendarInterface $calendar
-     * @param Theme/null $theme
+     * @param Theme|null $theme
+     * @param DateTimeImmutable|null $publicationDate
      *
      * @return self
      */
-    public static function createPlace($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
-    {
+    public static function createPlace(
+        $id,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null,
+        DateTimeImmutable $publicationDate = null
+    ) {
         $place = new self();
-        $place->apply(new PlaceCreated($id, $title, $eventType, $address, $calendar, $theme));
+        $place->apply(new PlaceCreated(
+            $id,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme,
+            $publicationDate
+        ));
 
         return $place;
     }
 
     /**
      * Apply the place created event.
-     * @param PlaceCreate $placeCreated
+     * @param PlaceCreated $placeCreated
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
@@ -172,14 +187,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     public function updateMajorInfo(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
     {
         $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
-    }
-
-    /**
-     * Delete this item.
-     */
-    public function deletePlace()
-    {
-        $this->apply(new PlaceDeleted($this->actorId));
     }
 
     /**
@@ -314,21 +321,26 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     /**
      * @param Language $language
-     * @param String $title
+     * @param StringLiteral $title
      * @return TitleTranslated
      */
-    protected function createTitleTranslatedEvent(Language $language, String $title)
+    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
     {
         return new TitleTranslated($this->actorId, $language, $title);
     }
 
     /**
      * @param Language $language
-     * @param String $description
+     * @param StringLiteral $description
      * @return DescriptionTranslated
      */
-    protected function createDescriptionTranslatedEvent(Language $language, String $description)
+    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
     {
         return new DescriptionTranslated($this->actorId, $language, $description);
+    }
+
+    protected function createOfferDeletedEvent()
+    {
+        return new PlaceDeleted($this->actorId);
     }
 }

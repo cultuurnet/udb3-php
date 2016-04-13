@@ -1,15 +1,21 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\Hydra\PagedCollection;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
-use PHPUnit_Framework_TestCase;
 use PDO;
+use PHPUnit_Framework_TestCase;
+use ValueObjects\Number\Integer;
+use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Web\Domain;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {
@@ -24,6 +30,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      * @var StringLiteral
      */
     protected $tableName;
+
+    /**
+     * @var EntityIriGeneratorFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $iriGeneratorFactory;
 
     /**
      * @var array
@@ -43,9 +54,21 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->insert($this->data);
 
+        $this->iriGeneratorFactory = $this->getMock(EntityIriGeneratorFactoryInterface::class);
+        $iriGenerator = $this->getMock(IriGeneratorInterface::class);
+
+        $this->iriGeneratorFactory
+            ->method('forEntityType')
+            ->willReturn($iriGenerator);
+
+        $iriGenerator
+            ->method('iri')
+            ->willReturn('http://hello.world/something/id');
+
         $this->repository = new DBALRepository(
             $this->getConnection(),
-            $this->tableName
+            $this->tableName,
+            $this->iriGeneratorFactory
         );
     }
 
@@ -101,6 +124,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'bar',
             'Test organizer abc update',
             '3020',
+            Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
 
@@ -129,6 +153,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'foo',
             'Test event xyz',
             '3020',
+            Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@0')
         );
 
@@ -140,7 +165,10 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'foo',
             'title' => 'Test event xyz',
             'zip' => '3020',
-            'created' => 0
+            'created' => 0,
+            'updated' => 0,
+            'owning_domain' => 'udb.be',
+            'entity_iri' => 'http://hello.world/something/id',
         ];
 
         $this->assertCurrentData($expectedData);
@@ -194,5 +222,85 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             $expectedIds,
             $this->repository->findPlacesByPostalCode('3000')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_updated_column_when_setting_the_updated_date()
+    {
+        $itemId = 'def';
+        $dateUpdated = new \DateTime();
+        $dateUpdated->setTimestamp(1171502725);
+
+        $expectedData = $this->data;
+
+        $expectedData[1] = [
+                'updated' => 1171502725,
+            ] + (array) $expectedData[1];
+
+        $expectedData[1] = (object) $expectedData[1];
+
+        $this->repository->setUpdateDate($itemId, $dateUpdated);
+
+        $this->assertCurrentData($expectedData);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_return_a_list_of_paged_items_when_looking_for_user_dashboard_content()
+    {
+        $limit = Natural::fromNative(5);
+        $start = Natural::fromNative(0);
+        $userId = 'bar';
+
+        $pagedCollection = $this->repository->findByUser($userId, $limit, $start);
+
+        $expectedItems = [
+            new IriOfferIdentifier('http://hello.world/something/123', '123', OfferType::PLACE()),
+        ];
+
+        $this->assertEquals($expectedItems, $pagedCollection->getItems());
+        $this->assertEquals(Integer::fromNative(1), $pagedCollection->getTotalItems());
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_return_a_list_of_paged_items_when_looking_for_user_dashboard_content_for_a_specific_domain()
+    {
+        $limit = Natural::fromNative(5);
+        $start = Natural::fromNative(0);
+        $userId = 'foo';
+        $domain = Domain::specifyType('omd.be');
+
+        $pagedCollection = $this->repository->findByUserForDomain(
+            $userId,
+            $limit,
+            $start,
+            $domain
+        );
+
+        $expectedItems = [
+            new IriOfferIdentifier('http://hello.world/something/ghj', 'ghj', OfferType::EVENT()),
+        ];
+
+        $this->assertEquals($expectedItems, $pagedCollection->getItems());
+        $this->assertEquals(Integer::fromNative(1), $pagedCollection->getTotalItems());
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_return_the_total_items_when_there_are_multiple_pages_of_dashboard_items()
+    {
+        $userId = 'foo';
+        $limit = Natural::fromNative(2);
+        $start = Natural::fromNative(0);
+
+        $pagedCollection = $this->repository->findByUser($userId, $limit, $start);
+
+        $this->assertEquals(Integer::fromNative(3), $pagedCollection->getTotalItems());
     }
 }

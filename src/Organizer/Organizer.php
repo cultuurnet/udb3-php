@@ -98,7 +98,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     public function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImported
     ) {
-        $this->actorId = $organizerImported->getActorId();
+        $this->actorId = (string) $organizerImported->getActorId();
     }
 
     /**

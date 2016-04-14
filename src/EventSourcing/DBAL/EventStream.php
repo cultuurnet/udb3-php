@@ -41,43 +41,57 @@ class EventStream
     protected $loadStatement;
 
     /**
+     * @var int
+     */
+    protected $previousId;
+
+    /**
      * @param Connection $connection
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
+     * @param int $startId
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
-        $tableName
+        $tableName,
+        $startId = 0
     ) {
         $this->connection = $connection;
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
+        $this->previousId = $startId > 0 ? $startId - 1 : 0;
     }
 
     public function __invoke()
     {
         $statement = $this->prepareLoadStatement();
 
-        $previousId = 0;
-
         do {
-            $statement->bindValue('previousid', $previousId, 'integer');
+            $statement->bindValue('previousid', $this->previousId, 'integer');
             $statement->execute();
 
             $events = [];
             while ($row = $statement->fetch()) {
                 $events[] = $this->deserializeEvent($row);
-                $previousId = $row['id'];
+                $this->previousId = $row['id'];
             }
 
             if (!empty($events)) {
                 yield new DomainEventStream($events);
             }
         } while (!empty($events));
+    }
+
+    /**
+     * @return int
+     */
+    public function getPreviousId()
+    {
+        return $this->previousId;
     }
 
     /**

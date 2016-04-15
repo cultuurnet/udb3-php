@@ -82,7 +82,6 @@ class CdbXMLImporter
                 }
                 $jsonLD->phone = $phones;
             }
-
         }
 
         return $jsonLD;

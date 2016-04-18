@@ -8,7 +8,7 @@ use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\Deserializer\NotWellFormedException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class AddLabelToMultipleJSONDeserializer extends JSONDeserializer
 {
@@ -26,13 +26,13 @@ class AddLabelToMultipleJSONDeserializer extends JSONDeserializer
     }
 
     /**
-     * @param \ValueObjects\String\String $data
+     * @param StringLiteral $data
      *
      * @return AddLabelToMultiple
      *
      * @throws NotWellFormedException
      */
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $data = parent::deserialize($data);
 
@@ -49,7 +49,7 @@ class AddLabelToMultipleJSONDeserializer extends JSONDeserializer
         foreach ($data->offers as $offer) {
             $offers = $offers->with(
                 $this->offerIdentifierDeserializer->deserialize(
-                    new String(
+                    new StringLiteral(
                         json_encode($offer)
                     )
                 )

@@ -5,11 +5,11 @@ namespace CultuurNet\UDB3\Offer\Commands;
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\Label;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class AddLabelToQueryJSONDeserializer extends JSONDeserializer
 {
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $data = parent::deserialize($data);
 

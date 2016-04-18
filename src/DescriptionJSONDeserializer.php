@@ -4,15 +4,15 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class DescriptionJSONDeserializer extends JSONDeserializer
 {
     /**
-     * @param String $data
+     * @param StringLiteral $data
      * @return Description
      */
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $data = parent::deserialize($data);
 

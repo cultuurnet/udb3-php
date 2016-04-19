@@ -380,9 +380,18 @@ class EventLDProjector extends OfferLDProjector implements
 
         // Because we can not properly track media coming from UDB2 we simply
         // ignore it and give priority to content added through UDB3.
-        $media = $this->UDB3Media($eventId);
+        $document = $this->loadDocumentFromRepositoryByItemId($eventId);
+
+        $media = $this->UDB3Media($document);
         if (!empty($media)) {
             $jsonLd->mediaObject = $media;
+        }
+
+        // Because UDB2 cannot keep track of UDB3 places as a location
+        // ignore it and give priority to content added through UDB3.
+        $location = $this->UDB3Location($document);
+        if (!empty($location)) {
+            $jsonLd->location = $location;
         }
 
         return $jsonLd;
@@ -391,15 +400,13 @@ class EventLDProjector extends OfferLDProjector implements
     /**
      * Return the media of an event if it already exists.
      *
-     * @param $eventId
-     *  The id of the event.
+     * @param JsonDocument $document The JsonDocument.
      *
      * @return array
      *  A list of media objects.
      */
-    private function UDB3Media($eventId)
+    private function UDB3Media($document)
     {
-        $document = $this->loadDocumentFromRepositoryByItemId($eventId);
         $media = [];
 
         if ($document) {
@@ -410,6 +417,26 @@ class EventLDProjector extends OfferLDProjector implements
         }
 
         return $media;
+    }
+
+    /**
+     * Return the location of an event if it already exists.
+     *
+     * @param JsonDocument $document The JsonDocument.
+     *
+     * @return array|null
+     *  The location
+     */
+    private function UDB3Location($document)
+    {
+        $location = null;
+
+        if ($document) {
+            $item = $document->getBody();
+            $location = isset($item->location) ? $item->location : null;
+        }
+
+        return $location;
     }
 
     /**

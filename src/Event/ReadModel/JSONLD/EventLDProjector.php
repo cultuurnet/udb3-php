@@ -420,12 +420,12 @@ class EventLDProjector extends OfferLDProjector implements
     }
 
     /**
-     * Return the media of an event if it already exists.
+     * Return the location of an event if it already exists.
      *
      * @param JsonDocument $document The JsonDocument.
      *
-     * @return array
-     *  A list of media objects.
+     * @return array|null
+     *  The location
      */
     private function UDB3Location($document)
     {

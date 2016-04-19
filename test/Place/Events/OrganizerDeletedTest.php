@@ -12,7 +12,7 @@ class OrganizerDeletedTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 [
-                    'place_id' => 'place-123',
+                    'item_id' => 'place-123',
                     'organizerId' => 'organizer-456',
                 ],
                 new OrganizerDeleted(

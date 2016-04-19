@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Place\Events;
 
@@ -12,7 +9,7 @@ class OrganizerUpdatedTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 [
-                    'place_id' => 'place123',
+                    'item_id' => 'place123',
                     'organizerId' => 'organizer-456',
                 ],
                 new OrganizerUpdated(

@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Event\Events;
+namespace CultuurNet\UDB3\Place\Events;
 
 /**
  * @method string getItemId()
@@ -14,7 +14,7 @@ trait BackwardsCompatibleEventTrait
      *
      * @return string
      */
-    public function getEventId()
+    public function getPlaceId()
     {
         return $this->getItemId();
     }

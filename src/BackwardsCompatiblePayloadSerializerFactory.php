@@ -16,12 +16,14 @@ use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
-use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
-use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
+use CultuurNet\UDB3\Event\Events\OrganizerUpdated as EventOrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
+use CultuurNet\UDB3\Place\Events\OrganizerDeleted as PlaceOrganizerDeleted;
+use CultuurNet\UDB3\Place\Events\OrganizerUpdated as PlaceOrganizerUpdated;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 
@@ -206,94 +208,45 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
-         * BOOKING INFO
+         * EventEvent to AbstractEvent (Offer)
          */
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
+        $refactoredEventEvents = [
             BookingInfoUpdated::class,
-            function (array $serializedObject) {
-
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
-
-        /**
-         * TYPICAL AGE RANGE
-         */
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
             TypicalAgeRangeDeleted::class,
-            function (array $serializedObject) {
-
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
             TypicalAgeRangeUpdated::class,
-            function (array $serializedObject) {
-
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
-
-        /**
-         * CONTACT POINT
-         */
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
             ContactPointUpdated::class,
-            function (array $serializedObject) {
-
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
-
-        /**
-         *  MAJOR INFO
-         */
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
             MajorInfoUpdated::class,
-            function (array $serializedObject) {
+            EventOrganizerUpdated::class,
+            EventOrganizerDeleted::class,
+        ];
 
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
+        foreach ($refactoredEventEvents as $refactoredEventEvent) {
+            $payloadManipulatingSerializer->manipulateEventsOfClass(
+                $refactoredEventEvent,
+                function (array $serializedObject) {
+                    $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+                    return $serializedObject;
+                }
+            );
+        }
 
         /**
-         * ORGANIZER
+         * PlaceEvent to AbstractEvent (Offer)
          */
+        $refactoredPlaceEvents = [
+            PlaceOrganizerUpdated::class,
+            PlaceOrganizerDeleted::class,
+        ];
 
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            OrganizerUpdated::class,
-            function (array $serializedObject) {
-
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            OrganizerDeleted::class,
-            function (array $serializedObject) {
-
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
+        foreach ($refactoredPlaceEvents as $refactoredPlaceEvent) {
+            $payloadManipulatingSerializer->manipulateEventsOfClass(
+                $refactoredPlaceEvent,
+                function (array $serializedObject) {
+                    $serializedObject = self::replacePlaceIdWithItemId($serializedObject);
+                    return $serializedObject;
+                }
+            );
+        }
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             DescriptionUpdated::class,
@@ -313,10 +266,30 @@ class BackwardsCompatiblePayloadSerializerFactory
      */
     private static function replaceEventIdWithItemId(array $serializedObject)
     {
-        if (isset($serializedObject['payload']['event_id'])) {
-            $eventId = $serializedObject['payload']['event_id'];
-            $serializedObject['payload']['item_id'] = $eventId;
-            unset($serializedObject['payload']['event_id']);
+        return self::replaceKeys('event_id', 'item_id', $serializedObject);
+    }
+
+    /**
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function replacePlaceIdWithItemId(array $serializedObject)
+    {
+        return self::replaceKeys('place_id', 'item_id', $serializedObject);
+    }
+
+    /**
+     * @param string $oldKey
+     * @param string $newKey
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function replaceKeys($oldKey, $newKey, $serializedObject)
+    {
+        if (isset($serializedObject['payload'][$oldKey])) {
+            $value = $serializedObject['payload'][$oldKey];
+            $serializedObject['payload'][$newKey] = $value;
+            unset($serializedObject['payload'][$oldKey]);
         }
 
         return $serializedObject;

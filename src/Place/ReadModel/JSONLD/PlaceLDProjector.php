@@ -8,18 +8,15 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
-use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
-use CultuurNet\UDB3\Offer\ReadModel\OfferJsonDocument;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -41,9 +38,7 @@ use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\PlaceEvent;
-use CultuurNet\UDB3\Place\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -302,38 +297,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the organizer updated event to the place repository.
-     * @param OrganizerUpdated $organizerUpdated
-     */
-    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
-    {
-        $document = $this->loadPlaceDocumentFromRepository($organizerUpdated);
-
-        $placeLd = $document->getBody();
-
-        $placeLd->organizer = array(
-          '@type' => 'Organizer',
-        ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
-
-        $this->repository->save($document->withBody($placeLd));
-    }
-
-    /**
-     * Apply the organizer delete event to the place repository.
-     * @param OrganizerDeleted $organizerDeleted
-     */
-    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
-    {
-        $document = $this->loadPlaceDocumentFromRepository($organizerDeleted);
-
-        $placeLd = $document->getBody();
-
-        unset($placeLd->organizer);
-
-        $this->repository->save($document->withBody($placeLd));
-    }
-
-    /**
      * Apply the contact point updated event to the place repository.
      * @param ContactPointUpdated $contactPointUpdated
      */
@@ -396,27 +359,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Get the organizer jsonLD.
-     * @param string $organizerId
-     * @return array
-     */
-    protected function organizerJSONLD($organizerId)
-    {
-        try {
-            $organizerJSONLD = $this->organizerService->getEntity(
-                $organizerId
-            );
-
-            return json_decode($organizerJSONLD);
-        } catch (EntityNotFoundException $e) {
-            // In case the place can not be found at the moment, just add its ID
-            return array(
-                '@id' => $this->organizerService->iri($organizerId)
-            );
-        }
-    }
-
-    /**
      * @return string
      */
     protected function getLabelAddedClassName()
@@ -475,5 +417,21 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getDescriptionTranslatedClassName()
     {
         return DescriptionTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrganizerUpdatedClassName()
+    {
+        return OrganizerUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrganizerDeletedClassName()
+    {
+        return OrganizerDeleted::class;
     }
 }

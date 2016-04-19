@@ -6,12 +6,9 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
@@ -39,15 +36,9 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\PlaceServiceInterface;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
-use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -56,8 +47,6 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -560,26 +549,6 @@ class EventLDProjector extends OfferLDProjector implements
     }
 
     /**
-     * @inheritdoc
-     */
-    public function organizerJSONLD($organizerId)
-    {
-
-        try {
-            $organizerJSONLD = $this->organizerService->getEntity(
-                $organizerId
-            );
-
-            return json_decode($organizerJSONLD);
-        } catch (EntityNotFoundException $e) {
-            // In case the place can not be found at the moment, just add its ID
-            return array(
-                '@id' => $this->organizerService->iri($organizerId)
-            );
-        }
-    }
-
-    /**
      * @param LabelsMerged $labelsMerged
      */
     protected function applyLabelsMerged(LabelsMerged $labelsMerged)
@@ -682,40 +651,6 @@ class EventLDProjector extends OfferLDProjector implements
         $eventLd = $document->getBody();
 
         unset($eventLd->typicalAgeRange);
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the organizer updated event to the event repository.
-     * @param OrganizerUpdated $organizerUpdated
-     */
-    protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
-    {
-
-        $document = $this->loadDocumentFromRepository($organizerUpdated);
-
-        $eventLd = $document->getBody();
-
-        $eventLd->organizer = array(
-          '@type' => 'Organizer',
-        ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the organizer delete event to the event repository.
-     * @param OrganizerDeleted $organizerDeleted
-     */
-    protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
-    {
-
-        $document = $this->loadDocumentFromRepository($organizerDeleted);
-
-        $eventLd = $document->getBody();
-
-        unset($eventLd->organizer);
 
         $this->repository->save($document->withBody($eventLd));
     }
@@ -841,5 +776,21 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getDescriptionTranslatedClassName()
     {
         return DescriptionTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrganizerUpdatedClassName()
+    {
+        return OrganizerUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrganizerDeletedClassName()
+    {
+        return OrganizerDeleted::class;
     }
 }

@@ -628,21 +628,6 @@ class EventLDProjector extends OfferLDProjector implements
         $this->repository->save($document->withBody($eventLd));
     }
 
-    /**
-     * Apply the contact info updated event to the event repository.
-     * @param ContactPointUpdated $contactPointUpdated
-     */
-    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
-    {
-
-        $document = $this->loadDocumentFromRepository($contactPointUpdated);
-
-        $eventLd = $document->getBody();
-        $eventLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);
@@ -754,5 +739,10 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getBookingInfoUpdatedClassName()
     {
         return BookingInfoUpdated::class;
+    }
+
+    protected function getContactPointUpdatedClassName()
+    {
+        return ContactPointUpdated::class;
     }
 }

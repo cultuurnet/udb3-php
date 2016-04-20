@@ -14,6 +14,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -185,6 +186,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getBookingInfoUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getContactPointUpdatedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -457,10 +463,24 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     {
         $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
 
-        $placeLD = $document->getBody();
-        $placeLD->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
+        $offerLd = $document->getBody();
+        $offerLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
 
-        $this->repository->save($document->withBody($placeLD));
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the contact point updated event to the offer repository.
+     * @param AbstractContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(AbstractContactPointUpdated $contactPointUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($contactPointUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
+
+        $this->repository->save($document->withBody($offerLd));
     }
 
     /**

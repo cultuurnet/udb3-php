@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
@@ -84,9 +85,14 @@ class ItemLDProjector extends OfferLDProjector
     {
         return OrganizerDeleted::class;
     }
-    
+
     protected function getBookingInfoUpdatedClassName()
     {
         return BookingInfoUpdated::class;
+    }
+
+    protected function getContactPointUpdatedClassName()
+    {
+        return ContactPointUpdated::class;
     }
 }

@@ -281,21 +281,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the contact point updated event to the place repository.
-     * @param ContactPointUpdated $contactPointUpdated
-     */
-    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
-    {
-
-        $document = $this->loadPlaceDocumentFromRepository($contactPointUpdated);
-
-        $placeLd = $document->getBody();
-        $placeLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
-
-        $this->repository->save($document->withBody($placeLd));
-    }
-
-    /**
      * Apply the facilitiesupdated event to the place repository.
      * @param FacilitiesUpdated $facilitiesUpdated
      */
@@ -422,5 +407,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getBookingInfoUpdatedClassName()
     {
         return BookingInfoUpdated::class;
+    }
+
+    protected function getContactPointUpdatedClassName()
+    {
+        return ContactPointUpdated::class;
     }
 }

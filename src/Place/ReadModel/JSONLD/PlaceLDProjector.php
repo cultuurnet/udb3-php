@@ -250,22 +250,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the booking info updated event to the place repository.
-     * @param BookingInfoUpdated $bookingInfoUpdated
-     */
-    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
-    {
-
-        $document = $this->loadPlaceDocumentFromRepository($bookingInfoUpdated);
-
-        $placeLD = $document->getBody();
-        $placeLD->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
-
-        $this->repository->save($document->withBody($placeLD));
-
-    }
-
-    /**
      * Apply the typical age range updated event to the place repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
@@ -433,5 +417,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getOrganizerDeletedClassName()
     {
         return OrganizerDeleted::class;
+    }
+
+    protected function getBookingInfoUpdatedClassName()
+    {
+        return BookingInfoUpdated::class;
     }
 }

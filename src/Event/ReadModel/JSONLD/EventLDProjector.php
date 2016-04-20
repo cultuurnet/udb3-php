@@ -643,22 +643,6 @@ class EventLDProjector extends OfferLDProjector implements
         $this->repository->save($document->withBody($eventLd));
     }
 
-    /**
-     * Apply the booking info updated event to the event repository.
-     * @param BookingInfoUpdated $bookingInfoUpdated
-     */
-    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
-    {
-
-        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
-
-        $eventLd = $document->getBody();
-        $eventLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
-
-        $this->repository->save($document->withBody($eventLd));
-
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);
@@ -765,5 +749,10 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getOrganizerDeletedClassName()
     {
         return OrganizerDeleted::class;
+    }
+
+    protected function getBookingInfoUpdatedClassName()
+    {
+        return BookingInfoUpdated::class;
     }
 }

@@ -6,6 +6,9 @@ use \CultuurNet\UDB3\BookingInfo;
 
 abstract class AbstractBookingInfoEvent extends AbstractEvent
 {
+    /**
+     * @var BookingInfo
+     */
     protected $bookingInfo;
 
     /**
@@ -16,6 +19,24 @@ abstract class AbstractBookingInfoEvent extends AbstractEvent
     {
         parent::__construct($id);
         $this->bookingInfo = $bookingInfo;
+    }
+
+    /**
+     * @return BookingInfo
+     */
+    public function getBookingInfo()
+    {
+        return $this->bookingInfo;
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + array(
+            'bookingInfo' => $this->bookingInfo->serialize(),
+        );
     }
 
     /**

@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -179,6 +180,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getOrganizerDeletedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getBookingInfoUpdatedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -412,7 +418,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
-     * Apply the organizer updated event to the place repository.
+     * Apply the organizer updated event to the offer repository.
      * @param AbstractOrganizerUpdated $organizerUpdated
      */
     protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
@@ -429,7 +435,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
-     * Apply the organizer delete event to the place repository.
+     * Apply the organizer delete event to the offer repository.
      * @param AbstractOrganizerDeleted $organizerDeleted
      */
     protected function applyOrganizerDeleted(AbstractOrganizerDeleted $organizerDeleted)
@@ -441,6 +447,20 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         unset($offerLd->organizer);
 
         $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the booking info updated event to the offer repository.
+     * @param AbstractBookingInfoUpdated $bookingInfoUpdated
+     */
+    protected function applyBookingInfoUpdated(AbstractBookingInfoUpdated $bookingInfoUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
+
+        $placeLD = $document->getBody();
+        $placeLD->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
+
+        $this->repository->save($document->withBody($placeLD));
     }
 
     /**

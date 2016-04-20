@@ -580,24 +580,6 @@ class EventLDProjector extends OfferLDProjector implements
     }
 
     /**
-     * Apply the description updated event to the event repository.
-     * @param DescriptionUpdated $descriptionUpdated
-     */
-    protected function applyDescriptionUpdated(
-        DescriptionUpdated $descriptionUpdated
-    ) {
-        $document = $this->loadDocumentFromRepository($descriptionUpdated);
-
-        $eventLd = $document->getBody();
-        if (empty($eventLd->description)) {
-            $eventLd->description = new \stdClass();
-        }
-        $eventLd->description->{'nl'} = $descriptionUpdated->getDescription();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
      * Apply the typical age range updated event to the event repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
@@ -744,5 +726,10 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
+    }
+    
+    protected function getDescriptionUpdatedClassName()
+    {
+        return DescriptionUpdated::class;
     }
 }

@@ -231,25 +231,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the description updated event to the place repository.
-     * @param DescriptionUpdated $descriptionUpdated
-     */
-    protected function applyDescriptionUpdated(
-        DescriptionUpdated $descriptionUpdated
-    ) {
-
-        $document = $this->loadPlaceDocumentFromRepository($descriptionUpdated);
-
-        $placeLD = $document->getBody();
-        if (empty($placeLD->description)) {
-            $placeLD->description = new \stdClass();
-        }
-        $placeLD->description->{'nl'} = $descriptionUpdated->getDescription();
-
-        $this->repository->save($document->withBody($placeLD));
-    }
-
-    /**
      * Apply the typical age range updated event to the place repository.
      * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
@@ -412,5 +393,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
+    }
+
+    protected function getDescriptionUpdatedClassName()
+    {
+        return DescriptionUpdated::class;
     }
 }

@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
@@ -191,6 +192,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getContactPointUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDescriptionUpdatedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -479,6 +485,24 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
         $offerLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the description updated event to the offer repository.
+     * @param AbstractDescriptionUpdated $descriptionUpdated
+     */
+    protected function applyDescriptionUpdated(
+        AbstractDescriptionUpdated $descriptionUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionUpdated);
+
+        $offerLd = $document->getBody();
+        if (empty($offerLd->description)) {
+            $offerLd->description = new \stdClass();
+        }
+        $offerLd->description->{'nl'} = $descriptionUpdated->getDescription();
 
         $this->repository->save($document->withBody($offerLd));
     }

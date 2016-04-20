@@ -1,11 +1,13 @@
 <?php
 
 namespace CultuurNet\UDB3\Offer\Events;
+
 use \CultuurNet\UDB3\BookingInfo;
 
 abstract class AbstractBookingInfoEvent extends AbstractEvent
 {
     protected $bookingInfo;
+
     /**
      * @param string $id
      * @param BookingInfo $bookingInfo
@@ -17,7 +19,8 @@ abstract class AbstractBookingInfoEvent extends AbstractEvent
     }
 
     /**
-     * @return mixed The object instance
+     * @param array $data
+     * @return AbstractBookingInfoEvent
      */
     public static function deserialize(array $data)
     {

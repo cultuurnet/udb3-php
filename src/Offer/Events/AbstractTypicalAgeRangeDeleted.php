@@ -2,6 +2,6 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-abstract class AbstractTypicalAgeRangeDeleted extends AbstractTypicalAgeRangeEvent
+abstract class AbstractTypicalAgeRangeDeleted extends AbstractEvent
 {
 }

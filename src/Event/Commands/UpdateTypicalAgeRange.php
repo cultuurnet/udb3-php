@@ -1,20 +1,40 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange.
- */
-
 namespace CultuurNet\UDB3\Event\Commands;
 
-/**
- * Provides a command to update the typicalAgeRange property.
- */
 class UpdateTypicalAgeRange
 {
+    /**
+     * @var string
+     */
+    protected $id;
 
-    use \CultuurNet\UDB3\UpdateTypicalAgeRangeTrait;
+    /**
+     * @var string
+     */
+    protected $typicalAgeRange;
 
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getTypicalAgeRange()
+    {
+        return $this->typicalAgeRange;
+    }
+
+    /**
+     * UpdateTypicalAgeRange constructor.
+     * @param string $id
+     * @param string $typicalAgeRange
+     */
     public function __construct($id, $typicalAgeRange)
     {
         $this->id = $id;

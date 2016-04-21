@@ -22,6 +22,8 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
@@ -197,6 +199,16 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getDescriptionUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTypicalAgeRangeUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTypicalAgeRangeDeletedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -503,6 +515,37 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             $offerLd->description = new \stdClass();
         }
         $offerLd->description->{'nl'} = $descriptionUpdated->getDescription();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the typical age range updated event to the offer repository.
+     * @param AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(
+        AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the typical age range deleted event to the offer repository.
+     * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    protected function applyTypicalAgeRangeDeleted(
+        AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
+
+        $offerLd = $document->getBody();
+
+        unset($offerLd->typicalAgeRange);
 
         $this->repository->save($document->withBody($offerLd));
     }

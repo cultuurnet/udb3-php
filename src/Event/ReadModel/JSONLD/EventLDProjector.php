@@ -579,37 +579,6 @@ class EventLDProjector extends OfferLDProjector implements
         $this->repository->save($document->withBody($eventLd));
     }
 
-    /**
-     * Apply the typical age range updated event to the event repository.
-     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
-     */
-    protected function applyTypicalAgeRangeUpdated(
-        TypicalAgeRangeUpdated $typicalAgeRangeUpdated
-    ) {
-        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
-
-        $eventLd = $document->getBody();
-        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the typical age range deleted event to the event repository.
-     * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
-     */
-    protected function applyTypicalAgeRangeDeleted(
-        TypicalAgeRangeDeleted $typicalAgeRangeDeleted
-    ) {
-        $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
-
-        $eventLd = $document->getBody();
-
-        unset($eventLd->typicalAgeRange);
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);
@@ -731,5 +700,15 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getDescriptionUpdatedClassName()
     {
         return DescriptionUpdated::class;
+    }
+
+    protected function getTypicalAgeRangeUpdatedClassName()
+    {
+        return TypicalAgeRangeUpdated::class;
+    }
+
+    protected function getTypicalAgeRangeDeletedClassName()
+    {
+        return TypicalAgeRangeDeleted::class;
     }
 }

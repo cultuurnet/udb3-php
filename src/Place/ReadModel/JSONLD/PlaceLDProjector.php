@@ -231,37 +231,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the typical age range updated event to the place repository.
-     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
-     */
-    protected function applyTypicalAgeRangeUpdated(
-        TypicalAgeRangeUpdated $typicalAgeRangeUpdated
-    ) {
-        $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeUpdated);
-
-        $placeLd = $document->getBody();
-        $placeLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
-
-        $this->repository->save($document->withBody($placeLd));
-    }
-
-    /**
-     * Apply the typical age range deleted event to the place repository.
-     * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
-     */
-    protected function applyTypicalAgeRangeDeleted(
-        TypicalAgeRangeDeleted $typicalAgeRangeDeleted
-    ) {
-        $document = $this->loadPlaceDocumentFromRepository($typicalAgeRangeDeleted);
-
-        $placeLd = $document->getBody();
-
-        unset($placeLd->typicalAgeRange);
-
-        $this->repository->save($document->withBody($placeLd));
-    }
-
-    /**
      * Apply the facilitiesupdated event to the place repository.
      * @param FacilitiesUpdated $facilitiesUpdated
      */
@@ -398,5 +367,15 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getDescriptionUpdatedClassName()
     {
         return DescriptionUpdated::class;
+    }
+
+    protected function getTypicalAgeRangeUpdatedClassName()
+    {
+        return TypicalAgeRangeUpdated::class;
+    }
+
+    protected function getTypicalAgeRangeDeletedClassName()
+    {
+        return TypicalAgeRangeDeleted::class;
     }
 }

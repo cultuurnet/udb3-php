@@ -184,6 +184,32 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             $domainEventStreams
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_return_the_start_id()
+    {
+        $table = 'events';
+        $payloadSerializer = new SimpleInterfaceSerializer();
+        $metadataSerializer = new SimpleInterfaceSerializer();
+        $startId = 101;
+
+        $eventStream = new EventStream(
+            $this->getConnection(),
+            $payloadSerializer,
+            $metadataSerializer,
+            $table,
+            $startId
+        );
+
+        $expectedPreviousId = 100;
+
+        $this->assertEquals(
+            $expectedPreviousId,
+            $eventStream->getPreviousId()
+        );
+    }
 }
 
 class DummyEvent implements SerializableInterface

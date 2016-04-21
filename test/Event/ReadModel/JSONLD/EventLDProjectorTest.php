@@ -504,6 +504,33 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_doesnt_remove_existing_location_when_updating_from_udb2()
+    {
+        $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
+            'samples/event_with_udb3_place.cdbxml.xml'
+        );
+
+        // add the event json to memory
+        $this->documentRepository->save(new JsonDocument(
+            'someId',
+            file_get_contents(
+                __DIR__ . '/../../samples/event_with_udb3_place.json'
+            )
+        ));
+
+        $body = $this->project($event, $event->getEventId());
+
+        // asset the location is still a place object
+        $this->assertEquals("Place", $body->location->{'@type'});
+        $this->assertEquals(
+            "http://culudb-silex.dev:8080/place/f31033c4-96b1-4012-99ac-4439c614f701",
+            $body->location->{'@id'}
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_add_an_empty_labels_property()
     {
         $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(

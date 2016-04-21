@@ -1,29 +1,31 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
-use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
-use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
-use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
-use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated as EventBookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated as EventContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\DescriptionUpdated as EventDescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated as EventOrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
-use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted as EventTypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated as PlaceBookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\ContactPointUpdated as PlaceContactPointUpdated;
+use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted as PlaceOrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated as PlaceOrganizerUpdated;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 
@@ -211,13 +213,14 @@ class BackwardsCompatiblePayloadSerializerFactory
          * EventEvent to AbstractEvent (Offer)
          */
         $refactoredEventEvents = [
-            BookingInfoUpdated::class,
-            TypicalAgeRangeDeleted::class,
-            TypicalAgeRangeUpdated::class,
-            ContactPointUpdated::class,
+            EventBookingInfoUpdated::class,
+            EventTypicalAgeRangeDeleted::class,
+            EventTypicalAgeRangeUpdated::class,
+            EventContactPointUpdated::class,
             MajorInfoUpdated::class,
             EventOrganizerUpdated::class,
             EventOrganizerDeleted::class,
+            EventDescriptionUpdated::class,
         ];
 
         foreach ($refactoredEventEvents as $refactoredEventEvent) {
@@ -236,6 +239,11 @@ class BackwardsCompatiblePayloadSerializerFactory
         $refactoredPlaceEvents = [
             PlaceOrganizerUpdated::class,
             PlaceOrganizerDeleted::class,
+            PlaceBookingInfoUpdated::class,
+            PlaceTypicalAgeRangeDeleted::class,
+            PlaceTypicalAgeRangeUpdated::class,
+            PlaceContactPointUpdated::class,
+            PlaceDescriptionUpdated::class,
         ];
 
         foreach ($refactoredPlaceEvents as $refactoredPlaceEvent) {
@@ -247,15 +255,6 @@ class BackwardsCompatiblePayloadSerializerFactory
                 }
             );
         }
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            DescriptionUpdated::class,
-            function (array $serializedObject) {
-                $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
 
         return $payloadManipulatingSerializer;
     }

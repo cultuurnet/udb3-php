@@ -66,7 +66,7 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
             ->method('getEntity');
 
         $identifier = new IriOfferIdentifier(
-            'https://foo.bar/event/foo-bar',
+            \ValueObjects\Web\Url::fromNative('https://foo.bar/event/foo-bar'),
             'foo-bar',
             OfferType::EVENT()
         );
@@ -94,7 +94,7 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
             ->method('getEntity');
 
         $identifier = new IriOfferIdentifier(
-            'https://foo.bar/place/foo-bar-place',
+            \ValueObjects\Web\Url::fromNative('https://foo.bar/place/foo-bar-place'),
             'foo-bar-place',
             OfferType::PLACE()
         );
@@ -120,7 +120,7 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
             ->willThrowException(new EntityNotFoundException());
 
         $identifier = new IriOfferIdentifier(
-            'https://foo.bar/event/foo-bar',
+            \ValueObjects\Web\Url::fromNative('https://foo.bar/event/foo-bar'),
             'foo-bar',
             OfferType::EVENT()
         );
@@ -155,7 +155,7 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
         );
 
         $identifier = new IriOfferIdentifier(
-            'https://foo.bar/place/foo-bar-place',
+            \ValueObjects\Web\Url::fromNative('https://foo.bar/place/foo-bar-place'),
             'foo-bar-place',
             OfferType::PLACE()
         );

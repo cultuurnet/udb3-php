@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use ValueObjects\Number\Integer;
+use ValueObjects\Web\Url;
 
 /**
  * Parser using XML pull parsing to extract the ids from the CDBXML-formatted
@@ -90,7 +91,7 @@ class ResultSetPullParser
                 if (!is_null($currentEventCdbId)) {
                     $items = $items->with(
                         new IriOfferIdentifier(
-                            $externalUrl,
+                            Url::fromNative($externalUrl),
                             $currentEventCdbId,
                             $currentEventIsUdb3Place ? OfferType::PLACE() : OfferType::EVENT()
                         )

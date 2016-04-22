@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use ValueObjects\Web\Url;
+
 interface OfferIdentifierInterface extends \JsonSerializable, \Serializable
 {
     /**
@@ -13,4 +15,9 @@ interface OfferIdentifierInterface extends \JsonSerializable, \Serializable
      * @return OfferType
      */
     public function getType();
+
+    /**
+     * @return Url
+     */
+    public function getIri();
 }

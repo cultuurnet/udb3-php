@@ -399,12 +399,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Cdb.git",
-                "reference": "c8a654d953a0b7bed677a0b4d2476b5ff0683cf4"
+                "reference": "ec1de9d6c1781b3d8d480c04ce7ae7ba5224704d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/c8a654d953a0b7bed677a0b4d2476b5ff0683cf4",
-                "reference": "c8a654d953a0b7bed677a0b4d2476b5ff0683cf4",
+                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/ec1de9d6c1781b3d8d480c04ce7ae7ba5224704d",
+                "reference": "ec1de9d6c1781b3d8d480c04ce7ae7ba5224704d",
                 "shasum": ""
             },
             "require-dev": {
@@ -426,7 +426,7 @@
                 "Apache-2.0"
             ],
             "description": "PHP library for hydrating/manipulating CultuurNet's Cdb XML documents",
-            "time": "2016-03-08 08:20:51"
+            "time": "2016-04-20 14:53:36"
         },
         {
             "name": "cultuurnet/clock",
@@ -2716,16 +2716,16 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.7.1",
+            "version": "2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "dbacb36514ebc0ec96b9263730eaaa6f0c502197"
+                "reference": "063694d3c781f284ab8f846b8af64c45d94aaf51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/dbacb36514ebc0ec96b9263730eaaa6f0c502197",
-                "reference": "dbacb36514ebc0ec96b9263730eaaa6f0c502197",
+                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/063694d3c781f284ab8f846b8af64c45d94aaf51",
+                "reference": "063694d3c781f284ab8f846b8af64c45d94aaf51",
                 "shasum": ""
             },
             "require": {
@@ -2783,7 +2783,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2016-04-06 15:44:10"
+            "time": "2016-04-18 17:28:37"
         }
     ],
     "packages-dev": [

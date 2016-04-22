@@ -80,12 +80,17 @@ class ResultSetPullParser
             }
 
             if ($r->nodeType == $r::END_ELEMENT && $r->localName == 'event') {
-                $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
+                $externalUrl = $r->getAttribute('externalurl');
+
+                if (is_null($externalUrl)) {
+                    $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
+                    $externalUrl = $iriGenerator->iri($currentEventCdbId);
+                }
 
                 if (!is_null($currentEventCdbId)) {
                     $items = $items->with(
                         new IriOfferIdentifier(
-                            $iriGenerator->iri($currentEventCdbId),
+                            $externalUrl,
                             $currentEventCdbId,
                             $currentEventIsUdb3Place ? OfferType::PLACE() : OfferType::EVENT()
                         )

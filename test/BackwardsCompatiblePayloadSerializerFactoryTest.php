@@ -240,6 +240,30 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
 
     /**
      * @test
+     * @dataProvider typedIdPlaceEventClassProvider
+     */
+    public function it_should_replace_place_id_on_older_events_with_item_id(
+        $eventClassFile
+    ) {
+        $sampleFile = $this->sampleDir . '/place/'. $eventClassFile;
+        $this->assertPlaceIdReplacedWithItemId($sampleFile);
+    }
+
+    public function typedIdPlaceEventClassProvider()
+    {
+        return [
+            ['booking_info_updated.class.json'],
+            ['contact_point_updated.class.json'],
+            ['description_updated.class.json'],
+            ['organizer_updated.class.json'],
+            ['organizer_deleted.class.json'],
+            ['typical_age_range_deleted.class.json'],
+            ['typical_age_range_updated.class.json'],
+        ];
+    }
+
+    /**
+     * @test
      */
     public function it_replaces_event_id_with_item_id_on_event_typical_age_range_deleted()
     {
@@ -306,9 +330,26 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
      */
     private function assertEventIdReplacedWithItemId($sampleFile)
     {
+        $this->assertTypedIdReplacedWithItemId('event', $sampleFile);
+    }
+
+    /**
+     * @param string $sampleFile
+     */
+    private function assertPlaceIdReplacedWithItemId($sampleFile)
+    {
+        $this->assertTypedIdReplacedWithItemId('place', $sampleFile);
+    }
+
+    /**
+     * @param string $type
+     * @param $sampleFile
+     */
+    private function assertTypedIdReplacedWithItemId($type, $sampleFile)
+    {
         $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
-        $eventId = $decoded['payload']['event_id'];
+        $typedId = $decoded['payload'][$type . '_id'];
 
         /**
          * @var AbstractEvent $abstractEvent
@@ -316,7 +357,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $abstractEvent = $this->serializer->deserialize($decoded);
         $itemId = $abstractEvent->getItemId();
 
-        $this->assertEquals($eventId, $itemId);
+        $this->assertEquals($typedId, $itemId);
     }
 
     /**

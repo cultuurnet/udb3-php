@@ -31,31 +31,49 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
+    /**
+     * @return string
+     */
     protected function getAddLabelClassName()
     {
         return AddLabel::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getAddImageClassName()
     {
         return AddImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getUpdateImageClassName()
     {
         return UpdateImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getRemoveImageClassName()
     {
         return RemoveImage::class;
     }
 
+    /**
+     * @return string
+     */
     protected function getSelectMainImageClassName()
     {
         return SelectMainImage::class;
@@ -78,102 +96,59 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Handle the update of description on a place.
+     * @return string
      */
-    public function handleUpdateDescription(UpdateDescription $updateDescription)
+    protected function getUpdateDescriptionClassName()
     {
-
-        /** @var Place $place */
-        $place = $this->repository->load($updateDescription->getId());
-
-        $place->updateDescription(
-            $updateDescription->getDescription()
-        );
-
-        $this->repository->save($place);
-
+        return UpdateDescription::class;
     }
 
     /**
-     * Handle the update of typical age range on a place.
+     * @return string
      */
-    public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $updateTypicalAgeRange)
+    protected function getUpdateTypicalAgeRangeClassName()
     {
-
-        /** @var Place $place */
-        $place = $this->repository->load($updateTypicalAgeRange->getId());
-
-        $place->updateTypicalAgeRange(
-            $updateTypicalAgeRange->getTypicalAgeRange()
-        );
-
-        $this->repository->save($place);
-
+        return UpdateTypicalAgeRange::class;
     }
 
     /**
-     * Handle the deletion of typical age range on a place.
+     * @return string
      */
-    public function handleDeleteTypicalAgeRange(DeleteTypicalAgeRange $deleteTypicalAgeRange)
+    protected function getDeleteTypicalAgeRangeClassName()
     {
-
-        /** @var Place $place */
-        $place = $this->repository->load($deleteTypicalAgeRange->getId());
-
-        $place->deleteTypicalAgeRange();
-
-        $this->repository->save($place);
-
+        return DeleteTypicalAgeRange::class;
     }
 
     /**
-     * Handle an update command to update organizer of a place.
+     * @return string
      */
-    public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
+    protected function getUpdateOrganizerClassName()
     {
-        /** @var Place $place */
-        $place = $this->repository->load($updateOrganizer->getId());
-
-        $place->updateOrganizer(
-            $updateOrganizer->getOrganizerId()
-        );
-
-        $this->repository->save($place);
-
+        return UpdateOrganizer::class;
     }
 
     /**
-     * Handle an update command to delete the organizer.
+     * @return string
      */
-    public function handleDeleteOrganizer(DeleteOrganizer $deleteOrganizer)
+    protected function getDeleteOrganizerClassName()
     {
-
-        /** @var Place $place */
-        $place = $this->repository->load($deleteOrganizer->getId());
-
-        $place->deleteOrganizer(
-            $deleteOrganizer->getOrganizerId()
-        );
-
-        $this->repository->save($place);
-
+        return DeleteOrganizer::class;
     }
 
     /**
-     * Handle an update command to updated the contact point.
+     * @return string
      */
-    public function handleUpdateContactPoint(UpdateContactPoint $updateContactPoint)
+    protected function getUpdateContactPointClassName()
     {
+        return UpdateContactPoint::class;
+    }
 
-        /** @var Place $place */
-        $place = $this->repository->load($updateContactPoint->getId());
-
-        $place->updateContactPoint(
-            $updateContactPoint->getContactPoint()
-        );
-
-        $this->repository->save($place);
-
+    /**
+     * @return string
+     */
+    protected function getUpdateBookingInfoClassName()
+    {
+        return UpdateBookingInfo::class;
     }
 
     /**
@@ -190,23 +165,6 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
         );
 
         $this->repository->save($place);
-    }
-
-    /**
-     * Handle an update command to updated the booking info.
-     */
-    public function handleUpdateBookingInfo(UpdateBookingInfo $updateBookingInfo)
-    {
-
-        /** @var Place $place */
-        $place = $this->repository->load($updateBookingInfo->getId());
-
-        $place->updateBookingInfo(
-            $updateBookingInfo->getBookingInfo()
-        );
-
-        $this->repository->save($place);
-
     }
 
     /**

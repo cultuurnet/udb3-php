@@ -24,9 +24,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements
     EventEditingServiceInterface,
     OfferEditingInterface
 {
-
-    use \CultuurNet\UDB3\OfferEditingTrait;
-
     /**
      * @var EventServiceInterface
      */

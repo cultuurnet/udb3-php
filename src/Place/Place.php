@@ -107,65 +107,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param string $description
-     */
-    public function updateDescription($description)
-    {
-        $this->apply(new DescriptionUpdated($this->actorId, $description));
-    }
-
-    /**
-     * @param string $typicalAgeRange
-     */
-    public function updateTypicalAgeRange($typicalAgeRange)
-    {
-        $this->apply(new TypicalAgeRangeUpdated($this->actorId, $typicalAgeRange));
-    }
-
-    public function deleteTypicalAgeRange()
-    {
-        $this->apply(new TypicalAgeRangeDeleted($this->actorId));
-    }
-
-    /**
-     * Handle an update command to update organizer.
-     */
-    public function updateOrganizer($organizerId)
-    {
-        $this->apply(new OrganizerUpdated($this->actorId, $organizerId));
-    }
-
-    /**
-     * Delete the given organizer.
-     *
-     * @param string $organizerId
-     */
-    public function deleteOrganizer($organizerId)
-    {
-        $this->apply(new OrganizerDeleted($this->actorId, $organizerId));
-    }
-
-    /**
-     * Updated the contact point.
-     *
-     * @param ContactPoint $contactPoint
-     */
-    public function updateContactPoint(ContactPoint $contactPoint)
-    {
-        $this->apply(new ContactPointUpdated($this->actorId, $contactPoint));
-    }
-
-    /**
-     * Updated the booking info.
-     *
-     * @param BookingInfo $bookingInfo
-     */
-    public function updateBookingInfo(BookingInfo $bookingInfo)
-    {
-        $this->apply(new BookingInfoUpdated($this->actorId, $bookingInfo));
-    }
-
-    /**
      * Update the facilities.
      *
      * @param array $facilities
@@ -339,6 +280,71 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return new DescriptionTranslated($this->actorId, $language, $description);
     }
 
+    /**
+     * @param string $description
+     * @return DescriptionUpdated
+     */
+    protected function createDescriptionUpdatedEvent($description)
+    {
+        return new DescriptionUpdated($this->actorId, $description);
+    }
+
+    /**
+     * @param string $typicalAgeRange
+     * @return TypicalAgeRangeUpdated
+     */
+    protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
+    {
+        return new TypicalAgeRangeUpdated($this->actorId, $typicalAgeRange);
+    }
+
+    /**
+     * @return TypicalAgeRangeDeleted
+     */
+    protected function createTypicalAgeRangeDeletedEvent()
+    {
+        return new TypicalAgeRangeDeleted($this->actorId);
+    }
+
+    /**
+     * @param string $organizerId
+     * @return OrganizerUpdated
+     */
+    protected function createOrganizerUpdatedEvent($organizerId)
+    {
+        return new OrganizerUpdated($this->actorId, $organizerId);
+    }
+
+    /**
+     * @param string $organizerId
+     * @return OrganizerDeleted
+     */
+    protected function createOrganizerDeletedEvent($organizerId)
+    {
+        return new OrganizerDeleted($this->actorId, $organizerId);
+    }
+
+    /**
+     * @param ContactPoint $contactPoint
+     * @return ContactPointUpdated
+     */
+    protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
+    {
+        return new ContactPointUpdated($this->actorId, $contactPoint);
+    }
+
+    /**
+     * @param BookingInfo $bookingInfo
+     * @return BookingInfoUpdated
+     */
+    protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo)
+    {
+        return new BookingInfoUpdated($this->actorId, $bookingInfo);
+    }
+
+    /**
+     * @return PlaceDeleted
+     */
     protected function createOfferDeletedEvent()
     {
         return new PlaceDeleted($this->actorId);

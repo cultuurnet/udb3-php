@@ -3,15 +3,24 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
@@ -106,6 +115,79 @@ abstract class Offer extends EventSourcedAggregateRoot
     {
         $this->apply(
             $this->createDescriptionTranslatedEvent($language, $description)
+        );
+    }
+
+
+    /**
+     * @param string $description
+     */
+    public function updateDescription($description)
+    {
+        $this->apply(
+            $this->createDescriptionUpdatedEvent($description)
+        );
+    }
+
+    /**
+     * @param string $typicalAgeRange
+     */
+    public function updateTypicalAgeRange($typicalAgeRange)
+    {
+        $this->apply(
+            $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
+        );
+    }
+
+    public function deleteTypicalAgeRange()
+    {
+        $this->apply(
+            $this->createTypicalAgeRangeDeletedEvent()
+        );
+    }
+
+    /**
+     * @param string $organizerId
+     */
+    public function updateOrganizer($organizerId)
+    {
+        $this->apply(
+            $this->createOrganizerUpdatedEvent($organizerId)
+        );
+    }
+
+    /**
+     * Delete the given organizer.
+     *
+     * @param string $organizerId
+     */
+    public function deleteOrganizer($organizerId)
+    {
+        $this->apply(
+            $this->createOrganizerDeletedEvent($organizerId)
+        );
+    }
+
+    /**
+     * Updated the contact info.
+     * @param ContactPoint $contactPoint
+     */
+    public function updateContactPoint(ContactPoint $contactPoint)
+    {
+        $this->apply(
+            $this->createContactPointUpdatedEvent($contactPoint)
+        );
+    }
+
+    /**
+     * Updated the booking info.
+     *
+     * @param BookingInfo $bookingInfo
+     */
+    public function updateBookingInfo(BookingInfo $bookingInfo)
+    {
+        $this->apply(
+            $this->createBookingInfoUpdatedEvent($bookingInfo)
         );
     }
 
@@ -304,4 +386,45 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractOfferDeleted
      */
     abstract protected function createOfferDeletedEvent();
+
+    /**
+     * @param string $description
+     * @return AbstractDescriptionUpdated
+     */
+    abstract protected function createDescriptionUpdatedEvent($description);
+
+    /**
+     * @param string $typicalAgeRange
+     * @return AbstractTypicalAgeRangeUpdated
+     */
+    abstract protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange);
+
+    /**
+     * @return AbstractTypicalAgeRangeDeleted
+     */
+    abstract protected function createTypicalAgeRangeDeletedEvent();
+
+    /**
+     * @param string $organizerId
+     * @return AbstractOrganizerUpdated
+     */
+    abstract protected function createOrganizerUpdatedEvent($organizerId);
+
+    /**
+     * @param string $organizerId
+     * @return AbstractOrganizerDeleted
+     */
+    abstract protected function createOrganizerDeletedEvent($organizerId);
+
+    /**
+     * @param ContactPoint $contactPoint
+     * @return AbstractContactPointUpdated
+     */
+    abstract protected function createContactPointUpdatedEvent(ContactPoint $contactPoint);
+
+    /**
+     * @param BookingInfo $bookingInfo
+     * @return AbstractBookingInfoUpdated
+     */
+    abstract protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo);
 }

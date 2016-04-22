@@ -18,14 +18,13 @@ use ValueObjects\String\String;
 
 interface PlaceEditingServiceInterface
 {
-
     /**
      * Create a new place.
      *
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
-     * @param CalendarBase $calendar
+     * @param CalendarInterface $calendar
      * @param Theme|null $theme
      *
      * @return string $eventId
@@ -46,10 +45,10 @@ interface PlaceEditingServiceInterface
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
-     * @param CalendarBase $calendar
-     * @param Theme/null $theme
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null);
+    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
 
     /**
      * Update the description of a place.

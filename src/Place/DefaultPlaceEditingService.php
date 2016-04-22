@@ -26,8 +26,6 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
     PlaceEditingServiceInterface,
     OfferEditingInterface
 {
-    use \CultuurNet\UDB3\OfferEditingTrait;
-
     /**
      * @var RepositoryInterface
      */
@@ -72,7 +70,7 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements
     /**
      * {@inheritdoc}
      */
-    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {
         $this->guardId($id);
 

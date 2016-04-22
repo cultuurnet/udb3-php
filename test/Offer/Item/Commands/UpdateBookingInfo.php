@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Place\Commands;
+namespace CultuurNet\UDB3\Offer\Item\Commands;
 
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 

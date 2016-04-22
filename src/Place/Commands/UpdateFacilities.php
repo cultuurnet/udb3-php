@@ -1,18 +1,9 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Place\Commands\UpdateFacilities.
- */
-
 namespace CultuurNet\UDB3\Place\Commands;
 
-/**
- * Provides a command to update the place facilities.
- */
 class UpdateFacilities
 {
-
     /**
      * Id that gets updated.
      * @var string

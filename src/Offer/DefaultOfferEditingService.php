@@ -4,13 +4,14 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class DefaultOfferEditingService implements OfferEditingServiceInterface
 {
@@ -107,10 +108,10 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param $id
      * @param Language $language
-     * @param String $title
+     * @param StringLiteral $title
      * @return string
      */
-    public function translateTitle($id, Language $language, String $title)
+    public function translateTitle($id, Language $language, StringLiteral $title)
     {
         $this->guardId($id);
 
@@ -126,10 +127,10 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param $id
      * @param Language $language
-     * @param String $description
+     * @param StringLiteral $description
      * @return string
      */
-    public function translateDescription($id, Language $language, String $description)
+    public function translateDescription($id, Language $language, StringLiteral $description)
     {
         $this->guardId($id);
 
@@ -143,6 +144,63 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     }
 
     /**
+     * @param string $id
+     * @param Image $image
+     * @return string
+     */
+    public function addImage($id, Image $image)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createAddImageCommand($id, $image)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param Image $image
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
+     * @return string
+     */
+    public function updateImage(
+        $id,
+        Image $image,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
+    ) {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateImageCommand(
+                $id,
+                $image->getMediaObjectId(),
+                $description,
+                $copyrightHolder
+            )
+        );
+    }
+
+    /**
+     * @param $id
+     *  Id of the offer to remove the image from.
+     *
+     * @param Image $image
+     *  The image that should be removed.
+     *
+     * @return string
+     */
+    public function removeImage($id, Image $image)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createRemoveImageCommand($id, $image)
+        );
+    }
+
+    /**
      * @param $id
      * @param Image $image
      * @return string
@@ -152,7 +210,106 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createMainImageSelected($id, $image)
+            $this->commandFactory->createSelectMainImageCommand($id, $image)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param string $description
+     * @return string
+     */
+    public function updateDescription($id, $description)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateDescriptionCommand($id, $description)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param string $ageRange
+     * @return string
+     */
+    public function updateTypicalAgeRange($id, $ageRange)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateTypicalAgeRangeCommand($id, $ageRange)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @return string
+     */
+    public function deleteTypicalAgeRange($id)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createDeleteTypicalAgeRangeCommand($id)
+        );
+
+    }
+
+    /**
+     * @param string $id
+     * @param string $organizerId
+     * @return string
+     */
+    public function updateOrganizer($id, $organizerId)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateOrganizerCommand($id, $organizerId)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param string $organizerId
+     * @return string
+     */
+    public function deleteOrganizer($id, $organizerId)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createDeleteOrganizerCommand($id, $organizerId)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param ContactPoint $contactPoint
+     * @return string
+     */
+    public function updateContactPoint($id, ContactPoint $contactPoint)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateContactPointCommand($id, $contactPoint)
+        );
+
+    }
+
+    /**
+     * @param string $id
+     * @param BookingInfo $bookingInfo
+     * @return string
+     */
+    public function updateBookingInfo($id, BookingInfo $bookingInfo)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateBookingInfoCommand($id, $bookingInfo)
         );
     }
 

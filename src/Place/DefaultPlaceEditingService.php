@@ -13,7 +13,6 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
@@ -22,9 +21,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-class DefaultPlaceEditingService extends DefaultOfferEditingService implements
-    PlaceEditingServiceInterface,
-    OfferEditingInterface
+class DefaultPlaceEditingService extends DefaultOfferEditingService implements PlaceEditingServiceInterface
 {
     /**
      * @var RepositoryInterface

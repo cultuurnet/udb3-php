@@ -3,18 +3,14 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\Place\Commands\AddLabel;
-use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;

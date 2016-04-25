@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use ValueObjects\String\String;
 

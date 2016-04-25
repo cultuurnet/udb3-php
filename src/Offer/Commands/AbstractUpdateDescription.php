@@ -29,7 +29,7 @@ abstract class AbstractUpdateDescription
     /**
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -37,7 +37,7 @@ abstract class AbstractUpdateDescription
     /**
      * @return string
      */
-    function getDescription()
+    public function getDescription()
     {
         return $this->description;
     }

@@ -31,7 +31,7 @@ abstract class AbstractUpdateBookingInfo
     /**
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -39,7 +39,7 @@ abstract class AbstractUpdateBookingInfo
     /**
      * @return BookingInfo
      */
-    function getBookingInfo()
+    public function getBookingInfo()
     {
         return $this->bookingInfo;
     }

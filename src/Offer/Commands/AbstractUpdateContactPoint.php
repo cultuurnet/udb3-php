@@ -31,7 +31,7 @@ abstract class AbstractUpdateContactPoint
     /**
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -39,7 +39,7 @@ abstract class AbstractUpdateContactPoint
     /**
      * @return ContactPoint
      */
-    function getContactPoint()
+    public function getContactPoint()
     {
         return $this->contactPoint;
     }

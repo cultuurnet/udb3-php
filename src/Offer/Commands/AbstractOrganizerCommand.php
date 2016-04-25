@@ -29,7 +29,7 @@ abstract class AbstractOrganizerCommand
     /**
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -37,7 +37,7 @@ abstract class AbstractOrganizerCommand
     /**
      * @return string
      */
-    function getOrganizerId()
+    public function getOrganizerId()
     {
         return $this->organizerId;
     }

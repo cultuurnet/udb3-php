@@ -6,12 +6,12 @@ use TwoDotsTwice\Collection\AbstractCollection;
 
 /**
  * @method OfferIdentifierCollection with($item)
- * @method OfferIdentifierInterface[] toArray()
+ * @method IriOfferIdentifier[] toArray()
  */
 class OfferIdentifierCollection extends AbstractCollection
 {
     protected function getValidObjectType()
     {
-        return OfferIdentifierInterface::class;
+        return IriOfferIdentifier::class;
     }
 }

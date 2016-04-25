@@ -4,10 +4,10 @@ namespace CultuurNet\UDB3\Offer;
 
 use ValueObjects\Web\Url;
 
-class IriOfferIdentifier implements OfferIdentifierInterface
+class IriOfferIdentifier implements \JsonSerializable, \Serializable
 {
     /**
-     * @var string
+     * @var Url
      */
     private $iri;
 

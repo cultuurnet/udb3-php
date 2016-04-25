@@ -25,7 +25,7 @@ class OfferIdentifierCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(
             \InvalidArgumentException::class,
-            'Expected instance of CultuurNet\UDB3\Offer\OfferIdentifierInterface, found stdClass instead.'
+            'Expected instance of CultuurNet\UDB3\Offer\IriOfferIdentifier, found stdClass instead.'
         );
 
         $collection->with(new \stdClass());

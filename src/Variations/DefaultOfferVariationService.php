@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\Variations;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;

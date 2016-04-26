@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Variations\Command\ValidationException;
+use ValueObjects\Web\Url;
 
 class IriOfferIdentifierFactory implements IriOfferIdentifierFactoryInterface
 {
@@ -33,10 +34,10 @@ class IriOfferIdentifierFactory implements IriOfferIdentifierFactoryInterface
     }
 
     /**
-     * @param string $iri
+     * @param Url $iri
      * @return IriOfferIdentifier
      */
-    public function fromIri($iri)
+    public function fromIri(Url $iri)
     {
         $match = @preg_match(
             '@^' . $this->regex . '$@',

@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Search;
 
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
-use CultuurNet\UDB3\Offer\OfferIdentifierInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use ValueObjects\Number\Integer;
 
 class Results
@@ -29,7 +29,7 @@ class Results
     }
 
     /**
-     * @return OfferIdentifierInterface[]
+     * @return IriOfferIdentifier[]
      */
     public function getItems()
     {

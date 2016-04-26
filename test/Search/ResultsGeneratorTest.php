@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Number\Integer;
+use ValueObjects\Web\Url;
 
 class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -167,43 +168,43 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
     public function pagedResultsDataProvider()
     {
         $event1 = new IriOfferIdentifier(
-            'event/1',
+            Url::fromNative('http://du.de/event/1'),
             '1',
             OfferType::EVENT()
         );
 
         $event2 = new IriOfferIdentifier(
-            'event/2',
+            Url::fromNative('http://du.de/event/2'),
             '2',
             OfferType::EVENT()
         );
 
         $event3 = new IriOfferIdentifier(
-            'event/3',
+            Url::fromNative('http://du.de/event/3'),
             '3',
             OfferType::EVENT()
         );
 
         $event4 = new IriOfferIdentifier(
-            'event/4',
+            Url::fromNative('http://du.de/event/4'),
             '4',
             OfferType::EVENT()
         );
 
         $event5 = new IriOfferIdentifier(
-            'event/5',
+            Url::fromNative('http://du.de/event/5'),
             '5',
             OfferType::EVENT()
         );
 
         $event6 = new IriOfferIdentifier(
-            'event/6',
+            Url::fromNative('http://du.de/event/6'),
             '6',
             OfferType::EVENT()
         );
 
         $event7 = new IriOfferIdentifier(
-            'event/7',
+            Url::fromNative('http://du.de/event/7'),
             '7',
             OfferType::EVENT()
         );

@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
+use ValueObjects\Web\Url;
 
 class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,17 +30,17 @@ class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
         $this->offerIdentifiers = OfferIdentifierCollection::fromArray(
             [
                 new IriOfferIdentifier(
-                    'event/1',
+                    Url::fromNative('http://du.de/event/1'),
                     '1',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
-                    'event/2',
+                    Url::fromNative('http://du.de/event/2'),
                     '2',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
-                    'event/3',
+                    Url::fromNative('http://du.de/event/3'),
                     '3',
                     OfferType::EVENT()
                 )

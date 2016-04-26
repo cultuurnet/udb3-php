@@ -6,7 +6,6 @@ use CultuurNet\Hydra\PagedCollection;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
-use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
@@ -16,6 +15,7 @@ use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Domain;
+use ValueObjects\Web\Url;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {
@@ -258,7 +258,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $pagedCollection = $this->repository->findByUser($userId, $limit, $start);
 
         $expectedItems = [
-            new IriOfferIdentifier('http://hello.world/something/123', '123', OfferType::PLACE()),
+            new IriOfferIdentifier(Url::fromNative('http://hello.world/something/123'), '123', OfferType::PLACE()),
         ];
 
         $this->assertEquals($expectedItems, $pagedCollection->getItems());
@@ -283,7 +283,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         );
 
         $expectedItems = [
-            new IriOfferIdentifier('http://hello.world/something/ghj', 'ghj', OfferType::EVENT()),
+            new IriOfferIdentifier(Url::fromNative('http://hello.world/something/ghj'), 'ghj', OfferType::EVENT()),
         ];
 
         $this->assertEquals($expectedItems, $pagedCollection->getItems());

@@ -2,7 +2,6 @@
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
 use CultuurNet\UDB3\Dashboard\DashboardItemLookupServiceInterface;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
@@ -21,6 +20,7 @@ use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Domain;
+use ValueObjects\Web\Url;
 
 class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, OrganizerLookupServiceInterface, DashboardItemLookupServiceInterface
 {
@@ -342,7 +342,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $offerIdentifierArray = array_map(
             function ($resultRow) {
                 $offerIdentifier = new IriOfferIdentifier(
-                    $resultRow['entity_iri'],
+                    Url::fromNative($resultRow['entity_iri']),
                     $resultRow['entity_id'],
                     OfferType::fromNative(ucfirst($resultRow['entity_type']))
                 );

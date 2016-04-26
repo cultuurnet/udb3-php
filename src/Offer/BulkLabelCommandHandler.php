@@ -58,7 +58,7 @@ class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareI
         $query = $addLabelToQuery->getQuery();
 
         foreach ($this->resultsGenerator->search($query) as $result) {
-            /* @var OfferIdentifierInterface $result */
+            /* @var IriOfferIdentifier $result */
             $this->label(
                 $result->getType(),
                 $result->getId(),

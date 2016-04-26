@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use ValueObjects\Number\Integer;
+use ValueObjects\Web\Url;
 
 /**
  * Parser using XML pull parsing to extract the ids from the CDBXML-formatted
@@ -80,12 +81,18 @@ class ResultSetPullParser
             }
 
             if ($r->nodeType == $r::END_ELEMENT && $r->localName == 'event') {
-                $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
+                $externalUrl = $r->getAttribute('externalurl');
+
+                // Null if attribute not set, empty string if not found in the search index.
+                if (empty($externalUrl)) {
+                    $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
+                    $externalUrl = $iriGenerator->iri($currentEventCdbId);
+                }
 
                 if (!is_null($currentEventCdbId)) {
                     $items = $items->with(
                         new IriOfferIdentifier(
-                            $iriGenerator->iri($currentEventCdbId),
+                            Url::fromNative($externalUrl),
                             $currentEventCdbId,
                             $currentEventIsUdb3Place ? OfferType::PLACE() : OfferType::EVENT()
                         )

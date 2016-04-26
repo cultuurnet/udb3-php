@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use ValueObjects\Web\Url;
 
 class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -108,12 +109,12 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'local://event/1',
+                Url::fromNative('local://event/1'),
                 '1',
                 OfferType::EVENT(),
             ],
             [
-                'local://place/7',
+                Url::fromNative('local://place/7'),
                 '7',
                 OfferType::PLACE(),
             ],
@@ -130,7 +131,7 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
             ->withDocumentRepository(OfferType::EVENT(), $this->eventDocumentRepository);
 
         // Map the given iri to a place.
-        $iri = 'local://place/2';
+        $iri = Url::fromNative('local://place/2');
         $id = 2;
         $type = OfferType::PLACE();
 

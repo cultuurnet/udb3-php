@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use Guzzle\Common\Event;
 use ValueObjects\Web\Domain;
+use ValueObjects\Web\Url;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -229,7 +230,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->iriOfferIdentifierFactory
             ->method('fromIri')
             ->willReturn(new IriOfferIdentifier(
-                'http://beep.boop',
+                Url::fromNative('http://du.de/1'),
                 $itemId,
                 OfferType::EVENT()
             ));
@@ -247,7 +248,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             array(
                 $this->domainMessage(
                     new PlaceProjectedToJSONLD(
-                        '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                        'http://du.de/place/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),
                 '6ecf5da4-220d-4486-9327-17c7ec8fa070'
@@ -255,7 +256,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             array(
                 $this->domainMessage(
                     new EventProjectedToJSONLD(
-                        '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                        'http://du.de/event/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),
                 '6ecf5da4-220d-4486-9327-17c7ec8fa070'

@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Number\Integer;
+use ValueObjects\Web\Url;
 
 class ResultsTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,22 +21,22 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
         $items = OfferIdentifierCollection::fromArray(
             [
                 new IriOfferIdentifier(
-                    'event/1',
+                    Url::fromNative('http://du.de/event/1'),
                     '1',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
-                    'event/2',
+                    Url::fromNative('http://du.de/event/2'),
                     '2',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
-                    'event/3',
+                    Url::fromNative('http://du.de/event/3'),
                     '3',
                     OfferType::EVENT()
                 ),
                 new IriOfferIdentifier(
-                    'event/4',
+                    Url::fromNative('http://du.de/event/4'),
                     '4',
                     OfferType::EVENT()
                 ),
@@ -69,7 +70,7 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
         new Results(
             OfferIdentifierCollection::fromArray(
                 [
-                    new IriOfferIdentifier('event/1', '1', OfferType::EVENT())
+                    new IriOfferIdentifier(Url::fromNative('http://du.de/event/1'), '1', OfferType::EVENT())
                 ]
             ),
             'foo'

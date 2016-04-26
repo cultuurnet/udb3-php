@@ -6,6 +6,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
@@ -149,6 +150,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getUpdateBookingInfoClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDeleteOfferClassName();
 
     /**
      * @param AbstractAddLabel $addLabel
@@ -337,6 +343,16 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
             $updateBookingInfo->getBookingInfo()
         );
 
+        $this->repository->save($offer);
+    }
+
+    /**
+     * @param AbstractDeleteOffer $deleteOffer
+     */
+    private function handleDeleteOffer(AbstractDeleteOffer $deleteOffer)
+    {
+        $offer = $this->load($deleteOffer->getId());
+        $offer->delete();
         $this->repository->save($offer);
     }
 

@@ -73,20 +73,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     }
 
     /**
-     * Handle a delete event command.
-     */
-    public function handleDeleteEvent(DeleteEvent $deleteEvent)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($deleteEvent->getId());
-        $event->delete();
-
-        $this->repository->save($event);
-
-    }
-
-    /**
      * @return string
      */
     protected function getAddLabelClassName()
@@ -204,5 +190,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getUpdateBookingInfoClassName()
     {
         return UpdateBookingInfo::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDeleteOfferClassName()
+    {
+        return DeleteEvent::class;
     }
 }

@@ -7,6 +7,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
@@ -172,5 +173,14 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     public function createUpdateBookingInfoCommand($id, BookingInfo $bookingInfo)
     {
         return new UpdateBookingInfo($id, $bookingInfo);
+    }
+
+    /**
+     * @param string $id
+     * @return AbstractDeleteOffer
+     */
+    public function createDeleteOfferCommand($id)
+    {
+        return new DeletePlace($id);
     }
 }

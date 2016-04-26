@@ -126,4 +126,10 @@ interface OfferCommandFactoryInterface
      * @return AbstractUpdateBookingInfo
      */
     public function createUpdateBookingInfoCommand($id, BookingInfo $bookingInfo);
+
+    /**
+     * @param string $id
+     * @return AbstractDeleteOffer
+     */
+    public function createDeleteOfferCommand($id);
 }

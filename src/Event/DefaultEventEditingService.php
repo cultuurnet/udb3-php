@@ -108,10 +108,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      */
     public function deleteEvent($eventId)
     {
-        $this->guardId($eventId);
-
-        return $this->commandBus->dispatch(
-            new DeleteEvent($eventId)
-        );
+        return $this->delete($eventId);
     }
 }

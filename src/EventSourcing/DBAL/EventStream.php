@@ -12,6 +12,8 @@ use Broadway\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\Index;
 
 class EventStream
 {
@@ -46,24 +48,33 @@ class EventStream
     protected $previousId;
 
     /**
+     * @var string
+     */
+    protected $primaryKey;
+
+    /**
      * @param Connection $connection
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
      * @param int $startId
+     * @param string $primaryKey
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
         $tableName,
-        $startId = 0
+        $startId = 0,
+        $primaryKey = 'id'
     ) {
         $this->connection = $connection;
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
         $this->previousId = $startId > 0 ? $startId - 1 : 0;
+
+        $this->primaryKey = $primaryKey;
     }
 
     public function __invoke()
@@ -77,7 +88,7 @@ class EventStream
             $events = [];
             while ($row = $statement->fetch()) {
                 $events[] = $this->deserializeEvent($row);
-                $this->previousId = $row['id'];
+                $this->previousId = $row[$this->primaryKey];
             }
 
             if (!empty($events)) {
@@ -101,11 +112,13 @@ class EventStream
     protected function prepareLoadStatement()
     {
         if (null === $this->loadStatement) {
-            $query = 'SELECT id, uuid, playhead, metadata, payload, recorded_on
-                FROM ' . $this->tableName . '
-                WHERE id > :previousid
-                ORDER BY id ASC
-                LIMIT 1';
+            $id = $this->primaryKey;
+            $query = "SELECT $id, uuid, playhead, metadata, payload, recorded_on
+                FROM $this->tableName
+                WHERE $id > :previousid
+                ORDER BY $id ASC
+                LIMIT 1";
+            
             $this->loadStatement = $this->connection->prepare($query);
         }
 

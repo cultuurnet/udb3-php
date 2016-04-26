@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Variations\Command\ValidationException;
+use ValueObjects\Web\Url;
 
 class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,7 +36,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->iriOfferIdentifierFactory->fromIri(
-            'abcdefghijklmnopqrstuvwxyz'
+            Url::fromNative('https://du.de/sweet')
         );
     }
 
@@ -50,7 +51,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->iriOfferIdentifierFactory->fromIri(
-            'https://culudb-silex.dev:8080/kwiet/foo-bar'
+            Url::fromNative('https://culudb-silex.dev:8080/kwiet/foo-bar')
         );
     }
 
@@ -69,7 +70,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $iriOfferIdentifierFactory->fromIri(
-            'https://foo.bar/place/foo-bar'
+            Url::fromNative('https://foo.bar/place/foo-bar')
         );
     }
 
@@ -88,7 +89,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $iriOfferIdentifierFactory->fromIri(
-            'https://foo.bar/place/foo-bar'
+            Url::fromNative('https://foo.bar/place/foo-bar')
         );
     }
 
@@ -98,11 +99,11 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
     public function it_returns_a_correct_iri_offer_identifier_when_url_is_valid()
     {
         $iriOfferIdentifier = $this->iriOfferIdentifierFactory->fromIri(
-            'https://foo.bar/place/1234'
+            Url::fromNative('https://foo.bar/place/1234')
         );
 
         $expectedIriOfferIdentifier = new IriOfferIdentifier(
-            'https://foo.bar/place/1234',
+            Url::fromNative('https://foo.bar/place/1234'),
             '1234',
             OfferType::PLACE()
         );

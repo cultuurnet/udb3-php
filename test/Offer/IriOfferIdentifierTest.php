@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use ValueObjects\Web\Url;
+
 class IriOfferIdentifierTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -12,7 +14,7 @@ class IriOfferIdentifierTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->identifier = new IriOfferIdentifier(
-            'place/1',
+            Url::fromNative('http://du.de/place/1'),
             '1',
             OfferType::PLACE()
         );
@@ -34,7 +36,7 @@ class IriOfferIdentifierTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_all_properties()
     {
-        $this->assertEquals('place/1', $this->identifier->getIri());
+        $this->assertEquals(Url::fromNative('http://du.de/place/1'), $this->identifier->getIri());
         $this->assertEquals('1', $this->identifier->getId());
         $this->assertEquals(OfferType::PLACE(), $this->identifier->getType());
     }

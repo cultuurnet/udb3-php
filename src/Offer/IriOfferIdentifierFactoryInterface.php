@@ -2,11 +2,13 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use ValueObjects\Web\Url;
+
 interface IriOfferIdentifierFactoryInterface
 {
     /**
-     * @param string $iri
+     * @param Url $iri
      * @return IriOfferIdentifier
      */
-    public function fromIri($iri);
+    public function fromIri(Url $iri);
 }

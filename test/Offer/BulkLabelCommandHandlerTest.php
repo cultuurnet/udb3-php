@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Psr\Log\LoggerInterface;
+use ValueObjects\Web\Url;
 
 class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -83,12 +84,12 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->offerIdentifiers = [
             1 => new IriOfferIdentifier(
-                'event/1',
+                Url::fromNative('http://du.de/event/1'),
                 '1',
                 OfferType::EVENT()
             ),
             2 => new IriOfferIdentifier(
-                'place/2',
+                Url::fromNative('http://du.de/place/2'),
                 '2',
                 OfferType::PLACE()
             ),

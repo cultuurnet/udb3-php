@@ -23,6 +23,7 @@ use Psr\Log\LoggerInterface;
 use Traversable;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\EmailAddress;
+use ValueObjects\Web\Url;
 
 class EventExportServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -98,7 +99,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $this->searchResults = array_map(
             function ($i) {
                 return new IriOfferIdentifier(
-                    'http://example.com/event/' . $i,
+                    Url::fromNative('http://example.com/event/' . $i),
                     $i,
                     OfferType::EVENT()
                 );

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Organizer\ReadModel\Index\Projector.
- */
-
 namespace CultuurNet\UDB3\ReadModel\Index;
 
 use Broadway\Domain\DomainMessage;
@@ -19,8 +14,6 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
-use CultuurNet\UDB3\Offer\IriOfferIdentifier;
-use CultuurNet\UDB3\Offer\IriOfferIdentifierFactory;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
@@ -34,6 +27,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Domain;
+use ValueObjects\Web\Url;
 
 /**
  * Logs new events / updates to an index for querying.
@@ -114,7 +108,9 @@ class Projector implements EventListenerInterface
         $eventName = get_class($event);
 
         if (in_array($eventName, self::$indexUpdateEvents)) {
-            $identifier = $this->identifierFactory->fromIri($event->getIri());
+            $identifier = $this->identifierFactory->fromIri(
+                Url::fromNative($event->getIri())
+            );
             $dateUpdated = new DateTime($domainMessage->getRecordedOn()->toString());
 
             $this->setItemUpdateDate($identifier->getId(), $dateUpdated);

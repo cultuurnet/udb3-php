@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\Deserializer\NotWellFormedException;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,17 +32,17 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_deserialize_a_valid_iri_offer_identifier()
     {
-        $json = new String('{"@id":"event/1","@type":"Event"}');
+        $json = new String('{"@id":"http://du.de/event/1","@type":"Event"}');
 
         $expected = new IriOfferIdentifier(
-            "event/1",
+            Url::fromNative("http://du.de/event/1"),
             "1",
             OfferType::EVENT()
         );
 
         $this->iriOfferIdentifierFactory->expects($this->once())
             ->method('fromIri')
-            ->with('event/1')
+            ->with('http://du.de/event/1')
             ->willReturn($expected);
 
         $actual = $this->deserializer->deserialize($json);
@@ -84,7 +85,7 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_type_is_missing()
     {
-        $json = new String('{"@id":"event/1"}');
+        $json = new String('{"@id":"http://du.de/event/1"}');
 
         $this->setExpectedException(
             MissingValueException::class,

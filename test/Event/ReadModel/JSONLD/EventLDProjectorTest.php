@@ -832,7 +832,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $secondEventID = '579';
 
         $placeID = '101214';
-        $placeIri = 'place/' . $placeID;
+        $placeIri = Url::fromNative('http://du.de/place/' . $placeID);
 
         $placeIdentifier = new IriOfferIdentifier($placeIri, $placeID, OfferType::PLACE());
 

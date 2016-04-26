@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,7 +32,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
             ->willReturnCallback(
                 function (String $id) {
                     return new IriOfferIdentifier(
-                        "event/{$id}",
+                        Url::fromNative("http://du.de/event/{$id}"),
                         $id,
                         OfferType::EVENT()
                     );
@@ -54,21 +55,21 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
             (new OfferIdentifierCollection())
                 ->with(
                     new IriOfferIdentifier(
-                        'event/1',
+                        Url::fromNative('http://du.de/event/1'),
                         '1',
                         OfferType::EVENT()
                     )
                 )
                 ->with(
                     new IriOfferIdentifier(
-                        'event/2',
+                        Url::fromNative('http://du.de/event/2'),
                         '2',
                         OfferType::EVENT()
                     )
                 )
                 ->with(
                     new IriOfferIdentifier(
-                        'event/3',
+                        Url::fromNative('http://du.de/event/3'),
                         '3',
                         OfferType::EVENT()
                     )

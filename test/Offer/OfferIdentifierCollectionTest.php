@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use ValueObjects\Web\Url;
+
 class OfferIdentifierCollectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -13,7 +15,7 @@ class OfferIdentifierCollectionTest extends \PHPUnit_Framework_TestCase
 
         $collection = $collection->with(
             new IriOfferIdentifier(
-                'event/1',
+                Url::fromNative('http://du.de/event/1'),
                 '1',
                 OfferType::EVENT()
             )
@@ -23,7 +25,7 @@ class OfferIdentifierCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(
             \InvalidArgumentException::class,
-            'Expected instance of CultuurNet\UDB3\Offer\OfferIdentifierInterface, found stdClass instead.'
+            'Expected instance of CultuurNet\UDB3\Offer\IriOfferIdentifier, found stdClass instead.'
         );
 
         $collection->with(new \stdClass());

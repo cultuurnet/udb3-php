@@ -47,7 +47,9 @@ class DefaultUrlValidator implements UrlValidator
      */
     public function validateUrl(Url $url)
     {
-        $identifier = $this->iriOfferIdentifierFactory->fromIri($url->toNative());
+        $identifier = $this->iriOfferIdentifierFactory->fromIri(
+            \ValueObjects\Web\Url::fromNative((string) $url)
+        );
         $offerType = $identifier->getType();
         $offerId = $identifier->getId();
 

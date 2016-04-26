@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Search;
 
-use CultuurNet\UDB3\Offer\OfferIdentifierInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;

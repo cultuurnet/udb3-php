@@ -606,86 +606,6 @@ class EventLDProjector extends OfferLDProjector implements
         $this->repository->save($document->withBody($eventLd));
     }
 
-    /**
-     * Apply the description updated event to the event repository.
-     * @param DescriptionUpdated $descriptionUpdated
-     */
-    protected function applyDescriptionUpdated(
-        DescriptionUpdated $descriptionUpdated
-    ) {
-        $document = $this->loadDocumentFromRepository($descriptionUpdated);
-
-        $eventLd = $document->getBody();
-        if (empty($eventLd->description)) {
-            $eventLd->description = new \stdClass();
-        }
-        $eventLd->description->{'nl'} = $descriptionUpdated->getDescription();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the typical age range updated event to the event repository.
-     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
-     */
-    protected function applyTypicalAgeRangeUpdated(
-        TypicalAgeRangeUpdated $typicalAgeRangeUpdated
-    ) {
-        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
-
-        $eventLd = $document->getBody();
-        $eventLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the typical age range deleted event to the event repository.
-     * @param TypicalAgeRangeDeleted $typicalAgeRangeDeleted
-     */
-    protected function applyTypicalAgeRangeDeleted(
-        TypicalAgeRangeDeleted $typicalAgeRangeDeleted
-    ) {
-        $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
-
-        $eventLd = $document->getBody();
-
-        unset($eventLd->typicalAgeRange);
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the contact info updated event to the event repository.
-     * @param ContactPointUpdated $contactPointUpdated
-     */
-    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
-    {
-
-        $document = $this->loadDocumentFromRepository($contactPointUpdated);
-
-        $eventLd = $document->getBody();
-        $eventLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the booking info updated event to the event repository.
-     * @param BookingInfoUpdated $bookingInfoUpdated
-     */
-    protected function applyBookingInfoUpdated(BookingInfoUpdated $bookingInfoUpdated)
-    {
-
-        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
-
-        $eventLd = $document->getBody();
-        $eventLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
-
-        $this->repository->save($document->withBody($eventLd));
-
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);
@@ -792,5 +712,30 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getOrganizerDeletedClassName()
     {
         return OrganizerDeleted::class;
+    }
+
+    protected function getBookingInfoUpdatedClassName()
+    {
+        return BookingInfoUpdated::class;
+    }
+
+    protected function getContactPointUpdatedClassName()
+    {
+        return ContactPointUpdated::class;
+    }
+    
+    protected function getDescriptionUpdatedClassName()
+    {
+        return DescriptionUpdated::class;
+    }
+
+    protected function getTypicalAgeRangeUpdatedClassName()
+    {
+        return TypicalAgeRangeUpdated::class;
+    }
+
+    protected function getTypicalAgeRangeDeletedClassName()
+    {
+        return TypicalAgeRangeDeleted::class;
     }
 }

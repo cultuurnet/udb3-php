@@ -6,6 +6,13 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
@@ -109,6 +116,41 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     abstract protected function getSelectMainImageClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getUpdateDescriptionClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateTypicalAgeRangeClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDeleteTypicalAgeRangeClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateOrganizerClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDeleteOrganizerClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateContactPointClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateBookingInfoClassName();
+
+    /**
      * @param AbstractAddLabel $addLabel
      */
     private function handleAddLabel(AbstractAddLabel $addLabel)
@@ -159,6 +201,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->repository->save($offer);
     }
 
+    /**
+     * @param AbstractRemoveImage $removeImage
+     */
     public function handleRemoveImage(AbstractRemoveImage $removeImage)
     {
         $offer = $this->load($removeImage->getItemId());
@@ -166,6 +211,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->repository->save($offer);
     }
 
+    /**
+     * @param AbstractUpdateImage $updateImage
+     */
     public function handleUpdateImage(AbstractUpdateImage $updateImage)
     {
         $offer = $this->load($updateImage->getItemId());
@@ -173,10 +221,122 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->repository->save($offer);
     }
 
+    /**
+     * @param AbstractSelectMainImage $selectMainImage
+     */
     public function handleSelectMainImage(AbstractSelectMainImage $selectMainImage)
     {
         $offer = $this->load($selectMainImage->getItemId());
         $offer->selectMainImage($selectMainImage->getImage());
+        $this->repository->save($offer);
+    }
+
+    /**
+     * Handle the update of description on a place.
+     * @param AbstractUpdateDescription $updateDescription
+     */
+    public function handleUpdateDescription(AbstractUpdateDescription $updateDescription)
+    {
+        $offer = $this->load($updateDescription->getId());
+
+        $offer->updateDescription(
+            $updateDescription->getDescription()
+        );
+
+        $this->repository->save($offer);
+
+    }
+
+    /**
+     * Handle the update of typical age range on a place.
+     * @param AbstractUpdateTypicalAgeRange $updateTypicalAgeRange
+     */
+    public function handleUpdateTypicalAgeRange(AbstractUpdateTypicalAgeRange $updateTypicalAgeRange)
+    {
+        $offer = $this->load($updateTypicalAgeRange->getId());
+
+        $offer->updateTypicalAgeRange(
+            $updateTypicalAgeRange->getTypicalAgeRange()
+        );
+
+        $this->repository->save($offer);
+
+    }
+
+    /**
+     * Handle the deletion of typical age range on a place.
+     * @param AbstractDeleteTypicalAgeRange $deleteTypicalAgeRange
+     */
+    public function handleDeleteTypicalAgeRange(AbstractDeleteTypicalAgeRange $deleteTypicalAgeRange)
+    {
+        $offer = $this->load($deleteTypicalAgeRange->getId());
+
+        $offer->deleteTypicalAgeRange();
+
+        $this->repository->save($offer);
+
+    }
+
+    /**
+     * Handle an update command to update organizer of a place.
+     * @param AbstractUpdateOrganizer $updateOrganizer
+     */
+    public function handleUpdateOrganizer(AbstractUpdateOrganizer $updateOrganizer)
+    {
+        $offer = $this->load($updateOrganizer->getId());
+
+        $offer->updateOrganizer(
+            $updateOrganizer->getOrganizerId()
+        );
+
+        $this->repository->save($offer);
+
+    }
+
+    /**
+     * Handle an update command to delete the organizer.
+     * @param AbstractDeleteOrganizer $deleteOrganizer
+     */
+    public function handleDeleteOrganizer(AbstractDeleteOrganizer $deleteOrganizer)
+    {
+        $offer = $this->load($deleteOrganizer->getId());
+
+        $offer->deleteOrganizer(
+            $deleteOrganizer->getOrganizerId()
+        );
+
+        $this->repository->save($offer);
+
+    }
+
+    /**
+     * Handle an update command to updated the contact point.
+     * @param AbstractUpdateContactPoint $updateContactPoint
+     */
+    public function handleUpdateContactPoint(AbstractUpdateContactPoint $updateContactPoint)
+    {
+        $offer = $this->load($updateContactPoint->getId());
+
+        $offer->updateContactPoint(
+            $updateContactPoint->getContactPoint()
+        );
+
+        $this->repository->save($offer);
+
+    }
+
+    /**
+     * Handle an update command to updated the booking info.
+     * @param AbstractUpdateBookingInfo $updateBookingInfo
+     */
+    public function handleUpdateBookingInfo(AbstractUpdateBookingInfo $updateBookingInfo)
+    {
+        $offer = $this->load($updateBookingInfo->getId());
+
+        $offer->updateBookingInfo(
+            $updateBookingInfo->getBookingInfo()
+        );
+
         $this->repository->save($offer);
     }
 

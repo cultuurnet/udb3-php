@@ -13,12 +13,17 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
@@ -179,6 +184,31 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getOrganizerDeletedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getBookingInfoUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getContactPointUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDescriptionUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTypicalAgeRangeUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTypicalAgeRangeDeletedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -412,7 +442,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
-     * Apply the organizer updated event to the place repository.
+     * Apply the organizer updated event to the offer repository.
      * @param AbstractOrganizerUpdated $organizerUpdated
      */
     protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
@@ -429,7 +459,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
-     * Apply the organizer delete event to the place repository.
+     * Apply the organizer delete event to the offer repository.
      * @param AbstractOrganizerDeleted $organizerDeleted
      */
     protected function applyOrganizerDeleted(AbstractOrganizerDeleted $organizerDeleted)
@@ -439,6 +469,83 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
 
         unset($offerLd->organizer);
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the booking info updated event to the offer repository.
+     * @param AbstractBookingInfoUpdated $bookingInfoUpdated
+     */
+    protected function applyBookingInfoUpdated(AbstractBookingInfoUpdated $bookingInfoUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the contact point updated event to the offer repository.
+     * @param AbstractContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(AbstractContactPointUpdated $contactPointUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($contactPointUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the description updated event to the offer repository.
+     * @param AbstractDescriptionUpdated $descriptionUpdated
+     */
+    protected function applyDescriptionUpdated(
+        AbstractDescriptionUpdated $descriptionUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($descriptionUpdated);
+
+        $offerLd = $document->getBody();
+        if (empty($offerLd->description)) {
+            $offerLd->description = new \stdClass();
+        }
+        $offerLd->description->{'nl'} = $descriptionUpdated->getDescription();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the typical age range updated event to the offer repository.
+     * @param AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(
+        AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * Apply the typical age range deleted event to the offer repository.
+     * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    protected function applyTypicalAgeRangeDeleted(
+        AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+    ) {
+        $document = $this->loadDocumentFromRepository($typicalAgeRangeDeleted);
+
+        $offerLd = $document->getBody();
+
+        unset($offerLd->typicalAgeRange);
 
         $this->repository->save($document->withBody($offerLd));
     }

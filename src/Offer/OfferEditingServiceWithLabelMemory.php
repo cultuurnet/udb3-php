@@ -2,9 +2,12 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\UsedLabelsMemory\UsedLabelsMemoryServiceInterface;
+use ValueObjects\String\String as StringLiteral;
 
 class OfferEditingServiceWithLabelMemory implements OfferEditingServiceInterface
 {

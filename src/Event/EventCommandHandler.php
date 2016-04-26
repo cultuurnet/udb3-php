@@ -52,123 +52,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     }
 
     /**
-     * Handle an update command to update the main description.
-     */
-    public function handleUpdateDescription(UpdateDescription $updateDescription)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($updateDescription->getId());
-
-        $event->updateDescription(
-            $updateDescription->getDescription()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update command to update the typical age range.
-     */
-    public function handleUpdateTypicalAgeRange(UpdateTypicalAgeRange $updateTypicalAgeRange)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($updateTypicalAgeRange->getId());
-
-        $event->updateTypicalAgeRange(
-            $updateTypicalAgeRange->getTypicalAgeRange()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle the deletion of typical age range on an event.
-     */
-    public function handleDeleteTypicalAgeRange(DeleteTypicalAgeRange $deleteTypicalAgeRange)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($deleteTypicalAgeRange->getId());
-
-        $event->deleteTypicalAgeRange();
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update command to update organizer.
-     */
-    public function handleUpdateOrganizer(UpdateOrganizer $updateOrganizer)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($updateOrganizer->getId());
-
-        $event->updateOrganizer(
-            $updateOrganizer->getOrganizerId()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update command to delete the organizer.
-     */
-    public function handleDeleteOrganizer(DeleteOrganizer $deleteOrganizer)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($deleteOrganizer->getId());
-
-        $event->deleteOrganizer(
-            $deleteOrganizer->getOrganizerId()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update command to updated the contact point.
-     */
-    public function handleUpdateContactPoint(UpdateContactPoint $updateContactPoint)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($updateContactPoint->getId());
-
-        $event->updateContactPoint(
-            $updateContactPoint->getContactPoint()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
-     * Handle an update command to updated the booking info.
-     */
-    public function handleUpdateBookingInfo(UpdateBookingInfo $updateBookingInfo)
-    {
-
-        /** @var Event $event */
-        $event = $this->repository->load($updateBookingInfo->getId());
-
-        $event->updateBookingInfo(
-            $updateBookingInfo->getBookingInfo()
-        );
-
-        $this->repository->save($event);
-
-    }
-
-    /**
      * Handle an update the major info command.
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
@@ -265,5 +148,61 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getTranslateDescriptionClassName()
     {
         return TranslateDescription::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdateDescriptionClassName()
+    {
+        return UpdateDescription::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdateTypicalAgeRangeClassName()
+    {
+        return UpdateTypicalAgeRange::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDeleteTypicalAgeRangeClassName()
+    {
+        return DeleteTypicalAgeRange::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdateOrganizerClassName()
+    {
+        return UpdateOrganizer::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDeleteOrganizerClassName()
+    {
+        return DeleteOrganizer::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdateContactPointClassName()
+    {
+        return UpdateContactPoint::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdateBookingInfoClassName()
+    {
+        return UpdateBookingInfo::class;
     }
 }

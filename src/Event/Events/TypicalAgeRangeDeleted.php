@@ -2,13 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 
-/**
- * Event when typical age range was deleted
- */
-class TypicalAgeRangeDeleted extends AbstractEvent implements SerializableInterface
+class TypicalAgeRangeDeleted extends AbstractTypicalAgeRangeDeleted
 {
     use BackwardsCompatibleEventTrait;
 }

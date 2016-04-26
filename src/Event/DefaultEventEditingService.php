@@ -16,17 +16,11 @@ use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\OfferEditingInterface;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
 
-class DefaultEventEditingService extends DefaultOfferEditingService implements
-    EventEditingServiceInterface,
-    OfferEditingInterface
+class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface
 {
-
-    use \CultuurNet\UDB3\OfferEditingTrait;
-
     /**
      * @var EventServiceInterface
      */

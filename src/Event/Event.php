@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -43,10 +42,8 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
-use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
@@ -344,67 +341,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param string $description
-     */
-    public function updateDescription($description)
-    {
-        $this->apply(new DescriptionUpdated($this->eventId, $description));
-    }
-
-    /**
-     * @param string $typicalAgeRange
-     */
-    public function updateTypicalAgeRange($typicalAgeRange)
-    {
-        $this->apply(new TypicalAgeRangeUpdated($this->eventId, $typicalAgeRange));
-    }
-
-    public function deleteTypicalAgeRange()
-    {
-        $this->apply(new TypicalAgeRangeDeleted($this->eventId));
-    }
-
-    /**
-     * @param string $organizerId
-     */
-    public function updateOrganizer($organizerId)
-    {
-        $this->apply(new OrganizerUpdated($this->eventId, $organizerId));
-    }
-
-    /**
-     * Delete the given organizer.
-     *
-     * @param string $organizerId
-     */
-    public function deleteOrganizer($organizerId)
-    {
-        $this->apply(new OrganizerDeleted($this->eventId, $organizerId));
-    }
-
-    /**
-     * Updated the contact info.
-     *
-     * @param array $phones
-     * @param array $emails
-     * @param array $urls
-     */
-    public function updateContactPoint(ContactPoint $contactPoint)
-    {
-        $this->apply(new ContactPointUpdated($this->eventId, $contactPoint));
-    }
-
-    /**
-     * Updated the booking info.
-     *
-     * @param BookingInfo $bookingInfo
-     */
-    public function updateBookingInfo(BookingInfo $bookingInfo)
-    {
-        $this->apply(new BookingInfoUpdated($this->eventId, $bookingInfo));
-    }
-
-    /**
      * Update the major info.
      *
      * @param Title $title
@@ -557,16 +493,28 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         return new LabelDeleted($this->eventId, $label);
     }
 
+    /**
+     * @param Image $image
+     * @return ImageAdded
+     */
     protected function createImageAddedEvent(Image $image)
     {
         return new ImageAdded($this->eventId, $image);
     }
 
+    /**
+     * @param Image $image
+     * @return ImageRemoved
+     */
     protected function createImageRemovedEvent(Image $image)
     {
         return new ImageRemoved($this->eventId, $image);
     }
 
+    /**
+     * @param AbstractUpdateImage $updateImageCommand
+     * @return ImageUpdated
+     */
     protected function createImageUpdatedEvent(
         AbstractUpdateImage $updateImageCommand
     ) {
@@ -578,6 +526,10 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
     }
 
+    /**
+     * @param Image $image
+     * @return MainImageSelected
+     */
     protected function createMainImageSelectedEvent(Image $image)
     {
         return new MainImageSelected($this->eventId, $image);
@@ -603,6 +555,71 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         return new DescriptionTranslated($this->eventId, $language, $description);
     }
 
+    /**
+     * @param string $description
+     * @return DescriptionUpdated
+     */
+    protected function createDescriptionUpdatedEvent($description)
+    {
+        return new DescriptionUpdated($this->eventId, $description);
+    }
+
+    /**
+     * @param string $typicalAgeRange
+     * @return TypicalAgeRangeUpdated
+     */
+    protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
+    {
+        return new TypicalAgeRangeUpdated($this->eventId, $typicalAgeRange);
+    }
+
+    /**
+     * @return TypicalAgeRangeDeleted
+     */
+    protected function createTypicalAgeRangeDeletedEvent()
+    {
+        return new TypicalAgeRangeDeleted($this->eventId);
+    }
+
+    /**
+     * @param string $organizerId
+     * @return OrganizerUpdated
+     */
+    protected function createOrganizerUpdatedEvent($organizerId)
+    {
+        return new OrganizerUpdated($this->eventId, $organizerId);
+    }
+
+    /**
+     * @param string $organizerId
+     * @return OrganizerDeleted
+     */
+    protected function createOrganizerDeletedEvent($organizerId)
+    {
+        return new OrganizerDeleted($this->eventId, $organizerId);
+    }
+
+    /**
+     * @param ContactPoint $contactPoint
+     * @return ContactPointUpdated
+     */
+    protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
+    {
+        return new ContactPointUpdated($this->eventId, $contactPoint);
+    }
+
+    /**
+     * @param BookingInfo $bookingInfo
+     * @return BookingInfoUpdated
+     */
+    protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo)
+    {
+        return new BookingInfoUpdated($this->eventId, $bookingInfo);
+    }
+
+    /**
+     * @return EventDeleted
+     */
     protected function createOfferDeletedEvent()
     {
         return new EventDeleted($this->eventId);

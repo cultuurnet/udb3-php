@@ -2,12 +2,13 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
+use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
-use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
-use CultuurNet\UDB3\Offer\Item\Commands\SelectMainImage;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 use CultuurNet\UDB3\Language;
@@ -58,15 +59,15 @@ interface OfferCommandFactoryInterface
     /**
      * @param $id
      * @param Image $image
-     * @return SelectMainImage
+     * @return AbstractSelectMainImage
      */
-    public function createSelectMainImage($id, Image $image);
+    public function createSelectMainImageCommand($id, Image $image);
 
     /**
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
-     * @return mixed
+     * @return AbstractTranslateTitle
      */
     public function createTranslateTitleCommand($id, Language $language, StringLiteral $title);
 
@@ -74,7 +75,55 @@ interface OfferCommandFactoryInterface
      * @param $id
      * @param Language $language
      * @param StringLiteral $description
-     * @return mixed
+     * @return AbstractTranslateDescription
      */
     public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description);
+
+    /**
+     * @param string $id
+     * @param string $description
+     * @return AbstractUpdateDescription
+     */
+    public function createUpdateDescriptionCommand($id, $description);
+
+    /**
+     * @param string $id
+     * @param string $ageRange
+     * @return AbstractUpdateTypicalAgeRange
+     */
+    public function createUpdateTypicalAgeRangeCommand($id, $ageRange);
+
+    /**
+     * @param string $id
+     * @return AbstractDeleteTypicalAgeRange
+     */
+    public function createDeleteTypicalAgeRangeCommand($id);
+
+    /**
+     * @param string $id
+     * @param string $organizerId
+     * @return AbstractUpdateOrganizer
+     */
+    public function createUpdateOrganizerCommand($id, $organizerId);
+
+    /**
+     * @param string $id
+     * @param string $organizerId
+     * @return AbstractDeleteOrganizer
+     */
+    public function createDeleteOrganizerCommand($id, $organizerId);
+
+    /**
+     * @param string $id
+     * @param ContactPoint $contactPoint
+     * @return AbstractUpdateContactPoint
+     */
+    public function createUpdateContactPointCommand($id, ContactPoint $contactPoint);
+
+    /**
+     * @param string $id
+     * @param BookingInfo $bookingInfo
+     * @return AbstractUpdateBookingInfo
+     */
+    public function createUpdateBookingInfoCommand($id, BookingInfo $bookingInfo);
 }

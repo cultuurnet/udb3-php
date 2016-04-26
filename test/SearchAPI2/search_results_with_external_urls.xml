@@ -204,7 +204,8 @@
                cdbid="d9725327-cbec-4bb8-bc56-9f3f7761b716" createdby="fpauwelyn@kinepolis.com"
                creationdate="2014-10-08T06:41:11" externalid="kinepolis_event_59816_KLUIK" isparent="false"
                lastupdated="2014-10-31T06:27:45" lastupdatedby="fpauwelyn@kinepolis.com" pctcomplete="70"
-               published="true" owner="Kinepolis" private="false" validator="Kinepolis" wfstatus="readyforvalidation">
+               published="true" owner="Kinepolis" private="false" validator="Kinepolis" wfstatus="readyforvalidation"
+               externalurl="">
         <cdb:activities>
             <cdb:activity count="0" type="like"/>
             <cdb:activity count="0" type="attend"/>

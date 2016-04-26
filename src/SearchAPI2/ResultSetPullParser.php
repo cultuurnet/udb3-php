@@ -83,7 +83,8 @@ class ResultSetPullParser
             if ($r->nodeType == $r::END_ELEMENT && $r->localName == 'event') {
                 $externalUrl = $r->getAttribute('externalurl');
 
-                if (is_null($externalUrl)) {
+                // Null if attribute not set, empty string if not found in the search index.
+                if (empty($externalUrl)) {
                     $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
                     $externalUrl = $iriGenerator->iri($currentEventCdbId);
                 }

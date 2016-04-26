@@ -152,6 +152,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     }
 
     /**
+     * @return string
+     */
+    protected function getDeleteOfferClassName()
+    {
+        return DeletePlace::class;
+    }
+
+    /**
      * Handle the update of facilities for a place.
      */
     public function handleUpdateFacilities(UpdateFacilities $updateFacilities)
@@ -186,17 +194,5 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
         $this->repository->save($place);
 
-    }
-
-    /**
-     * Handle a delete place command.
-     */
-    public function handleDeletePlace(DeletePlace $deletePlace)
-    {
-        /** @var Place $place */
-        $place = $this->repository->load($deletePlace->getId());
-        $place->delete();
-
-        $this->repository->save($place);
     }
 }

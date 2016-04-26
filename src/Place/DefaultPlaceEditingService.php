@@ -77,11 +77,7 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
      */
     public function deletePlace($id)
     {
-        $this->guardId($id);
-
-        return $this->commandBus->dispatch(
-            new DeletePlace($id)
-        );
+        return $this->delete($id);
     }
 
     /**

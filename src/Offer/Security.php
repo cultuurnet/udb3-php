@@ -5,6 +5,8 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use CultuurNet\SymfonySecurityJWT\Authentication\JWTUserToken;
+use CultuurNet\SymfonySecurityOAuth\Security\OAuthToken;
 use CultuurNet\SymfonySecurityOAuthUitid\User;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -58,12 +60,12 @@ class Security implements SecurityInterface
             return false;
         }
 
-        $user = $token->getUser();
-
-        if ($user instanceof User) {
+        if ($token instanceof OAuthToken) {
+            /* @var User $user */
+            $user = $token->getUser();
             $userId = new String($user->getUid());
-        } else if ($user instanceof \CultuurNet\UiTIDProvider\User\User) {
-            $userId = new String($user->id);
+        } else if ($token instanceof JWTUserToken) {
+            $userId = new String($token->getCredentials()->getClaim('uid'));
         }
 
         if (!isset($userId)) {

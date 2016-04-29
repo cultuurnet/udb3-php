@@ -11,7 +11,6 @@ use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use CultuurNet\UDB3\ReadModel\Index\RepositoryInterface;
 use CultuurNet\UDB3\Search\Results;
-use CultuurNet\UiTIDProvider\User\User;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\Expression\CompositeExpression;

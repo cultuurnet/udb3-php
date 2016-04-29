@@ -685,12 +685,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/symfony-security-jwt.git",
-                "reference": "2a4fd80c2a25b4ed6b3f9aebb483c2a10c4c42b4"
+                "reference": "932c724f7c199ad99866268285793855c41b9ec8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/symfony-security-jwt/zipball/2a4fd80c2a25b4ed6b3f9aebb483c2a10c4c42b4",
-                "reference": "2a4fd80c2a25b4ed6b3f9aebb483c2a10c4c42b4",
+                "url": "https://api.github.com/repos/cultuurnet/symfony-security-jwt/zipball/932c724f7c199ad99866268285793855c41b9ec8",
+                "reference": "932c724f7c199ad99866268285793855c41b9ec8",
                 "shasum": ""
             },
             "require": {
@@ -711,7 +711,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "CultuurNet\\SymfonySecurityJWT\\": "src/"
+                    "CultuurNet\\SymfonySecurityJwt\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -719,7 +719,7 @@
                 "Apache-2.0"
             ],
             "description": "JWT implementation for the Symfony Security component",
-            "time": "2016-04-28 14:48:51"
+            "time": "2016-04-29 13:13:55"
         },
         {
             "name": "cultuurnet/symfony-security-oauth",
@@ -2733,16 +2733,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.7.11",
+            "version": "v2.7.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "b69b6e103712870a3137e9132115d800b2713aac"
+                "reference": "dea1508c965603051e359f2a5f8b7d923ba358fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/b69b6e103712870a3137e9132115d800b2713aac",
-                "reference": "b69b6e103712870a3137e9132115d800b2713aac",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/dea1508c965603051e359f2a5f8b7d923ba358fb",
+                "reference": "dea1508c965603051e359f2a5f8b7d923ba358fb",
                 "shasum": ""
             },
             "require": {
@@ -2785,7 +2785,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2016-03-25 17:55:03"
+            "time": "2016-04-05 16:36:43"
         },
         {
             "name": "symfony/http-kernel",
@@ -2986,16 +2986,16 @@
         },
         {
             "name": "symfony/security",
-            "version": "v2.7.11",
+            "version": "v2.7.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security.git",
-                "reference": "d41391616712f23df16277d674280cea6cb5f139"
+                "reference": "5b789c31e791c6e499644f203b51e8302e467039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security/zipball/d41391616712f23df16277d674280cea6cb5f139",
-                "reference": "d41391616712f23df16277d674280cea6cb5f139",
+                "url": "https://api.github.com/repos/symfony/security/zipball/5b789c31e791c6e499644f203b51e8302e467039",
+                "reference": "5b789c31e791c6e499644f203b51e8302e467039",
                 "shasum": ""
             },
             "require": {
@@ -3062,7 +3062,7 @@
             ],
             "description": "Symfony Security Component",
             "homepage": "https://symfony.com",
-            "time": "2016-03-25 15:52:47"
+            "time": "2016-04-09 10:56:56"
         },
         {
             "name": "symfony/serializer",

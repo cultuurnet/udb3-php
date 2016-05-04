@@ -114,6 +114,9 @@ class Projector implements EventListenerInterface
             $variationLD = $document->getBody();
 
             // overwrite the description that's already set in the variation
+            if (empty($variationLD->description)) {
+                $variationLD->description = new \stdClass();
+            }
             $variationLD->description->nl = $variationDocument->getBody()->description->nl;
 
             // overwrite the event url with the variation url
@@ -144,18 +147,23 @@ class Projector implements EventListenerInterface
         $variationLD = $offerDocument->getBody();
 
         // overwrite the description that's already set in the variation
+        if (empty($variationLD->description)) {
+            $variationLD->description = new \stdClass();
+        }
         $variationLD->description->nl = (string)$eventVariationCreated->getDescription();
 
         // overwrite the offer url with the variation url
         $variationLD->{'@id'} = $this->variationIriGenerator->iri($eventVariationCreated->getId());
 
         // add the original event to the list of similar entities
-        $existingSameAsEntities = $offerDocument->getBody()->sameAs;
-        $newSameAsEntities = array_unique(array_merge(
-            $existingSameAsEntities,
-            [(string)$eventVariationCreated->getOriginUrl()]
-        ));
-        $variationLD->sameAs = $newSameAsEntities;
+        if ($offerDocument->getBody()) {
+            $existingSameAsEntities = $offerDocument->getBody()->sameAs;
+            $newSameAsEntities = array_unique(array_merge(
+                $existingSameAsEntities,
+                [(string)$eventVariationCreated->getOriginUrl()]
+            ));
+            $variationLD->sameAs = $newSameAsEntities;
+        }
 
         $variationDocument = new JsonDocument($eventVariationCreated->getId(), $variationLD);
         $this->repository->save($variationDocument->withBody($variationLD));

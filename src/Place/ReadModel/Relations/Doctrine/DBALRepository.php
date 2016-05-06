@@ -41,12 +41,11 @@ class DBALRepository implements RepositoryInterface
     private function prepareInsertStatement()
     {
         $table = $this->connection->quoteIdentifier($this->tableName);
+        
         return $this->connection->prepare(
-            "INSERT INTO {$table} SET
-              place = :place,
-              organizer = :organizer
-            ON DUPLICATE KEY UPDATE
-              organizer=:organizer"
+            "REPLACE INTO {$table}
+             (place, organizer)
+             VALUES (:place, :organizer)"
         );
     }
 

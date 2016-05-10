@@ -72,15 +72,15 @@ class DefaultExternalOfferEditingService implements ExternalOfferEditingServiceI
      */
     private function createJsonPostRequest(UriInterface $uri, array $data)
     {
-        return $this->psr7Factory->createAuthorizedRequest('POST', $uri)
+        /* @var RequestInterface $request */
+        $request = $this->psr7Factory->createRequest('POST', $uri)
+            ->withHeader('Content-Type', 'application/json')
             ->withBody(
                 $this->psr7Factory->createContentStream(
                     json_encode($data)
                 )
-            )
-            ->withHeader(
-                'Content-Type',
-                'application/json'
             );
+
+        return $this->psr7Factory->authorizeRequest($request);
     }
 }

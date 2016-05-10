@@ -11,16 +11,24 @@ interface Psr7FactoryInterface
     /**
      * @param string $method
      * @param UriInterface $uri
+     * @param array $headers
+     * @param string|null $body
+     * @param string $protocolVersion
      * @return RequestInterface
      */
-    public function createRequest($method, UriInterface $uri);
+    public function createRequest(
+        $method,
+        UriInterface $uri,
+        array $headers = [],
+        $body = null,
+        $protocolVersion = '1.1'
+    );
 
     /**
-     * @param string $method
-     * @param UriInterface $uri
+     * @param RequestInterface $request
      * @return RequestInterface
      */
-    public function createAuthorizedRequest($method, UriInterface $uri);
+    public function authorizeRequest(RequestInterface $request);
 
     /**
      * @param string $uri

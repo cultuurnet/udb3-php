@@ -43,25 +43,23 @@ class DefaultExternalOfferEditingService implements ExternalOfferEditingServiceI
             'labels'
         );
 
-        $data = json_encode(
-            [
-                'label' => (string) $label,
-            ]
-        );
+        $data = [
+            'label' => (string) $label,
+        ];
 
         $request = $this->createJsonPostRequest($uri, $data);
         $this->httpClient->sendRequest($request);
     }
 
     /**
-     * @param string $baseUrl
+     * @param string $iri
      * @param string $path
      * @return UriInterface
      */
-    private function createUri($baseUrl, $path)
+    private function createUri($iri, $path)
     {
         return $this->psr7Factory->createUri(
-            rtrim($baseUrl, '/') . '/' . $path
+            rtrim($iri, '/') . '/' . $path
         );
     }
 

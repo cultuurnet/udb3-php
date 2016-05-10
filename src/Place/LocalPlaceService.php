@@ -20,7 +20,7 @@ class LocalPlaceService extends LocalEntityService implements PlaceServiceInterf
         RepositoryInterface $entityRepository,
         RelationsRepository $placeRelationsRepository,
         IriGeneratorInterface $iriGenerator
-    ){
+    ) {
         parent::__construct($documentRepository, $entityRepository, $iriGenerator);
 
         $this->placeRelationsRepository = $placeRelationsRepository;

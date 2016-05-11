@@ -917,7 +917,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ],
         ];
 
-        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD($placeIri);
+        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD((string) $placeIri);
 
         $this->projector->handle(
             DomainMessage::recordNow(

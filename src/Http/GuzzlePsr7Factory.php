@@ -12,19 +12,6 @@ use ValueObjects\String\String as StringLiteral;
 class GuzzlePsr7Factory implements Psr7FactoryInterface
 {
     /**
-     * @var StringLiteral
-     */
-    private $authorizationHeader;
-
-    /**
-     * @param StringLiteral $authorizationHeader
-     */
-    public function __construct(StringLiteral $authorizationHeader)
-    {
-        $this->authorizationHeader = $authorizationHeader;
-    }
-
-    /**
      * @param string $method
      * @param UriInterface $uri
      * @param array $headers
@@ -40,17 +27,6 @@ class GuzzlePsr7Factory implements Psr7FactoryInterface
         $protocolVersion = '1.1'
     ) {
         return new Request($method, $uri, $headers, $body, $protocolVersion);
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @return RequestInterface
-     */
-    public function authorizeRequest(
-        RequestInterface $request
-    ) {
-        return $request
-            ->withHeader('Authorization', $this->authorizationHeader);
     }
 
     /**

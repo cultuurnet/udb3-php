@@ -3,10 +3,12 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Http\GuzzlePsr7Factory;
+use CultuurNet\UDB3\Http\JwtPsr7RequestAuthorizer;
 use CultuurNet\UDB3\Label;
 use Http\Client\HttpClient;
+use Lcobucci\JWT\Signature;
+use Lcobucci\JWT\Token as Jwt;
 use Psr\Http\Message\RequestInterface;
-use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 class DefaultExternalOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
@@ -17,14 +19,19 @@ class DefaultExternalOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $httpClient;
 
     /**
-     * @var StringLiteral
+     * @var Jwt
      */
-    private $authorizationHeader;
+    private $jwt;
 
     /**
      * @var GuzzlePsr7Factory
      */
     private $psr7Factory;
+
+    /**
+     * @var JwtPsr7RequestAuthorizer
+     */
+    private $psr7RequestAuthorizer;
 
     /**
      * @var DefaultExternalOfferEditingService
@@ -35,12 +42,21 @@ class DefaultExternalOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->httpClient = $this->getMock(HttpClient::class);
 
-        $this->authorizationHeader = new StringLiteral('Bearer json.web.token');
-        $this->psr7Factory = new GuzzlePsr7Factory($this->authorizationHeader);
+        $this->psr7Factory = new GuzzlePsr7Factory();
+
+        $this->jwt = new Jwt(
+            ['alg' => 'mock'],
+            ['foo' => 'bar'],
+            new Signature('token'),
+            ['json', 'web', 'token']
+        );
+
+        $this->psr7RequestAuthorizer = new JwtPsr7RequestAuthorizer($this->jwt);
 
         $this->service = new DefaultExternalOfferEditingService(
             $this->httpClient,
-            $this->psr7Factory
+            $this->psr7Factory,
+            $this->psr7RequestAuthorizer
         );
     }
 
@@ -80,7 +96,7 @@ class DefaultExternalOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         /* @var RequestInterface $request */
         $this->assertEquals('POST', $request->getMethod());
         $this->assertEquals('http://uitdatabank.be/event/123456/labels', (string) $request->getUri());
-        $this->assertEquals((string) $this->authorizationHeader, $request->getHeaderLine('Authorization'));
+        $this->assertEquals('Bearer ' . $this->jwt, $request->getHeaderLine('Authorization'));
         $this->assertEquals('application/json', $request->getHeaderLine('Content-Type'));
         $this->assertEquals($expectedBody, $request->getBody()->getContents());
     }

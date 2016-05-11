@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Http\Psr7FactoryInterface;
+use CultuurNet\UDB3\Http\Psr7RequestAuthorizerInterface;
 use CultuurNet\UDB3\Label;
 use Http\Client\HttpClient;
 use Psr\Http\Message\RequestInterface;
@@ -21,15 +22,23 @@ class DefaultExternalOfferEditingService implements ExternalOfferEditingServiceI
     private $psr7Factory;
 
     /**
+     * @var Psr7RequestAuthorizerInterface
+     */
+    private $psr7RequestAuthorizer;
+
+    /**
      * @param HttpClient $httpClient
      * @param Psr7FactoryInterface $psr7Factory
+     * @param Psr7RequestAuthorizerInterface $psr7RequestAuthorizer
      */
     public function __construct(
         HttpClient $httpClient,
-        Psr7FactoryInterface $psr7Factory
+        Psr7FactoryInterface $psr7Factory,
+        Psr7RequestAuthorizerInterface $psr7RequestAuthorizer
     ) {
         $this->httpClient = $httpClient;
         $this->psr7Factory = $psr7Factory;
+        $this->psr7RequestAuthorizer = $psr7RequestAuthorizer;
     }
 
     /**
@@ -79,6 +88,6 @@ class DefaultExternalOfferEditingService implements ExternalOfferEditingServiceI
                 )
             );
 
-        return $this->psr7Factory->authorizeRequest($request);
+        return $this->psr7RequestAuthorizer->authorize($request);
     }
 }

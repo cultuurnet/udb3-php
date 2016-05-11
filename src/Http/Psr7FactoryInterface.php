@@ -25,12 +25,6 @@ interface Psr7FactoryInterface
     );
 
     /**
-     * @param RequestInterface $request
-     * @return RequestInterface
-     */
-    public function authorizeRequest(RequestInterface $request);
-
-    /**
      * @param string $uri
      * @return UriInterface
      */

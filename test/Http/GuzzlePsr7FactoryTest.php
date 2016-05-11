@@ -11,22 +11,13 @@ use ValueObjects\String\String as StringLiteral;
 class GuzzlePsr7FactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var StringLiteral
-     */
-    private $authorizationHeader;
-
-    /**
      * @var GuzzlePsr7Factory
      */
     private $factory;
 
     public function setUp()
     {
-        $this->authorizationHeader = new StringLiteral('Bearer jwt.token.mock');
-
-        $this->factory = new GuzzlePsr7Factory(
-            $this->authorizationHeader
-        );
+        $this->factory = new GuzzlePsr7Factory();
     }
 
     /**
@@ -84,20 +75,6 @@ class GuzzlePsr7FactoryTest extends \PHPUnit_Framework_TestCase
                 '5.0',
             ],
         ];
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_authorize_requests()
-    {
-        $request = new Request('DELETE', 'http://foo.bar');
-        $authorizedRequest = $this->factory->authorizeRequest($request);
-
-        $this->assertEquals(
-            $this->authorizationHeader->toNative(),
-            $authorizedRequest->getHeaderLine('Authorization')
-        );
     }
 
     /**

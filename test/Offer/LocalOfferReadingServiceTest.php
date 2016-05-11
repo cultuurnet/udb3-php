@@ -43,12 +43,12 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider offerRepositoryDataProvider
      *
-     * @param string $iri
+     * @param Url $iri
      * @param string $id
      * @param OfferType $type
      */
     public function it_loads_an_offer_from_its_correct_repository_based_on_its_type(
-        $iri,
+        Url $iri,
         $id,
         OfferType $type
     ) {
@@ -96,7 +96,7 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
         }
 
         // Load the offer json document based on its iri.
-        $actualDocument = $this->service->load($iri);
+        $actualDocument = $this->service->load((string) $iri);
 
         // Make sure the document is passed through.
         $this->assertEquals($expectedDocument, $actualDocument);
@@ -152,6 +152,6 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
             'No document repository found for offer type Place.'
         );
 
-        $service->load($iri);
+        $service->load((string) $iri);
     }
 }

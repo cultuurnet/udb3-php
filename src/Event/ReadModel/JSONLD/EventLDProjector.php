@@ -51,6 +51,7 @@ use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 /**
  * Projects state changes on Event entities to a JSON-LD read model in a
@@ -142,7 +143,7 @@ class EventLDProjector extends OfferLDProjector implements
         PlaceProjectedToJSONLD $placeProjectedToJSONLD
     ) {
         $identifier = $this->iriOfferIdentifierFactory->fromIri(
-            $placeProjectedToJSONLD->getIri()
+            Url::fromNative($placeProjectedToJSONLD->getIri())
         );
 
         $eventsLocatedAtPlace = $this->eventsLocatedAtPlace(
@@ -723,7 +724,7 @@ class EventLDProjector extends OfferLDProjector implements
     {
         return ContactPointUpdated::class;
     }
-    
+
     protected function getDescriptionUpdatedClassName()
     {
         return DescriptionUpdated::class;

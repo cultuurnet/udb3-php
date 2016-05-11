@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use ValueObjects\Web\Url;
 
 class LocalOfferReadingService implements OfferReadingServiceInterface
 {
@@ -46,7 +47,9 @@ class LocalOfferReadingService implements OfferReadingServiceInterface
      */
     public function load($iri)
     {
-        $identifier = $this->iriOfferIdentifierFactory->fromIri($iri);
+        $identifier = $this->iriOfferIdentifierFactory->fromIri(
+            Url::fromNative($iri)
+        );
 
         $id = $identifier->getId();
         $type = $identifier->getType();

@@ -16,7 +16,7 @@ abstract class AbstractEventWithIri implements SerializableInterface
      */
     public function __construct($iri)
     {
-        $this->iri = $iri;
+        $this->iri = (string) $iri;
     }
 
     /**

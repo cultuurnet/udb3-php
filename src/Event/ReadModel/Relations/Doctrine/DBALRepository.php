@@ -52,11 +52,21 @@ class DBALRepository implements RepositoryInterface
 
     public function storeOrganizer($eventId, $organizerId)
     {
-        $transaction = function ($connection) use ($eventId, $organizerId) {
+        $this->storeRelation($eventId, 'organizer', $organizerId);
+    }
+
+    /**
+     * @param string $eventId
+     * @param string $relationType either 'place' or 'organizer'
+     * @param string $itemId
+     */
+    public function storeRelation($eventId, $relationType, $itemId)
+    {
+        $transaction = function ($connection) use ($eventId, $relationType, $itemId) {
             if ($this->eventHasRelations($connection, $eventId)) {
-                $this->updateEventOrganizerRelation($connection, $eventId, $organizerId);
+                $this->updateEventRelation($connection, $eventId, $relationType, $itemId);
             } else {
-                $this->createEventOrganizerRelation($connection, $eventId, $organizerId);
+                $this->createEventRelation($connection, $eventId, $relationType, $itemId);
             }
         };
 
@@ -66,22 +76,24 @@ class DBALRepository implements RepositoryInterface
     /**
      * @param Connection $connection
      * @param string $eventId
-     * @param string $organizerId
+     * @param string $relationType
+     * @param string $itemId
      */
-    private function createEventOrganizerRelation(
+    private function createEventRelation(
         Connection $connection,
         $eventId,
-        $organizerId
+        $relationType,
+        $itemId
     ) {
         $q = $connection
             ->createQueryBuilder()
             ->insert($this->tableName)
             ->values([
                 'event' => ':event_id',
-                'organizer' => ':organizer_id'
+                $relationType => ':item_id'
             ])
             ->setParameter('event_id', $eventId)
-            ->setParameter('organizer_id', $organizerId);
+            ->setParameter('item_id', $itemId);
 
         $q->execute();
     }
@@ -89,20 +101,22 @@ class DBALRepository implements RepositoryInterface
     /**
      * @param Connection $connection
      * @param string $eventId
-     * @param string $organizerId
+     * @param string $relationType
+     * @param string $itemId
      */
-    private function updateEventOrganizerRelation(
+    private function updateEventRelation(
         Connection $connection,
         $eventId,
-        $organizerId
+        $relationType,
+        $itemId
     ) {
         $q = $connection
             ->createQueryBuilder()
             ->update($this->tableName)
             ->where('event = :event_id')
-            ->set('organizer', ':organizer_id')
+            ->set($relationType, ':item_id')
             ->setParameter('event_id', $eventId)
-            ->setParameter('organizer_id', $organizerId);
+            ->setParameter('item_id', $itemId);
 
         $q->execute();
     }

@@ -22,6 +22,13 @@ interface RepositoryInterface
 
     /**
      * @param string $eventId
+     * @param string $relationType
+     * @param string $itemId
+     */
+    public function storeRelation($eventId, $relationType, $itemId);
+
+    /**
+     * @param string $eventId
      */
     public function removeOrganizer($eventId);
 

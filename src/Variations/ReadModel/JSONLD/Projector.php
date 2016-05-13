@@ -144,6 +144,9 @@ class Projector implements EventListenerInterface
         $variationLD = $offerDocument->getBody();
 
         // overwrite the description that's already set in the variation
+        if(!$variationLD->description) {
+            $variationLD->description = (object) [];
+        }
         $variationLD->description->nl = (string)$eventVariationCreated->getDescription();
 
         // overwrite the offer url with the variation url

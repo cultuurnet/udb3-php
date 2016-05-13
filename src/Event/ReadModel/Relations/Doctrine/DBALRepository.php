@@ -43,7 +43,7 @@ class DBALRepository implements RepositoryInterface
     {
         $transaction = function ($connection) use ($eventId) {
             if ($this->eventHasRelations($connection, $eventId)) {
-                $this->updateEventOrganizerRelation($connection, $eventId, null);
+                $this->updateEventRelation($connection, $eventId, 'organizer', null);
             }
         };
 

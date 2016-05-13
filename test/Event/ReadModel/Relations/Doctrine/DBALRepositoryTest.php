@@ -182,6 +182,9 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTableData($expectedData, $this->tableName);
     }
 
+    /**
+     * @test
+     */
     public function it_should_get_all_events_located_at_place()
     {
         $existingData = [

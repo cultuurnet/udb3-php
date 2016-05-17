@@ -70,7 +70,7 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
      */
     public function it_retrieves_all_events_from_the_event_store(
         EventStreamDecoratorInterface $eventStreamDecorator = null,
-        $expectedDecoratedMetadata
+        array $expectedDecoratedMetadata = []
     ) {
         $idOfEntityA = 'F68E71A1-DBB0-4542-AEE5-BD937E095F74';
         $idOfEntityB = '011A02C5-D395-47C1-BEBE-184840A2C961';

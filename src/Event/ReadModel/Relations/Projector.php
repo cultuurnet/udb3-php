@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -57,6 +58,13 @@ class Projector implements EventListenerInterface
             $this->storeRelations($eventId, $cdbid, $organizer);
         }
 
+    }
+    
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+        $eventId = $majorInfoUpdated->getItemId();
+        $cdbid = $majorInfoUpdated->getLocation()->getCdbid();
+        $this->repository->storeRelation($eventId, 'place', $cdbid);
     }
 
     /**

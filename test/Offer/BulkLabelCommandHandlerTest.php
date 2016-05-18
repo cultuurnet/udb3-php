@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
+use Http\Client\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Web\Url;
 
@@ -20,16 +21,6 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
      * @var ResultsGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $resultGenerator;
-
-    /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $eventRepository;
-
-    /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $placeRepository;
 
     /**
      * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -66,15 +57,20 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private $placeMock;
 
+    /**
+     * @var ExternalOfferEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $externalOfferEditingService;
+
     public function setUp()
     {
         $this->resultGenerator = $this->getMock(ResultsGeneratorInterface::class);
-        $this->eventRepository = $this->getMock(RepositoryInterface::class);
-        $this->placeRepository = $this->getMock(RepositoryInterface::class);
+        $this->externalOfferEditingService = $this->getMock(ExternalOfferEditingServiceInterface::class);
 
-        $this->commandHandler = (new BulkLabelCommandHandler($this->resultGenerator))
-            ->withRepository(OfferType::EVENT(), $this->eventRepository)
-            ->withRepository(OfferType::PLACE(), $this->placeRepository);
+        $this->commandHandler = new BulkLabelCommandHandler(
+            $this->resultGenerator,
+            $this->externalOfferEditingService
+        );
 
         $this->logger = $this->getMock(LoggerInterface::class);
         $this->commandHandler->setLogger($this->logger);
@@ -136,58 +132,46 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     */
-    public function it_throws_an_exception_when_no_repository_is_found_for_an_offer_type()
-    {
-        // Command handler without Place repository.
-        $commandHandler = (new BulkLabelCommandHandler($this->resultGenerator))
-            ->withRepository(OfferType::EVENT(), $this->eventRepository);
-
-        $addLabelToMultiple = new AddLabelToMultiple(
-            OfferIdentifierCollection::fromArray($this->offerIdentifiers),
-            $this->label
-        );
-
-        $this->expectEventToBeLabelledWith($this->label);
-
-        $this->setExpectedException(
-            \LogicException::class,
-            "Found no repository for type Place."
-        );
-
-        $commandHandler->handle($addLabelToMultiple);
-    }
-
-    /**
-     * @test
-     * @dataProvider aggregateExceptionDataProvider
+     * @dataProvider exceptionDataProvider
      *
      * @param \Exception $exception
-     * @param string $errorMessage
+     * @param string $exceptionClassName
+     * @param string $message
      */
-    public function it_logs_an_error_when_an_entity_is_not_found_and_continues_labelling(
+    public function it_logs_an_error_when_an_error_occurred_and_continues_labelling(
         \Exception $exception,
-        $errorMessage
+        $exceptionClassName,
+        $message
     ) {
-        // Make sure we log any attempts to label non-existing / removed events.
-        $this->eventRepository->expects($this->once())
-            ->method('load')
-            ->with(1)
+        // One label action should fail.
+        $this->externalOfferEditingService->expects($this->at(0))
+            ->method('addLabel')
+            ->with(
+                $this->offerIdentifiers[1],
+                $this->label
+            )
             ->willThrowException($exception);
 
+        // Make sure the other offer is still labelled.
+        $this->externalOfferEditingService->expects($this->at(1))
+            ->method('addLabel')
+            ->with(
+                $this->offerIdentifiers[2],
+                $this->label
+            );
+
+        // Make sure we log the occur.
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
-                $errorMessage,
+                'bulk_label_command_exception',
                 [
-                    'id' => '1',
-                    'type' => 'Event',
-                    'command' => 'CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple',
+                    'iri' => 'http://du.de/event/1',
+                    'command' => AddLabelToMultiple::class,
+                    'exception' => $exceptionClassName,
+                    'message' => $message,
                 ]
             );
-
-        // Make sure the place is still labelled.
-        $this->expectPlaceToBeLabelledWith($this->label);
 
         $this->commandHandler->handle(
             new AddLabelToMultiple(
@@ -200,16 +184,13 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function aggregateExceptionDataProvider()
+    public function exceptionDataProvider()
     {
         return [
             [
-                AggregateNotFoundException::create(1),
-                'bulk_label_command_entity_not_found',
-            ],
-            [
-                AggregateDeletedException::create(1),
-                'bulk_label_command_entity_deleted',
+                new \Exception('Something went awfully wrong'),
+                \Exception::class,
+                'Something went awfully wrong',
             ],
         ];
     }
@@ -219,45 +200,17 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function expectEventAndPlaceToBeLabelledWith(Label $label)
     {
-        $this->expectEventToBeLabelledWith($label);
-        $this->expectPlaceToBeLabelledWith($label);
-    }
-
-    /**
-     * @param Label $label
-     */
-    private function expectEventToBeLabelledWith(Label $label)
-    {
-        $this->eventRepository->expects($this->once())
-            ->method('load')
-            ->with(1)
-            ->willReturn($this->eventMock);
-
-        $this->eventMock->expects($this->once())
+        $this->externalOfferEditingService->expects($this->exactly(2))
             ->method('addLabel')
-            ->with($label);
-
-        $this->eventRepository->expects($this->once())
-            ->method('save')
-            ->with($this->eventMock);
-    }
-
-    /**
-     * @param Label $label
-     */
-    private function expectPlaceToBeLabelledWith(Label $label)
-    {
-        $this->placeRepository->expects($this->once())
-            ->method('load')
-            ->with(2)
-            ->willReturn($this->placeMock);
-
-        $this->placeMock->expects($this->once())
-            ->method('addLabel')
-            ->with($label);
-
-        $this->placeRepository->expects($this->once())
-            ->method('save')
-            ->with($this->placeMock);
+            ->withConsecutive(
+                [
+                    $this->offerIdentifiers[1],
+                    $label
+                ],
+                [
+                    $this->offerIdentifiers[2],
+                    $label
+                ]
+            );
     }
 }

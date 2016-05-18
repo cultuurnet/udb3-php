@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use ValueObjects\Web\Url;
 
 class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {
@@ -24,29 +25,18 @@ class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareI
     private $resultsGenerator;
 
     /**
-     * @var RepositoryInterface[]
+     * @var ExternalOfferEditingServiceInterface
      */
-    private $repositories;
+    private $externalOfferEditingService;
 
     public function __construct(
-        ResultsGeneratorInterface $resultsGenerator
+        ResultsGeneratorInterface $resultsGenerator,
+        ExternalOfferEditingServiceInterface $externalOfferEditingService
     ) {
         $this->resultsGenerator = $resultsGenerator;
-        $this->repositories = [];
+        $this->externalOfferEditingService = $externalOfferEditingService;
 
         $this->setLogger(new NullLogger());
-    }
-
-    /**
-     * @param OfferType $offerType
-     * @param RepositoryInterface $repository
-     * @return BulkLabelCommandHandler
-     */
-    public function withRepository(OfferType $offerType, RepositoryInterface $repository)
-    {
-        $c = clone $this;
-        $c->repositories[$offerType->toNative()] = $repository;
-        return $c;
     }
 
     /**
@@ -60,8 +50,7 @@ class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareI
         foreach ($this->resultsGenerator->search($query) as $result) {
             /* @var IriOfferIdentifier $result */
             $this->label(
-                $result->getType(),
-                $result->getId(),
+                $result,
                 $label,
                 AddLabelToQuery::class
             );
@@ -80,8 +69,7 @@ class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareI
 
         foreach ($offerIdentifiers as $offerIdentifier) {
             $this->label(
-                $offerIdentifier->getType(),
-                $offerIdentifier->getId(),
+                $offerIdentifier,
                 $label,
                 AddLabelToMultiple::class
             );
@@ -89,37 +77,27 @@ class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareI
     }
 
     /**
-     * @param OfferType $type
-     * @param string $id
+     * @param IriOfferIdentifier $offerIdentifier
      * @param Label $label
      * @param string|null $originalCommandName
      *   Original command name, for logging purposes if an entity is not found.
      */
-    private function label(OfferType $type, $id, Label $label, $originalCommandName = null)
-    {
-        $type = $type->toNative();
-
-        if (!isset($this->repositories[$type])) {
-            throw new \LogicException("Found no repository for type {$type}.");
-        }
-
-        $repository = $this->repositories[$type];
-
-        $logContext = [
-            'id' => $id,
-            'type' => $type,
-            'command' => $originalCommandName,
-        ];
-
-        /* @var Offer $offer */
+    private function label(
+        IriOfferIdentifier $offerIdentifier,
+        Label $label,
+        $originalCommandName = null
+    ) {
         try {
-            $offer = $repository->load($id);
-            $offer->addLabel($label);
-            $repository->save($offer);
-        } catch (AggregateNotFoundException $e) {
-            $this->logger->error('bulk_label_command_entity_not_found', $logContext);
-        } catch (AggregateDeletedException $e) {
-            $this->logger->error('bulk_label_command_entity_deleted', $logContext);
+            $this->externalOfferEditingService->addLabel($offerIdentifier, $label);
+        } catch (\Exception $e) {
+            $logContext = [
+                'iri' => (string) $offerIdentifier->getIri(),
+                'command' => $originalCommandName,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+            ];
+
+            $this->logger->error('bulk_label_command_exception', $logContext);
         }
     }
 }

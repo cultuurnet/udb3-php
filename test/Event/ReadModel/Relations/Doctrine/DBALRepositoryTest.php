@@ -181,4 +181,29 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTableData($expectedData, $this->tableName);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_get_all_events_located_at_place()
+    {
+        $existingData = [
+            (object)[
+                'event' => 'e201cea1-4a79-4834-9501-b28a92900fa1',
+                'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+            ],
+            (object)[
+                'event' => 'cd996276-7aac-40b7-8bf4-e505dbbf11bf',
+                'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+            ],
+        ];
+        $this->insertTableData($this->tableName, $existingData);
+
+        $events = $this->repository
+            ->getEventsLocatedAtPlace('e64362f5-43e1-468b-97d6-8981fb0fe426');
+        $expectedData = ['e201cea1-4a79-4834-9501-b28a92900fa1', 'cd996276-7aac-40b7-8bf4-e505dbbf11bf'];
+        $this->assertEquals($expectedData, $events);
+    }
 }

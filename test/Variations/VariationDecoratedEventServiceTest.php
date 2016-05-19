@@ -293,4 +293,43 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
             $actualEvents
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_should_not_generate_a_url_when_looking_for_an_id_that_is_already_a_url()
+    {
+        $eventId = 'http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0';
+        $variationId = 'D83B8FBC-9583-4F09-AE3F-C60393226D24';
+        $variationJsonLD = $this->variationJsonLD(
+            $variationId,
+            $eventId
+        );
+
+        $this->variationsJsonLdRepository->save(
+            new JsonDocument(
+                $variationId,
+                $variationJsonLD
+            )
+        );
+
+        $expectedCriteria = $this->criteria->withOriginUrl(
+            new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
+        );
+
+        $this->search->expects($this->once())
+            ->method('getOfferVariations')
+            ->with($expectedCriteria)
+            ->willReturn([$variationId]);
+
+        $this->decoratedEventService->expects($this->never())
+            ->method('getEvent');
+
+        $jsonLD = $this->service->getEvent($eventId);
+
+        $this->assertEquals(
+            $variationJsonLD,
+            $jsonLD
+        );
+    }
 }

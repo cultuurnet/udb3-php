@@ -44,4 +44,20 @@ class ExternalEventServiceTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedDocument, $actualDocument);
     }
+
+    /**
+     * @test
+     * @expectedException \CultuurNet\UDB3\Event\EventNotFoundException
+     */
+    public function it_should_notify_that_an_event_can_not_be_found_when_the_external_request_fails()
+    {
+        $response = new Response(400);
+        $eventId = 'http://culudb-silex.dev/event/e3604613-af01-4d2b-8cee-13ab61b89651';
+
+        $this->httpClient
+            ->method('sendRequest')
+            ->willReturn($response);
+
+        $this->eventService->getEvent($eventId);
+    }
 }

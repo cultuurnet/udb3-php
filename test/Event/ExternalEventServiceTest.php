@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 use GuzzleHttp\Psr7\Response;
 use Http\Client\HttpClient;
 use PHPUnit_Framework_TestCase;
@@ -29,7 +28,7 @@ class ExternalEventServiceTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_fetch_some_external_json_and_return_it_as_a_document_when_asking_for_an_event()
+    public function it_should_fetch_some_external_event_and_return_it_as_a_json_encoded_string_when_asking_for_an_event()
     {
         $encodedJsonEvent = file_get_contents(__DIR__ . '/samples/event_with_udb3_place.json');
         $response = new Response(200, ['Content-Type' => 'application/json'], $encodedJsonEvent);
@@ -39,10 +38,9 @@ class ExternalEventServiceTest extends PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->willReturn($response);
 
-        $actualDocument = $this->eventService->getEvent($eventId);
-        $expectedDocument = new JsonDocument($eventId, $encodedJsonEvent);
+        $actualData = $this->eventService->getEvent($eventId);
 
-        $this->assertEquals($expectedDocument, $actualDocument);
+        $this->assertEquals($encodedJsonEvent, $actualData);
     }
 
     /**

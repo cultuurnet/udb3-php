@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -30,7 +29,7 @@ class ExternalEventService implements EventServiceInterface
     public function getEvent($id)
     {
         $uri = new Uri($id);
-        $request = new Request('GET', $uri, ["Accept" => "application/json"]);
+        $request = new Request('GET', $uri, ["Accept" => "application/ld+json"]);
 
         try {
             $response = $this->httpClient->sendRequest($request);
@@ -42,7 +41,7 @@ class ExternalEventService implements EventServiceInterface
             throw new EventNotFoundException();
         }
 
-        return new JsonDocument($id, $response->getBody()->getContents());
+        return (string) $response->getBody();
     }
 
     public function eventsOrganizedByOrganizer($organizerId)

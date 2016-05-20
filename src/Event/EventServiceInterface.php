@@ -1,9 +1,6 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Event;
 
 /**
  * Interface for a service performing event related tasks.

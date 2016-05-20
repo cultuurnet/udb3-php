@@ -4,8 +4,8 @@ namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
-use CultuurNet\UDB3\EventNotFoundException;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventNotFoundException;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;

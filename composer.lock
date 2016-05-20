@@ -399,12 +399,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Cdb.git",
-                "reference": "706163f1df35d07caabdbae628aa1c8b2e038ce2"
+                "reference": "25532fa193d608b81e919f5874676211eb94ded3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/706163f1df35d07caabdbae628aa1c8b2e038ce2",
-                "reference": "706163f1df35d07caabdbae628aa1c8b2e038ce2",
+                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/25532fa193d608b81e919f5874676211eb94ded3",
+                "reference": "25532fa193d608b81e919f5874676211eb94ded3",
                 "shasum": ""
             },
             "require-dev": {
@@ -426,7 +426,7 @@
                 "Apache-2.0"
             ],
             "description": "PHP library for hydrating/manipulating CultuurNet's Cdb XML documents",
-            "time": "2016-05-18 13:32:09"
+            "time": "2016-05-20 10:08:13"
         },
         {
             "name": "cultuurnet/clock",

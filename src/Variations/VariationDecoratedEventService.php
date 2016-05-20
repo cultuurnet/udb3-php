@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Variations;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;

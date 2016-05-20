@@ -35,6 +35,7 @@ use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -535,6 +536,10 @@ class EventLDProjector extends OfferLDProjector implements
      */
     public function placeJSONLD($placeId)
     {
+        if (empty($placeId)) {
+            return array();
+        }
+
         try {
             $placeJSONLD = $this->placeService->getEntity(
                 $placeId
@@ -546,6 +551,12 @@ class EventLDProjector extends OfferLDProjector implements
             return array(
                 '@id' => $this->placeService->iri($placeId)
             );
+        } catch (DocumentGoneException $e) {
+            // In case the place can not be found at the moment, just add its ID
+            return array(
+                '@id' => $this->placeService->iri($placeId)
+            );
+
         }
     }
 

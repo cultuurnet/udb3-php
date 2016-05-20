@@ -98,10 +98,22 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
                 [
                     'item_id' => 'madId',
                     'label' => 'label123',
+                    'visibility' => true,
                 ],
                 new LabelAdded(
                     'madId',
                     new Label('label123')
+                ),
+            ],
+            'abstractLabelEvent2' => [
+                [
+                    'item_id' => 'madId',
+                    'label' => 'label123',
+                    'visibility' => false,
+                ],
+                new LabelAdded(
+                    'madId',
+                    new Label('label123', false)
                 ),
             ],
         ];

@@ -7,6 +7,8 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Event\EventNotFoundException;
+use CultuurNet\UDB3\Event\LocalEventService;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 

@@ -158,7 +158,9 @@ abstract class WebArchiveFileWriter implements FileWriterInterface
 
         $formattedEvents = new TransformingIteratorIterator(
             $events,
-            function ($event, $eventId) use ($formatter) {
+            function ($event, $eventLocation) use ($formatter) {
+                $urlParts = explode('/', $eventLocation);
+                $eventId = array_pop($urlParts);
                 return $formatter->formatEvent($eventId, $event);
             }
         );

@@ -556,7 +556,6 @@ class EventLDProjector extends OfferLDProjector implements
             return array(
                 '@id' => $this->placeService->iri($placeId)
             );
-
         }
     }
 

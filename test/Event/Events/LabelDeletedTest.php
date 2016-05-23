@@ -10,7 +10,7 @@ class LabelDeletedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param array $expectedSerializedValue
-     * @param Unlabelled $unlabelled
+     * @param LabelDeleted $unlabelled
      */
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
@@ -26,7 +26,7 @@ class LabelDeletedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param array $serializedValue
-     * @param Unlabelled $expectedUnlabelled
+     * @param LabelDeleted $expectedUnlabelled
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
@@ -44,7 +44,8 @@ class LabelDeletedTest extends \PHPUnit_Framework_TestCase
             'unlabelled' => [
                 [
                     'item_id' => 'foo',
-                    'label' => 'Label1'
+                    'label' => 'Label1',
+                    'visibility' => true,
                 ],
                 new LabelDeleted(
                     'foo',

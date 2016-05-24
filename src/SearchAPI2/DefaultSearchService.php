@@ -28,10 +28,11 @@ class DefaultSearchService extends OAuthProtectedService implements SearchServic
         // include past events and present events with an embargo date
         $params[] = new BooleanParameter('past', true);
         $params[] = new BooleanParameter('unavailable', true);
+        $params[] = new BooleanParameter('udb3filtering', false);
 
         $collector = new Collector();
         $collector->addParameters($params, $request->getQuery());
-        
+
         $response = $request->send();
 
         return $response;

@@ -7,8 +7,11 @@
 
 namespace CultuurNet\UDB3;
 
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Organizer\Organizer;
+use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
@@ -19,6 +22,10 @@ use ValueObjects\Web\Url;
  */
 trait OfferCommandHandlerTestTrait
 {
+    /**
+     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $organizerRepository;
 
     /**
      * Get the namespaced classname of the command to create.
@@ -207,11 +214,15 @@ trait OfferCommandHandlerTestTrait
         $organizerId = '5';
         $commandClass = $this->getCommandClass('DeleteOrganizer');
         $eventClass = $this->getEventClass('OrganizerDeleted');
+        $organizerUpdatedClass = $this->getEventClass('OrganizerUpdated');
 
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [
+                    $this->factorOfferCreated($id),
+                    new $organizerUpdatedClass($id, $organizerId)
+                ]
             )
             ->when(
                 new $commandClass($id, $organizerId)
@@ -228,6 +239,10 @@ trait OfferCommandHandlerTestTrait
         $organizer = '1';
         $commandClass = $this->getCommandClass('UpdateOrganizer');
         $eventClass = $this->getEventClass('OrganizerUpdated');
+
+        $this->organizerRepository
+            ->method('load')
+            ->willReturn($this->getMock(Organizer::class));
 
         $this->scenario
             ->withAggregateId($id)

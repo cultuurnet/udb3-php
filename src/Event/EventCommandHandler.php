@@ -27,7 +27,6 @@ use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Label as Label;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -39,26 +38,13 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     use LoggerAwareTrait;
 
     /**
-     * @var SearchServiceInterface
-     */
-    protected $searchService;
-
-    public function __construct(
-        RepositoryInterface $eventRepository,
-        SearchServiceInterface $searchService
-    ) {
-        parent::__construct($eventRepository);
-        $this->searchService = $searchService;
-    }
-
-    /**
      * Handle an update the major info command.
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {
 
         /** @var Event $event */
-        $event = $this->repository->load($updateMajorInfo->getId());
+        $event = $this->offerRepository->load($updateMajorInfo->getId());
 
         $event->updateMajorInfo(
             $updateMajorInfo->getTitle(),
@@ -68,7 +54,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
             $updateMajorInfo->getTheme()
         );
 
-        $this->repository->save($event);
+        $this->offerRepository->save($event);
 
     }
 

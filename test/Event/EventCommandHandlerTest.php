@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
@@ -24,6 +25,7 @@ use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Organizer\OrganizerRepository;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
@@ -34,20 +36,7 @@ use ValueObjects\String\String;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
-
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
-
-    /**
-     * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $search;
-
-    public function setUp()
-    {
-        $this->search = $this->getMock(SearchServiceInterface::class);
-
-        parent::setUp();
-    }
 
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
@@ -57,8 +46,10 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventStore,
             $eventBus
         );
+        
+        $this->organizerRepository = $this->getMock(RepositoryInterface::class);
 
-        return new EventCommandHandler($repository, $this->search);
+        return new EventCommandHandler($repository, $this->organizerRepository);
     }
 
     private function factorOfferCreated($id)

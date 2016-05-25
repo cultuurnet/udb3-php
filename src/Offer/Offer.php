@@ -47,6 +47,13 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $mainImageId;
 
     /**
+     * @var string
+     *
+     * Organizer ids can come from UDB2 which does not strictly use UUIDs.
+     */
+    protected $organizerId;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -151,9 +158,11 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function updateOrganizer($organizerId)
     {
-        $this->apply(
-            $this->createOrganizerUpdatedEvent($organizerId)
-        );
+        if ($this->organizerId !== $organizerId) {
+            $this->apply(
+                $this->createOrganizerUpdatedEvent($organizerId)
+            );
+        }
     }
 
     /**
@@ -163,9 +172,11 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function deleteOrganizer($organizerId)
     {
-        $this->apply(
-            $this->createOrganizerDeletedEvent($organizerId)
-        );
+        if ($this->organizerId === $organizerId) {
+            $this->apply(
+                $this->createOrganizerDeletedEvent($organizerId)
+            );
+        }
     }
 
     /**
@@ -328,6 +339,11 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)
     {
         $this->mainImageId = $mainImageSelected->getImage()->getMediaObjectId();
+    }
+
+    protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
+    {
+        $this->organizerId = $organizerUpdated->getOrganizerId();
     }
 
     /**

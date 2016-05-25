@@ -20,20 +20,30 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Organizer\Organizer;
 
 abstract class OfferCommandHandler extends Udb3CommandHandler
 {
     /**
      * @var RepositoryInterface
      */
-    protected $repository;
+    protected $offerRepository;
 
     /**
-     * @param RepositoryInterface $repository
+     * @var RepositoryInterface
      */
-    public function __construct(RepositoryInterface $repository)
-    {
-        $this->repository = $repository;
+    protected $organizerRepository;
+
+    /**
+     * @param RepositoryInterface $offerRepository
+     * @param RepositoryInterface $organizerRepository
+     */
+    public function __construct(
+        RepositoryInterface $offerRepository,
+        RepositoryInterface $organizerRepository
+    ) {
+        $this->offerRepository = $offerRepository;
+        $this->organizerRepository = $organizerRepository;
     }
 
     /**
@@ -163,7 +173,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($addLabel->getItemId());
         $offer->addLabel($addLabel->getLabel());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -173,7 +183,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($deleteLabel->getItemId());
         $offer->deleteLabel($deleteLabel->getLabel());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -183,7 +193,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($translateTitle->getItemId());
         $offer->translateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -193,7 +203,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($translateDescription->getItemId());
         $offer->translateDescription($translateDescription->getLanguage(), $translateDescription->getDescription());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -204,7 +214,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($addImage->getItemId());
         $offer->addImage($addImage->getImage());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -214,7 +224,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($removeImage->getItemId());
         $offer->removeImage($removeImage->getImage());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -224,7 +234,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($updateImage->getItemId());
         $offer->updateImage($updateImage);
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -234,7 +244,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($selectMainImage->getItemId());
         $offer->selectMainImage($selectMainImage->getImage());
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -249,7 +259,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
             $updateDescription->getDescription()
         );
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
 
     }
 
@@ -265,7 +275,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
             $updateTypicalAgeRange->getTypicalAgeRange()
         );
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
 
     }
 
@@ -279,7 +289,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
 
         $offer->deleteTypicalAgeRange();
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
 
     }
 
@@ -290,12 +300,13 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     public function handleUpdateOrganizer(AbstractUpdateOrganizer $updateOrganizer)
     {
         $offer = $this->load($updateOrganizer->getId());
+        $this->loadOrganizer($updateOrganizer->getId());
 
         $offer->updateOrganizer(
             $updateOrganizer->getOrganizerId()
         );
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
 
     }
 
@@ -311,7 +322,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
             $deleteOrganizer->getOrganizerId()
         );
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
 
     }
 
@@ -327,7 +338,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
             $updateContactPoint->getContactPoint()
         );
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
 
     }
 
@@ -343,7 +354,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
             $updateBookingInfo->getBookingInfo()
         );
 
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -353,7 +364,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($deleteOffer->getId());
         $offer->delete();
-        $this->repository->save($offer);
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -364,6 +375,17 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     private function load($id)
     {
-        return $this->repository->load($id);
+        return $this->offerRepository->load($id);
+    }
+
+    /**
+     * Makes it easier to type-hint to Organizer.
+     *
+     * @param string $id
+     * @return Organizer
+     */
+    private function loadOrganizer($id)
+    {
+        return $this->organizerRepository->load($id);
     }
 }

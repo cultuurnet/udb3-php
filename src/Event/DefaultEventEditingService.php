@@ -9,7 +9,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;

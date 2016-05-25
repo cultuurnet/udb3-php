@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\EventNotFoundException;
+use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;

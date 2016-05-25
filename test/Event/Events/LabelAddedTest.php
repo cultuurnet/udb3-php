@@ -23,6 +23,7 @@ class LabelAddedTest extends \PHPUnit_Framework_TestCase
         $expectedSerializedEvent = [
             'item_id' => 'foo',
             'label' => 'label 1',
+            'visibility' => true,
         ];
 
         $this->assertEquals(
@@ -39,6 +40,7 @@ class LabelAddedTest extends \PHPUnit_Framework_TestCase
         $serializedEvent = [
             'item_id' => 'foo',
             'label' => 'label 1',
+            'visibility' => true,
         ];
 
         $expectedEventWasLabelled = new LabelAdded(

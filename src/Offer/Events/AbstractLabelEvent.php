@@ -39,6 +39,7 @@ abstract class AbstractLabelEvent extends AbstractEvent
     {
         return parent::serialize() + array(
             'label' => (string) $this->label,
+            'visibility' => $this->label->isVisible(),
         );
     }
 
@@ -48,9 +49,13 @@ abstract class AbstractLabelEvent extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
+        if (!isset($data['visibility'])) {
+            $data['visibility'] = true;
+        }
+
         return new static(
             $data['item_id'],
-            new Label($data['label'])
+            new Label($data['label'], $data['visibility'])
         );
     }
 }

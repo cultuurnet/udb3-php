@@ -1,14 +1,11 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
-use CultuurNet\UDB3\EventNotFoundException;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventNotFoundException;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -74,25 +71,7 @@ class EventExportService implements EventExportServiceInterface
     }
 
     /**
-     * @param FileFormatInterface $fileFormat
-     *  The file format of the exported file.
-     *
-     * @param EventExportQuery $query
-     *  The query that will be exported.
-     *  A query has to be specified even if you are exporting a selection of events.
-     *
-     * @param EmailAddress|null $address
-     *  An optional email address that will receive an email containing the exported file.
-     *
-     * @param LoggerInterface|null $logger
-     *  An optional logger that reports unknown events and empty exports.
-     *
-     * @param string[]|null $selection
-     *  A selection of items that will be included in the export.
-     *  When left empty the whole query will export.
-     *
-     * @return bool|string
-     *  The destination url of the export file or false if no events were found.
+     * {@inheritDoc}
      */
     public function exportEvents(
         FileFormatInterface $fileFormat,

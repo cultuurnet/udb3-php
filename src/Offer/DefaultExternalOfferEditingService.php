@@ -56,7 +56,7 @@ class DefaultExternalOfferEditingService implements ExternalOfferEditingServiceI
             'label' => (string) $label,
         ];
 
-        $request = $this->createJsonPostRequest($uri, $data);
+        $request = $this->createJsonPostRequest($uri, $data)->withHeader('Accept', 'application/json');
         $this->httpClient->sendRequest($request);
     }
 

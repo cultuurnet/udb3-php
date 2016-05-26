@@ -166,13 +166,13 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->repository->load($updateFacilities->getId());
+        $place = $this->offerRepository->load($updateFacilities->getId());
 
         $place->updateFacilities(
             $updateFacilities->getFacilities()
         );
 
-        $this->repository->save($place);
+        $this->offerRepository->save($place);
     }
 
     /**
@@ -182,7 +182,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->repository->load($updateMajorInfo->getId());
+        $place = $this->offerRepository->load($updateMajorInfo->getId());
 
         $place->updateMajorInfo(
             $updateMajorInfo->getTitle(),
@@ -192,7 +192,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
             $updateMajorInfo->getTheme()
         );
 
-        $this->repository->save($place);
+        $this->offerRepository->save($place);
 
     }
 }

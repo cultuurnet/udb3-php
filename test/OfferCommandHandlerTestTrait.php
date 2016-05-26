@@ -7,6 +7,7 @@
 
 namespace CultuurNet\UDB3;
 
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -253,6 +254,32 @@ trait OfferCommandHandlerTestTrait
                 new $commandClass($id, $organizer)
             )
             ->then([new $eventClass($id, $organizer)]);
+    }
+
+    /**
+     * @test
+     * @expectedException \Broadway\Repository\AggregateNotFoundException
+     */
+    public function it_should_not_update_an_offer_with_an_unknown_organizer()
+    {
+        $offerId = '988691DA-8AED-45F7-9794-0577370EAE75';
+        $organizerId = 'DD309AA8-208A-4267-AD46-02A7E8082174';
+        $commandClass = $this->getCommandClass('UpdateOrganizer');
+
+        $this->organizerRepository
+            ->method('load')
+            ->with('DD309AA8-208A-4267-AD46-02A7E8082174')
+            ->willThrowException(new AggregateNotFoundException($organizerId));
+
+        $this->scenario
+            ->withAggregateId($offerId)
+            ->given(
+                [$this->factorOfferCreated($offerId)]
+            )
+            ->when(
+                new $commandClass($offerId, $organizerId)
+            )
+            ->then([]);
     }
 
     /**

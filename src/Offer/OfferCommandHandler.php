@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
@@ -300,14 +301,13 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     public function handleUpdateOrganizer(AbstractUpdateOrganizer $updateOrganizer)
     {
         $offer = $this->load($updateOrganizer->getId());
-        $this->loadOrganizer($updateOrganizer->getId());
+        $this->loadOrganizer($updateOrganizer->getOrganizerId());
 
         $offer->updateOrganizer(
             $updateOrganizer->getOrganizerId()
         );
 
         $this->offerRepository->save($offer);
-
     }
 
     /**
@@ -323,7 +323,6 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         );
 
         $this->offerRepository->save($offer);
-
     }
 
     /**
@@ -387,5 +386,6 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     private function loadOrganizer($id)
     {
         return $this->organizerRepository->load($id);
+
     }
 }

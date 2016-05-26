@@ -65,12 +65,13 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->placeIriGenerator
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(4))
             ->method('iri')
             ->withConsecutive(
                 ['9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'],
                 ['d9725327-cbec-4bb8-bc56-9f3f7761b716'],
-                ['ee08000a-ccfa-4675-93ef-a0dc02ae1be4']
+                ['ee08000a-ccfa-4675-93ef-a0dc02ae1be4'],
+                ['c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d']
             )
             ->willReturnCallback(
                 function ($id) {
@@ -123,6 +124,11 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
                         'ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
                         OfferType::PLACE()
                     ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d'),
+                        'c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d',
+                        OfferType::PLACE()
+                    )
                 ]
             ),
             new Integer(1820)
@@ -213,6 +219,11 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
                         'ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
                         OfferType::PLACE()
                     ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://www.omd.de/places/c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d'),
+                        'c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d',
+                        OfferType::PLACE()
+                    )
                 ]
             ),
             new Integer(1820)

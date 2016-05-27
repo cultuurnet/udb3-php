@@ -12,7 +12,7 @@ abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
     private $uuid;
 
     /**
-     * @var MakeInvisible
+     * @var AbstractCommand
      */
     private $command;
 

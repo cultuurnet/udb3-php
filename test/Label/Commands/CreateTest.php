@@ -12,27 +12,27 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     /**
      * @var UUID
      */
-    private $uuid;
+    protected $uuid;
 
     /**
      * @var StringLiteral
      */
-    private $name;
+    protected $name;
 
     /**
      * @var Visibility
      */
-    private $visibility;
+    protected $visibility;
 
     /**
      * @var Privacy
      */
-    private $privacy;
+    protected $privacy;
 
-    /**hip
+    /**
      * @var Create
      */
-    private $create;
+    protected $create;
 
     protected function setUp()
     {

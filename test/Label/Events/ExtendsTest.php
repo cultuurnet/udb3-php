@@ -4,17 +4,17 @@ namespace CultuurNet\UDB3\Label\Events;
 
 use ValueObjects\Identity\UUID;
 
-abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
+abstract class ExtendsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UUID
      */
-    private $uuid;
+    protected $uuid;
 
     /**
-     * @var AbstractEvent
+     * @var Event
      */
-    private $event;
+    protected $event;
 
     protected function setUp()
     {
@@ -30,13 +30,13 @@ abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(is_subclass_of(
             $this->event,
-            AbstractEvent::class
+            Event::class
         ));
     }
 
     /**
      * @param UUID $uuid
-     * @return AbstractEvent
+     * @return Event
      */
     abstract public function createEvent(UUID $uuid);
 }

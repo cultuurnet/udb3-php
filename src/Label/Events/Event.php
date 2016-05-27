@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\Events;
 use Broadway\Serializer\SerializableInterface;
 use ValueObjects\Identity\UUID;
 
-abstract class AbstractEvent implements SerializableInterface
+class Event implements SerializableInterface
 {
     const UUID = 'uuid';
 
@@ -36,7 +36,7 @@ abstract class AbstractEvent implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static($data[self::UUID]);
+        return new static(new UUID($data[self::UUID]));
     }
 
     /**
@@ -44,6 +44,6 @@ abstract class AbstractEvent implements SerializableInterface
      */
     public function serialize()
     {
-        return [self::UUID => $this->getUuid()];
+        return [self::UUID => $this->getUuid()->toNative()];
     }
 }

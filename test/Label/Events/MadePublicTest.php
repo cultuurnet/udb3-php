@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\Events;
 
 use ValueObjects\Identity\UUID;
 
-class MadePublicTest extends AbstractExtendsTest
+class MadePublicTest extends ExtendsTest
 {
     /**
      * @inheritdoc

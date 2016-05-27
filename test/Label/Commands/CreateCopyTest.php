@@ -22,7 +22,6 @@ class CreateCopyTest extends CreateTest
 
         $this->parentUuid = new UUID();
 
-        /** @var CreateCopy create */
         $this->create = new CreateCopy(
             $this->uuid,
             $this->name,

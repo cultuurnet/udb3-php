@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\EventExport;
 
+use ArrayIterator;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 use CultuurNet\UDB3\Event\EventNotFoundException;
@@ -14,6 +15,8 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
+use CultuurNet\UDB3\Search\ResultsGenerator;
+use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -68,9 +71,19 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     protected $searchResults;
 
     /**
+     * @var IriOfferIdentifier[]
+     */
+    private $offerIdentifiers;
+
+    /**
      * @var array
      */
     protected $searchResultsDetails;
+
+    /**
+     * @var ResultsGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $resultsGenerator;
 
     /**
      * @inheritdoc
@@ -84,6 +97,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
         $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
         $this->mailer = $this->getMock(NotificationMailerInterface::class);
+        $this->resultsGenerator = $this->getMock(ResultsGeneratorInterface::class);
 
         $this->eventExportService = new EventExportService(
             $this->eventService,
@@ -91,7 +105,8 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             $this->uuidGenerator,
             $this->publicDirectory->url(),
             $this->iriGenerator,
-            $this->mailer
+            $this->mailer,
+            $this->resultsGenerator
         );
 
         $amount = 19;
@@ -100,7 +115,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             function ($i) {
                 return new IriOfferIdentifier(
                     Url::fromNative('http://example.com/event/' . $i),
-                    $i,
+                    (string) $i,
                     OfferType::EVENT()
                 );
             },
@@ -164,12 +179,23 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
                     }
 
                     return [
-                        '@id' => 'http://example.com/event/' . $eventId,
+                        '@id' => $eventId,
                         '@type' => 'Event',
                         'foo' => 'bar',
                     ];
                 }
             );
+
+        $offerIdentifiers = array_filter(
+            $this->searchResults,
+            function ($offerIdentifier) use ($unavailableEventIds) {
+                return !in_array($offerIdentifier->getId(), $unavailableEventIds);
+            }
+        );
+
+        $this->resultsGenerator->expects($this->any())
+            ->method('search')
+            ->willReturn(new ArrayIterator($this->searchResults));
     }
 
     /**
@@ -361,7 +387,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     {
         $newResults = [];
         foreach ($results as $offerId => $result) {
-            if (in_array($offerId, $without)) {
+            if (in_array($result['@id'], $without)) {
                 continue;
             }
 
@@ -376,7 +402,11 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
      */
     public function it_ignores_items_that_can_not_be_found_by_the_event_service()
     {
-        $unavailableEventIds = [3, 6, 17];
+        $unavailableEventIds = [
+            'http://example.com/event/3',
+            'http://example.com/event/6',
+            'http://example.com/event/17'
+        ];
         $expectedDetails = $this->searchResultsWithout(
             $this->searchResultsDetails,
             $unavailableEventIds
@@ -421,7 +451,11 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $query,
         $selection
     ) {
-        $unavailableEventIds = [4, 7, 16];
+        $unavailableEventIds = [
+            'http://example.com/event/4',
+            'http://example.com/event/7',
+            'http://example.com/event/16'
+        ];
 
         $this->setUpEventService($unavailableEventIds);
 
@@ -438,15 +472,15 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             ->method('error')
             ->withConsecutive(
                 [
-                    $this->equalTo('Event with cdbid 4 could not be found via Entry API.'),
+                    $this->equalTo('Event with cdbid http://example.com/event/4 could not be found via Entry API.'),
                     $this->callback($expectedLogContextCallback),
                 ],
                 [
-                    $this->equalTo('Event with cdbid 7 could not be found via Entry API.'),
+                    $this->equalTo('Event with cdbid http://example.com/event/7 could not be found via Entry API.'),
                     $this->callback($expectedLogContextCallback),
                 ],
                 [
-                    $this->equalTo('Event with cdbid 16 could not be found via Entry API.'),
+                    $this->equalTo('Event with cdbid http://example.com/event/16 could not be found via Entry API.'),
                     $this->callback($expectedLogContextCallback),
                 ]
             );
@@ -466,7 +500,11 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
             [
                 "fileFormat" => $this->getFileFormat('txt'),
                 "query" => new EventExportQuery('city:Leuven'),
-                "selection" => ['4','7','16']
+                "selection" => [
+                    'http://example.com/event/4',
+                    'http://example.com/event/7',
+                    'http://example.com/event/16'
+                ]
             ],
             [
                 "fileFormat" => $this->getFileFormat('txt'),

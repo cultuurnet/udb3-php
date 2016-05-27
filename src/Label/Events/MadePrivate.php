@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
-class MadePrivate extends Event
+class MadePrivate extends AbstractEvent
 {
 
 }

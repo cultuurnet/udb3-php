@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class Created extends Event
+class Created extends AbstractEvent
 {
     const NAME = 'name';
     const VISIBILITY = 'visibility';

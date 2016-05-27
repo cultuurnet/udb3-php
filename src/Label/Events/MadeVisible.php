@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
-class MadeVisible extends Event
+class MadeVisible extends AbstractEvent
 {
 
 }

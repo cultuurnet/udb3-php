@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\Events;
 
 use ValueObjects\Identity\UUID;
 
-class MadeInvisibleTest extends ExtendsTest
+class MadeInvisibleTestAbstract extends AbstractExtendsTest
 {
     /**
      * @inheritdoc
@@ -12,5 +12,15 @@ class MadeInvisibleTest extends ExtendsTest
     public function createEvent(UUID $uuid)
     {
         return new MadeInvisible($uuid);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function deserialize(array $array)
+    {
+        return MadeInvisible::deserialize(
+            [AbstractEvent::UUID => $this->uuid->toNative()]
+        );
     }
 }

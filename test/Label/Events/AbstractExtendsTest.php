@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\Events;
 
 use ValueObjects\Identity\UUID;
 
-abstract class ExtendsTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UUID
@@ -12,7 +12,7 @@ abstract class ExtendsTest extends \PHPUnit_Framework_TestCase
     protected $uuid;
 
     /**
-     * @var Event
+     * @var AbstractEvent
      */
     protected $event;
 
@@ -30,13 +30,31 @@ abstract class ExtendsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(is_subclass_of(
             $this->event,
-            Event::class
+            AbstractEvent::class
         ));
     }
 
     /**
+     * @test
+     */
+    public function it_can_deserialize()
+    {
+        $actualEvent = $this->deserialize(
+            [AbstractEvent::UUID => $this->uuid->toNative()]
+        );
+
+        $this->assertEquals($this->event, $actualEvent);
+    }
+
+    /**
      * @param UUID $uuid
-     * @return Event
+     * @return AbstractEvent
      */
     abstract public function createEvent(UUID $uuid);
+
+    /**
+     * @param array $array
+     * @return AbstractEvent
+     */
+    abstract public function deserialize(array $array);
 }

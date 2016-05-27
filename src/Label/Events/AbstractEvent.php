@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\Events;
 use Broadway\Serializer\SerializableInterface;
 use ValueObjects\Identity\UUID;
 
-class Event implements SerializableInterface
+abstract class AbstractEvent implements SerializableInterface
 {
     const UUID = 'uuid';
 

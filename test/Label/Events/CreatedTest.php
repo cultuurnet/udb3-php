@@ -118,7 +118,7 @@ class CreatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    private function createdAsArray()
+    protected function createdAsArray()
     {
         return [
             Created::UUID => $this->created->getUuid()->toNative(),

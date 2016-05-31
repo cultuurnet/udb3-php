@@ -5,38 +5,12 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Doctrine;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Query\QueryBuilder;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Integer as IntegerValue;
 use ValueObjects\String\String as StringLiteral;
 
-class DBALWriteRepository implements WriteRepositoryInterface
+class DBALWriteRepository extends AbstractDBALRepository implements WriteRepositoryInterface
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * @var StringLiteral
-     */
-    private $tableName;
-
-    /**
-     * @var QueryBuilder
-     */
-    private $queryBuilder;
-
-    public function __construct(
-        Connection $connection,
-        StringLiteral $tableName
-    ) {
-        $this->connection = $connection;
-        $this->tableName = $tableName;
-        $this->queryBuilder = $this->connection->createQueryBuilder();
-    }
-
     /**
      * @param UUID $uuid
      * @param StringLiteral $name
@@ -51,7 +25,7 @@ class DBALWriteRepository implements WriteRepositoryInterface
         Privacy $privacy,
         UUID $parentUuid = null
     ) {
-        $this->queryBuilder->insert($this->tableName)
+        $this->getQueryBuilder()->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
                 SchemaConfigurator::NAME_COLUMN => '?',
@@ -67,7 +41,7 @@ class DBALWriteRepository implements WriteRepositoryInterface
                 $parentUuid ? $parentUuid->toNative() : null
             ]);
 
-        $this->queryBuilder->execute();
+        $this->getQueryBuilder()->execute();
     }
 
     /**
@@ -150,7 +124,7 @@ class DBALWriteRepository implements WriteRepositoryInterface
         $value,
         UUID $uuid
     ) {
-        $this->queryBuilder->update($this->tableName)
+        $this->getQueryBuilder()->update($this->getTableName())
             ->set($column, '?')
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
@@ -158,7 +132,7 @@ class DBALWriteRepository implements WriteRepositoryInterface
                 $uuid->toNative()
             ]);
 
-        $this->queryBuilder->execute();
+        $this->getQueryBuilder()->execute();
     }
 
     /**
@@ -169,13 +143,13 @@ class DBALWriteRepository implements WriteRepositoryInterface
         IntegerValue $value,
         UUID $uuid
     ) {
-        $this->queryBuilder->update($this->tableName)
+        $this->getQueryBuilder()->update($this->getTableName())
             ->set('`count`', '`count` + ' . $value->toNative())
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
                 $uuid->toNative()
             ]);
-        
-        $this->queryBuilder->execute();
+
+        $this->getQueryBuilder()->execute();
     }
 }

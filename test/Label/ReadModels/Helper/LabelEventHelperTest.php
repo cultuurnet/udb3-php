@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
+class LabelEventHelperTest extends \PHPUnit_Framework_TestCase
 {
     const RELATION_ID = 'relationId';
 
@@ -26,9 +26,9 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
     private $readRepository;
 
     /**
-     * @var AbstractLabelEventHelper
+     * @var LabelEventHelper
      */
-    private $abstractLabelEventHelper;
+    private $labelEventHelper;
 
     /**
      * @var AbstractLabelEvent
@@ -49,7 +49,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
     {
         $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
 
-        $this->abstractLabelEventHelper = new AbstractLabelEventHelper($this->readRepository);
+        $this->labelEventHelper = new LabelEventHelper($this->readRepository);
 
         $this->labelName = new StringLiteral('labelName');
         $this->label = new Label($this->labelName->toNative());
@@ -76,7 +76,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
                 Privacy::PRIVACY_PUBLIC()
             ));
 
-        $actualUuid = $this->abstractLabelEventHelper->getUuid($this->abstractLabelEvent);
+        $actualUuid = $this->labelEventHelper->getUuid($this->abstractLabelEvent);
 
         $this->assertEquals($expectedUuid, $actualUuid);
     }
@@ -88,7 +88,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
     {
         $eventLabelAdded = new EventLabelAdded(self::RELATION_ID, $this->label);
 
-        $relationType = $this->abstractLabelEventHelper->getRelationType($eventLabelAdded);
+        $relationType = $this->labelEventHelper->getRelationType($eventLabelAdded);
 
         $this->assertEquals(RelationType::EVENT(), $relationType);
     }
@@ -100,7 +100,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
     {
         $eventLabelDeleted = new EventLabelDeleted(self::RELATION_ID, $this->label);
 
-        $relationType = $this->abstractLabelEventHelper->getRelationType($eventLabelDeleted);
+        $relationType = $this->labelEventHelper->getRelationType($eventLabelDeleted);
 
         $this->assertEquals(RelationType::EVENT(), $relationType);
     }
@@ -112,7 +112,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
     {
         $placeLabelAdded = new PlaceLabelAdded(self::RELATION_ID, $this->label);
 
-        $relationType = $this->abstractLabelEventHelper->getRelationType($placeLabelAdded);
+        $relationType = $this->labelEventHelper->getRelationType($placeLabelAdded);
 
         $this->assertEquals(RelationType::PLACE(), $relationType);
     }
@@ -124,7 +124,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
     {
         $placeLabelDeleted = new PlaceLabelDeleted(self::RELATION_ID, $this->label);
 
-        $relationType = $this->abstractLabelEventHelper->getRelationType($placeLabelDeleted);
+        $relationType = $this->labelEventHelper->getRelationType($placeLabelDeleted);
 
         $this->assertEquals(RelationType::PLACE(), $relationType);
     }
@@ -134,7 +134,7 @@ class AbstractLabelEventHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_get_the_relation_id()
     {
-        $relationId = $this->abstractLabelEventHelper->getRelationId($this->abstractLabelEvent);
+        $relationId = $this->labelEventHelper->getRelationId($this->abstractLabelEvent);
 
         $this->assertEquals(self::RELATION_ID, $relationId);
     }

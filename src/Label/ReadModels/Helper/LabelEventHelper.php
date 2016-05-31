@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class AbstractLabelEventHelper
+class LabelEventHelper
 {
     /**
      * @var ReadRepositoryInterface

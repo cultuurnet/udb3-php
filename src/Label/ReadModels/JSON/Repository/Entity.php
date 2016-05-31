@@ -62,7 +62,7 @@ class Entity
         $this->visibility = $visibility;
         $this->privacy = $privacy;
         $this->parentUuid = $parentUuid;
-        $this->count = $count;
+        $this->count = $count ? $count : new Natural(0);
     }
 
     /**

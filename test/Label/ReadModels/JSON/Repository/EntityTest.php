@@ -45,6 +45,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     private $entity;
 
+    /**
+     * @var Entity
+     */
+    private $entityWithDefaults;
+
     protected function setUp()
     {
         $this->uuid = new UUID();
@@ -66,6 +71,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
             $this->privacy,
             $this->parentUuid,
             $this->count
+        );
+
+        $this->entityWithDefaults = new Entity(
+            $this->uuid,
+            $this->name,
+            $this->visibilty,
+            $this->privacy
         );
     }
 
@@ -115,5 +127,24 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_count()
     {
         $this->assertEquals($this->count, $this->entity->getCount());
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_a_default_parent_uuid_of_null()
+    {
+        $this->assertEquals(null, $this->entityWithDefaults->getParentUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_a_Default_count_of_natural_zero()
+    {
+        $this->assertEquals(
+            new Natural(0),
+            $this->entityWithDefaults->getCount()
+        );
     }
 }

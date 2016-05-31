@@ -18,6 +18,4 @@ interface ReadRepositoryInterface
      * @return Entity|null
      */
     public function getByName(StringLiteral $name);
-
-    // TODO: Add find methods with pagination.
 }

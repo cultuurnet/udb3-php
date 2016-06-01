@@ -144,7 +144,9 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         UUID $uuid
     ) {
         $this->getQueryBuilder()->update($this->getTableName())
-            ->set('`count`', '`count` + ' . $value->toNative())
+            ->set(
+                SchemaConfigurator::COUNT_COLUMN,
+                SchemaConfigurator::COUNT_COLUMN . ' + ' . $value->toNative())
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
                 $uuid->toNative()

@@ -10,12 +10,12 @@ use ValueObjects\String\String as StringLiteral;
 
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {
-    const UUID_COLUMN = 'uuid';
+    const UUID_COLUMN = 'uuid_col';
     const NAME_COLUMN = 'name';
     const VISIBLE_COLUMN = 'visible';
     const PRIVATE_COLUMN = 'private';
     const PARENT_UUID_COLUMN = 'parentUuid';
-    const COUNT_COLUMN = 'count';
+    const COUNT_COLUMN = 'count_col';
 
     /**
      * @var StringLiteral

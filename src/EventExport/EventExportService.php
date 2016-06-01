@@ -261,7 +261,6 @@ class EventExportService implements EventExportServiceInterface
     private function search($query, LoggerInterface $logger)
     {
         $events = $this->resultsGenerator->search($query);
-        var_dump($events);
 
         foreach ($events as $eventIdentifier) {
             $event = $this->getEvent((string) $eventIdentifier->getIri(), $logger);

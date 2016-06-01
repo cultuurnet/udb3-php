@@ -667,7 +667,7 @@
                         <cdb:mediatype>photo</cdb:mediatype>
                     </cdb:file>
                 </cdb:media>
-                <cdb:shortdescription>Sla op iets anders dan je broer of zus! 
+                <cdb:shortdescription>Sla op iets anders dan je broer of zus!
 Krijg superles van echte drummers; breng je favoriete nummers mee of laat je leiden doorheen pop, rock, jazz en bluesmuziek.</cdb:shortdescription>
                 <cdb:title>Drumlessen</cdb:title>
             </cdb:eventdetail>
@@ -698,4 +698,61 @@ Krijg superles van echte drummers; breng je favoriete nummers mee of laat je lei
             <cdb:label>PopCollege</cdb:label>
         </cdb:organiser>
     </cdb:event>
+    <cdb:actor asset="true" availablefrom="2010-01-15T11:54:36" availableto="2100-01-01T00:00:00" createdby="evertdemeyer" creationdate="2010-01-15T11:54:36" cdbid="cbda925e-99ea-44a5-9959-6dce20e08eea" externalid="CDB:c3cd87e4-ab8e-4541-aac2-dda8e3ef508d" lastupdated="2010-01-15T11:54:36" lastupdatedby="evertdemeyer" owner="Invoerders Algemeen ">
+        <cdb:actordetails>
+            <cdb:actordetail lang="nl">
+                <cdb:shortdescription>This actor is not a location and should be ignored.</cdb:shortdescription>
+                <cdb:title>NOT A LOCATION, IGNORE ME</cdb:title>
+            </cdb:actordetail>
+        </cdb:actordetails>
+        <cdb:categories>
+            <cdb:category catid="6.0.0.0.0" type="publicscope">Wijk of buurt</cdb:category>
+            <cdb:category catid="8.52.0.0.0" type="actortype">Polyvalente zaal of expohal</cdb:category>
+        </cdb:categories>
+        <cdb:contactinfo>
+            <cdb:address>
+                <cdb:physical>
+                    <cdb:city>Kapellen Antwerpen</cdb:city>
+                    <cdb:country>BE</cdb:country>
+                    <cdb:gis>
+                        <cdb:xcoordinate>4.428188</cdb:xcoordinate>
+                        <cdb:ycoordinate>51.314430</cdb:ycoordinate>
+                    </cdb:gis>
+                    <cdb:housenr>12</cdb:housenr>
+                    <cdb:street>Hoevsebaan</cdb:street>
+                    <cdb:zipcode>2950</cdb:zipcode>
+                </cdb:physical>
+            </cdb:address>
+            <cdb:url main="true">http://www.cckapellen.be</cdb:url>
+        </cdb:contactinfo>
+    </cdb:actor>
+    <cdb:actor asset="true" availablefrom="2010-01-15T11:54:36" availableto="2100-01-01T00:00:00" createdby="evertdemeyer" creationdate="2010-01-15T11:54:36" cdbid="c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d" externalid="CDB:f42842d7-da51-4a14-b777-e22a5e89923e" lastupdated="2010-01-15T11:54:36" lastupdatedby="evertdemeyer" owner="Invoerders Algemeen ">
+        <cdb:actordetails>
+            <cdb:actordetail lang="nl">
+                <cdb:shortdescription>Polyvalente zaal in Kapellen waar het Cultuurcentrum regelmatig activiteiten organiseert</cdb:shortdescription>
+                <cdb:title>THIS IS A LOCATION!!!</cdb:title>
+            </cdb:actordetail>
+        </cdb:actordetails>
+        <cdb:categories>
+            <cdb:category catid="8.15.0.0.0" type="actortype">Locatie</cdb:category>
+            <cdb:category catid="6.0.0.0.0" type="publicscope">Wijk of buurt</cdb:category>
+            <cdb:category catid="8.52.0.0.0" type="actortype">Polyvalente zaal of expohal</cdb:category>
+        </cdb:categories>
+        <cdb:contactinfo>
+            <cdb:address>
+                <cdb:physical>
+                    <cdb:city>Kapellen Antwerpen</cdb:city>
+                    <cdb:country>BE</cdb:country>
+                    <cdb:gis>
+                        <cdb:xcoordinate>4.428188</cdb:xcoordinate>
+                        <cdb:ycoordinate>51.314430</cdb:ycoordinate>
+                    </cdb:gis>
+                    <cdb:housenr>12</cdb:housenr>
+                    <cdb:street>Hoevsebaan</cdb:street>
+                    <cdb:zipcode>2950</cdb:zipcode>
+                </cdb:physical>
+            </cdb:address>
+            <cdb:url main="true">http://www.cckapellen.be</cdb:url>
+        </cdb:contactinfo>
+    </cdb:actor>
 </cdb:cdbxml>

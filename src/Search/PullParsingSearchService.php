@@ -80,7 +80,7 @@ class PullParsingSearchService implements SearchServiceInterface
         $groupParam = new Parameter\Group();
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);
-        $typeParam = new Parameter\FilterQuery('type:event');
+        $typeParam = new Parameter\FilterQuery('type:event OR (type:actor AND category_id:8.15.0.0.0)');
         // fetch all private and non-private events
         $privateParam = new Parameter\FilterQuery('private:*');
 

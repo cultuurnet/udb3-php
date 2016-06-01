@@ -67,7 +67,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
 
         try {
             // First make sure that the events itself can be stored,
-            // then check the uniqueness. 
+            // then check the uniqueness.
             parent::append($id, $eventStream);
 
             foreach ($eventStream as $domainMessage) {
@@ -136,13 +136,13 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
         DomainMessage $domainMessage
     ) {
         if ($uniqueHelper->requiresUnique($domainMessage)) {
-
             $unique = $uniqueHelper->getUnique($domainMessage);
 
             if ($this->isUnique($unique->toNative())) {
                 $this->insertUuidAndUnique(
                     $domainMessage->getId(),
-                    $unique->toNative());
+                    $unique->toNative()
+                );
             } else {
                 throw new UniqueConstraintException(
                     $domainMessage->getId(),

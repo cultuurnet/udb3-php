@@ -7,6 +7,7 @@ use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
 use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
@@ -24,6 +25,7 @@ class EventExportService implements EventExportServiceInterface
      * @var SearchServiceInterface
      */
     protected $searchService;
+
     /**
      * @var UuidGeneratorInterface
      */
@@ -47,12 +49,18 @@ class EventExportService implements EventExportServiceInterface
     protected $iriGenerator;
 
     /**
+     * @var ResultsGeneratorInterface
+     */
+    protected $resultsGenerator;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param SearchServiceInterface $searchService
      * @param UuidGeneratorInterface $uuidGenerator
      * @param string $publicDirectory
      * @param IriGeneratorInterface $iriGenerator
      * @param NotificationMailerInterface $mailer
+     * @param ResultsGeneratorInterface $resultsGenerator
      */
     public function __construct(
         EventServiceInterface $eventService,
@@ -60,7 +68,8 @@ class EventExportService implements EventExportServiceInterface
         UuidGeneratorInterface $uuidGenerator,
         $publicDirectory,
         IriGeneratorInterface $iriGenerator,
-        NotificationMailerInterface $mailer
+        NotificationMailerInterface $mailer,
+        ResultsGeneratorInterface $resultsGenerator
     ) {
         $this->eventService = $eventService;
         $this->searchService = $searchService;
@@ -68,6 +77,7 @@ class EventExportService implements EventExportServiceInterface
         $this->publicDirectory = $publicDirectory;
         $this->iriGenerator = $iriGenerator;
         $this->mailer = $mailer;
+        $this->resultsGenerator = $resultsGenerator;
     }
 
     /**
@@ -131,14 +141,10 @@ class EventExportService implements EventExportServiceInterface
             $tmpPath = "{$tmpDir}/{$tmpFileName}";
 
             // $events are keyed here by the authoritative event ID.
-            if (is_array($selection)) {
+            if (is_array($selection) && !empty($selection)) {
                 $events = $this->getEventsAsJSONLD($selection, $logger);
             } else {
-                $events = $this->search(
-                    $totalItemCount,
-                    $query,
-                    $logger
-                );
+                $events = $this->search($query, $logger);
             }
 
             $fileWriter = $fileFormat->getWriter();
@@ -247,64 +253,22 @@ class EventExportService implements EventExportServiceInterface
     /**
      * Generator that yields each unique search result.
      *
-     * @todo Replace with ResultsGenerator in III-664.
-     *
-     * @param int $totalItemCount
      * @param string|object $query
      * @param LoggerInterface $logger
      *
      * @return \Generator
      */
-    private function search($totalItemCount, $query, LoggerInterface $logger)
+    private function search($query, LoggerInterface $logger)
     {
-        // change this pageSize value to increase or decrease the page size;
-        $pageSize = 10;
-        $pageCount = ceil($totalItemCount / $pageSize);
-        $pageCounter = 0;
-        $exportedEventIds = [];
+        $events = $this->resultsGenerator->search($query);
 
-        // Page querying the search service;
-        while ($pageCounter < $pageCount) {
-            $start = $pageCounter * $pageSize;
-            // Sort ascending by creation date to make sure we get a quite consistent paging.
-            $sort = 'creationdate asc';
-            $results = $this->searchService->search(
-                (string)$query,
-                $pageSize,
-                $start,
-                $sort
-            );
+        foreach ($events as $eventIdentifier) {
+            $event = $this->getEvent((string) $eventIdentifier->getIri(), $logger);
 
-            // Iterate the results of the current page and get their IDs
-            // by stripping them from the json-LD representation
-            foreach ($results->getItems() as $event) {
-                // TODO: This is a bad workaround which can be removed entirely
-                // by using the ResultsGenerator here instead.
-                $event = $event->jsonSerialize();
-
-                $expoId = explode('/', $event['@id']);
-                $eventId = array_pop($expoId);
-
-                if (!array_key_exists($eventId, $exportedEventIds)) {
-                    $exportedEventIds[$eventId] = $pageCounter;
-
-                    $event = $this->getEvent($eventId, $logger);
-
-                    if ($event) {
-                        yield $eventId => $event;
-                    }
-                } else {
-                    $logger->error(
-                        'query_duplicate_event',
-                        array(
-                            'query' => $query,
-                            'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$exportedEventIds[$eventId]}"
-                        )
-                    );
-                }
+            if ($event) {
+                yield $eventIdentifier->getId() => $event;
             }
-            ++$pageCounter;
-        };
+        }
     }
 
     /**

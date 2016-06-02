@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Doctrine;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
@@ -50,6 +51,86 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $actualEntity = $this->getEntity();
 
         $this->assertEquals($expectedEntity, $actualEntity);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_not_save_same_uuid()
+    {
+        $entity1 = new Entity(
+            new UUID(),
+            new StringLiteral('labelName1'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC(),
+            new UUID()
+        );
+
+        $this->dbalWriteRepository->save(
+            $entity1->getUuid(),
+            $entity1->getName(),
+            $entity1->getVisibility(),
+            $entity1->getPrivacy(),
+            $entity1->getParentUuid()
+        );
+
+        $entity2 = new Entity(
+            $entity1->getUuid(),
+            new StringLiteral('labelName2'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC(),
+            new UUID()
+        );
+
+        $this->setExpectedException(UniqueConstraintViolationException::class);
+
+        $this->dbalWriteRepository->save(
+            $entity2->getUuid(),
+            $entity2->getName(),
+            $entity2->getVisibility(),
+            $entity2->getPrivacy(),
+            $entity2->getParentUuid()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_not_save_same_name()
+    {
+        $entity1 = new Entity(
+            new UUID(),
+            new StringLiteral('labelName'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC(),
+            new UUID()
+        );
+
+        $this->dbalWriteRepository->save(
+            $entity1->getUuid(),
+            $entity1->getName(),
+            $entity1->getVisibility(),
+            $entity1->getPrivacy(),
+            $entity1->getParentUuid()
+        );
+
+        $entity2 = new Entity(
+            new UUID(),
+            new StringLiteral('labelName'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC(),
+            new UUID()
+        );
+
+        $this->setExpectedException(UniqueConstraintViolationException::class);
+
+        $this->dbalWriteRepository->save(
+            $entity2->getUuid(),
+            $entity2->getName(),
+            $entity2->getVisibility(),
+            $entity2->getPrivacy(),
+            $entity2->getParentUuid()
+        );
     }
 
     /**

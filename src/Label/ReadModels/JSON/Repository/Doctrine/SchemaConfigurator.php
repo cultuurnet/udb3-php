@@ -20,7 +20,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     /**
      * @var StringLiteral
      */
-    protected $tableName;
+    private $tableName;
 
     /**
      * @param StringLiteral $tableName
@@ -31,7 +31,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     }
 
     /**
-     * @param AbstractSchemaManager $schemaManager
+     * @inheritdoc
      */
     public function configure(AbstractSchemaManager $schemaManager)
     {
@@ -44,6 +44,11 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
         }
     }
 
+    /**
+     * @param Schema $schema
+     * @param StringLiteral $tableName
+     * @return \Doctrine\DBAL\Schema\Table
+     */
     private function createTable(Schema $schema, StringLiteral $tableName)
     {
         $table = $schema->createTable($tableName->toNative());

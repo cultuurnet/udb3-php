@@ -78,7 +78,8 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             ->setDefault(0);
 
         $table->setPrimaryKey([self::UUID_COLUMN]);
-        $table->addUniqueIndex([self::UUID_COLUMN, self::NAME_COLUMN]);
+        $table->addUniqueIndex([self::UUID_COLUMN]);
+        $table->addUniqueIndex([self::NAME_COLUMN]);
 
         return $table;
     }

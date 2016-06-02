@@ -2,27 +2,21 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\JSON;
 
-use Broadway\Domain\DomainMessage;
-use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Label\Events\CopyCreated;
 use CultuurNet\UDB3\Label\Events\Created;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
+use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 
-class Projector implements EventListenerInterface
+class Projector extends AbstractProjector
 {
-    use DelegateEventHandlingToSpecificMethodTrait {
-        DelegateEventHandlingToSpecificMethodTrait::handle as handleSpecific;
-    }
-
     /**
      * @var WriteRepositoryInterface
      */
@@ -52,22 +46,6 @@ class Projector implements EventListenerInterface
         $this->writeRepository = $writeRepository;
         $this->readRepository = $readRepository;
         $this->abstractLabelEventHelper = $abstractLabelEventHelper;
-    }
-
-    /**
-     * @param DomainMessage $domainMessage
-     */
-    public function handle(DomainMessage $domainMessage)
-    {
-        $event = $domainMessage->getPayload();
-
-        if (is_a($event, AbstractLabelAdded::class)) {
-            $this->applyLabelAdded($domainMessage->getPayload());
-        } else if (is_a($event, AbstractLabelDeleted::class)) {
-            $this->applyLabelDeleted($domainMessage->getPayload());
-        } else {
-            $this->handleSpecific($domainMessage);
-        }
     }
 
     /**
@@ -138,7 +116,7 @@ class Projector implements EventListenerInterface
     }
 
     /**
-     * @param AbstractLabelAdded $labelAdded
+     * @inheritdoc
      */
     public function applyLabelAdded(AbstractLabelAdded $labelAdded)
     {
@@ -148,7 +126,7 @@ class Projector implements EventListenerInterface
     }
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @inheritdoc
      */
     public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
     {

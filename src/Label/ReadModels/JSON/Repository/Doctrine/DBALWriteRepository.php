@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Doctrine;
 
+use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;

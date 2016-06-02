@@ -66,13 +66,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             new UUID()
         );
 
-        $this->dbalWriteRepository->save(
-            $entity1->getUuid(),
-            $entity1->getName(),
-            $entity1->getVisibility(),
-            $entity1->getPrivacy(),
-            $entity1->getParentUuid()
-        );
+        $this->saveEntity($entity1);
 
         $entity2 = new Entity(
             $entity1->getUuid(),
@@ -106,13 +100,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             new UUID()
         );
 
-        $this->dbalWriteRepository->save(
-            $entity1->getUuid(),
-            $entity1->getName(),
-            $entity1->getVisibility(),
-            $entity1->getPrivacy(),
-            $entity1->getParentUuid()
-        );
+        $this->saveEntity($entity1);
 
         $entity2 = new Entity(
             new UUID(),

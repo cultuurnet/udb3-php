@@ -24,12 +24,12 @@ class Projector extends AbstractProjector
 
     /**
      * Projector constructor.
-     * @param LabelEventHelper $labelEventHelper
      * @param WriteRepositoryInterface $writeRepository
+     * @param LabelEventHelper $labelEventHelper
      */
     public function __construct(
-        LabelEventHelper $labelEventHelper,
-        WriteRepositoryInterface $writeRepository
+        WriteRepositoryInterface $writeRepository,
+        LabelEventHelper $labelEventHelper
     ) {
         $this->labelEventHelper = $labelEventHelper;
         $this->writeRepository = $writeRepository;

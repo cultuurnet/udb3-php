@@ -70,8 +70,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->mockLabelEventHelper();
 
         $this->projector = new Projector(
-            $this->labelEventHelper,
-            $this->writeRepository
+            $this->writeRepository,
+            $this->labelEventHelper
         );
     }
 

@@ -40,8 +40,8 @@ class Create extends AbstractCommand
         parent::__construct($uuid);
 
         $this->name = $name;
-        $this->visibility = $visibility;
-        $this->privacy = $privacy;
+        $this->visibility = $visibility->toNative();
+        $this->privacy = $privacy->toNative();
     }
 
     /**
@@ -57,7 +57,7 @@ class Create extends AbstractCommand
      */
     public function getVisibility()
     {
-        return $this->visibility;
+        return Visibility::fromNative($this->visibility);
     }
 
     /**
@@ -65,6 +65,6 @@ class Create extends AbstractCommand
      */
     public function getPrivacy()
     {
-        return $this->privacy;
+        return Privacy::fromNative($this->privacy);
     }
 }

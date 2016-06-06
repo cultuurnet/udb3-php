@@ -58,7 +58,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             ->setNotnull(true);
 
         $table->addColumn(self::NAME_COLUMN, Type::STRING)
-            ->setLength(256)
+            ->setLength(255)
             ->setNotnull(true);
 
         $table->addColumn(self::VISIBLE_COLUMN, Type::BOOLEAN)

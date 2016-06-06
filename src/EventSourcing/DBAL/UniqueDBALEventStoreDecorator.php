@@ -116,7 +116,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
             ->setNotnull(true);
 
         $table->addColumn(self::UNIQUE_COLUMN, Type::STRING)
-            ->setLength(256)
+            ->setLength(255)
             ->setNotnull(true);
 
         $table->setPrimaryKey([self::UUID_COLUMN]);

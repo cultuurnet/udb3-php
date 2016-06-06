@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
@@ -22,6 +23,7 @@ use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel as AddLabelToSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\DeleteLabel as DeleteLabelFromSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
+use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\String\String;
 
 class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -56,6 +58,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     protected $itemCreated;
 
+    /**
+     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $organizerRepository;
+
     public function setUp()
     {
         parent::setUp();
@@ -73,8 +80,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
     ) {
+        $this->organizerRepository = $this->getMock(RepositoryInterface::class);
+        
         return new ItemCommandHandler(
-            new ItemRepository($eventStore, $eventBus)
+            new ItemRepository($eventStore, $eventBus),
+            $this->organizerRepository
         );
     }
 

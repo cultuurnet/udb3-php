@@ -48,7 +48,7 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createOrganizer(Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public function create(Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         $id = $this->uuidGenerator->generate();
 

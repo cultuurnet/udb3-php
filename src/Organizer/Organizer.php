@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
@@ -74,6 +75,13 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         $organizer->apply(new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls));
 
         return $organizer;
+    }
+
+    public function delete()
+    {
+        $this->apply(
+            new OrganizerDeleted($this->getAggregateRootId())
+        );
     }
 
     /**

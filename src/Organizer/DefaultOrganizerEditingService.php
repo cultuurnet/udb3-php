@@ -52,7 +52,7 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     {
         $id = $this->uuidGenerator->generate();
 
-        $organizer = Organizer::createOrganizer($id, $title, $addresses, $phones, $emails, $urls);
+        $organizer = Organizer::create($id, $title, $addresses, $phones, $emails, $urls);
 
         $this->organizerRepository->save($organizer);
 

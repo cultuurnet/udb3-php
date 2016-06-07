@@ -94,4 +94,14 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->privacy, $this->create->getPrivacy());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_serialize()
+    {
+        $actualCreate = unserialize(serialize($this->create));
+
+        $this->assertEquals($this->create, $actualCreate);
+    }
 }

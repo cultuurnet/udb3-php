@@ -38,4 +38,14 @@ class CreateCopyTest extends CreateTest
     {
         $this->assertEquals($this->parentUuid, $this->create->getParentUuid());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_serialize()
+    {
+        $actualCreate = unserialize(serialize($this->create));
+
+        $this->assertEquals($this->create, $actualCreate);
+    }
 }

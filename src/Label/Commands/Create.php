@@ -15,12 +15,12 @@ class Create extends AbstractCommand
     private $name;
 
     /**
-     * @var Visibility
+     * @var string
      */
     private $visibility;
 
     /**
-     * @var Privacy
+     * @var string
      */
     private $privacy;
 
@@ -40,6 +40,9 @@ class Create extends AbstractCommand
         parent::__construct($uuid);
 
         $this->name = $name;
+
+        // The built-in serialize call does not work on Enum.
+        // Just store them internally as string but expose as Enum.
         $this->visibility = $visibility->toNative();
         $this->privacy = $privacy->toNative();
     }

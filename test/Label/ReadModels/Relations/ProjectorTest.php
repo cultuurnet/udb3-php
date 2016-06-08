@@ -193,21 +193,21 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private function mockGetUuid()
     {
         $this->labelEventHelper->method('getUuid')
-            ->will($this->returnValue($this->uuid));
+            ->willReturn($this->uuid);
     }
 
     private function mockGetRelationType()
     {
         $this->labelEventHelper->method('getRelationType')
-            ->will($this->returnCallback(function ($labelEvent) {
+            ->willReturnCallback(function ($labelEvent) {
                 return $this->getRelationType($labelEvent);
-            }));
+            });
     }
 
     private function mockGetRelationId()
     {
         $this->labelEventHelper->method('getRelationId')
-            ->will($this->returnValue(new StringLiteral(self::RELATION_ID)));
+            ->willReturn(new StringLiteral(self::RELATION_ID));
     }
 
     /**

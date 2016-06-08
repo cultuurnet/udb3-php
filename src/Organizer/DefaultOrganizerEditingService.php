@@ -65,7 +65,8 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
      */
     public function delete($id)
     {
-        $command = new DeleteOrganizer($id);
-        $this->commandBus->dispatch($command);
+        return $this->commandBus->dispatch(
+            new DeleteOrganizer($id)
+        );
     }
 }

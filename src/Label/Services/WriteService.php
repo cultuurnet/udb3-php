@@ -4,7 +4,12 @@ namespace CultuurNet\UDB3\Label\Services;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Label\Commands\AbstractCommand;
 use CultuurNet\UDB3\Label\Commands\Create;
+use CultuurNet\UDB3\Label\Commands\MakeInvisible;
+use CultuurNet\UDB3\Label\Commands\MakePrivate;
+use CultuurNet\UDB3\Label\Commands\MakePublic;
+use CultuurNet\UDB3\Label\Commands\MakeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
@@ -45,13 +50,63 @@ class WriteService implements WriteServiceInterface
     ) {
         $uuid = new UUID($this->uuidGenerator->generate());
 
-        $commandId = $this->commandBus->dispatch(new Create(
+        $command = new Create(
             $uuid,
             $name,
             $visibility,
             $privacy
-        ));
+        );
 
-        return new WriteResult(new StringLiteral($commandId), $uuid);
+        return $this->dispatch($command);
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return WriteResult
+     */
+    public function makeVisible(UUID $uuid)
+    {
+        return $this->dispatch(new MakeVisible($uuid));
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return WriteResult
+     */
+    public function makeInvisible(UUID $uuid)
+    {
+        return $this->dispatch(new MakeInvisible($uuid));
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return WriteResult
+     */
+    public function makePublic(UUID $uuid)
+    {
+        return $this->dispatch(new MakePublic($uuid));
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return WriteResult
+     */
+    public function makePrivate(UUID $uuid)
+    {
+        return $this->dispatch(new MakePrivate($uuid));
+    }
+
+    /**
+     * @param AbstractCommand $command
+     * @return WriteResult
+     */
+    private function dispatch(AbstractCommand $command)
+    {
+        $commandId = $this->commandBus->dispatch($command);
+
+        return new WriteResult(
+            new StringLiteral($commandId),
+            $command->getUuid()
+        );
     }
 }

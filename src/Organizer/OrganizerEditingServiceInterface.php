@@ -12,7 +12,7 @@ interface OrganizerEditingServiceInterface
 
     /**
      * @param Title $title
-     * @param array $adresses
+     * @param array $addresses
      * @param array $phones
      * @param array $emails
      * @param array $urls

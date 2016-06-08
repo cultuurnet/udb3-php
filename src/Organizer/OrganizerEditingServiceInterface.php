@@ -20,4 +20,9 @@ interface OrganizerEditingServiceInterface
      * @return string $organizerId
      */
     public function create(Title $title, array $addresses, array $phones, array $emails, array $urls);
+
+    /**
+     * @param $id
+     */
+    public function delete($id);
 }

@@ -14,12 +14,29 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     private $organizerRepository;
 
     /**
+     * @var OrganizerRelationServiceInterface[]
+     */
+    private $organizerRelationServices;
+
+    /**
      * @param RepositoryInterface $organizerRepository
      */
     public function __construct(
         RepositoryInterface $organizerRepository
     ) {
         $this->organizerRepository = $organizerRepository;
+        $this->organizerRelationServices = [];
+    }
+
+    /**
+     * @param OrganizerRelationServiceInterface $relationService
+     * @return OrganizerCommandHandler
+     */
+    public function withOrganizerRelationService(OrganizerRelationServiceInterface $relationService)
+    {
+        $c = clone $this;
+        $c->organizerRelationServices[] = $relationService;
+        return $c;
     }
 
     /**
@@ -51,9 +68,15 @@ class OrganizerCommandHandler implements CommandHandlerInterface
      */
     public function deleteOrganizer(DeleteOrganizer $deleteOrganizer)
     {
-        $organizer = $this->loadOrganizer(
-            $deleteOrganizer->getOrganizerId()
-        );
+        $id = $deleteOrganizer->getOrganizerId();
+
+        // First remove all relations to the given organizer.
+        foreach ($this->organizerRelationServices as $relationService) {
+            $relationService->deleteOrganizer($id);
+        }
+
+        // Delete the organizer itself.
+        $organizer = $this->loadOrganizer($id);
 
         $organizer->delete();
 

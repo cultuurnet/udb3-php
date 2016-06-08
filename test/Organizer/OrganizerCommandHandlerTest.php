@@ -34,6 +34,16 @@ class OrganizerCommandHandlerTest extends \PHPUnit_Framework_TestCase
     private $repository;
 
     /**
+     * @var OrganizerRelationServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $eventOrganizerRelationService;
+
+    /**
+     * @var OrganizerRelationServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $placeOrganizerRelationService;
+
+    /**
      * @var OrganizerCommandHandler
      */
     private $commandHandler;
@@ -48,7 +58,12 @@ class OrganizerCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $this->eventBus = $this->getMock(EventBusInterface::class);
         $this->repository = new OrganizerRepository($this->eventStore, $this->eventBus);
 
-        $this->commandHandler = new OrganizerCommandHandler($this->repository);
+        $this->eventOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
+        $this->placeOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
+
+        $this->commandHandler = (new OrganizerCommandHandler($this->repository))
+            ->withOrganizerRelationService($this->eventOrganizerRelationService)
+            ->withOrganizerRelationService($this->placeOrganizerRelationService);
     }
 
     /**
@@ -60,6 +75,14 @@ class OrganizerCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $this->createOrganizer($id);
 
         $this->eventStore->trace();
+
+        $this->eventOrganizerRelationService->expects($this->once())
+            ->method('deleteOrganizer')
+            ->with($id);
+
+        $this->placeOrganizerRelationService->expects($this->once())
+            ->method('deleteOrganizer')
+            ->with($id);
 
         $command = new DeleteOrganizer($id);
         $this->commandHandler->handle($command);

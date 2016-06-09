@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
@@ -49,6 +50,40 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     }
 
     /**
+     * @param Query $query
+     * @return Entity[]|null
+     */
+    public function search(Query $query)
+    {
+        $aliases = $this->getAliases();
+
+        $like = $this->getQueryBuilder()->expr()->like(
+            SchemaConfigurator::NAME_COLUMN,
+            ':' . SchemaConfigurator::NAME_COLUMN
+        );
+
+        $this->getQueryBuilder()->select($aliases)
+            ->from($this->getTableName()->toNative())
+            ->where($like)
+            ->setParameter(
+                SchemaConfigurator::NAME_COLUMN,
+                '%' . $query->getValue()->toNative() . '%'
+            );
+
+        if ($query->getOffset()) {
+            $this->getQueryBuilder()
+                ->setFirstResult($query->getOffset()->toNative());
+        }
+
+        if ($query->getLimit()) {
+            $this->getQueryBuilder()
+                ->setMaxResults($query->getLimit()->toNative());
+        }
+
+        return $this->getResults($this->getQueryBuilder());
+    }
+
+    /**
      * @return array
      */
     private function getAliases()
@@ -81,20 +116,49 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     }
 
     /**
+     * @param QueryBuilder $queryBuilder
+     * @return Entity[]|null
+     */
+    private function getResults(QueryBuilder $queryBuilder)
+    {
+        $entities = null;
+
+        $statement = $queryBuilder->execute();
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $entities[] = $this->rowToEntity($row);
+        }
+
+        return $entities;
+    }
+
+    /**
      * @param array $row
      * @return Entity
      */
     private function rowToEntity(array $row)
     {
+        $uuid = new UUID($row[SchemaConfigurator::UUID_COLUMN]);
+
+        $name = new StringLiteral($row[SchemaConfigurator::NAME_COLUMN]);
+
+        $visibility = $row[SchemaConfigurator::VISIBLE_COLUMN]
+            ? Visibility::VISIBLE() : Visibility::INVISIBLE();
+
+        $privacy = $row[SchemaConfigurator::PRIVATE_COLUMN]
+            ? Privacy::PRIVACY_PRIVATE() : Privacy::PRIVACY_PUBLIC();
+
+        $parentUuid = new UUID($row[SchemaConfigurator::PARENT_UUID_COLUMN]);
+
+        $count = new Natural($row[SchemaConfigurator::COUNT_COLUMN]);
+
         return new Entity(
-            new UUID($row[SchemaConfigurator::UUID_COLUMN]),
-            new StringLiteral($row[SchemaConfigurator::NAME_COLUMN]),
-            $row[SchemaConfigurator::VISIBLE_COLUMN]
-                ? Visibility::VISIBLE() : Visibility::INVISIBLE(),
-            $row[SchemaConfigurator::PRIVATE_COLUMN]
-                ? Privacy::PRIVACY_PRIVATE() : Privacy::PRIVACY_PUBLIC(),
-            new UUID($row[SchemaConfigurator::PARENT_UUID_COLUMN]),
-            new Natural($row[SchemaConfigurator::COUNT_COLUMN])
+            $uuid,
+            $name,
+            $visibility,
+            $privacy,
+            $parentUuid,
+            $count
         );
     }
 }

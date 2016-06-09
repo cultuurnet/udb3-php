@@ -3,9 +3,11 @@
 namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 
 class DBALReadRepositoryTest extends BaseDBALRepositoryTest
@@ -110,5 +112,94 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
         );
 
         $this->assertNull($entity);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_search_on_exact_name()
+    {
+        $search = new Query(new StringLiteral('label1'));
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertEquals(1, count($entities));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_search_on_name_part()
+    {
+        $search = new Query(new StringLiteral('labe'));
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertEquals(10, count($entities));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_search_on_name_case_insensitive()
+    {
+        $search = new Query(new StringLiteral('LAB'));
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertEquals(10, count($entities));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_search_with_offset()
+    {
+        $search = new Query(
+            new StringLiteral('label'),
+            new Natural(5)
+        );
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertEquals(5, count($entities));
+        $this->assertEquals('label5', $entities[0]->getName()->toNative());
+        $this->assertEquals('label9', $entities[4]->getName()->toNative());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_search_with_offset_and_limit()
+    {
+        $search = new Query(
+            new StringLiteral('label'),
+            new Natural(4),
+            new Natural(3)
+        );
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertEquals(3, count($entities));
+        $this->assertEquals('label4', $entities[0]->getName()->toNative());
+        $this->assertEquals('label6', $entities[2]->getName()->toNative());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_search_with_limit()
+    {
+        $search = new Query(
+            new StringLiteral('label'),
+            null,
+            new Natural(3)
+        );
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertEquals(3, count($entities));
+        $this->assertEquals('label0', $entities[0]->getName()->toNative());
+        $this->assertEquals('label2', $entities[2]->getName()->toNative());
     }
 }

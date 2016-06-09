@@ -18,4 +18,10 @@ interface ReadRepositoryInterface
      * @return Entity|null
      */
     public function getByName(StringLiteral $name);
+
+    /**
+     * @param Query $query
+     * @return Entity[]|null
+     */
+    public function search(Query $query);
 }

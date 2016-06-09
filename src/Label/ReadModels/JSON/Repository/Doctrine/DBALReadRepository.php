@@ -85,7 +85,7 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
      * @param Query $query
      * @return Natural
      */
-    public function searchTotalItems(Query $query)
+    public function searchTotalLabels(Query $query)
     {
         $like = $this->createLike($this->getQueryBuilder());
 

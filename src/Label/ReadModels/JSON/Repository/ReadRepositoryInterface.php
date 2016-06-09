@@ -30,5 +30,5 @@ interface ReadRepositoryInterface
      * @param Query $query
      * @return Natural
      */
-    public function searchTotalItems(Query $query);
+    public function searchTotalLabels(Query $query);
 }

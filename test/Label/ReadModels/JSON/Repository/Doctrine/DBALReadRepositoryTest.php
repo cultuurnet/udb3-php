@@ -222,9 +222,9 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     {
         $search = new Query(new StringLiteral('lab'));
 
-        $totalItems = $this->dbalReadRepository->searchTotalItems($search);
+        $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 
-        $this->assertEquals(10, $totalItems);
+        $this->assertEquals(10, $totalLabels);
     }
 
     /**
@@ -234,8 +234,8 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     {
         $search = new Query(new StringLiteral('nothing'));
 
-        $totalItems = $this->dbalReadRepository->searchTotalItems($search);
+        $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 
-        $this->assertEquals(0, $totalItems);
+        $this->assertEquals(0, $totalLabels);
     }
 }

@@ -92,7 +92,7 @@ class ReadServiceTest extends \PHPUnit_Framework_TestCase
 
         $totalLabels = $this->readService->searchTotalLabels($this->query);
 
-        $this->assertEquals(10, $totalLabels);
+        $this->assertEquals(new Natural(10), $totalLabels);
     }
 
     private function mockGetByUuid()
@@ -113,6 +113,6 @@ class ReadServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->readRepository->method('searchTotalLabels')
             ->with($this->query)
-            ->willReturn(10);
+            ->willReturn(new Natural(10));
     }
 }

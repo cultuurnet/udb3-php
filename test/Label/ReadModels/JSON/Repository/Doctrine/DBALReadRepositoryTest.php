@@ -202,4 +202,16 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
         $this->assertEquals('label0', $entities[0]->getName()->toNative());
         $this->assertEquals('label2', $entities[2]->getName()->toNative());
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_nothing_matches_search()
+    {
+        $search = new Query(new StringLiteral('nothing_please'));
+
+        $entities = $this->dbalReadRepository->search($search);
+
+        $this->assertNull($entities);
+    }
 }

@@ -214,4 +214,28 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $this->assertNull($entities);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_get_total_items_of_search()
+    {
+        $search = new Query(new StringLiteral('lab'));
+
+        $totalItems = $this->dbalReadRepository->searchTotalItems($search);
+
+        $this->assertEquals(10, $totalItems);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_zero_for_total_items_when_search_did_match_nothing()
+    {
+        $search = new Query(new StringLiteral('nothing'));
+
+        $totalItems = $this->dbalReadRepository->searchTotalItems($search);
+
+        $this->assertEquals(0, $totalItems);
+    }
 }

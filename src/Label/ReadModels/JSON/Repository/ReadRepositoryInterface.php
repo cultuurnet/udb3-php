@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository;
 
 use ValueObjects\Identity\UUID;
+use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 
 interface ReadRepositoryInterface
@@ -24,4 +25,10 @@ interface ReadRepositoryInterface
      * @return Entity[]|null
      */
     public function search(Query $query);
+
+    /**
+     * @param Query $query
+     * @return Natural
+     */
+    public function searchTotalItems(Query $query);
 }

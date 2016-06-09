@@ -57,17 +57,14 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     {
         $aliases = $this->getAliases();
 
-        $like = $this->getQueryBuilder()->expr()->like(
-            SchemaConfigurator::NAME_COLUMN,
-            ':' . SchemaConfigurator::NAME_COLUMN
-        );
+        $like = $this->createLike($this->getQueryBuilder());
 
         $this->getQueryBuilder()->select($aliases)
             ->from($this->getTableName()->toNative())
             ->where($like)
             ->setParameter(
                 SchemaConfigurator::NAME_COLUMN,
-                '%' . $query->getValue()->toNative() . '%'
+                $this->createLikeParameter($query)
             )
             ->orderBy(SchemaConfigurator::NAME_COLUMN);
 
@@ -85,6 +82,28 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     }
 
     /**
+     * @param Query $query
+     * @return Natural
+     */
+    public function searchTotalItems(Query $query)
+    {
+        $like = $this->createLike($this->getQueryBuilder());
+
+        $this->getQueryBuilder()->select('COUNT(*)')
+            ->from($this->getTableName()->toNative())
+            ->where($like)
+            ->setParameter(
+                SchemaConfigurator::NAME_COLUMN,
+                $this->createLikeParameter($query)
+            );
+
+        $statement = $this->getQueryBuilder()->execute();
+        $countArray = $statement->fetch(\PDO::FETCH_NUM);
+
+        return $countArray[0];
+    }
+
+    /**
      * @return array
      */
     private function getAliases()
@@ -97,6 +116,27 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
             SchemaConfigurator::PARENT_UUID_COLUMN,
             SchemaConfigurator::COUNT_COLUMN
         ];
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return string
+     */
+    private function createLike(QueryBuilder $queryBuilder)
+    {
+        return $queryBuilder->expr()->like(
+            SchemaConfigurator::NAME_COLUMN,
+            ':' . SchemaConfigurator::NAME_COLUMN
+        );
+    }
+
+    /**
+     * @param Query $query
+     * @return string
+     */
+    private function createLikeParameter(Query $query)
+    {
+        return '%' . $query->getValue()->toNative() . '%';
     }
 
     /**

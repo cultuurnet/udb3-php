@@ -100,7 +100,7 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
         $statement = $this->getQueryBuilder()->execute();
         $countArray = $statement->fetch(\PDO::FETCH_NUM);
 
-        return $countArray[0];
+        return new Natural($countArray[0]);
     }
 
     /**

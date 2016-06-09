@@ -224,7 +224,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 
-        $this->assertEquals(10, $totalLabels);
+        $this->assertEquals(new Natural(10), $totalLabels);
     }
 
     /**
@@ -236,6 +236,6 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 
-        $this->assertEquals(0, $totalLabels);
+        $this->assertEquals(new Natural(0), $totalLabels);
     }
 }

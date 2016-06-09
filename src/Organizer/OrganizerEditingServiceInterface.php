@@ -12,12 +12,17 @@ interface OrganizerEditingServiceInterface
 
     /**
      * @param Title $title
-     * @param array $adresses
+     * @param array $addresses
      * @param array $phones
      * @param array $emails
      * @param array $urls
      *
      * @return string $organizerId
      */
-    public function createOrganizer(Title $title, array $addresses, array $phones, array $emails, array $urls);
+    public function create(Title $title, array $addresses, array $phones, array $emails, array $urls);
+
+    /**
+     * @param $id
+     */
+    public function delete($id);
 }

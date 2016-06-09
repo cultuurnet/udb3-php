@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
@@ -136,6 +137,15 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->publishJSONLDUpdated(
             $organizerUpdatedFromUDB2->getActorId()
         );
+    }
+
+    /**
+     * @param \CultuurNet\UDB3\Organizer\Events\OrganizerDeleted $organizerDeleted
+     */
+    public function applyOrganizerDeleted(
+        OrganizerDeleted $organizerDeleted
+    ) {
+        $this->repository->remove($organizerDeleted->getOrganizerId());
     }
 
     protected function publishJSONLDUpdated($id)

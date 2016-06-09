@@ -1,20 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Organizer\Organizer.
- */
-
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
-use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String;
 
 class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
@@ -43,7 +37,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * @param string $cdbXmlNamespaceUri
      *   The cdb xml namespace uri.
      *
-     * @return Actor
+     * @return Organizer
      *   The actor.
      */
     public static function importFromUDB2(
@@ -66,9 +60,6 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     /**
      * Factory method to create a new Organizer.
      *
-     * @todo Refactor this method so it can be called create. Currently the
-     * normal behavior for create is taken by the legacy udb2 logic.
-     *
      * @param String $id
      * @param Title $title
      * @param array $addresses
@@ -76,14 +67,21 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * @param array $emails
      * @param array $urls
      *
-     * @return Place
+     * @return Organizer
      */
-    public static function createOrganizer($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public static function create($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         $organizer = new self();
         $organizer->apply(new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls));
 
         return $organizer;
+    }
+
+    public function delete()
+    {
+        $this->apply(
+            new OrganizerDeleted($this->getAggregateRootId())
+        );
     }
 
     /**

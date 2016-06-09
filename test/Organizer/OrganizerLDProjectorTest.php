@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
@@ -249,5 +250,20 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
+    }
+
+    /**
+     * @test
+     */
+    public function it_deletes_an_organizer()
+    {
+        $organizerId = 'ORG-123-FOO';
+        $organizerDeleted = new OrganizerDeleted($organizerId);
+
+        $this->documentRepository->expects($this->once())
+            ->method('remove')
+            ->with($organizerId);
+
+        $this->projector->applyOrganizerDeleted($organizerDeleted);
     }
 }

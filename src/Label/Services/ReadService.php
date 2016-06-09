@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Label\Services;
 
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use ValueObjects\Identity\UUID;
@@ -32,11 +31,18 @@ class ReadService implements ReadServiceInterface
     }
 
     /**
-     * @param Query $query
-     * @return Entity[]|null
+     * @inheritdoc
      */
     public function search(Query $query)
     {
         return $this->readRepository->search($query);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function searchTotalLabels(Query $query)
+    {
+        return $this->readRepository->searchTotalLabels($query);
     }
 }

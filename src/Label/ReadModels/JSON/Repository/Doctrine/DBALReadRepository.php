@@ -68,7 +68,8 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
             ->setParameter(
                 SchemaConfigurator::NAME_COLUMN,
                 '%' . $query->getValue()->toNative() . '%'
-            );
+            )
+            ->orderBy(SchemaConfigurator::NAME_COLUMN);
 
         if ($query->getOffset()) {
             $this->getQueryBuilder()

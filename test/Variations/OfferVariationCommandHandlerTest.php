@@ -73,7 +73,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->logger->expects($this->once())
             ->method('info')
-            ->with('job_info', ['event_variation_id' => $id]);
+            ->with('job_info', ['offer_variation_id' => $id]);
 
         $this->scenario
             ->withAggregateId($id)
@@ -108,7 +108,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->logger->expects($this->once())
             ->method('info')
-            ->with('job_info', ['event_variation_id' => $id]);
+            ->with('job_info', ['offer_variation_id' => $id]);
 
         $this->scenario
             ->withAggregateId((string) $id)
@@ -127,7 +127,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->logger->expects($this->once())
             ->method('info')
-            ->with('job_info', ['event_variation_id' => $id]);
+            ->with('job_info', ['offer_variation_id' => $id]);
 
         $this->scenario
             ->withAggregateId((string) $id)

@@ -39,7 +39,7 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
             $this->logger->info(
                 'job_info',
                 [
-                    'event_variation_id' => $variation->getAggregateRootId(),
+                    'offer_variation_id' => $variation->getAggregateRootId(),
                 ]
             );
         }
@@ -56,7 +56,7 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
             $this->logger->info(
                 'job_info',
                 [
-                    'event_variation_id' => (string) $editDescription->getId(),
+                    'offer_variation_id' => (string) $editDescription->getId(),
                 ]
             );
         }
@@ -70,7 +70,7 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
             $this->logger->info(
                 'job_info',
                 [
-                    'event_variation_id' => (string) $deleteEventVariation->getId()
+                    'offer_variation_id' => (string) $deleteEventVariation->getId()
                 ]
             );
         }

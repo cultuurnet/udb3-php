@@ -148,6 +148,10 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->repository->remove($organizerDeleted->getOrganizerId());
     }
 
+    /**
+     * @param string $id
+     * @todo Move broadcasting functionality to a decorator.
+     */
     protected function publishJSONLDUpdated($id)
     {
         $generator = new Version4Generator();

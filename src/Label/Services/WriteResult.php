@@ -9,7 +9,7 @@ class WriteResult implements \JsonSerializable
 {
     const COMMAND_ID = 'commandId';
     const UUID = 'uuid';
-    
+
     /**
      * @var StringLiteral
      */
@@ -50,7 +50,7 @@ class WriteResult implements \JsonSerializable
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             self::COMMAND_ID => $this->commandId->toNative(),

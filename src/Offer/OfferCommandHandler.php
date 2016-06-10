@@ -429,7 +429,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
 
         try {
             $this->labelRepository->save($label);
-        } catch (UniqueConstraintException $exception) {
+        } catch(UniqueConstraintException $exception) {
 
         }
     }

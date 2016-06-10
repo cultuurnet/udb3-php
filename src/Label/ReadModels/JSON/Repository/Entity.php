@@ -8,8 +8,13 @@ use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 
-class Entity
+class Entity implements \JsonSerializable
 {
+    const ID = 'id';
+    const NAME = 'name';
+    const VISIBILITY = 'visibility';
+    const PRIVACY = 'privacy';
+
     /**
      * @var UUID
      */
@@ -111,5 +116,18 @@ class Entity
     public function getCount()
     {
         return $this->count;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function jsonSerialize()
+    {
+        return [
+            self::ID => $this->uuid->toNative(),
+            self::NAME => $this->name->toNative(),
+            self::VISIBILITY => $this->visibility->toNative(),
+            self::PRIVACY => $this->privacy->toNative()
+        ];
     }
 }

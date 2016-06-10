@@ -5,8 +5,11 @@ namespace CultuurNet\UDB3\Label\Services;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class WriteResult
+class WriteResult implements \JsonSerializable
 {
+    const COMMAND_ID = 'commandId';
+    const UUID = 'uuid';
+    
     /**
      * @var StringLiteral
      */
@@ -42,5 +45,16 @@ class WriteResult
     public function getUuid()
     {
         return $this->uuid;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function jsonSerialize()
+    {
+        return [
+            self::COMMAND_ID => $this->commandId->toNative(),
+            self::UUID => $this->uuid->toNative()
+        ];
     }
 }

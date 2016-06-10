@@ -6,8 +6,12 @@ use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class Entity
+class Entity implements \JsonSerializable
 {
+    const UUID = 'uuid';
+    const RELATION_TYPE = 'relationType';
+    const RELATION_ID = 'relationId';
+
     /**
      * @var UUID
      */
@@ -61,5 +65,17 @@ class Entity
     public function getRelationId()
     {
         return $this->relationId;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function jsonSerialize()
+    {
+        return [
+            self::UUID => $this->uuid->toNative(),
+            self::RELATION_TYPE => $this->relationType->toNative(),
+            self::RELATION_ID => $this->relationId->toNative()
+        ];
     }
 }

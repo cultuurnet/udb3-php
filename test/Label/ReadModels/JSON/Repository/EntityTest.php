@@ -147,4 +147,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase
             $this->entityWithDefaults->getCount()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_encode_to_json()
+    {
+        $json = json_encode($this->entity);
+
+        $expectedJson = '{"id":"' . $this->uuid->toNative()
+            . '","name":"' . $this->name->toNative()
+            . '","visibility":"' . $this->visibilty->toNative()
+            . '","privacy":"' . $this->privacy->toNative() . '"}';
+
+        $this->assertEquals($expectedJson, $json);
+    }
 }

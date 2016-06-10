@@ -67,4 +67,18 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->relationId, $this->entity->getRelationId());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_encode_to_json()
+    {
+        $json = json_encode($this->entity);
+
+        $expectedJson = '{"uuid":"' . $this->uuid->toNative()
+            . '","relationType":"' . $this->relationType->toNative()
+            . '","relationId":"' . $this->relationId->toNative() . '"}';
+
+        $this->assertEquals($expectedJson, $json);
+    }
 }

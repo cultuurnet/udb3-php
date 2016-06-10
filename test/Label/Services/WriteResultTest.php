@@ -58,4 +58,15 @@ class WriteResultTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($writeResult->getUuid(), null);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_encode_to_json()
+    {
+        $json = json_encode($this->writeResult);
+        $expectedJson = '{"commandId":"commandId","uuid":"' . $this->uuid . '"}';
+
+        $this->assertEquals($expectedJson, $json);
+    }
 }

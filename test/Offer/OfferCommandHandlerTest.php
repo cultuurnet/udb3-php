@@ -6,6 +6,7 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
@@ -81,10 +82,17 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         EventBusInterface $eventBus
     ) {
         $this->organizerRepository = $this->getMock(RepositoryInterface::class);
-        
+
+        /** @var RepositoryInterface $labelRepository */
+        $labelRepository = $this->getMock(RepositoryInterface::class);
+        /** @var UuidGeneratorInterface $uuidGenerator */
+        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+
         return new ItemCommandHandler(
             new ItemRepository($eventStore, $eventBus),
-            $this->organizerRepository
+            $this->organizerRepository,
+            $labelRepository,
+            $uuidGenerator
         );
     }
 

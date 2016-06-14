@@ -108,7 +108,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         );
 
         try {
-            $document = $this->loadPlaceDocumentFromRepository($actorId);
+            $document = $this->loadPlaceDocumentFromRepositoryById($actorId);
         } catch (DocumentGoneException $e) {
             $document = $this->newDocument($actorId);
         }
@@ -299,6 +299,21 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         if (!$document) {
             return $this->newDocument($place->getPlaceId());
+        }
+
+        return $document;
+    }
+
+    /**
+     * @param string $itemId
+     * @return JsonDocument
+     */
+    protected function loadPlaceDocumentFromRepositoryById($itemId)
+    {
+        $document = $this->repository->get($itemId);
+
+        if (!$document) {
+            return $this->newDocument($itemId);
         }
 
         return $document;

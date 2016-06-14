@@ -5,11 +5,13 @@ namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -34,6 +36,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
@@ -74,17 +77,42 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * @param PlaceImportedFromUDB2 $actorImportedFromUDB2
+     * @param PlaceImportedFromUDB2 $placeImportedFromUDB2
      */
     protected function applyPlaceImportedFromUDB2(
-        PlaceImportedFromUDB2 $actorImportedFromUDB2
+        PlaceImportedFromUDB2 $placeImportedFromUDB2
     ) {
+        $this->projectActorImportedFromUDB2($placeImportedFromUDB2);
+    }
+
+    /**
+     * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+     */
+    protected function applyPlaceUpdatedFromUDB2(
+        PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+    ) {
+        $this->projectActorImportedFromUDB2($placeUpdatedFromUDB2);
+    }
+
+    /**
+     * @param ActorImportedFromUDB2 $actorImportedFromUDB2
+     */
+    protected function projectActorImportedFromUDB2(
+        ActorImportedFromUDB2 $actorImportedFromUDB2
+    ) {
+        $actorId = $actorImportedFromUDB2->getActorId();
+
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $actorImportedFromUDB2->getCdbXmlNamespaceUri(),
             $actorImportedFromUDB2->getCdbXml()
         );
 
-        $document = $this->newDocument($actorImportedFromUDB2->getActorId());
+        try {
+            $document = $this->loadPlaceDocumentFromRepository($actorId);
+        } catch (DocumentGoneException $e) {
+            $document = $this->newDocument($actorId);
+        }
+
         $actorLd = $document->getBody();
 
         $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
@@ -94,7 +122,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $this->repository->save($document->withBody($actorLd));
     }
-
 
     /**
      * @param PlaceImportedFromUDB2Event $eventImportedFromUDB2

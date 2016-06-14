@@ -542,11 +542,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventDeleted = new EventDeleted($eventId);
 
-        $this->project($eventDeleted, $eventDeleted->getItemId());
+        $this->project($eventDeleted, $eventDeleted->getItemId(), null, null, false);
 
         $eventUpdatedFromUdb2 = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
-            'samples/event_with_udb3_place.cdbxml.xml'
+            'samples/event_with_empty_keyword.cdbxml.xml'
         );
+        $this->project($eventUpdatedFromUdb2, $eventUpdatedFromUdb2->getEventId());
     }
 
     /**

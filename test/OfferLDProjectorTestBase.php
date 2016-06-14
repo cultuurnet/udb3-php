@@ -86,13 +86,15 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
      * @param string $entityId
      * @param Metadata|null $metadata
      * @param DateTime $dateTime
+     * @param bool $returnBody
      * @return \stdClass
      */
     protected function project(
         $event,
         $entityId,
         Metadata $metadata = null,
-        DateTime $dateTime = null
+        DateTime $dateTime = null,
+        $returnBody = true
     ) {
         if (null === $metadata) {
             $metadata = new Metadata();
@@ -112,7 +114,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
             )
         );
 
-        return $this->getBody($entityId);
+        if ($returnBody) {
+            return $this->getBody($entityId);
+        }
     }
 
     /**

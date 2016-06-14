@@ -531,6 +531,27 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_can_update_an_event_from_udb2_even_if_it_has_been_deleted()
+    {
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_with_empty_keyword.cdbxml.xml'
+        );
+        $eventId = $event->getEventId();
+
+        $this->project($event, $event->getEventId());
+
+        $eventDeleted = new EventDeleted($eventId);
+
+        $this->project($eventDeleted, $eventDeleted->getItemId());
+
+        $eventUpdatedFromUdb2 = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
+            'samples/event_with_udb3_place.cdbxml.xml'
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_add_an_empty_labels_property()
     {
         $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(

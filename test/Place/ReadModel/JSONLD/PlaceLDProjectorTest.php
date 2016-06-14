@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
+use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\ReadModel\JSONLD\PlaceLDProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
@@ -325,6 +326,59 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         return $samples;
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_a_place_from_udb2()
+    {
+        $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
+        $actorId = $placeImportedFromUdb2->getActorId();
+
+        $cdbXml = file_get_contents(
+            __DIR__ . '/place_with_image.cdbxml.xml'
+        );
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            $actorId,
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+        
+        $body = $this->project($placeUpdatedFromUdb2, $actorId);
+
+        $this->assertEquals(
+            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
+            $body->image
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_a_place_from_udb2_when_it_has_been_deleted_in_udb3()
+    {
+        $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
+        $actorId = $placeImportedFromUdb2->getActorId();
+        
+        $placeDeleted = new PlaceDeleted($actorId);
+        $this->project($placeDeleted, $actorId, null, null, false);
+
+        $cdbXml = file_get_contents(
+            __DIR__ . '/place_with_image.cdbxml.xml'
+        );
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            $actorId,
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        $body = $this->project($placeUpdatedFromUdb2, $actorId);
+
+        $this->assertEquals(
+            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
+            $body->image
+        );
     }
 
     /**

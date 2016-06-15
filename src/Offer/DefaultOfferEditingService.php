@@ -319,8 +319,6 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
      */
     public function delete($id)
     {
-        $this->guardId($id);
-
         return $this->commandBus->dispatch(
             $this->commandFactory->createDeleteOfferCommand($id)
         );

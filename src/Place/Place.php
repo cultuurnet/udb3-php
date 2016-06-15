@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Place;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
@@ -207,13 +208,25 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
     {
-        $this->apply(
-            new PlaceUpdatedFromUDB2(
-                $this->actorId,
-                $cdbXml,
-                $cdbXmlNamespaceUri
-            )
-        );
+        try {
+            ActorItemFactory::createActorFromCdbXml($cdbXmlNamespaceUri, $cdbXml);
+
+            $this->apply(
+                new PlaceUpdatedFromUDB2(
+                    $this->actorId,
+                    $cdbXml,
+                    $cdbXmlNamespaceUri
+                )
+            );
+        } catch (\CultureFeed_Cdb_ParseException $e) {
+            $this->apply(
+                new PlaceImportedFromUDB2Event(
+                    $this->actorId,
+                    $cdbXml,
+                    $cdbXmlNamespaceUri
+                )
+            );
+        }
     }
 
     /**

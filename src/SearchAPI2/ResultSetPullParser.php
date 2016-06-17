@@ -16,20 +16,28 @@ use ValueObjects\Web\Url;
  */
 class ResultSetPullParser
 {
+    const OFFER_TYPE_EVENT = 'offer.event';
+    const OFFER_TYPE_PLACE = 'offer.place';
+    const OFFER_TYPE_UNKNOWN = 'offer.unknown';
+
+    const CDBXML_TYPE_EVENT = 'cdbxml.event';
+    const CDBXML_TYPE_ACTOR = 'cdbxml.actor';
+    const CDBXML_TYPE_UNKNOWN = 'cdbxml.unknown';
+
+    /**
+     * @var array
+     */
+    private $knownCdbXmlResultTypes;
+
     /**
      * @var \XMLReader
      */
     protected $xmlReader;
 
     /**
-     * @var IriGeneratorInterface
+     * @var IriGeneratorInterface[]
      */
-    protected $eventIriGenerator;
-
-    /**
-     * @var IriGeneratorInterface
-     */
-    protected $placeIriGenerator;
+    protected $fallbackIriGenerators;
 
     /**
      * @param \XMLReader $xmlReader
@@ -42,8 +50,13 @@ class ResultSetPullParser
         IriGeneratorInterface $placeIriGenerator
     ) {
         $this->xmlReader = $xmlReader;
-        $this->eventIriGenerator = $eventIriGenerator;
-        $this->placeIriGenerator = $placeIriGenerator;
+
+        $this->fallbackIriGenerators = [
+            self::OFFER_TYPE_EVENT => $eventIriGenerator,
+            self::OFFER_TYPE_PLACE => $placeIriGenerator,
+        ];
+
+        $this->knownCdbXmlResultTypes = ['event', 'actor'];
     }
 
     /**
@@ -57,53 +70,138 @@ class ResultSetPullParser
     public function getResultSet($cdbxml)
     {
         $items = new OfferIdentifierCollection();
-        $totalItems = null;
+        $totalItems = $cdbId = $elementName = $offerType = null;
+
+        $resetCurrentResultValues = function () use (&$cdbId, &$elementName, &$offerType) {
+            $cdbId = null;
+            $elementName = self::CDBXML_TYPE_UNKNOWN;
+            $offerType = self::OFFER_TYPE_UNKNOWN;
+        };
+
+        $resetCurrentResultValues();
 
         $r = $this->xmlReader;
-
         $r->xml($cdbxml);
 
-        $currentEventCdbId = null;
-        $currentEventIsUdb3Place = false;
-
         while ($r->read()) {
-            if ($r->nodeType == $r::ELEMENT && $r->localName == 'nofrecords') {
-                $totalItems = new Integer((int)$r->readString());
+            if ($this->xmlNodeIsNumberOfRecordsTag($r)) {
+                $totalItems = new Integer((int) $r->readString());
             }
 
-            if ($r->nodeType == $r::ELEMENT && $r->localName == 'event') {
-                $currentEventCdbId = $r->getAttribute('cdbid');
+            if ($this->xmlNodeIsResultOpeningTag($r)) {
+                $cdbId = $r->getAttribute('cdbid');
+                $elementName = 'cdbxml.' . $r->localName;
+
+                if ($elementName == self::CDBXML_TYPE_EVENT) {
+                    $offerType = self::OFFER_TYPE_EVENT;
+                }
             }
 
-            if ($r->nodeType == $r::ELEMENT && $r->localName == 'keyword' && !$currentEventIsUdb3Place) {
-                $keyword = $r->readString();
-                $currentEventIsUdb3Place = strcasecmp('udb3 place', $keyword) == 0;
+            if ($this->xmlNodeIsUdb3PlaceKeyword($r) && $elementName == self::CDBXML_TYPE_EVENT) {
+                $offerType = self::OFFER_TYPE_PLACE;
             }
 
-            if ($r->nodeType == $r::END_ELEMENT && $r->localName == 'event') {
-                $externalUrl = $r->getAttribute('externalurl');
+            if ($this->xmlNodeIsLocationCategory($r) && $elementName == self::CDBXML_TYPE_ACTOR) {
+                $offerType = self::OFFER_TYPE_PLACE;
+            }
+
+            if ($this->xmlNodeIsResultClosingTag($r)) {
+                if ($offerType == self::OFFER_TYPE_UNKNOWN) {
+                    // Skip if we haven't been able to deduce an offer type.
+                    // (Eg. actor, but without the place category.)
+                    continue;
+                }
+
+                if (empty($cdbId)) {
+                    // Skip if no cdbid found.
+                    continue;
+                }
 
                 // Null if attribute not set, empty string if not found in the search index.
+                $externalUrl = $r->getAttribute('externalurl');
                 if (empty($externalUrl)) {
-                    $iriGenerator = $currentEventIsUdb3Place ? $this->placeIriGenerator : $this->eventIriGenerator;
-                    $externalUrl = $iriGenerator->iri($currentEventCdbId);
+                    $iriGenerator = $this->fallbackIriGenerators[$offerType];
+                    $externalUrl = $iriGenerator->iri($cdbId);
                 }
 
-                if (!is_null($currentEventCdbId)) {
-                    $items = $items->with(
-                        new IriOfferIdentifier(
-                            Url::fromNative($externalUrl),
-                            $currentEventCdbId,
-                            $currentEventIsUdb3Place ? OfferType::PLACE() : OfferType::EVENT()
-                        )
-                    );
-                }
+                $items = $items->with(
+                    new IriOfferIdentifier(
+                        Url::fromNative($externalUrl),
+                        $cdbId,
+                        $this->getOfferTypeEnum($offerType)
+                    )
+                );
 
-                $currentEventCdbId = null;
-                $currentEventIsUdb3Place = false;
+                $resetCurrentResultValues();
             }
         }
 
         return new Results($items, $totalItems);
+    }
+
+    /**
+     * @param \XMLReader $r
+     * @return bool
+     */
+    private function xmlNodeIsNumberOfRecordsTag(\XMLReader $r)
+    {
+        return $r->nodeType == $r::ELEMENT && $r->localName == 'nofrecords';
+    }
+
+    /**
+     * @param \XMLReader $r
+     * @return bool
+     */
+    private function xmlNodeIsResultOpeningTag(\XMLReader $r)
+    {
+        return $r->nodeType == $r::ELEMENT && $this->xmlNodeIsKnownResultType($r);
+    }
+
+    /**
+     * @param \XMLReader $r
+     * @return bool
+     */
+    private function xmlNodeIsResultClosingTag(\XMLReader $r)
+    {
+        return $r->nodeType == $r::END_ELEMENT && $this->xmlNodeIsKnownResultType($r);
+    }
+
+    /**
+     * @param \XMLReader $r
+     * @return bool
+     */
+    private function xmlNodeIsKnownResultType(\XMLReader $r)
+    {
+        return in_array($r->localName, $this->knownCdbXmlResultTypes);
+    }
+
+    /**
+     * @param \XMLReader $r
+     * @return bool
+     */
+    private function xmlNodeIsUdb3PlaceKeyword(\XMLReader $r)
+    {
+        return $r->nodeType == $r::ELEMENT && $r->localName == 'keyword' &&
+            strcasecmp('udb3 place', $r->readString()) == 0;
+    }
+
+    /**
+     * @param \XMLReader $r
+     * @return bool
+     */
+    private function xmlNodeIsLocationCategory(\XMLReader $r)
+    {
+        return $r->nodeType == $r::ELEMENT && $r->localName == 'category' && $r->getAttribute('catid') == '8.15.0.0.0';
+    }
+
+    /**
+     * @param string $offerTypeString
+     * @return OfferType
+     */
+    private function getOfferTypeEnum($offerTypeString)
+    {
+        $parts = explode('.', $offerTypeString);
+        $offerTypeString = $parts[count($parts) - 1];
+        return OfferType::fromCaseInsensitiveValue($offerTypeString);
     }
 }

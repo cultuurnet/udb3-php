@@ -83,7 +83,7 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             ->method('add')
             ->withConsecutive(
                 ['q', 'pop'],
-                ['fq', 'type:event'],
+                ['fq', 'type:event OR (type:actor AND category_id:8.15.0.0.0)'],
                 ['group', 'true'],
                 ['version', '3.3'],
                 ['past', 'true'],
@@ -115,7 +115,7 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->searchService->search([
             new Query('pop'),
-            new FilterQuery('type:event'),
+            new FilterQuery('type:event OR (type:actor AND category_id:8.15.0.0.0)'),
             new Group()
         ]);
     }

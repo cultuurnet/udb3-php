@@ -9,7 +9,10 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Title;
 
 class OrganizerTest extends AggregateRootScenarioTestCase
 {
@@ -54,5 +57,37 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                 )
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_deleted()
+    {
+        $id = '123';
+
+        $this->scenario
+            ->given(
+                [
+                    new OrganizerCreated(
+                        $id,
+                        new Title('Foo'),
+                        [],
+                        [],
+                        [],
+                        []
+                    )
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->delete();
+                }
+            )
+            ->then(
+                [
+                    new OrganizerDeleted($id)
+                ]
+            );
     }
 }

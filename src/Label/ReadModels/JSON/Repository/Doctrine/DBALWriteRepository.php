@@ -116,8 +116,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     }
 
     /**
-     * @param $column
-     * @param $value
+     * @param string $column
+     * @param bool $value
      * @param UUID $uuid
      */
     private function executeUpdate(
@@ -129,7 +129,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->set($column, '?')
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
-                $value,
+                $value ? 1 : 0,
                 $uuid->toNative()
             ]);
 

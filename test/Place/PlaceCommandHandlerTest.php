@@ -6,14 +6,13 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Organizer\OrganizerRepository;
-use CultuurNet\UDB3\Place\CommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
@@ -29,9 +28,7 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
-use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\String\String;
 
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
@@ -49,7 +46,17 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->organizerRepository = $this->getMock(RepositoryInterface::class);
 
-        return new CommandHandler($repository, $this->organizerRepository);
+        /** @var RepositoryInterface $labelRepository */
+        $labelRepository = $this->getMock(RepositoryInterface::class);
+        /** @var UuidGeneratorInterface $uuidGenerator */
+        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+
+        return new CommandHandler(
+            $repository,
+            $this->organizerRepository,
+            $labelRepository,
+            $uuidGenerator
+        );
     }
 
     private function factorOfferCreated($id)
@@ -137,7 +144,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             ->when(new AddLabel($id, new Label('foo')))
             ->then([new LabelAdded($id, new Label('foo'))]);
     }
-
+    
     /**
      * @test
      */

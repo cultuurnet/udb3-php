@@ -6,12 +6,11 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
-use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
-use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
@@ -25,13 +24,7 @@ use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\Organizer\OrganizerRepository;
-use CultuurNet\UDB3\Search\Results;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
-use Guzzle\Http\Exception\ClientErrorResponseException;
-use PHPUnit_Framework_MockObject_MockObject;
-use ValueObjects\Number\Integer;
 use ValueObjects\String\String;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -46,10 +39,20 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventStore,
             $eventBus
         );
-        
+
         $this->organizerRepository = $this->getMock(RepositoryInterface::class);
 
-        return new EventCommandHandler($repository, $this->organizerRepository);
+        /** @var RepositoryInterface $labelRepository */
+        $labelRepository = $this->getMock(RepositoryInterface::class);
+        /** @var UuidGeneratorInterface $uuidGenerator */
+        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+
+        return new EventCommandHandler(
+            $repository,
+            $this->organizerRepository,
+            $labelRepository,
+            $uuidGenerator
+        );
     }
 
     private function factorOfferCreated($id)

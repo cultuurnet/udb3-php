@@ -4,7 +4,12 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintException;
+use CultuurNet\UDB3\Label\Label;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
@@ -21,7 +26,10 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Organizer;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 abstract class OfferCommandHandler extends Udb3CommandHandler
 {
@@ -36,15 +44,31 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     protected $organizerRepository;
 
     /**
+     * @var RepositoryInterface
+     */
+    protected $labelRepository;
+
+    /**
+     * @var UuidGeneratorInterface
+     */
+    protected $uuidGenerator;
+
+    /**
      * @param RepositoryInterface $offerRepository
      * @param RepositoryInterface $organizerRepository
+     * @param RepositoryInterface $labelRepository
+     * @param UuidGeneratorInterface $uuidGenerator
      */
     public function __construct(
         RepositoryInterface $offerRepository,
-        RepositoryInterface $organizerRepository
+        RepositoryInterface $organizerRepository,
+        RepositoryInterface $labelRepository,
+        UuidGeneratorInterface $uuidGenerator
     ) {
         $this->offerRepository = $offerRepository;
         $this->organizerRepository = $organizerRepository;
+        $this->labelRepository = $labelRepository;
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     /**
@@ -172,6 +196,8 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     private function handleAddLabel(AbstractAddLabel $addLabel)
     {
+        $this->createLabel($addLabel);
+
         $offer = $this->load($addLabel->getItemId());
         $offer->addLabel($addLabel->getLabel());
         $this->offerRepository->save($offer);
@@ -387,5 +413,23 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         return $this->organizerRepository->load($id);
 
+    }
+
+    /**
+     * @param AbstractAddLabel $addLabel
+     */
+    private function createLabel(AbstractAddLabel $addLabel)
+    {
+        $label = Label::create(
+            new UUID($this->uuidGenerator->generate()),
+            new StringLiteral((string)$addLabel->getLabel()),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC()
+        );
+
+        try {
+            $this->labelRepository->save($label);
+        } catch (UniqueConstraintException $exception) {
+        }
     }
 }

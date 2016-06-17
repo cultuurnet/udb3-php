@@ -48,6 +48,7 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -371,7 +372,15 @@ class EventLDProjector extends OfferLDProjector implements
 
         // Because we can not properly track media coming from UDB2 we simply
         // ignore it and give priority to content added through UDB3.
-        $document = $this->loadDocumentFromRepositoryByItemId($eventId);
+        // It's possible that an event has been deleted in udb3, but never
+        // in udb2. If an update comes for that event from udb2, it should
+        // be imported again. This is intended by design.
+        // @see https://jira.uitdatabank.be/browse/III-1092
+        try {
+            $document = $this->loadDocumentFromRepositoryByItemId($eventId);
+        } catch (DocumentGoneException $documentGoneException) {
+            $document = $this->newDocument($eventId);
+        }
 
         $media = $this->UDB3Media($document);
         if (!empty($media)) {

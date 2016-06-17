@@ -8,12 +8,14 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
 use stdClass;
@@ -31,6 +33,11 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     protected $documentRepository;
 
     /**
+     * @var EventBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $eventBus;
+
+    /**
      * @var IriGeneratorInterface
      */
     private $iriGenerator;
@@ -38,6 +45,9 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
+
+        $this->eventBus = $this->getMock(EventBusInterface::class);
+
         $this->iriGenerator = new CallableIriGenerator(
             function ($id) {
                 return 'http://example.com/entity/' . $id;
@@ -47,16 +57,40 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector = new OrganizerLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->getMock(EventBusInterface::class)
+            $this->eventBus
         );
     }
 
+    /**
+     * @param string $fileName
+     * @return OrganizerImportedFromUDB2
+     */
     private function organizerImportedFromUDB2($fileName)
     {
         $cdbXml = file_get_contents(
             __DIR__ . '/' . $fileName
         );
+
         $event = new OrganizerImportedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param string $fileName
+     * @return OrganizerUpdatedFromUDB2
+     */
+    private function organizerUpdatedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+
+        $event = new OrganizerUpdatedFromUDB2(
             'someId',
             $cdbXml,
             'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
@@ -265,5 +299,31 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($organizerId);
 
         $this->projector->applyOrganizerDeleted($organizerDeleted);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_an_organizer_from_udb2_even_if_it_has_been_deleted()
+    {
+        $organizerUpdatedFromUdb2 = $this->organizerUpdatedFromUDB2('organizer_with_email.cdbxml.xml');
+        $actorId = $organizerUpdatedFromUdb2->getActorId();
+
+        $this->documentRepository->expects($this->once())
+            ->method('get')
+            ->with($actorId)
+            ->willThrowException(new DocumentGoneException());
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(
+                    function (JsonDocument $jsonDocument) use ($actorId) {
+                        return $actorId === $jsonDocument->getId() && !empty($jsonDocument->getRawBody());
+                    }
+                )
+            );
+
+        $this->projector->applyOrganizerUpdatedFromUDB2($organizerUpdatedFromUdb2);
     }
 }

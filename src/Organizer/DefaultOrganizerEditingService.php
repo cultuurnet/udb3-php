@@ -8,6 +8,7 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\Organizer\OrganizerEditingServiceInterface;
@@ -48,14 +49,24 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function createOrganizer(Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public function create(Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         $id = $this->uuidGenerator->generate();
 
-        $organizer = Organizer::createOrganizer($id, $title, $addresses, $phones, $emails, $urls);
+        $organizer = Organizer::create($id, $title, $addresses, $phones, $emails, $urls);
 
         $this->organizerRepository->save($organizer);
 
         return $id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function delete($id)
+    {
+        return $this->commandBus->dispatch(
+            new DeleteOrganizer($id)
+        );
     }
 }

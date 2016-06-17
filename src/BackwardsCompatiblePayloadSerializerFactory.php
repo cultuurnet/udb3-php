@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated as EventBookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated as EventContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated as EventDescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
@@ -24,6 +25,7 @@ use CultuurNet\UDB3\Place\Events\ContactPointUpdated as PlaceContactPointUpdated
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted as PlaceOrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated as PlaceOrganizerUpdated;
+use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
@@ -221,6 +223,7 @@ class BackwardsCompatiblePayloadSerializerFactory
             EventOrganizerUpdated::class,
             EventOrganizerDeleted::class,
             EventDescriptionUpdated::class,
+            EventDeleted::class,
         ];
 
         foreach ($refactoredEventEvents as $refactoredEventEvent) {
@@ -244,6 +247,7 @@ class BackwardsCompatiblePayloadSerializerFactory
             PlaceTypicalAgeRangeUpdated::class,
             PlaceContactPointUpdated::class,
             PlaceDescriptionUpdated::class,
+            PlaceDeleted::class,
         ];
 
         foreach ($refactoredPlaceEvents as $refactoredPlaceEvent) {

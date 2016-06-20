@@ -26,7 +26,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         Privacy $privacy,
         UUID $parentUuid = null
     ) {
-        $this->getQueryBuilder()->insert($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->insert($this->getTableName()->toNative())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
                 SchemaConfigurator::NAME_COLUMN => '?',
@@ -42,7 +43,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $parentUuid ? $parentUuid->toNative() : null
             ]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 
     /**
@@ -125,7 +126,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         $value,
         UUID $uuid
     ) {
-        $this->getQueryBuilder()->update($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->update($this->getTableName()->toNative())
             ->set($column, '?')
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
@@ -133,7 +135,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $uuid->toNative()
             ]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 
     /**
@@ -144,7 +146,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         IntegerValue $value,
         UUID $uuid
     ) {
-        $this->getQueryBuilder()->update($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->update($this->getTableName())
             ->set(
                 SchemaConfigurator::COUNT_COLUMN,
                 SchemaConfigurator::COUNT_COLUMN . ' + ' . $value->toNative()
@@ -154,6 +157,6 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $uuid->toNative()
             ]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 }

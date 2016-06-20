@@ -18,18 +18,12 @@ abstract class AbstractDBALRepository
      */
     private $tableName;
 
-    /**
-     * @var QueryBuilder
-     */
-    private $queryBuilder;
-
     public function __construct(
         Connection $connection,
         StringLiteral $tableName
     ) {
         $this->connection = $connection;
         $this->tableName = $tableName;
-        $this->queryBuilder = $this->connection->createQueryBuilder();
     }
 
     /**
@@ -51,8 +45,8 @@ abstract class AbstractDBALRepository
     /**
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function createQueryBuilder()
     {
-        return $this->queryBuilder;
+        return $this->connection->createQueryBuilder();
     }
 }

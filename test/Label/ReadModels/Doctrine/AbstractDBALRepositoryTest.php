@@ -20,11 +20,6 @@ class AbstractDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     private $tableName;
 
     /**
-     * @var QueryBuilder
-     */
-    private $queryBuilder;
-
-    /**
      * @var AbstractDBALRepository
      */
     private $abstractDBALRepository;
@@ -39,14 +34,11 @@ class AbstractDBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->tableName = new StringLiteral('tableName');
 
-        $this->queryBuilder = $this->connection->createQueryBuilder();
-
         $this->abstractDBALRepository = $this->getMockForAbstractClass(
             AbstractDBALRepository::class,
             [
                 $this->connection,
                 $this->tableName,
-                $this->queryBuilder
             ]
         );
     }
@@ -76,11 +68,10 @@ class AbstractDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_a_query_builder()
+    public function it_creates_a_query_builder()
     {
-        $this->assertEquals(
-            $this->queryBuilder,
-            $this->abstractDBALRepository->getQueryBuilder()
+        $this->assertNotNull(
+            $this->abstractDBALRepository->createQueryBuilder()
         );
     }
 }

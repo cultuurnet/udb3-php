@@ -18,7 +18,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         RelationType $relationType,
         StringLiteral $relationId
     ) {
-        $this->getQueryBuilder()->insert($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
                 SchemaConfigurator::RELATION_TYPE_COLUMN => '?',
@@ -30,7 +31,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $relationId->toNative()
             ]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 
     /**
@@ -38,10 +39,11 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
      */
     public function deleteByUuid(UUID $uuid)
     {
-        $this->getQueryBuilder()->delete($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->delete($this->getTableName())
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([$uuid->toNative()]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 }

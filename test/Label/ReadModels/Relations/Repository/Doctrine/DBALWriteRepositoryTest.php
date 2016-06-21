@@ -162,6 +162,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $this->assertEquals(
             $entity2->getUuid(),
-            $this->getLastEntity()->getUuid());
+            $this->getLastEntity()->getUuid()
+        );
     }
 }

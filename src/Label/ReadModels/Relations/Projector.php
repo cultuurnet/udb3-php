@@ -52,7 +52,7 @@ class Projector extends AbstractProjector
                     $entity->getRelationId()
                 );
             }
-        } catch(UniqueConstraintViolationException $exception) {
+        } catch (UniqueConstraintViolationException $exception) {
             // By design to catch unique exception.
         }
     }

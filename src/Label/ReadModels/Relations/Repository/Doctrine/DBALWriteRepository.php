@@ -37,12 +37,15 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     /**
      * @inheritdoc
      */
-    public function deleteByUuid(UUID $uuid)
-    {
+    public function deleteByUuidAndRelationId(
+        UUID $uuid,
+        StringLiteral $offerUuid
+    ) {
         $queryBuilder = $this->createQueryBuilder()
             ->delete($this->getTableName())
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
-            ->setParameters([$uuid->toNative()]);
+            ->andWhere(SchemaConfigurator::RELATION_ID_COLUMN . ' = ?')
+            ->setParameters([$uuid->toNative(), $offerUuid->toNative()]);
 
         $queryBuilder->execute();
     }

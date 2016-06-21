@@ -140,16 +140,28 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_delete_based_on_uuid()
     {
-        $entity = new Entity(
+        $entity1 = new Entity(
             new UUID(),
             RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $this->saveEntity($entity);
+        $entity2 = new Entity(
+            new UUID(),
+            RelationType::PLACE(),
+            new StringLiteral('otherRelationId')
+        );
 
-        $this->dbalWriteRepository->deleteByUuid($entity->getUuid());
+        $this->saveEntity($entity1);
+        $this->saveEntity($entity2);
 
-        $this->assertNull($this->getLastEntity());
+        $this->dbalWriteRepository->deleteByUuidAndRelationId(
+            $entity1->getUuid(),
+            $entity1->getRelationId()
+        );
+
+        $this->assertEquals(
+            $entity2->getUuid(),
+            $this->getLastEntity()->getUuid());
     }
 }

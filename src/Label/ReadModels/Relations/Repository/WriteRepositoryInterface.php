@@ -21,6 +21,10 @@ interface WriteRepositoryInterface
 
     /**
      * @param UUID $uuid
+     * @param StringLiteral $relationId
      */
-    public function deleteByUuid(UUID $uuid);
+    public function deleteByUuidAndRelationId(
+        UUID $uuid,
+        StringLiteral $relationId
+    );
 }

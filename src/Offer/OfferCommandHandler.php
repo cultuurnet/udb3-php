@@ -62,8 +62,8 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     public function __construct(
         RepositoryInterface $offerRepository,
         RepositoryInterface $organizerRepository,
-        RepositoryInterface $labelRepository,
-        UuidGeneratorInterface $uuidGenerator
+        RepositoryInterface $labelRepository = null,
+        UuidGeneratorInterface $uuidGenerator = null
     ) {
         $this->offerRepository = $offerRepository;
         $this->organizerRepository = $organizerRepository;
@@ -420,16 +420,18 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     private function createLabel(AbstractAddLabel $addLabel)
     {
-        $label = Label::create(
-            new UUID($this->uuidGenerator->generate()),
-            new StringLiteral((string)$addLabel->getLabel()),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
+        if (!is_null($this->labelRepository) && !is_null($this->uuidGenerator)) {
+            $label = Label::create(
+                new UUID($this->uuidGenerator->generate()),
+                new StringLiteral((string)$addLabel->getLabel()),
+                Visibility::VISIBLE(),
+                Privacy::PRIVACY_PUBLIC()
+            );
 
-        try {
-            $this->labelRepository->save($label);
-        } catch (UniqueConstraintException $exception) {
+            try {
+                $this->labelRepository->save($label);
+            } catch (UniqueConstraintException $exception) {
+            }
         }
     }
 }

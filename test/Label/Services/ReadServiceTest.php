@@ -46,6 +46,7 @@ class ReadServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->mockGetByUuid();
+        $this->mockGetByName();
         $this->mockSearch();
         $this->mockSearchTotalLabels();
 
@@ -64,6 +65,20 @@ class ReadServiceTest extends \PHPUnit_Framework_TestCase
             ->with($this->entity->getUuid());
 
         $entity = $this->readService->getByUuid($this->entity->getUuid());
+
+        $this->assertEquals($this->entity, $entity);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_get_label_entity_by_name()
+    {
+        $this->readRepository->expects($this->once())
+            ->method('getByName')
+            ->with($this->entity->getName());
+
+        $entity = $this->readService->getByName($this->entity->getName());
 
         $this->assertEquals($this->entity, $entity);
     }
@@ -100,6 +115,13 @@ class ReadServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->readRepository->method('getByUuid')
             ->with($this->entity->getUuid())
+            ->willReturn($this->entity);
+    }
+
+    private function mockGetByName()
+    {
+        $this->readRepository->method('getByName')
+            ->with($this->entity->getName())
             ->willReturn($this->entity);
     }
 

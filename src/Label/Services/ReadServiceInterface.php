@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
+use ValueObjects\String\String as StringLiteral;
 
 interface ReadServiceInterface
 {
@@ -14,6 +15,12 @@ interface ReadServiceInterface
      * @return Entity|null
      */
     public function getByUuid(UUID $uuid);
+
+    /**
+     * @param StringLiteral $identifier
+     * @return Entity|null
+     */
+    public function getByName(StringLiteral $identifier);
 
     /**
      * @param Query $query

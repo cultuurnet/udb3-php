@@ -2,9 +2,11 @@
 
 namespace CultuurNet\UDB3\Label\Services;
 
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 class ReadService implements ReadServiceInterface
 {
@@ -28,6 +30,14 @@ class ReadService implements ReadServiceInterface
     public function getByUuid(UUID $uuid)
     {
         return $this->readRepository->getByUuid($uuid);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getByName(StringLiteral $identifier)
+    {
+        return $this->readRepository->getByName($identifier);
     }
 
     /**

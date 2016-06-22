@@ -9,6 +9,8 @@ use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterfa
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use ValueObjects\String\String as StringLiteral;
 
 class Projector extends AbstractProjector
 {
@@ -42,11 +44,17 @@ class Projector extends AbstractProjector
     {
         $entity = $this->createEntity($this->labelEventHelper, $labelAdded);
 
-        $this->writeRepository->save(
-            $entity->getUuid(),
-            $entity->getRelationType(),
-            $entity->getRelationId()
-        );
+        try {
+            if (!is_null($entity)) {
+                $this->writeRepository->save(
+                    $entity->getUuid(),
+                    $entity->getRelationType(),
+                    $entity->getRelationId()
+                );
+            }
+        } catch (UniqueConstraintViolationException $exception) {
+            // By design to catch unique exception.
+        }
     }
 
     /**
@@ -56,7 +64,12 @@ class Projector extends AbstractProjector
     {
         $entity = $this->createEntity($this->labelEventHelper, $labelDeleted);
 
-        $this->writeRepository->deleteByUuid($entity->getUuid());
+        if (!is_null($entity)) {
+            $this->writeRepository->deleteByUuidAndRelationId(
+                $entity->getUuid(),
+                new StringLiteral($labelDeleted->getItemId())
+            );
+        }
     }
 
     /**
@@ -68,14 +81,20 @@ class Projector extends AbstractProjector
         LabelEventHelper $labelEventHelper,
         AbstractLabelEvent $labelEvent
     ) {
+        $entity = null;
+
         $uuid = $labelEventHelper->getUuid($labelEvent);
         $relationType = $labelEventHelper->getRelationType($labelEvent);
         $relationId = $labelEventHelper->getRelationId($labelEvent);
 
-        return new Entity(
-            $uuid,
-            $relationType,
-            $relationId
-        );
+        if (!is_null($uuid)) {
+            $entity = new Entity(
+                $uuid,
+                $relationType,
+                $relationId
+            );
+        }
+
+        return $entity;
     }
 }

@@ -30,15 +30,20 @@ class LabelEventHelper
 
     /**
      * @param AbstractLabelEvent $labelEvent
-     * @return UUID
+     * @return UUID|null
      */
     public function getUuid(AbstractLabelEvent $labelEvent)
     {
+        $uuid = null;
+        
         $name = new StringLiteral((string) $labelEvent->getLabel());
 
         $entity = $this->readRepository->getByName($name);
-
-        return $entity->getUuid();
+        if ($entity !== null) {
+            $uuid = $entity->getUuid();
+        }
+        
+        return $uuid;
     }
 
     /**

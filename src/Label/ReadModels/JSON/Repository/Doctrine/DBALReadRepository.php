@@ -24,12 +24,12 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
         $aliases = $this->getAliases();
         $whereId = SchemaConfigurator::UUID_COLUMN . ' = ?';
 
-        $this->getQueryBuilder()->select($aliases)
+        $queryBuilder = $this->createQueryBuilder()->select($aliases)
             ->from($this->getTableName()->toNative())
             ->where($whereId)
             ->setParameters([$uuid]);
 
-        return $this->getResult($this->getQueryBuilder());
+        return $this->getResult($queryBuilder);
     }
 
     /**
@@ -41,12 +41,12 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
         $aliases = $this->getAliases();
         $whereName = SchemaConfigurator::NAME_COLUMN . ' = ?';
 
-        $this->getQueryBuilder()->select($aliases)
+        $queryBuilder = $this->createQueryBuilder()->select($aliases)
             ->from($this->getTableName()->toNative())
             ->where($whereName)
             ->setParameters([$name]);
 
-        return $this->getResult($this->getQueryBuilder());
+        return $this->getResult($queryBuilder);
     }
 
     /**
@@ -57,9 +57,11 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     {
         $aliases = $this->getAliases();
 
-        $like = $this->createLike($this->getQueryBuilder());
+        $queryBuilder = $this->createQueryBuilder();
 
-        $this->getQueryBuilder()->select($aliases)
+        $like = $this->createLike($queryBuilder);
+
+        $queryBuilder->select($aliases)
             ->from($this->getTableName()->toNative())
             ->where($like)
             ->setParameter(
@@ -69,16 +71,16 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
             ->orderBy(SchemaConfigurator::NAME_COLUMN);
 
         if ($query->getOffset()) {
-            $this->getQueryBuilder()
+            $queryBuilder
                 ->setFirstResult($query->getOffset()->toNative());
         }
 
         if ($query->getLimit()) {
-            $this->getQueryBuilder()
+            $queryBuilder
                 ->setMaxResults($query->getLimit()->toNative());
         }
 
-        return $this->getResults($this->getQueryBuilder());
+        return $this->getResults($queryBuilder);
     }
 
     /**
@@ -87,9 +89,10 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
      */
     public function searchTotalLabels(Query $query)
     {
-        $like = $this->createLike($this->getQueryBuilder());
+        $queryBuilder = $this->createQueryBuilder();
+        $like = $this->createLike($queryBuilder);
 
-        $this->getQueryBuilder()->select('COUNT(*)')
+        $queryBuilder->select('COUNT(*)')
             ->from($this->getTableName()->toNative())
             ->where($like)
             ->setParameter(
@@ -97,7 +100,7 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
                 $this->createLikeParameter($query)
             );
 
-        $statement = $this->getQueryBuilder()->execute();
+        $statement = $queryBuilder->execute();
         $countArray = $statement->fetch(\PDO::FETCH_NUM);
 
         return new Natural($countArray[0]);

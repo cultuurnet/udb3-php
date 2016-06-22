@@ -26,7 +26,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         Privacy $privacy,
         UUID $parentUuid = null
     ) {
-        $this->getQueryBuilder()->insert($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->insert($this->getTableName()->toNative())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
                 SchemaConfigurator::NAME_COLUMN => '?',
@@ -42,7 +43,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $parentUuid ? $parentUuid->toNative() : null
             ]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 
     /**
@@ -125,7 +126,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         $value,
         UUID $uuid
     ) {
-        $this->getQueryBuilder()->update($this->getTableName())
+        $queryBuilder = $this->createQueryBuilder()
+            ->update($this->getTableName()->toNative())
             ->set($column, '?')
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
@@ -133,7 +135,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $uuid->toNative()
             ]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
     }
 
     /**
@@ -144,16 +146,36 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         IntegerValue $value,
         UUID $uuid
     ) {
-        $this->getQueryBuilder()->update($this->getTableName())
+        $currentCount = $this->getCurrentCount($uuid);
+        $newCount = $currentCount + $value->toNative();
+
+        $queryBuilder = $this->createQueryBuilder()
+            ->update($this->getTableName()->toNative())
             ->set(
                 SchemaConfigurator::COUNT_COLUMN,
-                SchemaConfigurator::COUNT_COLUMN . ' + ' . $value->toNative()
+                $newCount < 0 ? 0 : $newCount
             )
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
-            ->setParameters([
-                $uuid->toNative()
-            ]);
+            ->setParameters([$uuid->toNative()]);
 
-        $this->getQueryBuilder()->execute();
+        $queryBuilder->execute();
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return IntegerValue
+     */
+    private function getCurrentCount(UUID $uuid)
+    {
+        $queryBuilder = $this->createQueryBuilder()
+            ->select([SchemaConfigurator::COUNT_COLUMN])
+            ->from($this->getTableName()->toNative())
+            ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
+            ->setParameters([$uuid->toNative()]);
+
+        $statement = $queryBuilder->execute();
+        $row = $statement->fetch(\PDO::FETCH_NUM);
+
+        return $row[0];
     }
 }

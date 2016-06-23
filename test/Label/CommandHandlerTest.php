@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\Label;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Event\Commands\AddLabel as EventAddLabel;
+use CultuurNet\UDB3\Label as OfferLabel;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\CreateCopy;
 use CultuurNet\UDB3\Label\Commands\MakeInvisible;
@@ -19,6 +22,7 @@ use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Place\Commands\AddLabel as PlaceAddLabel;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -61,8 +65,6 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
 
     public function setUp()
     {
-        parent::setUp();
-
         $this->uuid = new UUID();
         $this->name = new StringLiteral('labelName');
         $this->visibility = Visibility::INVISIBLE();
@@ -83,6 +85,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             $this->privacy,
             $this->parentUuid
         );
+
+        // Ensure all members are created before createCommandHandler is called.
+        parent::setUp();
     }
 
     /**
@@ -92,10 +97,17 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
     ) {
-        return new CommandHandler(new LabelRepository(
-            $eventStore,
-            $eventBus
-        ));
+        /** @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject $uuidGenerator */
+        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+        $uuidGenerator->method('generate')
+            ->willReturn($this->uuid);
+
+        return new CommandHandler(
+            new LabelRepository(
+                $eventStore,
+                $eventBus),
+            $uuidGenerator
+        );
     }
 
     /**
@@ -227,5 +239,43 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given([$this->created])
             ->when(new MakePrivate($this->uuid))
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_label_added_on_event()
+    {
+        $created = new Created(
+            $this->uuid,
+            new StringLiteral('labelName'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC()
+        );
+
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([])
+            ->when(new EventAddLabel('eventId', new OfferLabel('labelName')))
+            ->then([$created]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_label_added_on_place()
+    {
+        $created = new Created(
+            $this->uuid,
+            new StringLiteral('labelName'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC()
+        );
+
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([])
+            ->when(new PlaceAddLabel('placeId', new OfferLabel('labelName')))
+            ->then([$created]);
     }
 }

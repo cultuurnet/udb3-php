@@ -6,7 +6,6 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
@@ -42,16 +41,9 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->organizerRepository = $this->getMock(RepositoryInterface::class);
 
-        /** @var RepositoryInterface $labelRepository */
-        $labelRepository = $this->getMock(RepositoryInterface::class);
-        /** @var UuidGeneratorInterface $uuidGenerator */
-        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-
         return new EventCommandHandler(
             $repository,
-            $this->organizerRepository,
-            $labelRepository,
-            $uuidGenerator
+            $this->organizerRepository
         );
     }
 

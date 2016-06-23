@@ -103,9 +103,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->willReturn($this->uuid);
 
         return new CommandHandler(
-            new LabelRepository(
-                $eventStore,
-                $eventBus),
+            new LabelRepository($eventStore, $eventBus),
             $uuidGenerator
         );
     }

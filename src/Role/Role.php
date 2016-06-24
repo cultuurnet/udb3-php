@@ -3,6 +3,11 @@
 namespace CultuurNet\UDB3\Role;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Role\Events\PermissionAdded;
+use CultuurNet\UDB3\Role\Events\PermissionRemoved;
+use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -24,5 +29,54 @@ class Role extends EventSourcedAggregateRoot
     public function getAggregateRootId()
     {
         return $this->uuid;
+    }
+
+    /**
+     * @param UUID $uuid
+     * @param StringLiteral $name
+     * @return Role
+     */
+    public static function create(
+        UUID $uuid,
+        StringLiteral $name
+    ) {
+        $role = new Role();
+
+        $role->apply(new RoleCreated(
+            $uuid,
+            $name
+        ));
+
+        return $role;
+    }
+
+    /**
+     * Rename the role.
+     *
+     * @param StringLiteral $name
+     */
+    public function renameRole(StringLiteral $name)
+    {
+        $this->apply(new RoleRenamed($this->uuid, $name));
+    }
+
+    /**
+     * Add a permission to the role.
+     *
+     * @param Permission $permission
+     */
+    public function addPermission(Permission $permission)
+    {
+        $this->apply(new PermissionAdded($this->uuid, $permission));
+    }
+
+    /**
+     * Remove a permission from the role.
+     *
+     * @param Permission $permission
+     */
+    public function removePermission(Permission $permission)
+    {
+        $this->apply(new PermissionRemoved($this->uuid, $permission));
     }
 }

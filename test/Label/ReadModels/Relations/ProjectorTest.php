@@ -11,11 +11,11 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as LabelDeletedFromPlace;
 use ValueObjects\Identity\UUID;
@@ -159,6 +159,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('save')
             ->with(
                 $this->uuid,
+                new StringLiteral('labelName'),
                 $expectedRelationType,
                 new StringLiteral(self::RELATION_ID)
             );
@@ -212,7 +213,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param AbstractLabelEvent $labelEvent
-     * @return RelationType|null
+     * @return OfferType|null
      */
     private function getRelationType(AbstractLabelEvent $labelEvent)
     {
@@ -220,10 +221,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         if ($labelEvent instanceof LabelAddedToPlace ||
             $labelEvent instanceof LabelDeletedFromPlace) {
-            $relationType = RelationType::PLACE();
+            $relationType = OfferType::PLACE();
         } else if ($labelEvent instanceof LabelAddedToEvent ||
             $labelEvent instanceof LabelDeletedFromEvent) {
-            $relationType = RelationType::EVENT();
+            $relationType = OfferType::EVENT();
         }
 
         return $relationType;

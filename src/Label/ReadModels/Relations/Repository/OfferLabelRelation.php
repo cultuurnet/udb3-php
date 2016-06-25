@@ -2,15 +2,17 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine\SchemaConfigurator;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class Entity implements \JsonSerializable
+class OfferLabelRelation implements \JsonSerializable
 {
     const UUID = 'uuid';
     const RELATION_TYPE = 'relationType';
     const RELATION_ID = 'relationId';
+    const LABEL_NAME = 'labelName';
 
     /**
      * @var UUID
@@ -18,7 +20,7 @@ class Entity implements \JsonSerializable
     private $uuid;
 
     /**
-     * @var RelationType
+     * @var OfferType
      */
     private $relationType;
 
@@ -28,19 +30,27 @@ class Entity implements \JsonSerializable
     private $relationId;
 
     /**
+     * @var StringLiteral
+     */
+    private $labelName;
+
+    /**
      * Entity constructor.
      * @param UUID $uuid
-     * @param RelationType $relationType
+     * @param OfferType $offerType
      * @param StringLiteral $relationId
+     * @param StringLiteral $labelName
      */
     public function __construct(
         UUID $uuid,
-        RelationType $relationType,
+        StringLiteral $labelName,
+        OfferType $offerType,
         StringLiteral $relationId
     ) {
         $this->uuid = $uuid;
-        $this->relationType = $relationType;
+        $this->relationType = $offerType;
         $this->relationId = $relationId;
+        $this->labelName = $labelName;
     }
 
     /**
@@ -52,7 +62,7 @@ class Entity implements \JsonSerializable
     }
 
     /**
-     * @return RelationType
+     * @return OfferType
      */
     public function getRelationType()
     {
@@ -68,14 +78,33 @@ class Entity implements \JsonSerializable
     }
 
     /**
+     * @return StringLiteral
+     */
+    public function getLabelName()
+    {
+        return $this->labelName;
+    }
+
+    /**
      * @inheritdoc
      */
     public function jsonSerialize()
     {
         return [
             self::UUID => $this->uuid->toNative(),
+            self::LABEL_NAME => (string) $this->getLabelName(),
             self::RELATION_TYPE => $this->relationType->toNative(),
             self::RELATION_ID => $this->relationId->toNative()
         ];
+    }
+
+    public static function fromRelationalData(array $relation)
+    {
+        return new static(
+            new UUID($relation[SchemaConfigurator::UUID_COLUMN]),
+            new StringLiteral($relation[SchemaConfigurator::LABEL_NAME]),
+            OfferType::fromCaseInsensitiveValue($relation[SchemaConfigurator::RELATION_TYPE_COLUMN]),
+            new StringLiteral($relation[SchemaConfigurator::RELATION_ID_COLUMN])
+        );
     }
 }

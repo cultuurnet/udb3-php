@@ -2,9 +2,8 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -28,38 +27,41 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
     /**
      * @test
      */
-    public function it_should_return_the_ids_of_all_the_offers_that_are_tagged_with_a_specific_label()
+    public function it_should_return_relations_of_the_offers_that_are_tagged_with_a_specific_label()
     {
         $labelId = new UUID('452ED5F7-925D-4D2C-9FA8-490398E85A16');
 
-        $entity1 = new Entity(
+        $relation1 = new OfferLabelRelation(
             $labelId,
-            RelationType::PLACE(),
+            new StringLiteral('green'),
+            OfferType::PLACE(),
             new StringLiteral('99A78F44-A45B-40E2-A1E3-7632D2F3B1C6')
         );
 
-        $entity2 = new Entity(
+        $relation2 = new OfferLabelRelation(
             $labelId,
-            RelationType::PLACE(),
+            new StringLiteral('green'),
+            OfferType::PLACE(),
             new StringLiteral('A9B3FA7B-9AF5-49F4-8BB5-2B169CE83107')
         );
 
-        $entity3 = new Entity(
+        $relation3 = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('blue'),
+            OfferType::PLACE(),
             new StringLiteral('298A39A1-8D1E-4F5D-B05E-811B6459EA36')
         );
 
-        $this->saveEntity($entity1);
-        $this->saveEntity($entity2);
-        $this->saveEntity($entity3);
+        $this->saveEntity($relation1);
+        $this->saveEntity($relation2);
+        $this->saveEntity($relation3);
 
-        $offerIds = $this->readRepository->getOffersByLabel($labelId);
-        $expectedOfferIds = [
-            '99A78F44-A45B-40E2-A1E3-7632D2F3B1C6',
-            'A9B3FA7B-9AF5-49F4-8BB5-2B169CE83107',
+        $offerIds = $this->readRepository->getOfferLabelRelations($labelId);
+        $expectedRelations = [
+            $relation1,
+            $relation2
         ];
 
-        $this->assertEquals($expectedOfferIds, $offerIds);
+        $this->assertEquals($expectedRelations, $offerIds);
     }
 }

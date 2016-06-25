@@ -3,9 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use ValueObjects\String\String as StringLiteral;
 
 abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -37,32 +35,33 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Entity $entity
+     * @param OfferLabelRelation $entity
      */
-    protected function saveEntity(Entity $entity)
+    protected function saveEntity(OfferLabelRelation $entity)
     {
         $values = $this->entityToValues($entity);
 
-        $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?)';
+        $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?, ?)';
 
         $this->connection->executeQuery($sql, $values);
     }
 
     /**
-     * @param Entity $entity
+     * @param OfferLabelRelation $entity
      * @return array
      */
-    protected function entityToValues(Entity $entity)
+    protected function entityToValues(OfferLabelRelation $entity)
     {
         return [
             $entity->getUuid()->toNative(),
+            $entity->getLabelName(),
             $entity->getRelationType()->toNative(),
             $entity->getRelationId()
         ];
     }
 
     /**
-     * @return Entity
+     * @return OfferLabelRelation
      */
     protected function getLastEntity()
     {
@@ -71,19 +70,6 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $statement = $this->connection->executeQuery($sql);
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $rows ? $this->rowToEntity($rows[count($rows) - 1]) : null;
-    }
-
-    /**
-     * @param array $row
-     * @return Entity
-     */
-    protected function rowToEntity(array $row)
-    {
-        return new Entity(
-            new UUID($row[SchemaConfigurator::UUID_COLUMN]),
-            RelationType::fromNative($row[SchemaConfigurator::RELATION_TYPE_COLUMN]),
-            new StringLiteral($row[SchemaConfigurator::RELATION_ID_COLUMN])
-        );
+        return $rows ? OfferLabelRelation::fromRelationalData($rows[count($rows) - 1]) : null;
     }
 }

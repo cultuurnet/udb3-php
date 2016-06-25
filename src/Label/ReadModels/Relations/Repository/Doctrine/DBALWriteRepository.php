@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -15,18 +15,21 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
      */
     public function save(
         UUID $uuid,
-        RelationType $relationType,
+        StringLiteral $labelName,
+        OfferType $relationType,
         StringLiteral $relationId
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
+                SchemaConfigurator::LABEL_NAME => '?',
                 SchemaConfigurator::RELATION_TYPE_COLUMN => '?',
                 SchemaConfigurator::RELATION_ID_COLUMN => '?'
             ])
             ->setParameters([
                 $uuid->toNative(),
+                (string) $labelName,
                 $relationType->toNative(),
                 $relationId->toNative()
             ]);

@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
@@ -48,6 +48,7 @@ class Projector extends AbstractProjector
             if (!is_null($entity)) {
                 $this->writeRepository->save(
                     $entity->getUuid(),
+                    $entity->getLabelName(),
                     $entity->getRelationType(),
                     $entity->getRelationId()
                 );
@@ -75,7 +76,7 @@ class Projector extends AbstractProjector
     /**
      * @param LabelEventHelper $labelEventHelper
      * @param AbstractLabelEvent $labelEvent
-     * @return Entity
+     * @return OfferLabelRelation
      */
     private function createEntity(
         LabelEventHelper $labelEventHelper,
@@ -88,8 +89,9 @@ class Projector extends AbstractProjector
         $relationId = $labelEventHelper->getRelationId($labelEvent);
 
         if (!is_null($uuid)) {
-            $entity = new Entity(
+            $entity = new OfferLabelRelation(
                 $uuid,
+                new StringLiteral((string) $labelEvent->getLabel()),
                 $relationType,
                 $relationId
             );

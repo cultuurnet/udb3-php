@@ -4,10 +4,10 @@ namespace CultuurNet\UDB3\Label\ReadModels\Helper;
 
 use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted as EventLabelDeleted;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -48,15 +48,15 @@ class LabelEventHelper
 
     /**
      * @param AbstractLabelEvent $labelEvent
-     * @return RelationType
+     * @return OfferType
      * @throws \InvalidArgumentException
      */
     public function getRelationType(AbstractLabelEvent $labelEvent)
     {
         if ($this->isEventRelationType($labelEvent)) {
-            $relationType = RelationType::EVENT();
+            $relationType = OfferType::EVENT();
         } else if ($this->isPlaceRelationType($labelEvent)) {
-            $relationType = RelationType::PLACE();
+            $relationType = OfferType::PLACE();
         } else {
             $message = $this->createIllegalArgumentMessage($labelEvent);
             throw new \InvalidArgumentException($message);

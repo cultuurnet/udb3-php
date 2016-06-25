@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Offer\OfferType;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -30,14 +30,16 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save()
     {
-        $expectedEntity = new Entity(
+        $expectedEntity = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('purple'),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedEntity->getUuid(),
+            $expectedEntity->getLabelName(),
             $expectedEntity->getRelationType(),
             $expectedEntity->getRelationId()
         );
@@ -52,22 +54,25 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save_same_uuid_but_different_relation_type_and_relation_id()
     {
-        $entity = new Entity(
+        $entity = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('blue'),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->saveEntity($entity);
 
-        $expectedEntity = new Entity(
+        $expectedEntity = new OfferLabelRelation(
             $entity->getUuid(),
-            RelationType::EVENT(),
+            new StringLiteral('green'),
+            OfferType::EVENT(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedEntity->getUuid(),
+            $expectedEntity->getLabelName(),
             $expectedEntity->getRelationType(),
             $expectedEntity->getRelationId()
         );
@@ -82,22 +87,25 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save_same_uuid_and_relation_type_but_different_relation_id()
     {
-        $entity = new Entity(
+        $entity = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('blue'),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->saveEntity($entity);
 
-        $expectedEntity = new Entity(
+        $expectedEntity = new OfferLabelRelation(
             $entity->getUuid(),
+            new StringLiteral('green'),
             $entity->getRelationType(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedEntity->getUuid(),
+            $expectedEntity->getLabelName(),
             $expectedEntity->getRelationType(),
             $expectedEntity->getRelationId()
         );
@@ -112,16 +120,18 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_not_save_same_entity()
     {
-        $entity = new Entity(
+        $entity = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('orange'),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->saveEntity($entity);
 
-        $sameEntity = new Entity(
+        $sameEntity = new OfferLabelRelation(
             $entity->getUuid(),
+            $entity->getLabelName(),
             $entity->getRelationType(),
             $entity->getRelationId()
         );
@@ -130,6 +140,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $this->dbalWriteRepository->save(
             $sameEntity->getUuid(),
+            $sameEntity->getLabelName(),
             $sameEntity->getRelationType(),
             $sameEntity->getRelationId()
         );
@@ -140,15 +151,17 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_delete_based_on_uuid()
     {
-        $entity1 = new Entity(
+        $entity1 = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('blue'),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $entity2 = new Entity(
+        $entity2 = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            new StringLiteral('green'),
+            OfferType::PLACE(),
             new StringLiteral('otherRelationId')
         );
 

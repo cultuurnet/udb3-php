@@ -3,7 +3,9 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 
 class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInterface
@@ -11,7 +13,7 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
     /**
      * @inheritdoc
      */
-    public function getOffersByLabel(UUID $labelId)
+    public function getOfferLabelRelations(UUID $labelId)
     {
 //        TODO: This one gives a cryptic error message: " Illegal offset type"
 //        $queryBuilder = $this->createQueryBuilder()
@@ -25,14 +27,17 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
         $query = $this
             ->getConnection()
             ->prepare(
-                'SELECT ' . SchemaConfigurator::RELATION_ID_COLUMN .
+                'SELECT * ' .
                 ' FROM ' . $this->getTableName() .
                 ' WHERE ' . SchemaConfigurator::UUID_COLUMN . ' = ?'
             );
 
         $query->bindValue(1, $labelId, 'string');
         $query->execute();
-        
-        return $query->fetchAll(\PDO::FETCH_COLUMN);
+
+        return array_map(
+            array(OfferLabelRelation::class, 'fromRelationalData'),
+            $query->fetchAll(\PDO::FETCH_ASSOC)
+        );
     }
 }

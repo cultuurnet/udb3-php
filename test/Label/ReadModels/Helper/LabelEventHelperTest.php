@@ -7,9 +7,9 @@ use CultuurNet\UDB3\Event\Events\LabelDeleted as EventLabelDeleted;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -90,7 +90,7 @@ class LabelEventHelperTest extends \PHPUnit_Framework_TestCase
 
         $relationType = $this->labelEventHelper->getRelationType($eventLabelAdded);
 
-        $this->assertEquals(RelationType::EVENT(), $relationType);
+        $this->assertEquals(OfferType::EVENT(), $relationType);
     }
 
     /**
@@ -102,7 +102,7 @@ class LabelEventHelperTest extends \PHPUnit_Framework_TestCase
 
         $relationType = $this->labelEventHelper->getRelationType($eventLabelDeleted);
 
-        $this->assertEquals(RelationType::EVENT(), $relationType);
+        $this->assertEquals(OfferType::EVENT(), $relationType);
     }
 
     /**
@@ -114,7 +114,7 @@ class LabelEventHelperTest extends \PHPUnit_Framework_TestCase
 
         $relationType = $this->labelEventHelper->getRelationType($placeLabelAdded);
 
-        $this->assertEquals(RelationType::PLACE(), $relationType);
+        $this->assertEquals(OfferType::PLACE(), $relationType);
     }
 
     /**
@@ -126,7 +126,7 @@ class LabelEventHelperTest extends \PHPUnit_Framework_TestCase
 
         $relationType = $this->labelEventHelper->getRelationType($placeLabelDeleted);
 
-        $this->assertEquals(RelationType::PLACE(), $relationType);
+        $this->assertEquals(OfferType::PLACE(), $relationType);
     }
 
     /**

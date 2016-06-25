@@ -2,11 +2,11 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class EntityTest extends \PHPUnit_Framework_TestCase
+class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UUID
@@ -14,7 +14,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     private $uuid;
 
     /**
-     * @var RelationType
+     * @var OfferType
      */
     private $relationType;
 
@@ -24,18 +24,25 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     private $relationId;
 
     /**
-     * @var Entity
+     * @var OfferLabelRelation
      */
     private $entity;
+
+    /**
+     * @var StringLiteral
+     */
+    private $labelName;
 
     protected function setUp()
     {
         $this->uuid = new UUID();
-        $this->relationType = RelationType::PLACE();
+        $this->relationType = OfferType::PLACE();
         $this->relationId = new StringLiteral('relationId');
+        $this->labelName = new StringLiteral('labelName');
 
-        $this->entity = new Entity(
+        $this->entity = new OfferLabelRelation(
             $this->uuid,
+            $this->labelName,
             $this->relationType,
             $this->relationId
         );
@@ -76,6 +83,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($this->entity);
 
         $expectedJson = '{"uuid":"' . $this->uuid->toNative()
+            . '","labelName":"' . (string) $this->labelName
             . '","relationType":"' . $this->relationType->toNative()
             . '","relationId":"' . $this->relationId->toNative() . '"}';
 

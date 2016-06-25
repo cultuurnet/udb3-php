@@ -13,6 +13,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     const UUID_COLUMN = 'uuid_col';
     const RELATION_TYPE_COLUMN = 'relationType';
     const RELATION_ID_COLUMN = 'relationId';
+    const LABEL_NAME = 'labelName';
 
     /**
      * @var StringLiteral
@@ -55,6 +56,10 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             ->setLength(36)
             ->setNotnull(true);
 
+        $table->addColumn(self::LABEL_NAME, Type::STRING)
+            ->setLength(255)
+            ->setNotnull(true);
+
         $table->addColumn(self::RELATION_TYPE_COLUMN, Type::STRING)
             ->setLength(255)
             ->setNotnull(true);
@@ -66,8 +71,9 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
         $table->addIndex([self::UUID_COLUMN]);
         $table->addUniqueIndex([
             self::UUID_COLUMN,
+            self::LABEL_NAME,
             self::RELATION_TYPE_COLUMN,
-            self::RELATION_ID_COLUMN
+            self::RELATION_ID_COLUMN,
         ]);
 
         return $table;

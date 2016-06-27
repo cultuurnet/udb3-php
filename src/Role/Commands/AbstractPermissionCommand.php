@@ -23,7 +23,9 @@ class AbstractPermissionCommand extends AbstractCommand
     ) {
         parent::__construct($uuid);
 
-        $this->permission = $permission;
+        // The built-in serialize call does not work on Enum.
+        // Just store them internally as string but expose as Enum.
+        $this->permission = $permission->toNative();
     }
 
     /**
@@ -31,6 +33,6 @@ class AbstractPermissionCommand extends AbstractCommand
      */
     public function getPermission()
     {
-        return $this->permission;
+        return Permission::fromNative($this->permission);
     }
 }

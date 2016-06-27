@@ -26,23 +26,16 @@ class OfferLabelProjector
     private $offerRepository;
 
     /**
-     * @var LabelRepository
-     */
-    private $labelRepository;
-
-    /**
      * OfferLabelProjector constructor.
      * @param DocumentRepositoryInterface $offerRepository
      * @param ReadRepositoryInterface $relationRepository
      */
     public function __construct(
         DocumentRepositoryInterface $offerRepository,
-        ReadRepositoryInterface $relationRepository,
-        LabelRepository $labelRepository
+        ReadRepositoryInterface $relationRepository
     ) {
         $this->offerRepository = $offerRepository;
         $this->relationRepository = $relationRepository;
-        $this->labelRepository = $labelRepository;
     }
 
     public function handleMadeVisible(MadeVisible $madeVisible)

@@ -18,7 +18,7 @@ class AbstractPermissionEventTest extends \PHPUnit_Framework_TestCase
     protected $permission;
 
     /**
-     * @var AbstractEvent
+     * @var AbstractPermissionEvent
      */
     protected $event;
 

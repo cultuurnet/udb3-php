@@ -56,19 +56,24 @@ class Role extends EventSourcedAggregateRoot
      * @param UUID $uuid
      * @param StringLiteral $name
      */
-    public function renameRole(UUID $uuid, StringLiteral $name)
-    {
+    public function renameRole(
+        UUID $uuid,
+        StringLiteral $name
+    ) {
         $this->apply(new RoleRenamed($uuid, $name));
     }
 
     /**
      * Add a permission to the role.
      *
+     * @param UUID $uuid
      * @param Permission $permission
      */
-    public function addPermission(Permission $permission)
-    {
-        $this->apply(new PermissionAdded($this->uuid, $permission));
+    public function addPermission(
+        UUID $uuid,
+        Permission $permission
+    ) {
+        $this->apply(new PermissionAdded($uuid, $permission));
     }
 
     /**
@@ -76,8 +81,10 @@ class Role extends EventSourcedAggregateRoot
      *
      * @param Permission $permission
      */
-    public function removePermission(Permission $permission)
-    {
-        $this->apply(new PermissionRemoved($this->uuid, $permission));
+    public function removePermission(
+        UUID $uuid,
+        Permission $permission
+    ) {
+        $this->apply(new PermissionRemoved($uuid, $permission));
     }
 }

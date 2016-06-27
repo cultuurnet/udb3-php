@@ -39,6 +39,9 @@ class CommandHandler extends AbstractCommandHandler
         $this->save($role);
     }
 
+    /**
+     * @param RenameRole $renameRole
+     */
     public function handleRenameRole(RenameRole $renameRole)
     {
         $role = $this->load($renameRole->getUuid());
@@ -51,20 +54,32 @@ class CommandHandler extends AbstractCommandHandler
         $this->save($role);
     }
 
+    /**
+     * @param AddPermission $addPermission
+     */
     public function handleAddPermission(AddPermission $addPermission)
     {
         $role = $this->load($addPermission->getUuid());
 
-        $role->addPermission($addPermission->getPermission());
+        $role->addPermission(
+            $addPermission->getUuid(),
+            $addPermission->getPermission()
+        );
 
         $this->save($role);
     }
 
+    /**
+     * @param RemovePermission $removePermission
+     */
     public function handleRemovePermission(RemovePermission $removePermission)
     {
         $role = $this->load($removePermission->getUuid());
 
-        $role->removePermission($removePermission->getPermission());
+        $role->removePermission(
+            $removePermission->getUuid(),
+            $removePermission->getPermission()
+        );
 
         $this->save($role);
     }

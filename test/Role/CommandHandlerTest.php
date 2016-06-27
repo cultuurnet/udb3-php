@@ -5,10 +5,15 @@ namespace CultuurNet\UDB3\Role;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
+use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
+use CultuurNet\UDB3\Role\Events\PermissionAdded;
+use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -25,6 +30,11 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $name;
 
     /**
+     * @var Permission
+     */
+    private $permission;
+
+    /**
      * @var RoleCreated
      */
     private $roleCreated;
@@ -34,12 +44,23 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     private $roleRenamed;
 
+    /**
+     * @var PermissionAdded
+     */
+    private $permissionAdded;
+
+    /**
+     * @var PermissionRemoved
+     */
+    private $permissionRemoved;
+
     public function setUp()
     {
         parent::setUp();
 
         $this->uuid = new UUID();
         $this->name = new StringLiteral('labelName');
+        $this->permission = Permission::AANBOD_INVOEREN();
 
         $this->roleCreated = new RoleCreated(
             $this->uuid,
@@ -49,6 +70,16 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->roleRenamed = new RoleRenamed(
             $this->uuid,
             $this->name
+        );
+
+        $this->permissionAdded = new PermissionAdded(
+            $this->uuid,
+            $this->permission
+        );
+        
+        $this->permissionRemoved = new PermissionRemoved(
+            $this->uuid,
+            $this->permission
         );
     }
 
@@ -93,5 +124,35 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $this->name
             ))
             ->then([$this->roleRenamed]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_addPermission()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([])
+            ->when(new AddPermission(
+                $this->uuid,
+                $this->permission
+            ))
+            ->then([$this->permissionAdded]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_removePermission()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([])
+            ->when(new RemovePermission(
+                $this->uuid,
+                $this->permission
+            ))
+            ->then([$this->permissionRemoved]);
     }
 }

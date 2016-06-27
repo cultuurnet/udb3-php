@@ -25,7 +25,7 @@ class AbstractPermissionCommandTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->uuid = new UUID();
-        $this->permission =Permission::AANBOD_BEWERKEN();
+        $this->permission = Permission::AANBOD_BEWERKEN();
 
         $this->abstractPermissionCommand = $this->getMockForAbstractClass(
             AbstractPermissionCommand::class,

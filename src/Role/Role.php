@@ -36,7 +36,7 @@ class Role extends EventSourcedAggregateRoot
      * @param StringLiteral $name
      * @return Role
      */
-    public static function create(
+    public static function createRole(
         UUID $uuid,
         StringLiteral $name
     ) {
@@ -53,11 +53,12 @@ class Role extends EventSourcedAggregateRoot
     /**
      * Rename the role.
      *
+     * @param UUID $uuid
      * @param StringLiteral $name
      */
-    public function renameRole(StringLiteral $name)
+    public function renameRole(UUID $uuid, StringLiteral $name)
     {
-        $this->apply(new RoleRenamed($this->uuid, $name));
+        $this->apply(new RoleRenamed($uuid, $name));
     }
 
     /**

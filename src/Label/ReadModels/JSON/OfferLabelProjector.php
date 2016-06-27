@@ -8,6 +8,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\Label;
 use CultuurNet\UDB3\Label\LabelRepository;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
 
 class OfferLabelProjector
@@ -46,21 +47,20 @@ class OfferLabelProjector
 
     public function handleMadeVisible(MadeVisible $madeVisible)
     {
-        /** @var Label $label */
-        $label = $this->labelRepository->load((string) $madeVisible->getUuid());
-        $offerIds = $this->relationRepository->getOffersByLabel($madeVisible->getUuid());
+        /** @var OfferLabelRelation[] $offerRelations */
+        $offerRelations = $this->relationRepository->getOfferLabelRelations($madeVisible->getUuid());
 
-        foreach ($offerIds as $offerId) {
+        foreach ($offerRelations as $offerRelation) {
             try {
-                $offerDocument = $this->offerRepository->get($offerId);
+                $offerDocument = $this->offerRepository->get((string) $offerRelation->getRelationId());
 
                 if ($offerDocument) {
                     $offerLd = $offerDocument->getBody();
 
                     $labels = isset($offerLd->labels) ? $offerLd->labels : [];
-                    $labelName = $label->getName();
+                    $labelName = (string) $offerRelation->getLabelName();
 
-                    // TODO: unlike CDBXML, the json-ld labels are just strings so we just make sure it's in the list
+                    // TODO: unlike CDBXML, the json-ld labels are just strings so we can only make sure it's in the list
                     $labels[] = $labelName;
                     $offerLd->labels = array_unique($labels);
 

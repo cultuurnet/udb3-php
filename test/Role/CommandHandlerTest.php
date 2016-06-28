@@ -99,7 +99,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_createRole()
+    public function it_handles_create()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -114,7 +114,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_renameRole()
+    public function it_handles_rename()
     {
         $this->scenario
             ->withAggregateId($this->uuid)

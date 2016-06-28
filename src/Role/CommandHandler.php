@@ -31,7 +31,7 @@ class CommandHandler extends AbstractCommandHandler
      */
     public function handleCreateRole(CreateRole $createRole)
     {
-        $role = Role::createRole(
+        $role = Role::create(
             $createRole->getUuid(),
             $createRole->getName()
         );
@@ -46,7 +46,7 @@ class CommandHandler extends AbstractCommandHandler
     {
         $role = $this->load($renameRole->getUuid());
         
-        $role->renameRole(
+        $role->rename(
             $renameRole->getUuid(),
             $renameRole->getName()
         );

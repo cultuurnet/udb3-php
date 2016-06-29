@@ -166,6 +166,33 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_projects_the_addition_of_an_invisible_label()
+    {
+        $labelAdded = new LabelAdded(
+            'foo',
+            new Label('label B', false)
+        );
+
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A']
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $body = $this->project($labelAdded, 'foo');
+
+        $this->assertEquals(
+            (object) ['labels' => ['label A'], 'hiddenLabels' => ['label B']],
+            $body
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_projects_the_removal_of_a_label()
     {
         $initialDocument = new JsonDocument(
@@ -187,6 +214,34 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             ['label A', 'label C'],
             $body->labels
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_removal_of_a_hidden_label()
+    {
+        $initialDocument = new JsonDocument(
+            'foo',
+            json_encode([
+                'labels' => ['label A', 'label B'],
+                'hiddenLabels' => ['label C']
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $labelDeleted = new LabelDeleted(
+            'foo',
+            new Label('label C', false)
+        );
+
+        $body = $this->project($labelDeleted, 'foo');
+
+        $this->assertEquals(
+            (object) ['labels' => ['label A', 'label B']],
+            $body
         );
     }
 

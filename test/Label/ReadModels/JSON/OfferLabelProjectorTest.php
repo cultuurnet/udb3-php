@@ -7,6 +7,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
+use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
@@ -80,7 +81,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $existingPlaceDocument = new JsonDocument(
             (string)$placeId,
-            json_encode((object)['labels' => ['orange'], 'hiddenLabels' => ['green', 'black']])
+            json_encode((object)['hiddenLabels' => ['green', 'black']])
         );
 
         $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
@@ -92,7 +93,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $expectedDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['labels' => ['orange', 'black'], 'hiddenLabels' => ['green']])
+            json_encode((object)['hiddenLabels' => ['green'], 'labels' => ['black']])
         );
 
         $this->offerRepository
@@ -127,6 +128,74 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
         $expectedDocument = new JsonDocument(
             (string) $placeId,
             json_encode((object)['labels' => ['orange', 'green', 'black']])
+        );
+
+        $this->offerRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_projection_of_offers_which_have_a_label_made_invisible()
+    {
+        $labelId = new UUID();
+        $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
+        $madeVisibleEvent = new MadeInvisible($labelId);
+
+        $existingPlaceDocument = new JsonDocument(
+            (string)$placeId,
+            json_encode((object)['labels' => ['orange', 'black'], 'hiddenLabels' => ['green']])
+        );
+
+        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+
+        $domainMessage = $this->createDomainMessage(
+            (string)$labelId,
+            $madeVisibleEvent
+        );
+
+        $expectedDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode((object)['labels' => ['orange'], 'hiddenLabels' => ['green', 'black']])
+        );
+
+        $this->offerRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_remove_the_labels_property_of_an_offer_when_the_last_shown_label_is_made_invisible()
+    {
+        $labelId = new UUID();
+        $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
+        $madeVisibleEvent = new MadeInvisible($labelId);
+
+        $existingPlaceDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode((object)['labels' => ['black'], 'hiddenLabels' => ['orange']])
+        );
+
+        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+
+        $domainMessage = $this->createDomainMessage(
+            (string) $labelId,
+            $madeVisibleEvent
+        );
+
+        $expectedDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode((object)['hiddenLabels' => ['orange', 'black']])
         );
 
         $this->offerRepository

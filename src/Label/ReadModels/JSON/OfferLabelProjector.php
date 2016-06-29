@@ -6,8 +6,6 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\Label;
-use CultuurNet\UDB3\Label\LabelRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
 
@@ -38,7 +36,7 @@ class OfferLabelProjector
         $this->relationRepository = $relationRepository;
     }
 
-    public function handleMadeVisible(MadeVisible $madeVisible)
+    public function applyMadeVisible(MadeVisible $madeVisible)
     {
         /** @var OfferLabelRelation[] $offerRelations */
         $offerRelations = $this->relationRepository->getOfferLabelRelations($madeVisible->getUuid());
@@ -53,9 +51,19 @@ class OfferLabelProjector
                     $labels = isset($offerLd->labels) ? $offerLd->labels : [];
                     $labelName = (string) $offerRelation->getLabelName();
 
-                    // TODO: unlike CDBXML, the json-ld labels are just strings so we can only make sure it's in the list
+                    // The label should now be shown so we add it to the list of regular labels.
                     $labels[] = $labelName;
                     $offerLd->labels = array_unique($labels);
+
+                    // Another list tracks hidden labels so we have to make sure it's no longer listed here.
+                    if (isset($offerLd->hiddenLabels)) {
+                        $offerLd->hiddenLabels = array_diff($offerLd->hiddenLabels, [$labelName]);
+
+                        // If there are no other hidden labels left, remove the list so we don't have an empty leftover attribute.
+                        if (count($offerLd->hiddenLabels) === 0) {
+                            unset($offerLd->hiddenLabels);
+                        }
+                    }
 
                     $this->offerRepository->save($offerDocument->withBody($offerLd));
                 }

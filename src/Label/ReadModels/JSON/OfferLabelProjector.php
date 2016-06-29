@@ -11,10 +11,15 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
 use Generator;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
-class OfferLabelProjector
+class OfferLabelProjector implements LoggerAwareInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
+    use LoggerAwareTrait;
 
     /**
      * @var ReadRepositoryInterface
@@ -37,6 +42,7 @@ class OfferLabelProjector
     ) {
         $this->offerRepository = $offerRepository;
         $this->relationRepository = $relationRepository;
+        $this->logger = new NullLogger();
     }
 
     public function applyMadeVisible(MadeVisible $madeVisible)
@@ -116,7 +122,11 @@ class OfferLabelProjector
                     yield new RelatedDocument($offerRelation, $offerDocument);
                 }
             } catch (DocumentGoneException $exception) {
-                //TODO: you don't want to stop publishing the label for all documents if one is missing but maybe log it?
+                $this->logger->alert(
+                    'Can not update visibility of label: "'. $offerRelation->getLabelName() . '"'
+                    . ' for the offer with id: "' . $offerRelation->getRelationId() . '"'
+                    . ' because the document could not be retrieved.'
+                );
             }
         }
     }

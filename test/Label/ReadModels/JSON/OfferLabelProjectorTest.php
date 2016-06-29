@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON;
 use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
@@ -15,6 +16,8 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -202,6 +205,52 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_log_the_absence_of_an_offer_document_when_the_visibility_of_its_labels_changes()
+    {
+        $labelId = new UUID();
+        $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
+        $madeVisibleEvent = new MadeInvisible($labelId);
+
+        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
+        $logger = $this->getMock(AbstractLogger::class);
+        $logger
+            ->expects($this->once())
+            ->method('alert')
+            ->with('Can not update visibility of label: "black" for the offer with id: "B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A" because the document could not be retrieved.');
+        
+        $this->projector->setLogger($logger);
+
+        $this->relationRepository
+            ->expects($this->once())
+            ->method('getOfferLabelRelations')
+            ->with($labelId)
+            ->willReturn(
+                [
+                    new OfferLabelRelation(
+                        $labelId,
+                        new StringLiteral('black'),
+                        OfferType::PLACE(),
+                        new StringLiteral((string) $placeId)
+                    ),
+                ]
+            );
+
+        $this->offerRepository
+            ->expects($this->once())
+            ->method('get')
+            ->willThrowException(new DocumentGoneException());
+
+        $domainMessage = $this->createDomainMessage(
+            (string) $labelId,
+            $madeVisibleEvent
+        );
 
         $this->projector->handle($domainMessage);
     }

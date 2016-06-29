@@ -29,14 +29,6 @@ class RelatedDocument
     }
 
     /**
-     * @return OfferLabelRelation
-     */
-    public function getOfferLabelRelation()
-    {
-        return $this->offerLabelRelation;
-    }
-
-    /**
      * @return JsonDocument
      */
     public function getJsonDocument()

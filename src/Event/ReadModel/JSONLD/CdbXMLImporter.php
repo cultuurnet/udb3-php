@@ -1,10 +1,8 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultureFeed_Cdb_Data_Keyword;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
@@ -168,21 +166,50 @@ class CdbXMLImporter
      */
     private function importLabels(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
-        $labels = array_filter(
-            array_values($event->getKeywords()),
+        /** @var CultureFeed_Cdb_Data_Keyword[] $keywords */
+        $keywords = array_values($event->getKeywords(true));
+        
+        $visibleKeywords = array_filter(
+            $keywords,
             function ($keyword) {
-                return (strlen(trim($keyword)) > 0);
+                /** @var CultureFeed_Cdb_Data_Keyword $keyword */
+                return (strlen(trim($keyword->getValue())) > 0) && $keyword->isVisible();
             }
         );
-        // Ensure keys are continuous after the filtering was applied, otherwise
-        // JSON-encoding the array will result in an object.
-        $labels = array_values($labels);
+
+        $hiddenKeywords = array_filter(
+            $keywords,
+            function ($keyword) {
+                /** @var CultureFeed_Cdb_Data_Keyword $keyword */
+                return (strlen(trim($keyword->getValue())) > 0) && !$keyword->isVisible();
+            }
+        );
+
+        $this->addKeywordsAsLabelsProperty($jsonLD, 'labels', $visibleKeywords);
+        $this->addKeywordsAsLabelsProperty($jsonLD, 'hiddenLabels', $hiddenKeywords);
+    }
+
+    /**
+     * @param object $jsonLD
+     * @param string $labelsPropertyName
+     *  The property where the labels should be listed. Used the differentiate between visible and hidden labels.
+     * @param CultureFeed_Cdb_Data_Keyword[] $keywords
+     */
+    private function addKeywordsAsLabelsProperty($jsonLD, $labelsPropertyName, array $keywords)
+    {
+        $labels = array_map(
+            function ($keyword) {
+                /** @var CultureFeed_Cdb_Data_Keyword $keyword */
+                return $keyword->getValue();
+            },
+            $keywords
+        );
 
         // Create a label collection to get rid of duplicates.
         $labelCollection = LabelCollection::fromStrings($labels);
 
         if (count($labelCollection) > 0) {
-            $jsonLD->labels = $labelCollection->toStrings();
+            $jsonLD->{$labelsPropertyName} = $labelCollection->toStrings();
         }
     }
 

@@ -324,6 +324,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_should_import_invisble_keywords_as_hidden_labels()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml(
+            'event_with_invisible_keyword.cdbxml.xml'
+        );
+
+        $this->assertEquals(['verberg mij'], $jsonEvent->hiddenLabels);
+    }
+
+    /**
+     * @test
+     */
     public function it_does_import_an_event_with_semicolons_in_keywords_tag()
     {
         $jsonEvent = $this->createJsonEventFromCdbXml(

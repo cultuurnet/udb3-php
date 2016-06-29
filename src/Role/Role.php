@@ -24,6 +24,11 @@ class Role extends EventSourcedAggregateRoot
     private $name;
 
     /**
+     * @var Permission[]
+     */
+    private $permissions = [];
+
+    /**
      * @return string
      */
     public function getAggregateRootId()
@@ -73,18 +78,57 @@ class Role extends EventSourcedAggregateRoot
         UUID $uuid,
         Permission $permission
     ) {
-        $this->apply(new PermissionAdded($uuid, $permission));
+        if (!in_array($permission, $this->permissions)) {
+            $this->apply(new PermissionAdded($uuid, $permission));
+        }
     }
 
     /**
      * Remove a permission from the role.
      *
+     * @param UUID $uuid
      * @param Permission $permission
      */
     public function removePermission(
         UUID $uuid,
         Permission $permission
     ) {
-        $this->apply(new PermissionRemoved($uuid, $permission));
+        if (in_array($permission, $this->permissions)) {
+            $this->apply(new PermissionRemoved($uuid, $permission));
+        }
+    }
+
+    /**
+     * @param RoleCreated $roleCreated
+     */
+    public function applyRoleCreated(RoleCreated $roleCreated)
+    {
+        $this->uuid = $roleCreated->getUuid();
+        $this->name = $roleCreated->getName();
+    }
+
+    /**
+     * @param RoleRenamed $roleRenamed
+     */
+    public function applyRoleRenamed(RoleRenamed $roleRenamed)
+    {
+        $this->name = $roleRenamed->getName();
+    }
+
+    /**
+     * @param PermissionAdded $permissionAdded
+     */
+    public function applyPermissionAdded(PermissionAdded $permissionAdded)
+    {
+        $permission = $permissionAdded->getPermission();
+
+        $this->permissions[$permission->getName()] = $permission;
+    }
+
+    public function applyPermissionRemoved(PermissionRemoved $permissionRemoved)
+    {
+        $permission = $permissionRemoved->getPermission();
+
+        unset($this->permissions[$permission->getName()]);
     }
 }

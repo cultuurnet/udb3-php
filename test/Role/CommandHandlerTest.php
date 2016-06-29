@@ -118,7 +118,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([])
+            ->given([$this->roleCreated])
             ->when(new RenameRole(
                 $this->uuid,
                 $this->name
@@ -133,7 +133,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([])
+            ->given([$this->roleCreated])
             ->when(new AddPermission(
                 $this->uuid,
                 $this->permission
@@ -148,7 +148,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([])
+            ->given([$this->roleCreated, new PermissionAdded($this->uuid, $this->permission)])
             ->when(new RemovePermission(
                 $this->uuid,
                 $this->permission

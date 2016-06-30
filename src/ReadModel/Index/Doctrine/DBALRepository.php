@@ -68,13 +68,18 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $this->connection->beginTransaction();
 
         try {
+            $iriGenerator = $this->iriGeneratorFactory->forEntityType($entityType);
+            $iri = $iriGenerator->iri($id);
+
             if ($this->itemExists($id, $entityType)) {
                 $q = $this->connection->createQueryBuilder();
                 $q->update($this->tableName->toNative())
                     ->where($this->matchesIdAndEntityType())
                     ->set('uid', ':uid')
                     ->set('title', ':title')
-                    ->set('zip', ':zip');
+                    ->set('zip', ':zip')
+                    ->set('owning_domain', ':owning_domain')
+                    ->set('entity_iri', ':entity_iri');
 
                 if ($created instanceof DateTimeInterface) {
                     $q->set('created', ':created');
@@ -82,15 +87,13 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
 
                 $this->setIdAndEntityType($q, $id, $entityType);
                 $this->setValues($q, $userId, $name, $postalCode, $owningDomain, $created);
+                $q->setParameter('entity_iri', $iri);
 
                 $q->execute();
             } else {
                 if (!$created instanceof DateTimeInterface) {
                     $created = new \DateTimeImmutable('now');
                 }
-
-                $iriGenerator = $this->iriGeneratorFactory->forEntityType($entityType);
-                $iri = $iriGenerator->iri($id);
 
                 $q = $this->connection->createQueryBuilder();
                 $q->insert($this->tableName->toNative())

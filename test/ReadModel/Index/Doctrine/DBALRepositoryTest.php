@@ -37,6 +37,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     protected $iriGeneratorFactory;
 
     /**
+     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $iriGenerator;
+
+    /**
      * @var array
      */
     protected $data;
@@ -55,15 +60,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->insert($this->data);
 
         $this->iriGeneratorFactory = $this->getMock(EntityIriGeneratorFactoryInterface::class);
-        $iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
 
         $this->iriGeneratorFactory
             ->method('forEntityType')
-            ->willReturn($iriGenerator);
-
-        $iriGenerator
-            ->method('iri')
-            ->willReturn('http://hello.world/something/id');
+            ->willReturn($this->iriGenerator);
 
         $this->repository = new DBALRepository(
             $this->getConnection(),
@@ -118,6 +119,10 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_updates_existing_data_by_unique_combination_of_id_and_entity_type()
     {
+        $this->iriGenerator
+            ->method('iri')
+            ->willReturn('http://hello.world/something/abc');
+
         $this->repository->updateIndex(
             'abc',
             EntityType::ORGANIZER(),
@@ -134,7 +139,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'bar',
             'title' => 'Test organizer abc update',
             'created' => '100',
-            'zip' => '3020',
+            'zip' => '3020'
         ] + (array) $expectedData[3];
 
         $expectedData[3] = (object) $expectedData[3];
@@ -145,8 +150,47 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_updates_owning_domain_and_entity_iri()
+    {
+        $this->iriGenerator
+            ->method('iri')
+            ->willReturn('http://hello.world/something/blub');
+
+        $this->repository->updateIndex(
+            'blub',
+            EntityType::ORGANIZER(),
+            'bar',
+            'Test organizer abc update',
+            '3020',
+            Domain::specifyType('udb.be'),
+            new \DateTimeImmutable('@100')
+        );
+
+        $expectedData = $this->data;
+
+        $expectedData[5] = [
+                'uid' => 'bar',
+                'title' => 'Test organizer abc update',
+                'created' => '100',
+                'zip' => '3020',
+                'owning_domain' => 'udb.be',
+                'entity_iri' => 'http://hello.world/something/blub'
+            ] + (array) $expectedData[5];
+
+        $expectedData[5] = (object) $expectedData[5];
+
+        $this->assertCurrentData($expectedData);
+    }
+
+    /**
+     * @test
+     */
     public function it_inserts_new_unique_combinations_of_id_and_entity_type()
     {
+        $this->iriGenerator
+            ->method('iri')
+            ->willReturn('http://hello.world/something/id');
+
         $this->repository->updateIndex(
             'xyz',
             EntityType::EVENT(),

@@ -53,5 +53,16 @@
         "owning_domain": "udb.be",
         "updated": 0,
         "entity_iri": "http://hello.world/something/123"
+    },
+    {
+        "entity_id": "blub",
+        "entity_type": "organizer",
+        "uid": "foo",
+        "title": "Test abc organizer",
+        "zip": 3040,
+        "created": 0,
+        "owning_domain": "",
+        "updated": 0,
+        "entity_iri": ""
     }
 ]

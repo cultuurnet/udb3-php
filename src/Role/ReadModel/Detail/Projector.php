@@ -42,7 +42,7 @@ class Projector implements EventListenerInterface
             $roleCreated->getUuid()->toNative(),
             function (\stdClass $json) use ($roleCreated, $domainMessage) {
                 $json->{'@id'} = $roleCreated->getUuid()->toNative();
-                $json->name['nl'] = $roleCreated->getName()->toNative();
+                $json->name = (object) ['nl' => $roleCreated->getName()->toNative()];
 
                 $recordedOn = $domainMessage->getRecordedOn()->toString();
                 $json->created = \DateTime::createFromFormat(
@@ -72,11 +72,11 @@ class Projector implements EventListenerInterface
         DomainMessage $domainMessage
     ) {
         $document = $this->loadDocumentFromRepositoryByUuid(
-            $roleRenamed->getUuid()
+            $roleRenamed->getUuid()->toNative()
         );
 
         $json = $document->getBody();
-        $json->name['nl'] = $roleRenamed->getName()->fromNative();
+        $json->name->nl = $roleRenamed->getName()->toNative();
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $json->modified = \DateTime::createFromFormat(

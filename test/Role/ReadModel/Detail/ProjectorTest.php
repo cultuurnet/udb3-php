@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\AbstractEvent;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -88,6 +89,62 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_handles_rename()
+    {
+        $roleCreated = new RoleCreated(
+            $this->uuid,
+            $this->name
+        );
+
+        $name = new StringLiteral('newRoleName');
+        $roleRenamed = new RoleRenamed(
+            $this->uuid,
+            $name
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $roleCreated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+        
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $this->projector->handle($domainMessage);
+
+        $domainMessageRenamed = $this->createDomainMessage(
+            $this->uuid,
+            $roleRenamed,
+            BroadwayDateTime::fromString('2016-06-30T14:25:21+01:00')
+        );
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T14:25:21+01:00';
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->initialDocument());
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessageRenamed);
+    }
+
+    /**
      * @param string $id
      * @param AbstractEvent $payload
      * @param BroadwayDateTime $dateTime
@@ -106,5 +163,25 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $payload,
             $dateTime
         );
+    }
+
+    /**
+     * @return JsonDocument|static
+     */
+    private function initialDocument()
+    {
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T13:25:21+01:00';
+
+        $document = $document->withBody($json);
+
+        return $document;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\JSON;
 
+use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
@@ -16,7 +17,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class OfferLabelProjector implements LoggerAwareInterface
+class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterface
 {
     use DelegateEventHandlingToSpecificMethodTrait;
     use LoggerAwareTrait;

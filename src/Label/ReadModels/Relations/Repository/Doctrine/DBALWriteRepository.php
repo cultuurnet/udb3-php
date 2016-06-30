@@ -23,7 +23,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
-                SchemaConfigurator::LABEL_NAME => '?',
+                SchemaConfigurator::LABEL_NAME_COLUMN => '?',
                 SchemaConfigurator::RELATION_TYPE_COLUMN => '?',
                 SchemaConfigurator::RELATION_ID_COLUMN => '?'
             ])

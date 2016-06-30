@@ -102,7 +102,7 @@ class OfferLabelRelation implements \JsonSerializable
     {
         return new static(
             new UUID($relation[SchemaConfigurator::UUID_COLUMN]),
-            new StringLiteral($relation[SchemaConfigurator::LABEL_NAME]),
+            new StringLiteral($relation[SchemaConfigurator::LABEL_NAME_COLUMN]),
             OfferType::fromCaseInsensitiveValue($relation[SchemaConfigurator::RELATION_TYPE_COLUMN]),
             new StringLiteral($relation[SchemaConfigurator::RELATION_ID_COLUMN])
         );

@@ -4,32 +4,12 @@ namespace CultuurNet\UDB3\Role\ReadModel\Detail;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
-use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
 
-class Projector implements EventListenerInterface
+class Projector extends RoleProjector
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
-
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    protected $repository;
-
-    /**
-     * Projector constructor.
-     * @param DocumentRepositoryInterface $repository
-     */
-    public function __construct(
-        DocumentRepositoryInterface $repository
-    ) {
-        $this->repository = $repository;
-    }
-
     /**
      * @param RoleCreated $roleCreated
      * @param DomainMessage $domainMessage
@@ -85,47 +65,5 @@ class Projector implements EventListenerInterface
         )->format('c');
 
         $this->repository->save($document->withBody($json));
-    }
-
-    /**
-     * @param string $uuid
-     * @param callable $fn
-     */
-    protected function saveNewDocument($uuid, callable $fn)
-    {
-        $document = $this
-            ->newDocument($uuid)
-            ->apply($fn);
-
-        $this->repository->save($document);
-    }
-
-    /**
-     * @param string $uuid
-     * @return JsonDocument
-     */
-    protected function loadDocumentFromRepositoryByUuid($uuid)
-    {
-        $document = $this->repository->get($uuid);
-
-        if (!$document) {
-            return $this->newDocument($uuid);
-        }
-
-        return $document;
-    }
-
-    /**
-     * @param string $uuid
-     * @return JsonDocument
-     */
-    protected function newDocument($uuid)
-    {
-        $document = new JsonDocument($uuid);
-
-        $json = $document->getBody();
-        $json->{'@id'} = $uuid;
-
-        return $document->withBody($json);
     }
 }

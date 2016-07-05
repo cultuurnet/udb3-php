@@ -330,6 +330,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             'event_with_invisible_keyword.cdbxml.xml'
         );
 
+        $this->assertEquals(['toon mij', 'toon mij ook'], $jsonEvent->labels);
         $this->assertEquals(['verberg mij'], $jsonEvent->hiddenLabels);
     }
 

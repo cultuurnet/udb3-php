@@ -168,20 +168,25 @@ class CdbXMLImporter
     {
         /** @var CultureFeed_Cdb_Data_Keyword[] $keywords */
         $keywords = array_values($event->getKeywords(true));
-        
-        $visibleKeywords = array_filter(
+
+        $validKeywords = array_filter(
             $keywords,
-            function ($keyword) {
-                /** @var CultureFeed_Cdb_Data_Keyword $keyword */
-                return (strlen(trim($keyword->getValue())) > 0) && $keyword->isVisible();
+            function (CultureFeed_Cdb_Data_Keyword $keyword) {
+                return strlen(trim($keyword->getValue())) > 0;
+            }
+        );
+
+        $visibleKeywords = array_filter(
+            $validKeywords,
+            function (CultureFeed_Cdb_Data_Keyword $keyword) {
+                return $keyword->isVisible();
             }
         );
 
         $hiddenKeywords = array_filter(
-            $keywords,
-            function ($keyword) {
-                /** @var CultureFeed_Cdb_Data_Keyword $keyword */
-                return (strlen(trim($keyword->getValue())) > 0) && !$keyword->isVisible();
+            $validKeywords,
+            function (CultureFeed_Cdb_Data_Keyword $keyword) {
+                return !$keyword->isVisible();
             }
         );
 

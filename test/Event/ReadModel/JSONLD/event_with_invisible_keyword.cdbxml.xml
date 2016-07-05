@@ -77,7 +77,10 @@
         </cdb:eventdetail>
     </cdb:eventdetails>
     <cdb:keywords>
+        <cdb:keyword> </cdb:keyword>
+        <cdb:keyword visible="false">  </cdb:keyword>
         <cdb:keyword>toon mij</cdb:keyword>
+        <cdb:keyword visible="true">toon mij ook</cdb:keyword>
         <cdb:keyword visible="false">verberg mij</cdb:keyword>
     </cdb:keywords>
     <cdb:location>

@@ -26,7 +26,7 @@ class SetConstraintTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID();
 
-        $this->query = new StringLiteral('category_falndersregion_name:"Regio Aalst"');
+        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
 
         $this->setConstraint = new SetConstraint(
             $this->uuid,

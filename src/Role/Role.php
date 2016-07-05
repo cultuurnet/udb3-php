@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3\Role;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -22,6 +25,11 @@ class Role extends EventSourcedAggregateRoot
      * @var StringLiteral
      */
     private $name;
+
+    /**
+     * @var StringLiteral
+     */
+    private $query;
 
     /**
      * @var Permission[]
@@ -69,6 +77,29 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
+     * Set a constraint on the role.
+     *
+     * @param UUID $uuid
+     * @param StringLiteral $query
+     */
+    public function setConstraint(
+        UUID $uuid,
+        StringLiteral $query
+    ) {
+        if (empty($this->query)) {
+            if (!empty($query) && !$query->isEmpty()) {
+                $this->apply(new ConstraintCreated($uuid, $query));
+            }
+        } else {
+            if (!empty($query) && !$query->isEmpty()) {
+                $this->apply(new ConstraintUpdated($uuid, $query));
+            } else {
+                $this->apply(new ConstraintRemoved($uuid));
+            }
+        }
+    }
+
+    /**
      * Add a permission to the role.
      *
      * @param UUID $uuid
@@ -113,6 +144,30 @@ class Role extends EventSourcedAggregateRoot
     public function applyRoleRenamed(RoleRenamed $roleRenamed)
     {
         $this->name = $roleRenamed->getName();
+    }
+
+    /**
+     * @param ConstraintCreated $constraintCreated
+     */
+    public function applyConstraintCreated(ConstraintCreated $constraintCreated)
+    {
+        $this->query = $constraintCreated->getQuery();
+    }
+
+    /**
+     * @param ConstraintUpdated $constraintUpdated
+     */
+    public function applyConstraintUpdated(ConstraintUpdated $constraintUpdated)
+    {
+        $this->query = $constraintUpdated->getQuery();
+    }
+
+    /**
+     * @param ConstraintRemoved $constraintRemoved
+     */
+    public function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
+    {
+        $this->query = new StringLiteral('');
     }
 
     /**

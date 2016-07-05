@@ -9,6 +9,10 @@ use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
+use CultuurNet\UDB3\Role\Commands\SetConstraint;
+use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -35,6 +39,16 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $permission;
 
     /**
+     * @var StringLiteral
+     */
+    private $query;
+
+    /**
+     * @var StringLiteral
+     */
+    private $updatedQuery;
+
+    /**
      * @var RoleCreated
      */
     private $roleCreated;
@@ -54,6 +68,21 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     private $permissionRemoved;
 
+    /**
+     * @var ConstraintCreated
+     */
+    private $constraintCreated;
+
+    /**
+     * @var ConstraintUpdated
+     */
+    private $constraintUpdated;
+
+    /**
+     * @var ConstraintRemoved
+     */
+    private $constraintRemoved;
+
     public function setUp()
     {
         parent::setUp();
@@ -61,6 +90,8 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->uuid = new UUID();
         $this->name = new StringLiteral('labelName');
         $this->permission = Permission::AANBOD_INVOEREN();
+        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
+        $this->updatedQuery = new StringLiteral('category_flandersregion_name:"Regio Brussel"');
 
         $this->roleCreated = new RoleCreated(
             $this->uuid,
@@ -80,6 +111,20 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->permissionRemoved = new PermissionRemoved(
             $this->uuid,
             $this->permission
+        );
+
+        $this->constraintCreated = new ConstraintCreated(
+            $this->uuid,
+            $this->query
+        );
+        
+        $this->constraintUpdated = new ConstraintUpdated(
+            $this->uuid,
+            $this->updatedQuery
+        );
+        
+        $this->constraintRemoved = new ConstraintRemoved(
+            $this->uuid
         );
     }
 
@@ -154,5 +199,52 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $this->permission
             ))
             ->then([$this->permissionRemoved]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_setConstraint_by_creating_the_constraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(new SetConstraint(
+                $this->uuid,
+                $this->query
+            ))
+            ->then([$this->constraintCreated]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_setConstraint_by_updating_the_constraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated, $this->constraintCreated])
+            ->when(new SetConstraint(
+                $this->uuid,
+                $this->updatedQuery
+            ))
+            ->then([$this->constraintUpdated]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_setConstraint_by_removing_the_constraint()
+    {
+        $query = new StringLiteral('');
+        
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated, $this->constraintCreated])
+            ->when(new SetConstraint(
+                $this->uuid,
+                $query
+            ))
+            ->then([$this->constraintRemoved]);
     }
 }

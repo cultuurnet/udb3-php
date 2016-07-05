@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
+use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use ValueObjects\Identity\UUID;
 
 class CommandHandler extends AbstractCommandHandler
@@ -49,6 +50,21 @@ class CommandHandler extends AbstractCommandHandler
         $role->rename(
             $renameRole->getUuid(),
             $renameRole->getName()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param SetConstraint $setConstraint
+     */
+    public function handleSetConstraint(SetConstraint $setConstraint)
+    {
+        $role = $this->load($setConstraint->getUuid());
+        
+        $role->setConstraint(
+            $setConstraint->getUuid(),
+            $setConstraint->getQuery()
         );
 
         $this->save($role);

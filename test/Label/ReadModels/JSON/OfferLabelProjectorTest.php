@@ -83,20 +83,29 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
         $madeVisibleEvent = new MadeVisible($labelId);
 
         $existingPlaceDocument = new JsonDocument(
-            (string)$placeId,
-            json_encode((object)['hiddenLabels' => ['green', 'black']])
+            (string) $placeId,
+            json_encode(
+                (object) [
+                    'hiddenLabels' => ['green', 'black'],
+                ]
+            )
         );
 
         $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
-            (string)$labelId,
+            (string) $labelId,
             $madeVisibleEvent
         );
 
         $expectedDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['hiddenLabels' => ['green'], 'labels' => ['black']])
+            json_encode(
+                (object) [
+                    'hiddenLabels' => ['green'],
+                    'labels' => ['black'],
+                ]
+            )
         );
 
         $this->offerRepository
@@ -118,7 +127,12 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['labels' => ['orange', 'green'], 'hiddenLabels' => ['black']])
+            json_encode(
+                (object) [
+                    'labels' => ['orange', 'green'],
+                    'hiddenLabels' => ['black'],
+                ]
+            )
         );
 
         $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
@@ -130,7 +144,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $expectedDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['labels' => ['orange', 'green', 'black']])
+            json_encode(
+                (object) [
+                    'labels' => ['orange', 'green', 'black'],
+                ]
+            )
         );
 
         $this->offerRepository
@@ -151,20 +169,30 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
         $madeVisibleEvent = new MadeInvisible($labelId);
 
         $existingPlaceDocument = new JsonDocument(
-            (string)$placeId,
-            json_encode((object)['labels' => ['orange', 'black'], 'hiddenLabels' => ['green']])
+            (string) $placeId,
+            json_encode(
+                (object) [
+                    'labels' => ['orange', 'black'],
+                    'hiddenLabels' => ['green'],
+                ]
+            )
         );
 
         $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
-            (string)$labelId,
+            (string) $labelId,
             $madeVisibleEvent
         );
 
         $expectedDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['labels' => ['orange'], 'hiddenLabels' => ['green', 'black']])
+            json_encode(
+                (object) [
+                    'labels' => ['orange'],
+                    'hiddenLabels' => ['green', 'black'],
+                ]
+            )
         );
 
         $this->offerRepository
@@ -186,7 +214,12 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['labels' => ['black'], 'hiddenLabels' => ['orange']])
+            json_encode(
+                (object) [
+                    'labels' => ['black'],
+                    'hiddenLabels' => ['orange'],
+                ]
+            )
         );
 
         $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
@@ -198,7 +231,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $expectedDocument = new JsonDocument(
             (string) $placeId,
-            json_encode((object)['hiddenLabels' => ['orange', 'black']])
+            json_encode(
+                (object) [
+                    'hiddenLabels' => ['orange', 'black'],
+                ]
+            )
         );
 
         $this->offerRepository
@@ -224,7 +261,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('alert')
             ->with('Can not update visibility of label: "black" for the offer with id: "B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A" because the document could not be retrieved.');
-        
+
         $this->projector->setLogger($logger);
 
         $this->relationRepository

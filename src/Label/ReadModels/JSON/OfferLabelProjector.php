@@ -96,7 +96,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
             if (isset($offerLd->labels)) {
                 $offerLd->labels = array_diff($offerLd->labels, [$labelName]);
 
-                // If there are visible labels left, remove the list so we don't have an empty leftover attribute.
+                // If there are no visible labels left, remove the list so we don't have an empty leftover attribute.
                 if (count($offerLd->labels) === 0) {
                     unset($offerLd->labels);
                 }

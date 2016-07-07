@@ -12,7 +12,7 @@ interface RoleEditingServiceInterface
      * Create a role.
      *
      * @param StringLiteral $name
-     * @return mixed
+     * @return string
      */
     public function create(StringLiteral $name);
 
@@ -21,7 +21,7 @@ interface RoleEditingServiceInterface
      *
      * @param UUID $uuid
      * @param StringLiteral $name
-     * @return mixed
+     * @return string
      */
     public function rename(UUID $uuid, StringLiteral $name);
 
@@ -30,7 +30,7 @@ interface RoleEditingServiceInterface
      *
      * @param UUID $uuid
      * @param Permission $permission
-     * @return mixed
+     * @return string
      */
     public function addPermission(UUID $uuid, Permission $permission);
 
@@ -39,7 +39,7 @@ interface RoleEditingServiceInterface
      *
      * @param UUID $uuid
      * @param Permission $permission
-     * @return mixed
+     * @return string
      */
     public function removePermission(UUID $uuid, Permission $permission);
 
@@ -48,7 +48,7 @@ interface RoleEditingServiceInterface
      *
      * @param UUID $uuid
      * @param StringLiteral $query
-     * @return mixed
+     * @return string
      */
     public function setConstraint(UUID $uuid, StringLiteral $query);
 }

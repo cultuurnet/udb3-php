@@ -7,8 +7,6 @@ use ValueObjects\Identity\UUID;
 
 abstract class AbstractEvent implements SerializableInterface
 {
-    const UUID = 'uuid';
-
     /**
      * @var UUID
      */
@@ -36,7 +34,7 @@ abstract class AbstractEvent implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(new UUID($data[self::UUID]));
+        return new static(new UUID($data['uuid']));
     }
 
     /**
@@ -44,6 +42,6 @@ abstract class AbstractEvent implements SerializableInterface
      */
     public function serialize()
     {
-        return [self::UUID => $this->getUuid()->toNative()];
+        return ['uuid' => $this->getUuid()->toNative()];
     }
 }

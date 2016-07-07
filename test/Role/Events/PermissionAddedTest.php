@@ -51,7 +51,7 @@ class PermissionAddedTest extends \PHPUnit_Framework_TestCase
         $actualArray = $this->event->serialize();
 
         $expectedArray = [
-            PermissionAdded::UUID => $this->uuid->toNative(),
+            'uuid' => $this->uuid->toNative(),
             'permission' => $this->permission->toNative()
         ];
 

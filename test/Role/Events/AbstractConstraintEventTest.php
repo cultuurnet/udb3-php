@@ -51,7 +51,7 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
         $actualArray = $this->event->serialize();
 
         $expectedArray = [
-            AbstractConstraintEvent::UUID => $this->uuid->toNative(),
+            'uuid' => $this->uuid->toNative(),
             'query' => $this->query->toNative()
         ];
 

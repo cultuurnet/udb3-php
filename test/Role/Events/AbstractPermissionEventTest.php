@@ -51,7 +51,7 @@ class AbstractPermissionEventTest extends \PHPUnit_Framework_TestCase
         $actualArray = $this->event->serialize();
 
         $expectedArray = [
-            AbstractPermissionEvent::UUID => $this->uuid->toNative(),
+            'uuid' => $this->uuid->toNative(),
             'permission' => $this->permission->toNative()
         ];
 

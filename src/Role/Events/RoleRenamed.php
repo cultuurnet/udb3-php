@@ -37,7 +37,7 @@ class RoleRenamed extends AbstractEvent
     public static function deserialize(array $data)
     {
         return new static(
-            new UUID($data[self::UUID]),
+            new UUID($data['uuid']),
             new StringLiteral($data['name'])
         );
     }

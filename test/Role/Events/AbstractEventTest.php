@@ -41,7 +41,7 @@ class AbstractEventTest extends \PHPUnit_Framework_TestCase
     {
         $actualArray = $this->event->serialize();
 
-        $expectedArray = [AbstractEvent::UUID => $this->uuid->toNative()];
+        $expectedArray = ['uuid' => $this->uuid->toNative()];
 
         $this->assertEquals($expectedArray, $actualArray);
     }

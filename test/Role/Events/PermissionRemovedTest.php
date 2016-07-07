@@ -51,7 +51,7 @@ class PermissionRemovedTest extends \PHPUnit_Framework_TestCase
         $actualArray = $this->event->serialize();
 
         $expectedArray = [
-            PermissionRemoved::UUID => $this->uuid->toNative(),
+            'uuid' => $this->uuid->toNative(),
             'permission' => $this->permission->toNative()
         ];
 

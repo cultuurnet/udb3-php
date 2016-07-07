@@ -3,12 +3,19 @@
 namespace CultuurNet\UDB3\Role\Services;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\EventHandling\SimpleEventBus;
+use Broadway\EventStore\InMemoryEventStore;
+use Broadway\EventStore\TraceableEventStore;
+use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
+use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Role;
+use CultuurNet\UDB3\Role\RoleRepository;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -24,6 +31,16 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
      * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $uuidGenerator;
+
+    /**
+     * @var TraceableEventStore
+     */
+    protected $eventStore;
+
+    /**
+     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $writeRepository;
 
     /**
      * @var UUID
@@ -67,12 +84,16 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->uuid = new UUID();
+        $this->uuid = new UUID('9196cb78-4381-11e6-beb8-9e71128cae77');
 
         $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
 
-        $this->uuidGenerator = $this->getMock(
-            UuidGeneratorInterface::class
+        $this->eventStore = new TraceableEventStore(new InMemoryEventStore());
+
+        $this->writeRepository = new RoleRepository(
+            $this->eventStore,
+            new SimpleEventBus
         );
 
         $this->createRole = new CreateRole(
@@ -101,11 +122,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->uuidGenerator->method('generate')
-            ->willReturn($this->createRole->getUuid()->toNative());
+            ->willReturn('9196cb78-4381-11e6-beb8-9e71128cae77');
 
         $this->roleEditingService = new DefaultRoleEditingService(
             $this->commandBus,
-            $this->uuidGenerator
+            $this->uuidGenerator,
+            $this->writeRepository
         );
 
         $this->expectedCommandId = '123456789';
@@ -116,16 +138,25 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_create_a_role()
     {
-        $this->commandBus->expects($this->once())
-            ->method('dispatch')
-            ->with($this->createRole)
-            ->willReturn($this->expectedCommandId);
-
-        $commandId = $this->roleEditingService->create(
+        $this->eventStore->trace();
+        
+        $roleId = $this->roleEditingService->create(
             new StringLiteral('roleName')
         );
 
-        $this->assertEquals($this->expectedCommandId, $commandId);
+        $expectedUuid = $this->uuid;
+
+        $this->assertEquals(
+            [
+                new RoleCreated(
+                    $this->uuid,
+                    new StringLiteral('roleName')
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
+
+        $this->assertEquals($expectedUuid, $roleId);
     }
 
     /**

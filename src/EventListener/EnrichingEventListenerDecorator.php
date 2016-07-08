@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\EventBus;
+namespace CultuurNet\UDB3\EventListener;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainEventStreamInterface;
@@ -8,7 +8,7 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
 
-class EnrichingEventBusDecorator implements EventBusInterface
+class EnrichingEventListenerDecorator implements EventBusInterface
 {
     /**
      * @var EventBusInterface

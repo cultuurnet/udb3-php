@@ -1,17 +1,17 @@
 <?php
 
-namespace CultuurNet\UDB3\DomainMessage;
+namespace CultuurNet\UDB3\EventListener;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
+use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\EventBus\DomainMessageTestDataTrait;
-use CultuurNet\UDB3\EventBus\EnrichingEventBusDecorator;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 
-class EnrichingEventBusDecoratorTest extends \PHPUnit_Framework_TestCase
+class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
 {
     use DomainMessageTestDataTrait;
 
@@ -26,7 +26,7 @@ class EnrichingEventBusDecoratorTest extends \PHPUnit_Framework_TestCase
     private $decoratee;
 
     /**
-     * @var EnrichingEventBusDecorator
+     * @var EnrichingEventListenerDecorator
      */
     private $enrichingDecorator;
 
@@ -34,7 +34,7 @@ class EnrichingEventBusDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->enricher = $this->getMock(DomainMessageEnricherInterface::class);
         $this->decoratee = $this->getMock(EventBusInterface::class);
-        $this->enrichingDecorator = new EnrichingEventBusDecorator($this->decoratee, $this->enricher);
+        $this->enrichingDecorator = new EnrichingEventListenerDecorator($this->decoratee, $this->enricher);
     }
 
     /**

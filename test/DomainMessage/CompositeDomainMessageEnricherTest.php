@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\DomainMessage;
 
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\EventBus\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 

@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterfac
 use Generator;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterface

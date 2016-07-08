@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
-use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 
 class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInterface

@@ -2,17 +2,10 @@
 
 namespace CultuurNet\UDB3\Label;
 
-use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted as EventLabelDeleted;
 use CultuurNet\UDB3\Label\Specifications\OfferLabelEventIsOfEventType;
 use CultuurNet\UDB3\Label\Specifications\OfferLabelEventIsOfPlaceType;
-use CultuurNet\UDB3\Offer\OfferType;
-use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
-use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use CultuurNet\UDB3\Offer\OfferType;
 
 class LabelEventOfferTypeResolver implements LabelEventOfferTypeResolverInterface
 {

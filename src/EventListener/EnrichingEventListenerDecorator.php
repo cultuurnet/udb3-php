@@ -2,16 +2,14 @@
 
 namespace CultuurNet\UDB3\EventListener;
 
-use Broadway\Domain\DomainEventStream;
-use Broadway\Domain\DomainEventStreamInterface;
-use Broadway\EventHandling\EventBusInterface;
+use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
 
-class EnrichingEventListenerDecorator implements EventBusInterface
+class EnrichingEventListenerDecorator implements EventListenerInterface
 {
     /**
-     * @var EventBusInterface
+     * @var EventListenerInterface
      */
     private $decoratee;
 
@@ -21,11 +19,11 @@ class EnrichingEventListenerDecorator implements EventBusInterface
     private $enricher;
 
     /**
-     * @param EventBusInterface $decoratee
+     * @param EventListenerInterface $decoratee
      * @param DomainMessageEnricherInterface $enricher
      */
     public function __construct(
-        EventBusInterface $decoratee,
+        EventListenerInterface $decoratee,
         DomainMessageEnricherInterface $enricher
     ) {
         $this->decoratee = $decoratee;
@@ -33,30 +31,14 @@ class EnrichingEventListenerDecorator implements EventBusInterface
     }
 
     /**
-     * @inheritdoc
+     * @param DomainMessage $domainMessage
      */
-    public function subscribe(EventListenerInterface $eventListener)
+    public function handle(DomainMessage $domainMessage)
     {
-        $this->decoratee->subscribe($eventListener);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function publish(DomainEventStreamInterface $stream)
-    {
-        $domainMessages = [];
-
-        foreach ($stream->getIterator() as $domainMessage) {
-            if ($this->enricher->supports($domainMessage)) {
-                $domainMessage = $this->enricher->enrich($domainMessage);
-            }
-
-            $domainMessages[] = $domainMessage;
+        if ($this->enricher->supports($domainMessage)) {
+            $domainMessage = $this->enricher->enrich($domainMessage);
         }
 
-        $this->decoratee->publish(
-            new DomainEventStream($domainMessages)
-        );
+        $this->decoratee->handle($domainMessage);
     }
 }

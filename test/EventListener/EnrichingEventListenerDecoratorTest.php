@@ -21,7 +21,7 @@ class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
     private $enricher;
 
     /**
-     * @var EventBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventListenerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $decoratee;
 
@@ -33,23 +33,8 @@ class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->enricher = $this->getMock(DomainMessageEnricherInterface::class);
-        $this->decoratee = $this->getMock(EventBusInterface::class);
+        $this->decoratee = $this->getMock(EventListenerInterface::class);
         $this->enrichingDecorator = new EnrichingEventListenerDecorator($this->decoratee, $this->enricher);
-    }
-
-    /**
-     * @test
-     */
-    public function it_delegates_subscriptions_to_the_decoratee()
-    {
-        /* @var EventListenerInterface $subscriber */
-        $subscriber = $this->getMock(EventListenerInterface::class);
-
-        $this->decoratee->expects($this->once())
-            ->method('subscribe')
-            ->with($subscriber);
-
-        $this->enrichingDecorator->subscribe($subscriber);
     }
 
     /**
@@ -60,22 +45,8 @@ class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
         $supportedDomainMessage = $this->createDomainMessage($this, EventCreated::class);
         $otherDomainMessage = $this->createDomainMessage($this, PlaceCreated::class);
 
-        $stream = new DomainEventStream(
-            [
-                $supportedDomainMessage,
-                $otherDomainMessage,
-            ]
-        );
-
         $enrichedDomainMessage = clone $supportedDomainMessage;
         $enrichedDomainMessage->extraProperty = true;
-
-        $enrichedStream = new DomainEventStream(
-            [
-                $enrichedDomainMessage,
-                $otherDomainMessage,
-            ]
-        );
 
         $this->enricher->expects($this->any())
             ->method('supports')
@@ -90,10 +61,14 @@ class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
             ->with($supportedDomainMessage)
             ->willReturn($enrichedDomainMessage);
 
-        $this->decoratee->expects($this->once())
-            ->method('publish')
-            ->with($enrichedStream);
+        $this->decoratee->expects($this->exactly(2))
+            ->method('handle')
+            ->withConsecutive(
+                [$enrichedDomainMessage],
+                [$otherDomainMessage]
+            );
 
-        $this->enrichingDecorator->publish($stream);
+        $this->enrichingDecorator->handle($supportedDomainMessage);
+        $this->enrichingDecorator->handle($otherDomainMessage);
     }
 }

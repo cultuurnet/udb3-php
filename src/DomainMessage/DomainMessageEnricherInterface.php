@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\EventBus;
+namespace CultuurNet\UDB3\DomainMessage;
 
 use Broadway\Domain\DomainMessage;
 

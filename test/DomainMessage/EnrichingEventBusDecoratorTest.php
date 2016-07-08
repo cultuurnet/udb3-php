@@ -1,12 +1,14 @@
 <?php
 
-namespace CultuurNet\UDB3\EventBus;
+namespace CultuurNet\UDB3\DomainMessage;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\EventBus\DomainMessageTestDataTrait;
+use CultuurNet\UDB3\EventBus\EnrichingEventBusDecorator;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 
 class EnrichingEventBusDecoratorTest extends \PHPUnit_Framework_TestCase
@@ -91,7 +93,7 @@ class EnrichingEventBusDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->decoratee->expects($this->once())
             ->method('publish')
             ->with($enrichedStream);
-        
+
         $this->enrichingDecorator->publish($stream);
     }
 }

@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
+use CultuurNet\UDB3\Label\LabelEventOfferTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -42,6 +42,16 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $unknownId;
 
     /**
+     * @var StringLiteral
+     */
+    private $labelName;
+
+    /**
+     * @var StringLiteral
+     */
+    private $unknownLabelName;
+
+    /**
      * @var WriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $writeRepository;
@@ -50,11 +60,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $readRepository;
-
-    /**
-     * @var LabelEventHelper|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $labelEventHelper;
 
     /**
      * @var Entity
@@ -68,8 +73,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->uuid = new UUID();
-        $this->unknownId = new UUID();
+        $this->uuid = new UUID('EC1697B7-7E2B-4462-A901-EC20E2A0AAFC');
+        $this->unknownId = new UUID('ACFCFE56-3D16-48FB-A053-FAA9950720DC');
+
+        $this->labelName = new StringLiteral('labelName');
+        $this->unknownLabelName = new StringLiteral('unknownLabelName');
 
         $this->writeRepository = $this->getMock(
             WriteRepositoryInterface::class
@@ -78,19 +86,26 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->readRepository = $this->getMock(
             ReadRepositoryInterface::class
         );
-        $this->mockGetByUuid();
 
-        $this->labelEventHelper = $this->getMock(
-            LabelEventHelper::class,
-            [],
-            [$this->readRepository]
+        $this->entity = new Entity(
+            $this->uuid,
+            $this->labelName,
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PRIVATE(),
+            new UUID()
         );
-        $this->mockGetUuid();
+
+        $uuidMap = [
+            [$this->uuid, $this->entity],
+            [$this->unknownId, null],
+        ];
+
+        $this->readRepository->method('getByUuid')
+            ->will($this->returnValueMap($uuidMap));
 
         $this->projector = new Projector(
             $this->writeRepository,
-            $this->readRepository,
-            $this->labelEventHelper
+            $this->readRepository
         );
     }
 
@@ -315,31 +330,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->handleDeleting($labelDeleted);
     }
 
-    private function mockGetByUuid()
-    {
-        $this->entity = new Entity(
-            $this->uuid,
-            new StringLiteral('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PRIVATE(),
-            new UUID()
-        );
-
-        $map = [
-            [$this->uuid, $this->entity],
-            [$this->unknownId, null]
-        ];
-
-        $this->readRepository->method('getByUuid')
-            ->will($this->returnValueMap($map));
-    }
-
-    private function mockGetUuid()
-    {
-        $this->labelEventHelper->method('getUuid')
-            ->will($this->returnValue($this->uuid));
-    }
-
     /**
      * @param string $id
      * @param AbstractEvent|AbstractLabelEvent $payload
@@ -362,7 +352,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private function handleAdding(AbstractLabelAdded $labelAdded)
     {
         $this->handleLabelMovement($labelAdded, 'updateCountIncrement');
-
     }
 
     /**
@@ -385,6 +374,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $labelEvent->getItemId(),
             $labelEvent
         );
+
+        $this->readRepository->expects($this->once())
+            ->method('getByName')
+            ->with($this->labelName)
+            ->willReturn($this->entity);
 
         $this->writeRepository->expects($this->once())
             ->method($expectedMethod)

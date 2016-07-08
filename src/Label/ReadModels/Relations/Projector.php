@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Label\LabelEventOfferTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
-use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -16,26 +16,27 @@ use ValueObjects\String\String as StringLiteral;
 class Projector extends AbstractProjector
 {
     /**
-     * @var LabelEventHelper
-     */
-    private $labelEventHelper;
-
-    /**
      * @var WriteRepositoryInterface
      */
     private $writeRepository;
 
     /**
+     * @var LabelEventOfferTypeResolverInterface
+     */
+    private $offerTypeResolver;
+
+    /**
      * Projector constructor.
      * @param WriteRepositoryInterface $writeRepository
-     * @param LabelEventHelper $labelEventHelper
+     * @param LabelEventOfferTypeResolverInterface $labelEventOfferTypeResolver
      */
     public function __construct(
         WriteRepositoryInterface $writeRepository,
-        LabelEventHelper $labelEventHelper
+        LabelEventOfferTypeResolverInterface $labelEventOfferTypeResolver
     ) {
-        $this->labelEventHelper = $labelEventHelper;
         $this->writeRepository = $writeRepository;
+        $this->offerTypeResolver = $labelEventOfferTypeResolver;
+
     }
 
     /**
@@ -43,7 +44,7 @@ class Projector extends AbstractProjector
      */
     public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
-        $entity = $this->createEntity($this->labelEventHelper, $labelAdded);
+        $entity = $this->createEntity($labelAdded, $metadata);
 
         try {
             if (!is_null($entity)) {
@@ -64,7 +65,7 @@ class Projector extends AbstractProjector
      */
     public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
-        $entity = $this->createEntity($this->labelEventHelper, $labelDeleted);
+        $entity = $this->createEntity($labelDeleted, $metadata);
 
         if (!is_null($entity)) {
             $this->writeRepository->deleteByUuidAndRelationId(
@@ -75,19 +76,21 @@ class Projector extends AbstractProjector
     }
 
     /**
-     * @param LabelEventHelper $labelEventHelper
      * @param AbstractLabelEvent $labelEvent
+     * @param Metadata $metadata
      * @return OfferLabelRelation
      */
     private function createEntity(
-        LabelEventHelper $labelEventHelper,
-        AbstractLabelEvent $labelEvent
+        AbstractLabelEvent $labelEvent,
+        Metadata $metadata
     ) {
         $entity = null;
 
-        $uuid = $labelEventHelper->getUuid($labelEvent);
-        $relationType = $labelEventHelper->getRelationType($labelEvent);
-        $relationId = $labelEventHelper->getRelationId($labelEvent);
+        $metadataArray = $metadata->serialize();
+
+        $uuid = isset($metadataArray['labelUuid']) ? $metadataArray['labelUuid'] : null;
+        $relationType = $this->offerTypeResolver->getOfferType($labelEvent);
+        $relationId = new StringLiteral($labelEvent->getItemId());
 
         if (!is_null($uuid)) {
             $entity = new OfferLabelRelation(

@@ -10,11 +10,13 @@ use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
-use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 class Projector extends AbstractProjector
 {
@@ -29,24 +31,16 @@ class Projector extends AbstractProjector
     private $readRepository;
 
     /**
-     * @var LabelEventHelper
-     */
-    private $abstractLabelEventHelper;
-
-    /**
      * Projector constructor.
      * @param WriteRepositoryInterface $writeRepository
      * @param ReadRepositoryInterface $readRepository
-     * @param LabelEventHelper $abstractLabelEventHelper
      */
     public function __construct(
         WriteRepositoryInterface $writeRepository,
-        ReadRepositoryInterface $readRepository,
-        LabelEventHelper $abstractLabelEventHelper
+        ReadRepositoryInterface $readRepository
     ) {
         $this->writeRepository = $writeRepository;
         $this->readRepository = $readRepository;
-        $this->abstractLabelEventHelper = $abstractLabelEventHelper;
     }
 
     /**
@@ -121,7 +115,7 @@ class Projector extends AbstractProjector
      */
     public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
-        $uuid = $this->abstractLabelEventHelper->getUuid($labelAdded);
+        $uuid = $this->getUuid($labelAdded);
 
         if ($uuid) {
             $this->writeRepository->updateCountIncrement($uuid);
@@ -133,10 +127,28 @@ class Projector extends AbstractProjector
      */
     public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
-        $uuid = $this->abstractLabelEventHelper->getUuid($labelDeleted);
+        $uuid = $this->getUuid($labelDeleted);
 
         if ($uuid) {
             $this->writeRepository->updateCountDecrement($uuid);
         }
+    }
+
+    /**
+     * @param AbstractLabelEvent $labelEvent
+     * @return UUID|null
+     */
+    private function getUuid(AbstractLabelEvent $labelEvent)
+    {
+        $uuid = null;
+
+        $name = new StringLiteral((string) $labelEvent->getLabel());
+
+        $entity = $this->readRepository->getByName($name);
+        if ($entity !== null) {
+            $uuid = $entity->getUuid();
+        }
+
+        return $uuid;
     }
 }

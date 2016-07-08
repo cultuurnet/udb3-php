@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class Projector extends AbstractProjector
@@ -88,7 +89,7 @@ class Projector extends AbstractProjector
 
         $metadataArray = $metadata->serialize();
 
-        $uuid = isset($metadataArray['labelUuid']) ? $metadataArray['labelUuid'] : null;
+        $uuid = isset($metadataArray['labelUuid']) ? new UUID($metadataArray['labelUuid']) : null;
         $relationType = $this->offerTypeResolver->getOfferType($labelEvent);
         $relationId = new StringLiteral($labelEvent->getItemId());
 

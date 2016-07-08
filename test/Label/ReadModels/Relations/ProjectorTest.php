@@ -179,7 +179,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         return new DomainMessage(
             $id,
             0,
-            new Metadata(['labelUuid' => $this->uuid]),
+            new Metadata(['labelUuid' => (string) $this->uuid]),
             $payload,
             BroadwayDateTime::now()
         );

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 
+use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
@@ -40,7 +41,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded(AbstractLabelAdded $labelAdded)
+    public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
         $entity = $this->createEntity($this->labelEventHelper, $labelAdded);
 
@@ -61,7 +62,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
+    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
         $entity = $this->createEntity($this->labelEventHelper, $labelDeleted);
 

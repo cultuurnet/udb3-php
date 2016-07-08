@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\JSON;
 
+use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Label\Events\CopyCreated;
 use CultuurNet\UDB3\Label\Events\Created;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
@@ -118,7 +119,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded(AbstractLabelAdded $labelAdded)
+    public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
         $uuid = $this->abstractLabelEventHelper->getUuid($labelAdded);
 
@@ -130,7 +131,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
+    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
         $uuid = $this->abstractLabelEventHelper->getUuid($labelDeleted);
 

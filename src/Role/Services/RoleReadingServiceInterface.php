@@ -9,12 +9,6 @@ interface RoleReadingServiceInterface
 {
     /**
      * @param UUID $uuid
-     * @return array
-     */
-    public function getByUuid(UUID $uuid);
-
-    /**
-     * @param UUID $uuid
      * @return Permission[]
      */
     public function getPermissionsByRoleUuid(UUID $uuid);

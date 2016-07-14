@@ -2,41 +2,39 @@
 
 namespace CultuurNet\UDB3\Role\Services;
 
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\LocalEntityService;
 use ValueObjects\Identity\UUID;
 
-class LocalRoleReadingService implements RoleReadingServiceInterface
+class LocalRoleReadingService extends LocalEntityService implements RoleReadingServiceInterface
 {
     /**
      * @var DocumentRepositoryInterface
      */
-    private $roleRepository;
-
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    private $rolePermissionsRepository;
+    private $rolePermissionsReadRepository;
 
     /**
      * ReadRoleRestController constructor.
-     * @param DocumentRepositoryInterface $roleRepository
-     * @param DocumentRepositoryInterface $rolePermissionsRepository
+     * @param DocumentRepositoryInterface $roleReadRepository
+     * @param RepositoryInterface $roleWriteRepository
+     * @param IriGeneratorInterface $iriGenerator
+     * @param DocumentRepositoryInterface $rolePermissionsReadRepository
      */
     public function __construct(
-        DocumentRepositoryInterface $roleRepository,
-        DocumentRepositoryInterface $rolePermissionsRepository
+        DocumentRepositoryInterface $roleReadRepository,
+        RepositoryInterface $roleWriteRepository,
+        IriGeneratorInterface $iriGenerator,
+        DocumentRepositoryInterface $rolePermissionsReadRepository
     ) {
-        $this->roleRepository = $roleRepository;
-        $this->rolePermissionsRepository = $rolePermissionsRepository;
-    }
-    
-    /**
-     * @param UUID $uuid
-     * @return mixed
-     */
-    public function getByUuid(UUID $uuid)
-    {
-        return $this->roleRepository->get($uuid->toNative());
+        parent::__construct(
+            $roleReadRepository,
+            $roleWriteRepository,
+            $iriGenerator
+        );
+
+        $this->rolePermissionsReadRepository = $rolePermissionsReadRepository;
     }
 
     /**
@@ -45,6 +43,6 @@ class LocalRoleReadingService implements RoleReadingServiceInterface
      */
     public function getPermissionsByRoleUuid(UUID $uuid)
     {
-        return $this->rolePermissionsRepository->get($uuid->toNative());
+        return $this->rolePermissionsReadRepository->get($uuid->toNative());
     }
 }

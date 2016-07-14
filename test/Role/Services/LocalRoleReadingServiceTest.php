@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Role\Services;
 
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
@@ -12,12 +14,22 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $roleRepository;
+    private $roleReadRepository;
 
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $rolePermissionsRepository;
+    private $rolePermissionsReadRepository;
+
+    /**
+     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $roleWriteRepository;
+
+    /**
+     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $iriGenerator;
 
     /**
      * @var LocalRoleReadingService
@@ -26,17 +38,16 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->roleRepository = $this->getMock(
-            DocumentRepositoryInterface::class
-        );
-
-        $this->rolePermissionsRepository = $this->getMock(
-            DocumentRepositoryInterface::class
-        );
+        $this->roleReadRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->roleWriteRepository = $this->getMock(RepositoryInterface::class);
+        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->rolePermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
 
         $this->readingService = new LocalRoleReadingService(
-            $this->roleRepository,
-            $this->rolePermissionsRepository
+            $this->roleReadRepository,
+            $this->roleWriteRepository,
+            $this->iriGenerator,
+            $this->rolePermissionsReadRepository
         );
     }
 
@@ -45,22 +56,22 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_the_details_of_a_role()
     {
-        $roleId = new UUID('da114bb4-42bc-11e6-beb8-9e71128cae77');
+        $roleId = 'da114bb4-42bc-11e6-beb8-9e71128cae77';
         $document = new JsonDocument('da114bb4-42bc-11e6-beb8-9e71128cae77');
         $json = $document->getBody();
-        $json->{'@id'} = $roleId->toNative();
+        $json->{'@id'} = $roleId;
         $json->name = 'administrator';
         $json->query = 'category_flandersregion_name:"Regio Brussel"';
         $expectedRole = $document->withBody($json);
 
-        $this->roleRepository->expects($this->once())
+        $this->roleReadRepository->expects($this->once())
             ->method('get')
             ->with($roleId)
             ->willReturn($expectedRole);
 
-        $role = $this->readingService->getByUuid($roleId);
+        $role = $this->readingService->getEntity($roleId);
 
-        $this->assertEquals($expectedRole, $role);
+        $this->assertEquals($expectedRole->getRawBody(), $role);
     }
 
     /**
@@ -80,7 +91,7 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
         $json->permissions[$permission2->getName()] = $permission2->getValue();
         $expectedPermissions = $document->withBody($json);
 
-        $this->rolePermissionsRepository->expects($this->once())
+        $this->rolePermissionsReadRepository->expects($this->once())
             ->method('get')
             ->with($roleId)
             ->willReturn($expectedPermissions);

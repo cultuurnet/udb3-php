@@ -10,6 +10,7 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
+use CultuurNet\UDB3\Role\Commands\DeleteRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
@@ -73,6 +74,11 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $removePermission;
 
     /**
+     * @var DeleteRole
+     */
+    private $deleteRole;
+
+    /**
      * @var DefaultRoleEditingService
      */
     private $roleEditingService;
@@ -119,6 +125,10 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->removePermission = new RemovePermission(
             $this->uuid,
             Permission::AANBOD_INVOEREN()
+        );
+
+        $this->deleteRole = new DeleteRole(
+            $this->uuid
         );
 
         $this->uuidGenerator->method('generate')
@@ -226,6 +236,23 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         $commandId = $this->roleEditingService->removePermission(
             $this->uuid,
             Permission::AANBOD_INVOEREN()
+        );
+
+        $this->assertEquals($this->expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_a_role()
+    {
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($this->deleteRole)
+            ->willReturn($this->expectedCommandId);
+
+        $commandId = $this->roleEditingService->deleteRole(
+            $this->uuid
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);

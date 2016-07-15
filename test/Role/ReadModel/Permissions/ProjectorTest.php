@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Role\Events\AbstractEvent;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -187,6 +188,41 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->projector->handle($domainMessageRemoved);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_the_deletion_of_a_role()
+    {
+        $roleCreated = new RoleCreated(
+            $this->uuid,
+            new StringLiteral('roleName')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $roleCreated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $this->projector->handle($domainMessage);
+
+        $roleDeleted = new RoleDeleted(
+            $this->uuid
+        );
+
+        $deletedDomainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $roleDeleted,
+            BroadwayDateTime::fromString('2016-06-30T16:25:21+01:00')
+        );
+
+        $this->repository->expects($this->once())
+            ->method('remove')
+            ->with($this->uuid->toNative());
+
+        $this->projector->handle($deletedDomainMessage);
     }
 
     /**

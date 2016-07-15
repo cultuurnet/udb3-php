@@ -7,6 +7,7 @@ use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
 
 class Projector extends RoleProjector
@@ -97,5 +98,16 @@ class Projector extends RoleProjector
                 return $json;
             }
         );
+    }
+
+    /**
+     * @param RoleDeleted $roleDeleted
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyRoleDeleted(
+        RoleDeleted $roleDeleted,
+        DomainMessage $domainMessage
+    ) {
+        $this->repository->remove($roleDeleted->getUuid());
     }
 }

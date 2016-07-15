@@ -251,7 +251,7 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with($this->deleteRole)
             ->willReturn($this->expectedCommandId);
 
-        $commandId = $this->roleEditingService->deleteRole(
+        $commandId = $this->roleEditingService->delete(
             $this->uuid
         );
 

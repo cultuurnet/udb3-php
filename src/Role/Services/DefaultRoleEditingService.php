@@ -118,7 +118,7 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function deleteRole(UUID $uuid)
+    public function delete(UUID $uuid)
     {
         $command = new DeleteRole(
             $uuid

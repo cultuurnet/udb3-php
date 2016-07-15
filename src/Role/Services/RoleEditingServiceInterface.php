@@ -58,5 +58,5 @@ interface RoleEditingServiceInterface
      * @param UUID $uuid
      * @return string
      */
-    public function deleteRole(UUID $uuid);
+    public function delete(UUID $uuid);
 }

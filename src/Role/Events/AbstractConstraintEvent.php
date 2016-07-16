@@ -36,7 +36,7 @@ class AbstractConstraintEvent extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['uuid'], new StringLiteral($data['query']));
+        return new static(new UUID($data['uuid']), new StringLiteral($data['query']));
     }
 
     /**

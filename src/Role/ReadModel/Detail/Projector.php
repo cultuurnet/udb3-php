@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
 
@@ -69,6 +70,17 @@ class Projector extends RoleProjector
         )->format('c');
 
         $this->repository->save($document->withBody($json));
+    }
+
+    /**
+     * @param RoleDeleted $roleDeleted
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyRoleDeleted(
+        RoleDeleted $roleDeleted,
+        DomainMessage $domainMessage
+    ) {
+        $this->repository->remove($roleDeleted->getUuid());
     }
 
     /**
@@ -142,5 +154,4 @@ class Projector extends RoleProjector
 
         $this->repository->save($document->withBody($json));
     }
-
 }

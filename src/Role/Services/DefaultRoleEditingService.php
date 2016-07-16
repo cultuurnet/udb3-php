@@ -6,6 +6,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
+use CultuurNet\UDB3\Role\Commands\DeleteRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
@@ -101,11 +102,26 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
         return $this->commandBus->dispatch($command);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setConstraint(UUID $uuid, StringLiteral $query)
     {
         $command = new SetConstraint(
             $uuid,
             $query
+        );
+
+        return $this->commandBus->dispatch($command);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete(UUID $uuid)
+    {
+        $command = new DeleteRole(
+            $uuid
         );
 
         return $this->commandBus->dispatch($command);

@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
@@ -130,6 +131,17 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
+     * Delete a role.
+     *
+     * @param UUID $uuid
+     */
+    public function delete(
+        UUID $uuid
+    ) {
+        $this->apply(new RoleDeleted($uuid));
+    }
+
+    /**
      * @param RoleCreated $roleCreated
      */
     public function applyRoleCreated(RoleCreated $roleCreated)
@@ -180,6 +192,9 @@ class Role extends EventSourcedAggregateRoot
         $this->permissions[$permission->getName()] = $permission;
     }
 
+    /**
+     * @param PermissionRemoved $permissionRemoved
+     */
     public function applyPermissionRemoved(PermissionRemoved $permissionRemoved)
     {
         $permission = $permissionRemoved->getPermission();

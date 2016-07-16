@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\AbstractEvent;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use stdClass;
 use ValueObjects\Identity\UUID;
@@ -142,6 +143,41 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->projector->handle($domainMessageRenamed);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_delete()
+    {
+        $roleCreated = new RoleCreated(
+            $this->uuid,
+            $this->name
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $roleCreated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $this->projector->handle($domainMessage);
+
+        $roleDeleted = new RoleDeleted(
+            $this->uuid
+        );
+
+        $deletedDomainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $roleDeleted,
+            BroadwayDateTime::fromString('2016-06-30T16:25:21+01:00')
+        );
+
+        $this->repository->expects($this->once())
+            ->method('remove')
+            ->with($this->uuid->toNative());
+
+        $this->projector->handle($deletedDomainMessage);
     }
 
     /**

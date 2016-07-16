@@ -7,6 +7,7 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
+use CultuurNet\UDB3\Role\Commands\DeleteRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
+use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
@@ -83,6 +85,11 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     private $constraintRemoved;
 
+    /**
+     * @var RoleDeleted
+     */
+    private $roleDeleted;
+
     public function setUp()
     {
         parent::setUp();
@@ -124,6 +131,10 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         );
         
         $this->constraintRemoved = new ConstraintRemoved(
+            $this->uuid
+        );
+
+        $this->roleDeleted = new RoleDeleted(
             $this->uuid
         );
     }
@@ -246,5 +257,19 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $query
             ))
             ->then([$this->constraintRemoved]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_deleteRole_by_deleting_the_role()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(new DeleteRole(
+                $this->uuid
+            ))
+            ->then([$this->roleDeleted]);
     }
 }

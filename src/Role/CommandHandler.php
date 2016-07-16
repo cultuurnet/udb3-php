@@ -6,6 +6,7 @@ use Broadway\CommandHandling\CommandHandler as AbstractCommandHandler;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
+use CultuurNet\UDB3\Role\Commands\DeleteRole;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
@@ -96,6 +97,20 @@ class CommandHandler extends AbstractCommandHandler
             $removePermission->getUuid(),
             $removePermission->getPermission()
         );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param DeleteRole $deleteRole
+     */
+    public function handleDeleteRole(DeleteRole $deleteRole)
+    {
+        $role = $this->load($deleteRole->getUuid());
+
+        //@TODO Check linked users and labels once added.
+
+        $role->delete($deleteRole->getUuid());
 
         $this->save($role);
     }

@@ -51,4 +51,12 @@ interface RoleEditingServiceInterface
      * @return string
      */
     public function setConstraint(UUID $uuid, StringLiteral $query);
+
+    /**
+     * Deleting a role.
+     *
+     * @param UUID $uuid
+     * @return string
+     */
+    public function delete(UUID $uuid);
 }

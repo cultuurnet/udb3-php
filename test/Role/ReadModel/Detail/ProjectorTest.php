@@ -8,6 +8,9 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\AbstractEvent;
+use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
@@ -17,6 +20,16 @@ use ValueObjects\String\String as StringLiteral;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var StringLiteral
+     */
+    private $constraintName;
+
+    /**
+     * @var UUID
+     */
+    private $constraintUuid;
+
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -43,6 +56,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->uuid = new UUID();
         $this->name = new StringLiteral('roleName');
+
+        $this->constraintUuid = new UUID();
+        $this->constraintName = new StringLiteral('constraintName');
         
         $this->repository = $this->getMock(
             DocumentRepositoryInterface::class
@@ -178,6 +194,133 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->uuid->toNative());
 
         $this->projector->handle($deletedDomainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_constraint_created()
+    {
+        $constraintCreated = new ConstraintCreated(
+            $this->uuid,
+            $this->constraintName
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $constraintCreated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->constraint = $this->constraintName->toNative();
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->initialDocument());
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_constraint_updated()
+    {
+        $constraintUpdated = new ConstraintUpdated(
+            $this->uuid,
+            new StringLiteral('newConstraintName')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $constraintUpdated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->constraint = 'newConstraintName';
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->initialDocument());
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_constraint_removed()
+    {
+        $constraintRemoved = new ConstraintRemoved(
+            $this->uuid
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $constraintRemoved,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T13:25:21+01:00';
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->initialDocument());
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
     }
 
     /**

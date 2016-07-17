@@ -2,14 +2,14 @@
 
 namespace CultuurNet\UDB3\Role\Services;
 
-use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;
 
 interface RoleReadingServiceInterface
 {
     /**
      * @param UUID $uuid
-     * @return Permission[]
+     * @return JsonDocument
      */
     public function getPermissionsByRoleUuid(UUID $uuid);
 }

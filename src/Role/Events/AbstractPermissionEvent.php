@@ -36,7 +36,7 @@ class AbstractPermissionEvent extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['uuid'], Permission::fromNative($data['permission']));
+        return new static(new UUID($data['uuid']), Permission::fromNative($data['permission']));
     }
 
     /**

@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 
 class Projector extends RoleProjector
 {
@@ -29,7 +30,10 @@ class Projector extends RoleProjector
         $permissionValue = $permission->getValue();
 
         $json = $document->getBody();
-        $json->permissions = (object) [$permissionName  => $permissionValue];
+        if (!is_array($json->permissions)) {
+            $json->permissions = array();
+        }
+        $json->permissions[] = (object) [$permissionName  => $permissionValue];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $json->modified = \DateTime::createFromFormat(
@@ -56,7 +60,12 @@ class Projector extends RoleProjector
         $permissionName = $permission->getName();
 
         $json = $document->getBody();
-        unset($json->permissions->$permissionName);
+        if (!is_array($json->permissions)) {
+            $json->permissions = array();
+        }
+        $json->permissions = array_values(array_filter($json->permissions, function($item) use ($permissionName) {
+            return key($item) !== $permissionName;
+        }));
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $json->modified = \DateTime::createFromFormat(

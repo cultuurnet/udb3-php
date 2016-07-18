@@ -125,7 +125,9 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         }
 
         // Search everything, results are sorted alphabetically.
+        $this->connection->beginTransaction();
         $actualResults = $this->dbalRepository->search();
+        $this->connection->rollBack();
 
         $this->assertEquals(
             array(
@@ -141,8 +143,15 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             $actualResults->getItemsPerPage()
         );
 
+        $this->assertEquals(
+            3,
+            $actualResults->getTotalItems()
+        );
+
         // Search everything, results are sorted alphabetically.
+        $this->connection->beginTransaction();
         $actualResults = $this->dbalRepository->search('with', 5);
+        $this->connection->rollBack();
 
         $this->assertEquals(
             array(
@@ -155,6 +164,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             5,
             $actualResults->getItemsPerPage()
+        );
+
+        $this->assertEquals(
+            2,
+            $actualResults->getTotalItems()
         );
     }
 

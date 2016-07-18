@@ -58,7 +58,7 @@ class Projector extends RoleProjector
         $permissionName = $permission->getName();
 
         $json = $document->getBody();
-        $json->permissions = array_values(array_filter($json->permissions, function($item) use ($permissionName) {
+        $json->permissions = array_values(array_filter($json->permissions, function ($item) use ($permissionName) {
             return $item->key !== $permissionName;
         }));
 

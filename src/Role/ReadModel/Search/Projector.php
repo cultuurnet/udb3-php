@@ -30,7 +30,7 @@ class Projector implements EventListenerInterface
      * @param RoleCreated $roleCreated
      * @param DomainMessage $domainMessage
      */
-    protected function applyRoleCreated(
+    public function applyRoleCreated(
         RoleCreated $roleCreated,
         DomainMessage $domainMessage
     ) {
@@ -44,7 +44,7 @@ class Projector implements EventListenerInterface
      * @param RoleRenamed $roleRenamed
      * @param DomainMessage $domainMessage
      */
-    protected function applyRoleRenamed(
+    public function applyRoleRenamed(
         RoleRenamed $roleRenamed,
         DomainMessage $domainMessage
     ) {
@@ -58,7 +58,7 @@ class Projector implements EventListenerInterface
      * @param RoleDeleted $roleDeleted
      * @param DomainMessage $domainMessage
      */
-    protected function applyRoleDeleted(
+    public function applyRoleDeleted(
         RoleDeleted $roleDeleted,
         DomainMessage $domainMessage
     ) {

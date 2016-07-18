@@ -1,12 +1,14 @@
 <?php
 
-namespace CultuurNet\UDB3\Role\ReadModel\Search;
+namespace CultuurNet\UDB3\Role\ReadModel\Search\Doctrine;
 
+use CultuurNet\UDB3\Role\ReadModel\Search\RepositoryInterface;
+use CultuurNet\UDB3\Role\ReadModel\Search\Results;
 use Doctrine\DBAL\Connection;
 use ValueObjects\String\String as StringLiteral;
 
-class DBALRepository implements RepositoryInterface {
-
+class DBALRepository implements RepositoryInterface
+{
     /**
      * @var Connection
      */
@@ -17,7 +19,12 @@ class DBALRepository implements RepositoryInterface {
      */
     protected $tableName;
 
-    public function __construct(Connection $connection, StringLiteral $tableName) {
+    /**
+     * @param Connection $connection
+     * @param StringLiteral $tableName
+     */
+    public function __construct(Connection $connection, StringLiteral $tableName)
+    {
         $this->connection = $connection;
         $this->tableName = $tableName;
     }
@@ -25,7 +32,8 @@ class DBALRepository implements RepositoryInterface {
     /**
      * {@inheritdoc}
      */
-    public function remove($uuid) {
+    public function remove($uuid)
+    {
         $q = $this->connection->createQueryBuilder();
         $expr = $this->connection->getExpressionBuilder();
 
@@ -39,7 +47,8 @@ class DBALRepository implements RepositoryInterface {
     /**
      * {@inheritdoc}
      */
-    public function save($uuid,  $name) {
+    public function save($uuid, $name)
+    {
         $q = $this->connection->createQueryBuilder();
         $q
             ->insert($this->tableName->toNative())
@@ -57,7 +66,8 @@ class DBALRepository implements RepositoryInterface {
     /**
      * {@inheritdoc}
      */
-    public function search($name = '', $limit = 10, $start = 0) {
+    public function search($name = '', $limit = 10, $start = 0)
+    {
         $q = $this->connection->createQueryBuilder();
         $expr = $this->connection->getExpressionBuilder();
 
@@ -80,9 +90,16 @@ class DBALRepository implements RepositoryInterface {
         $q = $this->connection->createQueryBuilder();
 
         $q
-            ->select('uuid')
+            ->resetQueryParts()
+            ->select('COUNT(*) AS total')
             ->from($this->tableName->toNative());
-        $total = $q->execute()->rowCount();
+
+        if (!empty($name)) {
+            $q->where($expr->like('name', ':role_name'));
+            $q->setParameter('role_name', '%' . $name . '%');
+        }
+
+        $total = $q->execute()->fetchColumn();
 
         return new Results($limit, $results, $total);
     }
@@ -90,7 +107,8 @@ class DBALRepository implements RepositoryInterface {
     /**
      * {@inheritdoc}
      */
-    public function update($uuid,  $name) {
+    public function update($uuid, $name)
+    {
         $q = $this->connection->createQueryBuilder();
         $expr = $this->connection->getExpressionBuilder();
 

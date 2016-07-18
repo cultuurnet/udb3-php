@@ -28,5 +28,4 @@ interface RepositoryInterface
      * @param string $name
      */
     public function update($uuid, $name);
-
 }

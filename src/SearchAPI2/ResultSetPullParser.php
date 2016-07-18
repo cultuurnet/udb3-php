@@ -7,6 +7,9 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
@@ -14,8 +17,10 @@ use ValueObjects\Web\Url;
  * Parser using XML pull parsing to extract the ids from the CDBXML-formatted
  * results returned by Search API 2.
  */
-class ResultSetPullParser
+class ResultSetPullParser implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     const OFFER_TYPE_EVENT = 'offer.event';
     const OFFER_TYPE_PLACE = 'offer.place';
     const OFFER_TYPE_UNKNOWN = 'offer.unknown';
@@ -57,6 +62,8 @@ class ResultSetPullParser
         ];
 
         $this->knownCdbXmlResultTypes = ['event', 'actor'];
+
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -70,12 +77,13 @@ class ResultSetPullParser
     public function getResultSet($cdbxml)
     {
         $items = new OfferIdentifierCollection();
-        $totalItems = $cdbId = $elementName = $offerType = null;
+        $totalItems = $cdbId = $elementName = $offerType = $resultXmlString = null;
 
-        $resetCurrentResultValues = function () use (&$cdbId, &$elementName, &$offerType) {
+        $resetCurrentResultValues = function () use (&$cdbId, &$elementName, &$offerType, &$resultXmlString) {
             $cdbId = null;
             $elementName = self::CDBXML_TYPE_UNKNOWN;
             $offerType = self::OFFER_TYPE_UNKNOWN;
+            $resultXmlString = '';
         };
 
         $resetCurrentResultValues();
@@ -89,6 +97,7 @@ class ResultSetPullParser
             }
 
             if ($this->xmlNodeIsResultOpeningTag($r)) {
+                $resultXmlString = $r->readOuterXml();
                 $cdbId = $r->getAttribute('cdbid');
                 $elementName = 'cdbxml.' . $r->localName;
 
@@ -122,6 +131,10 @@ class ResultSetPullParser
                 if (empty($externalUrl)) {
                     $iriGenerator = $this->fallbackIriGenerators[$offerType];
                     $externalUrl = $iriGenerator->iri($cdbId);
+
+                    $this->logger->debug(
+                        "Created fallback url for search result {$cdbId}, with cdbxml: {$resultXmlString}"
+                    );
                 }
 
                 $items = $items->with(

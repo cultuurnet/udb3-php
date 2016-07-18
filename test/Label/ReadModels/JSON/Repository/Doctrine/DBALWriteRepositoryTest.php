@@ -276,4 +276,32 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             $actualEntity->getCount()
         );
     }
+
+    /**
+     * @test
+     */
+    public function count_never_smaller_then_zero()
+    {
+        $expectedEntity = new Entity(
+            new UUID(),
+            new StringLiteral('labelName'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC(),
+            new UUID(),
+            new Natural(0)
+        );
+
+        $this->saveEntity($expectedEntity);
+
+        $this->dbalWriteRepository->updateCountDecrement(
+            $expectedEntity->getUuid()
+        );
+
+        $actualEntity = $this->getEntity();
+
+        $this->assertEquals(
+            new Natural(0),
+            $actualEntity->getCount()
+        );
+    }
 }

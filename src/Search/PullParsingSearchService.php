@@ -5,6 +5,8 @@ namespace CultuurNet\UDB3\Search;
 use CultuurNet\Search\Parameter;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\SearchAPI2;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * SearchServiceInterface implementation that uses Search API 2 and parses
@@ -34,18 +36,26 @@ class PullParsingSearchService implements SearchServiceInterface
     protected $placeIriGenerator;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $resultParserLogger;
+
+    /**
      * @param SearchAPI2\SearchServiceInterface $search
      * @param IriGeneratorInterface $eventIriGenerator
      * @param IriGeneratorInterface $placeIriGenerator
+     * @param LoggerInterface|null $resultParserLogger
      */
     public function __construct(
         SearchAPI2\SearchServiceInterface $search,
         IriGeneratorInterface $eventIriGenerator,
-        IriGeneratorInterface $placeIriGenerator
+        IriGeneratorInterface $placeIriGenerator,
+        LoggerInterface $resultParserLogger = null
     ) {
         $this->searchAPI2 = $search;
         $this->eventIriGenerator = $eventIriGenerator;
         $this->placeIriGenerator = $placeIriGenerator;
+        $this->resultParserLogger = $resultParserLogger ? $resultParserLogger : new NullLogger();
     }
 
     /**
@@ -113,6 +123,7 @@ class PullParsingSearchService implements SearchServiceInterface
                 $this->eventIriGenerator,
                 $this->placeIriGenerator
             );
+            $this->pullParser->setLogger($this->resultParserLogger);
         }
         return $this->pullParser;
     }

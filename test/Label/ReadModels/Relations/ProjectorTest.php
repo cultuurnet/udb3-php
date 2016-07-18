@@ -177,8 +177,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->writeRepository->expects($this->once())
-            ->method('deleteByUuid')
-            ->with($this->uuid);
+            ->method('deleteByUuidAndRelationId')
+            ->with($this->uuid, new StringLiteral($labelDeleted->getItemId()));
 
         $this->projector->handle($domainMessage);
     }

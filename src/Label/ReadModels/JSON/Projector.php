@@ -122,7 +122,9 @@ class Projector extends AbstractProjector
     {
         $uuid = $this->abstractLabelEventHelper->getUuid($labelAdded);
 
-        $this->writeRepository->updateCountIncrement($uuid);
+        if ($uuid) {
+            $this->writeRepository->updateCountIncrement($uuid);
+        }
     }
 
     /**
@@ -132,6 +134,8 @@ class Projector extends AbstractProjector
     {
         $uuid = $this->abstractLabelEventHelper->getUuid($labelDeleted);
 
-        $this->writeRepository->updateCountDecrement($uuid);
+        if ($uuid) {
+            $this->writeRepository->updateCountDecrement($uuid);
+        }
     }
 }

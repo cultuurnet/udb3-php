@@ -30,9 +30,7 @@ class Projector extends RoleProjector
         $permissionValue = $permission->getValue();
 
         $json = $document->getBody();
-        if (!is_array($json->permissions)) {
-            $json->permissions = array();
-        }
+
         $json->permissions[] = (object) ['key' => $permissionName, 'name' => $permissionValue];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
@@ -60,9 +58,6 @@ class Projector extends RoleProjector
         $permissionName = $permission->getName();
 
         $json = $document->getBody();
-        if (!is_array($json->permissions)) {
-            $json->permissions = array();
-        }
         $json->permissions = array_values(array_filter($json->permissions, function($item) use ($permissionName) {
             return $item->key !== $permissionName;
         }));
@@ -88,7 +83,7 @@ class Projector extends RoleProjector
             $roleCreated->getUuid()->toNative(),
             function (\stdClass $json) use ($roleCreated, $domainMessage) {
                 $json->{'@id'} = $roleCreated->getUuid()->toNative();
-                $json->permissions = (object) [];
+                $json->permissions = array();
 
                 $recordedOn = $domainMessage->getRecordedOn()->toString();
                 $json->created = \DateTime::createFromFormat(

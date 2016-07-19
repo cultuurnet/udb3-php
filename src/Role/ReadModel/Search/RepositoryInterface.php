@@ -2,24 +2,31 @@
 
 namespace CultuurNet\UDB3\Role\ReadModel\Search;
 
-use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as stringLiteral;
-
 interface RepositoryInterface
 {
     /**
-     * @param UUID $uuid
-     * @param stringLiteral $name
+     * @param string $uuid
      * @return mixed
      */
-    public function save(
-        UUID $uuid,
-        StringLiteral $name
-    );
+    public function remove($uuid);
 
     /**
-     * @param UUID $uuid
-     * @return mixed
+     * @param string $uuid
+     * @param string $name
      */
-    public function remove(UUID $uuid);
+    public function save($uuid, $name);
+
+    /**
+     * @param string $query
+     * @param int $limit
+     * @param int $start
+     * @return Results
+     */
+    public function search($query = '', $limit = 10, $start = 0);
+
+    /**
+     * @param string $uuid
+     * @param string $name
+     */
+    public function update($uuid, $name);
 }

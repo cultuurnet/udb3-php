@@ -17,11 +17,12 @@ interface RepositoryInterface
     public function save($uuid, $name);
 
     /**
-     * @param string $name
+     * @param string $query
      * @param int $limit
      * @param int $start
+     * @return Results
      */
-    public function search($name, $limit, $start);
+    public function search($query = '', $limit = 10, $start = 0);
 
     /**
      * @param string $uuid

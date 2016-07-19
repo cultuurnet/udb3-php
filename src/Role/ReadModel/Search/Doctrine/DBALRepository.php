@@ -66,7 +66,7 @@ class DBALRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function search($name = '', $limit = 10, $start = 0)
+    public function search($query = '', $limit = 10, $start = 0)
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $this->connection->getExpressionBuilder();
@@ -79,9 +79,9 @@ class DBALRepository implements RepositoryInterface
             ->setMaxResults($limit)
             ->setFirstResult($start);
 
-        if (!empty($name)) {
+        if (!empty($query)) {
             $q->where($expr->like('name', ':role_name'));
-            $q->setParameter('role_name', '%' . $name . '%');
+            $q->setParameter('role_name', '%' . $query . '%');
         }
 
         $results = $q->execute()->fetchAll(\PDO::FETCH_ASSOC);
@@ -94,9 +94,9 @@ class DBALRepository implements RepositoryInterface
             ->select('COUNT(*) AS total')
             ->from($this->tableName->toNative());
 
-        if (!empty($name)) {
+        if (!empty($query)) {
             $q->where($expr->like('name', ':role_name'));
-            $q->setParameter('role_name', '%' . $name . '%');
+            $q->setParameter('role_name', '%' . $query . '%');
         }
 
         $total = $q->execute()->fetchColumn();

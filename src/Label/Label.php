@@ -181,6 +181,6 @@ class Label extends EventSourcedAggregateRoot
      */
     public function applyMadePrivate(MadePrivate $madePrivate)
     {
-        $this->privacy = Privacy::PRIVACY_PUBLIC();
+        $this->privacy = Privacy::PRIVACY_PRIVATE();
     }
 }

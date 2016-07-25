@@ -183,12 +183,4 @@ class Label extends EventSourcedAggregateRoot
     {
         $this->privacy = Privacy::PRIVACY_PUBLIC();
     }
-
-    /**
-     * @return StringLiteral
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 }

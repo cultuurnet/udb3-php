@@ -6,6 +6,42 @@ class OfferTypeTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
+     */
+    public function it_has_an_event_option()
+    {
+        $relationsType = OfferType::EVENT();
+
+        $this->assertEquals($relationsType, OfferType::EVENT);
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_a_place_option()
+    {
+        $relationsType = OfferType::PLACE();
+
+        $this->assertEquals($relationsType, OfferType::PLACE);
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_only_an_event_and_place_option()
+    {
+        $options = OfferType::getConstants();
+
+        $this->assertEquals(
+            [
+                OfferType::EVENT()->getName() => OfferType::EVENT,
+                OfferType::PLACE()->getName() => OfferType::PLACE
+            ],
+            $options
+        );
+    }
+
+    /**
+     * @test
      * @dataProvider offerTypeDataProvider
      *
      * @param string $enumValue

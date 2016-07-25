@@ -24,8 +24,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
                 SchemaConfigurator::LABEL_NAME_COLUMN => '?',
-                SchemaConfigurator::RELATION_TYPE_COLUMN => '?',
-                SchemaConfigurator::RELATION_ID_COLUMN => '?'
+                SchemaConfigurator::OFFER_TYPE_COLUMN => '?',
+                SchemaConfigurator::OFFER_ID_COLUMN => '?'
             ])
             ->setParameters([
                 $uuid->toNative(),
@@ -47,7 +47,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         $queryBuilder = $this->createQueryBuilder()
             ->delete($this->getTableName())
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
-            ->andWhere(SchemaConfigurator::RELATION_ID_COLUMN . ' = ?')
+            ->andWhere(SchemaConfigurator::OFFER_ID_COLUMN . ' = ?')
             ->setParameters([$uuid->toNative(), $offerUuid->toNative()]);
 
         $queryBuilder->execute();

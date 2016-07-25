@@ -99,4 +99,13 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
             'streetAddress' => $this->streetAddress
         ];
     }
+
+    /**
+     * @param Address $otherAddress
+     * @return bool
+     */
+    public function sameAs(Address $otherAddress)
+    {
+        return $this->toJsonLd() === $otherAddress->toJsonLd();
+    }
 }

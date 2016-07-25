@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
+class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UUID
@@ -26,7 +26,7 @@ class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
     /**
      * @var OfferLabelRelation
      */
-    private $entity;
+    private $offerLabelRelation;
 
     /**
      * @var StringLiteral
@@ -40,7 +40,7 @@ class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
         $this->relationId = new StringLiteral('relationId');
         $this->labelName = new StringLiteral('labelName');
 
-        $this->entity = new OfferLabelRelation(
+        $this->offerLabelRelation = new OfferLabelRelation(
             $this->uuid,
             $this->labelName,
             $this->relationType,
@@ -53,7 +53,7 @@ class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_uuid()
     {
-        $this->assertEquals($this->uuid, $this->entity->getUuid());
+        $this->assertEquals($this->uuid, $this->offerLabelRelation->getUuid());
     }
 
     /**
@@ -63,7 +63,7 @@ class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->relationType,
-            $this->entity->getRelationType()
+            $this->offerLabelRelation->getRelationType()
         );
     }
 
@@ -72,7 +72,7 @@ class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_relation_id()
     {
-        $this->assertEquals($this->relationId, $this->entity->getRelationId());
+        $this->assertEquals($this->relationId, $this->offerLabelRelation->getRelationId());
     }
 
     /**
@@ -80,7 +80,7 @@ class LabelOfferRelationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_encode_to_json()
     {
-        $json = json_encode($this->entity);
+        $json = json_encode($this->offerLabelRelation);
 
         $expectedJson = '{"uuid":"' . $this->uuid->toNative()
             . '","labelName":"' . (string) $this->labelName

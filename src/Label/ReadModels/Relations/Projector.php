@@ -45,15 +45,15 @@ class Projector extends AbstractProjector
      */
     public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
-        $entity = $this->createEntity($labelAdded, $metadata);
+        $offerLabelRelation = $this->createOfferLabelRelation($labelAdded, $metadata);
 
         try {
-            if (!is_null($entity)) {
+            if (!is_null($offerLabelRelation)) {
                 $this->writeRepository->save(
-                    $entity->getUuid(),
-                    $entity->getLabelName(),
-                    $entity->getRelationType(),
-                    $entity->getRelationId()
+                    $offerLabelRelation->getUuid(),
+                    $offerLabelRelation->getLabelName(),
+                    $offerLabelRelation->getRelationType(),
+                    $offerLabelRelation->getRelationId()
                 );
             }
         } catch (UniqueConstraintViolationException $exception) {
@@ -66,11 +66,11 @@ class Projector extends AbstractProjector
      */
     public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
-        $entity = $this->createEntity($labelDeleted, $metadata);
+        $offerLabelRelation = $this->createOfferLabelRelation($labelDeleted, $metadata);
 
-        if (!is_null($entity)) {
+        if (!is_null($offerLabelRelation)) {
             $this->writeRepository->deleteByUuidAndRelationId(
-                $entity->getUuid(),
+                $offerLabelRelation->getUuid(),
                 new StringLiteral($labelDeleted->getItemId())
             );
         }
@@ -81,11 +81,11 @@ class Projector extends AbstractProjector
      * @param Metadata $metadata
      * @return OfferLabelRelation
      */
-    private function createEntity(
+    private function createOfferLabelRelation(
         AbstractLabelEvent $labelEvent,
         Metadata $metadata
     ) {
-        $entity = null;
+        $offerLabelRelation = null;
 
         $metadataArray = $metadata->serialize();
 
@@ -94,7 +94,7 @@ class Projector extends AbstractProjector
         $relationId = new StringLiteral($labelEvent->getItemId());
 
         if (!is_null($uuid)) {
-            $entity = new OfferLabelRelation(
+            $offerLabelRelation = new OfferLabelRelation(
                 $uuid,
                 new StringLiteral((string) $labelEvent->getLabel()),
                 $relationType,
@@ -102,6 +102,6 @@ class Projector extends AbstractProjector
             );
         }
 
-        return $entity;
+        return $offerLabelRelation;
     }
 }

@@ -52,9 +52,9 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
             new StringLiteral('298A39A1-8D1E-4F5D-B05E-811B6459EA36')
         );
 
-        $this->saveEntity($relation1);
-        $this->saveEntity($relation2);
-        $this->saveEntity($relation3);
+        $this->saveOfferLabelRelation($relation1);
+        $this->saveOfferLabelRelation($relation2);
+        $this->saveOfferLabelRelation($relation3);
 
         $offerIds = $this->readRepository->getOfferLabelRelations($labelId);
         $expectedRelations = [

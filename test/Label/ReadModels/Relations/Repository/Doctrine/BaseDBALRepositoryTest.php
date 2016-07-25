@@ -35,11 +35,11 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OfferLabelRelation $entity
+     * @param OfferLabelRelation $offerLabelRelation
      */
-    protected function saveEntity(OfferLabelRelation $entity)
+    protected function saveOfferLabelRelation(OfferLabelRelation $offerLabelRelation)
     {
-        $values = $this->entityToValues($entity);
+        $values = $this->offerLabelRelationToValues($offerLabelRelation);
 
         $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?, ?)';
 
@@ -47,23 +47,23 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OfferLabelRelation $entity
+     * @param OfferLabelRelation $offerLabelRelation
      * @return array
      */
-    protected function entityToValues(OfferLabelRelation $entity)
+    protected function offerLabelRelationToValues(OfferLabelRelation $offerLabelRelation)
     {
         return [
-            $entity->getUuid()->toNative(),
-            $entity->getLabelName(),
-            $entity->getRelationType()->toNative(),
-            $entity->getRelationId()
+            $offerLabelRelation->getUuid()->toNative(),
+            $offerLabelRelation->getLabelName(),
+            $offerLabelRelation->getRelationType()->toNative(),
+            $offerLabelRelation->getRelationId()
         ];
     }
 
     /**
      * @return OfferLabelRelation
      */
-    protected function getLastEntity()
+    protected function getLastOfferLabelRelation()
     {
         $sql = 'SELECT * FROM ' . $this->tableName;
 

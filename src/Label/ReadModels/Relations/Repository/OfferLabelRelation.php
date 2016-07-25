@@ -98,6 +98,10 @@ class OfferLabelRelation implements \JsonSerializable
         ];
     }
 
+    /**
+     * @param array $relation
+     * @return OfferLabelRelation
+     */
     public static function fromRelationalData(array $relation)
     {
         return new static(

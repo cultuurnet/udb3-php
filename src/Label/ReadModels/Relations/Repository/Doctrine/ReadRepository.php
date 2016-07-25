@@ -14,20 +14,32 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
      */
     public function getOfferLabelRelations(UUID $labelId)
     {
-        $query = $this
-            ->getConnection()
-            ->prepare(
-                'SELECT * ' .
-                ' FROM ' . $this->getTableName() .
-                ' WHERE ' . SchemaConfigurator::UUID_COLUMN . ' = ?'
-            );
+        $aliases = $this->getAliases();
+        $whereUuid = SchemaConfigurator::UUID_COLUMN . ' = ?';
 
-        $query->bindValue(1, $labelId, 'string');
-        $query->execute();
+        $queryBuilder = $this->createQueryBuilder()->select($aliases)
+            ->from($this->getTableName()->toNative())
+            ->where($whereUuid)
+            ->setParameters([$labelId]);
 
-        return array_map(
-            array(OfferLabelRelation::class, 'fromRelationalData'),
-            $query->fetchAll(\PDO::FETCH_ASSOC)
-        );
+        $statement = $queryBuilder->execute();
+
+        while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $offerLabelRelation = OfferLabelRelation::fromRelationalData($row);
+            yield $offerLabelRelation;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function getAliases()
+    {
+        return [
+            SchemaConfigurator::UUID_COLUMN,
+            SchemaConfigurator::LABEL_NAME_COLUMN,
+            SchemaConfigurator::OFFER_TYPE_COLUMN,
+            SchemaConfigurator::OFFER_ID_COLUMN
+        ];
     }
 }

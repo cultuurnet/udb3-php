@@ -14,6 +14,21 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
      */
     private $readRepository;
 
+    /**
+     * @var UUID
+     */
+    private $labelId;
+
+    /**
+     * @var OfferLabelRelation
+     */
+    private $relation1;
+
+    /**
+     * @var OfferLabelRelation
+     */
+    private $relation2;
+
     protected function setUp()
     {
         parent::setUp();
@@ -22,6 +37,8 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
             $this->getConnection(),
             $this->getTableName()
         );
+
+        $this->saveOfferLabelRelations();
     }
 
     /**
@@ -29,17 +46,45 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_should_return_relations_of_the_offers_that_are_tagged_with_a_specific_label()
     {
-        $labelId = new UUID('452ED5F7-925D-4D2C-9FA8-490398E85A16');
+        $offerLabelRelations = [];
+        foreach ($this->readRepository->getOfferLabelRelations($this->labelId) as $offerLabelRelation) {
+            $offerLabelRelations[] = $offerLabelRelation;
+        }
 
-        $relation1 = new OfferLabelRelation(
-            $labelId,
+        $expectedRelations = [
+            $this->relation1,
+            $this->relation2
+        ];
+
+        $this->assertEquals($expectedRelations, $offerLabelRelations);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_empty_array_when_no_relations_found_for_specific_label()
+    {
+        $offerLabelRelations = [];
+        foreach ($this->readRepository->getOfferLabelRelations(new UUID()) as $offerLabelRelation) {
+            $offerLabelRelations[] = $offerLabelRelation;
+        }
+
+        $this->assertEmpty($offerLabelRelations);
+    }
+
+    private function saveOfferLabelRelations()
+    {
+        $this->labelId = new UUID('452ED5F7-925D-4D2C-9FA8-490398E85A16');
+
+        $this->relation1 = new OfferLabelRelation(
+            $this->labelId,
             new StringLiteral('green'),
             OfferType::PLACE(),
             new StringLiteral('99A78F44-A45B-40E2-A1E3-7632D2F3B1C6')
         );
 
-        $relation2 = new OfferLabelRelation(
-            $labelId,
+        $this->relation2 = new OfferLabelRelation(
+            $this->labelId,
             new StringLiteral('green'),
             OfferType::PLACE(),
             new StringLiteral('A9B3FA7B-9AF5-49F4-8BB5-2B169CE83107')
@@ -52,16 +97,8 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
             new StringLiteral('298A39A1-8D1E-4F5D-B05E-811B6459EA36')
         );
 
-        $this->saveOfferLabelRelation($relation1);
-        $this->saveOfferLabelRelation($relation2);
+        $this->saveOfferLabelRelation($this->relation1);
+        $this->saveOfferLabelRelation($this->relation2);
         $this->saveOfferLabelRelation($relation3);
-
-        $offerIds = $this->readRepository->getOfferLabelRelations($labelId);
-        $expectedRelations = [
-            $relation1,
-            $relation2
-        ];
-
-        $this->assertEquals($expectedRelations, $offerIds);
     }
 }

@@ -48,7 +48,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
     public function applyMadeVisible(MadeVisible $madeVisible)
     {
         $relatedDocuments = $this->getRelatedDocuments($madeVisible);
-        
+
         foreach ($relatedDocuments as $relatedDocument) {
             $offerDocument = $relatedDocument->getJsonDocument();
 
@@ -111,7 +111,6 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     private function getRelatedDocuments(AbstractEvent $labelEvent)
     {
-        /** @var OfferLabelRelation[] $offerRelations */
         $offerRelations = $this->relationRepository->getOfferLabelRelations($labelEvent->getUuid());
 
         foreach ($offerRelations as $offerRelation) {

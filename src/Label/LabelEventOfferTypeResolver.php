@@ -9,6 +9,16 @@ use CultuurNet\UDB3\Offer\OfferType;
 
 class LabelEventOfferTypeResolver implements LabelEventOfferTypeResolverInterface
 {
+    /**
+     * @var OfferLabelEventIsOfEventType
+     */
+    private $eventTypeSpecification;
+
+    /**
+     * @var OfferLabelEventIsOfPlaceType
+     */
+    private $placeTypeSpecification;
+
     public function __construct()
     {
         $this->eventTypeSpecification = new OfferLabelEventIsOfEventType();

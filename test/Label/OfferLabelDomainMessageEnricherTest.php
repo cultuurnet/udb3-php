@@ -12,7 +12,9 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -44,6 +46,18 @@ class OfferLabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
         $supported = $this->createDomainMessage($this, AbstractLabelEvent::class);
         $this->assertTrue($this->enricher->supports($supported));
 
+        $supported = $this->createDomainMessage($this, AbstractLabelAdded::class);
+        $this->assertTrue($this->enricher->supports($supported));
+
+        $supported = $this->createDomainMessage($this, PlaceLabelAdded::class);
+        $this->assertTrue($this->enricher->supports($supported));
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_support_events_which_are_not_an_instance_of_abstract_label_events()
+    {
         $unsupported = $this->createDomainMessage($this, EventCreated::class);
         $this->assertFalse($this->enricher->supports($unsupported));
     }
@@ -103,17 +117,8 @@ class OfferLabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
             Privacy::PRIVACY_PUBLIC()
         );
 
-        $expectedEnrichedDomainMessage = new DomainMessage(
-            $id,
-            $playhead,
-            new Metadata(
-                [
-                    'ip' => '127.0.0.1',
-                    'labelUuid' => (string) $labelUuid,
-                ]
-            ),
-            $payload,
-            $recordedOn
+        $expectedEnrichedDomainMessage = $originalDomainMessage->andMetadata(
+            new Metadata(['labelUuid' => (string) $labelUuid])
         );
 
         $this->readRepository->expects($this->once())

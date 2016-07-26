@@ -2,9 +2,7 @@
 
 namespace CultuurNet\UDB3\EventListener;
 
-use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;

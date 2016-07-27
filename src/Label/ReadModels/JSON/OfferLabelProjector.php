@@ -9,9 +9,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
-use Generator;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -45,6 +43,9 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
         $this->logger = new NullLogger();
     }
 
+    /**
+     * @param MadeVisible $madeVisible
+     */
     public function applyMadeVisible(MadeVisible $madeVisible)
     {
         $relatedDocuments = $this->getRelatedDocuments($madeVisible);
@@ -75,6 +76,9 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
         }
     }
 
+    /**
+     * @param MadeInvisible $madeInvisible
+     */
     public function applyMadeInvisible(MadeInvisible $madeInvisible)
     {
         $relatedDocuments = $this->getRelatedDocuments($madeInvisible);
@@ -107,7 +111,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
 
     /**
      * @param AbstractEvent $labelEvent
-     * @return Generator|RelatedDocument[]
+     * @return \Generator|RelatedDocument[]
      */
     private function getRelatedDocuments(AbstractEvent $labelEvent)
     {

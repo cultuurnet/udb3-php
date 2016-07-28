@@ -118,6 +118,49 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_updates_the_projection_of_offers_which_have_a_label_made_invisible()
+    {
+        $labelId = new UUID();
+        $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
+        $madeInvisibleEvent = new MadeInvisible($labelId);
+
+        $existingPlaceDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode(
+                (object) [
+                    'labels' => ['green', 'black'],
+                ]
+            )
+        );
+
+        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+
+        $domainMessage = $this->createDomainMessage(
+            (string) $labelId,
+            $madeInvisibleEvent
+        );
+
+        $expectedDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode(
+                (object) [
+                    'labels' => ['green'],
+                    'hiddenLabels' => ['black'],
+                ]
+            )
+        );
+
+        $this->offerRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_remove_the_hidden_labels_property_of_an_offer_when_the_last_hidden_label_is_made_visible()
     {
         $labelId = new UUID();

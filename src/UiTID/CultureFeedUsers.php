@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class CultureFeedUsers implements UsersInterface
@@ -32,12 +32,43 @@ class CultureFeedUsers implements UsersInterface
         $query->mbox = $email->toNative();
         $query->mboxIncludePrivate = true;
 
-        return $this->searchSingleUser($query);
+        $user = $this->searchSingleUser($query);
+
+        // Given e-mail address could contain a wildcard (eg. *@cultuurnet.be),
+        // so we should make sure the emails are exactly the same, otherwise
+        // we're just returning the first user that matches the wildcard which
+        // is not intended.
+        if ($user && $user->mbox === $email->toNative()) {
+            return new StringLiteral($user->id);
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function byNick(StringLiteral $nick)
+    {
+        $query = new \CultureFeed_SearchUsersQuery();
+        $query->nick = $nick->toNative();
+
+        $user = $this->searchSingleUser($query);
+
+        // Given nick could contain a wildcard (eg. *somepartofnick*), so we
+        // should make sure the nicks are exactly the same, otherwise we're
+        // just returning the first user that matches the wildcard which is not
+        // intended.
+        if ($user && $user->nick === $nick->toNative()) {
+            return new StringLiteral($user->id);
+        }
+
+        return null;
     }
 
     /**
      * @param \CultureFeed_SearchUsersQuery $query
-     * @return string|null
+     * @return \CultureFeed_SearchUser|null
      */
     private function searchSingleUser(\CultureFeed_SearchUsersQuery $query)
     {
@@ -47,21 +78,6 @@ class CultureFeedUsers implements UsersInterface
         /** @var \CultureFeed_SearchUser $user */
         $user = reset($results->objects);
 
-        if ($user) {
-            return new String($user->id);
-        }
-
-        return;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function byNick(String $nick)
-    {
-        $query = new \CultureFeed_SearchUsersQuery();
-        $query->nick = $nick->toNative();
-
-        return $this->searchSingleUser($query);
+        return $user ? $user : null;
     }
 }

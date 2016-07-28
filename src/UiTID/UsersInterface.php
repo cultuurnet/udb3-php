@@ -1,24 +1,23 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\UiTID;
 
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 interface UsersInterface
 {
     /**
      * @param EmailAddress $email
-     * @return String Id of the user with the given e-mail address.
+     * @return StringLiteral|null
+     *   Id of the user with the given e-mail address or null if not found.
      */
     public function byEmail(EmailAddress $email);
 
     /**
-     * @param String $nick
-     * @return String Id of the user with the given nick.
+     * @param StringLiteral $nick
+     * @return StringLiteral|null
+     *   Id of the user with the given nick or null if not found.
      */
-    public function byNick(String $nick);
+    public function byNick(StringLiteral $nick);
 }

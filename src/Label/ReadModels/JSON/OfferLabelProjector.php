@@ -8,16 +8,14 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\LabelDomainMessageEnricher;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Identity\UUID;
 
 class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterface
 {
@@ -73,30 +71,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     public function applyMadeVisible(MadeVisible $madeVisible, Metadata $metaData)
     {
-        $offers = $this->getRelatedOffers($madeVisible);
-        $labelName = $this->getLabelName($metaData);
-
-        foreach ($offers as $offer) {
-            $offerLd = $offer->getBody();
-
-            $labels = isset($offerLd->labels) ? $offerLd->labels : [];
-
-            // The label should now be shown so we add it to the list of regular labels.
-            $labels[] = $labelName;
-            $offerLd->labels = array_unique($labels);
-
-            // Another list tracks hidden labels so we have to make sure it's no longer listed here.
-            if (isset($offerLd->hiddenLabels)) {
-                $offerLd->hiddenLabels = array_diff($offerLd->hiddenLabels, [$labelName]);
-
-                // If there are no other hidden labels left, remove the list so we don't have an empty leftover attribute.
-                if (count($offerLd->hiddenLabels) === 0) {
-                    unset($offerLd->hiddenLabels);
-                }
-            }
-
-            $this->offerRepository->save($offer->withBody($offerLd));
-        }
+        $this->updateLabels($madeVisible->getUuid(), $metaData, true);
     }
 
     /**
@@ -105,25 +80,38 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     public function applyMadeInvisible(MadeInvisible $madeInvisible, Metadata $metaData)
     {
-        $offers = $this->getRelatedOffers($madeInvisible);
+        $this->updateLabels($madeInvisible->getUuid(), $metaData, false);
+    }
+
+    /**
+     * @param UUID $uuid
+     * @param Metadata $metaData
+     * @param bool $madeVisible
+     */
+    private function updateLabels(
+        UUID $uuid,
+        Metadata $metaData,
+        $madeVisible
+    ) {
+        $offers = $this->getRelatedOffers($uuid);
         $labelName = $this->getLabelName($metaData);
+
+        $removeFrom = $madeVisible ? 'hiddenLabels' : 'labels';
+        $addTo = $madeVisible ? 'labels' : 'hiddenLabels';
 
         foreach ($offers as $offer) {
             $offerLd = $offer->getBody();
 
-            $hiddenLabels = isset($offerLd->hiddenLabels) ? $offerLd->hiddenLabels : [];
+            $addToArray = isset($offerLd->{$addTo}) ? $offerLd->{$addTo} : [];
 
-            // The label is now invisible so we add it to the list of hidden labels.
-            $hiddenLabels[] = $labelName;
-            $offerLd->hiddenLabels = array_unique($hiddenLabels);
+            $addToArray[] = $labelName;
+            $offerLd->{$addTo} = array_unique($addToArray);
 
-            // Remove the hidden label from the list of visible labels.
-            if (isset($offerLd->labels)) {
-                $offerLd->labels = array_diff($offerLd->labels, [$labelName]);
+            if (isset($offerLd->{$removeFrom})) {
+                $offerLd->{$removeFrom} = array_diff($offerLd->{$removeFrom}, [$labelName]);
 
-                // If there are no visible labels left, remove the list so we don't have an empty leftover attribute.
-                if (count($offerLd->labels) === 0) {
-                    unset($offerLd->labels);
+                if (count($offerLd->{$removeFrom}) === 0) {
+                    unset($offerLd->{$removeFrom});
                 }
             }
 
@@ -132,12 +120,12 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
     }
 
     /**
-     * @param AbstractEvent $labelEvent
-     * @return \Generator|JsonDocument[]
+     * @param UUID $uuid
+     * @return \CultuurNet\UDB3\ReadModel\JsonDocument[]|\Generator
      */
-    private function getRelatedOffers(AbstractEvent $labelEvent)
+    private function getRelatedOffers(UUID $uuid)
     {
-        $offerRelations = $this->relationRepository->getOfferLabelRelations($labelEvent->getUuid());
+        $offerRelations = $this->relationRepository->getOfferLabelRelations($uuid);
 
         foreach ($offerRelations as $offerRelation) {
             try {

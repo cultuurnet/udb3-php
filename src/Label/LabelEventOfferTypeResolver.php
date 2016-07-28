@@ -33,15 +33,15 @@ class LabelEventOfferTypeResolver implements LabelEventOfferTypeResolverInterfac
     public function getOfferType(AbstractLabelEvent $labelEvent)
     {
         if ($this->eventTypeSpecification->isSatisfiedBy($labelEvent)) {
-            $relationType = OfferType::EVENT();
+            $offerType = OfferType::EVENT();
         } else if ($this->placeTypeSpecification->isSatisfiedBy($labelEvent)) {
-            $relationType = OfferType::PLACE();
+            $offerType = OfferType::PLACE();
         } else {
             $message = $this->createIllegalArgumentMessage($labelEvent);
             throw new \InvalidArgumentException($message);
         }
 
-        return $relationType;
+        return $offerType;
     }
 
     /**

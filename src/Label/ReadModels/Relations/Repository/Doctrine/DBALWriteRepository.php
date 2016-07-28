@@ -15,8 +15,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
      */
     public function save(
         UUID $uuid,
-        OfferType $relationType,
-        StringLiteral $relationId
+        OfferType $offerType,
+        StringLiteral $offerId
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())
@@ -27,8 +27,8 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ])
             ->setParameters([
                 $uuid->toNative(),
-                $relationType->toNative(),
-                $relationId->toNative()
+                $offerType->toNative(),
+                $offerId->toNative()
             ]);
 
         $queryBuilder->execute();
@@ -37,7 +37,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     /**
      * @inheritdoc
      */
-    public function deleteByUuidAndRelationId(
+    public function deleteByUuidAndOfferId(
         UUID $uuid,
         StringLiteral $offerUuid
     ) {

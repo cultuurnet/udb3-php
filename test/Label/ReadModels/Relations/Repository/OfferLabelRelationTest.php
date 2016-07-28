@@ -16,12 +16,12 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     /**
      * @var OfferType
      */
-    private $relationType;
+    private $offerType;
 
     /**
      * @var StringLiteral
      */
-    private $relationId;
+    private $offerId;
 
     /**
      * @var OfferLabelRelation
@@ -31,13 +31,13 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->uuid = new UUID();
-        $this->relationType = OfferType::PLACE();
-        $this->relationId = new StringLiteral('relationId');
+        $this->offerType = OfferType::PLACE();
+        $this->offerId = new StringLiteral('relationId');
 
         $this->offerLabelRelation = new OfferLabelRelation(
             $this->uuid,
-            $this->relationType,
-            $this->relationId
+            $this->offerType,
+            $this->offerId
         );
     }
 
@@ -55,8 +55,8 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_relation_type()
     {
         $this->assertEquals(
-            $this->relationType,
-            $this->offerLabelRelation->getRelationType()
+            $this->offerType,
+            $this->offerLabelRelation->getOfferType()
         );
     }
 
@@ -65,7 +65,7 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_relation_id()
     {
-        $this->assertEquals($this->relationId, $this->offerLabelRelation->getRelationId());
+        $this->assertEquals($this->offerId, $this->offerLabelRelation->getOfferId());
     }
 
     /**
@@ -76,8 +76,8 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($this->offerLabelRelation);
 
         $expectedJson = '{"uuid":"' . $this->uuid->toNative()
-            . '","relationType":"' . $this->relationType->toNative()
-            . '","relationId":"' . $this->relationId->toNative() . '"}';
+            . '","offerType":"' . $this->offerType->toNative()
+            . '","offerId":"' . $this->offerId->toNative() . '"}';
 
         $this->assertEquals($expectedJson, $json);
     }

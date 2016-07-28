@@ -11,8 +11,8 @@ use ValueObjects\String\String as StringLiteral;
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {
     const UUID_COLUMN = 'uuid_col';
-    const OFFER_TYPE_COLUMN = 'relationType';
-    const OFFER_ID_COLUMN = 'relationId';
+    const OFFER_TYPE_COLUMN = 'offerType';
+    const OFFER_ID_COLUMN = 'offerId';
 
     /**
      * @var StringLiteral

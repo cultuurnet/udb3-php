@@ -54,8 +54,8 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         return [
             $offerLabelRelation->getUuid()->toNative(),
-            $offerLabelRelation->getRelationType()->toNative(),
-            $offerLabelRelation->getRelationId()
+            $offerLabelRelation->getOfferType()->toNative(),
+            $offerLabelRelation->getOfferId()
         ];
     }
 

@@ -51,8 +51,8 @@ class Projector extends AbstractProjector
             if (!is_null($offerLabelRelation)) {
                 $this->writeRepository->save(
                     $offerLabelRelation->getUuid(),
-                    $offerLabelRelation->getRelationType(),
-                    $offerLabelRelation->getRelationId()
+                    $offerLabelRelation->getOfferType(),
+                    $offerLabelRelation->getOfferId()
                 );
             }
         } catch (UniqueConstraintViolationException $exception) {
@@ -68,7 +68,7 @@ class Projector extends AbstractProjector
         $offerLabelRelation = $this->createOfferLabelRelation($labelDeleted, $metadata);
 
         if (!is_null($offerLabelRelation)) {
-            $this->writeRepository->deleteByUuidAndRelationId(
+            $this->writeRepository->deleteByUuidAndOfferId(
                 $offerLabelRelation->getUuid(),
                 new StringLiteral($labelDeleted->getItemId())
             );
@@ -89,14 +89,14 @@ class Projector extends AbstractProjector
         $metadataArray = $metadata->serialize();
 
         $uuid = isset($metadataArray['labelUuid']) ? new UUID($metadataArray['labelUuid']) : null;
-        $relationType = $this->offerTypeResolver->getOfferType($labelEvent);
-        $relationId = new StringLiteral($labelEvent->getItemId());
+        $offerType = $this->offerTypeResolver->getOfferType($labelEvent);
+        $offerId = new StringLiteral($labelEvent->getItemId());
 
         if (!is_null($uuid)) {
             $offerLabelRelation = new OfferLabelRelation(
                 $uuid,
-                $relationType,
-                $relationId
+                $offerType,
+                $offerId
             );
         }
 

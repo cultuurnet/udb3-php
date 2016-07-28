@@ -10,8 +10,8 @@ use ValueObjects\String\String as StringLiteral;
 class OfferLabelRelation implements \JsonSerializable
 {
     const UUID = 'uuid';
-    const RELATION_TYPE = 'relationType';
-    const RELATION_ID = 'relationId';
+    const OFFER_TYPE = 'offerType';
+    const OFFER_ID = 'offerId';
 
     /**
      * @var UUID
@@ -21,27 +21,27 @@ class OfferLabelRelation implements \JsonSerializable
     /**
      * @var OfferType
      */
-    private $relationType;
+    private $offerType;
 
     /**
      * @var StringLiteral
      */
-    private $relationId;
+    private $offerId;
 
     /**
      * Entity constructor.
      * @param UUID $uuid
      * @param OfferType $offerType
-     * @param StringLiteral $relationId
+     * @param StringLiteral $offerId
      */
     public function __construct(
         UUID $uuid,
         OfferType $offerType,
-        StringLiteral $relationId
+        StringLiteral $offerId
     ) {
         $this->uuid = $uuid;
-        $this->relationType = $offerType;
-        $this->relationId = $relationId;
+        $this->offerType = $offerType;
+        $this->offerId = $offerId;
     }
 
     /**
@@ -55,17 +55,17 @@ class OfferLabelRelation implements \JsonSerializable
     /**
      * @return OfferType
      */
-    public function getRelationType()
+    public function getOfferType()
     {
-        return $this->relationType;
+        return $this->offerType;
     }
 
     /**
      * @return StringLiteral
      */
-    public function getRelationId()
+    public function getOfferId()
     {
-        return $this->relationId;
+        return $this->offerId;
     }
 
     /**
@@ -75,8 +75,8 @@ class OfferLabelRelation implements \JsonSerializable
     {
         return [
             self::UUID => $this->uuid->toNative(),
-            self::RELATION_TYPE => $this->relationType->toNative(),
-            self::RELATION_ID => $this->relationId->toNative()
+            self::OFFER_TYPE => $this->offerType->toNative(),
+            self::OFFER_ID => $this->offerId->toNative()
         ];
     }
 

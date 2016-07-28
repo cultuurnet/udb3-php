@@ -10,21 +10,21 @@ interface WriteRepositoryInterface
 {
     /**
      * @param UUID $uuid
-     * @param OfferType $relationType
-     * @param StringLiteral $relationId
+     * @param OfferType $offerType
+     * @param StringLiteral $offerId
      */
     public function save(
         UUID $uuid,
-        OfferType $relationType,
-        StringLiteral $relationId
+        OfferType $offerType,
+        StringLiteral $offerId
     );
 
     /**
      * @param UUID $uuid
-     * @param StringLiteral $relationId
+     * @param StringLiteral $offerId
      */
-    public function deleteByUuidAndRelationId(
+    public function deleteByUuidAndOfferId(
         UUID $uuid,
-        StringLiteral $relationId
+        StringLiteral $offerId
     );
 }

@@ -38,8 +38,8 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getRelationType(),
-            $expectedOfferLabelRelation->getRelationId()
+            $expectedOfferLabelRelation->getOfferType(),
+            $expectedOfferLabelRelation->getOfferId()
         );
 
         $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
@@ -68,8 +68,8 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getRelationType(),
-            $expectedOfferLabelRelation->getRelationId()
+            $expectedOfferLabelRelation->getOfferType(),
+            $expectedOfferLabelRelation->getOfferId()
         );
 
         $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
@@ -92,14 +92,14 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $expectedOfferLabelRelation = new OfferLabelRelation(
             $offerLabelRelation->getUuid(),
-            $offerLabelRelation->getRelationType(),
+            $offerLabelRelation->getOfferType(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getRelationType(),
-            $expectedOfferLabelRelation->getRelationId()
+            $expectedOfferLabelRelation->getOfferType(),
+            $expectedOfferLabelRelation->getOfferId()
         );
 
         $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
@@ -122,16 +122,16 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $sameOfferLabelRelation = new OfferLabelRelation(
             $offerLabelRelation->getUuid(),
-            $offerLabelRelation->getRelationType(),
-            $offerLabelRelation->getRelationId()
+            $offerLabelRelation->getOfferType(),
+            $offerLabelRelation->getOfferId()
         );
 
         $this->setExpectedException(UniqueConstraintViolationException::class);
 
         $this->dbalWriteRepository->save(
             $sameOfferLabelRelation->getUuid(),
-            $sameOfferLabelRelation->getRelationType(),
-            $sameOfferLabelRelation->getRelationId()
+            $sameOfferLabelRelation->getOfferType(),
+            $sameOfferLabelRelation->getOfferId()
         );
     }
 
@@ -155,9 +155,9 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $this->saveOfferLabelRelation($OfferLabelRelation1);
         $this->saveOfferLabelRelation($OfferLabelRelation2);
 
-        $this->dbalWriteRepository->deleteByUuidAndRelationId(
+        $this->dbalWriteRepository->deleteByUuidAndOfferId(
             $OfferLabelRelation1->getUuid(),
-            $OfferLabelRelation1->getRelationId()
+            $OfferLabelRelation1->getOfferId()
         );
 
         $this->assertEquals(

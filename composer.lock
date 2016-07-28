@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1b8226267a0b96a68c03cc6d59c07e1d",
-    "content-hash": "e9e5571b1ff31c67e47c751fceb0f37d",
+    "hash": "2ed2c36695a4a825e2aa097d968d597b",
+    "content-hash": "5f34418666e82ad882e3f2c4bec55ca4",
     "packages": [
         {
             "name": "2dotstwice/collection",
@@ -471,16 +471,16 @@
         },
         {
             "name": "cultuurnet/culturefeed-php",
-            "version": "v1.6.1",
+            "version": "dev-feature/III-1189",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/culturefeed-php.git",
-                "reference": "aa0656aa939fdff13ec3770d0cc8229c32d0278a"
+                "reference": "c5003cdf4189450d277408bef59090589c363baf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/aa0656aa939fdff13ec3770d0cc8229c32d0278a",
-                "reference": "aa0656aa939fdff13ec3770d0cc8229c32d0278a",
+                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/c5003cdf4189450d277408bef59090589c363baf",
+                "reference": "c5003cdf4189450d277408bef59090589c363baf",
                 "shasum": ""
             },
             "require": {
@@ -534,7 +534,7 @@
                 }
             ],
             "description": "Culturefeed PHP library",
-            "time": "2016-01-08 12:08:20"
+            "time": "2016-07-28 12:52:40"
         },
         {
             "name": "cultuurnet/deserializer",
@@ -1601,6 +1601,7 @@
                 "rest",
                 "web service"
             ],
+            "abandoned": "guzzlehttp/guzzle",
             "time": "2015-03-18 18:23:50"
         },
         {
@@ -5082,9 +5083,18 @@
             "time": "2016-03-04 07:55:57"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "1.5",
+            "alias_normalized": "1.5.0.0",
+            "version": "dev-feature/III-1189",
+            "package": "cultuurnet/culturefeed-php"
+        }
+    ],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "cultuurnet/culturefeed-php": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

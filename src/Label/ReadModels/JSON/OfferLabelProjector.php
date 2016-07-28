@@ -93,29 +93,35 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
         Metadata $metaData,
         $madeVisible
     ) {
-        $offers = $this->getRelatedOffers($uuid);
         $labelName = $this->getLabelName($metaData);
 
-        $removeFrom = $madeVisible ? 'hiddenLabels' : 'labels';
-        $addTo = $madeVisible ? 'labels' : 'hiddenLabels';
+        if ($labelName) {
+            $offers = $this->getRelatedOffers($uuid);
 
-        foreach ($offers as $offer) {
-            $offerLd = $offer->getBody();
+            $removeFrom = $madeVisible ? 'hiddenLabels' : 'labels';
+            $addTo = $madeVisible ? 'labels' : 'hiddenLabels';
 
-            $addToArray = isset($offerLd->{$addTo}) ? $offerLd->{$addTo} : [];
+            foreach ($offers as $offer) {
+                $offerLd = $offer->getBody();
 
-            $addToArray[] = $labelName;
-            $offerLd->{$addTo} = array_unique($addToArray);
+                $addToArray = isset($offerLd->{$addTo}) ? $offerLd->{$addTo} : [];
 
-            if (isset($offerLd->{$removeFrom})) {
-                $offerLd->{$removeFrom} = array_diff($offerLd->{$removeFrom}, [$labelName]);
+                $addToArray[] = $labelName;
+                $offerLd->{$addTo} = array_unique($addToArray);
 
-                if (count($offerLd->{$removeFrom}) === 0) {
-                    unset($offerLd->{$removeFrom});
+                if (isset($offerLd->{$removeFrom})) {
+                    $offerLd->{$removeFrom} = array_diff($offerLd->{$removeFrom}, [$labelName]);
+
+                    if (count($offerLd->{$removeFrom}) === 0) {
+                        unset($offerLd->{$removeFrom});
+                    }
                 }
-            }
 
-            $this->offerRepository->save($offer->withBody($offerLd));
+                $this->offerRepository->save($offer->withBody($offerLd));
+            }
+        } else {
+            $this->logger->alert('Could not apply visibility for label: ' .
+                $uuid . ' because label name not found in meta data!');
         }
     }
 

@@ -28,21 +28,14 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
      */
     private $offerLabelRelation;
 
-    /**
-     * @var StringLiteral
-     */
-    private $labelName;
-
     protected function setUp()
     {
         $this->uuid = new UUID();
         $this->relationType = OfferType::PLACE();
         $this->relationId = new StringLiteral('relationId');
-        $this->labelName = new StringLiteral('labelName');
 
         $this->offerLabelRelation = new OfferLabelRelation(
             $this->uuid,
-            $this->labelName,
             $this->relationType,
             $this->relationId
         );
@@ -83,7 +76,6 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($this->offerLabelRelation);
 
         $expectedJson = '{"uuid":"' . $this->uuid->toNative()
-            . '","labelName":"' . (string) $this->labelName
             . '","relationType":"' . $this->relationType->toNative()
             . '","relationId":"' . $this->relationId->toNative() . '"}';
 

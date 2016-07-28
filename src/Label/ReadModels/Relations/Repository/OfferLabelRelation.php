@@ -12,7 +12,6 @@ class OfferLabelRelation implements \JsonSerializable
     const UUID = 'uuid';
     const RELATION_TYPE = 'relationType';
     const RELATION_ID = 'relationId';
-    const LABEL_NAME = 'labelName';
 
     /**
      * @var UUID
@@ -30,27 +29,19 @@ class OfferLabelRelation implements \JsonSerializable
     private $relationId;
 
     /**
-     * @var StringLiteral
-     */
-    private $labelName;
-
-    /**
      * Entity constructor.
      * @param UUID $uuid
      * @param OfferType $offerType
      * @param StringLiteral $relationId
-     * @param StringLiteral $labelName
      */
     public function __construct(
         UUID $uuid,
-        StringLiteral $labelName,
         OfferType $offerType,
         StringLiteral $relationId
     ) {
         $this->uuid = $uuid;
         $this->relationType = $offerType;
         $this->relationId = $relationId;
-        $this->labelName = $labelName;
     }
 
     /**
@@ -78,21 +69,12 @@ class OfferLabelRelation implements \JsonSerializable
     }
 
     /**
-     * @return StringLiteral
-     */
-    public function getLabelName()
-    {
-        return $this->labelName;
-    }
-
-    /**
      * @inheritdoc
      */
     public function jsonSerialize()
     {
         return [
             self::UUID => $this->uuid->toNative(),
-            self::LABEL_NAME => (string) $this->getLabelName(),
             self::RELATION_TYPE => $this->relationType->toNative(),
             self::RELATION_ID => $this->relationId->toNative()
         ];
@@ -106,7 +88,6 @@ class OfferLabelRelation implements \JsonSerializable
     {
         return new static(
             new UUID($relation[SchemaConfigurator::UUID_COLUMN]),
-            new StringLiteral($relation[SchemaConfigurator::LABEL_NAME_COLUMN]),
             OfferType::fromCaseInsensitiveValue($relation[SchemaConfigurator::OFFER_TYPE_COLUMN]),
             new StringLiteral($relation[SchemaConfigurator::OFFER_ID_COLUMN])
         );

@@ -88,7 +88,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('save')
             ->with(
                 $this->uuid,
-                new StringLiteral('labelName'),
                 $offerType,
                 new StringLiteral($this->offerId)
             );

@@ -37,7 +37,6 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
     {
         return [
             SchemaConfigurator::UUID_COLUMN,
-            SchemaConfigurator::LABEL_NAME_COLUMN,
             SchemaConfigurator::OFFER_TYPE_COLUMN,
             SchemaConfigurator::OFFER_ID_COLUMN
         ];

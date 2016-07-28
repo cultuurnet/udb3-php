@@ -32,14 +32,12 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
     {
         $expectedOfferLabelRelation = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('purple'),
             OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getLabelName(),
             $expectedOfferLabelRelation->getRelationType(),
             $expectedOfferLabelRelation->getRelationId()
         );
@@ -56,7 +54,6 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
     {
         $offerLabelRelation = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('blue'),
             OfferType::PLACE(),
             new StringLiteral('relationId')
         );
@@ -65,14 +62,12 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $expectedOfferLabelRelation = new OfferLabelRelation(
             $offerLabelRelation->getUuid(),
-            new StringLiteral('green'),
             OfferType::EVENT(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getLabelName(),
             $expectedOfferLabelRelation->getRelationType(),
             $expectedOfferLabelRelation->getRelationId()
         );
@@ -89,7 +84,6 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
     {
         $offerLabelRelation = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('blue'),
             OfferType::PLACE(),
             new StringLiteral('relationId')
         );
@@ -98,14 +92,12 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $expectedOfferLabelRelation = new OfferLabelRelation(
             $offerLabelRelation->getUuid(),
-            new StringLiteral('green'),
             $offerLabelRelation->getRelationType(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getLabelName(),
             $expectedOfferLabelRelation->getRelationType(),
             $expectedOfferLabelRelation->getRelationId()
         );
@@ -122,7 +114,6 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
     {
         $offerLabelRelation = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('orange'),
             OfferType::PLACE(),
             new StringLiteral('relationId')
         );
@@ -131,7 +122,6 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $sameOfferLabelRelation = new OfferLabelRelation(
             $offerLabelRelation->getUuid(),
-            $offerLabelRelation->getLabelName(),
             $offerLabelRelation->getRelationType(),
             $offerLabelRelation->getRelationId()
         );
@@ -140,7 +130,6 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
 
         $this->dbalWriteRepository->save(
             $sameOfferLabelRelation->getUuid(),
-            $sameOfferLabelRelation->getLabelName(),
             $sameOfferLabelRelation->getRelationType(),
             $sameOfferLabelRelation->getRelationId()
         );
@@ -153,14 +142,12 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
     {
         $OfferLabelRelation1 = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('blue'),
             OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $OfferLabelRelation2 = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('green'),
             OfferType::PLACE(),
             new StringLiteral('otherRelationId')
         );

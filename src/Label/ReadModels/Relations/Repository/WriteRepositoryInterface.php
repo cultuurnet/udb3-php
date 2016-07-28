@@ -12,11 +12,9 @@ interface WriteRepositoryInterface
      * @param UUID $uuid
      * @param OfferType $relationType
      * @param StringLiteral $relationId
-     * @param StringLiteral $labelName
      */
     public function save(
         UUID $uuid,
-        StringLiteral $labelName,
         OfferType $relationType,
         StringLiteral $relationId
     );

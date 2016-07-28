@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\JSON;
 
+use Broadway\Domain\DomainMessage;
+use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -9,14 +11,20 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
+use CultuurNet\UDB3\Label\LabelDomainMessageEnricher;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use ValueObjects\String\String as StringLiteral;
 
 class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
+    use DelegateEventHandlingToSpecificMethodTrait {
+        DelegateEventHandlingToSpecificMethodTrait::handle as handleSpecific;
+    }
+
     use LoggerAwareTrait;
 
     /**
@@ -44,17 +52,32 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
     }
 
     /**
-     * @param MadeVisible $madeVisible
+     * @param DomainMessage $domainMessage
      */
-    public function applyMadeVisible(MadeVisible $madeVisible)
+    public function handle(DomainMessage $domainMessage)
     {
-        $relatedDocuments = $this->getRelatedDocuments($madeVisible);
+        $event = $domainMessage->getPayload();
 
-        foreach ($relatedDocuments as $relatedDocument) {
-            $offerDocument = $relatedDocument->getJsonDocument();
+        if ($event instanceof MadeVisible) {
+            $this->applyMadeVisible($domainMessage->getPayload(), $domainMessage->getMetadata());
+        } else if ($event instanceof MadeInvisible) {
+            $this->applyMadeInvisible($domainMessage->getPayload(), $domainMessage->getMetadata());
+        } else {
+            $this->handleSpecific($domainMessage);
+        }
+    }
 
-            $labelName = $relatedDocument->getLabelName();
-            $offerLd = $offerDocument->getBody();
+    /**
+     * @param MadeVisible $madeVisible
+     * @param Metadata $metaData
+     */
+    public function applyMadeVisible(MadeVisible $madeVisible, Metadata $metaData)
+    {
+        $offers = $this->getRelatedOffers($madeVisible);
+        $labelName = $this->getLabelName($metaData);
+
+        foreach ($offers as $offer) {
+            $offerLd = $offer->getBody();
 
             $labels = isset($offerLd->labels) ? $offerLd->labels : [];
 
@@ -72,22 +95,21 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
                 }
             }
 
-            $this->offerRepository->save($offerDocument->withBody($offerLd));
+            $this->offerRepository->save($offer->withBody($offerLd));
         }
     }
 
     /**
      * @param MadeInvisible $madeInvisible
+     * @param Metadata $metaData
      */
-    public function applyMadeInvisible(MadeInvisible $madeInvisible)
+    public function applyMadeInvisible(MadeInvisible $madeInvisible, Metadata $metaData)
     {
-        $relatedDocuments = $this->getRelatedDocuments($madeInvisible);
+        $offers = $this->getRelatedOffers($madeInvisible);
+        $labelName = $this->getLabelName($metaData);
 
-        foreach ($relatedDocuments as $relatedDocument) {
-            $offerDocument = $relatedDocument->getJsonDocument();
-
-            $labelName = $relatedDocument->getLabelName();
-            $offerLd = $offerDocument->getBody();
+        foreach ($offers as $offer) {
+            $offerLd = $offer->getBody();
 
             $hiddenLabels = isset($offerLd->hiddenLabels) ? $offerLd->hiddenLabels : [];
 
@@ -105,32 +127,44 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
                 }
             }
 
-            $this->offerRepository->save($offerDocument->withBody($offerLd));
+            $this->offerRepository->save($offer->withBody($offerLd));
         }
     }
 
     /**
      * @param AbstractEvent $labelEvent
-     * @return \Generator|RelatedDocument[]
+     * @return \Generator|JsonDocument[]
      */
-    private function getRelatedDocuments(AbstractEvent $labelEvent)
+    private function getRelatedOffers(AbstractEvent $labelEvent)
     {
         $offerRelations = $this->relationRepository->getOfferLabelRelations($labelEvent->getUuid());
 
         foreach ($offerRelations as $offerRelation) {
             try {
-                $offerDocument = $this->offerRepository->get((string) $offerRelation->getRelationId());
+                $offer = $this->offerRepository->get((string) $offerRelation->getRelationId());
 
-                if ($offerDocument) {
-                    yield new RelatedDocument($offerRelation, $offerDocument);
+                if ($offer) {
+                    yield $offer;
                 }
             } catch (DocumentGoneException $exception) {
                 $this->logger->alert(
-                    'Can not update visibility of label: "'. $offerRelation->getLabelName() . '"'
+                    'Can not update visibility of label: "'. $offerRelation->getUuid() . '"'
                     . ' for the offer with id: "' . $offerRelation->getRelationId() . '"'
                     . ' because the document could not be retrieved.'
                 );
             }
         }
+    }
+
+    /**
+     * @param Metadata $metadata
+     * @return string|null
+     */
+    private function getLabelName(Metadata $metadata)
+    {
+        $metadataAsArray = $metadata->serialize();
+
+        return isset($metadataAsArray[LabelDomainMessageEnricher::LABEL_NAME]) ?
+            $metadataAsArray[LabelDomainMessageEnricher::LABEL_NAME] : null;
     }
 }

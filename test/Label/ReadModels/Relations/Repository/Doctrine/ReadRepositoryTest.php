@@ -78,21 +78,18 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
 
         $this->relation1 = new OfferLabelRelation(
             $this->labelId,
-            new StringLiteral('green'),
             OfferType::PLACE(),
             new StringLiteral('99A78F44-A45B-40E2-A1E3-7632D2F3B1C6')
         );
 
         $this->relation2 = new OfferLabelRelation(
             $this->labelId,
-            new StringLiteral('green'),
             OfferType::PLACE(),
             new StringLiteral('A9B3FA7B-9AF5-49F4-8BB5-2B169CE83107')
         );
 
         $relation3 = new OfferLabelRelation(
             new UUID(),
-            new StringLiteral('blue'),
             OfferType::PLACE(),
             new StringLiteral('298A39A1-8D1E-4F5D-B05E-811B6459EA36')
         );

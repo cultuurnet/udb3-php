@@ -59,7 +59,6 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
                 [
                     new OfferLabelRelation(
                         $labelId,
-                        new StringLiteral('black'),
                         OfferType::PLACE(),
                         new StringLiteral($jsonDocument->getId())
                     ),
@@ -260,7 +259,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
         $logger
             ->expects($this->once())
             ->method('alert')
-            ->with('Can not update visibility of label: "black" for the offer with id: "B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A" because the document could not be retrieved.');
+            ->with('Can not update visibility of label: "'. $labelId . '" for the offer with id: "B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A" because the document could not be retrieved.');
 
         $this->projector->setLogger($logger);
 
@@ -272,7 +271,6 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
                 [
                     new OfferLabelRelation(
                         $labelId,
-                        new StringLiteral('black'),
                         OfferType::PLACE(),
                         new StringLiteral((string) $placeId)
                     ),
@@ -302,7 +300,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
         return new DomainMessage(
             $id,
             0,
-            new Metadata(),
+            new Metadata(['labelName' => 'black']),
             $payload,
             BroadwayDateTime::now()
         );

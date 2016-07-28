@@ -51,7 +51,6 @@ class Projector extends AbstractProjector
             if (!is_null($offerLabelRelation)) {
                 $this->writeRepository->save(
                     $offerLabelRelation->getUuid(),
-                    $offerLabelRelation->getLabelName(),
                     $offerLabelRelation->getRelationType(),
                     $offerLabelRelation->getRelationId()
                 );
@@ -96,7 +95,6 @@ class Projector extends AbstractProjector
         if (!is_null($uuid)) {
             $offerLabelRelation = new OfferLabelRelation(
                 $uuid,
-                new StringLiteral((string) $labelEvent->getLabel()),
                 $relationType,
                 $relationId
             );

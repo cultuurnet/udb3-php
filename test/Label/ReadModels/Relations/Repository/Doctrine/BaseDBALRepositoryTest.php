@@ -41,7 +41,7 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $values = $this->offerLabelRelationToValues($offerLabelRelation);
 
-        $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?, ?)';
+        $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?)';
 
         $this->connection->executeQuery($sql, $values);
     }
@@ -54,7 +54,6 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         return [
             $offerLabelRelation->getUuid()->toNative(),
-            $offerLabelRelation->getLabelName(),
             $offerLabelRelation->getRelationType()->toNative(),
             $offerLabelRelation->getRelationId()
         ];

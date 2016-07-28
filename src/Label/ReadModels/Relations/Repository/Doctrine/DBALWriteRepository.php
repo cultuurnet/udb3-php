@@ -15,7 +15,6 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
      */
     public function save(
         UUID $uuid,
-        StringLiteral $labelName,
         OfferType $relationType,
         StringLiteral $relationId
     ) {
@@ -23,13 +22,11 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::UUID_COLUMN => '?',
-                SchemaConfigurator::LABEL_NAME_COLUMN => '?',
                 SchemaConfigurator::OFFER_TYPE_COLUMN => '?',
                 SchemaConfigurator::OFFER_ID_COLUMN => '?'
             ])
             ->setParameters([
                 $uuid->toNative(),
-                (string) $labelName,
                 $relationType->toNative(),
                 $relationId->toNative()
             ]);

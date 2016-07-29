@@ -1,11 +1,8 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\UiTID;
 
-use Guzzle\Common\Validation\Email;
+use CultuurNet\UDB3\User\CultureFeedUserIdentityDetailsFactory;
 use ValueObjects\String\String;
 use ValueObjects\Web\EmailAddress;
 
@@ -29,7 +26,10 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->cultureFeed = $this->getMock(\ICultureFeed::class);
-        $this->users = new CultureFeedUsers($this->cultureFeed);
+        $this->users = new CultureFeedUsers(
+            $this->cultureFeed,
+            new CultureFeedUserIdentityDetailsFactory()
+        );
 
         $this->user = $user = new \CultureFeed_SearchUser();
         $this->user->id = 'abc';

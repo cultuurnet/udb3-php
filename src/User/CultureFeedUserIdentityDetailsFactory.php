@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\User;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
-class CultureFeedUserIdentityFactory implements CultureFeedUserIdentityDetailsFactoryInterface
+class CultureFeedUserIdentityDetailsFactory implements CultureFeedUserIdentityDetailsFactoryInterface
 {
     /**
      * @param \CultureFeed_User $cfUser

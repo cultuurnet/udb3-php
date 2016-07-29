@@ -64,7 +64,7 @@ class UserIdentityDetails implements \JsonSerializable
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'uuid' => $this->userId->toNative(),

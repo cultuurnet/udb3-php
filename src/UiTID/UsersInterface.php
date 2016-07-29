@@ -2,30 +2,15 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
-use CultuurNet\UDB3\User\UserIdentityDetails;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
+/**
+ * @deprecated
+ *   Use CultuurNet\UDB3\User\UserIdentityResolverInterface instead.
+ */
 interface UsersInterface
 {
-    /**
-     * @param StringLiteral $userId
-     * @return UserIdentityDetails
-     */
-    public function getUserById(StringLiteral $userId);
-
-    /**
-     * @param EmailAddress $email
-     * @return UserIdentityDetails
-     */
-    public function getUserByEmail(EmailAddress $email);
-
-    /**
-     * @param StringLiteral $nick
-     * @return UserIdentityDetails
-     */
-    public function getUserByNick(StringLiteral $nick);
-
     /**
      * @param EmailAddress $email
      * @return StringLiteral|null

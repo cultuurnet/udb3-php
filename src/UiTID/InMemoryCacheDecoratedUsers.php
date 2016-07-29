@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
-use CultuurNet\UDB3\User\UserIdentityDetails;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -20,21 +19,6 @@ class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterfac
      * @var UsersInterface
      */
     private $wrapped;
-
-    /**
-     * @var UserIdentityDetails[]
-     */
-    private $userByIdMap;
-
-    /**
-     * @var UserIdentityDetails[]
-     */
-    private $userByEmailMap;
-
-    /**
-     * @var UserIdentityDetails[]
-     */
-    private $userByNickMap;
 
     /**
      * @var String[]
@@ -55,60 +39,6 @@ class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterfac
         $this->logger = new NullLogger();
         $this->nickMap = [];
         $this->mailMap = [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUserById(StringLiteral $userId)
-    {
-        $key = $userId->toNative();
-
-        if (!array_key_exists($key, $this->userByIdMap)) {
-            $this->userByIdMap[$key] = $this->wrapped->getUserById($userId);
-        } else {
-            $this->logger->info(
-                'found user with id ' . $key . ' in cache'
-            );
-        }
-
-        return $this->userByIdMap[$key];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUserByEmail(EmailAddress $email)
-    {
-        $key = $email->toNative();
-
-        if (!array_key_exists($key, $this->userByEmailMap)) {
-            $this->userByIdMap[$key] = $this->wrapped->getUserByEmail($email);
-        } else {
-            $this->logger->info(
-                'found user with email ' . $key . ' in cache'
-            );
-        }
-
-        return $this->userByEmailMap[$key];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUserByNick(StringLiteral $nick)
-    {
-        $key = $nick->toNative();
-
-        if (!array_key_exists($key, $this->userByNickMap)) {
-            $this->userByIdMap[$key] = $this->wrapped->getUserByNick($nick);
-        } else {
-            $this->logger->info(
-                'found user with nick ' . $key . ' in cache'
-            );
-        }
-
-        return $this->userByNickMap[$key];
     }
 
     /**

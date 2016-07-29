@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\UiTID;
 
 use CultuurNet\UDB3\User\CultureFeedUserIdentityDetailsFactory;
+use CultuurNet\UDB3\User\CultureFeedUserIdentityResolver;
 use ValueObjects\String\String;
 use ValueObjects\Web\EmailAddress;
 
@@ -27,8 +28,10 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
     {
         $this->cultureFeed = $this->getMock(\ICultureFeed::class);
         $this->users = new CultureFeedUsers(
-            $this->cultureFeed,
-            new CultureFeedUserIdentityDetailsFactory()
+            new CultureFeedUserIdentityResolver(
+                $this->cultureFeed,
+                new CultureFeedUserIdentityDetailsFactory()
+            )
         );
 
         $this->user = $user = new \CultureFeed_SearchUser();

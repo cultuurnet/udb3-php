@@ -11,6 +11,8 @@ use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\Events\UserAdded;
+use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -36,6 +38,11 @@ class Role extends EventSourcedAggregateRoot
      * @var Permission[]
      */
     private $permissions = [];
+
+    /**
+     * @var StringLiteral[]
+     */
+    private $userIds = [];
 
     /**
      * @return string
@@ -131,6 +138,32 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param UUID $uuid
+     * @param StringLiteral $userId
+     */
+    public function addUser(
+        UUID $uuid,
+        StringLiteral $userId
+    ) {
+        if (!in_array($userId, $this->userIds)) {
+            $this->apply(new UserAdded($uuid, $userId));
+        }
+    }
+
+    /**
+     * @param UUID $uuid
+     * @param StringLiteral $userId
+     */
+    public function removeUser(
+        UUID $uuid,
+        StringLiteral $userId
+    ) {
+        if (in_array($userId, $this->userIds)) {
+            $this->apply(new UserRemoved($uuid, $userId));
+        }
+    }
+
+    /**
      * Delete a role.
      *
      * @param UUID $uuid
@@ -200,5 +233,26 @@ class Role extends EventSourcedAggregateRoot
         $permission = $permissionRemoved->getPermission();
 
         unset($this->permissions[$permission->getName()]);
+    }
+
+    /**
+     * @param UserAdded $userAdded
+     */
+    public function applyUserAdded(UserAdded $userAdded)
+    {
+        $userId = $userAdded->getUserId();
+        $this->userIds[] = $userId;
+    }
+
+    /**
+     * @param UserRemoved $userRemoved
+     */
+    public function applyUserRemoved(UserRemoved $userRemoved)
+    {
+        $userId = $userRemoved->getUserId();
+
+        if (($index = array_search($userId, $this->userIds)) !== false) {
+            unset($this->userIds[$index]);
+        }
     }
 }

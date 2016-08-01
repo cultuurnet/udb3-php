@@ -44,6 +44,20 @@ interface RoleEditingServiceInterface
     public function removePermission(UUID $uuid, Permission $permission);
 
     /**
+     * @param UUID $uuid
+     * @param StringLiteral $userId
+     * @return string
+     */
+    public function addUser(UUID $uuid, StringLiteral $userId);
+
+    /**
+     * @param UUID $uuid
+     * @param StringLiteral $userId
+     * @return string
+     */
+    public function removeUser(UUID $uuid, StringLiteral $userId);
+
+    /**
      * Setting a constraint on a role.
      *
      * @param UUID $uuid

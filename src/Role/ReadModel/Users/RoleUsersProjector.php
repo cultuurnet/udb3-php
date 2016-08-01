@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Role\ReadModel\Users;
 
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -34,18 +35,24 @@ class RoleUsersProjector extends RoleProjector
      */
     public function applyUserAdded(UserAdded $userAdded)
     {
-        $document = $this->loadDocumentFromRepositoryByUuid(
-            $userAdded->getUuid()
-        );
+        $document = $this->getDocument($userAdded->getUuid());
 
-        $userIdentityDetails = $this->getUserIdentityDetails($document);
-        $userIdentityDetail = $this->userIdentityResolver->getUserById(
-            $userAdded->getUuid()
-        );
+        if ($document) {
+            $userIdentityDetail = $this->userIdentityResolver->getUserById(
+                $userAdded->getUserId()
+            );
 
-        $userIdentityDetails[$userAdded->getUserId()->toNative()] = $userIdentityDetail;
+            if ($userIdentityDetail) {
+                $userIdentityDetails = $this->getUserIdentityDetails($document);
 
-        $this->repository->save($document);
+                $userKey = $userAdded->getUserId()->toNative();
+                $userIdentityDetails[$userKey] = $userIdentityDetail;
+
+                $document = $document->withBody($userIdentityDetails);
+
+                $this->repository->save($document);
+            }
+        }
     }
 
     /**
@@ -53,17 +60,18 @@ class RoleUsersProjector extends RoleProjector
      */
     public function applyUserRemoved(UserRemoved $userRemoved)
     {
-        $document = $this->loadDocumentFromRepositoryByUuid(
-            $userRemoved->getUuid()
-        );
+        $document = $this->getDocument($userRemoved->getUuid());
 
-        $userIdentityDetails = $this->getUserIdentityDetails($document);
-        unset($userIdentityDetails[$userRemoved->getUserId()->toNative()]);
+        if ($document) {
+            $userIdentityDetails = $this->getUserIdentityDetails($document);
+            unset($userIdentityDetails[$userRemoved->getUserId()->toNative()]);
 
-        if (count($userIdentityDetails) === 0) {
-            $this->repository->remove($userRemoved->getUuid());
-        } else {
-            $this->repository->save($document);
+            if (count($userIdentityDetails) === 0) {
+                $this->repository->remove($userRemoved->getUuid());
+            } else {
+                $document = $document->withBody($userIdentityDetails);
+                $this->repository->save($document);
+            }
         }
     }
 
@@ -85,14 +93,28 @@ class RoleUsersProjector extends RoleProjector
     }
 
     /**
+     * @param UUID $uuid
+     * @return JsonDocument|null
+     */
+    private function getDocument(UUID $uuid)
+    {
+        $document = null;
+
+        try {
+            $document = $this->repository->get($uuid->toNative());
+        } catch (DocumentGoneException $e) {
+        }
+
+        return $document;
+    }
+
+    /**
      * @param JsonDocument $document
      * @return UserIdentityDetails[]
      */
     private function getUserIdentityDetails(JsonDocument $document)
     {
-        $body = $document->getBody();
-
-        return $body->userIdentityDetails;
+        return json_decode($document->getRawBody(), true);
     }
 
     /**
@@ -101,9 +123,10 @@ class RoleUsersProjector extends RoleProjector
      */
     private function createNewDocument(UUID $uuid)
     {
-        $document = new JsonDocument($uuid->toNative());
-        $body = $document->getBody();
-        $body->userIdentityDetails = [];
+        $document = new JsonDocument(
+            $uuid->toNative(),
+            []
+        );
 
         return $document;
     }

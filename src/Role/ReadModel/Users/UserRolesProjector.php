@@ -1,15 +1,14 @@
 <?php
 
-namespace CultuurNet\UDB3\Role\ReadModel;
+namespace CultuurNet\UDB3\Role\ReadModel\Users;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Role\Events\RoleCreated;
-use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
+use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
 
 class UserRolesProjector extends RoleProjector
 {
@@ -30,19 +29,6 @@ class UserRolesProjector extends RoleProjector
     ) {
         parent::__construct($userRolesDocumentRepository);
         $this->roleDetailsDocumentRepository = $roleDetailsDocumentRepository;
-    }
-
-    /**
-     * @param RoleCreated $roleCreated
-     */
-    public function applyRoleCreated(RoleCreated $roleCreated)
-    {
-        $document = new JsonDocument(
-            $roleCreated->getUuid(),
-            json_encode([])
-        );
-
-        $this->repository->save($document);
     }
 
     /**
@@ -67,7 +53,14 @@ class UserRolesProjector extends RoleProjector
 
         $document = $this->repository->get($userId);
 
-        $roles = $document->getBody();
+        if (empty($document)) {
+            $document = new JsonDocument(
+                $userId,
+                json_encode([])
+            );
+        }
+
+        $roles = json_decode($document->getRawBody(), true);
         $roles[$roleId] = $roleDetails;
 
         $document = $document->withBody($roles);
@@ -84,19 +77,11 @@ class UserRolesProjector extends RoleProjector
         $roleId = $userRemoved->getUuid()->toNative();
 
         $document = $this->repository->get($userId);
-        $roles = $document->getBody();
+        $roles = json_decode($document->getRawBody(), true);
         unset($roles[$roleId]);
 
         $document = $document->withBody($roles);
 
         $this->repository->save($document);
-    }
-
-    /**
-     * @param RoleDeleted $roleDeleted
-     */
-    public function applyRoleDeleted(RoleDeleted $roleDeleted)
-    {
-        $this->repository->remove($roleDeleted->getUuid());
     }
 }

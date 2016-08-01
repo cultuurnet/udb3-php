@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\EventHandling\SimpleEventBus;
+use Broadway\EventStore\InMemoryEventStore;
+use Broadway\EventStore\TraceableEventStore;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
@@ -11,6 +14,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Title;
 
 class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
@@ -46,6 +50,11 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $writeRepository;
 
+    /**
+     * @var TraceableEventStore
+     */
+    protected $eventStore;
+
     public function setUp()
     {
         $this->commandBus = $this->getMock(CommandBusInterface::class);
@@ -59,7 +68,13 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         /** @var DocumentRepositoryInterface $repository */
         $this->readRepository = $this->getMock(DocumentRepositoryInterface::class);
 
-        $this->writeRepository = $this->getMock(RepositoryInterface::class);
+        $this->eventStore = new TraceableEventStore(
+            new InMemoryEventStore()
+        );
+        $this->writeRepository = new PlaceRepository(
+            $this->eventStore,
+            new SimpleEventBus()
+        );
 
         $this->placeEditingService = new DefaultPlaceEditingService(
             $this->commandBus,
@@ -82,17 +97,27 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $calendar = new Calendar('permanent', '', '');
         $theme = null;
 
-        $place = Place::createPlace($placeId, $title, $eventType, $address, $calendar, $theme);
-
         $this->uuidGenerator->expects($this->once())
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->writeRepository->expects($this->once())
-            ->method('save')
-            ->with($place);
+        $this->eventStore->trace();
 
         $this->placeEditingService->createPlace($title, $eventType, $address, $calendar, $theme);
+
+        $this->assertEquals(
+            [
+                new PlaceCreated(
+                    $placeId,
+                    $title,
+                    $eventType,
+                    $address,
+                    $calendar,
+                    $theme
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
     }
 
     /**
@@ -109,18 +134,29 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $calendar = new Calendar('permanent', '', '');
         $theme = null;
 
-        $place = Place::createPlace($placeId, $title, $eventType, $address, $calendar, $theme, $publicationDate);
-
         $this->uuidGenerator->expects($this->once())
           ->method('generate')
           ->willReturn('generated-uuid');
 
-        $this->writeRepository->expects($this->once())
-          ->method('save')
-          ->with($place);
+        $this->eventStore->trace();
 
         $editingService = $this->placeEditingService->withFixedPublicationDateForNewOffers($publicationDate);
 
         $editingService->createPlace($title, $eventType, $address, $calendar, $theme);
+
+        $this->assertEquals(
+            [
+                new PlaceCreated(
+                    $placeId,
+                    $title,
+                    $eventType,
+                    $address,
+                    $calendar,
+                    $theme,
+                    $publicationDate
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
     }
 }

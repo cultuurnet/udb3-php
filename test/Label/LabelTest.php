@@ -138,6 +138,25 @@ class LabelTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_can_make_a_label_visible_after_a_make_invisible()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->when(function ($label) {
+                /** @var Label $label */
+                $label->makeInvisible();
+                $label->makeVisible();
+            })
+            ->then([
+                new MadeInvisible($this->uuid),
+                new MadeVisible($this->uuid)
+            ]);
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_make_a_label_invisible_when_already_visible()
     {
         $this->scenario
@@ -193,6 +212,25 @@ class LabelTest extends AggregateRootScenarioTestCase
                 $label->makePublic();
             })
             ->then([new MadePublic($this->uuid)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_make_a_label_public_after_a_make_private()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->created, new MadePublic($this->uuid)])
+            ->when(function ($label) {
+                /** @var Label $label */
+                $label->makePrivate();
+                $label->makePublic();
+            })
+            ->then([
+                new MadePrivate($this->uuid),
+                new MadePublic($this->uuid)
+            ]);
     }
 
     /**

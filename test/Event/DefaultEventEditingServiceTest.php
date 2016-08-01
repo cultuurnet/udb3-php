@@ -6,7 +6,11 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\EventHandling\SimpleEventBus;
+use Broadway\EventStore\InMemoryEventStore;
+use Broadway\EventStore\TraceableEventStore;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventNotFoundException;
@@ -58,6 +62,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $writeRepository;
 
+    /**
+     * @var TraceableEventStore
+     */
+    protected $eventStore;
+
     public function setUp()
     {
         $this->eventService = $this->getMock(EventServiceInterface::class);
@@ -81,7 +90,14 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             false
         );
 
-        $this->writeRepository = $this->getMock(RepositoryInterface::class);
+        $this->eventStore = new TraceableEventStore(
+            new InMemoryEventStore()
+        );
+        
+        $this->writeRepository = new EventRepository(
+            $this->eventStore,
+            new SimpleEventBus()
+        );
 
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
@@ -170,17 +186,27 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $calendar = new Calendar('permanent', '', '');
         $theme = null;
 
-        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
+        $this->eventStore->trace();
 
         $this->uuidGenerator->expects($this->once())
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->writeRepository->expects($this->once())
-            ->method('save')
-            ->with($event);
-
         $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+
+        $this->assertEquals(
+            [
+                new EventCreated(
+                    $eventId,
+                    $title,
+                    $eventType,
+                    $location,
+                    $calendar,
+                    $theme
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
     }
 
     /**
@@ -202,17 +228,28 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService = $this->eventEditingService
             ->withFixedPublicationDateForNewOffers($publicationDate);
 
-        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme, $publicationDate);
+        $this->eventStore->trace();
 
         $this->uuidGenerator->expects($this->once())
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->writeRepository->expects($this->once())
-            ->method('save')
-            ->with($event);
-
         $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+
+        $this->assertEquals(
+            [
+                new EventCreated(
+                    $eventId,
+                    $title,
+                    $eventType,
+                    $location,
+                    $calendar,
+                    $theme,
+                    $publicationDate
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
     }
 
     /**

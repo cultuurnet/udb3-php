@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\UiTID;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterface
@@ -61,7 +61,7 @@ class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterfac
     /**
      * @inheritdoc
      */
-    public function byNick(String $nick)
+    public function byNick(StringLiteral $nick)
     {
         $key = $nick->toNative();
         if (!array_key_exists($key, $this->nickMap)) {

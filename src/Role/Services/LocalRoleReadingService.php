@@ -20,6 +20,11 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     /**
      * @var DocumentRepositoryInterface
      */
+    private $roleUsersReadRepository;
+
+    /**
+     * @var DocumentRepositoryInterface
+     */
     private $userRolesReadRepository;
 
     /**
@@ -28,6 +33,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
      * @param RepositoryInterface $roleWriteRepository
      * @param IriGeneratorInterface $iriGenerator
      * @param DocumentRepositoryInterface $rolePermissionsReadRepository
+     * @param DocumentRepositoryInterface $roleUsersReadRepository
      * @param DocumentRepositoryInterface $userRolesReadRepository
      */
     public function __construct(
@@ -35,6 +41,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
         RepositoryInterface $roleWriteRepository,
         IriGeneratorInterface $iriGenerator,
         DocumentRepositoryInterface $rolePermissionsReadRepository,
+        DocumentRepositoryInterface $roleUsersReadRepository,
         DocumentRepositoryInterface $userRolesReadRepository
     ) {
         parent::__construct(
@@ -44,6 +51,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
         );
 
         $this->rolePermissionsReadRepository = $rolePermissionsReadRepository;
+        $this->roleUsersReadRepository = $roleUsersReadRepository;
         $this->userRolesReadRepository = $userRolesReadRepository;
     }
 
@@ -57,10 +65,19 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     }
 
     /**
+     * @param UUID $uuid
+     * @return JsonDocument
+     */
+    public function getUsersByRoleUuid(UUID $uuid)
+    {
+        return $this->roleUsersReadRepository->get($uuid->toNative());
+    }
+
+    /**
      * @param StringLiteral $userId
      * @return JsonDocument
      */
-    public function getRolesByUserId(StringLiteral $userId) 
+    public function getRolesByUserId(StringLiteral $userId)
     {
         return $this->userRolesReadRepository->get($userId->toNative());
     }

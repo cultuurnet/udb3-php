@@ -13,7 +13,6 @@ class AbstractPermissionCommand extends AbstractCommand
     private $permission;
 
     /**
-     * AddPermission constructor.
      * @param UUID $uuid
      * @param Permission $permission
      */

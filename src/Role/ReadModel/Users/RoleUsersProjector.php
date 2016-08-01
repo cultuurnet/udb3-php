@@ -4,12 +4,14 @@ namespace CultuurNet\UDB3\Role\ReadModel\Users;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
 use CultuurNet\UDB3\User\UserIdentityDetails;
 use CultuurNet\UDB3\User\UserIdentityResolverInterface;
+use ValueObjects\Identity\UUID;
 
 class RoleUsersProjector extends RoleProjector
 {
@@ -66,6 +68,15 @@ class RoleUsersProjector extends RoleProjector
     }
 
     /**
+     * @param RoleCreated $roleCreated
+     */
+    public function applyRoleCreated(RoleCreated $roleCreated)
+    {
+        $document = $this->createNewDocument($roleCreated->getUuid());
+        $this->repository->save($document);
+    }
+
+    /**
      * @param RoleDeleted $roleDeleted
      */
     public function applyRoleDeleted(RoleDeleted $roleDeleted)
@@ -77,14 +88,23 @@ class RoleUsersProjector extends RoleProjector
      * @param JsonDocument $document
      * @return UserIdentityDetails[]
      */
-    public function getUserIdentityDetails(JsonDocument $document)
+    private function getUserIdentityDetails(JsonDocument $document)
     {
         $body = $document->getBody();
 
-        if (!isset($body->userIdentityDetails)) {
-            $body->userIdentityDetails = [];
-        }
-
         return $body->userIdentityDetails;
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return JsonDocument
+     */
+    private function createNewDocument(UUID $uuid)
+    {
+        $document = new JsonDocument($uuid->toNative());
+        $body = $document->getBody();
+        $body->userIdentityDetails = [];
+
+        return $document;
     }
 }

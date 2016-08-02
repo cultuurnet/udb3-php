@@ -49,7 +49,7 @@ class CommandHandler extends AbstractCommandHandler
     public function handleRenameRole(RenameRole $renameRole)
     {
         $role = $this->load($renameRole->getUuid());
-        
+
         $role->rename(
             $renameRole->getUuid(),
             $renameRole->getName()
@@ -64,7 +64,7 @@ class CommandHandler extends AbstractCommandHandler
     public function handleSetConstraint(SetConstraint $setConstraint)
     {
         $role = $this->load($setConstraint->getUuid());
-        
+
         $role->setConstraint(
             $setConstraint->getUuid(),
             $setConstraint->getQuery()
@@ -127,6 +127,8 @@ class CommandHandler extends AbstractCommandHandler
         $role->addLabel(
             $addLabel->getLabelId()
         );
+
+        $this->save($role);
     }
 
     /**
@@ -139,6 +141,8 @@ class CommandHandler extends AbstractCommandHandler
         $role->removeLabel(
             $removeLabel->getLabelId()
         );
+
+        $this->save($role);
     }
 
     /**

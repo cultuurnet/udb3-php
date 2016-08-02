@@ -66,12 +66,8 @@ class RoleUsersProjector extends RoleProjector
             $userIdentityDetails = $this->getUserIdentityDetails($document);
             unset($userIdentityDetails[$userRemoved->getUserId()->toNative()]);
 
-            if (count($userIdentityDetails) === 0) {
-                $this->repository->remove($userRemoved->getUuid());
-            } else {
-                $document = $document->withBody($userIdentityDetails);
-                $this->repository->save($document);
-            }
+            $document = $document->withBody($userIdentityDetails);
+            $this->repository->save($document);
         }
     }
 
@@ -125,7 +121,7 @@ class RoleUsersProjector extends RoleProjector
     {
         $document = new JsonDocument(
             $uuid->toNative(),
-            []
+            json_encode([])
         );
 
         return $document;

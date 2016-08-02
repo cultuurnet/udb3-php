@@ -19,10 +19,6 @@ use ValueObjects\Identity\UUID;
 
 class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait {
-        DelegateEventHandlingToSpecificMethodTrait::handle as handleSpecific;
-    }
-
     use LoggerAwareTrait;
 
     /**
@@ -60,8 +56,6 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
             $this->applyMadeVisible($domainMessage->getPayload(), $domainMessage->getMetadata());
         } else if ($event instanceof MadeInvisible) {
             $this->applyMadeInvisible($domainMessage->getPayload(), $domainMessage->getMetadata());
-        } else {
-            $this->handleSpecific($domainMessage);
         }
     }
 

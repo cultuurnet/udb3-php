@@ -2,54 +2,57 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 
+use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Label\LabelEventOfferTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
-use CultuurNet\UDB3\Label\ReadModels\Helper\LabelEventHelper;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class Projector extends AbstractProjector
 {
-    /**
-     * @var LabelEventHelper
-     */
-    private $labelEventHelper;
-
     /**
      * @var WriteRepositoryInterface
      */
     private $writeRepository;
 
     /**
+     * @var LabelEventOfferTypeResolverInterface
+     */
+    private $offerTypeResolver;
+
+    /**
      * Projector constructor.
      * @param WriteRepositoryInterface $writeRepository
-     * @param LabelEventHelper $labelEventHelper
+     * @param LabelEventOfferTypeResolverInterface $labelEventOfferTypeResolver
      */
     public function __construct(
         WriteRepositoryInterface $writeRepository,
-        LabelEventHelper $labelEventHelper
+        LabelEventOfferTypeResolverInterface $labelEventOfferTypeResolver
     ) {
-        $this->labelEventHelper = $labelEventHelper;
         $this->writeRepository = $writeRepository;
+        $this->offerTypeResolver = $labelEventOfferTypeResolver;
+
     }
 
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded(AbstractLabelAdded $labelAdded)
+    public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
-        $entity = $this->createEntity($this->labelEventHelper, $labelAdded);
+        $offerLabelRelation = $this->createOfferLabelRelation($labelAdded, $metadata);
 
         try {
-            if (!is_null($entity)) {
+            if (!is_null($offerLabelRelation)) {
                 $this->writeRepository->save(
-                    $entity->getUuid(),
-                    $entity->getRelationType(),
-                    $entity->getRelationId()
+                    $offerLabelRelation->getUuid(),
+                    $offerLabelRelation->getOfferType(),
+                    $offerLabelRelation->getOfferId()
                 );
             }
         } catch (UniqueConstraintViolationException $exception) {
@@ -60,41 +63,43 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
+    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
-        $entity = $this->createEntity($this->labelEventHelper, $labelDeleted);
+        $offerLabelRelation = $this->createOfferLabelRelation($labelDeleted, $metadata);
 
-        if (!is_null($entity)) {
-            $this->writeRepository->deleteByUuidAndRelationId(
-                $entity->getUuid(),
+        if (!is_null($offerLabelRelation)) {
+            $this->writeRepository->deleteByUuidAndOfferId(
+                $offerLabelRelation->getUuid(),
                 new StringLiteral($labelDeleted->getItemId())
             );
         }
     }
 
     /**
-     * @param LabelEventHelper $labelEventHelper
      * @param AbstractLabelEvent $labelEvent
-     * @return Entity
+     * @param Metadata $metadata
+     * @return OfferLabelRelation
      */
-    private function createEntity(
-        LabelEventHelper $labelEventHelper,
-        AbstractLabelEvent $labelEvent
+    private function createOfferLabelRelation(
+        AbstractLabelEvent $labelEvent,
+        Metadata $metadata
     ) {
-        $entity = null;
+        $offerLabelRelation = null;
 
-        $uuid = $labelEventHelper->getUuid($labelEvent);
-        $relationType = $labelEventHelper->getRelationType($labelEvent);
-        $relationId = $labelEventHelper->getRelationId($labelEvent);
+        $metadataArray = $metadata->serialize();
+
+        $uuid = isset($metadataArray['labelUuid']) ? new UUID($metadataArray['labelUuid']) : null;
+        $offerType = $this->offerTypeResolver->getOfferType($labelEvent);
+        $offerId = new StringLiteral($labelEvent->getItemId());
 
         if (!is_null($uuid)) {
-            $entity = new Entity(
+            $offerLabelRelation = new OfferLabelRelation(
                 $uuid,
-                $relationType,
-                $relationId
+                $offerType,
+                $offerId
             );
         }
 
-        return $entity;
+        return $offerLabelRelation;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -10,21 +10,21 @@ interface WriteRepositoryInterface
 {
     /**
      * @param UUID $uuid
-     * @param RelationType $relationType
-     * @param StringLiteral $relationId
+     * @param OfferType $offerType
+     * @param StringLiteral $offerId
      */
     public function save(
         UUID $uuid,
-        RelationType $relationType,
-        StringLiteral $relationId
+        OfferType $offerType,
+        StringLiteral $offerId
     );
 
     /**
      * @param UUID $uuid
-     * @param StringLiteral $relationId
+     * @param StringLiteral $offerId
      */
-    public function deleteByUuidAndRelationId(
+    public function deleteByUuidAndOfferId(
         UUID $uuid,
-        StringLiteral $relationId
+        StringLiteral $offerId
     );
 }

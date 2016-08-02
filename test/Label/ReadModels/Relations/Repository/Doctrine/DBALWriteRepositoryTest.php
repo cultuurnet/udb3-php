@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Offer\OfferType;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -30,21 +30,21 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save()
     {
-        $expectedEntity = new Entity(
+        $expectedOfferLabelRelation = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->dbalWriteRepository->save(
-            $expectedEntity->getUuid(),
-            $expectedEntity->getRelationType(),
-            $expectedEntity->getRelationId()
+            $expectedOfferLabelRelation->getUuid(),
+            $expectedOfferLabelRelation->getOfferType(),
+            $expectedOfferLabelRelation->getOfferId()
         );
 
-        $actualEntity = $this->getLastEntity();
+        $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
 
-        $this->assertEquals($expectedEntity, $actualEntity);
+        $this->assertEquals($expectedOfferLabelRelation, $actualOfferLabelRelation);
     }
 
     /**
@@ -52,29 +52,29 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save_same_uuid_but_different_relation_type_and_relation_id()
     {
-        $entity = new Entity(
+        $offerLabelRelation = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $this->saveEntity($entity);
+        $this->saveOfferLabelRelation($offerLabelRelation);
 
-        $expectedEntity = new Entity(
-            $entity->getUuid(),
-            RelationType::EVENT(),
+        $expectedOfferLabelRelation = new OfferLabelRelation(
+            $offerLabelRelation->getUuid(),
+            OfferType::EVENT(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
-            $expectedEntity->getUuid(),
-            $expectedEntity->getRelationType(),
-            $expectedEntity->getRelationId()
+            $expectedOfferLabelRelation->getUuid(),
+            $expectedOfferLabelRelation->getOfferType(),
+            $expectedOfferLabelRelation->getOfferId()
         );
 
-        $actualEntity = $this->getLastEntity();
+        $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
 
-        $this->assertEquals($expectedEntity, $actualEntity);
+        $this->assertEquals($expectedOfferLabelRelation, $actualOfferLabelRelation);
     }
 
     /**
@@ -82,56 +82,56 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save_same_uuid_and_relation_type_but_different_relation_id()
     {
-        $entity = new Entity(
+        $offerLabelRelation = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $this->saveEntity($entity);
+        $this->saveOfferLabelRelation($offerLabelRelation);
 
-        $expectedEntity = new Entity(
-            $entity->getUuid(),
-            $entity->getRelationType(),
+        $expectedOfferLabelRelation = new OfferLabelRelation(
+            $offerLabelRelation->getUuid(),
+            $offerLabelRelation->getOfferType(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
-            $expectedEntity->getUuid(),
-            $expectedEntity->getRelationType(),
-            $expectedEntity->getRelationId()
+            $expectedOfferLabelRelation->getUuid(),
+            $expectedOfferLabelRelation->getOfferType(),
+            $expectedOfferLabelRelation->getOfferId()
         );
 
-        $actualEntity = $this->getLastEntity();
+        $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
 
-        $this->assertEquals($expectedEntity, $actualEntity);
+        $this->assertEquals($expectedOfferLabelRelation, $actualOfferLabelRelation);
     }
 
     /**
      * @test
      */
-    public function it_can_not_save_same_entity()
+    public function it_can_not_save_same_offer_label_relation()
     {
-        $entity = new Entity(
+        $offerLabelRelation = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $this->saveEntity($entity);
+        $this->saveOfferLabelRelation($offerLabelRelation);
 
-        $sameEntity = new Entity(
-            $entity->getUuid(),
-            $entity->getRelationType(),
-            $entity->getRelationId()
+        $sameOfferLabelRelation = new OfferLabelRelation(
+            $offerLabelRelation->getUuid(),
+            $offerLabelRelation->getOfferType(),
+            $offerLabelRelation->getOfferId()
         );
 
         $this->setExpectedException(UniqueConstraintViolationException::class);
 
         $this->dbalWriteRepository->save(
-            $sameEntity->getUuid(),
-            $sameEntity->getRelationType(),
-            $sameEntity->getRelationId()
+            $sameOfferLabelRelation->getUuid(),
+            $sameOfferLabelRelation->getOfferType(),
+            $sameOfferLabelRelation->getOfferId()
         );
     }
 
@@ -140,29 +140,29 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_delete_based_on_uuid()
     {
-        $entity1 = new Entity(
+        $OfferLabelRelation1 = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            OfferType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $entity2 = new Entity(
+        $OfferLabelRelation2 = new OfferLabelRelation(
             new UUID(),
-            RelationType::PLACE(),
+            OfferType::PLACE(),
             new StringLiteral('otherRelationId')
         );
 
-        $this->saveEntity($entity1);
-        $this->saveEntity($entity2);
+        $this->saveOfferLabelRelation($OfferLabelRelation1);
+        $this->saveOfferLabelRelation($OfferLabelRelation2);
 
-        $this->dbalWriteRepository->deleteByUuidAndRelationId(
-            $entity1->getUuid(),
-            $entity1->getRelationId()
+        $this->dbalWriteRepository->deleteByUuidAndOfferId(
+            $OfferLabelRelation1->getUuid(),
+            $OfferLabelRelation1->getOfferId()
         );
 
         $this->assertEquals(
-            $entity2->getUuid(),
-            $this->getLastEntity()->getUuid()
+            $OfferLabelRelation2->getUuid(),
+            $this->getLastOfferLabelRelation()->getUuid()
         );
     }
 }

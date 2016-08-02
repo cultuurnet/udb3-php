@@ -5,15 +5,19 @@ namespace CultuurNet\UDB3\Role;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\Role\Events\LabelAdded;
+use CultuurNet\UDB3\Role\Events\LabelRemoved;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -51,6 +55,11 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $updatedQuery;
 
     /**
+     * @var UUID
+     */
+    private $labelId;
+
+    /**
      * @var RoleCreated
      */
     private $roleCreated;
@@ -86,6 +95,16 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $constraintRemoved;
 
     /**
+     * @var LabelAdded
+     */
+    private $labelAdded;
+
+    /**
+     * @var LabelRemoved
+     */
+    private $labelRemoved;
+
+    /**
      * @var RoleDeleted
      */
     private $roleDeleted;
@@ -99,6 +118,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->permission = Permission::AANBOD_INVOEREN();
         $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
         $this->updatedQuery = new StringLiteral('category_flandersregion_name:"Regio Brussel"');
+        $this->labelId = new UUID();
 
         $this->roleCreated = new RoleCreated(
             $this->uuid,
@@ -132,6 +152,16 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         
         $this->constraintRemoved = new ConstraintRemoved(
             $this->uuid
+        );
+
+        $this->labelAdded = new LabelAdded(
+            $this->uuid,
+            $this->labelId
+        );
+
+        $this->labelRemoved = new LabelRemoved(
+            $this->uuid,
+            $this->labelId
         );
 
         $this->roleDeleted = new RoleDeleted(
@@ -257,6 +287,40 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $query
             ))
             ->then([$this->constraintRemoved]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_addLabel()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(
+                new AddLabel(
+                    $this->uuid,
+                    $this->labelId
+                )
+            )
+            ->then([$this->labelAdded]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_removeLabel()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated, $this->labelAdded])
+            ->when(
+                new RemoveLabel(
+                    $this->uuid,
+                    $this->labelId
+                )
+            )
+            ->then([$this->labelRemoved]);
     }
 
     /**

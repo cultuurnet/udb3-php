@@ -7,6 +7,8 @@ use ValueObjects\Identity\UUID;
 
 abstract class AbstractEvent implements SerializableInterface
 {
+    const UUID = 'uuid';
+
     /**
      * @var UUID
      */

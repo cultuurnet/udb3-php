@@ -6,6 +6,8 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\Role\Events\LabelAdded;
+use CultuurNet\UDB3\Role\Events\LabelRemoved;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
 use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -36,6 +38,11 @@ class Role extends EventSourcedAggregateRoot
      * @var Permission[]
      */
     private $permissions = [];
+
+    /**
+     * @var UUID[]
+     */
+    private $labelIds = [];
 
     /**
      * @return string
@@ -131,6 +138,28 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param UUID $labelId
+     */
+    public function addLabel(
+        UUID $labelId
+    ) {
+        if (!in_array($labelId, $this->labelIds)) {
+            $this->apply(new LabelAdded($this->uuid, $labelId));
+        }
+    }
+
+    /**
+     * @param \ValueObjects\Identity\UUID $labelId
+     */
+    public function removeLabel(
+        UUID $labelId
+    ) {
+        if (in_array($labelId, $this->labelIds)) {
+            $this->apply(new LabelRemoved($this->uuid, $labelId));
+        }
+    }
+
+    /**
      * Delete a role.
      *
      * @param UUID $uuid
@@ -200,5 +229,23 @@ class Role extends EventSourcedAggregateRoot
         $permission = $permissionRemoved->getPermission();
 
         unset($this->permissions[$permission->getName()]);
+    }
+
+    /**
+     * @param \CultuurNet\UDB3\Role\Events\LabelAdded $labelAdded
+     */
+    public function applyLabelAdded(LabelAdded $labelAdded)
+    {
+        $labelId = $labelAdded->getLabelId();
+        $this->labelIds[] = $labelId;
+    }
+
+    /**
+     * @param \CultuurNet\UDB3\Role\Events\LabelRemoved $labelRemoved
+     */
+    public function applyLabelRemoved(LabelRemoved $labelRemoved)
+    {
+        $labelId = $labelRemoved->getLabelId();
+        $this->labelIds = array_diff($this->labelIds, [$labelId]);
     }
 }

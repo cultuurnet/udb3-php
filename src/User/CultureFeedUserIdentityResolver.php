@@ -61,7 +61,7 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
         // so we should make sure the emails are exactly the same, otherwise
         // we're just returning the first user that matches the wildcard which
         // is not intended.
-        if ($user && $user->getEmailAddress()->toNative() === $email->toNative()) {
+        if ($user && strcasecmp($user->getEmailAddress()->toNative(), $email->toNative()) === 0) {
             return $user;
         } else {
             return null;
@@ -82,7 +82,7 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
         // should make sure the nicks are exactly the same, otherwise we're
         // just returning the first user that matches the wildcard which is not
         // intended.
-        if ($user && $user->getUserName()->toNative() === $nick->toNative()) {
+        if ($user && strcasecmp($user->getUserName()->toNative(), $nick->toNative()) === 0) {
             return $user;
         } else {
             return null;

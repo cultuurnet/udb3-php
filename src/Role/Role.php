@@ -232,7 +232,7 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\LabelAdded $labelAdded
+     * @param LabelAdded $labelAdded
      */
     public function applyLabelAdded(LabelAdded $labelAdded)
     {
@@ -241,7 +241,7 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\LabelRemoved $labelRemoved
+     * @param LabelRemoved $labelRemoved
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)
     {

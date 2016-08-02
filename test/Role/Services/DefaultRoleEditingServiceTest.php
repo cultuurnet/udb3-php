@@ -8,9 +8,11 @@ use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
@@ -49,6 +51,11 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $uuid;
 
     /**
+     * @var UUID
+     */
+    private $labelId;
+
+    /**
      * @var CreateRole
      */
     private $createRole;
@@ -74,6 +81,16 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $removePermission;
 
     /**
+     * @var AddLabel
+     */
+    private $addLabel;
+
+    /**
+     * @var RemoveLabel
+     */
+    private $removeLabel;
+
+    /**
      * @var DeleteRole
      */
     private $deleteRole;
@@ -94,6 +111,8 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->commandBus = $this->getMock(CommandBusInterface::class);
         $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+
+        $this->labelId = new UUID();
 
         $this->eventStore = new TraceableEventStore(new InMemoryEventStore());
 
@@ -125,6 +144,16 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->removePermission = new RemovePermission(
             $this->uuid,
             Permission::AANBOD_INVOEREN()
+        );
+
+        $this->addLabel = new AddLabel(
+            $this->uuid,
+            $this->labelId
+        );
+
+        $this->removeLabel = new RemoveLabel(
+            $this->uuid,
+            $this->labelId
         );
 
         $this->deleteRole = new DeleteRole(
@@ -236,6 +265,42 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         $commandId = $this->roleEditingService->removePermission(
             $this->uuid,
             Permission::AANBOD_INVOEREN()
+        );
+
+        $this->assertEquals($this->expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_a_label()
+    {
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($this->addLabel)
+            ->willReturn($this->expectedCommandId);
+
+        $commandId = $this->roleEditingService->addLabel(
+            $this->uuid,
+            $this->labelId
+        );
+
+        $this->assertEquals($this->expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_a_label()
+    {
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($this->removeLabel)
+            ->willReturn($this->expectedCommandId);
+
+        $commandId = $this->roleEditingService->removeLabel(
+            $this->uuid,
+            $this->labelId
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);

@@ -138,28 +138,24 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param UUID $uuid
      * @param StringLiteral $userId
      */
     public function addUser(
-        UUID $uuid,
         StringLiteral $userId
     ) {
         if (!in_array($userId, $this->userIds)) {
-            $this->apply(new UserAdded($uuid, $userId));
+            $this->apply(new UserAdded($this->uuid, $userId));
         }
     }
 
     /**
-     * @param UUID $uuid
      * @param StringLiteral $userId
      */
     public function removeUser(
-        UUID $uuid,
         StringLiteral $userId
     ) {
         if (in_array($userId, $this->userIds)) {
-            $this->apply(new UserRemoved($uuid, $userId));
+            $this->apply(new UserRemoved($this->uuid, $userId));
         }
     }
 

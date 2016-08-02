@@ -111,26 +111,31 @@ class UserRolesProjector extends RoleProjector
             return;
         }
 
-        $roleDetails = $roleDetailsDocument->getBody();
+        try {
+            $roleUsersDocument = $this->roleUsersDocumentRepository->get($roleId);
+        } catch (DocumentGoneException $e) {
+            return;
+        }
 
-        $roleUsersDocument = $this->roleUsersDocumentRepository->get($roleId);
         if (is_null($roleUsersDocument)) {
             return;
         }
 
-        $roleUsers = $roleUsersDocument->getBody();
+        $roleDetails = $roleDetailsDocument->getBody();
+
+        $roleUsers = json_decode($roleUsersDocument->getRawBody(), true);
         $roleUserIds = array_keys($roleUsers);
 
         foreach ($roleUserIds as $roleUserId) {
             $userRolesDocument = $this->repository->get($roleUserId);
 
-            if ($userRolesDocument) {
+            if (is_null($userRolesDocument)) {
                 continue;
             }
 
-            $userRoles = $userRolesDocument->getBody();
+            $userRoles = json_decode($userRolesDocument->getRawBody(), true);
             $userRoles[$roleId] = $roleDetails;
-            
+
             $userRolesDocument = $userRolesDocument->withBody($userRoles);
             $this->repository->save($userRolesDocument);
         }

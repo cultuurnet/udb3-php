@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Role\Events\RoleDetailsProjectedToJSONLD;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
@@ -20,15 +21,23 @@ class UserRolesProjector extends RoleProjector
     private $roleDetailsDocumentRepository;
 
     /**
+     * @var DocumentRepositoryInterface
+     */
+    private $roleUsersDocumentRepository;
+
+    /**
      * @param DocumentRepositoryInterface $userRolesDocumentRepository
      * @param DocumentRepositoryInterface $roleDetailsDocumentRepository
+     * @param DocumentRepositoryInterface $roleUsersDocumentRepository
      */
     public function __construct(
         DocumentRepositoryInterface $userRolesDocumentRepository,
-        DocumentRepositoryInterface $roleDetailsDocumentRepository
+        DocumentRepositoryInterface $roleDetailsDocumentRepository,
+        DocumentRepositoryInterface $roleUsersDocumentRepository
     ) {
         parent::__construct($userRolesDocumentRepository);
         $this->roleDetailsDocumentRepository = $roleDetailsDocumentRepository;
+        $this->roleUsersDocumentRepository = $roleUsersDocumentRepository;
     }
 
     /**
@@ -83,5 +92,47 @@ class UserRolesProjector extends RoleProjector
         $document = $document->withBody($roles);
 
         $this->repository->save($document);
+    }
+
+    /**
+     * @param RoleDetailsProjectedToJSONLD $roleDetailsProjectedToJSONLD
+     */
+    public function applyRoleDetailsProjectedToJSONLD(RoleDetailsProjectedToJSONLD $roleDetailsProjectedToJSONLD)
+    {
+        $roleId = $roleDetailsProjectedToJSONLD->getUuid()->toNative();
+
+        try {
+            $roleDetailsDocument = $this->roleDetailsDocumentRepository->get($roleId);
+        } catch (DocumentGoneException $e) {
+            return;
+        }
+
+        if (is_null($roleDetailsDocument)) {
+            return;
+        }
+
+        $roleDetails = $roleDetailsDocument->getBody();
+
+        $roleUsersDocument = $this->roleUsersDocumentRepository->get($roleId);
+        if (is_null($roleUsersDocument)) {
+            return;
+        }
+
+        $roleUsers = $roleUsersDocument->getBody();
+        $roleUserIds = array_keys($roleUsers);
+
+        foreach ($roleUserIds as $roleUserId) {
+            $userRolesDocument = $this->repository->get($roleUserId);
+
+            if ($userRolesDocument) {
+                continue;
+            }
+
+            $userRoles = $userRolesDocument->getBody();
+            $userRoles[$roleId] = $roleDetails;
+            
+            $userRolesDocument = $userRolesDocument->withBody($userRoles);
+            $this->repository->save($userRolesDocument);
+        }
     }
 }

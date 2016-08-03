@@ -11,9 +11,12 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\UserAdded;
+use CultuurNet\UDB3\Role\Events\UserRemoved;
+use CultuurNet\UDB3\User\UserIdentityDetails;
 use CultuurNet\UDB3\User\UserIdentityResolverInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Web\EmailAddress;
 
 class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,6 +35,11 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $roleUsersProjector;
 
+    /**
+     * @var UserIdentityDetails
+     */
+    private $userIdentityDetail;
+
     protected function setUp()
     {
         $this->repository = $this->getMock(DocumentRepositoryInterface::class);
@@ -43,6 +51,16 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
         $this->roleUsersProjector = new RoleUsersProjector(
             $this->repository,
             $this->userIdentityResolver
+        );
+
+        $this->userIdentityDetail = new UserIdentityDetails(
+            new StringLiteral('userId'),
+            new StringLiteral('username'),
+            new EmailAddress('username@company.be')
+        );
+        $this->mockGetUserById(
+            $this->userIdentityDetail->getUserId(),
+            $this->userIdentityDetail
         );
     }
 
@@ -61,11 +79,7 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             $roleCreated
         );
 
-        $jsonDocument = new JsonDocument(
-            $roleCreated->getUuid(),
-            json_encode([])
-        );
-
+        $jsonDocument = $this->createEmptyJsonDocument($roleCreated->getUuid());
         $this->repository->expects($this->once())
             ->method('save')
             ->with($jsonDocument);
@@ -109,9 +123,12 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             $userAdded
         );
 
-        $jsonDocument = new JsonDocument($userAdded->getUuid(), []);
+        $this->mockGet($this->createEmptyJsonDocument($userAdded->getUuid()));
 
-        $this->mockGet($jsonDocument);
+        $jsonDocument = $this->createJsonDocumentWithUserIdentityDetail(
+            $userAdded->getUuid(),
+            $this->userIdentityDetail
+        );
 
         $this->repository->expects($this->once())
             ->method('save')
@@ -125,7 +142,26 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_removes_user_identity_from_projection_on_user_removed_event()
     {
-        $this->assertTrue(false);
+        $userRemoved = new UserRemoved(
+            new UUID(),
+            new StringLiteral('userId')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $userRemoved->getUuid(),
+            $userRemoved
+        );
+
+        $this->mockGet($this->createJsonDocumentWithUserIdentityDetail(
+            $userRemoved->getUuid(),
+            $this->userIdentityDetail
+        ));
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with($this->createEmptyJsonDocument($userRemoved->getUuid()));
+
+        $this->roleUsersProjector->handle($domainMessage);
     }
 
     /**
@@ -137,6 +173,20 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with($jsonDocument->getId())
             ->willReturn($jsonDocument);
+    }
+
+    /**
+     * @param StringLiteral $userId
+     * @param UserIdentityDetails $userIdentityDetails
+     */
+    private function mockGetUserById(
+        StringLiteral $userId,
+        UserIdentityDetails $userIdentityDetails
+    ) {
+        $this->userIdentityResolver
+            ->method('getUserById')
+            ->with($userId)
+            ->willReturn($userIdentityDetails);
     }
 
     /**
@@ -155,5 +205,34 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             $payload,
             BroadwayDateTime::now()
         );
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return JsonDocument
+     */
+    private function createEmptyJsonDocument(UUID $uuid)
+    {
+        return new JsonDocument(
+            $uuid,
+            json_encode([])
+        );
+    }
+
+    /**
+     * @param UUID $uuid
+     * @param UserIdentityDetails $userIdentityDetail
+     * @return JsonDocument
+     */
+    private function createJsonDocumentWithUserIdentityDetail(
+        UUID $uuid,
+        UserIdentityDetails $userIdentityDetail
+    ) {
+        $userIdentityDetails = [];
+
+        $key = $this->userIdentityDetail->getUserId()->toNative();
+        $userIdentityDetails[$key] = $userIdentityDetail;
+
+        return new JsonDocument($uuid, json_encode($userIdentityDetails));
     }
 }

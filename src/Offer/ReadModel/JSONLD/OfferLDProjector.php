@@ -219,11 +219,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
 
-        $labels = isset($offerLd->labels) ? $offerLd->labels : [];
+        // Check the visibility of the label to update the right property.
+        $labelsProperty = $labelAdded->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
+
+        $labels = isset($offerLd->{$labelsProperty}) ? $offerLd->{$labelsProperty} : [];
         $label = (string) $labelAdded->getLabel();
 
         $labels[] = $label;
-        $offerLd->labels = array_unique($labels);
+        $offerLd->{$labelsProperty} = array_unique($labels);
 
         $this->repository->save($document->withBody($offerLd));
     }
@@ -237,9 +240,12 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
 
-        if (isset($offerLd->labels) && is_array($offerLd->labels)) {
-            $offerLd->labels = array_filter(
-                $offerLd->labels,
+        // Check the visibility of the label to update the right property.
+        $labelsProperty = $deleteLabel->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
+
+        if (isset($offerLd->{$labelsProperty}) && is_array($offerLd->{$labelsProperty})) {
+            $offerLd->{$labelsProperty} = array_filter(
+                $offerLd->{$labelsProperty},
                 function ($label) use ($deleteLabel) {
                     return !$deleteLabel->getLabel()->equals(
                         new Label($label)
@@ -248,7 +254,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             );
             // Ensure array keys start with 0 so json_encode() does encode it
             // as an array and not as an object.
-            $offerLd->labels = array_values($offerLd->labels);
+            if (count($offerLd->{$labelsProperty}) > 0) {
+                $offerLd->{$labelsProperty} = array_values($offerLd->{$labelsProperty});
+            } else {
+                unset($offerLd->{$labelsProperty});
+            }
         }
 
         $this->repository->save($document->withBody($offerLd));

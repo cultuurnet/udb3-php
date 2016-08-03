@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Label\Services;
 
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use ValueObjects\Identity\UUID;

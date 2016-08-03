@@ -2,11 +2,11 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Offer\OfferType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class EntityTest extends \PHPUnit_Framework_TestCase
+class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UUID
@@ -14,30 +14,30 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     private $uuid;
 
     /**
-     * @var RelationType
+     * @var OfferType
      */
-    private $relationType;
+    private $offerType;
 
     /**
      * @var StringLiteral
      */
-    private $relationId;
+    private $offerId;
 
     /**
-     * @var Entity
+     * @var OfferLabelRelation
      */
-    private $entity;
+    private $offerLabelRelation;
 
     protected function setUp()
     {
         $this->uuid = new UUID();
-        $this->relationType = RelationType::PLACE();
-        $this->relationId = new StringLiteral('relationId');
+        $this->offerType = OfferType::PLACE();
+        $this->offerId = new StringLiteral('relationId');
 
-        $this->entity = new Entity(
+        $this->offerLabelRelation = new OfferLabelRelation(
             $this->uuid,
-            $this->relationType,
-            $this->relationId
+            $this->offerType,
+            $this->offerId
         );
     }
 
@@ -46,7 +46,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_uuid()
     {
-        $this->assertEquals($this->uuid, $this->entity->getUuid());
+        $this->assertEquals($this->uuid, $this->offerLabelRelation->getUuid());
     }
 
     /**
@@ -55,8 +55,8 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_relation_type()
     {
         $this->assertEquals(
-            $this->relationType,
-            $this->entity->getRelationType()
+            $this->offerType,
+            $this->offerLabelRelation->getOfferType()
         );
     }
 
@@ -65,7 +65,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_relation_id()
     {
-        $this->assertEquals($this->relationId, $this->entity->getRelationId());
+        $this->assertEquals($this->offerId, $this->offerLabelRelation->getOfferId());
     }
 
     /**
@@ -73,11 +73,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_encode_to_json()
     {
-        $json = json_encode($this->entity);
+        $json = json_encode($this->offerLabelRelation);
 
         $expectedJson = '{"uuid":"' . $this->uuid->toNative()
-            . '","relationType":"' . $this->relationType->toNative()
-            . '","relationId":"' . $this->relationId->toNative() . '"}';
+            . '","offerType":"' . $this->offerType->toNative()
+            . '","offerId":"' . $this->offerId->toNative() . '"}';
 
         $this->assertEquals($expectedJson, $json);
     }

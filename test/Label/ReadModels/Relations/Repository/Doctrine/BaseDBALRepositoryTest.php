@@ -3,9 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Entity;
-use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
 use ValueObjects\String\String as StringLiteral;
 
 abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -37,11 +35,11 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Entity $entity
+     * @param OfferLabelRelation $offerLabelRelation
      */
-    protected function saveEntity(Entity $entity)
+    protected function saveOfferLabelRelation(OfferLabelRelation $offerLabelRelation)
     {
-        $values = $this->entityToValues($entity);
+        $values = $this->offerLabelRelationToValues($offerLabelRelation);
 
         $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?)';
 
@@ -49,41 +47,28 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Entity $entity
+     * @param OfferLabelRelation $offerLabelRelation
      * @return array
      */
-    protected function entityToValues(Entity $entity)
+    protected function offerLabelRelationToValues(OfferLabelRelation $offerLabelRelation)
     {
         return [
-            $entity->getUuid()->toNative(),
-            $entity->getRelationType()->toNative(),
-            $entity->getRelationId()
+            $offerLabelRelation->getUuid()->toNative(),
+            $offerLabelRelation->getOfferType()->toNative(),
+            $offerLabelRelation->getOfferId()
         ];
     }
 
     /**
-     * @return Entity
+     * @return OfferLabelRelation
      */
-    protected function getLastEntity()
+    protected function getLastOfferLabelRelation()
     {
         $sql = 'SELECT * FROM ' . $this->tableName;
 
         $statement = $this->connection->executeQuery($sql);
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $rows ? $this->rowToEntity($rows[count($rows) - 1]) : null;
-    }
-
-    /**
-     * @param array $row
-     * @return Entity
-     */
-    protected function rowToEntity(array $row)
-    {
-        return new Entity(
-            new UUID($row[SchemaConfigurator::UUID_COLUMN]),
-            RelationType::fromNative($row[SchemaConfigurator::RELATION_TYPE_COLUMN]),
-            new StringLiteral($row[SchemaConfigurator::RELATION_ID_COLUMN])
-        );
+        return $rows ? OfferLabelRelation::fromRelationalData($rows[count($rows) - 1]) : null;
     }
 }

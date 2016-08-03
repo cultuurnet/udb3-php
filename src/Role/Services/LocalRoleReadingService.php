@@ -16,17 +16,24 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     private $rolePermissionsReadRepository;
 
     /**
+     * @var DocumentRepositoryInterface
+     */
+    private $roleLabelsReadRepository;
+
+    /**
      * ReadRoleRestController constructor.
      * @param DocumentRepositoryInterface $roleReadRepository
      * @param RepositoryInterface $roleWriteRepository
      * @param IriGeneratorInterface $iriGenerator
      * @param DocumentRepositoryInterface $rolePermissionsReadRepository
+     * @param DocumentRepositoryInterface $roleLabelsReadRepository
      */
     public function __construct(
         DocumentRepositoryInterface $roleReadRepository,
         RepositoryInterface $roleWriteRepository,
         IriGeneratorInterface $iriGenerator,
-        DocumentRepositoryInterface $rolePermissionsReadRepository
+        DocumentRepositoryInterface $rolePermissionsReadRepository,
+        DocumentRepositoryInterface $roleLabelsReadRepository
     ) {
         parent::__construct(
             $roleReadRepository,
@@ -35,6 +42,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
         );
 
         $this->rolePermissionsReadRepository = $rolePermissionsReadRepository;
+        $this->roleLabelsReadRepository = $roleLabelsReadRepository;
     }
 
     /**
@@ -44,5 +52,14 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     public function getPermissionsByRoleUuid(UUID $uuid)
     {
         return $this->rolePermissionsReadRepository->get($uuid->toNative());
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return mixed
+     */
+    public function getLabelsByRoleUuid(UUID $uuid)
+    {
+        return $this->roleLabelsReadRepository->get($uuid->toNative());
     }
 }

@@ -52,7 +52,7 @@ class UserRemovedTest extends \PHPUnit_Framework_TestCase
             AbstractUserEvent::USER_ID => $this->userId->toNative()
         ];
 
-        $actualUserAdded = UserAdded::deserialize($userRemovedAsArray);
+        $actualUserAdded = UserRemoved::deserialize($userRemovedAsArray);
 
         $this->assertEquals($this->userRemoved, $actualUserAdded);
     }

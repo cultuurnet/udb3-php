@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Role;
 
-use Broadway\CommandHandling\CommandHandler as AbstractCommandHandler;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;

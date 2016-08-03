@@ -8,7 +8,7 @@ use ValueObjects\Identity\UUID;
 class AbstractPermissionCommand extends AbstractCommand
 {
     /**
-     * @var Permission
+     * @var string
      */
     private $permission;
 

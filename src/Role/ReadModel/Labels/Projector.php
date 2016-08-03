@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Labels;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
-use CultuurNet\UDB3\Label\Services\ReadServiceInterface;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
 use CultuurNet\UDB3\Role\Events\LabelRemoved;
@@ -17,17 +17,17 @@ use ValueObjects\Identity\UUID;
 class Projector extends RoleProjector
 {
     /**
-     * @var ReadServiceInterface
+     * @var ReadRepositoryInterface
      */
-    private $labelService;
+    private $labelJsonRepository;
 
     public function __construct(
         DocumentRepositoryInterface $repository,
-        ReadServiceInterface $labelService
+        ReadRepositoryInterface $labelJsonRepository
     ) {
         parent::__construct($repository);
 
-        $this->labelService = $labelService;
+        $this->labelJsonRepository = $labelJsonRepository;
     }
 
     /**
@@ -39,10 +39,10 @@ class Projector extends RoleProjector
 
         if ($document) {
             $labelDetails = $this->getLabelDetails($document);
-            $label = $this->labelService->getByUuid($labelAdded->getLabelId());
+            $label = $this->labelJsonRepository->getByUuid($labelAdded->getLabelId());
 
             if ($label) {
-                $labelDetails[] = $label;
+                $labelDetails[$label->getUuid()->toNative()] = $label;
                 $document = $document->withBody($labelDetails);
                 $this->repository->save($document);
             }
@@ -58,10 +58,10 @@ class Projector extends RoleProjector
 
         if ($document) {
             $labelDetails = $this->getLabelDetails($document);
-            $label = $this->labelService->getByUuid($labelRemoved->getLabelId());
+            $label = $this->labelJsonRepository->getByUuid($labelRemoved->getLabelId());
 
             if ($label) {
-                $labelDetails = array_diff($labelDetails, [$label]);
+                unset($labelDetails[$label->getUuid()->toNative()]);
                 $document = $document->withBody($labelDetails);
                 $this->repository->save($document);
             }

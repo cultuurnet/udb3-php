@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
 use ValueObjects\Identity\UUID;
 
-class Projector extends RoleProjector
+class RoleLabelsProjector extends RoleProjector
 {
     /**
      * @var ReadRepositoryInterface
@@ -50,7 +50,7 @@ class Projector extends RoleProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\LabelRemoved $labelRemoved
+     * @param LabelRemoved $labelRemoved
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
@@ -69,7 +69,7 @@ class Projector extends RoleProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\RoleCreated $roleCreated
+     * @param RoleCreated $roleCreated
      */
     public function applyRoleCreated(RoleCreated $roleCreated)
     {

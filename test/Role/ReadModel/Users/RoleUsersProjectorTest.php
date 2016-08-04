@@ -58,10 +58,6 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             new StringLiteral('username'),
             new EmailAddress('username@company.be')
         );
-        $this->mockGetUserById(
-            $this->userIdentityDetail->getUserId(),
-            $this->userIdentityDetail
-        );
     }
 
     /**
@@ -123,7 +119,15 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             $userAdded
         );
 
-        $this->mockGet($this->createEmptyJsonDocument($userAdded->getUuid()));
+        $this->mockGet(
+            $userAdded->getUuid(),
+            $this->createEmptyJsonDocument($userAdded->getUuid())
+        );
+
+        $this->mockGetUserById(
+            $this->userIdentityDetail->getUserId(),
+            $this->userIdentityDetail
+        );
 
         $jsonDocument = $this->createJsonDocumentWithUserIdentityDetail(
             $userAdded->getUuid(),
@@ -152,10 +156,13 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
             $userRemoved
         );
 
-        $this->mockGet($this->createJsonDocumentWithUserIdentityDetail(
+        $this->mockGet(
             $userRemoved->getUuid(),
-            $this->userIdentityDetail
-        ));
+            $this->createJsonDocumentWithUserIdentityDetail(
+                $userRemoved->getUuid(),
+                $this->userIdentityDetail
+            )
+        );
 
         $this->repository->expects($this->once())
             ->method('save')
@@ -165,13 +172,98 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_does_not_save_a_projection_when_document_not_found_on_user_added_event()
+    {
+        $userAdded = new UserAdded(
+            new UUID(),
+            new StringLiteral('userId')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $userAdded->getUuid(),
+            $userAdded
+        );
+
+        $this->mockGet($userAdded->getUuid());
+
+        $this->userIdentityResolver->expects($this->never())
+            ->method('getUserById');
+
+        $this->repository->expects($this->never())
+            ->method('save');
+
+        $this->roleUsersProjector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_save_a_projection_when_user_details_not_found_on_user_added_event()
+    {
+        $userAdded = new UserAdded(
+            new UUID(),
+            new StringLiteral('userId')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $userAdded->getUuid(),
+            $userAdded
+        );
+
+        $this->mockGet(
+            $userAdded->getUuid(),
+            $this->createEmptyJsonDocument($userAdded->getUuid())
+        );
+
+        $this->mockGetUserById(new StringLiteral('userId'));
+
+        $this->userIdentityResolver->expects($this->once())
+            ->method('getUserById')
+            ->with(new StringLiteral('userId'));
+
+        $this->repository->expects($this->never())
+            ->method('save');
+
+        $this->roleUsersProjector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_save_a_projection_when_document_not_found_on_user_removed_event()
+    {
+        $userRemoved = new UserRemoved(
+            new UUID(),
+            new StringLiteral('userId')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $userRemoved->getUuid(),
+            $userRemoved
+        );
+
+        $this->mockGet($userRemoved->getUuid());
+
+        $this->userIdentityResolver->expects($this->never())
+            ->method('getUserById');
+
+        $this->repository->expects($this->never())
+            ->method('save');
+
+        $this->roleUsersProjector->handle($domainMessage);
+    }
+    
+    /**
+     * @param UUID $uuid
      * @param JsonDocument $jsonDocument
      */
-    private function mockGet(JsonDocument $jsonDocument)
+    private function mockGet(UUID $uuid, JsonDocument $jsonDocument = null)
     {
         $this->repository
             ->method('get')
-            ->with($jsonDocument->getId())
+            ->with($uuid)
             ->willReturn($jsonDocument);
     }
 
@@ -181,7 +273,7 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private function mockGetUserById(
         StringLiteral $userId,
-        UserIdentityDetails $userIdentityDetails
+        UserIdentityDetails $userIdentityDetails = null
     ) {
         $this->userIdentityResolver
             ->method('getUserById')

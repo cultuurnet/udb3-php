@@ -81,6 +81,9 @@ class RoleLabelsProjector extends RoleProjector
         }
     }
 
+    /**
+     * @param LabelDetailsProjectedToJSONLD $labelDetailsProjectedToJSONLD
+     */
     public function applyLabelDetailsProjectedToJSONLD(LabelDetailsProjectedToJSONLD $labelDetailsProjectedToJSONLD)
     {
         $labelId = $labelDetailsProjectedToJSONLD->getUuid()->toNative();

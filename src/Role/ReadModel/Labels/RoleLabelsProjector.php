@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Labels;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Label\Events\LabelDetailsProjectedToJSONLD;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -21,13 +22,25 @@ class RoleLabelsProjector extends RoleProjector
      */
     private $labelJsonRepository;
 
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    private $labelRolesRepository;
+
+    /**
+     * @param \CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface $repository
+     * @param \CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface $labelJsonRepository
+     * @param \CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface $labelRolesRepository
+     */
     public function __construct(
         DocumentRepositoryInterface $repository,
-        ReadRepositoryInterface $labelJsonRepository
+        ReadRepositoryInterface $labelJsonRepository,
+        DocumentRepositoryInterface $labelRolesRepository
     ) {
         parent::__construct($repository);
 
         $this->labelJsonRepository = $labelJsonRepository;
+        $this->labelRolesRepository = $labelRolesRepository;
     }
 
     /**
@@ -64,6 +77,27 @@ class RoleLabelsProjector extends RoleProjector
                 unset($labelDetails[$label->getUuid()->toNative()]);
                 $document = $document->withBody($labelDetails);
                 $this->repository->save($document);
+            }
+        }
+    }
+
+    public function applyLabelDetailsProjectedToJSONLD(LabelDetailsProjectedToJSONLD $labelDetailsProjectedToJSONLD)
+    {
+        $labelId = $labelDetailsProjectedToJSONLD->getUuid()->toNative();
+        $document = $this->labelRolesRepository->get($labelId);
+
+        if ($document) {
+            $roles = json_decode($document->getRawBody());
+
+            foreach ($roles as $roleId) {
+                $role = $this->getDocument(new UUID($roleId));
+
+                if ($role) {
+                    $labelDetails = $this->getLabelDetails($role);
+                    $labelDetails[$labelId] = $this->labelJsonRepository->getByUuid($labelDetailsProjectedToJSONLD->getUuid());
+                    $role = $role->withBody($labelDetails);
+                    $this->repository->save($role);
+                }
             }
         }
     }

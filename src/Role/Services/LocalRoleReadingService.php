@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\LocalEntityService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -26,6 +27,11 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
      * @var DocumentRepositoryInterface
      */
     private $userRolesReadRepository;
+
+    /**
+     * @var $userPermissionsRepositoryInterface
+     */
+    private $userPermissionsRepository;
 
     /**
      * ReadRoleRestController constructor.
@@ -80,5 +86,14 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     public function getRolesByUserId(StringLiteral $userId)
     {
         return $this->userRolesReadRepository->get($userId->toNative());
+    }
+
+    /**
+     * @param StringLiteral $userId
+     * @return Permission[]
+     */
+    public function getPermissionByUserId(StringLiteral $userId)
+    {
+        return $this->userPermissionsReadRepository->get($userId->toNative());
     }
 }

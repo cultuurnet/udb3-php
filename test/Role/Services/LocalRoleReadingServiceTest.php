@@ -107,4 +107,26 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedPermissions, $permissions);
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_labels_of_a_role()
+    {
+        $roleId = new UUID();
+
+        $expectedLabels = (new JsonDocument($roleId))
+            ->withBody(
+                json_encode([])
+            );
+
+        $this->roleLabelsReadRepository->expects($this->once())
+            ->method('get')
+            ->with($roleId)
+            ->willReturn($expectedLabels);
+
+        $actualLabels = $this->readingService->getLabelsByRoleUuid($roleId);
+
+        $this->assertEquals($expectedLabels, $actualLabels);
+    }
 }

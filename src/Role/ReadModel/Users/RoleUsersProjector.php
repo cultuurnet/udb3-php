@@ -76,8 +76,12 @@ class RoleUsersProjector extends RoleProjector
      */
     public function applyRoleCreated(RoleCreated $roleCreated)
     {
-        $document = $this->createNewDocument($roleCreated->getUuid());
-        $this->repository->save($document);
+        $this->repository->save(
+            new JsonDocument(
+                $roleCreated->getUuid()->toNative(),
+                json_encode([])
+            )
+        );
     }
 
     /**
@@ -111,19 +115,5 @@ class RoleUsersProjector extends RoleProjector
     private function getUserIdentityDetails(JsonDocument $document)
     {
         return json_decode($document->getRawBody(), true);
-    }
-
-    /**
-     * @param UUID $uuid
-     * @return JsonDocument
-     */
-    private function createNewDocument(UUID $uuid)
-    {
-        $document = new JsonDocument(
-            $uuid->toNative(),
-            json_encode([])
-        );
-
-        return $document;
     }
 }

@@ -29,7 +29,7 @@ class LabelRolesProjector extends RoleProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\LabelRemoved $labelRemoved
+     * @param LabelRemoved $labelRemoved
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)
     {

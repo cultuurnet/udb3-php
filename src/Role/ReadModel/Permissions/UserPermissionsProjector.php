@@ -22,6 +22,16 @@ class UserPermissionsProjector implements EventListenerInterface
     private $repository;
 
     /**
+     * UserPermissionsProjector constructor.
+     * @param UserPermissionsWriteRepositoryInterface $repository
+     */
+    public function __construct(UserPermissionsWriteRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
+
+    /**
      * @param RoleDeleted $roleDeleted
      * @param DomainMessage $domainMessage
      */

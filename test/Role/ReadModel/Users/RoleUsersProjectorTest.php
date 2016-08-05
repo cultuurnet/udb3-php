@@ -254,7 +254,7 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->roleUsersProjector->handle($domainMessage);
     }
-    
+
     /**
      * @param UUID $uuid
      * @param JsonDocument $jsonDocument
@@ -322,7 +322,7 @@ class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
     ) {
         $userIdentityDetails = [];
 
-        $key = $this->userIdentityDetail->getUserId()->toNative();
+        $key = $userIdentityDetail->getUserId()->toNative();
         $userIdentityDetails[$key] = $userIdentityDetail;
 
         return new JsonDocument($uuid, json_encode($userIdentityDetails));

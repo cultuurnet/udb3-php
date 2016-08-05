@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\Label;
 
-use Broadway\CommandHandling\CommandHandler as AbstractCommandHandler;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
 use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintException;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\CreateCopy;

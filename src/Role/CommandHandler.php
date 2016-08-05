@@ -2,12 +2,14 @@
 
 namespace CultuurNet\UDB3\Role;
 
-use Broadway\CommandHandling\CommandHandler as AbstractCommandHandler;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
+use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
@@ -141,6 +143,34 @@ class CommandHandler extends AbstractCommandHandler
         //@TODO Check linked users and labels once added.
 
         $role->delete($deleteRole->getUuid());
+
+        $this->save($role);
+    }
+
+    /**
+     * @param AddLabel $addLabel
+     */
+    public function handleAddLabel(AddLabel $addLabel)
+    {
+        $role = $this->load($addLabel->getUuid());
+
+        $role->addLabel(
+            $addLabel->getLabelId()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param RemoveLabel $removeLabel
+     */
+    public function handleRemoveLabel(RemoveLabel $removeLabel)
+    {
+        $role = $this->load($removeLabel->getUuid());
+
+        $role->removeLabel(
+            $removeLabel->getLabelId()
+        );
 
         $this->save($role);
     }

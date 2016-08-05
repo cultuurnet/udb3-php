@@ -3594,16 +3594,16 @@
     "packages-dev": [
         {
             "name": "alchemy/zippy",
-            "version": "0.4.0",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alchemy-fr/Zippy.git",
-                "reference": "28b7c0e9db9755889d1e6b3a3ca237abcbd98693"
+                "reference": "b0316a0aeaf0a7123cdc4adf092157d0576bdd1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alchemy-fr/Zippy/zipball/28b7c0e9db9755889d1e6b3a3ca237abcbd98693",
-                "reference": "28b7c0e9db9755889d1e6b3a3ca237abcbd98693",
+                "url": "https://api.github.com/repos/alchemy-fr/Zippy/zipball/b0316a0aeaf0a7123cdc4adf092157d0576bdd1a",
+                "reference": "b0316a0aeaf0a7123cdc4adf092157d0576bdd1a",
                 "shasum": ""
             },
             "require": {
@@ -3654,7 +3654,7 @@
                 "tar",
                 "zip"
             ],
-            "time": "2016-07-19 14:49:40"
+            "time": "2016-08-05 10:07:43"
         },
         {
             "name": "doctrine/instantiator",

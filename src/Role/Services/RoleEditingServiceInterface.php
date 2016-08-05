@@ -67,6 +67,24 @@ interface RoleEditingServiceInterface
     public function setConstraint(UUID $uuid, StringLiteral $query);
 
     /**
+     * Add a label to a role.
+     *
+     * @param UUID $uuid
+     * @param UUID $labelId
+     * @return string
+     */
+    public function addLabel(UUID $uuid, UUID $labelId);
+
+    /**
+     * Remove a label from a role.
+     *
+     * @param UUID $uuid
+     * @param UUID $labelId
+     * @return string
+     */
+    public function removeLabel(UUID $uuid, UUID $labelId);
+
+    /**
      * Deleting a role.
      *
      * @param UUID $uuid

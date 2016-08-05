@@ -24,6 +24,11 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
+    private $roleLabelsReadRepository;
+
+    /**
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $roleUsersPermissionsReadRepository;
 
     /**
@@ -52,6 +57,7 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
         $this->roleWriteRepository = $this->getMock(RepositoryInterface::class);
         $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
         $this->rolePermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->roleLabelsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->roleUsersPermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->userRolesPermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
 
@@ -60,6 +66,7 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
             $this->roleWriteRepository,
             $this->iriGenerator,
             $this->rolePermissionsReadRepository,
+            $this->roleLabelsReadRepository,
             $this->roleUsersPermissionsReadRepository,
             $this->userRolesPermissionsReadRepository
         );
@@ -113,5 +120,27 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
         $permissions = $this->readingService->getPermissionsByRoleUuid($roleId);
 
         $this->assertEquals($expectedPermissions, $permissions);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_labels_of_a_role()
+    {
+        $roleId = new UUID();
+
+        $expectedLabels = (new JsonDocument($roleId))
+            ->withBody(
+                json_encode([])
+            );
+
+        $this->roleLabelsReadRepository->expects($this->once())
+            ->method('get')
+            ->with($roleId)
+            ->willReturn($expectedLabels);
+
+        $actualLabels = $this->readingService->getLabelsByRoleUuid($roleId);
+
+        $this->assertEquals($expectedLabels, $actualLabels);
     }
 }

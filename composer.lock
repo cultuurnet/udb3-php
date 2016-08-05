@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b242bae6aa40b9791e02613ffa71a161",
-    "content-hash": "333c416b25c4bc3346faea1a1756ee74",
+    "hash": "86f8fa8c351fd8e5a3741edc8d783ee9",
+    "content-hash": "bac7afefa8730fc3fd37035edc37cbf4",
     "packages": [
         {
             "name": "2dotstwice/collection",
@@ -477,16 +477,16 @@
         },
         {
             "name": "cultuurnet/culturefeed-php",
-            "version": "dev-feature/III-1189",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/culturefeed-php.git",
-                "reference": "8ecbded9ea380a5bf100babb5543cff108e77630"
+                "reference": "8c7414d8230ad886990f687581003b045d2e73aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/8ecbded9ea380a5bf100babb5543cff108e77630",
-                "reference": "8ecbded9ea380a5bf100babb5543cff108e77630",
+                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/8c7414d8230ad886990f687581003b045d2e73aa",
+                "reference": "8c7414d8230ad886990f687581003b045d2e73aa",
                 "shasum": ""
             },
             "require": {
@@ -541,7 +541,7 @@
                 }
             ],
             "description": "Culturefeed PHP library",
-            "time": "2016-07-29 13:19:31"
+            "time": "2016-08-05 09:35:06"
         },
         {
             "name": "cultuurnet/deserializer",
@@ -1837,16 +1837,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.25",
+            "version": "1.0.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "a76afa4035931be0c78ca8efc6abf3902362f437"
+                "reference": "fb3b30dca320b36931ea878fea17ebe136fba1b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a76afa4035931be0c78ca8efc6abf3902362f437",
-                "reference": "a76afa4035931be0c78ca8efc6abf3902362f437",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/fb3b30dca320b36931ea878fea17ebe136fba1b0",
+                "reference": "fb3b30dca320b36931ea878fea17ebe136fba1b0",
                 "shasum": ""
             },
             "require": {
@@ -1916,7 +1916,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2016-07-18 12:22:57"
+            "time": "2016-08-03 09:49:11"
         },
         {
             "name": "league/flysystem-ziparchive",
@@ -3595,16 +3595,16 @@
     "packages-dev": [
         {
             "name": "alchemy/zippy",
-            "version": "0.4.0",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alchemy-fr/Zippy.git",
-                "reference": "28b7c0e9db9755889d1e6b3a3ca237abcbd98693"
+                "reference": "b0316a0aeaf0a7123cdc4adf092157d0576bdd1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alchemy-fr/Zippy/zipball/28b7c0e9db9755889d1e6b3a3ca237abcbd98693",
-                "reference": "28b7c0e9db9755889d1e6b3a3ca237abcbd98693",
+                "url": "https://api.github.com/repos/alchemy-fr/Zippy/zipball/b0316a0aeaf0a7123cdc4adf092157d0576bdd1a",
+                "reference": "b0316a0aeaf0a7123cdc4adf092157d0576bdd1a",
                 "shasum": ""
             },
             "require": {
@@ -3655,7 +3655,7 @@
                 "tar",
                 "zip"
             ],
-            "time": "2016-07-19 14:49:40"
+            "time": "2016-08-05 10:07:43"
         },
         {
             "name": "doctrine/instantiator",
@@ -5241,9 +5241,9 @@
     ],
     "aliases": [
         {
-            "alias": "1.5",
-            "alias_normalized": "1.5.0.0",
-            "version": "dev-feature/III-1189",
+            "alias": "1.6",
+            "alias_normalized": "1.6.0.0",
+            "version": "9999999-dev",
             "package": "cultuurnet/culturefeed-php"
         }
     ],

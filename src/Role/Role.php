@@ -13,6 +13,8 @@ use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\Events\UserAdded;
+use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -43,6 +45,11 @@ class Role extends EventSourcedAggregateRoot
      * @var UUID[]
      */
     private $labelIds = [];
+
+    /**
+     * @var StringLiteral[]
+     */
+    private $userIds = [];
 
     /**
      * @return string
@@ -160,6 +167,28 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param StringLiteral $userId
+     */
+    public function addUser(
+        StringLiteral $userId
+    ) {
+        if (!in_array($userId, $this->userIds)) {
+            $this->apply(new UserAdded($this->uuid, $userId));
+        }
+    }
+
+    /**
+     * @param StringLiteral $userId
+     */
+    public function removeUser(
+        StringLiteral $userId
+    ) {
+        if (in_array($userId, $this->userIds)) {
+            $this->apply(new UserRemoved($this->uuid, $userId));
+        }
+    }
+
+    /**
      * Delete a role.
      *
      * @param UUID $uuid
@@ -247,5 +276,26 @@ class Role extends EventSourcedAggregateRoot
     {
         $labelId = $labelRemoved->getLabelId();
         $this->labelIds = array_diff($this->labelIds, [$labelId]);
+    }
+
+    /**
+     * @param UserAdded $userAdded
+     */
+    public function applyUserAdded(UserAdded $userAdded)
+    {
+        $userId = $userAdded->getUserId();
+        $this->userIds[] = $userId;
+    }
+
+    /**
+     * @param UserRemoved $userRemoved
+     */
+    public function applyUserRemoved(UserRemoved $userRemoved)
+    {
+        $userId = $userRemoved->getUserId();
+
+        if (($index = array_search($userId, $this->userIds)) !== false) {
+            unset($this->userIds[$index]);
+        }
     }
 }

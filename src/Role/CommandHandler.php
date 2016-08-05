@@ -6,10 +6,12 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
+use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
+use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use ValueObjects\Identity\UUID;
@@ -98,6 +100,34 @@ class CommandHandler extends AbstractCommandHandler
         $role->removePermission(
             $removePermission->getUuid(),
             $removePermission->getPermission()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param AddUser $addUser
+     */
+    public function handleAddUser(AddUser $addUser)
+    {
+        $role = $this->load($addUser->getUuid());
+
+        $role->addUser(
+            $addUser->getUserId()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param RemoveUser $removeUser
+     */
+    public function handleRemoveUser(RemoveUser $removeUser)
+    {
+        $role = $this->load($removeUser->getUuid());
+
+        $role->removeUser(
+            $removeUser->getUserId()
         );
 
         $this->save($role);

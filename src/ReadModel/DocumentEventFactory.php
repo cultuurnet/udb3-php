@@ -2,13 +2,11 @@
 
 namespace CultuurNet\UDB3\ReadModel;
 
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
-
 interface DocumentEventFactory
 {
     /**
-     * @param $id
-     * @return AbstractEvent
+     * @param string $id
+     * @return object
      */
     public function createEvent($id);
 }

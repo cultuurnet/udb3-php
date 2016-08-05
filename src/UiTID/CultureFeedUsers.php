@@ -1,26 +1,28 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\UiTID;
 
-use ValueObjects\String\String;
+use CultuurNet\UDB3\User\CultureFeedUserIdentityResolver;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
+/**
+ * @deprecated
+ *   Use \CultuurNet\UDB3\User\CultureFeedUserIdentityResolver instead.
+ */
 class CultureFeedUsers implements UsersInterface
 {
     /**
-     * @var \ICultureFeed
+     * @var CultureFeedUserIdentityResolver
      */
-    private $cultureFeed;
+    private $userIdentityResolver;
 
     /**
-     * @param \ICultureFeed $cultureFeed
+     * @param CultureFeedUserIdentityResolver $userIdentityResolver
      */
-    public function __construct(\ICultureFeed $cultureFeed)
+    public function __construct(CultureFeedUserIdentityResolver $userIdentityResolver)
     {
-        $this->cultureFeed = $cultureFeed;
+        $this->userIdentityResolver = $userIdentityResolver;
     }
 
     /**
@@ -28,40 +30,26 @@ class CultureFeedUsers implements UsersInterface
      */
     public function byEmail(EmailAddress $email)
     {
-        $query = new \CultureFeed_SearchUsersQuery();
-        $query->mbox = $email->toNative();
-        $query->mboxIncludePrivate = true;
+        $user = $this->userIdentityResolver->getUserByEmail($email);
 
-        return $this->searchSingleUser($query);
-    }
-
-    /**
-     * @param \CultureFeed_SearchUsersQuery $query
-     * @return string|null
-     */
-    private function searchSingleUser(\CultureFeed_SearchUsersQuery $query)
-    {
-        /** @var \CultureFeed_ResultSet $results */
-        $results = $this->cultureFeed->searchUsers($query);
-
-        /** @var \CultureFeed_SearchUser $user */
-        $user = reset($results->objects);
-
-        if ($user) {
-            return new String($user->id);
+        if (!is_null($user)) {
+            return $user->getUserId();
+        } else {
+            return null;
         }
-
-        return;
     }
 
     /**
      * @inheritdoc
      */
-    public function byNick(String $nick)
+    public function byNick(StringLiteral $nick)
     {
-        $query = new \CultureFeed_SearchUsersQuery();
-        $query->nick = $nick->toNative();
+        $user = $this->userIdentityResolver->getUserByNick($nick);
 
-        return $this->searchSingleUser($query);
+        if (!is_null($user)) {
+            return $user->getUserId();
+        } else {
+            return null;
+        }
     }
 }

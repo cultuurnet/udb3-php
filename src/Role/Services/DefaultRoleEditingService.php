@@ -7,9 +7,11 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
+use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
+use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use CultuurNet\UDB3\Role\Role;
@@ -99,6 +101,32 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
         $command = new RemovePermission(
             $uuid,
             $permission
+        );
+
+        return $this->commandBus->dispatch($command);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addUser(UUID $uuid, StringLiteral $userId)
+    {
+        $command = new AddUser(
+            $uuid,
+            $userId
+        );
+
+        return $this->commandBus->dispatch($command);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeUser(UUID $uuid, StringLiteral $userId)
+    {
+        $command = new RemoveUser(
+            $uuid,
+            $userId
         );
 
         return $this->commandBus->dispatch($command);

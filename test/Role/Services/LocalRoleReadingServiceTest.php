@@ -27,6 +27,16 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
     private $roleLabelsReadRepository;
 
     /**
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $roleUsersPermissionsReadRepository;
+
+    /**
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $userRolesPermissionsReadRepository;
+
+    /**
      * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $roleWriteRepository;
@@ -48,13 +58,17 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
         $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
         $this->rolePermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->roleLabelsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->roleUsersPermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->userRolesPermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
 
         $this->readingService = new LocalRoleReadingService(
             $this->roleReadRepository,
             $this->roleWriteRepository,
             $this->iriGenerator,
             $this->rolePermissionsReadRepository,
-            $this->roleLabelsReadRepository
+            $this->roleLabelsReadRepository,
+            $this->roleUsersPermissionsReadRepository,
+            $this->userRolesPermissionsReadRepository
         );
     }
 

@@ -47,12 +47,12 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
 
         $connection->delete(
             $this->userRoleTableName,
-            array(SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative())
+            array(SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId)
         );
 
         $connection->delete(
             $this->rolePermissionTableName,
-            array(SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative())
+            array(SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId)
         );
     }
 
@@ -61,8 +61,8 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
         $this->connection->insert(
             $this->rolePermissionTableName,
             array(
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
-                SchemaConfigurator::PERMISSION_COLUMN => $permission->getName()
+                SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
+                SchemaConfigurator::PERMISSION_COLUMN => (string) $permission
             )
         );
     }
@@ -71,7 +71,10 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
     {
         $this->connection->delete(
             $this->rolePermissionTableName,
-            array(SchemaConfigurator::PERMISSION_COLUMN => $permission->getName())
+            array(
+                SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
+                SchemaConfigurator::PERMISSION_COLUMN => (string) $permission
+            )
         );
     }
 
@@ -80,7 +83,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
         $this->connection->insert(
             $this->userRoleTableName,
             array(
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
+                SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
                 SchemaConfigurator::USER_ID_COLUMN => $userId
             )
         );
@@ -92,7 +95,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::USER_ID_COLUMN => $userId,
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId
             )
         );
     }

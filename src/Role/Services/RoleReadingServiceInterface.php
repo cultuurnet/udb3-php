@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Role\Services;
 
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -26,10 +25,4 @@ interface RoleReadingServiceInterface
      * @return JsonDocument
      */
     public function getRolesByUserId(StringLiteral $userId);
-
-    /**
-     * @param StringLiteral $userId
-     * @return Permission[]
-     */
-    public function getPermissionsByUserId(StringLiteral $userId);
 }

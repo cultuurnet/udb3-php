@@ -21,9 +21,14 @@ use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -41,9 +46,20 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->organizerRepository = $this->getMock(RepositoryInterface::class);
 
+        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository->method('getByName')
+            ->with(new String('foo'))
+            ->willReturn(new Entity(
+                new UUID(),
+                new String('foo'),
+                Visibility::VISIBLE(),
+                Privacy::PRIVACY_PUBLIC()
+            ));
+
         return new EventCommandHandler(
             $repository,
-            $this->organizerRepository
+            $this->organizerRepository,
+            $this->labelRepository
         );
     }
 

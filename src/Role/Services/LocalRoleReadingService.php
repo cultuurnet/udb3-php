@@ -20,6 +20,11 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     /**
      * @var DocumentRepositoryInterface
      */
+    private $roleLabelsReadRepository;
+
+    /**
+     * @var DocumentRepositoryInterface
+     */
     private $roleUsersReadRepository;
 
     /**
@@ -33,6 +38,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
      * @param RepositoryInterface $roleWriteRepository
      * @param IriGeneratorInterface $iriGenerator
      * @param DocumentRepositoryInterface $rolePermissionsReadRepository
+     * @param DocumentRepositoryInterface $roleLabelsReadRepository
      * @param DocumentRepositoryInterface $roleUsersReadRepository
      * @param DocumentRepositoryInterface $userRolesReadRepository
      */
@@ -41,6 +47,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
         RepositoryInterface $roleWriteRepository,
         IriGeneratorInterface $iriGenerator,
         DocumentRepositoryInterface $rolePermissionsReadRepository,
+        DocumentRepositoryInterface $roleLabelsReadRepository,
         DocumentRepositoryInterface $roleUsersReadRepository,
         DocumentRepositoryInterface $userRolesReadRepository
     ) {
@@ -51,6 +58,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
         );
 
         $this->rolePermissionsReadRepository = $rolePermissionsReadRepository;
+        $this->roleLabelsReadRepository = $roleLabelsReadRepository;
         $this->roleUsersReadRepository = $roleUsersReadRepository;
         $this->userRolesReadRepository = $userRolesReadRepository;
     }
@@ -66,6 +74,14 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
 
     /**
      * @param UUID $uuid
+     * @return mixed
+     */
+    public function getLabelsByRoleUuid(UUID $uuid)
+    {
+        return $this->roleLabelsReadRepository->get($uuid->toNative());
+    }
+
+    /**
      * @return JsonDocument
      */
     public function getUsersByRoleUuid(UUID $uuid)

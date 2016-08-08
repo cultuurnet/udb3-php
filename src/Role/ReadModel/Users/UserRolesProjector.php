@@ -85,7 +85,16 @@ class UserRolesProjector extends RoleProjector
         $userId = $userRemoved->getUserId()->toNative();
         $roleId = $userRemoved->getUuid()->toNative();
 
-        $document = $this->repository->get($userId);
+        try {
+            $document = $this->repository->get($userId);
+        } catch (DocumentGoneException $e) {
+            return;
+        }
+
+        if (empty($document)) {
+            return;
+        }
+
         $roles = json_decode($document->getRawBody(), true);
         unset($roles[$roleId]);
 

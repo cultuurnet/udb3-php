@@ -9,6 +9,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Organizer\Organizer;
@@ -27,6 +28,11 @@ trait OfferCommandHandlerTestTrait
      * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $organizerRepository;
+
+    /**
+     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $labelRepository;
 
     /**
      * Get the namespaced classname of the command to create.

@@ -4,6 +4,9 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
@@ -21,6 +24,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Organizer\Organizer;
+use ValueObjects\String\String as StringLiteral;
 
 abstract class OfferCommandHandler extends Udb3CommandHandler
 {
@@ -35,15 +39,23 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     protected $organizerRepository;
 
     /**
+     * @var RepositoryInterface
+     */
+    protected $labelRepository;
+
+    /**
      * @param RepositoryInterface $offerRepository
      * @param RepositoryInterface $organizerRepository
+     * @param ReadRepositoryInterface $labelRepository
      */
     public function __construct(
         RepositoryInterface $offerRepository,
-        RepositoryInterface $organizerRepository
+        RepositoryInterface $organizerRepository,
+        ReadRepositoryInterface $labelRepository
     ) {
         $this->offerRepository = $offerRepository;
         $this->organizerRepository = $organizerRepository;
+        $this->labelRepository = $labelRepository;
     }
 
     /**
@@ -172,7 +184,15 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     private function handleAddLabel(AbstractAddLabel $addLabel)
     {
         $offer = $this->load($addLabel->getItemId());
-        $offer->addLabel($addLabel->getLabel());
+
+        $labelName = new StringLiteral((string)$addLabel->getLabel());
+        $label = $this->labelRepository->getByName($labelName);
+
+        $offer->addLabel(new Label(
+            $label->getName()->toNative(),
+            $label->getVisibility() === Visibility::VISIBLE()
+        ));
+
         $this->offerRepository->save($offer);
     }
 

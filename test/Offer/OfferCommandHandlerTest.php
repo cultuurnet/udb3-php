@@ -7,6 +7,10 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
@@ -24,6 +28,7 @@ use CultuurNet\UDB3\Offer\Mock\Commands\DeleteLabel as DeleteLabelFromSomethingE
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
 use PHPUnit_Framework_MockObject_MockObject;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
 class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -63,6 +68,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     protected $organizerRepository;
 
+    /**
+     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $labelRepository;
+
     public function setUp()
     {
         parent::setUp();
@@ -82,9 +92,20 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     ) {
         $this->organizerRepository = $this->getMock(RepositoryInterface::class);
 
+        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository->method('getByName')
+            ->with(new String('foo'))
+            ->willReturn(new Entity(
+                new UUID(),
+                new String('foo'),
+                Visibility::VISIBLE(),
+                Privacy::PRIVACY_PUBLIC()
+            ));
+
         return new ItemCommandHandler(
             new ItemRepository($eventStore, $eventBus),
-            $this->organizerRepository
+            $this->organizerRepository,
+            $this->labelRepository
         );
     }
 

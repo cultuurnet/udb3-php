@@ -58,7 +58,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
         $userId = '4A9F8064-755E-46C5-A5C2-DFD7970A4BF3';
         $roleId = new UUID();
 
-        $this->repository->addPermissionsByUserRole($userId, $roleId);
+        $this->repository->addUserRole($userId, $roleId);
 
         $rows = $this->getTableRows($this->userRoleTableName);
 
@@ -186,7 +186,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->repository->removePermissionsByRole($roleId);
+        $this->repository->removeRole($roleId);
 
         $rolePermissions = $this->getTableRows($this->rolePermissionTableName);
         $userRoles = $this->getTableRows($this->userRoleTableName);
@@ -227,7 +227,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->repository->removePermissionsByUserRole($userId, $roleId);
+        $this->repository->removeUserRole($userId, $roleId);
 
         $rows = $this->getTableRows($this->userRoleTableName);
 

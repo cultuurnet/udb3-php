@@ -10,7 +10,7 @@ interface UserPermissionsWriteRepositoryInterface
     /**
      * @param UUID $roleId
      */
-    public function removePermissionsByRole(UUID $roleId);
+    public function removeRole(UUID $roleId);
 
     /**
      * @param Permission $permission
@@ -28,11 +28,11 @@ interface UserPermissionsWriteRepositoryInterface
      * @param string $userId
      * @param UUID $roleId
      */
-    public function addPermissionsByUserRole($userId, UUID $roleId);
+    public function addUserRole($userId, UUID $roleId);
 
     /**
      * @param string $userId
      * @param UUID $roleId
      */
-    public function removePermissionsByUserRole($userId, UUID $roleId);
+    public function removeUserRole($userId, UUID $roleId);
 }

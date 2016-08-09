@@ -37,7 +37,7 @@ class UserPermissionsProjector implements EventListenerInterface
      */
     public function applyRoleDeleted(RoleDeleted $roleDeleted, DomainMessage $domainMessage)
     {
-        $this->repository->removePermissionsByRole($roleDeleted->getUuid());
+        $this->repository->removeRole($roleDeleted->getUuid());
     }
 
     /**
@@ -46,7 +46,7 @@ class UserPermissionsProjector implements EventListenerInterface
      */
     public function applyUserAdded(UserAdded $userAdded, DomainMessage $domainMessage)
     {
-        $this->repository->addPermissionsByUserRole($userAdded->getUserId(), $userAdded->getUuid());
+        $this->repository->addUserRole($userAdded->getUserId(), $userAdded->getUuid());
     }
 
     /**
@@ -55,7 +55,7 @@ class UserPermissionsProjector implements EventListenerInterface
      */
     public function applyUserRemoved(UserRemoved $userRemoved, DomainMessage $domainMessage)
     {
-        $this->repository->removePermissionsByUserRole($userRemoved->getUserId(), $userRemoved->getUuid());
+        $this->repository->removeUserRole($userRemoved->getUserId(), $userRemoved->getUuid());
     }
 
     /**

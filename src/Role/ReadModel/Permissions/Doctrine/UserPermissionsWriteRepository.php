@@ -41,7 +41,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
         $this->rolePermissionTableName = $rolePermissionTableName;
     }
 
-    public function removePermissionsByRole(UUID $roleId)
+    public function removeRole(UUID $roleId)
     {
         $connection = $this->connection;
 
@@ -78,7 +78,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
         );
     }
 
-    public function addPermissionsByUserRole($userId, UUID $roleId)
+    public function addUserRole($userId, UUID $roleId)
     {
         $this->connection->insert(
             $this->userRoleTableName,
@@ -89,7 +89,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
         );
     }
 
-    public function removePermissionsByUserRole($userId, UUID $roleId)
+    public function removeUserRole($userId, UUID $roleId)
     {
         $this->connection->delete(
             $this->userRoleTableName,

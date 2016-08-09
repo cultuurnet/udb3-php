@@ -17,9 +17,9 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
      */
     private $repository;
 
-    /*
-    * @var StringLiteral
-    */
+    /**
+     * @var StringLiteral
+     */
     private $userRoleTableName;
 
     /**

@@ -48,15 +48,24 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
     {
         $connection = $this->connection;
 
-        $connection->delete(
-            $this->userRoleTableName,
-            array(SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId)
-        );
+        try {
+            $connection->beginTransaction();
 
-        $connection->delete(
-            $this->rolePermissionTableName,
-            array(SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId)
-        );
+            $connection->delete(
+                $this->userRoleTableName,
+                array(SchemaConfigurator::ROLE_ID_COLUMN => (string)$roleId)
+            );
+
+            $connection->delete(
+                $this->rolePermissionTableName,
+                array(SchemaConfigurator::ROLE_ID_COLUMN => (string)$roleId)
+            );
+
+            $connection->commit();
+        } catch (\Exception $exception) {
+            $this->connection->rollBack();
+            throw $exception;
+        }
     }
 
     /**

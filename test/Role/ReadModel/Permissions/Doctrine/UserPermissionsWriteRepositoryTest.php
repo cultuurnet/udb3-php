@@ -242,6 +242,10 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedRows, $rows);
     }
 
+    /**
+     * @param $tableName
+     * @return array
+     */
     private function getTableRows($tableName)
     {
         $sql = 'SELECT * FROM ' . $tableName;

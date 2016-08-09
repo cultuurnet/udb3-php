@@ -54,7 +54,7 @@ class UserPermissionsReadRepository implements UserPermissionsReadRepositoryInte
         $userPermissionQuery = $this->connection->createQueryBuilder()
             ->select('DISTINCT ' . SchemaConfigurator::PERMISSION_COLUMN)
             ->from($this->rolePermissionTableName, 'rp')
-            ->leftJoin(
+            ->innerJoin(
                 'rp',
                 sprintf('(%s)', $userRoleQuery->getSQL()),
                 'up',

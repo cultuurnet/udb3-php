@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\UserPermissionsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use GuzzleHttp\Tests\Psr7\Str;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\String\String as StringLiteral;
 
@@ -55,12 +56,22 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
     {
         $userId = new StringLiteral('7D23021B-C9AA-4B64-97A5-ECA8168F4A27');
         $roleId = new StringLiteral('7B6A161E-987B-4069-8BB2-9956B01782CB');
+        $otherRoleId = new StringLiteral('8B6A161E-987B-8069-8BB2-9856B01782CB');
 
         // Add a role for the user
         $this->getConnection()->insert(
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
+                SchemaConfigurator::USER_ID_COLUMN => (string) $userId
+            )
+        );
+
+        // Add another role for the user
+        $this->getConnection()->insert(
+            $this->userRoleTableName,
+            array(
+                SchemaConfigurator::ROLE_ID_COLUMN => (string) $otherRoleId,
                 SchemaConfigurator::USER_ID_COLUMN => (string) $userId
             )
         );
@@ -81,13 +92,39 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
             )
         );
 
+        // Add a permission to the other role
+        $this->getConnection()->insert(
+            $this->rolePermissionTableName,
+            array(
+                SchemaConfigurator::ROLE_ID_COLUMN => $otherRoleId,
+                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::GEBRUIKERS_BEHEREN
+            )
+        );
+        $this->getConnection()->insert(
+            $this->rolePermissionTableName,
+            array(
+                SchemaConfigurator::ROLE_ID_COLUMN => $otherRoleId,
+                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::AANBOD_MODEREREN
+            )
+        );
+
         $permissions = $this->repository->getPermissions($userId);
 
         $expectedPermissions = [
-            Permission::LABELS_BEHEREN,
-            Permission::GEBRUIKERS_BEHEREN,
+            Permission::LABELS_BEHEREN(),
+            Permission::GEBRUIKERS_BEHEREN(),
+            Permission::AANBOD_MODEREREN()
         ];
+        $this->assertEquals(
+            $expectedPermissions,
+            $permissions,
+            'User permissions do not match expected!',
+            0.0,
+            10,
+            true
+        );
 
-        $this->assertEquals($expectedPermissions, $permissions);
+        $otherUserPermissions = $this->repository->getPermissions(new StringLiteral('otherUserId'));
+        $this->assertEmpty($otherUserPermissions);
     }
 }

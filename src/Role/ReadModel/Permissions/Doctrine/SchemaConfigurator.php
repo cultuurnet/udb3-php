@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine;
 
 use CultuurNet\UDB3\Doctrine\DBAL\SchemaConfiguratorInterface;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Type;
 use ValueObjects\String\String as StringLiteral;
 

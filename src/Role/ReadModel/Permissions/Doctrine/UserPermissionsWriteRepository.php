@@ -78,23 +78,23 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
         );
     }
 
-    public function addUserRole($userId, UUID $roleId)
+    public function addUserRole(StringLiteral $userId, UUID $roleId)
     {
         $this->connection->insert(
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::USER_ID_COLUMN => $userId
+                SchemaConfigurator::USER_ID_COLUMN => (string) $userId
             )
         );
     }
 
-    public function removeUserRole($userId, UUID $roleId)
+    public function removeUserRole(StringLiteral $userId, UUID $roleId)
     {
         $this->connection->delete(
             $this->userRoleTableName,
             array(
-                SchemaConfigurator::USER_ID_COLUMN => $userId,
+                SchemaConfigurator::USER_ID_COLUMN => (string) $userId,
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId
             )
         );

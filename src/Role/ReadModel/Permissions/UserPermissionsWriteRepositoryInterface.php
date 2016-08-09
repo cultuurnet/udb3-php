@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Permissions;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 interface UserPermissionsWriteRepositoryInterface
 {
@@ -25,14 +26,14 @@ interface UserPermissionsWriteRepositoryInterface
     public function removeRolePermission(UUID $roleId, Permission $permission);
 
     /**
-     * @param string $userId
+     * @param StringLiteral $userId
      * @param UUID $roleId
      */
-    public function addUserRole($userId, UUID $roleId);
+    public function addUserRole(StringLiteral $userId, UUID $roleId);
 
     /**
-     * @param string $userId
+     * @param StringLiteral $userId
      * @param UUID $roleId
      */
-    public function removeUserRole($userId, UUID $roleId);
+    public function removeUserRole(StringLiteral $userId, UUID $roleId);
 }

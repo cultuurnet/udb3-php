@@ -55,7 +55,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_update_permissions_when_a_user_is_assigned_a_role()
     {
-        $userId = '4A9F8064-755E-46C5-A5C2-DFD7970A4BF3';
+        $userId = new StringLiteral('4A9F8064-755E-46C5-A5C2-DFD7970A4BF3');
         $roleId = new UUID();
 
         $this->repository->addUserRole($userId, $roleId);
@@ -207,7 +207,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_revoke_permissions_when_a_role_is_taken_from_a_user()
     {
-        $userId = '4A9F8064-755E-46C5-A5C2-DFD7970A4BF3';
+        $userId = new StringLiteral('4A9F8064-755E-46C5-A5C2-DFD7970A4BF3');
         $otherUserId = UUID::generateAsString();
         $roleId = new UUID();
 

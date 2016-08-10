@@ -201,6 +201,16 @@ class TabularDataEventFormatter
                 'include' => function ($event) {
                     if (property_exists($event, 'description')) {
                         $description = reset($event->description);
+
+                        // the following preg replace statements will strip unwanted line-breaking characters
+                        // except for markup
+
+                        // do not add a whitespace when a line break follows a break tag
+                        $description = preg_replace('/<br\ ?\/?>\s+/', '<br>', $description);
+
+                        // replace all leftover line breaks with a space to prevent words from sticking together
+                        $description = trim(preg_replace('/\s+/', ' ', $description));
+
                         return $this->htmlFilter->filter($description);
                     }
                 },

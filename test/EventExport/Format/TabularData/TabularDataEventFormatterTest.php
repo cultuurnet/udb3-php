@@ -264,4 +264,33 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
             array('event_with_modified_date.json', '2015-10-13 14:27', '2015-10-29 20:00', '', '2015-10-13 14:27'),
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_should_strip_line_breaking_white_spaces_that_are_not_set_by_markup()
+    {
+        $includedProperties = [
+            'id',
+            'description'
+        ];
+        $eventWithUnwantedLineBreaks = $this->getJSONEventFromFile('event_with_unwanted_line_breaks.json');
+
+        $formatter = new TabularDataEventFormatter($includedProperties);
+        $expectedDescription = 'Wat is de kracht van verzoening? Jan De Cock trekt de wereld rond en ontmoet tientallen slachtoffers van misdaden die we soms moeilijk kunnen vatten en die toch konden ze vergeven.'
+        . PHP_EOL . 'Jan De Cock ontmoet slachtoffers van misdaden die het laatste woord niet aan de feiten hebben gelaten, noch aan de wrok.'
+        . PHP_EOL . 'In een wereld waar de roep naar gerechtigheid steeds vaker gehoord wordt als een schreeuw voor meer repressie en straf, biedt Jan De Cock weerwerk.'
+        . PHP_EOL . 'Hij trekt de wereld rond en ontmoet tientallen slachtoffers van daden die we soms moeilijk kunnen vatten.'
+        . PHP_EOL . 'Toch konden ze vergeven: ouders van wie de kinderen door de Noor Breivik werden vermoord, moeders van zonen die met de Twin Towers ten onder gingen, de weduwe van Gerrit Jan Heijn...'
+        . PHP_EOL . 'Zondert twijfel een onvergetelijk avond.'
+        . PHP_EOL . 'Graag doorklikken naar de website van Markant Melle Merelbeke voor alle informatie betreffende deze lezing. Iedereen welkom!';
+
+        $formattedEvent = $formatter->formatEvent($eventWithUnwantedLineBreaks);
+        $expectedFormatting = array(
+            'id' =>'ee7c4030-d69f-4584-b0f2-a700955c7df2',
+            'description' => $expectedDescription
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
 }

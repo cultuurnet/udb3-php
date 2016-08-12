@@ -10,7 +10,7 @@ use ValueObjects\String\String as StringLiteral;
 
 class Entity implements \JsonSerializable
 {
-    const ID = 'id';
+    const ID = 'uuid';
     const NAME = 'name';
     const VISIBILITY = 'visibility';
     const PRIVACY = 'privacy';

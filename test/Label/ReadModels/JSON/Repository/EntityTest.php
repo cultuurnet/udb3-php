@@ -155,7 +155,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     {
         $json = json_encode($this->entity);
 
-        $expectedJson = '{"id":"' . $this->uuid->toNative()
+        $expectedJson = '{"uuid":"' . $this->uuid->toNative()
             . '","name":"' . $this->name->toNative()
             . '","visibility":"' . $this->visibilty->toNative()
             . '","privacy":"' . $this->privacy->toNative() . '"}';

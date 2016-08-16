@@ -10,7 +10,7 @@ use ValueObjects\String\String as StringLiteral;
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {
     const ROLE_ID_COLUMN = 'role_id';
-    const CONSTRAINT_COLUMN = 'permission';
+    const CONSTRAINT_COLUMN = 'constraint_col';
 
     /**
      * @var StringLiteral

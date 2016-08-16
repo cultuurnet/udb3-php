@@ -94,14 +94,14 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 
     private function seedRolePermissions()
     {
-        $this->insertUserPermission($this->roleIds[0],Permission::AANBOD_BEWERKEN());
-        $this->insertUserPermission($this->roleIds[0],Permission::AANBOD_VERWIJDEREN());
-        $this->insertUserPermission($this->roleIds[0],Permission::AANBOD_MODEREREN());
+        $this->insertUserPermission($this->roleIds[0], Permission::AANBOD_BEWERKEN());
+        $this->insertUserPermission($this->roleIds[0], Permission::AANBOD_VERWIJDEREN());
+        $this->insertUserPermission($this->roleIds[0], Permission::AANBOD_MODEREREN());
 
-        $this->insertUserPermission($this->roleIds[1],Permission::LABELS_BEHEREN());
-        $this->insertUserPermission($this->roleIds[1],Permission::GEBRUIKERS_BEHEREN());
+        $this->insertUserPermission($this->roleIds[1], Permission::LABELS_BEHEREN());
+        $this->insertUserPermission($this->roleIds[1], Permission::GEBRUIKERS_BEHEREN());
 
-        $this->insertUserPermission($this->roleIds[2],Permission::AANBOD_MODEREREN());
+        $this->insertUserPermission($this->roleIds[2], Permission::AANBOD_MODEREREN());
     }
 
     /**

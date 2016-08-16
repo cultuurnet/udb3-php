@@ -49,8 +49,7 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
     public function getByUserAndPermission(
         StringLiteral $userId,
         Permission $permission
-    )
-    {
+    ) {
         $userRolesSubQuery = $this->connection->createQueryBuilder()
             ->select(SchemaConfigurator::ROLE_ID_COLUMN)
             ->from($this->userRolesTableName->toNative())
@@ -72,7 +71,7 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
 
         $results = $userConstraintsQuery->execute()->fetchAll(\PDO::FETCH_COLUMN);
 
-        return array_map(function($roleId) {
+        return array_map(function ($roleId) {
             return new StringLiteral($roleId);
         }, $results);
     }

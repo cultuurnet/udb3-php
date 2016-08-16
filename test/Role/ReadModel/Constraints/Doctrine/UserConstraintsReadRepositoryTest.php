@@ -4,7 +4,8 @@ namespace CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
-use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator;
+use CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine\SchemaConfigurator as ConstraintSchemaConfigurator;
+use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as PermissionSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -29,6 +30,11 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
     private $rolePermissionsTableName;
 
     /**
+     * @var StringLiteral
+     */
+    private $roleConstraintTableName;
+
+    /**
      * @var UserConstraintsReadRepositoryInterface
      */
     private $userConstraintsReadRepository;
@@ -39,23 +45,33 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->userRolesTableName = new StringLiteral('user_roles');
         $this->rolePermissionsTableName = new StringLiteral('role_permissions');
+        $this->roleConstraintTableName = new StringLiteral('role_constraint');
 
-        $schemaConfigurator = new SchemaConfigurator(
+        $permissionSchemaConfigurator = new PermissionSchemaConfigurator(
             $this->userRolesTableName,
             $this->rolePermissionsTableName
         );
-        $schemaConfigurator->configure(
+        $permissionSchemaConfigurator->configure(
+            $this->getConnection()->getSchemaManager()
+        );
+
+        $constraintSchemaConfigurator = new ConstraintSchemaConfigurator(
+            $this->roleConstraintTableName
+        );
+        $constraintSchemaConfigurator->configure(
             $this->getConnection()->getSchemaManager()
         );
 
         $this->userConstraintsReadRepository = new UserConstraintsReadRepository(
             $this->getConnection(),
             $this->userRolesTableName,
-            $this->rolePermissionsTableName
+            $this->rolePermissionsTableName,
+            $this->roleConstraintTableName
         );
 
         $this->seedUserRoles();
         $this->seedRolePermissions();
+        $this->seedRoleConstraint();
     }
 
     /**
@@ -63,25 +79,50 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_constraints_for_a_certain_user_and_permission()
     {
-        $roles = $this->userConstraintsReadRepository->getByUserAndPermission(
+        $constraints = $this->userConstraintsReadRepository->getByUserAndPermission(
             new StringLiteral('user1'),
             Permission::AANBOD_MODEREREN()
         );
 
-        // TODO: Needs to be a list of constraints.
-        $expectedRoles = [
-            new StringLiteral($this->roleIds[0]->toNative()),
-            new StringLiteral($this->roleIds[2]->toNative())
+        $expectedConstraints = [
+            new StringLiteral('zipCode:1000'),
+            new StringLiteral('zipCode:3000')
         ];
 
         $this->assertEquals(
-            $expectedRoles,
-            $roles,
+            $expectedConstraints,
+            $constraints,
             'Constraints do not match expected!',
             0.0,
             0,
             true
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_empty_array_for_a_missing_user()
+    {
+        $constraints = $this->userConstraintsReadRepository->getByUserAndPermission(
+            new StringLiteral('user3'),
+            Permission::AANBOD_MODEREREN()
+        );
+
+        $this->assertEmpty($constraints);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_empty_array_for_a_missing_permission()
+    {
+        $constraints = $this->userConstraintsReadRepository->getByUserAndPermission(
+            new StringLiteral('user1'),
+            Permission::AANBOD_INVOEREN()
+        );
+
+        $this->assertEmpty($constraints);
     }
 
     private function seedUserRoles()
@@ -104,6 +145,13 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->insertUserPermission($this->roleIds[2], Permission::AANBOD_MODEREREN());
     }
 
+    private function seedRoleConstraint()
+    {
+        $this->insertRoleConstraint($this->roleIds[0], new StringLiteral('zipCode:1000'));
+        $this->insertRoleConstraint($this->roleIds[1], new StringLiteral('zipCode:2000'));
+        $this->insertRoleConstraint($this->roleIds[2], new StringLiteral('zipCode:3000'));
+    }
+
     /**
      * @param StringLiteral $userId
      * @param UUID $roleId
@@ -113,8 +161,8 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->getConnection()->insert(
             $this->userRolesTableName,
             [
-                SchemaConfigurator::USER_ID_COLUMN => $userId->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                PermissionSchemaConfigurator::USER_ID_COLUMN => $userId->toNative(),
+                PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
             ]
         );
     }
@@ -128,8 +176,23 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->getConnection()->insert(
             $this->rolePermissionsTableName,
             [
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
-                SchemaConfigurator::PERMISSION_COLUMN => $permission->toNative()
+                PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
+                PermissionSchemaConfigurator::PERMISSION_COLUMN => $permission->toNative()
+            ]
+        );
+    }
+
+    /**
+     * @param UUID $roleId
+     * @param StringLiteral $constraint
+     */
+    private function insertRoleConstraint(UUID $roleId, StringLiteral $constraint)
+    {
+        $this->getConnection()->insert(
+            $this->roleConstraintTableName,
+            [
+                PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
+                ConstraintSchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative()
             ]
         );
     }

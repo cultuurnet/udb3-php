@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine;
 
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as PermissionsSchemaConfigurator;
+use CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine\SchemaConfigurator as ConstraintsSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use Doctrine\DBAL\Connection;
 use ValueObjects\String\String as StringLiteral;
@@ -26,19 +27,27 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
     private $rolePermissionsTableName;
 
     /**
+     * @var StringLiteral
+     */
+    private $roleConstraintTableName;
+
+    /**
      * UserConstraintsReadRepository constructor.
      * @param Connection $connection
      * @param StringLiteral $userRolesTableName
      * @param StringLiteral $rolePermissionsTableName
+     * @param StringLiteral $roleConstraintTableName
      */
     public function __construct(
         Connection $connection,
         StringLiteral $userRolesTableName,
-        StringLiteral $rolePermissionsTableName
+        StringLiteral $rolePermissionsTableName,
+        StringLiteral $roleConstraintTableName
     ) {
         $this->connection = $connection;
         $this->userRolesTableName = $userRolesTableName;
         $this->rolePermissionsTableName = $rolePermissionsTableName;
+        $this->roleConstraintTableName = $roleConstraintTableName;
     }
 
     /**
@@ -55,15 +64,20 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
             ->from($this->userRolesTableName->toNative())
             ->where(PermissionsSchemaConfigurator::USER_ID_COLUMN . ' = :userId');
 
-        // TODO: Needs to return the list of constraints instead of role ids.
         $userConstraintsQuery = $this->connection->createQueryBuilder()
-            ->select('rp.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN)
-            ->from($this->rolePermissionsTableName, 'rp')
+            ->select('rc.' . ConstraintsSchemaConfigurator::CONSTRAINT_COLUMN)
+            ->from($this->roleConstraintTableName, 'rc')
             ->innerJoin(
-                'rp',
+                'rc',
                 sprintf('(%s)', $userRolesSubQuery->getSQL()),
                 'ur',
-                'rp.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN .' = ur.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
+                'rc.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN . ' = ur.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
+            )
+            ->innerJoin(
+                'rc',
+                $this->rolePermissionsTableName->toNative(),
+                'rp',
+                'rc.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN . ' = rp.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
             )
             ->where(PermissionsSchemaConfigurator::PERMISSION_COLUMN . ' = :permission')
             ->setParameter('userId', $userId->toNative())
@@ -71,8 +85,8 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
 
         $results = $userConstraintsQuery->execute()->fetchAll(\PDO::FETCH_COLUMN);
 
-        return array_map(function ($roleId) {
-            return new StringLiteral($roleId);
+        return array_map(function ($constraint) {
+            return new StringLiteral($constraint);
         }, $results);
     }
 }

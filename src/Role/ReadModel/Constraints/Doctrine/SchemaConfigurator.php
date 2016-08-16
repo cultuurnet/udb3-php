@@ -15,15 +15,15 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     /**
      * @var StringLiteral
      */
-    private $userConstraintsTableName;
+    private $roleConstraintTableName;
 
     /**
      * SchemaConfigurator constructor.
-     * @param StringLiteral $userConstraintsTableName
+     * @param StringLiteral $roleConstraintTableName
      */
-    public function __construct(StringLiteral $userConstraintsTableName)
+    public function __construct(StringLiteral $roleConstraintTableName)
     {
-        $this->userConstraintsTableName = $userConstraintsTableName;
+        $this->roleConstraintTableName = $roleConstraintTableName;
     }
 
     /**
@@ -33,22 +33,22 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     {
         $schema = $schemaManager->createSchema();
 
-        if (!$schema->hasTable((string) $this->userConstraintsTableName)) {
-            $roleConstraintsTable = $schema->createTable(
-                $this->userConstraintsTableName->toNative()
+        if (!$schema->hasTable((string) $this->roleConstraintTableName)) {
+            $roleConstraintTable = $schema->createTable(
+                $this->roleConstraintTableName->toNative()
             );
 
-            $roleConstraintsTable->addColumn(self::ROLE_ID_COLUMN, Type::GUID)
+            $roleConstraintTable->addColumn(self::ROLE_ID_COLUMN, Type::GUID)
                 ->setLength(36)
                 ->setNotnull(true);
 
-            $roleConstraintsTable->addColumn(self::CONSTRAINT_COLUMN, Type::STRING)
+            $roleConstraintTable->addColumn(self::CONSTRAINT_COLUMN, Type::STRING)
                 ->setLength(255)
                 ->setNotnull(true);
 
-            $roleConstraintsTable->setPrimaryKey([self::ROLE_ID_COLUMN]);
+            $roleConstraintTable->setPrimaryKey([self::ROLE_ID_COLUMN]);
 
-            $schemaManager->createTable($roleConstraintsTable);
+            $schemaManager->createTable($roleConstraintTable);
         }
     }
 }

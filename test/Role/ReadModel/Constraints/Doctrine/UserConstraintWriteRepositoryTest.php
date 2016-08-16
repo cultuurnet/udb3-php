@@ -14,7 +14,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @var StringLiteral
      */
-    private $roleConstraintsTableName;
+    private $roleConstraintTableName;
 
     /**
      * @var UserConstraintsWriteRepositoryInterface
@@ -23,14 +23,14 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->roleConstraintsTableName = new StringLiteral('role_constraints');
+        $this->roleConstraintTableName = new StringLiteral('role_constraints');
 
-        $schemaConfigurator = new SchemaConfigurator($this->roleConstraintsTableName);
+        $schemaConfigurator = new SchemaConfigurator($this->roleConstraintTableName);
         $schemaConfigurator->configure($this->getConnection()->getSchemaManager());
 
-        $this->userConstraintsWriteRepository = new UserConstraintWriteRepository(
+        $this->userConstraintsWriteRepository = new UserConstraintsWriteRepository(
             $this->connection,
-            $this->roleConstraintsTableName
+            $this->roleConstraintTableName
         );
     }
 
@@ -48,7 +48,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
             SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             SchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative()
         ]];
-        $actualRows = $this->getTableRows($this->roleConstraintsTableName);
+        $actualRows = $this->getTableRows($this->roleConstraintTableName);
 
         $this->assertEquals($expectedRows, $actualRows);
     }
@@ -62,7 +62,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
         $constraint = new StringLiteral('zipCode:3000');
 
         $this->getConnection()->insert(
-            $this->roleConstraintsTableName,
+            $this->roleConstraintTableName,
             [
                 SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
                 SchemaConfigurator::CONSTRAINT_COLUMN => 'zipCode:1000'
@@ -75,7 +75,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
             SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             SchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative()
         ]];
-        $actualRows = $this->getTableRows($this->roleConstraintsTableName);
+        $actualRows = $this->getTableRows($this->roleConstraintTableName);
 
         $this->assertEquals($expectedRows, $actualRows);
     }
@@ -89,7 +89,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
         $constraint = new StringLiteral('zipCode:3000');
 
         $this->getConnection()->insert(
-            $this->roleConstraintsTableName,
+            $this->roleConstraintTableName,
             [
                 SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
                 SchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative()
@@ -99,7 +99,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->userConstraintsWriteRepository->removeRole($roleId);
 
         $expectedRows = [];
-        $actualRows = $this->getTableRows($this->roleConstraintsTableName);
+        $actualRows = $this->getTableRows($this->roleConstraintTableName);
 
         $this->assertEquals($expectedRows, $actualRows);
     }

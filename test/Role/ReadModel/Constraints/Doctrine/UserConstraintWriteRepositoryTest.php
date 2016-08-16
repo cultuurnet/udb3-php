@@ -23,7 +23,7 @@ class UserConstraintWriteRepositoryTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->roleConstraintTableName = new StringLiteral('role_constraints');
+        $this->roleConstraintTableName = new StringLiteral('role_constraint');
 
         $schemaConfigurator = new SchemaConfigurator($this->roleConstraintTableName);
         $schemaConfigurator->configure($this->getConnection()->getSchemaManager());

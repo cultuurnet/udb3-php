@@ -1,12 +1,10 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use stdClass;
 
 class CdbXMLItemBaseImporter
@@ -87,5 +85,20 @@ class CdbXMLItemBaseImporter
                 array_push($jsonLD->sameAs, $externalId);
             }
         }
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Item_Base $item
+     * @param stdClass $jsonLD
+     */
+    public function importWorkflowStatus(
+        CultureFeed_Cdb_Item_Base $item,
+        \stdClass $jsonLD
+    ) {
+        $wfStatus = $item->getWfStatus();
+
+        $workflowStatus = $wfStatus ? WorkflowStatus::fromNative($wfStatus) : WorkflowStatus::APPROVED();
+
+        $jsonLD->workflowStatus = $workflowStatus->getValue();
     }
 }

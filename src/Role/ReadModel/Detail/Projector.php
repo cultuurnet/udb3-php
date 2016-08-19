@@ -44,6 +44,7 @@ class Projector extends RoleProjector
                 } elseif (isset($metaData['user_nick'])) {
                     $json->creator = $metaData['user_nick'];
                 }
+                $json->permissions = [];
 
                 return $json;
             }

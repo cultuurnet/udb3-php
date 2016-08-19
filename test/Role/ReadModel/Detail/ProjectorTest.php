@@ -17,7 +17,6 @@ use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -61,7 +60,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->name = new StringLiteral('roleName');
 
         $this->constraintUuid = new UUID();
-        $this->constraintName = new StringLiteral('constraintName');
+        $this->constraintName = new StringLiteral('city:Leuven');
         
         $this->repository = $this->getMock(
             DocumentRepositoryInterface::class
@@ -96,6 +95,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->permissions = [];
 
         $document = $document->withBody($json);
 
@@ -147,6 +147,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T14:25:21+01:00';
+        $json->permissions = [];
 
         $document = $document->withBody($json);
 
@@ -224,6 +225,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->permissions = [];
         $json->constraint = $this->constraintName->toNative();
 
         $document = $document->withBody($json);
@@ -249,7 +251,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $constraintUpdated = new ConstraintUpdated(
             $this->uuid,
-            new StringLiteral('newConstraintName')
+            new StringLiteral('city:Kortrijk OR keywords:"zuidwest uitpas"')
         );
 
         $domainMessage = $this->createDomainMessage(
@@ -267,7 +269,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
-        $json->constraint = 'newConstraintName';
+        $json->permissions = [];
+        $json->constraint = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
 
         $document = $document->withBody($json);
 
@@ -309,6 +312,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->permissions = [];
 
         $document = $document->withBody($json);
 
@@ -326,6 +330,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->handle($domainMessage);
     }
 
+    /**
+     * @test
+     */
     public function it_initializes_empty_permissions_on_the_creation_of_a_role()
     {
         $roleCreated = new RoleCreated(
@@ -343,9 +350,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $json = $document->getBody();
         $json->{'@id'} = $this->uuid->toNative();
-        $json->permissions = [];
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->permissions = [];
 
         $document = $document->withBody($json);
 
@@ -512,6 +522,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->permissions = [];
 
         $document = $document->withBody($json);
 

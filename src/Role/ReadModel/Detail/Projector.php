@@ -8,6 +8,8 @@ use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\Role\Events\PermissionAdded;
+use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
@@ -145,6 +147,61 @@ class Projector extends RoleProjector
 
         $json = $document->getBody();
         unset($json->constraint);
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $json->modified = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $this->repository->save($document->withBody($json));
+    }
+
+    public function applyPermissionAdded(
+        PermissionAdded $permissionAdded,
+        DomainMessage $domainMessage
+    ) {
+        $document = $this->loadDocumentFromRepositoryByUuid(
+            $permissionAdded->getUuid()->toNative()
+        );
+
+        $permission = $permissionAdded->getPermission();
+
+        $json = $document->getBody();
+
+        $permissions = property_exists($json, 'permissions') ? $json->permissions : [];
+        array_push($permissions, $permission->getName());
+
+        $json->permissions = array_unique($permissions);
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $json->modified = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $this->repository->save($document->withBody($json));
+    }
+
+    /**
+     * @param PermissionRemoved $permissionRemoved
+     * @param DomainMessage $domainMessage
+     */
+    public function applyPermissionRemoved(
+        PermissionRemoved $permissionRemoved,
+        DomainMessage $domainMessage
+    ) {
+        $document = $this->loadDocumentFromRepositoryByUuid(
+            $permissionRemoved->getUuid()->toNative()
+        );
+
+        $permission = $permissionRemoved->getPermission();
+        $permissionName = $permission->getName();
+
+        $json = $document->getBody();
+        $json->permissions = array_values(array_filter($json->permissions, function ($item) use ($permissionName) {
+            return $item !== $permissionName;
+        }));
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $json->modified = \DateTime::createFromFormat(

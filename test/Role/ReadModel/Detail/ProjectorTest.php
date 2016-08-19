@@ -11,9 +11,12 @@ use CultuurNet\UDB3\Role\Events\AbstractEvent;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\Role\Events\PermissionAdded;
+use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -323,6 +326,157 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->handle($domainMessage);
     }
 
+    public function it_initializes_empty_permissions_on_the_creation_of_a_role()
+    {
+        $roleCreated = new RoleCreated(
+            $this->uuid,
+            new StringLiteral('roleName')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $roleCreated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->permissions = [];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T13:25:21+01:00';
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_the_addition_of_a_permission()
+    {
+        $roleCreated = new RoleCreated(
+            $this->uuid,
+            new StringLiteral('roleName')
+        );
+
+        $permission = Permission::AANBOD_INVOEREN();
+
+        $domainMessageCreated = $this->createDomainMessage(
+            $this->uuid,
+            $roleCreated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $this->projector->handle($domainMessageCreated);
+
+        $permissionAdded = new PermissionAdded(
+            $this->uuid,
+            $permission
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $permissionAdded,
+            BroadwayDateTime::fromString('2016-06-30T14:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T14:25:21+01:00';
+        $json->permissions = [
+            $permission->getName()
+        ];
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->initialDocument());
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_the_removal_of_a_permission()
+    {
+        $permission = Permission::AANBOD_INVOEREN();
+
+        $permissionAdded = new PermissionAdded(
+            $this->uuid,
+            $permission
+        );
+
+        $permissionRemoved = new PermissionRemoved(
+            $this->uuid,
+            $permission
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $permissionAdded,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $this->projector->handle($domainMessage);
+
+        $domainMessageRemoved = $this->createDomainMessage(
+            $this->uuid,
+            $permissionRemoved,
+            BroadwayDateTime::fromString('2016-06-30T15:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T15:25:21+01:00';
+        $json->permissions = array();
+
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->documentWithPermission($permission));
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessageRemoved);
+    }
+
     /**
      * @param string $id
      * @param AbstractEvent $payload
@@ -358,6 +512,30 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         ];
         $json->created = '2016-06-30T13:25:21+01:00';
         $json->modified = '2016-06-30T13:25:21+01:00';
+
+        $document = $document->withBody($json);
+
+        return $document;
+    }
+
+    /**
+     * @param Permission $permission
+     * @return JsonDocument|static
+     */
+    private function documentWithPermission(Permission $permission)
+    {
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->{'@id'} = $this->uuid->toNative();
+        $json->name = (object)[
+            'nl' => $this->name->toNative()
+        ];
+        $json->created = '2016-06-30T13:25:21+01:00';
+        $json->modified = '2016-06-30T14:25:21+01:00';
+        $json->permissions = [
+            $permission->getName()
+        ];
 
         $document = $document->withBody($json);
 

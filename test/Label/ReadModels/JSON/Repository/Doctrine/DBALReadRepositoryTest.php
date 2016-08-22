@@ -157,6 +157,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     {
         $search = new Query(
             new StringLiteral('label'),
+            null,
             new Natural(5)
         );
 
@@ -174,6 +175,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     {
         $search = new Query(
             new StringLiteral('label'),
+            null,
             new Natural(4),
             new Natural(3)
         );
@@ -192,6 +194,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     {
         $search = new Query(
             new StringLiteral('label'),
+            null,
             null,
             new Natural(3)
         );

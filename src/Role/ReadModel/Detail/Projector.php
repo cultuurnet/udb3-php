@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Role\ReadModel\Detail;
 
-use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
@@ -15,15 +14,13 @@ class Projector extends RoleProjector
 {
     /**
      * @param RoleCreated $roleCreated
-     * @param DomainMessage $domainMessage
      */
     protected function applyRoleCreated(
-        RoleCreated $roleCreated,
-        DomainMessage $domainMessage
+        RoleCreated $roleCreated
     ) {
         $this->saveNewDocument(
             $roleCreated->getUuid()->toNative(),
-            function (\stdClass $json) use ($roleCreated, $domainMessage) {
+            function (\stdClass $json) use ($roleCreated) {
                 $json->{'uuid'} = $roleCreated->getUuid()->toNative();
                 $json->name = $roleCreated->getName()->toNative();
 
@@ -34,11 +31,9 @@ class Projector extends RoleProjector
 
     /**
      * @param RoleRenamed $roleRenamed
-     * @param DomainMessage $domainMessage
      */
     protected function applyRoleRenamed(
-        RoleRenamed $roleRenamed,
-        DomainMessage $domainMessage
+        RoleRenamed $roleRenamed
     ) {
         $document = $this->loadDocumentFromRepositoryByUuid(
             $roleRenamed->getUuid()->toNative()
@@ -52,22 +47,18 @@ class Projector extends RoleProjector
 
     /**
      * @param RoleDeleted $roleDeleted
-     * @param DomainMessage $domainMessage
      */
     protected function applyRoleDeleted(
-        RoleDeleted $roleDeleted,
-        DomainMessage $domainMessage
+        RoleDeleted $roleDeleted
     ) {
         $this->repository->remove($roleDeleted->getUuid());
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\ConstraintCreated $constraintCreated
-     * @param \Broadway\Domain\DomainMessage $domainMessage
+     * @param ConstraintCreated $constraintCreated
      */
     protected function applyConstraintCreated(
-        ConstraintCreated $constraintCreated,
-        DomainMessage $domainMessage
+        ConstraintCreated $constraintCreated
     ) {
         $document = $this->loadDocumentFromRepositoryByUuid(
             $constraintCreated->getUuid()->toNative()
@@ -80,12 +71,10 @@ class Projector extends RoleProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\ConstraintUpdated $constraintUpdated
-     * @param \Broadway\Domain\DomainMessage $domainMessage
+     * @param ConstraintUpdated $constraintUpdated
      */
     protected function applyConstraintUpdated(
-        ConstraintUpdated $constraintUpdated,
-        DomainMessage $domainMessage
+        ConstraintUpdated $constraintUpdated
     ) {
         $document = $this->loadDocumentFromRepositoryByUuid(
             $constraintUpdated->getUuid()->toNative()
@@ -98,12 +87,10 @@ class Projector extends RoleProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Role\Events\ConstraintRemoved $constraintRemoved
-     * @param \Broadway\Domain\DomainMessage $domainMessage
+     * @param ConstraintRemoved $constraintRemoved
      */
     protected function applyConstraintRemoved(
-        ConstraintRemoved $constraintRemoved,
-        DomainMessage $domainMessage
+        ConstraintRemoved $constraintRemoved
     ) {
         $document = $this->loadDocumentFromRepositoryByUuid(
             $constraintRemoved->getUuid()->toNative()

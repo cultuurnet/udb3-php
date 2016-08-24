@@ -29,13 +29,6 @@ class Projector extends RoleProjector
                 $json->{'uuid'} = $roleCreated->getUuid()->toNative();
                 $json->name = (object) ['nl' => $roleCreated->getName()->toNative()];
 
-                $metaData = $domainMessage->getMetadata()->serialize();
-                if (isset($metaData['user_email'])) {
-                    $json->creator = $metaData['user_email'];
-                } elseif (isset($metaData['user_nick'])) {
-                    $json->creator = $metaData['user_nick'];
-                }
-
                 return $json;
             }
         );

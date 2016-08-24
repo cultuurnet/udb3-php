@@ -26,7 +26,7 @@ class Projector extends RoleProjector
         $this->saveNewDocument(
             $roleCreated->getUuid()->toNative(),
             function (\stdClass $json) use ($roleCreated, $domainMessage) {
-                $json->{'@id'} = $roleCreated->getUuid()->toNative();
+                $json->{'uuid'} = $roleCreated->getUuid()->toNative();
                 $json->name = (object) ['nl' => $roleCreated->getName()->toNative()];
 
                 $recordedOn = $domainMessage->getRecordedOn()->toString();

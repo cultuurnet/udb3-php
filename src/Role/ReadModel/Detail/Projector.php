@@ -15,9 +15,8 @@ class Projector extends RoleProjector
     /**
      * @param RoleCreated $roleCreated
      */
-    protected function applyRoleCreated(
-        RoleCreated $roleCreated
-    ) {
+    protected function applyRoleCreated(RoleCreated $roleCreated)
+    {
         $this->saveNewDocument(
             $roleCreated->getUuid()->toNative(),
             function (\stdClass $json) use ($roleCreated) {
@@ -32,9 +31,8 @@ class Projector extends RoleProjector
     /**
      * @param RoleRenamed $roleRenamed
      */
-    protected function applyRoleRenamed(
-        RoleRenamed $roleRenamed
-    ) {
+    protected function applyRoleRenamed(RoleRenamed $roleRenamed)
+    {
         $document = $this->loadDocumentFromRepositoryByUuid(
             $roleRenamed->getUuid()->toNative()
         );
@@ -48,9 +46,8 @@ class Projector extends RoleProjector
     /**
      * @param RoleDeleted $roleDeleted
      */
-    protected function applyRoleDeleted(
-        RoleDeleted $roleDeleted
-    ) {
+    protected function applyRoleDeleted(RoleDeleted $roleDeleted)
+    {
         $this->repository->remove($roleDeleted->getUuid());
     }
 

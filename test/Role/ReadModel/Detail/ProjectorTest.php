@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
-use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -325,7 +324,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return JsonDocument|static
+     * @return JsonDocument
      */
     private function initialDocument()
     {

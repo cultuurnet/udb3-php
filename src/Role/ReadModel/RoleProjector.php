@@ -20,9 +20,8 @@ class RoleProjector implements EventListenerInterface
      * Projector constructor.
      * @param DocumentRepositoryInterface $repository
      */
-    public function __construct(
-        DocumentRepositoryInterface $repository
-    ) {
+    public function __construct(DocumentRepositoryInterface $repository)
+    {
         $this->repository = $repository;
     }
 

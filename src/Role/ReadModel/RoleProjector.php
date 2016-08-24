@@ -63,7 +63,7 @@ class RoleProjector implements EventListenerInterface
         $document = new JsonDocument($uuid);
 
         $json = $document->getBody();
-        $json->{'uuid'} = $uuid;
+        $json->uuid = $uuid;
 
         return $document->withBody($json);
     }

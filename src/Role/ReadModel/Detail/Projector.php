@@ -21,7 +21,7 @@ class Projector extends RoleProjector
         $this->saveNewDocument(
             $roleCreated->getUuid()->toNative(),
             function (\stdClass $json) use ($roleCreated) {
-                $json->{'uuid'} = $roleCreated->getUuid()->toNative();
+                $json->uuid = $roleCreated->getUuid()->toNative();
                 $json->name = $roleCreated->getName()->toNative();
 
                 return $json;

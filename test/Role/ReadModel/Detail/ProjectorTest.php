@@ -59,7 +59,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->constraintUuid = new UUID();
         $this->constraintName = new StringLiteral('constraintName');
-        
+
         $this->repository = $this->getMock(
             DocumentRepositoryInterface::class
         );
@@ -87,7 +87,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'uuid'} = $this->uuid->toNative();
+        $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
 
         $document = $document->withBody($json);
@@ -122,7 +122,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $roleCreated,
             BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
         );
-        
+
         $document = new JsonDocument($this->uuid->toNative());
 
         $this->projector->handle($domainMessage);
@@ -134,7 +134,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $json = $document->getBody();
-        $json->{'uuid'} = $this->uuid->toNative();
+        $json->uuid = $this->uuid->toNative();
         $json->name = $name->toNative();
 
         $document = $document->withBody($json);
@@ -207,7 +207,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'uuid'} = $this->uuid->toNative();
+        $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->constraint = $this->constraintName->toNative();
 
@@ -246,7 +246,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'uuid'} = $this->uuid->toNative();
+        $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->constraint = 'newConstraintName';
 
@@ -284,7 +284,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'uuid'} = $this->uuid->toNative();
+        $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
 
         $document = $document->withBody($json);
@@ -332,7 +332,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'uuid'} = $this->uuid->toNative();
+        $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
 
         $document = $document->withBody($json);

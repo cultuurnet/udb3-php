@@ -29,13 +29,6 @@ class Projector extends RoleProjector
                 $json->{'uuid'} = $roleCreated->getUuid()->toNative();
                 $json->name = (object) ['nl' => $roleCreated->getName()->toNative()];
 
-                $recordedOn = $domainMessage->getRecordedOn()->toString();
-                $json->created = \DateTime::createFromFormat(
-                    DateTime::FORMAT_STRING,
-                    $recordedOn
-                )->format('c');
-                $json->modified = $json->created;
-
                 $metaData = $domainMessage->getMetadata()->serialize();
                 if (isset($metaData['user_email'])) {
                     $json->creator = $metaData['user_email'];
@@ -62,12 +55,6 @@ class Projector extends RoleProjector
 
         $json = $document->getBody();
         $json->name->nl = $roleRenamed->getName()->toNative();
-
-        $recordedOn = $domainMessage->getRecordedOn()->toString();
-        $json->modified = \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $recordedOn
-        )->format('c');
 
         $this->repository->save($document->withBody($json));
     }
@@ -98,12 +85,6 @@ class Projector extends RoleProjector
         $json = $document->getBody();
         $json->constraint = $constraintCreated->getQuery()->toNative();
 
-        $recordedOn = $domainMessage->getRecordedOn()->toString();
-        $json->modified = \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $recordedOn
-        )->format('c');
-
         $this->repository->save($document->withBody($json));
     }
 
@@ -122,12 +103,6 @@ class Projector extends RoleProjector
         $json = $document->getBody();
         $json->constraint = $constraintUpdated->getQuery()->toNative();
 
-        $recordedOn = $domainMessage->getRecordedOn()->toString();
-        $json->modified = \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $recordedOn
-        )->format('c');
-
         $this->repository->save($document->withBody($json));
     }
 
@@ -145,12 +120,6 @@ class Projector extends RoleProjector
 
         $json = $document->getBody();
         unset($json->constraint);
-
-        $recordedOn = $domainMessage->getRecordedOn()->toString();
-        $json->modified = \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $recordedOn
-        )->format('c');
 
         $this->repository->save($document->withBody($json));
     }

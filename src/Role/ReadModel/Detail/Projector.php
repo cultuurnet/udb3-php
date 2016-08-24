@@ -2,9 +2,7 @@
 
 namespace CultuurNet\UDB3\Role\ReadModel\Detail;
 
-use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
-use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
@@ -27,7 +25,7 @@ class Projector extends RoleProjector
             $roleCreated->getUuid()->toNative(),
             function (\stdClass $json) use ($roleCreated, $domainMessage) {
                 $json->{'uuid'} = $roleCreated->getUuid()->toNative();
-                $json->name = (object) ['nl' => $roleCreated->getName()->toNative()];
+                $json->name = $roleCreated->getName()->toNative();
 
                 return $json;
             }
@@ -47,7 +45,7 @@ class Projector extends RoleProjector
         );
 
         $json = $document->getBody();
-        $json->name->nl = $roleRenamed->getName()->toNative();
+        $json->name = $roleRenamed->getName()->toNative();
 
         $this->repository->save($document->withBody($json));
     }

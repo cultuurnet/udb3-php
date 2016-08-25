@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
-use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -59,7 +58,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->constraintUuid = new UUID();
         $this->constraintName = new StringLiteral('constraintName');
-        
+
         $this->repository = $this->getMock(
             DocumentRepositoryInterface::class
         );
@@ -87,12 +86,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
 
         $document = $document->withBody($json);
 
@@ -126,7 +121,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $roleCreated,
             BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
         );
-        
+
         $document = new JsonDocument($this->uuid->toNative());
 
         $this->projector->handle($domainMessage);
@@ -138,12 +133,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T14:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $name->toNative();
 
         $document = $document->withBody($json);
 
@@ -215,12 +206,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->constraint = $this->constraintName->toNative();
 
         $document = $document->withBody($json);
@@ -258,12 +245,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->constraint = 'newConstraintName';
 
         $document = $document->withBody($json);
@@ -300,12 +283,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
 
         $document = $document->withBody($json);
 
@@ -345,19 +324,15 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return JsonDocument|static
+     * @return JsonDocument
      */
     private function initialDocument()
     {
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
 
         $document = $document->withBody($json);
 

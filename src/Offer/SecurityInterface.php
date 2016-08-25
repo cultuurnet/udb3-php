@@ -1,10 +1,8 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Offer;
 
+use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use ValueObjects\String\String;
 
 interface SecurityInterface
@@ -18,8 +16,9 @@ interface SecurityInterface
     /**
      * Returns if the event allows updates through the UDB3 core APIs.
      *
-     * @param String $offerId
-     * @return boolean
+     * @param AuthorizableCommandInterface $command
+     * @return bool
+     * @internal param String $offerId
      */
-    public function allowsUpdates(String $offerId);
+    public function isAuthorized(AuthorizableCommandInterface $command);
 }

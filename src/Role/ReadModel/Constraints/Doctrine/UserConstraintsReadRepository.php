@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as PermissionsSchemaConfigurator;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine\SchemaConfigurator as ConstraintsSchemaConfigurator;
+use CultuurNet\UDB3\Role\ReadModel\Search\Doctrine\SchemaConfigurator as SearchSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use Doctrine\DBAL\Connection;
 use ValueObjects\String\String as StringLiteral;
@@ -29,25 +30,25 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
     /**
      * @var StringLiteral
      */
-    private $roleConstraintTableName;
+    private $rolesSearchTableName;
 
     /**
      * UserConstraintsReadRepository constructor.
      * @param Connection $connection
      * @param StringLiteral $userRolesTableName
      * @param StringLiteral $rolePermissionsTableName
-     * @param StringLiteral $roleConstraintTableName
+     * @param StringLiteral $rolesSearchTableName
      */
     public function __construct(
         Connection $connection,
         StringLiteral $userRolesTableName,
         StringLiteral $rolePermissionsTableName,
-        StringLiteral $roleConstraintTableName
+        StringLiteral $rolesSearchTableName
     ) {
         $this->connection = $connection;
         $this->userRolesTableName = $userRolesTableName;
         $this->rolePermissionsTableName = $rolePermissionsTableName;
-        $this->roleConstraintTableName = $roleConstraintTableName;
+        $this->rolesSearchTableName = $rolesSearchTableName;
     }
 
     /**
@@ -65,19 +66,19 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
             ->where(PermissionsSchemaConfigurator::USER_ID_COLUMN . ' = :userId');
 
         $userConstraintsQuery = $this->connection->createQueryBuilder()
-            ->select('rc.' . ConstraintsSchemaConfigurator::CONSTRAINT_COLUMN)
-            ->from($this->roleConstraintTableName, 'rc')
+            ->select('rs.' . SearchSchemaConfigurator::CONSTRAINT_COLUMN)
+            ->from($this->rolesSearchTableName, 'rs')
             ->innerJoin(
-                'rc',
+                'rs',
                 sprintf('(%s)', $userRolesSubQuery->getSQL()),
                 'ur',
-                'rc.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN . ' = ur.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
+                'rs.' . SearchSchemaConfigurator::UUID_COLUMN . ' = ur.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
             )
             ->innerJoin(
-                'rc',
+                'rs',
                 $this->rolePermissionsTableName->toNative(),
                 'rp',
-                'rc.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN . ' = rp.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
+                'rs.' . SearchSchemaConfigurator::UUID_COLUMN . ' = rp.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
             )
             ->where(PermissionsSchemaConfigurator::PERMISSION_COLUMN . ' = :permission')
             ->setParameter('userId', $userId->toNative())

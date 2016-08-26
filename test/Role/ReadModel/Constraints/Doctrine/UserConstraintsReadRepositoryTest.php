@@ -4,8 +4,8 @@ namespace CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
-use CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine\SchemaConfigurator as ConstraintSchemaConfigurator;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as PermissionSchemaConfigurator;
+use CultuurNet\UDB3\Role\ReadModel\Search\Doctrine\SchemaConfigurator as SearchSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -32,7 +32,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @var StringLiteral
      */
-    private $roleConstraintTableName;
+    private $rolesSearchTableName;
 
     /**
      * @var UserConstraintsReadRepositoryInterface
@@ -45,7 +45,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->userRolesTableName = new StringLiteral('user_roles');
         $this->rolePermissionsTableName = new StringLiteral('role_permissions');
-        $this->roleConstraintTableName = new StringLiteral('role_constraint');
+        $this->rolesSearchTableName = new StringLiteral('roles_search');
 
         $permissionSchemaConfigurator = new PermissionSchemaConfigurator(
             $this->userRolesTableName,
@@ -55,8 +55,8 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getConnection()->getSchemaManager()
         );
 
-        $constraintSchemaConfigurator = new ConstraintSchemaConfigurator(
-            $this->roleConstraintTableName
+        $constraintSchemaConfigurator = new SearchSchemaConfigurator(
+            $this->rolesSearchTableName
         );
         $constraintSchemaConfigurator->configure(
             $this->getConnection()->getSchemaManager()
@@ -66,12 +66,12 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getConnection(),
             $this->userRolesTableName,
             $this->rolePermissionsTableName,
-            $this->roleConstraintTableName
+            $this->rolesSearchTableName
         );
 
         $this->seedUserRoles();
         $this->seedRolePermissions();
-        $this->seedRoleConstraint();
+        $this->seedRolesSearch();
     }
 
     /**
@@ -145,11 +145,11 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->insertUserPermission($this->roleIds[2], Permission::AANBOD_MODEREREN());
     }
 
-    private function seedRoleConstraint()
+    private function seedRolesSearch()
     {
-        $this->insertRoleConstraint($this->roleIds[0], new StringLiteral('zipCode:1000'));
-        $this->insertRoleConstraint($this->roleIds[1], new StringLiteral('zipCode:2000'));
-        $this->insertRoleConstraint($this->roleIds[2], new StringLiteral('zipCode:3000'));
+        $this->insertRole($this->roleIds[0], new StringLiteral('Brussel Validatoren'), new StringLiteral('zipCode:1000'));
+        $this->insertRole($this->roleIds[1], new StringLiteral('Antwerpen Validatoren'), new StringLiteral('zipCode:2000'));
+        $this->insertRole($this->roleIds[2], new StringLiteral('Leuven Validatoren'), new StringLiteral('zipCode:3000'));
     }
 
     /**
@@ -184,15 +184,17 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param UUID $roleId
+     * @param StringLiteral $roleName
      * @param StringLiteral $constraint
      */
-    private function insertRoleConstraint(UUID $roleId, StringLiteral $constraint)
+    private function insertRole(UUID $roleId, StringLiteral $roleName, StringLiteral $constraint)
     {
         $this->getConnection()->insert(
-            $this->roleConstraintTableName,
+            $this->rolesSearchTableName,
             [
-                PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
-                ConstraintSchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative()
+                SearchSchemaConfigurator::UUID_COLUMN => $roleId->toNative(),
+                SearchSchemaConfigurator::NAME_COLUMN => $roleName->toNative(),
+                SearchSchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative(),
             ]
         );
     }

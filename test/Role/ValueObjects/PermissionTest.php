@@ -17,7 +17,6 @@ class PermissionTest extends \PHPUnit_Framework_TestCase
                 Permission::AANBOD_BEWERKEN()->getName() => Permission::AANBOD_BEWERKEN,
                 Permission::AANBOD_MODEREREN()->getName() => Permission::AANBOD_MODEREREN,
                 Permission::AANBOD_VERWIJDEREN()->getName() => Permission::AANBOD_VERWIJDEREN,
-                Permission::AANBOD_VALIDEREN()->getName() => Permission::AANBOD_VALIDEREN,
                 Permission::GEBRUIKERS_BEHEREN()->getName() => Permission::GEBRUIKERS_BEHEREN,
                 Permission::LABELS_BEHEREN()->getName() => Permission::LABELS_BEHEREN,
                 Permission::ORGANISATIES_BEHEREN()->getName() => Permission::ORGANISATIES_BEHEREN,

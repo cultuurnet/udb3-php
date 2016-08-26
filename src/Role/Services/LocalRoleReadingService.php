@@ -6,7 +6,6 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\LocalEntityService;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -56,8 +55,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     }
 
     /**
-     * @param UUID $uuid
-     * @return mixed
+     * @inheritdoc
      */
     public function getLabelsByRoleUuid(UUID $uuid)
     {
@@ -65,7 +63,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     }
 
     /**
-     * @return JsonDocument
+     * @inheritdoc
      */
     public function getUsersByRoleUuid(UUID $uuid)
     {
@@ -73,8 +71,7 @@ class LocalRoleReadingService extends LocalEntityService implements RoleReadingS
     }
 
     /**
-     * @param StringLiteral $userId
-     * @return JsonDocument
+     * @inheritdoc
      */
     public function getRolesByUserId(StringLiteral $userId)
     {

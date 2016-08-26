@@ -20,9 +20,8 @@ class RoleProjector implements EventListenerInterface
      * Projector constructor.
      * @param DocumentRepositoryInterface $repository
      */
-    public function __construct(
-        DocumentRepositoryInterface $repository
-    ) {
+    public function __construct(DocumentRepositoryInterface $repository)
+    {
         $this->repository = $repository;
     }
 
@@ -63,7 +62,7 @@ class RoleProjector implements EventListenerInterface
         $document = new JsonDocument($uuid);
 
         $json = $document->getBody();
-        $json->{'@id'} = $uuid;
+        $json->uuid = $uuid;
 
         return $document->withBody($json);
     }

@@ -61,7 +61,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->constraintUuid = new UUID();
         $this->constraintName = new StringLiteral('city:Leuven');
-        
         $this->repository = $this->getMock(
             DocumentRepositoryInterface::class
         );
@@ -89,12 +88,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->permissions = [];
 
         $document = $document->withBody($json);
@@ -129,7 +124,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $roleCreated,
             BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
         );
-        
+
         $document = new JsonDocument($this->uuid->toNative());
 
         $this->projector->handle($domainMessage);
@@ -141,12 +136,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T14:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $name->toNative();
         $json->permissions = [];
 
         $document = $document->withBody($json);
@@ -219,12 +210,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->permissions = [];
         $json->constraint = $this->constraintName->toNative();
 
@@ -263,12 +250,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->permissions = [];
         $json->constraint = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
 
@@ -306,12 +289,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->permissions = [];
 
         $document = $document->withBody($json);
@@ -349,12 +328,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->permissions = [];
 
         $document = $document->withBody($json);
@@ -402,15 +377,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T14:25:21+01:00';
-        $json->permissions = [
-            $permission->getName()
-        ];
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [$permission->getName()];
 
         $document = $document->withBody($json);
 
@@ -462,14 +431,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T15:25:21+01:00';
-        $json->permissions = array();
-
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [];
 
         $document = $document->withBody($json);
 
@@ -509,19 +473,15 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return JsonDocument|static
+     * @return JsonDocument
      */
     private function initialDocument()
     {
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T13:25:21+01:00';
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
         $json->permissions = [];
 
         $document = $document->withBody($json);
@@ -531,22 +491,16 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param Permission $permission
-     * @return JsonDocument|static
+     * @return JsonDocument
      */
     private function documentWithPermission(Permission $permission)
     {
         $document = new JsonDocument($this->uuid->toNative());
 
         $json = $document->getBody();
-        $json->{'@id'} = $this->uuid->toNative();
-        $json->name = (object)[
-            'nl' => $this->name->toNative()
-        ];
-        $json->created = '2016-06-30T13:25:21+01:00';
-        $json->modified = '2016-06-30T14:25:21+01:00';
-        $json->permissions = [
-            $permission->getName()
-        ];
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [$permission->getName()];
 
         $document = $document->withBody($json);
 

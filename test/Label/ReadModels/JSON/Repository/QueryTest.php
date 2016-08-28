@@ -8,6 +8,7 @@ use ValueObjects\String\String as StringLiteral;
 class QueryTest extends \PHPUnit_Framework_TestCase
 {
     const NAME = 'name';
+    const USER_ID = 'userId';
     const OFFSET = 5;
     const LIMIT = 10;
 
@@ -20,6 +21,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
     {
         $this->query = new Query(
             new StringLiteral(self::NAME),
+            new StringLiteral(self::USER_ID),
             new Natural(self::OFFSET),
             new Natural(self::LIMIT)
         );
@@ -33,6 +35,17 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             new StringLiteral(self::NAME),
             $this->query->getValue()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_a_user_id()
+    {
+        $this->assertEquals(
+            new StringLiteral(self::USER_ID),
+            $this->query->getUserId()
         );
     }
 
@@ -56,6 +69,16 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             new Natural(self::LIMIT),
             $this->query->getLimit()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_a_default_user_id_of_null()
+    {
+        $query = new Query(new StringLiteral(self::NAME));
+
+        $this->assertEquals(null, $query->getUserId());
     }
 
     /**

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace CultuurNet\UDB3\Offer;
+namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\SymfonySecurityJwt\Authentication\JwtUserToken;
 use CultuurNet\SymfonySecurityOAuth\Security\OAuthToken;

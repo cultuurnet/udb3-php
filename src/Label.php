@@ -12,14 +12,29 @@ class Label extends Keyword
     public function __construct($value, $visible = true)
     {
         if (!is_string($value)) {
-            throw new \InvalidArgumentException(
-                'Value for argument $value should be a string, got a value of type ' . gettype($value)
-            );
+            throw new \InvalidArgumentException(sprintf(
+                'Value for argument $value should be a string, got a value of type %s.',
+                gettype($value)
+            ));
         }
 
         if (!is_bool($visible)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Value for argument $visible should be a boolean, got a value of type %s.',
+                gettype($visible)
+            ));
+        }
+
+        $length = mb_strlen($value);
+        if ($length < 3) {
             throw new \InvalidArgumentException(
-                'Value for argument $visible should be a boolean, got a value of type ' . gettype($visible)
+                'Value for argument $value should not be shorter than 3 chars.'
+            );
+        }
+
+        if ($length > 255) {
+            throw new \InvalidArgumentException(
+                'Value for argument $value should not be longer than 255 chars.'
             );
         }
 

@@ -42,7 +42,7 @@ class AbstractOrganizerCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedOrganizerId, $organizerId);
 
-        $itemId = $this->organizerCommand->getId();
+        $itemId = $this->organizerCommand->getItemId();
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);

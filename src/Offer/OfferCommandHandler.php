@@ -319,7 +319,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateOrganizer(AbstractUpdateOrganizer $updateOrganizer)
     {
-        $offer = $this->load($updateOrganizer->getId());
+        $offer = $this->load($updateOrganizer->getItemId());
         $this->loadOrganizer($updateOrganizer->getOrganizerId());
 
         $offer->updateOrganizer(
@@ -335,7 +335,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleDeleteOrganizer(AbstractDeleteOrganizer $deleteOrganizer)
     {
-        $offer = $this->load($deleteOrganizer->getId());
+        $offer = $this->load($deleteOrganizer->getItemId());
 
         $offer->deleteOrganizer(
             $deleteOrganizer->getOrganizerId()

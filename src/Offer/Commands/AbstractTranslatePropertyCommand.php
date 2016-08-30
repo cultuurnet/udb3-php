@@ -4,12 +4,8 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Language;
 
-abstract class AbstractTranslatePropertyCommand
+abstract class AbstractTranslatePropertyCommand extends AbstractCommand
 {
-    /**
-     * @var string
-     */
-    protected $itemId;
     /**
      * @var Language
      */
@@ -17,16 +13,8 @@ abstract class AbstractTranslatePropertyCommand
 
     public function __construct($itemId, Language $language)
     {
-        $this->itemId = $itemId;
+        parent::__construct($itemId);
         $this->language = $language;
-    }
-
-    /**
-     * @return string
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
     }
 
     /**

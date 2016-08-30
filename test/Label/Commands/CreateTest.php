@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Label\Commands;
 
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -15,7 +16,7 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     protected $uuid;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     protected $name;
 
@@ -38,7 +39,7 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID();
 
-        $this->name = new StringLiteral('labelName');
+        $this->name = new LabelName('labelName');
 
         $this->visibility = Visibility::VISIBLE();
 

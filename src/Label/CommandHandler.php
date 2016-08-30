@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Label\Commands\MakePublic;
 use CultuurNet\UDB3\Label\Commands\MakeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -163,7 +164,7 @@ class CommandHandler extends AbstractCommandHandler
     {
         $label = Label::create(
             new UUID($this->uuidGenerator->generate()),
-            new StringLiteral((string)$addLabel->getLabel()),
+            new LabelName((string)$addLabel->getLabel()),
             Visibility::VISIBLE(),
             Privacy::PRIVACY_PUBLIC()
         );

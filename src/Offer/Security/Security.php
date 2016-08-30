@@ -5,38 +5,40 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
-use CultuurNet\SymfonySecurityJwt\Authentication\JwtUserToken;
-use CultuurNet\SymfonySecurityOAuth\Security\OAuthToken;
-use CultuurNet\SymfonySecurityOAuthUitid\User;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use ValueObjects\String\String;
+use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use ValueObjects\String\String as StringLiteral;
 
 class Security implements SecurityInterface
 {
+    /**
+     * @var UserIdentificationInterface
+     */
+    private $userIdentification;
+
     /**
      * @var PermissionQueryInterface
      */
     private $permissionRepository;
 
     /**
-     * @var TokenStorageInterface
+     * Security constructor.
+     * @param UserIdentificationInterface $userIdentification
+     * @param PermissionQueryInterface $permissionRepository
      */
-    private $tokenStorage;
-
     public function __construct(
-        TokenStorageInterface $tokenStorage,
+        UserIdentificationInterface $userIdentification,
         PermissionQueryInterface $permissionRepository
     ) {
-        $this->tokenStorage = $tokenStorage;
+        $this->userIdentification = $userIdentification;
         $this->permissionRepository = $permissionRepository;
     }
 
     /**
      * @inheritdoc
      */
-    public function allowsUpdateWithCdbXml(String $offerId)
+    public function allowsUpdateWithCdbXml(StringLiteral $offerId)
     {
         return $this->currentUiTIDUserCanEditOffer($offerId);
     }
@@ -46,44 +48,36 @@ class Security implements SecurityInterface
      */
     public function isAuthorized(AuthorizableCommandInterface $command)
     {
-        $offerId = new String($command->getItemId());
+        $offerId = new StringLiteral($command->getItemId());
 
         return $this->currentUiTIDUserCanEditOffer($offerId);
     }
 
     /**
-     * @param String $offerId
+     * @param StringLiteral $offerId
      * @return bool
      */
-    private function currentUiTIDUserCanEditOffer(String $offerId)
+    private function currentUiTIDUserCanEditOffer(StringLiteral $offerId)
     {
-        $token = $this->tokenStorage->getToken();
-
-        if (!$token) {
-            return false;
-        }
-
-        if ($token instanceof OAuthToken) {
-            /* @var User $user */
-            $user = $token->getUser();
-            $userId = new String($user->getUid());
-        } elseif ($token instanceof JwtUserToken) {
-            $userId = new String($token->getCredentials()->getClaim('uid'));
-        }
-
-        if (!isset($userId)) {
+        if (!$this->userIdentification->getId()) {
             return false;
         }
 
         // Check if superuser. If so return true.
+        if ($this->userIdentification->isGodUser()) {
+            return true;
+        }
 
         // Then check if user is owner of the offer. IF so, return true.
         $editableEvents = $this->permissionRepository->getEditableOffers(
-            $userId
+            $this->userIdentification->getId()
         );
+        if (in_array($offerId, $editableEvents)) {
+            return true;
+        }
 
         // Check role permissions and constraint. IF ok true. Else false.
 
-        return in_array($offerId, $editableEvents);
+        return false;
     }
 }

@@ -366,7 +366,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateBookingInfo(AbstractUpdateBookingInfo $updateBookingInfo)
     {
-        $offer = $this->load($updateBookingInfo->getId());
+        $offer = $this->load($updateBookingInfo->getItemId());
 
         $offer->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()

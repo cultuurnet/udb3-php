@@ -4,14 +4,8 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 
-abstract class AbstractUpdateBookingInfo
+abstract class AbstractUpdateBookingInfo extends AbstractCommand
 {
-    /**
-     * Id that gets updated.
-     * @var string
-     */
-    protected $id;
-
     /**
      * The bookingInfo entry
      * @var BookingInfo
@@ -19,21 +13,13 @@ abstract class AbstractUpdateBookingInfo
     protected $bookingInfo;
 
     /**
-     * @param string $id
+     * @param string $itemId
      * @param BookingInfo $bookingInfo
      */
-    public function __construct($id, BookingInfo $bookingInfo)
+    public function __construct($itemId, BookingInfo $bookingInfo)
     {
-        $this->id = $id;
+        parent::__construct($itemId);
         $this->bookingInfo = $bookingInfo;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

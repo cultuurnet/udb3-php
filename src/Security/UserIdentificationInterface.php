@@ -12,7 +12,7 @@ interface UserIdentificationInterface
     public function isGodUser();
 
     /**
-     * @return StringLiteral
+     * @return StringLiteral|null
      */
     public function getId();
 }

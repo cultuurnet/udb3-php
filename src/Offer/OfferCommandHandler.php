@@ -380,7 +380,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     private function handleDeleteOffer(AbstractDeleteOffer $deleteOffer)
     {
-        $offer = $this->load($deleteOffer->getId());
+        $offer = $this->load($deleteOffer->getItemId());
         $offer->delete();
         $this->offerRepository->save($offer);
     }

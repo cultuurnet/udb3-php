@@ -65,7 +65,8 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
             ->from($this->userRolesTableName->toNative())
             ->where(PermissionsSchemaConfigurator::USER_ID_COLUMN . ' = :userId');
 
-        $userConstraintsQuery = $this->connection->createQueryBuilder()
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $userConstraintsQuery = $queryBuilder
             ->select('rs.' . SearchSchemaConfigurator::CONSTRAINT_COLUMN)
             ->from($this->rolesSearchTableName, 'rs')
             ->innerJoin(
@@ -81,6 +82,9 @@ class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInte
                 'rs.' . SearchSchemaConfigurator::UUID_COLUMN . ' = rp.' . PermissionsSchemaConfigurator::ROLE_ID_COLUMN
             )
             ->where(PermissionsSchemaConfigurator::PERMISSION_COLUMN . ' = :permission')
+            ->andWhere($queryBuilder->expr()->isNotNull(
+                'rs.' . SearchSchemaConfigurator::CONSTRAINT_COLUMN
+            ))
             ->setParameter('userId', $userId->toNative())
             ->setParameter('permission', $permission->toNative());
 

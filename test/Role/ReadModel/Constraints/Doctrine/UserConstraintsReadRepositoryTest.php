@@ -41,7 +41,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->roleIds = [new UUID(), new UUID(), new UUID()];
+        $this->roleIds = [new UUID(), new UUID(), new UUID(), new UUID()];
 
         $this->userRolesTableName = new StringLiteral('user_roles');
         $this->rolePermissionsTableName = new StringLiteral('role_permissions');
@@ -131,6 +131,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->insertUserRole(new StringLiteral('user1'), $this->roleIds[1]);
         $this->insertUserRole(new StringLiteral('user1'), $this->roleIds[2]);
         $this->insertUserRole(new StringLiteral('user2'), $this->roleIds[2]);
+        $this->insertUserRole(new StringLiteral('user1'), $this->roleIds[3]);
     }
 
     private function seedRolePermissions()
@@ -143,6 +144,9 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->insertUserPermission($this->roleIds[1], Permission::GEBRUIKERS_BEHEREN());
 
         $this->insertUserPermission($this->roleIds[2], Permission::AANBOD_MODEREREN());
+
+        $this->insertUserPermission($this->roleIds[3], Permission::AANBOD_VERWIJDEREN());
+        $this->insertUserPermission($this->roleIds[3], Permission::AANBOD_MODEREREN());
     }
 
     private function seedRolesSearch()
@@ -150,6 +154,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->insertRole($this->roleIds[0], new StringLiteral('Brussel Validatoren'), new StringLiteral('zipCode:1000'));
         $this->insertRole($this->roleIds[1], new StringLiteral('Antwerpen Validatoren'), new StringLiteral('zipCode:2000'));
         $this->insertRole($this->roleIds[2], new StringLiteral('Leuven Validatoren'), new StringLiteral('zipCode:3000'));
+        $this->insertRole($this->roleIds[3], new StringLiteral('Geen constraint'), null);
     }
 
     /**
@@ -187,14 +192,17 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
      * @param StringLiteral $roleName
      * @param StringLiteral $constraint
      */
-    private function insertRole(UUID $roleId, StringLiteral $roleName, StringLiteral $constraint)
-    {
+    private function insertRole(
+        UUID $roleId,
+        StringLiteral $roleName,
+        StringLiteral $constraint = null
+    ) {
         $this->getConnection()->insert(
             $this->rolesSearchTableName,
             [
                 SearchSchemaConfigurator::UUID_COLUMN => $roleId->toNative(),
                 SearchSchemaConfigurator::NAME_COLUMN => $roleName->toNative(),
-                SearchSchemaConfigurator::CONSTRAINT_COLUMN => $constraint->toNative(),
+                SearchSchemaConfigurator::CONSTRAINT_COLUMN => $constraint ? $constraint->toNative() : null,
             ]
         );
     }

@@ -305,7 +305,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleDeleteTypicalAgeRange(AbstractDeleteTypicalAgeRange $deleteTypicalAgeRange)
     {
-        $offer = $this->load($deleteTypicalAgeRange->getId());
+        $offer = $this->load($deleteTypicalAgeRange->getItemId());
 
         $offer->deleteTypicalAgeRange();
 

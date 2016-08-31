@@ -12,20 +12,12 @@ class AbstractCommand implements AuthorizableCommandInterface
     protected $itemId;
 
     /**
-     * @var Permission[]
-     */
-    protected $permissions;
-
-    /**
      * AbstractCommand constructor.
      * @param $itemId
      */
     public function __construct($itemId)
     {
         $this->itemId = $itemId;
-        $this->permissions = [
-            Permission::AANBOD_BEWERKEN(),
-        ];
     }
 
     /**
@@ -41,6 +33,8 @@ class AbstractCommand implements AuthorizableCommandInterface
      */
     public function getPermissions()
     {
-        return $this->permissions;
+        return [
+            Permission::AANBOD_BEWERKEN(),
+        ];
     }
 }

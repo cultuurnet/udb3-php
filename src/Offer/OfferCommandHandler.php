@@ -273,7 +273,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateDescription(AbstractUpdateDescription $updateDescription)
     {
-        $offer = $this->load($updateDescription->getId());
+        $offer = $this->load($updateDescription->getItemId());
 
         $offer->updateDescription(
             $updateDescription->getDescription()

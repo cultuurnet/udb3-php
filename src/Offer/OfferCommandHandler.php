@@ -289,7 +289,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateTypicalAgeRange(AbstractUpdateTypicalAgeRange $updateTypicalAgeRange)
     {
-        $offer = $this->load($updateTypicalAgeRange->getId());
+        $offer = $this->load($updateTypicalAgeRange->getItemId());
 
         $offer->updateTypicalAgeRange(
             $updateTypicalAgeRange->getTypicalAgeRange()

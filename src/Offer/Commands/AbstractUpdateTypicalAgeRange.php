@@ -2,24 +2,22 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-abstract class AbstractUpdateTypicalAgeRange
+abstract class AbstractUpdateTypicalAgeRange extends AbstractCommand
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
     /**
      * @var string
      */
     protected $typicalAgeRange;
 
     /**
-     * @return string
+     * UpdateTypicalAgeRange constructor.
+     * @param string $itemId
+     * @param string $typicalAgeRange
      */
-    public function getId()
+    public function __construct($itemId, $typicalAgeRange)
     {
-        return $this->id;
+        parent::__construct($itemId);
+        $this->typicalAgeRange = $typicalAgeRange;
     }
 
     /**
@@ -28,16 +26,5 @@ abstract class AbstractUpdateTypicalAgeRange
     public function getTypicalAgeRange()
     {
         return $this->typicalAgeRange;
-    }
-
-    /**
-     * UpdateTypicalAgeRange constructor.
-     * @param string $id
-     * @param string $typicalAgeRange
-     */
-    public function __construct($id, $typicalAgeRange)
-    {
-        $this->id = $id;
-        $this->typicalAgeRange = $typicalAgeRange;
     }
 }

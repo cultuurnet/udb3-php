@@ -166,7 +166,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     {
 
         /** @var Place $place */
-        $place = $this->offerRepository->load($updateFacilities->getId());
+        $place = $this->offerRepository->load($updateFacilities->getItemId());
 
         $place->updateFacilities(
             $updateFacilities->getFacilities()

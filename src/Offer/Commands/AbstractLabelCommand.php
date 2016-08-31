@@ -4,13 +4,8 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 
-abstract class AbstractLabelCommand
+abstract class AbstractLabelCommand extends AbstractCommand
 {
-    /**
-     * @var string
-     */
-    protected $itemId;
-
     /**
      * @var Label
      */
@@ -25,6 +20,7 @@ abstract class AbstractLabelCommand
      */
     public function __construct($itemId, Label $label)
     {
+        parent::__construct($itemId);
         $this->label = $label;
         $this->itemId = $itemId;
     }

@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 
 class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,6 +16,11 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
      * @var string
      */
     protected $itemId;
+
+    /**
+     * @var Permission[]
+     */
+    protected $permissions;
 
     /**
      * @var Label
@@ -46,5 +52,12 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);
+
+        $permissions = $this->labelCommand->getPermissions();
+        $expectedPermissions = [
+            Permission::AANBOD_BEWERKEN(),
+        ];
+
+        $this->assertEquals($expectedPermissions, $permissions);
     }
 }

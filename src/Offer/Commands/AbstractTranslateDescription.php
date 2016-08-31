@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Language;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 abstract class AbstractTranslateDescription extends AbstractTranslatePropertyCommand
 {
@@ -15,16 +15,16 @@ abstract class AbstractTranslateDescription extends AbstractTranslatePropertyCom
     /**
      * @param string $itemId
      * @param Language $language
-     * @param String $description
+     * @param StringLiteral $description
      */
-    public function __construct($itemId, Language $language, String $description)
+    public function __construct($itemId, Language $language, StringLiteral $description)
     {
         parent::__construct($itemId, $language);
         $this->description = $description;
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getDescription()
     {

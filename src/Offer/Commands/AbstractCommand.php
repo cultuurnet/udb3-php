@@ -24,7 +24,7 @@ class AbstractCommand implements AuthorizableCommandInterface
     {
         $this->itemId = $itemId;
         $this->permissions = [
-            Permission::AANBOD_BEWERKEN,
+            Permission::AANBOD_BEWERKEN(),
         ];
     }
 

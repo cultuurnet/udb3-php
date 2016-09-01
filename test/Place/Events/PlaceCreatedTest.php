@@ -54,8 +54,8 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'address' => array(
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
-                        'locality' => 'Zottegem',
-                        'country' => 'BE',
+                        'addressLocality' => 'Zottegem',
+                        'addressCountry' => 'BE',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -98,8 +98,8 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'address' => array(
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
-                        'locality' => 'Zottegem',
-                        'country' => 'BE',
+                        'addressLocality' => 'Zottegem',
+                        'addressCountry' => 'BE',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -139,8 +139,8 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'address' => array(
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
-                        'locality' => 'Zottegem',
-                        'country' => 'BE',
+                        'addressLocality' => 'Zottegem',
+                        'addressCountry' => 'BE',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',

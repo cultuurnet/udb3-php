@@ -79,8 +79,8 @@ class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
                         0 => [
                             'streetAddress' => 'Kerkstraat 69',
                             'postalCode' => '3000',
-                            'locality' => 'Leuven',
-                            'country' => 'BE',
+                            'addressLocality' => 'Leuven',
+                            'addressCountry' => 'BE',
                         ],
                     ],
                     'phones' => [

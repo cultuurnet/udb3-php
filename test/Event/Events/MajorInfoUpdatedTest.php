@@ -2,6 +2,10 @@
 
 namespace test\Event\Events;
 
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
@@ -9,6 +13,8 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
+use ValueObjects\String\String as StringLiteral;
 
 class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -53,13 +59,13 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                         'domain' => 'theme'
                     ),
                     'location' => array(
-                        'cdbid' => 'cdbid',
+                        'cdbid' => '395fe7eb-9bac-4647-acae-316b6446a85e',
                         'name' => 'Repeteerkot',
                         'address' => array(
-                            'addressCountry' => 'Belgium',
+                            'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
+                            'streetAddress' => 'Kerkstraat 69'
                         ),
                     ),
                     'calendar' => array(
@@ -80,12 +86,14 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
-                        '9620',
-                        'De straat'
+                        '395fe7eb-9bac-4647-acae-316b6446a85e',
+                        new StringLiteral('Repeteerkot'),
+                        new Address(
+                            new Street('Kerkstraat 69'),
+                            new PostalCode('9620'),
+                            new Locality('Zottegem'),
+                            Country::fromNative('BE')
+                        )
                     ),
                     new Calendar(
                         'permanent'

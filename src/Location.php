@@ -1,13 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Location.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
+use ValueObjects\Geography\Country;
+use ValueObjects\String\String as StringLiteral;
 
 /**
  * Instantiates an UDB3 Location.
@@ -22,38 +23,20 @@ class Location implements SerializableInterface
     protected $cdbid;
 
     /**
-     * @var string
+     * @var StringLiteral
      */
     protected $name;
 
     /**
-     * @var string
+     * @var Address
      */
-    protected $country;
+    protected $address;
 
-    /**
-     * @var string
-     */
-    protected $locality;
-
-    /**
-     * @var string
-     */
-    protected $postalcode;
-
-    /**
-     * @var string
-     */
-    protected $street;
-
-    public function __construct($cdbid, $name, $country, $locality, $postalcode, $street)
+    public function __construct($cdbid, StringLiteral $name, Address $address)
     {
         $this->cdbid = $cdbid;
         $this->name = $name;
-        $this->country = $country;
-        $this->locality = $locality;
-        $this->postalcode = $postalcode;
-        $this->street = $street;
+        $this->address = $address;
     }
 
     public function getCdbid()
@@ -61,29 +44,20 @@ class Location implements SerializableInterface
         return $this->cdbid;
     }
 
+    /**
+     * @return StringLiteral
+     */
     public function getName()
     {
         return $this->name;
     }
 
-    public function getCountry()
+    /**
+     * @return Address
+     */
+    public function getAddress()
     {
-        return $this->country;
-    }
-
-    public function getLocality()
-    {
-        return $this->locality;
-    }
-
-    public function getPostalcode()
-    {
-        return $this->postalcode;
-    }
-
-    public function getStreet()
-    {
-        return $this->street;
+        return $this->address;
     }
 
     /**
@@ -93,13 +67,8 @@ class Location implements SerializableInterface
     {
         return [
           'cdbid' => $this->cdbid,
-          'name' => $this->name,
-          'address' => [
-            'addressCountry' => $this->country,
-            'addressLocality' => $this->locality,
-            'postalCode' => $this->postalcode,
-            'streetAddress' => $this->street,
-          ]
+          'name' => $this->name->toNative(),
+          'address' => $this->address->serialize()
         ];
     }
 
@@ -109,7 +78,14 @@ class Location implements SerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-                $data['cdbid'], $data['name'], $data['address']['addressCountry'], $data['address']['addressLocality'], $data['address']['postalCode'], $data['address']['streetAddress']
+            $data['cdbid'],
+            new StringLiteral($data['name']),
+            new Address(
+                new Street($data['address']['streetAddress']),
+                new PostalCode($data['address']['postalCode']),
+                new Locality($data['address']['addressLocality']),
+                Country::fromNative($data['address']['addressCountry'])
+            )
         );
     }
 }

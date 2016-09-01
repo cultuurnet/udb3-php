@@ -86,8 +86,8 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         return [
           'streetAddress' => $this->streetAddress->toNative(),
           'postalCode' => $this->postalCode->toNative(),
-          'locality' => $this->locality->toNative(),
-          'country' => $this->country->getCode()->toNative(),
+          'addressLocality' => $this->locality->toNative(),
+          'addressCountry' => $this->country->getCode()->toNative(),
         ];
     }
 
@@ -99,8 +99,8 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         return new static(
             new Street($data['streetAddress']),
             new PostalCode($data['postalCode']),
-            new Locality($data['locality']),
-            Country::fromNative($data['country'])
+            new Locality($data['addressLocality']),
+            Country::fromNative($data['addressCountry'])
         );
     }
 

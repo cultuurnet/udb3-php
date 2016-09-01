@@ -17,10 +17,10 @@
       "cdbid": "061C13AC-A15F-F419-D8993D68C9E94548",
       "name": "Muziekcentrum Het Depot",
       "address": {
-        "addressCountry": "",
+        "addressCountry": "BE",
         "addressLocality": "Leuven",
         "postalCode": "3000",
-        "streetAddress": ""
+        "streetAddress": "Kerkstraat 69"
       }
     },
     "calendar": {

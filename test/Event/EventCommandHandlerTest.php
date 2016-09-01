@@ -6,6 +6,10 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
@@ -28,8 +32,9 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -48,10 +53,10 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
-            ->with(new String('foo'))
+            ->with(new StringLiteral('foo'))
             ->willReturn(new Entity(
                 new UUID(),
-                new String('foo'),
+                new StringLiteral('foo'),
                 Visibility::VISIBLE(),
                 Privacy::PRIVACY_PUBLIC()
             ));
@@ -69,7 +74,16 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Location(
+                'd0cd4e9d-3cf1-4324-9835-2bfba63ac015',
+                new StringLiteral('Repeteerkot'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('9630'),
+                    new Locality('Zottegem'),
+                    Country::fromNative('BE')
+                )
+            ),
             new Calendar('permanent', '', '')
         );
     }
@@ -80,7 +94,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_title_of_an_event()
     {
         $id = '1';
-        $title = new String('Voorbeeld');
+        $title = new StringLiteral('Voorbeeld');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -103,7 +117,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_description_of_an_event()
     {
         $id = '1';
-        $description = new String('Lorem ipsum dolor si amet...');
+        $description = new StringLiteral('Lorem ipsum dolor si amet...');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -189,7 +203,16 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
         $title = new Title('foo');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
+        $location = new Location(
+            'd0cd4e9d-3cf1-4324-9835-2bfba63ac015',
+            new StringLiteral('Repeteerkot'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9630'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )
+        );
         $calendar = new Calendar('permanent', '', '');
 
         $this->scenario

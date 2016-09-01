@@ -114,6 +114,8 @@ class CdbXMLImporter
 
         $this->importContactPoint($event, $jsonLD);
 
+        $this->cdbXMLItemBaseImporter->importWorkflowStatus($event, $jsonLD);
+
         return $jsonLD;
     }
 

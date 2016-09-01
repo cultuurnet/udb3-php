@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Place;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
@@ -68,7 +68,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param string $id
      * @param Title $title
      * @param EventType $eventType
-     * @param Address $address
+     * @param \CultuurNet\UDB3\Address\Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
@@ -122,7 +122,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      *
      * @param Title $title
      * @param EventType $eventType
-     * @param Address $address
+     * @param \CultuurNet\UDB3\Address\Address $address
      * @param CalendarInterface $calendar
      * @param type $theme
      */

@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Theme;
@@ -90,7 +90,7 @@ class UpdateMajorInfo
     }
 
     /**
-     * @return Address
+     * @return \CultuurNet\UDB3\Address\Address
      */
     public function getAddress()
     {

@@ -6,7 +6,10 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
@@ -32,6 +35,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
@@ -73,7 +77,12 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('$street', '$postalcode', '$locality', '$country'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            ),
             new Calendar('permanent', '', '')
         );
     }
@@ -86,7 +95,12 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
         $title = new Title('foo');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $address = new Address('$street', '$postalcode', '$locality', '$country');
+        $address = new Address(
+            new Street('Kerkstraat 69'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
         $calendar = new Calendar('permanent', '', '');
 
         $this->scenario

@@ -2,13 +2,16 @@
 
 namespace test\Place\Events;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use DateTimeImmutable;
+use ValueObjects\Geography\Country;
 
 class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -52,7 +55,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
                         'locality' => 'Zottegem',
-                        'country' => 'Belgium',
+                        'country' => 'BE',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -73,10 +76,10 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Address(
-                        'De straat',
-                        '9620',
-                        'Zottegem',
-                        'Belgium'
+                        new Street('De straat'),
+                        new PostalCode('9620'),
+                        new Locality('Zottegem'),
+                        Country::fromNative('BE')
                     ),
                     new Calendar(
                         'permanent'
@@ -96,7 +99,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
                         'locality' => 'Zottegem',
-                        'country' => 'Belgium',
+                        'country' => 'BE',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -117,10 +120,10 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Address(
-                        'De straat',
-                        '9620',
-                        'Zottegem',
-                        'Belgium'
+                        new Street('De straat'),
+                        new PostalCode('9620'),
+                        new Locality('Zottegem'),
+                        Country::fromNative('BE')
                     ),
                     new Calendar(
                         'permanent'
@@ -137,7 +140,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
                         'locality' => 'Zottegem',
-                        'country' => 'Belgium',
+                        'country' => 'BE',
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -158,10 +161,10 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Address(
-                        'De straat',
-                        '9620',
-                        'Zottegem',
-                        'Belgium'
+                        new Street('De straat'),
+                        new PostalCode('9620'),
+                        new Locality('Zottegem'),
+                        Country::fromNative('BE')
                     ),
                     new Calendar(
                         'permanent'

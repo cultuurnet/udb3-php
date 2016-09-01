@@ -8,7 +8,10 @@ use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -16,6 +19,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 
 class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -90,10 +94,15 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_create_a_new_place()
     {
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+        
         $placeId = 'generated-uuid';
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $address = new Address('$street', '$postalcode', '$locality', '$country');
+        $address = new Address($street, $postalCode, $locality, $country);
         $calendar = new Calendar('permanent', '', '');
         $theme = null;
 
@@ -127,10 +136,14 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $publicationDate = \DateTimeImmutable::createFromFormat(\DateTime::ISO8601, '2016-08-01T00:00:00+0200');
 
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
         $placeId = 'generated-uuid';
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $address = new Address('$street', '$postalcode', '$locality', '$country');
+        $address = new Address($street, $postalCode, $locality, $country);
         $calendar = new Calendar('permanent', '', '');
         $theme = null;
 

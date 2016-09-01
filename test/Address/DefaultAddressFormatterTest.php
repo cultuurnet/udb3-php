@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Address;
 
-use CultuurNet\UDB3\Address;
+use ValueObjects\Geography\Country;
 
 class DefaultAddressFormatterTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,10 +14,10 @@ class DefaultAddressFormatterTest extends \PHPUnit_Framework_TestCase
         $formatter = new DefaultAddressFormatter();
         
         $address = new Address(
-            'Martelarenlaan 1',
-            '3000',
-            'Leuven',
-            'BE'
+            new Street('Martelarenlaan 1'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
         );
 
         $expectedString = 'Martelarenlaan 1, 3000 Leuven, BE';

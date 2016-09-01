@@ -1,10 +1,13 @@
 <?php
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Address;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\JsonLdSerializableInterface;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String as StringLiteral;
 
 /**
  * Value object for address information.
@@ -17,29 +20,26 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     protected $country;
 
     /**
-     * City/Town/Village
-     * @var StringLiteral
+     * @var Locality
      */
     protected $locality;
 
     /**
-     * Postal code/P.O. Box/ZIP code
-     * @var StringLiteral
+     * @var PostalCode
      */
     protected $postalCode;
 
     /**
-     * Street name and number
-     * @var StringLiteral
+     * @var Street
      */
     protected $streetAddress;
 
     public function __construct(
-        StringLiteral $streetAddress,
-        StringLiteral $postalCode,
-        StringLiteral $locality,
-        Country $country)
-    {
+        Street $streetAddress,
+        PostalCode $postalCode,
+        Locality $locality,
+        Country $country
+    ) {
         $this->streetAddress = $streetAddress;
         $this->postalCode = $postalCode;
         $this->locality = $locality;
@@ -55,7 +55,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
-     * @return StringLiteral
+     * @return Locality
      */
     public function getLocality()
     {
@@ -63,7 +63,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
-     * @return StringLiteral
+     * @return PostalCode
      */
     public function getPostalCode()
     {
@@ -71,7 +71,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
-     * @return StringLiteral
+     * @return Street
      */
     public function getStreetAddress()
     {
@@ -97,9 +97,9 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-            new StringLiteral($data['streetAddress']),
-            new StringLiteral($data['postalCode']),
-            new StringLiteral($data['locality']),
+            new Street($data['streetAddress']),
+            new PostalCode($data['postalCode']),
+            new Locality($data['locality']),
             Country::fromNative($data['country'])
         );
     }

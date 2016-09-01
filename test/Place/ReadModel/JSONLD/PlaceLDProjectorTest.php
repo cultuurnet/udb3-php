@@ -6,7 +6,10 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
@@ -32,6 +35,7 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
+use ValueObjects\Geography\Country;
 
 class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 {
@@ -54,6 +58,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      * @var SerializerInterface
      */
     private $serializer;
+
+    /**
+     * @var Address
+     */
+    private $address;
 
     /**
      * Constructs a test case with the given name.
@@ -88,6 +97,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $this->organizerService,
             $this->serializer
         );
+
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+
+        $this->address = new Address($street, $postalCode, $locality, $country);
     }
 
     /**
@@ -120,7 +136,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('$street', '$postalCode', '$locality', '$country'),
+            $this->address,
             new Calendar('permanent')
         );
 
@@ -129,10 +145,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
-          'addressCountry' => '$country',
-          'addressLocality' => '$locality',
-          'postalCode' => '$postalCode',
-          'streetAddress' => '$street',
+          'addressCountry' => 'BE',
+          'addressLocality' => 'Leuven',
+          'postalCode' => '3000',
+          'streetAddress' => 'Kerkstraat 69',
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -170,7 +186,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('$street', '$postalCode', '$locality', '$country'),
+            $this->address,
             new Calendar('permanent'),
             new Theme('123', 'theme label')
         );
@@ -180,10 +196,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
-          'addressCountry' => '$country',
-          'addressLocality' => '$locality',
-          'postalCode' => '$postalCode',
-          'streetAddress' => '$street',
+            'addressCountry' => 'BE',
+            'addressLocality' => 'Leuven',
+            'postalCode' => '3000',
+            'streetAddress' => 'Kerkstraat 69',
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -226,7 +242,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('$street', '$postalCode', '$locality', '$country'),
+            $this->address,
             new Calendar('permanent')
         );
 
@@ -235,10 +251,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
         $jsonLD->name = 'some representative title';
         $jsonLD->address = (object)[
-          'addressCountry' => '$country',
-          'addressLocality' => '$locality',
-          'postalCode' => '$postalCode',
-          'streetAddress' => '$street',
+            'addressCountry' => 'BE',
+            'addressLocality' => 'Leuven',
+            'postalCode' => '3000',
+            'streetAddress' => 'Kerkstraat 69',
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -405,10 +421,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $id = 'foo';
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $address = new Address('$newStreet', '$newPostalCode', '$newLocality', '$newCountry');
         $calendar = new Calendar('single', '2015-01-26T13:25:21+01:00', '2015-02-26T13:25:21+01:00');
         $theme = new Theme('123', 'theme label');
-        $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $address, $calendar, $theme);
+        $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $this->address, $calendar, $theme);
 
         $jsonLD = new stdClass();
         $jsonLD->id = $id;
@@ -437,10 +452,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->id = $id;
         $expectedJsonLD->name = (object)['nl'=>'new title'];
         $expectedJsonLD->address = (object)[
-          'addressCountry' => '$newCountry',
-          'addressLocality' => '$newLocality',
-          'postalCode' => '$newPostalCode',
-          'streetAddress' => '$newStreet',
+            'addressCountry' => 'BE',
+            'addressLocality' => 'Leuven',
+            'postalCode' => '3000',
+            'streetAddress' => 'Kerkstraat 69',
         ];
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->terms = [

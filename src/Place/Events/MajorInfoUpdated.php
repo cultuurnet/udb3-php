@@ -6,7 +6,7 @@
  */
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
@@ -37,7 +37,7 @@ class MajorInfoUpdated extends PlaceEvent
     private $theme = null;
 
     /**
-     * @var Address
+     * @var \CultuurNet\UDB3\Address\Address
      */
     private $address;
 

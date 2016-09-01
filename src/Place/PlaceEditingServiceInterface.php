@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Place;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
@@ -23,7 +23,7 @@ interface PlaceEditingServiceInterface
      *
      * @param Title $title
      * @param EventType $eventType
-     * @param Address $address
+     * @param \CultuurNet\UDB3\Address\Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      *
@@ -44,7 +44,7 @@ interface PlaceEditingServiceInterface
      * @param string $id
      * @param Title $title
      * @param EventType $eventType
-     * @param Address $address
+     * @param \CultuurNet\UDB3\Address\Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;

@@ -100,7 +100,7 @@ class HistoryProjector implements EventListenerInterface
             $eventUpdatedFromUDB2->getEventId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String('Updatet vanuit UDB2')
+                new String('Geüpdatet vanuit UDB2')
             )
         );
     }

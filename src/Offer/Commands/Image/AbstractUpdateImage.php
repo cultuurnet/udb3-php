@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Offer\Commands\Image;
 
+use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-abstract class AbstractUpdateImage
+abstract class AbstractUpdateImage extends AbstractCommand
 {
     /**
      * The id of the media object that the new information applies to.
@@ -24,11 +25,6 @@ abstract class AbstractUpdateImage
     protected $copyrightHolder;
 
     /**
-     * @var string
-     */
-    protected $itemId;
-
-    /**
      * @param $itemId
      * @param UUID $mediaObjectId
      * @param StringLiteral $description
@@ -40,18 +36,10 @@ abstract class AbstractUpdateImage
         StringLiteral $description,
         StringLiteral $copyrightHolder
     ) {
-        $this->itemId = $itemId;
+        parent::__construct($itemId);
         $this->mediaObjectId = $mediaObjectId;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
-    }
-
-    /**
-     * @return int
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
     }
 
     /**

@@ -3,14 +3,10 @@
 namespace CultuurNet\UDB3\Offer\Commands\Image;
 
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 
-abstract class AbstractImageCommand
+abstract class AbstractImageCommand extends AbstractCommand
 {
-    /**
-     * @var string
-     */
-    protected $itemId;
-
     /**
      * @var Image
      */
@@ -25,16 +21,8 @@ abstract class AbstractImageCommand
      */
     public function __construct($itemId, Image $image)
     {
+        parent::__construct($itemId);
         $this->image = $image;
-        $this->itemId = $itemId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
     }
 
     /**

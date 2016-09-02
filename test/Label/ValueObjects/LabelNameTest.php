@@ -2,16 +2,19 @@
 
 namespace CultuurNet\UDB3\Label\ValueObjects;
 
+use ValueObjects\Exception\InvalidNativeArgumentException;
+
 class LabelNameTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @dataProvider labelNameValues
      * @test
      */
-    public function it_refuses_value_that_are_not_strings()
+    public function it_refuses_value_that_are_not_strings($value)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->setExpectedException(InvalidNativeArgumentException::class);
 
-        new LabelName(null);
+        new LabelName($value);
     }
 
     /**
@@ -53,6 +56,17 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
     {
         $label = new LabelName('turnip');
 
-        $this->assertEquals($label->__toString(), 'turnip');
+        $this->assertEquals($label->toNative(), 'turnip');
+    }
+
+    /**
+     * @return array
+     */
+    public function labelNameValues()
+    {
+        return [
+            [null],
+            [1],
+        ];
     }
 }

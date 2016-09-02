@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Label\Commands;
 
-use CultuurNet\UDB3\Label\Label;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;

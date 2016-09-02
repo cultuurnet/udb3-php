@@ -25,7 +25,6 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Place\Commands\AddLabel as PlaceAddLabel;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class CommandHandlerTest extends CommandHandlerScenarioTestCase
 {

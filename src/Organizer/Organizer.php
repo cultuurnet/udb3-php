@@ -1,23 +1,32 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Organizer\Organizer.
- */
-
 namespace CultuurNet\UDB3\Organizer;
 
-use CultuurNet\UDB3\Actor\Actor;
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
-use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String;
 
-class Organizer extends Actor implements UpdateableWithCdbXmlInterface
+class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
+    /**
+     * The actor id.
+     *
+     * @var string
+     */
+    protected $actorId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAggregateRootId()
+    {
+        return $this->actorId;
+    }
+
     /**
      * Import from UDB2.
      *
@@ -28,7 +37,7 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
      * @param string $cdbXmlNamespaceUri
      *   The cdb xml namespace uri.
      *
-     * @return Actor
+     * @return Organizer
      *   The actor.
      */
     public static function importFromUDB2(
@@ -51,9 +60,6 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
     /**
      * Factory method to create a new Organizer.
      *
-     * @todo Refactor this method so it can be called create. Currently the
-     * normal behavior for create is taken by the legacy udb2 logic.
-     *
      * @param String $id
      * @param Title $title
      * @param array $addresses
@@ -61,14 +67,21 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
      * @param array $emails
      * @param array $urls
      *
-     * @return Place
+     * @return Organizer
      */
-    public static function createOrganizer($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public static function create($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         $organizer = new self();
         $organizer->apply(new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls));
 
         return $organizer;
+    }
+
+    public function delete()
+    {
+        $this->apply(
+            new OrganizerDeleted($this->getAggregateRootId())
+        );
     }
 
     /**
@@ -83,7 +96,7 @@ class Organizer extends Actor implements UpdateableWithCdbXmlInterface
     public function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImported
     ) {
-        $this->applyActorImportedFromUDB2($organizerImported);
+        $this->actorId = (string) $organizerImported->getActorId();
     }
 
     /**

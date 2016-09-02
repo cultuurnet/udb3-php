@@ -5,42 +5,35 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Event\Commands\ApplyLabel;
+use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
+use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\TranslateDescription;
+use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
 use CultuurNet\UDB3\Title;
-use Guzzle\Http\Exception\ClientErrorResponseException;
-use PHPUnit_Framework_MockObject_MockObject;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
-
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
-
-    /**
-     * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $search;
-
-    public function setUp()
-    {
-        $this->search = $this->getMock(SearchServiceInterface::class);
-
-        parent::setUp();
-    }
 
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
@@ -51,7 +44,23 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventBus
         );
 
-        return new EventCommandHandler($repository, $this->search);
+        $this->organizerRepository = $this->getMock(RepositoryInterface::class);
+
+        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository->method('getByName')
+            ->with(new String('foo'))
+            ->willReturn(new Entity(
+                new UUID(),
+                new String('foo'),
+                Visibility::VISIBLE(),
+                Privacy::PRIVACY_PUBLIC()
+            ));
+
+        return new EventCommandHandler(
+            $repository,
+            $this->organizerRepository,
+            $this->labelRepository
+        );
     }
 
     private function factorOfferCreated($id)
@@ -68,109 +77,10 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_label_a_list_of_events_with_a_label()
-    {
-        $ids = ['eventId1', 'eventId2'];
-
-        $this->scenario
-            ->withAggregateId($ids[0])
-            ->given(
-                [
-                    $this->factorOfferCreated($ids[0])
-                ]
-            )
-            ->withAggregateId($ids[1])
-            ->given(
-                [
-                    $this->factorOfferCreated($ids[1])
-                ]
-            )
-            ->when(new LabelEvents($ids, new Label('awesome')))
-            ->then(
-                [
-                    new EventWasLabelled($ids[0], new Label('awesome')),
-                    new EventWasLabelled($ids[1], new Label('awesome'))
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_label_all_results_of_a_search_query()
-    {
-        $events = [];
-        $expectedSourcedEvents = [];
-        $total = 60;
-
-        for ($i = 1; $i <= $total; $i++) {
-            $eventId = (string)$i;
-            $events[] = array(
-                '@id' => 'http://example.com/event/' . $eventId,
-            );
-
-            $expectedSourcedEvents[] = new EventWasLabelled($eventId, new Label('foo'));
-
-            $this->scenario
-                ->withAggregateId($i)
-                ->given(
-                    [
-                        $this->factorOfferCreated($eventId)
-                    ]
-                );
-        }
-
-        $this->search->expects($this->any())
-            ->method('search')
-            ->with('*.*')
-            ->will(
-                $this->returnCallback(
-                    function ($query, $limit, $start) use ($events) {
-                        $pageEvents = array_slice($events, $start, $limit);
-
-                        return [
-                            'member' => $pageEvents,
-                            'totalItems' => count($events),
-                            'itemsPerPage' => $limit
-                        ];
-                    }
-                )
-            );
-
-        $this->scenario
-            ->when(new LabelQuery('*.*', new Label('foo')))
-            ->then(
-                $expectedSourcedEvents
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_label_events_when_a_search_error_occurs()
-    {
-        $this->search->expects($this->once())
-            ->method('search')
-            ->will(
-                $this->throwException(
-                    new ClientErrorResponseException()
-                )
-            );
-
-        $this->scenario
-            ->when(new LabelQuery('---fsdfs', new Label('foo')))
-            ->then(
-                []
-            );
-    }
-
-    /**
-     * @test
-     */
     public function it_can_translate_the_title_of_an_event()
     {
         $id = '1';
-        $title = 'Voorbeeld';
+        $title = new String('Voorbeeld');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -193,7 +103,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_description_of_an_event()
     {
         $id = '1';
-        $description = 'Lorem ipsum dolor si amet...';
+        $description = new String('Lorem ipsum dolor si amet...');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -215,8 +125,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new ApplyLabel($id, new Label('foo')))
-            ->then([new EventWasLabelled($id, new Label('foo'))]);
+            ->when(new AddLabel($id, new Label('foo')))
+            ->then([new LabelAdded($id, new Label('foo'))]);
     }
 
     /**
@@ -230,11 +140,11 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new EventWasLabelled($id, new Label('foo'))
+                    new LabelAdded($id, new Label('foo'))
                 ]
             )
-            ->when(new Unlabel($id, new Label('foo')))
-            ->then([new Unlabelled($id, new Label('foo'))]);
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([new LabelDeleted($id, new Label('foo'))]);
     }
 
     /**
@@ -248,7 +158,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new Unlabel($id, new Label('foo')))
+            ->when(new DeleteLabel($id, new Label('foo')))
             ->then([]);
     }
 
@@ -263,11 +173,11 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new EventWasLabelled($id, new Label('foo')),
-                    new Unlabelled($id, new Label('foo'))
+                    new LabelAdded($id, new Label('foo')),
+                    new LabelDeleted($id, new Label('foo'))
                 ]
             )
-            ->when(new Unlabel($id, new Label('foo')))
+            ->when(new DeleteLabel($id, new Label('foo')))
             ->then([]);
     }
 

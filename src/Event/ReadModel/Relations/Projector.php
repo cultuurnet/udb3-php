@@ -7,13 +7,16 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\EventServiceInterface;
 
 class Projector implements EventListenerInterface
 {
@@ -24,15 +27,9 @@ class Projector implements EventListenerInterface
      */
     protected $repository;
 
-    /**
-     * @var EventServiceInterface
-     */
-    protected $eventService;
-
-    public function __construct($repository, EventServiceInterface $eventService)
+    public function __construct($repository)
     {
         $this->repository = $repository;
-        $this->eventService = $eventService;
     }
 
     protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $event)
@@ -44,17 +41,8 @@ class Projector implements EventListenerInterface
             $event->getCdbXml()
         );
 
-        $location = $udb2Event->getLocation();
-        $placeId = null;
-        if ($location->getCdbid()) {
-            $placeId = $location->getCdbid();
-        }
-
-        $organizer = $udb2Event->getOrganiser();
-        $organizerId = null;
-        if ($organizer && $organizer->getCdbid()) {
-            $organizerId = $organizer->getCdbid();
-        }
+        $placeId = $this->getPlaceId($udb2Event);
+        $organizerId = $this->getOrganizerId($udb2Event);
 
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
@@ -71,6 +59,13 @@ class Projector implements EventListenerInterface
         }
 
     }
+    
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+        $eventId = $majorInfoUpdated->getItemId();
+        $cdbid = $majorInfoUpdated->getLocation()->getCdbid();
+        $this->repository->storeRelation($eventId, 'place', $cdbid);
+    }
 
     /**
      * Delete the relations.
@@ -78,7 +73,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyEventDeleted(EventDeleted $event)
     {
-        $eventId = $event->getEventId();
+        $eventId = $event->getItemId();
         $this->repository->removeRelations($eventId);
 
     }
@@ -88,12 +83,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
-        $eventEntity = $this->eventService->getEvent($organizerUpdated->getEventId());
-        $event = json_decode($eventEntity);
-
-        $placeId = !empty($event->location) ? $event->location->{'@id'}: null;
-
-        $this->storeRelations($organizerUpdated->getEventId(), $placeId, $organizerUpdated->getOrganizerId());
+        $this->repository->storeOrganizer($organizerUpdated->getItemId(), $organizerUpdated->getOrganizerId());
     }
 
     /**
@@ -101,21 +91,78 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
-
-        $eventEntity = $this->eventService->getEvent($organizerDeleted->getEventId());
-        $event = json_decode($eventEntity);
-
-        $placeId = null;
-        if (!empty($event->location)) {
-            $idParts = explode('/', $event->location->{'@id'});
-            $placeId = array_pop($idParts);
-        }
-
-        $this->storeRelations($organizerDeleted->getEventId(), $placeId, null);
+        $this->repository->storeOrganizer($organizerDeleted->getItemId(), null);
     }
 
     protected function storeRelations($eventId, $placeId, $organizerId)
     {
         $this->repository->storeRelations($eventId, $placeId, $organizerId);
+    }
+
+    /**
+     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
+     */
+    protected function applyEventCreatedFromCdbXml(EventCreatedFromCdbXml $eventCreatedFromCdbXml)
+    {
+        $eventId = $eventCreatedFromCdbXml->getEventId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $placeId = $this->getPlaceId($udb2Event);
+        $organizerId = $this->getOrganizerId($udb2Event);
+
+        $this->storeRelations($eventId, $placeId, $organizerId);
+    }
+
+    /**
+    * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
+    */
+    protected function applyEventUpdatedFromCdbXml(EventUpdatedFromCdbXml $eventUpdatedFromCdbXml)
+    {
+        $eventId = $eventUpdatedFromCdbXml->getEventId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
+        );
+
+        $placeId = $this->getPlaceId($udb2Event);
+        $organizerId = $this->getOrganizerId($udb2Event);
+
+        $this->storeRelations($eventId, $placeId, $organizerId);
+    }
+
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $udb2Event
+     * @return string
+     */
+    protected function getPlaceId(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
+        $location = $udb2Event->getLocation();
+        $placeId = null;
+        if ($location->getCdbid()) {
+            $placeId = $location->getCdbid();
+        }
+
+        return $placeId;
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $udb2Event
+     * @return string
+     */
+    protected function getOrganizerId(\CultureFeed_Cdb_Item_Event $udb2Event)
+    {
+        $organizer = $udb2Event->getOrganiser();
+        $organizerId = null;
+        if ($organizer && $organizer->getCdbid()) {
+            $organizerId = $organizer->getCdbid();
+        }
+
+        return $organizerId;
     }
 }

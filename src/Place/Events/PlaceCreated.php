@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 namespace CultuurNet\UDB3\Place\Events;
 
 use CultuurNet\UDB3\Address;
@@ -13,13 +9,13 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use DateTimeImmutable;
 
 /**
  * Event when a place is created.
  */
 class PlaceCreated extends PlaceEvent
 {
-
     /**
      * @var Title
      */
@@ -46,14 +42,28 @@ class PlaceCreated extends PlaceEvent
     private $calendar;
 
     /**
+     * @var DateTimeImmutable|null
+     */
+    private $publicationDate = null;
+
+    /**
      * @param string $eventId
      * @param Title $title
      * @param Address $address
      * @param EventType $eventType
      * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @param DateTimeImmutable|null $publicationDate
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null,
+        DateTimeImmutable $publicationDate = null
+    ) {
         parent::__construct($eventId);
 
         $this->title = $title;
@@ -61,6 +71,7 @@ class PlaceCreated extends PlaceEvent
         $this->address = $address;
         $this->calendar = $calendar;
         $this->theme = $theme;
+        $this->publicationDate = $publicationDate;
     }
 
     /**
@@ -88,7 +99,7 @@ class PlaceCreated extends PlaceEvent
     }
 
     /**
-     * @return CalendarBase
+     * @return CalendarInterface
      */
     public function getCalendar()
     {
@@ -104,6 +115,14 @@ class PlaceCreated extends PlaceEvent
     }
 
     /**
+     * @return DateTimeImmutable|null
+     */
+    public function getPublicationDate()
+    {
+        return $this->publicationDate;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
@@ -112,12 +131,17 @@ class PlaceCreated extends PlaceEvent
         if ($this->getTheme() !== null) {
             $theme = $this->getTheme()->serialize();
         }
+        $publicationDate = null;
+        if (!is_null($this->getPublicationDate())) {
+            $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
+        }
         return parent::serialize() + array(
-          'title' => (string) $this->getTitle(),
-          'event_type' => $this->getEventType()->serialize(),
-          'theme' => $theme,
-          'address' => $this->getAddress()->serialize(),
-          'calendar' => $this->getCalendar()->serialize(),
+            'title' => (string) $this->getTitle(),
+            'event_type' => $this->getEventType()->serialize(),
+            'theme' => $theme,
+            'address' => $this->getAddress()->serialize(),
+            'calendar' => $this->getCalendar()->serialize(),
+            'publication_date' => $publicationDate,
         );
     }
 
@@ -130,8 +154,21 @@ class PlaceCreated extends PlaceEvent
         if (!empty($data['theme'])) {
             $theme = Theme::deserialize($data['theme']);
         }
+        $publicationDate = null;
+        if (!empty($data['publication_date'])) {
+            $publicationDate = DateTimeImmutable::createFromFormat(
+                \DateTime::ISO8601,
+                $data['publication_date']
+            );
+        }
         return new static(
-             $data['place_id'], new Title($data['title']), EventType::deserialize($data['event_type']), Address::deserialize($data['address']), Calendar::deserialize($data['calendar'])
+            $data['place_id'],
+            new Title($data['title']),
+            EventType::deserialize($data['event_type']),
+            Address::deserialize($data['address']),
+            Calendar::deserialize($data['calendar']),
+            $theme,
+            $publicationDate
         );
     }
 }

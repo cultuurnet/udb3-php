@@ -1,17 +1,16 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use ValueObjects\Exception\InvalidNativeArgumentException;
 
 class VariationDecoratedEventService implements EventServiceInterface
 {
@@ -66,14 +65,20 @@ class VariationDecoratedEventService implements EventServiceInterface
      */
     public function getEvent($id)
     {
+        // If the id is not a valid url we assume it points to the local installation and generate one ourselves.
         try {
-            $url = $this->eventIriGenerator->iri($id);
-
-            $criteria = $this->baseCriteria->withEventUrl(
-                new Url($url)
+            $validUrl = \ValueObjects\Web\Url::fromNative($id);
+            $url = new Url((string) $validUrl);
+        } catch (InvalidNativeArgumentException $e) {
+            $url = new Url(
+                $this->eventIriGenerator->iri($id)
             );
+        }
 
-            $variationIds = $this->searchRepository->getEventVariations(
+        try {
+            $criteria = $this->baseCriteria->withOriginUrl($url);
+
+            $variationIds = $this->searchRepository->getOfferVariations(
                 $criteria
             );
 

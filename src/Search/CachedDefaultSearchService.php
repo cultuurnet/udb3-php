@@ -7,10 +7,10 @@ namespace CultuurNet\UDB3\Search;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Search\Cache\WarmUpInterface;
+use CultuurNet\UDB3\Search\Cache\CacheHandlerInterface;
 use Doctrine\Common\Cache\Cache;
 
-class CachedDefaultSearchService implements SearchServiceInterface, EventListenerInterface, WarmUpInterface
+class CachedDefaultSearchService implements SearchServiceInterface, EventListenerInterface, CacheHandlerInterface
 {
     /**
      * @var \CultuurNet\UDB3\Search\SearchServiceInterface
@@ -98,9 +98,20 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
         $this->cache->save(self::CACHE_KEY, serialize($result));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function warmUpCache()
     {
         $result = $this->search->search('*.*', 30, 0, 'lastupdated desc');
-        $this->cache->save('default-search', serialize($result));
+        $this->saveToCache($result);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearCache()
+    {
+        $this->cache->delete(self::CACHE_KEY);
     }
 }

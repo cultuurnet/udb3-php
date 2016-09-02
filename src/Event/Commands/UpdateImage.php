@@ -1,30 +1,9 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Commands\UpdateImage.
- */
-
 namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 
-/**
- * Provides a command to update an image of the event.
- */
-class UpdateImage
+class UpdateImage extends AbstractUpdateImage
 {
-
-    use \CultuurNet\UDB3\UpdateImageTrait;
-
-    /**
-     * @param string $id
-     * @param MediaObject $mediaObject
-     */
-    public function __construct($id, $indexToUpdate, MediaObject $mediaObject)
-    {
-        $this->id = $id;
-        $this->indexToUpdate = $indexToUpdate;
-        $this->mediaObject = $mediaObject;
-    }
 }

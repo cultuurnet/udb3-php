@@ -1,0 +1,216 @@
+<?php
+
+namespace CultuurNet\UDB3\Offer;
+
+use Broadway\Repository\AggregateNotFoundException;
+use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Event\Event;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
+use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
+use CultuurNet\UDB3\Place\Place;
+use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
+use CultuurNet\UDB3\Variations\AggregateDeletedException;
+use Http\Client\Exception\HttpException;
+use Psr\Log\LoggerInterface;
+use ValueObjects\Web\Url;
+
+class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var ResultsGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $resultGenerator;
+
+    /**
+     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $logger;
+
+    /**
+     * @var BulkLabelCommandHandler
+     */
+    private $commandHandler;
+
+    /**
+     * @var string
+     */
+    private $query;
+
+    /**
+     * @var Label
+     */
+    private $label;
+
+    /**
+     * @var IriOfferIdentifier[]
+     */
+    private $offerIdentifiers;
+
+    /**
+     * @var Event|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $eventMock;
+
+    /**
+     * @var Place|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $placeMock;
+
+    /**
+     * @var ExternalOfferEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $externalOfferEditingService;
+
+    public function setUp()
+    {
+        $this->resultGenerator = $this->getMock(ResultsGeneratorInterface::class);
+        $this->externalOfferEditingService = $this->getMock(ExternalOfferEditingServiceInterface::class);
+
+        $this->commandHandler = new BulkLabelCommandHandler(
+            $this->resultGenerator,
+            $this->externalOfferEditingService
+        );
+
+        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->commandHandler->setLogger($this->logger);
+
+        $this->query = 'city:leuven';
+        $this->label = new Label('foo');
+
+        $this->offerIdentifiers = [
+            1 => new IriOfferIdentifier(
+                Url::fromNative('http://du.de/event/1'),
+                '1',
+                OfferType::EVENT()
+            ),
+            2 => new IriOfferIdentifier(
+                Url::fromNative('http://du.de/place/2'),
+                '2',
+                OfferType::PLACE()
+            ),
+        ];
+
+        $this->eventMock = $this->getMock(Event::class);
+        $this->placeMock = $this->getMock(Place::class);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_label_all_offer_results_from_a_query()
+    {
+        $addLabelToQuery = new AddLabelToQuery(
+            $this->query,
+            $this->label
+        );
+
+        $this->resultGenerator->expects($this->once())
+            ->method('search')
+            ->with($this->query)
+            ->willReturn($this->offerIdentifiers);
+
+        $this->expectEventAndPlaceToBeLabelledWith($this->label);
+
+        $this->commandHandler->handle($addLabelToQuery);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_label_all_offers_from_a_selection()
+    {
+        $addLabelToMultiple = new AddLabelToMultiple(
+            OfferIdentifierCollection::fromArray($this->offerIdentifiers),
+            $this->label
+        );
+
+        $this->expectEventAndPlaceToBeLabelledWith($this->label);
+
+        $this->commandHandler->handle($addLabelToMultiple);
+    }
+
+    /**
+     * @test
+     * @dataProvider exceptionDataProvider
+     *
+     * @param \Exception $exception
+     * @param string $exceptionClassName
+     * @param string $message
+     */
+    public function it_logs_an_error_when_an_error_occurred_and_continues_labelling(
+        \Exception $exception,
+        $exceptionClassName,
+        $message
+    ) {
+        // One label action should fail.
+        $this->externalOfferEditingService->expects($this->at(0))
+            ->method('addLabel')
+            ->with(
+                $this->offerIdentifiers[1],
+                $this->label
+            )
+            ->willThrowException($exception);
+
+        // Make sure the other offer is still labelled.
+        $this->externalOfferEditingService->expects($this->at(1))
+            ->method('addLabel')
+            ->with(
+                $this->offerIdentifiers[2],
+                $this->label
+            );
+
+        // Make sure we log the occur.
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with(
+                'bulk_label_command_exception',
+                [
+                    'iri' => 'http://du.de/event/1',
+                    'command' => AddLabelToMultiple::class,
+                    'exception' => $exceptionClassName,
+                    'message' => $message,
+                ]
+            );
+
+        $this->commandHandler->handle(
+            new AddLabelToMultiple(
+                OfferIdentifierCollection::fromArray($this->offerIdentifiers),
+                $this->label
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function exceptionDataProvider()
+    {
+        return [
+            [
+                new \Exception('Something went awfully wrong'),
+                \Exception::class,
+                'Something went awfully wrong',
+            ],
+        ];
+    }
+
+    /**
+     * @param Label $label
+     */
+    private function expectEventAndPlaceToBeLabelledWith(Label $label)
+    {
+        $this->externalOfferEditingService->expects($this->exactly(2))
+            ->method('addLabel')
+            ->withConsecutive(
+                [
+                    $this->offerIdentifiers[1],
+                    $label
+                ],
+                [
+                    $this->offerIdentifiers[2],
+                    $label
+                ]
+            );
+    }
+}

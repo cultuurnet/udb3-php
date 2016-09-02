@@ -7,13 +7,32 @@
 
 namespace CultuurNet\UDB3;
 
+use Broadway\Repository\AggregateNotFoundException;
+use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Organizer\Organizer;
+use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionObject;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
+use ValueObjects\Web\Url;
 
 /**
  * Provides a trait to test commands that are applicable for all UDB3 offer types
  */
 trait OfferCommandHandlerTestTrait
 {
+    /**
+     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $organizerRepository;
+
+    /**
+     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $labelRepository;
 
     /**
      * Get the namespaced classname of the command to create.
@@ -108,7 +127,13 @@ trait OfferCommandHandlerTestTrait
     public function it_can_add_an_image_to_an_offer()
     {
         $id = '1';
-        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $image = new Image(
+            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            String::fromNative('Some description.'),
+            String::fromNative('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
         $commandClass = $this->getCommandClass('AddImage');
         $eventClass = $this->getEventClass('ImageAdded');
 
@@ -118,53 +143,73 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $mediaObject)
+                new $commandClass($id, $image)
             )
-            ->then([new $eventClass($id, $mediaObject)]);
+            ->then([new $eventClass($id, $image)]);
     }
 
     /**
      * @test
      */
-    public function it_can_add_delete_an_image_of_an_offer()
+    public function it_can_remove_an_image_from_an_offer()
     {
         $id = '1';
-        $indexToDelete = 1;
-        $internalId = '1';
-        $commandClass = $this->getCommandClass('DeleteImage');
-        $eventClass = $this->getEventClass('ImageDeleted');
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            new String('sexy ladies without clothes'),
+            new String('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+        );
+        $imageAddedEventClass = $this->getEventClass('ImageAdded');
+        $commandClass = $this->getCommandClass('RemoveImage');
+        $eventClass = $this->getEventClass('ImageRemoved');
 
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [
+                    $this->factorOfferCreated($id),
+                    new $imageAddedEventClass($id, $image),
+                ]
             )
             ->when(
-                new $commandClass($id, $indexToDelete, $internalId)
+                new $commandClass($id, $image)
             )
-            ->then([new $eventClass($id, $indexToDelete, $internalId)]);
+            ->then([new $eventClass($id, $image)]);
     }
 
     /**
      * @test
      */
-    public function it_can_add_update_an_image_of_an_offer()
+    public function it_can_update_an_image_of_an_offer()
     {
-        $id = '1';
-        $index = 1;
-        $mediaObject = new MediaObject('$url', '$thumbnailUrl', '$description', '$copyrightHolder');
+        $itemId = '1';
+        $mediaObjectId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
+        $description = new String('A description.');
+        $copyrightHolder = new String('Dirk');
         $commandClass = $this->getCommandClass('UpdateImage');
         $eventClass = $this->getEventClass('ImageUpdated');
 
         $this->scenario
-            ->withAggregateId($id)
+            ->withAggregateId($itemId)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [$this->factorOfferCreated($itemId)]
             )
             ->when(
-                new $commandClass($id, $index, $mediaObject)
+                new $commandClass(
+                    $itemId,
+                    $mediaObjectId,
+                    $description,
+                    $copyrightHolder
+                )
             )
-            ->then([new $eventClass($id, $index, $mediaObject)]);
+            ->then([new $eventClass(
+                $itemId,
+                $mediaObjectId,
+                $description,
+                $copyrightHolder
+            )]);
     }
 
     /**
@@ -176,11 +221,15 @@ trait OfferCommandHandlerTestTrait
         $organizerId = '5';
         $commandClass = $this->getCommandClass('DeleteOrganizer');
         $eventClass = $this->getEventClass('OrganizerDeleted');
+        $organizerUpdatedClass = $this->getEventClass('OrganizerUpdated');
 
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [
+                    $this->factorOfferCreated($id),
+                    new $organizerUpdatedClass($id, $organizerId)
+                ]
             )
             ->when(
                 new $commandClass($id, $organizerId)
@@ -198,6 +247,10 @@ trait OfferCommandHandlerTestTrait
         $commandClass = $this->getCommandClass('UpdateOrganizer');
         $eventClass = $this->getEventClass('OrganizerUpdated');
 
+        $this->organizerRepository
+            ->method('load')
+            ->willReturn($this->getMock(Organizer::class));
+
         $this->scenario
             ->withAggregateId($id)
             ->given(
@@ -207,6 +260,32 @@ trait OfferCommandHandlerTestTrait
                 new $commandClass($id, $organizer)
             )
             ->then([new $eventClass($id, $organizer)]);
+    }
+
+    /**
+     * @test
+     * @expectedException \Broadway\Repository\AggregateNotFoundException
+     */
+    public function it_should_not_update_an_offer_with_an_unknown_organizer()
+    {
+        $offerId = '988691DA-8AED-45F7-9794-0577370EAE75';
+        $organizerId = 'DD309AA8-208A-4267-AD46-02A7E8082174';
+        $commandClass = $this->getCommandClass('UpdateOrganizer');
+
+        $this->organizerRepository
+            ->method('load')
+            ->with('DD309AA8-208A-4267-AD46-02A7E8082174')
+            ->willThrowException(new AggregateNotFoundException($organizerId));
+
+        $this->scenario
+            ->withAggregateId($offerId)
+            ->given(
+                [$this->factorOfferCreated($offerId)]
+            )
+            ->when(
+                new $commandClass($offerId, $organizerId)
+            )
+            ->then([]);
     }
 
     /**

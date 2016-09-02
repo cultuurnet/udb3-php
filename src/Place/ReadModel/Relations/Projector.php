@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Place\ReadModel\Relations;
 
@@ -32,7 +29,6 @@ class Projector implements EventListenerInterface
      */
     protected function applyPlaceImportedFromUDB2(PlaceImportedFromUDB2 $place)
     {
-
         // No relation exists in UDB2.
         $placeId = $place->getActorId();
         $this->storeRelations($placeId, null);
@@ -43,7 +39,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyPlaceDeleted(PlaceDeleted $place)
     {
-        $placeId = $place->getPlaceId();
+        $placeId = $place->getItemId();
         $this->repository->removeRelations($placeId);
 
     }
@@ -53,7 +49,10 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
-        $this->storeRelations($organizerUpdated->getPlaceId(), $organizerUpdated->getOrganizerId());
+        $this->storeRelations(
+            $organizerUpdated->getItemId(),
+            $organizerUpdated->getOrganizerId()
+        );
     }
 
     /**
@@ -61,7 +60,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
-        $this->storeRelations($organizerDeleted->getPlaceId(), null);
+        $this->storeRelations($organizerDeleted->getItemId(), null);
     }
 
     /**

@@ -15,9 +15,11 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
@@ -117,9 +119,17 @@ class OrganizerLDProjector extends ActorLDProjector
     public function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
     ) {
-        $document = $this->loadDocumentFromRepository(
-            $organizerUpdatedFromUDB2
-        );
+        // It's possible that an organizer has been deleted in udb3, but never
+        // in udb2. If an update comes for that organizer from udb2, it should
+        // be imported again. This is intended by design.
+        // @see https://jira.uitdatabank.be/browse/III-1092
+        try {
+            $document = $this->loadDocumentFromRepository(
+                $organizerUpdatedFromUDB2
+            );
+        } catch (DocumentGoneException $e) {
+            $document = $this->newDocument($organizerUpdatedFromUDB2->getActorId());
+        }
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $organizerUpdatedFromUDB2->getCdbXmlNamespaceUri(),
@@ -138,15 +148,30 @@ class OrganizerLDProjector extends ActorLDProjector
         );
     }
 
+    /**
+     * @param \CultuurNet\UDB3\Organizer\Events\OrganizerDeleted $organizerDeleted
+     */
+    public function applyOrganizerDeleted(
+        OrganizerDeleted $organizerDeleted
+    ) {
+        $this->repository->remove($organizerDeleted->getOrganizerId());
+    }
+
+    /**
+     * @param string $id
+     * @todo Move broadcasting functionality to a decorator.
+     */
     protected function publishJSONLDUpdated($id)
     {
         $generator = new Version4Generator();
-        $events[] = DomainMessage::recordNow(
-            $generator->generate(),
-            1,
-            new Metadata(),
-            new OrganizerProjectedToJSONLD($id)
-        );
+        $events = [
+            DomainMessage::recordNow(
+                $generator->generate(),
+                1,
+                new Metadata(),
+                new OrganizerProjectedToJSONLD($id)
+            )
+        ];
 
         $this->eventBus->publish(
             new DomainEventStream($events)

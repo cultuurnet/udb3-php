@@ -1,74 +1,68 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\Model\Properties;
 
-use CultuurNet\UDB3\EventServiceInterface;
-use CultuurNet\UDB3\UDB2\EventNotFoundException;
+use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\EntityServiceInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Command\ValidationException;
 
 class DefaultUrlValidator implements UrlValidator
 {
     /**
-     * @var string
+     * @var IriOfferIdentifierFactoryInterface
      */
-    private $regExpPattern;
+    private $iriOfferIdentifierFactory;
 
     /**
-     * @var EventServiceInterface
+     * @var EntityServiceInterface[]
      */
-    private $eventService;
+    private $entityServices;
 
     /**
-     * @param string $regExpPattern
-     * @param EventServiceInterface $eventService
+     * DefaultUrlValidator constructor.
+     * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      */
     public function __construct(
-        $regExpPattern,
-        EventServiceInterface $eventService
+        IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
     ) {
-        $this->regExpPattern = $regExpPattern;
-        $this->eventService = $eventService;
+        $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
     }
 
+    /**
+     * @param OfferType $offerType
+     * @param EntityServiceInterface $entityService
+     * @return static
+     */
+    public function withEntityService(OfferType $offerType, EntityServiceInterface $entityService)
+    {
+        $c = clone $this;
+        $c->entityServices[$offerType->toNative()] = $entityService;
+        return $c;
+    }
+
+    /**
+     * @param Url $url
+     */
     public function validateUrl(Url $url)
     {
-        $match = @preg_match(
-            '@^' . $this->regExpPattern . '$@',
-            (string)$url,
-            $matches
+        $identifier = $this->iriOfferIdentifierFactory->fromIri(
+            \ValueObjects\Web\Url::fromNative((string) $url)
         );
+        $offerType = $identifier->getType();
+        $offerId = $identifier->getId();
 
-        if (false === $match) {
-            throw new \RuntimeException(
-                'Problem evaluating regular expression pattern ' . $this->regExpPattern
-            );
+        if (!isset($this->entityServices[$offerType->toNative()])) {
+            throw new \LogicException("Found no repository for type {$offerType->toNative()}.");
         }
-
-        if (0 === $match) {
-            throw new ValidationException(
-                [
-                    'The given URL can not be used. It might not be a cultural event, or no integration is provided with the system the cultural event is located at.'
-                ]
-            );
-        }
-
-        if (!array_key_exists('eventid', $matches)) {
-            throw new \RuntimeException(
-                'Regular expression pattern should capture group named "eventid"'
-            );
-        }
-
-        $eventId = $matches['eventid'];
 
         try {
-            $this->eventService->getEvent($eventId);
-        } catch (EventNotFoundException $e) {
+            $this->entityServices[$offerType->toNative()]->getEntity($offerId);
+        } catch (EntityNotFoundException $e) {
             throw new ValidationException(
                 [
-                    'Unable to load event. The specified URL does not seem to point to an existing event.'
+                    "Unable to load {$offerType}. The specified URL does not seem to point to an existing {$offerType}."
                 ]
             );
         }

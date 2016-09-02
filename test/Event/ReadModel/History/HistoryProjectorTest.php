@@ -8,17 +8,27 @@ namespace CultuurNet\UDB3\Event\ReadModel\History;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\CollaborationData;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
-use CultuurNet\UDB3\Event\TitleTranslated;
+use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use ValueObjects\String\String;
 
 class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -178,13 +188,13 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            'Titre en français'
+            new String('Titre en français')
         );
 
         $translatedDate = '2015-03-26T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $titleTranslated->getEventId(),
+            $titleTranslated->getItemId(),
             3,
             new Metadata(['user_nick' => 'JohnDoe']),
             $titleTranslated,
@@ -222,13 +232,13 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            'Signalement en français'
+            new String('Signalement en français')
         );
 
         $translatedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $descriptionTranslated->getEventId(),
+            $descriptionTranslated->getItemId(),
             3,
             new Metadata(['user_nick' => 'JaneDoe']),
             $descriptionTranslated,
@@ -263,7 +273,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_eventWasTagged()
     {
-        $eventWasTagged = new EventWasLabelled(
+        $eventWasTagged = new LabelAdded(
             self::EVENT_ID_1,
             new Label('foo')
         );
@@ -271,7 +281,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $taggedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $eventWasTagged->getEventId(),
+            $eventWasTagged->getItemId(),
             2,
             new Metadata(['user_nick' => 'Jan Janssen']),
             $eventWasTagged,
@@ -306,7 +316,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_tagErased()
     {
-        $tagErased = new Unlabelled(
+        $tagErased = new LabelDeleted(
             self::EVENT_ID_1,
             new Label('foo')
         );
@@ -314,7 +324,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $tagErasedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $tagErased->getEventId(),
+            $tagErased->getItemId(),
             2,
             new Metadata(['user_nick' => 'Jan Janssen']),
             $tagErased,
@@ -345,6 +355,244 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_logs_EventCreatedFromCdbXml()
+    {
+        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
+            new String(self::EVENT_ID_2),
+            new EventXmlString($this->getEventCdbXml(self::EVENT_ID_2)),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
+            1,
+            $metadata,
+            $eventCreatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => 'Aangemaakt via EntryAPI door consumer "UiTDatabank"',
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_EventUpdatedFromCdbXml()
+    {
+        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
+            new String(self::EVENT_ID_2),
+            new EventXmlString($this->getEventCdbXml(self::EVENT_ID_2)),
+            new String(self::CDBXML_NAMESPACE)
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            1,
+            $metadata,
+            $eventUpdatedFromCdbXml,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => 'Geüpdatet via EntryAPI door consumer "UiTDatabank"',
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_LabelsMerged()
+    {
+        $labels = new LabelCollection(
+            [
+                new Label('label B', true),
+                new Label('label C', false),
+            ]
+        );
+        $labelsMerged = new LabelsMerged(
+            new String(self::EVENT_ID_2),
+            $labels
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $labelsMerged->getEventId()->toNative(),
+            1,
+            $metadata,
+            $labelsMerged,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => "Labels 'label B', 'label C' toegepast via EntryAPI door consumer \"UiTDatabank\"",
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_TranslationApplied()
+    {
+        $translationApplied = new TranslationApplied(
+            new String(self::EVENT_ID_2),
+            new Language('en'),
+            new String('Title'),
+            new String('Short description'),
+            new String('Long long long extra long description')
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $translationApplied->getEventId()->toNative(),
+            1,
+            $metadata,
+            $translationApplied,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $logMessage =
+            'Titel, korte beschrijving, lange beschrijving vertaald (en) via EntryAPI door consumer "UiTDatabank"';
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => $logMessage,
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_TranslationDeleted()
+    {
+        $translationDeleted = new TranslationDeleted(
+            new String(self::EVENT_ID_2),
+            new Language('en')
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $translationDeleted->getEventId()->toNative(),
+            1,
+            $metadata,
+            $translationDeleted,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $logMessage = 'Vertaling verwijderd (en) via EntryAPI door consumer "UiTDatabank"';
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => $logMessage,
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_CollaborationDataAdded()
+    {
+        $collaborationDataAdded = new CollaborationDataAdded(
+            new String(self::EVENT_ID_2),
+            new Language('en'),
+            new CollaborationData(
+                new String('sub-brand-foo'),
+                new String('plain text')
+            )
+        );
+
+        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+
+        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
+
+        $domainMessage = new DomainMessage(
+            $collaborationDataAdded->getEventId()->toNative(),
+            1,
+            $metadata,
+            $collaborationDataAdded,
+            DateTime::fromString($importedDate)
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $logMessage = 'Collaboration data toegevoegd (en) voor sub brand "sub-brand-foo" via EntryAPI door consumer "UiTDatabank"';
+
+        $this->assertHistoryOfEvent(
+            self::EVENT_ID_2,
+            [
+                (object)[
+                    'date' => '2015-03-01T10:17:19+02:00',
+                    'description' => $logMessage,
+                    'author' => 'Jantest',
+                ]
+            ]
+        );
+    }
+
+    /**
      * @param string $eventId
      * @param array $history
      */
@@ -357,5 +605,22 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             $history,
             $document->getBody()
         );
+    }
+
+    /**
+     * @param string $userNick
+     * @param string $consumerName
+     * @return Metadata
+     */
+    protected function entryApiMetadata($userNick, $consumerName)
+    {
+        $values = [
+            'user_nick' => $userNick,
+            'consumer' => [
+                'name' => $consumerName,
+            ],
+        ];
+
+        return new Metadata($values);
     }
 }

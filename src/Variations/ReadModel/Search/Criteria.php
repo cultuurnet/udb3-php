@@ -1,11 +1,8 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
@@ -25,7 +22,7 @@ class Criteria
     /**
      * @var Url
      */
-    private $eventUrl;
+    private $originUrl;
 
     public function withOwnerId(OwnerId $ownerId)
     {
@@ -43,19 +40,19 @@ class Criteria
         return $new;
     }
 
-    public function withEventUrl(Url $eventUrl)
+    public function withOriginUrl(Url $originUrl)
     {
         $new = clone $this;
-        $new->setEventUrl($eventUrl);
+        $new->setOriginUrl($originUrl);
         return $new;
     }
 
     /**
      * @param Url $eventUrl
      */
-    private function setEventUrl(Url $eventUrl)
+    private function setOriginUrl(Url $eventUrl)
     {
-        $this->eventUrl = $eventUrl;
+        $this->originUrl = $eventUrl;
     }
 
     /**
@@ -77,9 +74,9 @@ class Criteria
     /**
      * @return Url
      */
-    public function getEventUrl()
+    public function getOriginUrl()
     {
-        return $this->eventUrl;
+        return $this->originUrl;
     }
 
     /**
@@ -99,16 +96,16 @@ class Criteria
     }
 
     /**
-     * @param EventVariation $variation
+     * @param OfferVariation $variation
      * @return bool
      */
-    public function isSatisfiedBy(EventVariation $variation)
+    public function isSatisfiedBy(OfferVariation $variation)
     {
         $satisfied = true;
 
         if (($this->purpose && $variation->getPurpose() != $this->purpose) ||
             ($this->ownerId && $variation->getOwnerId() != $this->ownerId) ||
-            ($this->eventUrl && $variation->getEventUrl() != $this->eventUrl)
+            ($this->originUrl && $variation->getOriginUrl() != $this->originUrl)
         ) {
             $satisfied = false;
         }

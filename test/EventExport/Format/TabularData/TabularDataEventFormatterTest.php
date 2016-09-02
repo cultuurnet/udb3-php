@@ -101,18 +101,20 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider eventDateProvider
      */
-    public function it_formats_dates($eventFile, $created, $startDate, $endDate)
+    public function it_formats_dates($eventFile, $created, $startDate, $endDate, $modified)
     {
         $expectedFormatting = [
             'created' => $created,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'modified' => $modified
         ];
 
         $includedProperties = [
             'created',
             'startDate',
-            'endDate'
+            'endDate',
+            'modified'
         ];
         $event = $this->getJSONEventFromFile($eventFile);
         $formatter = new TabularDataEventFormatter($includedProperties);
@@ -138,6 +140,117 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_can_format_event_with_all_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_all_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_some_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_all_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_contact_point_with_reservation_contact_point()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.reservations.email',
+            'contactPoint.reservations.telephone'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_reservation_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16755083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.reservations.email" => "educatie@debijloke.be",
+            "contactPoint.reservations.telephone" => "09 269 92 92"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_format_event_with_mixed_contact_points()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.email',
+            'contactPoint.reservations.email',
+            'contactPoint.reservations.telephone'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_mixed_contact_points.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com",
+            "contactPoint.reservations.email" => "educatie@cultuurnet.be",
+            "contactPoint.reservations.telephone" => "09 269 92 92",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_available_date()
+    {
+        $includedProperties = [
+            'id',
+            'available'
+        ];
+        $eventWithAvailableDate = $this->getJSONEventFromFile('event_with_available_from.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithAvailableDate);
+        $expectedFormatting = array(
+            "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
+            "available" => "2015-10-13"
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
      * Test data provider for it_formats_dates().
      *
      * @return array
@@ -146,8 +259,38 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     public function eventDateProvider()
     {
         return array(
-            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30'),
-            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', ''),
+            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30', ''),
+            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', '', ''),
+            array('event_with_modified_date.json', '2015-10-13 14:27', '2015-10-29 20:00', '', '2015-10-13 14:27'),
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_strip_line_breaking_white_spaces_that_are_not_set_by_markup()
+    {
+        $includedProperties = [
+            'id',
+            'description'
+        ];
+        $eventWithUnwantedLineBreaks = $this->getJSONEventFromFile('event_with_unwanted_line_breaks.json');
+
+        $formatter = new TabularDataEventFormatter($includedProperties);
+        $expectedDescription = 'Wat is de kracht van verzoening? Jan De Cock trekt de wereld rond en ontmoet tientallen slachtoffers van misdaden die we soms moeilijk kunnen vatten en die toch konden ze vergeven.'
+        . PHP_EOL . 'Jan De Cock ontmoet slachtoffers van misdaden die het laatste woord niet aan de feiten hebben gelaten, noch aan de wrok.'
+        . PHP_EOL . 'In een wereld waar de roep naar gerechtigheid steeds vaker gehoord wordt als een schreeuw voor meer repressie en straf, biedt Jan De Cock weerwerk.'
+        . PHP_EOL . 'Hij trekt de wereld rond en ontmoet tientallen slachtoffers van daden die we soms moeilijk kunnen vatten.'
+        . PHP_EOL . 'Toch konden ze vergeven: ouders van wie de kinderen door de Noor Breivik werden vermoord, moeders van zonen die met de Twin Towers ten onder gingen, de weduwe van Gerrit Jan Heijn...'
+        . PHP_EOL . 'Zondert twijfel een onvergetelijk avond.'
+        . PHP_EOL . 'Graag doorklikken naar de website van Markant Melle Merelbeke voor alle informatie betreffende deze lezing. Iedereen welkom!';
+
+        $formattedEvent = $formatter->formatEvent($eventWithUnwantedLineBreaks);
+        $expectedFormatting = array(
+            'id' =>'ee7c4030-d69f-4584-b0f2-a700955c7df2',
+            'description' => $expectedDescription
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
     }
 }

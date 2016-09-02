@@ -1,36 +1,10 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Place\Events\OrganizerDeleted.
- */
-
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 
-/**
- * Organizer deleted event
- */
-class OrganizerDeleted extends PlaceEvent
+class OrganizerDeleted extends AbstractOrganizerDeleted
 {
-    use \CultuurNet\UDB3\OrganizerDeletedTrait;
-
-    /**
-     * @param string $id
-     * @param string $organizerId
-     */
-    public function __construct($id, $organizerId)
-    {
-        parent::__construct($id);
-        $this->organizerId = $organizerId;
-    }
-
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static($data['place_id'], $data['organizerId']);
-    }
+    use BackwardsCompatibleEventTrait;
 }

@@ -1,9 +1,8 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
+
+use CultuurNet\UDB3\Event\EventServiceInterface;
 
 /**
  * Base class for EventServiceInterface decorators.

@@ -6,26 +6,28 @@
 namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
-use CultuurNet\UDB3\Variations\Model\EventVariation;
+use CultuurNet\UDB3\DBALTestConnectionTrait;
+use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
-use Doctrine\DBAL\DriverManager;
-use PDO;
 use PHPUnit_Framework_TestCase;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {
+    use DBALTestConnectionTrait;
+
     /**
      * @var DBALRepository
      */
     private $repository;
 
     /**
-     * @var EventVariation[]
+     * @var OfferVariation[]
      */
     private $variations;
 
@@ -46,29 +48,12 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('PDO')) {
-            $this->markTestSkipped('PDO is required to run this test.');
-        }
-
-        $availableDrivers = PDO::getAvailableDrivers();
-        if (!in_array('sqlite', $availableDrivers)) {
-            $this->markTestSkipped(
-                'PDO sqlite driver is required to run this test.'
-            );
-        }
-
-        $connection = DriverManager::getConnection(
-            [
-                'url' => 'sqlite:///:memory:',
-            ]
-        );
-
         $this->repository = new DBALRepository(
-            $connection,
+            $this->getConnection(),
             new ExpressionFactory()
         );
 
-        $schemaManager = $connection->getSchemaManager();
+        $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
         $schemaManager->createTable(
@@ -97,7 +82,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                 foreach ($this->urls as $url) {
                     $id = new Id($uuidGenerator->generate());
 
-                    $this->variations[] = EventVariation::create(
+                    $this->variations[] = OfferVariation::create(
                         $id,
                         $url,
                         $owner,
@@ -154,7 +139,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider keysProvider
      */
-    public function it_allows_to_search_for_event_variations_with_criteria(
+    public function it_allows_to_search_for_offer_variations_with_criteria(
         $ownerKey,
         $purposeKey,
         $urlKey
@@ -166,7 +151,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array_slice($this->getVariationsMatching($criteria), $page * $limit, $limit),
-            $this->repository->getEventVariations($criteria, $limit, $page)
+            $this->repository->getOfferVariations($criteria, $limit, $page)
         );
     }
 
@@ -188,7 +173,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         }
 
         if (null !== $urlKey) {
-            $criteria = $criteria->withEventUrl($this->urls[$urlKey]);
+            $criteria = $criteria->withOriginUrl($this->urls[$urlKey]);
         }
 
         return $criteria;
@@ -203,7 +188,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider keysProvider
      */
-    public function it_can_count_event_variations_with_criteria(
+    public function it_can_count_offer_variations_with_criteria(
         $ownerKey,
         $purposeKey,
         $urlKey
@@ -212,7 +197,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             count($this->getVariationsMatching($criteria)),
-            $this->repository->countEventVariations($criteria)
+            $this->repository->countOfferVariations($criteria)
         );
     }
 
@@ -225,10 +210,10 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             ->withOwnerId($this->owners[1])
             ->withPurpose($this->purposes[2]);
 
-        $count = $this->repository->countEventVariations($criteria);
+        $count = $this->repository->countOfferVariations($criteria);
         $this->assertEquals(10, $count);
 
-        $variationIds = $this->repository->getEventVariations($criteria);
+        $variationIds = $this->repository->getOfferVariations($criteria);
 
         $firstVariationId = array_shift($variationIds);
         $lastVariationId = array_pop($variationIds);
@@ -238,12 +223,12 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $variationIds,
-            $this->repository->getEventVariations($criteria, $count)
+            $this->repository->getOfferVariations($criteria, $count)
         );
 
         $this->assertEquals(
             $count - 2,
-            $this->repository->countEventVariations($criteria)
+            $this->repository->countOfferVariations($criteria)
         );
     }
 }

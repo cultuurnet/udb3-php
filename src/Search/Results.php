@@ -1,16 +1,15 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Search;
 
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use ValueObjects\Number\Integer;
 
 class Results
 {
     /**
-     * @var array
+     * @var OfferIdentifierCollection
      */
     private $items;
 
@@ -20,25 +19,25 @@ class Results
     private $totalItems;
 
     /**
-     * @param array $items
-     * @param Integer $totalItems
+     * @param OfferIdentifierCollection $items
+     * @param \ValueObjects\Number\Integer $totalItems
      */
-    public function __construct(array $items, Integer $totalItems)
+    public function __construct(OfferIdentifierCollection $items, Integer $totalItems)
     {
         $this->items = $items;
         $this->totalItems = $totalItems;
     }
 
     /**
-     * @return array
+     * @return IriOfferIdentifier[]
      */
     public function getItems()
     {
-        return $this->items;
+        return $this->items->toArray();
     }
 
     /**
-     * @return Integer
+     * @return \ValueObjects\Number\Integer
      */
     public function getTotalItems()
     {

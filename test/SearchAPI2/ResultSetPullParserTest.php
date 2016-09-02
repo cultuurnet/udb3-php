@@ -3,16 +3,25 @@
 namespace SearchAPI2;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use ValueObjects\Number\Integer;
+use ValueObjects\Web\Url;
 
 class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var IriGeneratorInterface | \PHPUnit_Framework_MockObject_MockObject
      */
-    protected $iriGenerator;
+    protected $eventIriGenerator;
+
+    /**
+     * @var IriGeneratorInterface | \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $placeIriGenerator;
 
     /**
      * @var ResultSetPullParser
@@ -21,10 +30,12 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->eventIriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->placeIriGenerator = $this->getMock(IriGeneratorInterface::class);
         $this->resultSetPullParser = new ResultSetPullParser(
             new \XMLReader(),
-            $this->iriGenerator
+            $this->eventIriGenerator,
+            $this->placeIriGenerator
         );
     }
 
@@ -37,34 +48,184 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
             __DIR__ . '/search_results.xml'
         );
 
-        $this->iriGenerator
-            ->expects($this->exactly(8))
+        $this->eventIriGenerator
+            ->expects($this->exactly(5))
             ->method('iri')
             ->withConsecutive(
                 ['590174eb-5577-4b49-8bc2-4b619a948c56'],
-                ['9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'],
-                ['d9725327-cbec-4bb8-bc56-9f3f7761b716'],
                 ['70d24706-6e23-406c-9b54-445f5249ae6b'],
                 ['2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'],
                 ['409cca2b-d5bb-4f53-9312-de22bdbbcbb2'],
-                ['40836aa3-9fcb-4672-8f69-6394fc0873f2'],
-                ['ee08000a-ccfa-4675-93ef-a0dc02ae1be4']
+                ['40836aa3-9fcb-4672-8f69-6394fc0873f2']
             )
-            ->willReturnArgument(0);
+            ->willReturnCallback(
+                function ($id) {
+                    return 'http://du.de/event/' . $id;
+                }
+            );
+
+        $this->placeIriGenerator
+            ->expects($this->exactly(4))
+            ->method('iri')
+            ->withConsecutive(
+                ['9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'],
+                ['d9725327-cbec-4bb8-bc56-9f3f7761b716'],
+                ['ee08000a-ccfa-4675-93ef-a0dc02ae1be4'],
+                ['c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d']
+            )
+            ->willReturnCallback(
+                function ($id) {
+                    return 'http://du.de/place/' . $id;
+                }
+            );
 
         $resultSet = $this->resultSetPullParser->getResultSet($cdbxml);
 
         $expectedResultSet = new Results(
-            [
-                ['@id' => '590174eb-5577-4b49-8bc2-4b619a948c56'],
-                ['@id' => '9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'],
-                ['@id' => 'd9725327-cbec-4bb8-bc56-9f3f7761b716'],
-                ['@id' => '70d24706-6e23-406c-9b54-445f5249ae6b'],
-                ['@id' => '2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'],
-                ['@id' => '409cca2b-d5bb-4f53-9312-de22bdbbcbb2'],
-                ['@id' => '40836aa3-9fcb-4672-8f69-6394fc0873f2'],
-                ['@id' => 'ee08000a-ccfa-4675-93ef-a0dc02ae1be4'],
-            ],
+            OfferIdentifierCollection::fromArray(
+                [
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/590174eb-5577-4b49-8bc2-4b619a948c56'),
+                        '590174eb-5577-4b49-8bc2-4b619a948c56',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'),
+                        '9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c',
+                        OfferType::PLACE()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/d9725327-cbec-4bb8-bc56-9f3f7761b716'),
+                        'd9725327-cbec-4bb8-bc56-9f3f7761b716',
+                        OfferType::PLACE()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/70d24706-6e23-406c-9b54-445f5249ae6b'),
+                        '70d24706-6e23-406c-9b54-445f5249ae6b',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'),
+                        '2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/409cca2b-d5bb-4f53-9312-de22bdbbcbb2'),
+                        '409cca2b-d5bb-4f53-9312-de22bdbbcbb2',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/40836aa3-9fcb-4672-8f69-6394fc0873f2'),
+                        '40836aa3-9fcb-4672-8f69-6394fc0873f2',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/ee08000a-ccfa-4675-93ef-a0dc02ae1be4'),
+                        'ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
+                        OfferType::PLACE()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d'),
+                        'c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d',
+                        OfferType::PLACE()
+                    )
+                ]
+            ),
+            new Integer(1820)
+        );
+
+        $this->assertEquals($expectedResultSet, $resultSet);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_the_identifier_iri_to_the_external_url_when_provided()
+    {
+        $cdbxml = file_get_contents(
+            __DIR__ . '/search_results_with_external_urls.xml'
+        );
+
+        $this->eventIriGenerator
+            ->expects($this->exactly(4))
+            ->method('iri')
+            ->withConsecutive(
+                ['70d24706-6e23-406c-9b54-445f5249ae6b'],
+                ['2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'],
+                ['409cca2b-d5bb-4f53-9312-de22bdbbcbb2'],
+                ['40836aa3-9fcb-4672-8f69-6394fc0873f2']
+            )
+            ->willReturnCallback(
+                function ($id) {
+                    return 'http://du.de/event/' . $id;
+                }
+            );
+
+        $this->placeIriGenerator
+            ->expects($this->exactly(2))
+            ->method('iri')
+            ->withConsecutive(
+                ['d9725327-cbec-4bb8-bc56-9f3f7761b716'],
+                ['ee08000a-ccfa-4675-93ef-a0dc02ae1be4']
+            )
+            ->willReturnCallback(
+                function ($id) {
+                    return 'http://du.de/place/' . $id;
+                }
+            );
+
+        $resultSet = $this->resultSetPullParser->getResultSet($cdbxml);
+
+        $expectedResultSet = new Results(
+            OfferIdentifierCollection::fromArray(
+                [
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://www.omd.de/events/590174eb-5577-4b49-8bc2-4b619a948c56'),
+                        '590174eb-5577-4b49-8bc2-4b619a948c56',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://www.omd.de/places/9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c'),
+                        '9b60002a-9671-4b91-a2ad-5ccf8fbf7e5c',
+                        OfferType::PLACE()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/d9725327-cbec-4bb8-bc56-9f3f7761b716'),
+                        'd9725327-cbec-4bb8-bc56-9f3f7761b716',
+                        OfferType::PLACE()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/70d24706-6e23-406c-9b54-445f5249ae6b'),
+                        '70d24706-6e23-406c-9b54-445f5249ae6b',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45'),
+                        '2c86bd2d-686a-41e8-a1fc-6fe99c9d6b45',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/409cca2b-d5bb-4f53-9312-de22bdbbcbb2'),
+                        '409cca2b-d5bb-4f53-9312-de22bdbbcbb2',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/event/40836aa3-9fcb-4672-8f69-6394fc0873f2'),
+                        '40836aa3-9fcb-4672-8f69-6394fc0873f2',
+                        OfferType::EVENT()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://du.de/place/ee08000a-ccfa-4675-93ef-a0dc02ae1be4'),
+                        'ee08000a-ccfa-4675-93ef-a0dc02ae1be4',
+                        OfferType::PLACE()
+                    ),
+                    new IriOfferIdentifier(
+                        Url::fromNative('http://www.omd.de/places/c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d'),
+                        'c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d',
+                        OfferType::PLACE()
+                    )
+                ]
+            ),
             new Integer(1820)
         );
 

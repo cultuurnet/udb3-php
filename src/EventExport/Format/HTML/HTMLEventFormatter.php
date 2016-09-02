@@ -111,21 +111,39 @@ class HTMLEventFormatter
         }
 
         $type = EventType::fromJSONLDEvent($eventString);
-        $formattedEvent['type'] = $type->getLabel();
+        if ($type) {
+            $formattedEvent['type'] = $type->getLabel();
+        }
 
         $formattedEvent['title'] = reset($event->name);
-        $formattedEvent['description'] = $this->filters->filter(
-            reset($event->description)
-        );
 
-        $formattedEvent['address'] = [
-            'name' => $event->location->name,
-            'street' => $event->location->address->streetAddress,
-            'postcode' => $event->location->address->postalCode,
-            'municipality' => $event->location->address->addressLocality,
-        ];
+        if (property_exists($event, 'description')) {
+            $formattedEvent['description'] = $this->filters->filter(
+                reset($event->description)
+            );
+        }
 
-        if (isset($event->bookingInfo)) {
+        $address = [];
+
+        if (property_exists($event, 'location')) {
+            if (property_exists($event->location, 'name')) {
+                $address['name'] = reset($event->location->name);
+            }
+
+            if (property_exists($event->location, 'address')) {
+                $address += [
+                    'street' => $event->location->address->streetAddress,
+                    'postcode' => $event->location->address->postalCode,
+                    'municipality' => $event->location->address->addressLocality,
+                ];
+            }
+        }
+
+        if (!empty($address)) {
+            $formattedEvent['address'] = $address;
+        }
+
+        if (isset($event->bookingInfo) && is_array($event->bookingInfo)) {
             $firstPrice = reset($event->bookingInfo);
             $formattedEvent['price'] = $this->priceFormatter->format($firstPrice->price);
         } else {

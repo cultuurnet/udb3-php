@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
@@ -9,56 +6,35 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\ApplyLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\Unlabel;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
-use CultuurNet\UDB3\EventNotFoundException;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\OfferEditingInterface;
+use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Variations\EventVariationServiceInterface;
 
-class DefaultEventEditingService implements EventEditingServiceInterface, OfferEditingInterface
+class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface
 {
-
-    use \CultuurNet\UDB3\OfferEditingTrait;
-
     /**
      * @var EventServiceInterface
      */
     protected $eventService;
 
     /**
-     * @var EventVariationServiceInterface
+     * @var PlaceService
      */
-    protected $eventVariationService;
-
-    /**
-     * @var CommandBusInterface
-     */
-    protected $commandBus;
-
-    /**
-     * @var UuidGeneratorInterface
-     */
-    protected $uuidGenerator;
+    protected $places;
 
     /**
      * @var RepositoryInterface
      */
-    protected $eventRepository;
-
-    /**
-     * @var PlaceService
-     */
-    protected $places;
+    protected $writeRepository;
 
     /**
      * @param EventServiceInterface $eventService
@@ -69,50 +45,15 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
         EventServiceInterface $eventService,
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $eventRepository,
-        PlaceService $placeService
+        DocumentRepositoryInterface $readRepository,
+        PlaceService $placeService,
+        OfferCommandFactoryInterface $commandFactory,
+        RepositoryInterface $writeRepository
     ) {
+        parent::__construct($commandBus, $uuidGenerator, $readRepository, $commandFactory);
         $this->eventService = $eventService;
-        $this->commandBus = $commandBus;
-        $this->uuidGenerator = $uuidGenerator;
-        $this->eventRepository = $eventRepository;
         $this->places = $placeService;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function translateTitle($eventId, Language $language, $title)
-    {
-        $this->guardId($eventId);
-        $this->guardTranslationLanguage($language);
-
-        return $this->commandBus->dispatch(
-            new TranslateTitle($eventId, $language, $title)
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function translateDescription($eventId, Language $language, $description)
-    {
-        $this->guardId($eventId);
-        $this->guardTranslationLanguage($language);
-
-        return $this->commandBus->dispatch(
-            new TranslateDescription($eventId, $language, $description)
-        );
-    }
-
-    /**
-     * @param string $id
-     * @throws EventNotFoundException
-     */
-    public function guardId($id)
-    {
-        // This validates if the eventId is valid.
-        $this->eventService->getEvent($id);
+        $this->writeRepository = $writeRepository;
     }
 
     protected function guardTranslationLanguage(Language $language)
@@ -123,49 +64,28 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
     }
 
     /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function label($eventId, Label $label)
-    {
-        $this->guardId($eventId);
-
-        return $this->commandBus->dispatch(
-            new ApplyLabel($eventId, $label)
-        );
-    }
-
-    /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function unlabel($eventId, Label $label)
-    {
-        $this->guardId($eventId);
-
-        return $this->commandBus->dispatch(
-            new Unlabel($eventId, $label)
-        );
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function createEvent(
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    ) {
         $eventId = $this->uuidGenerator->generate();
 
-        // This will throw an EntityNotFoundException if the place does
-        // not exist.
-        //$this->places->getEntity($location);
+        $event = Event::create(
+            $eventId,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme,
+            $this->publicationDate
+        );
 
-        $event = Event::create($eventId, $title, $eventType, $location, $calendar, $theme);
-
-        $this->eventRepository->save($event);
+        $this->writeRepository->save($event);
 
         return $eventId;
     }
@@ -188,10 +108,6 @@ class DefaultEventEditingService implements EventEditingServiceInterface, OfferE
      */
     public function deleteEvent($eventId)
     {
-        $this->guardId($eventId);
-
-        return $this->commandBus->dispatch(
-            new DeleteEvent($eventId)
-        );
+        return $this->delete($eventId);
     }
 }

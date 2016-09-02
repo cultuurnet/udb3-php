@@ -32,6 +32,16 @@ class JSONLDEventFormatter
                 array_push($include, 'location');
             }
 
+            // We include bookingInfo if one of its properties is wanted.
+            $includedBookingInfoProperties = array_intersect(
+                ['bookingInfo.price', 'bookingInfo.url'],
+                $include
+            );
+            if (!empty($includedBookingInfoProperties) &&
+                !in_array('bookingInfo', $include)) {
+                array_push($include, 'bookingInfo');
+            }
+
             $terms = $this->filterTermsFromProperties($include);
             if (count($terms) > 0) {
                 $this->includedTerms = $terms;

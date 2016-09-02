@@ -41,12 +41,11 @@ class DBALRepository implements RepositoryInterface
     private function prepareInsertStatement()
     {
         $table = $this->connection->quoteIdentifier($this->tableName);
+        
         return $this->connection->prepare(
-            "INSERT INTO {$table} SET
-              place = :place,
-              organizer = :organizer
-            ON DUPLICATE KEY UPDATE
-              organizer=:organizer"
+            "REPLACE INTO {$table}
+             (place, organizer)
+             VALUES (:place, :organizer)"
         );
     }
 
@@ -54,24 +53,29 @@ class DBALRepository implements RepositoryInterface
     {
         $q = $this->connection->createQueryBuilder();
         $q
-            ->select('event')
+            ->select('place')
             ->from($this->tableName)
             ->where('organizer = ?')
             ->setParameter(0, $organizerId);
 
         $results = $q->execute();
 
-        $events = array();
+        $places = array();
         while ($id = $results->fetchColumn(0)) {
-            $events[] = $id;
+            $places[] = $id;
         }
 
-        return $events;
+        return $places;
     }
 
-    public function removeRelations($eventId)
+    public function removeRelations($placeId)
     {
-      // @todo implement this for non-drupal.
+        $q = $this->connection->createQueryBuilder();
+        $q->delete($this->tableName)
+            ->where('place = ?')
+            ->setParameter(0, $placeId);
+
+        $q->execute();
     }
 
     /**
@@ -93,17 +97,17 @@ class DBALRepository implements RepositoryInterface
         $table = $schema->createTable($this->tableName);
 
         $table->addColumn(
-            'organizer',
-            'string',
-            array('length' => 32, 'notnull' => false)
-        );
-        $table->addColumn(
             'place',
             'string',
-            array('length' => 32, 'notnull' => false)
+            array('length' => 36, 'notnull' => false)
+        );
+        $table->addColumn(
+            'organizer',
+            'string',
+            array('length' => 36, 'notnull' => false)
         );
 
-        $table->setPrimaryKey(array('event'));
+        $table->setPrimaryKey(array('place'));
 
         return $table;
     }

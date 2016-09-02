@@ -22,28 +22,39 @@ class OrganizerCreated extends OrganizerEvent
     public $title;
 
     /**
-     * @var array
+     * @var Address[]
      */
     public $addresses;
 
     /**
-     * @var array
+     * @var string[]
      */
     public $phones;
 
     /**
-     * @var array
+     * @var string[]
      */
     public $emails;
 
     /**
-     * @var array
+     * @var string[]
      */
     public $urls;
 
+    /**
+     * @param string $id
+     * @param Title $title
+     * @param Address[] $addresses
+     * @param string[] $phones
+     * @param string[] $emails
+     * @param string[] $urls
+     */
     public function __construct($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         parent::__construct($id);
+
+        $this->guardAddressTypes($addresses);
+
         $this->title = $title;
         $this->addresses = $addresses;
         $this->phones = $phones;
@@ -51,26 +62,58 @@ class OrganizerCreated extends OrganizerEvent
         $this->urls = $urls;
     }
 
+    /**
+     * @param Address[] $addresses
+     */
+    private function guardAddressTypes(array $addresses)
+    {
+        foreach ($addresses as $address) {
+            if (!($address instanceof Address)) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        "Argument should be of type Address, %s given.",
+                        is_object($address) ? get_class($address) : 'scalar'
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * @return Title
+     */
     public function getTitle()
     {
         return $this->title;
     }
 
+    /**
+     * @return Address[]
+     */
     public function getAddresses()
     {
         return $this->addresses;
     }
 
+    /**
+     * @return string[]
+     */
     public function getPhones()
     {
         return $this->phones;
     }
 
+    /**
+     * @return string[]
+     */
     public function getEmails()
     {
         return $this->emails;
     }
 
+    /**
+     * @return string[]
+     */
     public function getUrls()
     {
         return $this->urls;

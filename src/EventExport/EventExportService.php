@@ -1,17 +1,17 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventExport;
 
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\EventExport\Notification\NotificationMailerInterface;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventNotFoundException;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use ValueObjects\Web\EmailAddress;
 
 class EventExportService implements EventExportServiceInterface
@@ -25,6 +25,7 @@ class EventExportService implements EventExportServiceInterface
      * @var SearchServiceInterface
      */
     protected $searchService;
+
     /**
      * @var UuidGeneratorInterface
      */
@@ -43,12 +44,23 @@ class EventExportService implements EventExportServiceInterface
     protected $mailer;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
+     * @var ResultsGeneratorInterface
+     */
+    protected $resultsGenerator;
+
+    /**
      * @param EventServiceInterface $eventService
      * @param SearchServiceInterface $searchService
      * @param UuidGeneratorInterface $uuidGenerator
      * @param string $publicDirectory
      * @param IriGeneratorInterface $iriGenerator
      * @param NotificationMailerInterface $mailer
+     * @param ResultsGeneratorInterface $resultsGenerator
      */
     public function __construct(
         EventServiceInterface $eventService,
@@ -56,16 +68,21 @@ class EventExportService implements EventExportServiceInterface
         UuidGeneratorInterface $uuidGenerator,
         $publicDirectory,
         IriGeneratorInterface $iriGenerator,
-        NotificationMailerInterface $mailer
+        NotificationMailerInterface $mailer,
+        ResultsGeneratorInterface $resultsGenerator
     ) {
         $this->eventService = $eventService;
         $this->searchService = $searchService;
         $this->uuidGenerator = $uuidGenerator;
-        $this->publicDirectory = realpath($publicDirectory);
+        $this->publicDirectory = $publicDirectory;
         $this->iriGenerator = $iriGenerator;
         $this->mailer = $mailer;
+        $this->resultsGenerator = $resultsGenerator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function exportEvents(
         FileFormatInterface $fileFormat,
         EventExportQuery $query,
@@ -73,6 +90,9 @@ class EventExportService implements EventExportServiceInterface
         LoggerInterface $logger = null,
         $selection = null
     ) {
+        if (!$logger instanceof LoggerInterface) {
+            $logger = new NullLogger();
+        }
 
         // do a pre query to test if the query is valid and check the item count
         try {
@@ -81,53 +101,50 @@ class EventExportService implements EventExportServiceInterface
                 1,
                 0
             );
-            $totalItemCount = $preQueryResult['totalItems'];
+            $totalItemCount = $preQueryResult->getTotalItems()->toNative();
         } catch (ClientErrorResponseException $e) {
-            if ($logger) {
-                $logger->error(
-                    'not_exported',
-                    array(
-                        'query' => (string)$query,
-                        'error' => $e->getMessage(),
-                        'exception_class' => get_class($e),
-                    )
-                );
-            }
+            $logger->error(
+                'not_exported',
+                array(
+                    'query' => (string)$query,
+                    'error' => $e->getMessage(),
+                    'exception_class' => get_class($e),
+                )
+            );
 
             throw ($e);
         }
 
-        print($totalItemCount) . PHP_EOL;
+        $logger->debug(
+            'total items: {totalItems}',
+            [
+                'totalItems' => $totalItemCount,
+                'query' => (string)$query,
+            ]
+        );
 
         if ($totalItemCount < 1) {
-            if ($logger) {
-                $logger->error(
-                    'not_exported',
-                    array(
-                        'query' => (string)$query,
-                        'error' => "query did not return any results"
-                    )
-                );
-            }
+            $logger->error(
+                'not_exported',
+                array(
+                    'query' => (string)$query,
+                    'error' => "query did not return any results"
+                )
+            );
 
             return false;
         }
 
         try {
-            $tmpPath = tempnam(
-                sys_get_temp_dir(),
-                $this->uuidGenerator->generate()
-            );
+            $tmpDir = sys_get_temp_dir();
+            $tmpFileName = $this->uuidGenerator->generate();
+            $tmpPath = "{$tmpDir}/{$tmpFileName}";
 
             // $events are keyed here by the authoritative event ID.
-            if ($selection) {
-                $events = $this->getEventsAsJSONLD($selection);
+            if (is_array($selection) && !empty($selection)) {
+                $events = $this->getEventsAsJSONLD($selection, $logger);
             } else {
-                $events = $this->search(
-                    $totalItemCount,
-                    $query,
-                    $logger
-                );
+                $events = $this->search($query, $logger);
             }
 
             $fileWriter = $fileFormat->getWriter();
@@ -135,13 +152,13 @@ class EventExportService implements EventExportServiceInterface
 
             $finalPath = $this->getFinalFilePath($fileFormat, $tmpPath);
 
-            $moved = rename($tmpPath, $finalPath);
+            $moved = copy($tmpPath, $finalPath);
+            unlink($tmpPath);
 
             if (!$moved) {
                 throw new \RuntimeException(
-                    'Unable to move export file to public directory ' . realpath(
-                        $this->publicDirectory
-                    )
+                    'Unable to move export file to public directory ' .
+                    $this->publicDirectory
                 );
             }
 
@@ -149,14 +166,12 @@ class EventExportService implements EventExportServiceInterface
                 basename($finalPath)
             );
 
-            if ($logger) {
-                $logger->info(
-                    'job_info',
-                    [
-                        'location' => $finalUrl,
-                    ]
-                );
-            }
+            $logger->info(
+                'job_info',
+                [
+                    'location' => $finalUrl,
+                ]
+            );
 
             if ($address) {
                 $this->notifyByMail($address, $finalUrl);
@@ -176,13 +191,46 @@ class EventExportService implements EventExportServiceInterface
      * Get all events formatted as JSON-LD.
      *
      * @param \Traversable $events
+     * @param LoggerInterface $logger
      * @return \Generator
      */
-    private function getEventsAsJSONLD($events)
+    private function getEventsAsJSONLD($events, LoggerInterface $logger)
     {
         foreach ($events as $eventId) {
-            yield $eventId => $this->eventService->getEvent($eventId);
+            $event = $this->getEvent($eventId, $logger);
+
+            if ($event) {
+                yield $eventId => $event;
+            }
         }
+    }
+
+    /**
+     * @param string $id
+     *   A string uniquely identifying an event.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return array|null
+     *   An event array or null if the event was not found.
+     */
+    private function getEvent($id, LoggerInterface $logger)
+    {
+        try {
+            $event = $this->eventService->getEvent($id);
+        } catch (EventNotFoundException $e) {
+            $logger->error(
+                $e->getMessage(),
+                [
+                    'eventId' => $id,
+                    'exception' => $e,
+                ]
+            );
+
+            $event = null;
+        }
+
+        return $event;
     }
 
     /**
@@ -205,58 +253,22 @@ class EventExportService implements EventExportServiceInterface
     /**
      * Generator that yields each unique search result.
      *
-     * @param $totalItemCount
-     * @param $query
-     * @param LoggerInterface|null $logger
+     * @param string|object $query
+     * @param LoggerInterface $logger
      *
      * @return \Generator
      */
-    private function search($totalItemCount, $query, LoggerInterface $logger = null)
+    private function search($query, LoggerInterface $logger)
     {
-        // change this pageSize value to increase or decrease the page size;
-        $pageSize = 10;
-        $pageCount = ceil($totalItemCount / $pageSize);
-        $pageCounter = 0;
-        $exportedEventIds = [];
+        $events = $this->resultsGenerator->search($query);
 
-        // Page querying the search service;
-        while ($pageCounter < $pageCount) {
-            $start = $pageCounter * $pageSize;
-            // Sort ascending by creation date to make sure we get a quite consistent paging.
-            $sort = 'creationdate asc';
-            $results = $this->searchService->search(
-                (string)$query,
-                $pageSize,
-                $start,
-                $sort
-            );
+        foreach ($events as $eventIdentifier) {
+            $event = $this->getEvent((string) $eventIdentifier->getIri(), $logger);
 
-            // Iterate the results of the current page and get their IDs
-            // by stripping them from the json-LD representation
-            foreach ($results['member'] as $event) {
-                $expoId = explode('/', $event['@id']);
-                $eventId = array_pop($expoId);
-
-                if (!array_key_exists($eventId, $exportedEventIds)) {
-                    $exportedEventIds[$eventId] = $pageCounter;
-
-                    $event = $this->eventService->getEvent($eventId);
-
-                    yield $eventId => $event;
-                } else {
-                    if ($logger) {
-                        $logger->error(
-                            'query_duplicate_event',
-                            array(
-                                'query' => $query,
-                                'error' => "found duplicate event {$eventId} on page {$pageCounter}, occurred first time on page {$exportedEventIds[$eventId]}"
-                            )
-                        );
-                    }
-                }
+            if ($event) {
+                yield $eventIdentifier->getId() => $event;
             }
-            ++$pageCounter;
-        };
+        }
     }
 
     /**

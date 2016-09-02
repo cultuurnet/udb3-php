@@ -1,37 +1,10 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 
-/**
- * Event for typical age range updates.
- */
-class TypicalAgeRangeUpdated extends EventEvent
+class TypicalAgeRangeUpdated extends AbstractTypicalAgeRangeUpdated
 {
-
-    use \CultuurNet\UDB3\TypicalAgeRangeUpdatedTrait;
-
-    /**
-     * @param string $id
-     * @param string $typicalAgeRange
-     */
-    public function __construct($id, $typicalAgeRange)
-    {
-        parent::__construct($id);
-        $this->typicalAgeRange = $typicalAgeRange;
-    }
-
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static($data['event_id'], $data['typicalAgeRange']);
-    }
+    use BackwardsCompatibleEventTrait;
 }

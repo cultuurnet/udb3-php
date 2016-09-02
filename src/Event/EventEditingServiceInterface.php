@@ -7,35 +7,17 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\EventNotFoundException;
+use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
-use CultuurNet\UDB3\MediaObject;
+use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Title;
+use ValueObjects\String\String;
 
 interface EventEditingServiceInterface
 {
-    /**
-     * @param string $eventId
-     * @param Language $language
-     * @param string $title
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function translateTitle($eventId, Language $language, $title);
-
-    /**
-     * Update the description for a language.
-     *
-     * @param string $eventId
-     * @param Language $language
-     * @param string $description
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function translateDescription($eventId, Language $language, $description);
-
     /**
      * Update the description of an event.
      *
@@ -87,43 +69,35 @@ interface EventEditingServiceInterface
      * Add an image to the event.
      *
      * @param string $id
-     * @param MediaObject $mediaObject
+     * @param Image $image
      */
-    public function addImage($id, MediaObject $mediaObject);
+    public function addImage($id, Image $image);
 
     /**
      * Update an image of the event.
      *
-     * @param string $id
-     * @parma int $indexToEdit
-     * @param MediaObject $mediaObject
+     * @param $id
+     * @param Image $image
+     * @param \ValueObjects\String\String $description
+     * @param \ValueObjects\String\String $copyrightHolder
+     *
+     * @return string
+     *  The command id for this task.
      */
-    public function updateImage($id, $indexToEdit, MediaObject $mediaObject);
+    public function updateImage(
+        $id,
+        Image $image,
+        String $description,
+        String $copyrightHolder
+    );
 
     /**
-     * Delete an image of the event.
+     * Remove an image from an event.
      *
      * @param string $id
-     * @param int $indexToDelete
-     * @param mixed int|string $interalId
+     * @param Image $image
      */
-    public function deleteImage($id, $indexToDelete, $internalId = '');
-
-    /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function label($eventId, Label $label);
-
-    /**
-     * @param string $eventId
-     * @param Label $label
-     * @return string command id
-     * @throws EventNotFoundException
-     */
-    public function unlabel($eventId, Label $label);
+    public function removeImage($id, Image $image);
 
     /**
      * @param Title $title

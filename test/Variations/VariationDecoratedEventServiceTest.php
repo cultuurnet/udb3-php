@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\Variations;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\EventServiceInterface;
+use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
@@ -91,12 +91,12 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -118,14 +118,14 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
     {
         $eventId = '937E901C-2E15-4F28-92EE-CD0AAFF44DB0';
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $eventJsonLD = $this->eventJsonLD($eventId);
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([]);
 
@@ -154,12 +154,12 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
 
         $eventJsonLD = $this->eventJsonLD($eventId);
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -199,12 +199,12 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         );
         $this->variationsJsonLdRepository->remove($variationId);
 
-        $expectedCriteria = $this->criteria->withEventUrl(
+        $expectedCriteria = $this->criteria->withOriginUrl(
             new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
         );
 
         $this->search->expects($this->once())
-            ->method('getEventVariations')
+            ->method('getOfferVariations')
             ->with($expectedCriteria)
             ->willReturn([$variationId]);
 
@@ -291,6 +291,45 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             $events,
             $actualEvents
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_generate_a_url_when_looking_for_an_id_that_is_already_a_url()
+    {
+        $eventId = 'http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0';
+        $variationId = 'D83B8FBC-9583-4F09-AE3F-C60393226D24';
+        $variationJsonLD = $this->variationJsonLD(
+            $variationId,
+            $eventId
+        );
+
+        $this->variationsJsonLdRepository->save(
+            new JsonDocument(
+                $variationId,
+                $variationJsonLD
+            )
+        );
+
+        $expectedCriteria = $this->criteria->withOriginUrl(
+            new Url('http://example.com/event/937E901C-2E15-4F28-92EE-CD0AAFF44DB0')
+        );
+
+        $this->search->expects($this->once())
+            ->method('getOfferVariations')
+            ->with($expectedCriteria)
+            ->willReturn([$variationId]);
+
+        $this->decoratedEventService->expects($this->never())
+            ->method('getEvent');
+
+        $jsonLD = $this->service->getEvent($eventId);
+
+        $this->assertEquals(
+            $variationJsonLD,
+            $jsonLD
         );
     }
 }

@@ -4,6 +4,8 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -32,13 +34,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->importer = new CdbXMLImporter();
+        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter());
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
         $this->slugger = $this->getMock(SluggerInterface::class);
         date_default_timezone_set('Europe/Brussels');
     }
 
+    /**
+     * @param string $fileName
+     * @return \stdClass
+     */
     private function createJsonEventFromCdbXml($fileName)
     {
         $cdbXml = file_get_contents(
@@ -304,5 +310,77 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('bookingInfo', $jsonEvent);
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityStarts']);
         $this->assertEquals('1968-12-31T23:00:00+00:00', $jsonEvent->bookingInfo[0]['availabilityEnds']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_include_duplicate_labels()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_duplicate_labels.cdbxml.xml');
+
+        $this->assertEquals(['enkel'], $jsonEvent->labels);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_invisible_keywords_as_hidden_labels()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml(
+            'event_with_invisible_keyword.cdbxml.xml'
+        );
+
+        $this->assertEquals(['toon mij', 'toon mij ook'], $jsonEvent->labels);
+        $this->assertEquals(['verberg mij'], $jsonEvent->hiddenLabels);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_import_an_event_with_semicolons_in_keywords_tag()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml(
+            'event_with_semicolon_in_keywords_tag.cdbxml.xml'
+        );
+
+        $this->assertEquals(['leren Frans', 'cursus Frans'], $jsonEvent->labels);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_import_an_event_with_semicolons_in_keyword_tag()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml(
+            'event_with_semicolon_in_keyword_tag.cdbxml.xml'
+        );
+
+        $this->assertEquals(
+            ['Franse kennis','leren Frans', 'cursus Frans'],
+            $jsonEvent->labels
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_import_a_new_event_with_semicolons_in_keyword_tag()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+
+        $this->createJsonEventFromCdbXml(
+            'event_with_semicolon_in_keyword_tag_but_too_new.cdbxml.xml'
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_copy_over_a_known_workflow_status()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
+
+        $this->assertEquals(WorkflowStatus::APPROVED, $jsonEvent->workflowStatus);
     }
 }

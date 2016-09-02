@@ -1,18 +1,10 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted.
- */
-
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\EventEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 
-/**
- * Event when typical age range was deleted
- */
-class TypicalAgeRangeDeleted extends EventEvent
+class TypicalAgeRangeDeleted extends AbstractTypicalAgeRangeDeleted
 {
-
+    use BackwardsCompatibleEventTrait;
 }

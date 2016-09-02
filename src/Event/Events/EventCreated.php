@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\Events;
 
@@ -12,7 +9,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use DateTime;
+use DateTimeImmutable;
 
 /**
  * Event when an event is created.
@@ -46,13 +43,28 @@ class EventCreated extends EventEvent
     private $calendar;
 
     /**
+     * @var DateTimeImmutable|null
+     */
+    private $publicationDate = null;
+
+    /**
      * @param string $eventId
      * @param Title $title
-     * @param string $location
-     * @param DateTime $date
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @param DateTimeImmutable|null $publicationDate
      */
-    public function __construct($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $eventId,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null,
+        DateTimeImmutable $publicationDate = null
+    ) {
         parent::__construct($eventId);
 
         $this->title = $title;
@@ -60,6 +72,7 @@ class EventCreated extends EventEvent
         $this->location = $location;
         $this->calendar = $calendar;
         $this->theme = $theme;
+        $this->publicationDate = $publicationDate;
     }
 
     /**
@@ -87,7 +100,7 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @return CalendarBase
+     * @return CalendarInterface
      */
     public function getCalendar()
     {
@@ -102,6 +115,13 @@ class EventCreated extends EventEvent
         return $this->location;
     }
 
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getPublicationDate()
+    {
+        return $this->publicationDate;
+    }
 
     /**
      * @return array
@@ -112,12 +132,17 @@ class EventCreated extends EventEvent
         if ($this->getTheme() !== null) {
             $theme = $this->getTheme()->serialize();
         }
+        $publicationDate = null;
+        if (!is_null($this->getPublicationDate())) {
+            $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
+        }
         return parent::serialize() + array(
             'title' => (string)$this->getTitle(),
             'event_type' => $this->getEventType()->serialize(),
             'theme' => $theme,
             'location' => $this->getLocation()->serialize(),
             'calendar' => $this->getCalendar()->serialize(),
+            'publication_date' => $publicationDate,
         );
     }
 
@@ -130,13 +155,21 @@ class EventCreated extends EventEvent
         if (!empty($data['theme'])) {
             $theme = Theme::deserialize($data['theme']);
         }
+        $publicationDate = null;
+        if (!empty($data['publication_date'])) {
+            $publicationDate = DateTimeImmutable::createFromFormat(
+                \DateTime::ISO8601,
+                $data['publication_date']
+            );
+        }
         return new static(
             $data['event_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Location::deserialize($data['location']),
             Calendar::deserialize($data['calendar']),
-            $theme
+            $theme,
+            $publicationDate
         );
     }
 }

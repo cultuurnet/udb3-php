@@ -39,6 +39,110 @@ class DBALRepository implements RepositoryInterface
         $this->connection->commit();
     }
 
+    public function removeOrganizer($eventId)
+    {
+        $transaction = function ($connection) use ($eventId) {
+            if ($this->eventHasRelations($connection, $eventId)) {
+                $this->updateEventRelation($connection, $eventId, 'organizer', null);
+            }
+        };
+
+        $this->connection->transactional($transaction);
+    }
+
+    public function storeOrganizer($eventId, $organizerId)
+    {
+        $this->storeRelation($eventId, 'organizer', $organizerId);
+    }
+
+    /**
+     * @param string $eventId
+     * @param string $relationType either 'place' or 'organizer'
+     * @param string $itemId
+     */
+    public function storeRelation($eventId, $relationType, $itemId)
+    {
+        $transaction = function ($connection) use ($eventId, $relationType, $itemId) {
+            if ($this->eventHasRelations($connection, $eventId)) {
+                $this->updateEventRelation($connection, $eventId, $relationType, $itemId);
+            } else {
+                $this->createEventRelation($connection, $eventId, $relationType, $itemId);
+            }
+        };
+
+        $this->connection->transactional($transaction);
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $eventId
+     * @param string $relationType
+     * @param string $itemId
+     */
+    private function createEventRelation(
+        Connection $connection,
+        $eventId,
+        $relationType,
+        $itemId
+    ) {
+        $q = $connection
+            ->createQueryBuilder()
+            ->insert($this->tableName)
+            ->values([
+                'event' => ':event_id',
+                $relationType => ':item_id'
+            ])
+            ->setParameter('event_id', $eventId)
+            ->setParameter('item_id', $itemId);
+
+        $q->execute();
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $eventId
+     * @param string $relationType
+     * @param string $itemId
+     */
+    private function updateEventRelation(
+        Connection $connection,
+        $eventId,
+        $relationType,
+        $itemId
+    ) {
+        $q = $connection
+            ->createQueryBuilder()
+            ->update($this->tableName)
+            ->where('event = :event_id')
+            ->set($relationType, ':item_id')
+            ->setParameter('event_id', $eventId)
+            ->setParameter('item_id', $itemId);
+
+        $q->execute();
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $id
+     * @return bool
+     */
+    private function eventHasRelations(
+        Connection $connection,
+        $id
+    ) {
+        $q = $connection->createQueryBuilder();
+
+        $q->select('1')
+            ->from($this->tableName, 'relation')
+            ->where('relation.event = :event_id')
+            ->setParameter('event_id', $id);
+
+        $result = $q->execute();
+        $relations = $result->fetchAll();
+
+        return count($relations) > 0;
+    }
+
     private function prepareInsertStatement()
     {
         $table = $this->connection->quoteIdentifier($this->tableName);
@@ -92,7 +196,12 @@ class DBALRepository implements RepositoryInterface
 
     public function removeRelations($eventId)
     {
-      // @todo implement this for non-drupal.
+        $q = $this->connection->createQueryBuilder();
+        $q->delete($this->tableName)
+          ->where('event = ?')
+          ->setParameter(0, $eventId);
+
+        $q->execute();
     }
 
     /**

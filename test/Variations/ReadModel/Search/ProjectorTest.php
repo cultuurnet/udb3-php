@@ -7,8 +7,9 @@ namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationCreated;
-use CultuurNet\UDB3\Variations\Model\Events\EventVariationDeleted;
+use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationCreated;
+use CultuurNet\UDB3\Variations\Model\Events\OfferVariationDeleted;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
@@ -53,12 +54,13 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
                 $purpose
             );
 
-        $eventVariationCreated = new EventVariationCreated(
+        $eventVariationCreated = new OfferVariationCreated(
             $id,
             $url,
             $ownerId,
             $purpose,
-            new Description('my personal description of this event')
+            new Description('my personal description of this event'),
+            OfferType::EVENT()
         );
 
         $this->projector->handle(DomainMessage::recordNow(
@@ -80,7 +82,7 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
             ->method('remove')
             ->with($id);
 
-        $eventVariationDeleted = new EventVariationDeleted($id);
+        $eventVariationDeleted = new OfferVariationDeleted($id);
 
         $this->projector->handle(DomainMessage::recordNow(
             (string)$id,

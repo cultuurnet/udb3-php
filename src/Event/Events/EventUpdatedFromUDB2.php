@@ -37,7 +37,7 @@ class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
     public static function deserialize(array $data)
     {
         $data += array(
-            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Default::CDB_SCHEME_URL
+            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2')
         );
         return new static(
             $data['event_id'],

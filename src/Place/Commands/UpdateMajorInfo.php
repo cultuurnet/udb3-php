@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Place\Commands\UpdateMajorInfo.
- */
-
 namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\Address;
@@ -13,9 +8,6 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-/**
- * Provides a command to update the major info of the place.
- */
 class UpdateMajorInfo
 {
 

@@ -5,38 +5,39 @@ namespace CultuurNet\UDB3\Place;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
-use CultuurNet\UDB3\Place\CommandHandler;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Place\Commands\AddLabel;
+use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
+use CultuurNet\UDB3\Place\Commands\TranslateDescription;
+use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\LabelAdded;
+use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
+use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Title;
-use PHPUnit_Framework_MockObject_MockObject;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
 
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {
-
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
-
-    /**
-     * @var SearchServiceInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $search;
-
-    public function setUp()
-    {
-        $this->search = $this->getMock(SearchServiceInterface::class);
-
-        parent::setUp();
-    }
 
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
@@ -47,7 +48,23 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             $eventBus
         );
 
-        return new CommandHandler($repository, $this->search);
+        $this->organizerRepository = $this->getMock(RepositoryInterface::class);
+
+        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository->method('getByName')
+            ->with(new String('foo'))
+            ->willReturn(new Entity(
+                new UUID(),
+                new String('foo'),
+                Visibility::VISIBLE(),
+                Privacy::PRIVACY_PUBLIC()
+            ));
+
+        return new CommandHandler(
+            $repository,
+            $this->organizerRepository,
+            $this->labelRepository
+        );
     }
 
     private function factorOfferCreated($id)
@@ -109,7 +126,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
      */
     public function it_can_delete_places()
     {
-        $id = '1';
+        $id = 'event-id';
         $this->scenario
             ->withAggregateId($id)
             ->given(
@@ -119,5 +136,112 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 new DeletePlace($id)
             )
             ->then([new PlaceDeleted($id)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_label_a_place()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new AddLabel($id, new Label('foo')))
+            ->then([new LabelAdded($id, new Label('foo'))]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_unlabel_a_place()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                    new LabelAdded($id, new Label('foo'))
+                ]
+            )
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([new LabelDeleted($id, new Label('foo'))]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_a_label_that_is_not_present_on_a_place()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_a_label_from_a_place_that_has_been_unlabelled_already()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                    new LabelAdded($id, new Label('foo')),
+                    new LabelDeleted($id, new Label('foo'))
+                ]
+            )
+            ->when(new DeleteLabel($id, new Label('foo')))
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_the_title_of_an_event()
+    {
+        $id = '1';
+        $title = new String('Voorbeeld');
+        $language = new Language('nl');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id)
+                ]
+            )
+            ->when(new TranslateTitle($id, $language, $title))
+            ->then(
+                [
+                    new TitleTranslated($id, $language, $title)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_the_description_of_an_event()
+    {
+        $id = '1';
+        $description = new String('Lorem ipsum dolor si amet...');
+        $language = new Language('nl');
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new TranslateDescription($id, $language, $description))
+            ->then([new DescriptionTranslated($id, $language, $description)]);
     }
 }

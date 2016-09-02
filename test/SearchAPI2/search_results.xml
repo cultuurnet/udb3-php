@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<cdb:cdbxml xmlns:cdb="http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL">
+<cdb:cdbxml xmlns:cdb="http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL">
     <cdb:nofrecords xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:long">1820</cdb:nofrecords>
     <cdb:event availablefrom="2014-10-14T00:00:00" availableto="2015-09-27T00:00:00" cdbid="590174eb-5577-4b49-8bc2-4b619a948c56" createdby="d.bol@parkstadlimburgtheaters.nl" creationdate="2014-10-14T13:57:31" externalid="CDB:98e8e409-6609-45fa-9903-f8a858db11ee" isparent="false" lastupdated="2014-10-14T13:58:57" lastupdatedby="d.bol@parkstadlimburgtheaters.nl" pctcomplete="75" published="true" owner="Invoerders Algemeen " private="false" validator="UiTdatabank Validatoren" wfstatus="readyforvalidation">
         <cdb:activities>
@@ -65,7 +65,11 @@
                 <cdb:title>Herman van Veen</cdb:title>
             </cdb:eventdetail>
         </cdb:eventdetails>
-        <cdb:keywords>Herman Van Veen;van Veen</cdb:keywords>
+        <cdb:keywords>
+            <cdb:keyword>Herman Van Veen</cdb:keyword>
+            <cdb:keyword>van Veen</cdb:keyword>
+            <cdb:keyword>not an udb3 place</cdb:keyword>
+        </cdb:keywords>
         <cdb:location>
             <cdb:address>
                 <cdb:physical>
@@ -153,6 +157,9 @@
         <cdb:languages>
             <cdb:language type="spoken">Frans</cdb:language>
         </cdb:languages>
+        <cdb:keywords>
+            <cdb:keyword>udb3 place</cdb:keyword>
+        </cdb:keywords>
         <cdb:location>
             <cdb:address>
                 <cdb:physical>
@@ -241,6 +248,10 @@
         <cdb:languages>
             <cdb:language type="spoken">Frans</cdb:language>
         </cdb:languages>
+        <cdb:keywords>
+            <cdb:keyword>UDB3 place</cdb:keyword>
+            <cdb:keyword>some other keyword that might reset the UDB3 place state</cdb:keyword>
+        </cdb:keywords>
         <cdb:location>
             <cdb:address>
                 <cdb:physical>
@@ -656,12 +667,17 @@
                         <cdb:mediatype>photo</cdb:mediatype>
                     </cdb:file>
                 </cdb:media>
-                <cdb:shortdescription>Sla op iets anders dan je broer of zus! 
+                <cdb:shortdescription>Sla op iets anders dan je broer of zus!
 Krijg superles van echte drummers; breng je favoriete nummers mee of laat je leiden doorheen pop, rock, jazz en bluesmuziek.</cdb:shortdescription>
                 <cdb:title>Drumlessen</cdb:title>
             </cdb:eventdetail>
         </cdb:eventdetails>
-        <cdb:keywords>drum;drumles;wijk__oostakker</cdb:keywords>
+        <cdb:keywords>
+            <cdb:keyword>drum</cdb:keyword>
+            <cdb:keyword>drumles</cdb:keyword>
+            <cdb:keyword>wijk__oostakker</cdb:keyword>
+            <cdb:keyword>UDB3 place</cdb:keyword>
+        </cdb:keywords>
         <cdb:location>
             <cdb:address>
                 <cdb:physical>
@@ -682,4 +698,61 @@ Krijg superles van echte drummers; breng je favoriete nummers mee of laat je lei
             <cdb:label>PopCollege</cdb:label>
         </cdb:organiser>
     </cdb:event>
+    <cdb:actor asset="true" availablefrom="2010-01-15T11:54:36" availableto="2100-01-01T00:00:00" createdby="evertdemeyer" creationdate="2010-01-15T11:54:36" cdbid="cbda925e-99ea-44a5-9959-6dce20e08eea" externalid="CDB:c3cd87e4-ab8e-4541-aac2-dda8e3ef508d" lastupdated="2010-01-15T11:54:36" lastupdatedby="evertdemeyer" owner="Invoerders Algemeen ">
+        <cdb:actordetails>
+            <cdb:actordetail lang="nl">
+                <cdb:shortdescription>This actor is not a location and should be ignored.</cdb:shortdescription>
+                <cdb:title>NOT A LOCATION, IGNORE ME</cdb:title>
+            </cdb:actordetail>
+        </cdb:actordetails>
+        <cdb:categories>
+            <cdb:category catid="6.0.0.0.0" type="publicscope">Wijk of buurt</cdb:category>
+            <cdb:category catid="8.52.0.0.0" type="actortype">Polyvalente zaal of expohal</cdb:category>
+        </cdb:categories>
+        <cdb:contactinfo>
+            <cdb:address>
+                <cdb:physical>
+                    <cdb:city>Kapellen Antwerpen</cdb:city>
+                    <cdb:country>BE</cdb:country>
+                    <cdb:gis>
+                        <cdb:xcoordinate>4.428188</cdb:xcoordinate>
+                        <cdb:ycoordinate>51.314430</cdb:ycoordinate>
+                    </cdb:gis>
+                    <cdb:housenr>12</cdb:housenr>
+                    <cdb:street>Hoevsebaan</cdb:street>
+                    <cdb:zipcode>2950</cdb:zipcode>
+                </cdb:physical>
+            </cdb:address>
+            <cdb:url main="true">http://www.cckapellen.be</cdb:url>
+        </cdb:contactinfo>
+    </cdb:actor>
+    <cdb:actor asset="true" availablefrom="2010-01-15T11:54:36" availableto="2100-01-01T00:00:00" createdby="evertdemeyer" creationdate="2010-01-15T11:54:36" cdbid="c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d" externalid="CDB:f42842d7-da51-4a14-b777-e22a5e89923e" lastupdated="2010-01-15T11:54:36" lastupdatedby="evertdemeyer" owner="Invoerders Algemeen ">
+        <cdb:actordetails>
+            <cdb:actordetail lang="nl">
+                <cdb:shortdescription>Polyvalente zaal in Kapellen waar het Cultuurcentrum regelmatig activiteiten organiseert</cdb:shortdescription>
+                <cdb:title>THIS IS A LOCATION!!!</cdb:title>
+            </cdb:actordetail>
+        </cdb:actordetails>
+        <cdb:categories>
+            <cdb:category catid="8.15.0.0.0" type="actortype">Locatie</cdb:category>
+            <cdb:category catid="6.0.0.0.0" type="publicscope">Wijk of buurt</cdb:category>
+            <cdb:category catid="8.52.0.0.0" type="actortype">Polyvalente zaal of expohal</cdb:category>
+        </cdb:categories>
+        <cdb:contactinfo>
+            <cdb:address>
+                <cdb:physical>
+                    <cdb:city>Kapellen Antwerpen</cdb:city>
+                    <cdb:country>BE</cdb:country>
+                    <cdb:gis>
+                        <cdb:xcoordinate>4.428188</cdb:xcoordinate>
+                        <cdb:ycoordinate>51.314430</cdb:ycoordinate>
+                    </cdb:gis>
+                    <cdb:housenr>12</cdb:housenr>
+                    <cdb:street>Hoevsebaan</cdb:street>
+                    <cdb:zipcode>2950</cdb:zipcode>
+                </cdb:physical>
+            </cdb:address>
+            <cdb:url main="true">http://www.cckapellen.be</cdb:url>
+        </cdb:contactinfo>
+    </cdb:actor>
 </cdb:cdbxml>

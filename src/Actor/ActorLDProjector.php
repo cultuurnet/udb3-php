@@ -49,14 +49,6 @@ abstract class ActorLDProjector implements EventListenerInterface
     }
 
     /**
-     * @param ActorCreated $actorCreated
-     */
-    protected function applyActorCreated(ActorCreated $actorCreated)
-    {
-        // @todo This just creates an empty event. Should we do anything here?
-    }
-
-    /**
      * @param ActorEvent $actor
      * @return JsonDocument
      */

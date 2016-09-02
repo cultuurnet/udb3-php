@@ -1,25 +1,12 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Place\Events\PlaceDeleted.
- */
-
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 
 /**
  * Provides an PlaceDeleted event.
  */
-class PlaceDeleted extends PlaceEvent
+class PlaceDeleted extends AbstractOfferDeleted
 {
-
-    /**
-     * @param string $id
-     */
-    public function __construct($id)
-    {
-        parent::__construct($id);
-    }
 }

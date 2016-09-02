@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
@@ -17,7 +18,7 @@ interface RepositoryInterface
      * @return string[]
      *  A list of variation ids
      */
-    public function getEventVariations(
+    public function getOfferVariations(
         Criteria $criteria,
         $limit = 30,
         $page = 0
@@ -27,7 +28,7 @@ interface RepositoryInterface
      * @param Criteria $criteria
      * @return int
      */
-    public function countEventVariations(
+    public function countOfferVariations(
         Criteria $criteria
     );
 

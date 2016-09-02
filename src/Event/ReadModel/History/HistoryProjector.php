@@ -10,32 +10,28 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
+use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventWasLabelled;
-use CultuurNet\UDB3\Event\Events\Unlabelled;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
+use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TranslationApplied;
+use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\TitleTranslated;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\String\String;
 
-class HistoryProjector implements EventListenerInterface
+class HistoryProjector extends OfferHistoryProjector implements EventListenerInterface
 {
-    use DelegateEventHandlingToSpecificMethodTrait;
 
-    /**
-     * @var DocumentRepositoryInterface
-     */
-    private $documentRepository;
-
-    public function __construct(DocumentRepositoryInterface $documentRepository)
-    {
-        $this->documentRepository = $documentRepository;
-    }
-
-    private function applyEventImportedFromUDB2(
+    protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2,
         DomainMessage $domainMessage
     ) {
@@ -66,33 +62,47 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    /**
-     * @param DateTime $date
-     * @return \DateTime
-     */
-    private function domainMessageDateToNativeDate(DateTime $date)
-    {
-        $dateString = $date->toString();
-        return \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $dateString
+    protected function applyEventCreatedFromCdbXml(
+        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        $this->writeHistory(
+            $eventCreatedFromCdbXml->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String(
+                    'Aangemaakt via EntryAPI door consumer "' . $consumerName . '"'
+                ),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
         );
     }
 
-    /**
-     * @param $dateString
-     * @return \DateTime
-     */
-    private function dateFromUdb2DateString($dateString)
-    {
-        return \DateTime::createFromFormat(
-            'Y-m-d?H:i:s',
-            $dateString,
-            new \DateTimeZone('Europe/Brussels')
+    protected function applyEventUpdatedFromCdbXml(
+        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
+        DomainMessage $domainMessage
+    ) {
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        $this->writeHistory(
+            $eventUpdatedFromCdbXml->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String(
+                    'Geüpdatet via EntryAPI door consumer "' . $consumerName . '"'
+                ),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
         );
     }
 
-    private function applyEventUpdatedFromUDB2(
+    protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2,
         DomainMessage $domainMessage
     ) {
@@ -105,109 +115,162 @@ class HistoryProjector implements EventListenerInterface
         );
     }
 
-    private function getAuthorFromMetadata(Metadata $metadata)
-    {
-        $properties = $metadata->serialize();
+    /**
+     * @param LabelsMerged $labelsMerged
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyLabelsMerged(
+        LabelsMerged $labelsMerged,
+        DomainMessage $domainMessage
+    ) {
+        $labels = $labelsMerged->getLabels()->toStrings();
+        // Quote labels.
+        $quotedLabels = array_map(
+            function ($label) {
+                return "'{$label}'";
+            },
+            $labels
+        );
+        $quotedLabelsString = implode(', ', $quotedLabels);
 
-        if (isset($properties['user_nick'])) {
-            return new String($properties['user_nick']);
+        $message = "Labels {$quotedLabelsString} toegepast";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        if ($consumerName) {
+            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
         }
-    }
 
-    private function applyEventWasLabelled(
-        EventWasLabelled $eventWasLabelled,
-        DomainMessage $domainMessage
-    ) {
         $this->writeHistory(
-            $eventWasLabelled->getEventId(),
+            $labelsMerged->getEventId()->toNative(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$eventWasLabelled->getLabel()}' toegepast"),
+                new String($message),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }
 
-    private function applyUnlabelled(
-        Unlabelled $unlabelled,
+    protected function applyTranslationApplied(
+        TranslationApplied $translationApplied,
         DomainMessage $domainMessage
     ) {
-        $this->writeHistory(
-            $unlabelled->getEventId(),
-            new Log(
-                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$unlabelled->getLabel()}' verwijderd"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
+        $fields = [];
 
-    private function applyTitleTranslated(
-        TitleTranslated $titleTranslated,
-        DomainMessage $domainMessage
-    ) {
-        $this->writeHistory(
-            $titleTranslated->getEventId(),
-            new Log(
-                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Titel vertaald ({$titleTranslated->getLanguage()})"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
+        if ($translationApplied->getTitle() !== null) {
+            $fields[] = 'titel';
+        }
+        if ($translationApplied->getShortDescription() !== null) {
+            $fields[] = 'korte beschrijving';
+        }
+        if ($translationApplied->getLongDescription() !== null) {
+            $fields[] = 'lange beschrijving';
+        }
+        $fieldString = ucfirst(implode(', ', $fields));
 
-    private function applyDescriptionTranslated(
-        DescriptionTranslated $descriptionTranslated,
-        DomainMessage $domainMessage
-    ) {
+        $logMessage = "{$fieldString} vertaald ({$translationApplied->getLanguage()->getCode()})";
+
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+        if ($consumerName) {
+            $logMessage .= " via EntryAPI door consumer \"{$consumerName}\"";
+        }
+
         $this->writeHistory(
-            $descriptionTranslated->getEventId(),
+            $translationApplied->getEventId()->toNative(),
             new Log(
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()
                 ),
-                new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
+                new String($logMessage),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }
 
     /**
-     * @param string $eventId
-     * @return JsonDocument
+     * @param TranslationDeleted $translationDeleted
+     * @param DomainMessage $domainMessage
      */
-    private function loadDocumentFromRepositoryByEventId($eventId)
-    {
-        $historyDocument = $this->documentRepository->get($eventId);
+    protected function applyTranslationDeleted(
+        TranslationDeleted $translationDeleted,
+        DomainMessage $domainMessage
+    ) {
+        $message = "Vertaling verwijderd ({$translationDeleted->getLanguage()})";
 
-        if (!$historyDocument) {
-            $historyDocument = new JsonDocument($eventId, '[]');
+        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
+
+        if ($consumerName) {
+            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
         }
 
-        return $historyDocument;
+        $this->writeHistory(
+            $translationDeleted->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($message),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
     }
 
     /**
-     * @param string $eventId
-     * @param Log[]|Log $logs
+     * @param CollaborationDataAdded $collaborationDataAdded
+     * @param DomainMessage $domainMessage
      */
-    protected function writeHistory($eventId, $logs)
-    {
-        $historyDocument = $this->loadDocumentFromRepositoryByEventId($eventId);
-
-        $history = $historyDocument->getBody();
-
-        if (!is_array($logs)) {
-            $logs = [$logs];
-        }
-
-        // Append most recent one to the top.
-        foreach ($logs as $log) {
-            array_unshift($history, $log);
-        }
-
-        $this->documentRepository->save(
-            $historyDocument->withBody($history)
+    protected function applyCollaborationDataAdded(
+        CollaborationDataAdded $collaborationDataAdded,
+        DomainMessage $domainMessage
+    ) {
+        $message = sprintf(
+            'Collaboration data toegevoegd (%s) voor sub brand "%s" via EntryAPI door consumer "%s"',
+            $collaborationDataAdded->getLanguage(),
+            $collaborationDataAdded->getCollaborationData()->getSubBrand(),
+            $this->getConsumerFromMetadata($domainMessage->getMetadata())
         );
+
+        $this->writeHistory(
+            $collaborationDataAdded->getEventId()->toNative(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new String($message),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+            )
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLabelAddedClassName()
+    {
+        return LabelAdded::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLabelDeletedClassName()
+    {
+        return LabelDeleted::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTitleTranslatedClassName()
+    {
+        return TitleTranslated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDescriptionTranslatedClassName()
+    {
+        return DescriptionTranslated::class;
     }
 }

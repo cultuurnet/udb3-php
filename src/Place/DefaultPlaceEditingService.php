@@ -1,68 +1,61 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\OfferEditingInterface;
+use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferEditingInterface
+class DefaultPlaceEditingService extends DefaultOfferEditingService implements PlaceEditingServiceInterface
 {
-
-    use \CultuurNet\UDB3\OfferEditingTrait;
-
-    /**
-     * @var CommandBusInterface
-     */
-    protected $commandBus;
-
-    /**
-     * @var UuidGeneratorInterface
-     */
-    protected $uuidGenerator;
-
     /**
      * @var RepositoryInterface
      */
-    protected $placeRepository;
+    protected $writeRepository;
 
-    /**
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $placeRepository
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $placeRepository
+        DocumentRepositoryInterface $readRepository,
+        OfferCommandFactoryInterface $commandFactory,
+        RepositoryInterface $writeRepository
     ) {
-        $this->commandBus = $commandBus;
-        $this->uuidGenerator = $uuidGenerator;
-        $this->placeRepository = $placeRepository;
+        parent::__construct(
+            $commandBus,
+            $uuidGenerator,
+            $readRepository,
+            $commandFactory
+        );
+
+        $this->writeRepository = $writeRepository;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
-    {
+    public function createPlace(
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         $id = $this->uuidGenerator->generate();
 
-        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme);
+        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme, $this->publicationDate);
 
-        $this->placeRepository->save($place);
+        $this->writeRepository->save($place);
 
         return $id;
     }
@@ -70,7 +63,7 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
     /**
      * {@inheritdoc}
      */
-    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
+    public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)
     {
         $this->guardId($id);
 
@@ -84,11 +77,7 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
      */
     public function deletePlace($id)
     {
-        $this->guardId($id);
-
-        return $this->commandBus->dispatch(
-            new DeletePlace($id)
-        );
+        return $this->delete($id);
     }
 
     /**
@@ -102,15 +91,5 @@ class DefaultPlaceEditingService implements PlaceEditingServiceInterface, OfferE
         return $this->commandBus->dispatch(
             new UpdateFacilities($id, $facilities)
         );
-    }
-
-    /**
-     * @param string $id
-     * @throws AggregateNotFoundException
-     */
-    public function guardId($id)
-    {
-        // This validates if the id is valid.
-        return $this->placeRepository->load($id);
     }
 }

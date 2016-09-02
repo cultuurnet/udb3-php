@@ -1,0 +1,60 @@
+<?php
+
+namespace CultuurNet\UDB3\Media;
+
+use CultuurNet\UDB3\Media\Properties\MIMEType;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String;
+use ValueObjects\Web\Url;
+
+class ImageTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @test
+     */
+    public function it_can_be_serialized()
+    {
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new String('my pic'),
+            new String('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+        );
+
+        $serializedImage = $image->serialize();
+        $expectedSerializedImage = [
+            'media_object_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+            'mime_type' => 'image/jpg',
+            'description' => 'my pic',
+            'copyright_holder' => 'Dirk Dirkington',
+            'source_location' => 'http://foo.bar/media/my_pic.jpg'
+        ];
+
+        $this->assertEquals($expectedSerializedImage, $serializedImage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_create_an_image_from_serialized_data()
+    {
+        $serializedData = [
+            'media_object_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+            'mime_type' => 'image/jpg',
+            'description' => 'my pic',
+            'copyright_holder' => 'Dirk Dirkington',
+            'source_location' => 'http://foo.bar/media/my_pic.jpg'
+        ];
+        $image = Image::deserialize($serializedData);
+        $expectedImage = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new String('my pic'),
+            new String('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+        );
+
+        $this->assertEquals($expectedImage, $image);
+    }
+}

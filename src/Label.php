@@ -6,17 +6,14 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\Entry\Keyword;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 
 class Label extends Keyword
 {
     public function __construct($value, $visible = true)
     {
-        if (!is_string($value)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Value for argument $value should be a string, got a value of type %s.',
-                gettype($value)
-            ));
-        }
+        // Try constructing a LabelName object, so the same validation rules hold.
+        $labelName = new LabelName($value);
 
         if (!is_bool($visible)) {
             throw new \InvalidArgumentException(sprintf(
@@ -25,20 +22,7 @@ class Label extends Keyword
             ));
         }
 
-        $length = mb_strlen($value);
-        if ($length < 3) {
-            throw new \InvalidArgumentException(
-                'Value for argument $value should not be shorter than 3 chars.'
-            );
-        }
-
-        if ($length > 255) {
-            throw new \InvalidArgumentException(
-                'Value for argument $value should not be longer than 255 chars.'
-            );
-        }
-
-        parent::__construct($value, $visible);
+        parent::__construct($labelName->toNative(), $visible);
     }
 
     /**

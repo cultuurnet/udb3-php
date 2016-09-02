@@ -1,30 +1,30 @@
 <?php
-/**
- * @file
- */
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Label\ValueObjects;
 
-class LabelTest extends \PHPUnit_Framework_TestCase
+use ValueObjects\Exception\InvalidNativeArgumentException;
+
+class LabelNameTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @dataProvider labelNameValues
      * @test
      */
-    public function it_refuses_value_that_are_not_strings()
+    public function it_refuses_value_that_are_not_strings($value)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->setExpectedException(InvalidNativeArgumentException::class);
 
-        new Label(null);
+        new LabelName($value);
     }
 
     /**
      * @test
      */
-    public function it_refuses_visible_that_is_not_a_boolean()
+    public function it_refuses_value_containing_a_semicolon()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
 
-        new Label('keyword 1', null);
+        new LabelName(';');
     }
 
     /**
@@ -34,7 +34,7 @@ class LabelTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(\InvalidArgumentException::class);
 
-        new Label('k');
+        new LabelName('k');
     }
 
     /**
@@ -44,7 +44,7 @@ class LabelTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(\InvalidArgumentException::class);
 
-        new Label(
+        new LabelName(
             'turnip greens yarrow ricebean rutabaga endive cauliflower sea lettuce kohlrabi amaranth water spinach avocado daikon napa cabbage asparagus winter purslane kale celery potato scallion desert raisin horseradish spinach carrot soko Lotus root water spinach fennel'
         );
     }
@@ -54,8 +54,19 @@ class LabelTest extends \PHPUnit_Framework_TestCase
      */
     public function it_accepts_a_regular_string_length_for_value()
     {
-        $label = new Label('turnip');
+        $label = new LabelName('turnip');
 
-        $this->assertEquals($label->__toString(), 'turnip');
+        $this->assertEquals($label->toNative(), 'turnip');
+    }
+
+    /**
+     * @return array
+     */
+    public function labelNameValues()
+    {
+        return [
+            [null],
+            [1],
+        ];
     }
 }

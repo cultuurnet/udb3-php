@@ -6,24 +6,23 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\Entry\Keyword;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 
 class Label extends Keyword
 {
     public function __construct($value, $visible = true)
     {
-        if (!is_string($value)) {
-            throw new \InvalidArgumentException(
-                'Value for argument $value should be a string, got a value of type ' . gettype($value)
-            );
-        }
+        // Try constructing a LabelName object, so the same validation rules hold.
+        $labelName = new LabelName($value);
 
         if (!is_bool($visible)) {
-            throw new \InvalidArgumentException(
-                'Value for argument $visible should be a boolean, got a value of type ' . gettype($visible)
-            );
+            throw new \InvalidArgumentException(sprintf(
+                'Value for argument $visible should be a boolean, got a value of type %s.',
+                gettype($visible)
+            ));
         }
 
-        parent::__construct($value, $visible);
+        parent::__construct($labelName->toNative(), $visible);
     }
 
     /**

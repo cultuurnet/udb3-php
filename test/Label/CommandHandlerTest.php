@@ -22,9 +22,9 @@ use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Place\Commands\AddLabel as PlaceAddLabel;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class CommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -34,7 +34,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $uuid;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $name;
 
@@ -66,7 +66,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     public function setUp()
     {
         $this->uuid = new UUID();
-        $this->name = new StringLiteral('labelName');
+        $this->name = new LabelName('labelName');
         $this->visibility = Visibility::INVISIBLE();
         $this->privacy = Privacy::PRIVACY_PRIVATE();
         $this->parentUuid = new UUID();
@@ -246,7 +246,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $created = new Created(
             $this->uuid,
-            new StringLiteral('labelName'),
+            new LabelName('labelName'),
             Visibility::VISIBLE(),
             Privacy::PRIVACY_PUBLIC()
         );
@@ -265,7 +265,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $created = new Created(
             $this->uuid,
-            new StringLiteral('labelName'),
+            new LabelName('labelName'),
             Visibility::VISIBLE(),
             Privacy::PRIVACY_PUBLIC()
         );

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Label\Commands\MakePublic;
 use CultuurNet\UDB3\Label\Commands\MakeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -54,7 +55,7 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->create = new Create(
             $this->uuid,
-            new StringLiteral('labelName'),
+            new LabelName('labelName'),
             Visibility::INVISIBLE(),
             Privacy::PRIVACY_PRIVATE()
         );

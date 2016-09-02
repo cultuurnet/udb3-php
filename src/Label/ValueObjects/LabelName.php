@@ -12,10 +12,12 @@ class LabelName extends StringLiteral
 {
     /**
      * @param string $value
-     * @param bool $visible
      */
     public function __construct($value)
     {
+        // checks if the value is a string, etc.
+        parent::__construct($value);
+
         if (false !== strpos($value, ';')) {
             throw new \InvalidArgumentException(
                 'Value for argument $value should not contain semicolons.'
@@ -34,8 +36,5 @@ class LabelName extends StringLiteral
                 'Value for argument $value should not be longer than 255 chars.'
             );
         }
-
-        // checks if the value is a string, etc.
-        parent::__construct($value);
     }
 }

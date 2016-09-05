@@ -1,12 +1,11 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Offer\Commands\PreflightCommand;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\String\String as StringLiteral;
 
@@ -23,16 +22,24 @@ class Security implements SecurityInterface
     private $permissionRepository;
 
     /**
+     * @var UserPermissionMatcherInterface
+     */
+    private $userPermissionMatcher;
+
+    /**
      * Security constructor.
      * @param UserIdentificationInterface $userIdentification
      * @param PermissionQueryInterface $permissionRepository
+     * @param UserPermissionMatcherInterface $userPermissionMatcher
      */
     public function __construct(
         UserIdentificationInterface $userIdentification,
-        PermissionQueryInterface $permissionRepository
+        PermissionQueryInterface $permissionRepository,
+        UserPermissionMatcherInterface $userPermissionMatcher
     ) {
         $this->userIdentification = $userIdentification;
         $this->permissionRepository = $permissionRepository;
+        $this->userPermissionMatcher = $userPermissionMatcher;
     }
 
     /**
@@ -40,7 +47,10 @@ class Security implements SecurityInterface
      */
     public function allowsUpdateWithCdbXml(StringLiteral $offerId)
     {
-        return $this->currentUiTIDUserCanEditOffer($offerId);
+        return $this->currentUiTIDUserCanEditOffer(
+            $offerId,
+            new PreflightCommand($offerId, [Permission::AANBOD_BEWERKEN])
+        );
     }
 
     /**
@@ -50,15 +60,18 @@ class Security implements SecurityInterface
     {
         $offerId = new StringLiteral($command->getItemId());
 
-        return $this->currentUiTIDUserCanEditOffer($offerId);
+        return $this->currentUiTIDUserCanEditOffer($offerId, $command);
     }
 
     /**
      * @param StringLiteral $offerId
+     * @param AuthorizableCommandInterface $command
      * @return bool
      */
-    private function currentUiTIDUserCanEditOffer(StringLiteral $offerId)
-    {
+    private function currentUiTIDUserCanEditOffer(
+        StringLiteral $offerId,
+        AuthorizableCommandInterface $command
+    ) {
         if (!$this->userIdentification->getId()) {
             return false;
         }
@@ -77,6 +90,13 @@ class Security implements SecurityInterface
         }
 
         // Check role permissions and constraint. IF ok true. Else false.
+        if ($this->userPermissionMatcher->itMatchesOffer(
+            $this->userIdentification->getId(),
+            $command->getPermissions()[0],
+            $offerId
+        )) {
+            return true;
+        }
 
         return false;
     }

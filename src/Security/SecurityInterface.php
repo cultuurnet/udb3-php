@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Offer\Security;
+namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use ValueObjects\String\String as StringLiteral;

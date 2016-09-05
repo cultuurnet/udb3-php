@@ -49,7 +49,7 @@ class Security implements SecurityInterface
     {
         return $this->currentUiTIDUserCanEditOffer(
             $offerId,
-            new PreflightCommand($offerId, [Permission::AANBOD_BEWERKEN])
+            new PreflightCommand($offerId, Permission::AANBOD_BEWERKEN())
         );
     }
 
@@ -92,7 +92,7 @@ class Security implements SecurityInterface
         // Check role permissions and constraint. IF ok true. Else false.
         if ($this->userPermissionMatcher->itMatchesOffer(
             $this->userIdentification->getId(),
-            $command->getPermissions()[0],
+            $command->getPermission(),
             $offerId
         )) {
             return true;

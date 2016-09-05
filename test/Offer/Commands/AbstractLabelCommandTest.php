@@ -53,11 +53,9 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedItemId, $itemId);
 
-        $permissions = $this->labelCommand->getPermissions();
-        $expectedPermissions = [
-            Permission::AANBOD_BEWERKEN(),
-        ];
+        $permission = $this->labelCommand->getPermission();
+        $expectedPermission = Permission::AANBOD_BEWERKEN();
 
-        $this->assertEquals($expectedPermissions, $permissions);
+        $this->assertEquals($expectedPermission, $permission);
     }
 }

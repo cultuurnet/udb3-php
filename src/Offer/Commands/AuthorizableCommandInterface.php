@@ -12,7 +12,7 @@ interface AuthorizableCommandInterface
     public function getItemId();
 
     /**
-     * @return Permission[]
+     * @return Permission
      */
-    public function getPermissions();
+    public function getPermission();
 }

@@ -7,13 +7,26 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 class PreflightCommand extends AbstractCommand
 {
     /**
+     * @var Permission
+     */
+    private $permission;
+
+    /**
      * PreflightCommand constructor.
      * @param string $itemId
-     * @param Permission[] $permissions
+     * @param Permission $permission
      */
-    public function __construct($itemId, $permissions)
+    public function __construct($itemId, $permission)
     {
         parent::__construct($itemId);
-        $this->permissions = $permissions;
+        $this->permission = $permission;
+    }
+
+    /**
+     * @return Permission
+     */
+    public function getPermission()
+    {
+        return $this->permission;
     }
 }

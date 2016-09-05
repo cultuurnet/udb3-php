@@ -29,12 +29,10 @@ class AbstractCommand implements AuthorizableCommandInterface
     }
 
     /**
-     * @return Permission[]
+     * @return Permission
      */
-    public function getPermissions()
+    public function getPermission()
     {
-        return [
-            Permission::AANBOD_BEWERKEN(),
-        ];
+        return Permission::AANBOD_BEWERKEN();
     }
 }

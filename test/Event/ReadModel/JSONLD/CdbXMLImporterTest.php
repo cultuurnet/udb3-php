@@ -4,6 +4,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
@@ -371,5 +372,15 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->createJsonEventFromCdbXml(
             'event_with_semicolon_in_keyword_tag_but_too_new.cdbxml.xml'
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_copy_over_a_known_workflow_status()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
+
+        $this->assertEquals(WorkflowStatus::APPROVED, $jsonEvent->workflowStatus);
     }
 }

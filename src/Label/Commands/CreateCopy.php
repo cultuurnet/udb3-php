@@ -4,8 +4,8 @@ namespace CultuurNet\UDB3\Label\Commands;
 
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class CreateCopy extends Create
 {
@@ -17,14 +17,14 @@ class CreateCopy extends Create
     /**
      * CreateCopy constructor.
      * @param UUID $uuid
-     * @param StringLiteral $name
+     * @param LabelName $name
      * @param Visibility $visibility
      * @param Privacy $privacy
      * @param UUID $parentUuid
      */
     public function __construct(
         UUID $uuid,
-        StringLiteral $name,
+        LabelName $name,
         Visibility $visibility,
         Privacy $privacy,
         UUID $parentUuid

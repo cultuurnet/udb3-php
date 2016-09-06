@@ -12,12 +12,6 @@ interface RoleReadingServiceInterface
      * @param UUID $uuid
      * @return JsonDocument
      */
-    public function getPermissionsByRoleUuid(UUID $uuid);
-
-    /**
-     * @param UUID $uuid
-     * @return JsonDocument
-     */
     public function getLabelsByRoleUuid(UUID $uuid);
 
     /**

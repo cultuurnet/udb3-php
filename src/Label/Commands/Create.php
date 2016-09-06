@@ -4,13 +4,13 @@ namespace CultuurNet\UDB3\Label\Commands;
 
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class Create extends AbstractCommand
 {
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $name;
 
@@ -27,13 +27,13 @@ class Create extends AbstractCommand
     /**
      * Create constructor.
      * @param UUID $uuid
-     * @param StringLiteral $name
+     * @param LabelName $name
      * @param Visibility $visibility
      * @param Privacy $privacy
      */
     public function __construct(
         UUID $uuid,
-        StringLiteral $name,
+        LabelName $name,
         Visibility $visibility,
         Privacy $privacy
     ) {
@@ -48,7 +48,7 @@ class Create extends AbstractCommand
     }
 
     /**
-     * @return StringLiteral
+     * @return LabelName
      */
     public function getName()
     {

@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Label\Commands\MakePublic;
 use CultuurNet\UDB3\Label\Commands\MakeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -44,7 +45,7 @@ class WriteService implements WriteServiceInterface
      * @inheritdoc
      */
     public function create(
-        StringLiteral $name,
+        LabelName $name,
         Visibility $visibility,
         Privacy $privacy
     ) {

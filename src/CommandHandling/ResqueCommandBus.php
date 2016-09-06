@@ -7,6 +7,8 @@ namespace CultuurNet\UDB3\CommandHandling;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use CultuurNet\UDB3\Log\ContextEnrichingLogger;
+use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Broadway\Domain\Metadata;
@@ -89,11 +91,22 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      * Dispatches the command $command to a queue.
      *
      * @param mixed $command
-     *
      * @return string the command id
+     *
+     * @throws CommandAuthorizationException
      */
     public function dispatch($command)
     {
+        if ($this->decoratee instanceof AuthorizedCommandBusInterface &&
+            $command instanceof AuthorizableCommandInterface) {
+            if (!$this->decoratee->isAuthorized($command)) {
+                throw new CommandAuthorizationException(
+                    $this->decoratee->getUserIdentification()->getId(),
+                    $command
+                );
+            }
+        }
+
         $args = array();
         $args['command'] = base64_encode(serialize($command));
         $args['context'] = base64_encode(serialize($this->context));
@@ -107,6 +120,8 @@ class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareIn
      *
      * @param string $jobId
      * @param mixed $command
+     *
+     * @throws \Exception
      */
     public function deferredDispatch($jobId, $command)
     {

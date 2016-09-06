@@ -75,6 +75,16 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_stores_and_returns_user_identification()
+    {
+        $userIdentification = $this->authorizedCommandBus->getUserIdentification();
+
+        $this->assertEquals($this->userIdentification, $userIdentification);
+    }
+
+    /**
+     * @test
+     */
     public function is_does_not_call_is_authorized_when_command_is_not_an_instance_of_authorizable_command()
     {
         $command = new DummyCommand();

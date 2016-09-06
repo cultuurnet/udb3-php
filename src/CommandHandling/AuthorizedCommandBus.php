@@ -65,4 +65,12 @@ class AuthorizedCommandBus extends CommandBusDecoratorBase implements Authorized
     {
         return $this->security->isAuthorized($command);
     }
+
+    /**
+     * @return UserIdentificationInterface
+     */
+    public function getUserIdentification()
+    {
+        return $this->userIdentification;
+    }
 }

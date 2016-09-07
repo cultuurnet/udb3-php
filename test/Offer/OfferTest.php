@@ -11,8 +11,8 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Item;
-use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
@@ -251,6 +251,59 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new ImageAdded('someId', $originalMainImage),
                     new ImageAdded('someId', $newMainImage),
                     new MainImageSelected('someId', $newMainImage),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_approve_an_offer_that_is_waiting_for_validation()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->approve();
+                }
+            )
+            ->then(
+                [
+                    new Approved($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_approve_an_offer_more_than_once()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->approve();
+                    $item->approve();
+                }
+            )
+            ->then(
+                [
+                    new Approved($itemId)
                 ]
             );
     }

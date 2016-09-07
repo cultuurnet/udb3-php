@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
 use CultuurNet\UDB3\Organizer\Organizer;
 use ValueObjects\String\String as StringLiteral;
 
@@ -177,6 +178,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getDeleteOfferClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getApproveClassName();
 
     /**
      * @param AbstractAddLabel $addLabel
@@ -382,6 +388,13 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($deleteOffer->getItemId());
         $offer->delete();
+        $this->offerRepository->save($offer);
+    }
+
+    private function handleApprove(AbstractApprove $approve)
+    {
+        $offer = $this->load($approve->getItemId());
+        $offer->approve();
         $this->offerRepository->save($offer);
     }
 

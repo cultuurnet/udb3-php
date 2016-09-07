@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
@@ -108,5 +109,10 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getDeleteOfferClassName()
     {
         return DeleteItem::class;
+    }
+
+    protected function getApproveClassName()
+    {
+        return Approve::class;
     }
 }

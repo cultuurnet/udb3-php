@@ -26,6 +26,8 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -54,11 +56,17 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $organizerId;
 
     /**
+     * @var WorkflowStatus
+     */
+    protected $workflowStatus;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
     {
         $this->resetLabels();
+        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -313,6 +321,27 @@ abstract class Offer extends EventSourcedAggregateRoot
         );
     }
 
+    /**
+     * Approve the offer when it's waiting for validation.
+     */
+    public function approve()
+    {
+        if ($this->workflowStatus === WorkflowStatus::APPROVED()) {
+            return; // nothing left to do if the offer has already been approved
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::READY_FOR_VALIDATION()) {
+            throw new Exception('You can not approve an offer that is not ready for validation');
+        }
+
+        $this->apply($this->createApprovedEvent());
+    }
+
+    protected function applyApproved(AbstractApproved $approved)
+    {
+        $this->workflowStatus = WorkflowStatus::APPROVED();
+    }
+
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
         $imageId = $imageAdded->getImage()->getMediaObjectId();
@@ -443,4 +472,9 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractBookingInfoUpdated
      */
     abstract protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo);
+
+    /**
+     * @return AbstractApproved
+     */
+    abstract protected function createApprovedEvent();
 }

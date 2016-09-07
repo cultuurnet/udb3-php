@@ -18,7 +18,15 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -182,5 +190,25 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     public function createDeleteOfferCommand($id)
     {
         return new DeletePlace($id);
+    }
+
+    public function createApproveCommand($id)
+    {
+        return new Approve($id);
+    }
+
+    public function createRejectCommand($id, StringLiteral $reason)
+    {
+        return new Reject($id, $reason);
+    }
+
+    public function createFlagAsInappropriate($id)
+    {
+        return new FlagAsInappropriate($id);
+    }
+
+    public function createFlagAsDuplicate($id)
+    {
+        return new FlagAsDuplicate($id);
     }
 }

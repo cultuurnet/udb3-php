@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 use ValueObjects\String\String as StringLiteral;
 
-class AbstractReject extends AbstractCommand
+class AbstractReject extends AbstractModerationCommand
 {
     /**
      * The reason why an offer is rejected, e.g.: Image and price info is missing.

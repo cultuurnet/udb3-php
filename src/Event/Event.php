@@ -47,6 +47,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Theme;
@@ -646,5 +647,13 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsDuplicate()
     {
         return new FlaggedAsDuplicate($this->eventId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsInappropriate()
+    {
+        return new FlaggedAsInappropriate($this->eventId);
     }
 }

@@ -25,6 +25,8 @@ use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Organizer\Organizer;
 use ValueObjects\String\String as StringLiteral;
 
@@ -403,6 +405,20 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($reject->getItemId());
         $offer->reject($reject->getReason());
+        $this->offerRepository->save($offer);
+    }
+
+    private function handleFlaggedAsDuplicate(AbstractFlaggedAsDuplicate $flaggedAsDuplicate)
+    {
+        $offer = $this->load($flaggedAsDuplicate->getItemId());
+        $offer->flagAsDuplicate();
+        $this->offerRepository->save($offer);
+    }
+
+    private function handleFlaggedAsInappropriate(AbstractFlaggedAsInappropriate $flaggedAsInappropriate)
+    {
+        $offer = $this->load($flaggedAsInappropriate->getItemId());
+        $offer->flagAsInappropriate();
         $this->offerRepository->save($offer);
     }
 

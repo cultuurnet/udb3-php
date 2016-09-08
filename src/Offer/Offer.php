@@ -28,6 +28,7 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use Exception;
 use ValueObjects\Identity\UUID;
@@ -362,6 +363,12 @@ abstract class Offer extends EventSourcedAggregateRoot
         $this->guardRejection($reason) ?: $this->apply($this->createFlaggedAsDuplicate());
     }
 
+    public function flagAsInappropriate()
+    {
+        $reason = new StringLiteral(self::INAPPROPRIATE_REASON);
+        $this->guardRejection($reason) ?: $this->apply($this->createFlaggedAsInappropriate());
+    }
+
     /**
      * @param StringLiteral $reason
      * @return bool
@@ -399,6 +406,12 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected function applyFlaggedAsDuplicate(AbstractFlaggedAsDuplicate $flaggedAsDuplicate)
     {
         $this->rejectedReason = new StringLiteral(self::DUPLICATE_REASON);
+        $this->workflowStatus = WorkflowStatus::REJECTED();
+    }
+
+    protected function applyFlaggedAsInappropriate(AbstractFlaggedAsInappropriate $flaggedAsInappropriate)
+    {
+        $this->rejectedReason = new StringLiteral(self::INAPPROPRIATE_REASON);
         $this->workflowStatus = WorkflowStatus::REJECTED();
     }
 
@@ -547,4 +560,9 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractFlaggedAsDuplicate
      */
     abstract protected function createFlaggedAsDuplicate();
+
+    /**
+     * @return AbstractFlaggedAsInappropriate
+     */
+    abstract protected function createFlaggedAsInappropriate();
 }

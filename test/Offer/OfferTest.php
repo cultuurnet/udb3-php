@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Item;
 use Exception;
@@ -461,6 +462,58 @@ class OfferTest extends AggregateRootScenarioTestCase
                 [
                     new ItemCreated($itemId),
                     new FlaggedAsDuplicate($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_flag_an_offer_that_is_waiting_for_validation_as_inappropriate()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->flagAsInappropriate();
+                }
+            )
+            ->then(
+                [
+                    new FlaggedAsInappropriate($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage The offer has already been rejected for another reason: inappropriate
+     */
+    public function it_should_reject_an_offer_when_it_is_flagged_as_inappropriate()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The theme does not match the description.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new FlaggedAsInappropriate($itemId)
                 ]
             )
             ->when(

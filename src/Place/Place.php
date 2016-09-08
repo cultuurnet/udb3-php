@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
@@ -29,6 +30,7 @@ use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Place\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -380,5 +382,13 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsDuplicate()
     {
         return new FlaggedAsDuplicate($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsInappropriate()
+    {
+        return new FlaggedAsInappropriate($this->actorId);
     }
 }

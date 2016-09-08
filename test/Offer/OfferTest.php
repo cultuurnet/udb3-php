@@ -12,7 +12,9 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Item;
+use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
@@ -96,7 +98,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
-     * @expectedException     \Exception
+     * @expectedException     Exception
      */
     public function it_should_throw_an_exception_when_selecting_an_unknown_main_image()
     {
@@ -306,5 +308,86 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new Approved($itemId)
                 ]
             );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage You can not approve an offer that is not ready for validation
+     */
+    public function it_should_not_approve_an_offer_after_it_was_rejected()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('There are spelling mistakes in the description.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new Rejected($itemId, $reason)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->approve();
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_reject_an_offer_more_than_once_for_the_same_reason()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The title is misleading.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                    $item->reject($reason);
+                }
+            )
+            ->then(
+                [
+                    new Rejected($itemId, $reason)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage The offer has already been rejected for another reason: The title is misleading.
+     */
+    public function it_should_not_reject_an_offer_that_is_already_rejected_for_different_reason()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The title is misleading.');
+        $differentReason = new StringLiteral('I\'m afraid I can\'t let you do that.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new Rejected($itemId, $reason)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($differentReason) {
+                    $item->reject($differentReason);
+                }
+            )
+            ->then([]);
     }
 }

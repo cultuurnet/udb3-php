@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -59,6 +60,12 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @var WorkflowStatus
      */
     protected $workflowStatus;
+
+
+    /**
+     * @var StringLiteral|null
+     */
+    protected $rejectedReason;
 
     /**
      * Offer constructor.
@@ -337,9 +344,35 @@ abstract class Offer extends EventSourcedAggregateRoot
         $this->apply($this->createApprovedEvent());
     }
 
+    /**
+     * Reject an offer that is waiting for validation with a given reason.
+     */
+    public function reject(StringLiteral $reason)
+    {
+        if ($this->workflowStatus === WorkflowStatus::REJECTED()) {
+            if ($this->rejectedReason && $reason->sameValueAs($this->rejectedReason)) {
+                return; // nothing left to do if the offer has already been rejected for the same reason
+            } else {
+                throw new Exception('The offer has already been rejected for another reason: ' . $this->rejectedReason);
+            }
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::READY_FOR_VALIDATION()) {
+            throw new Exception('You can not reject an offer that is not ready for validation');
+        }
+
+        $this->apply($this->createRejectedEvent($reason));
+    }
+
     protected function applyApproved(AbstractApproved $approved)
     {
         $this->workflowStatus = WorkflowStatus::APPROVED();
+    }
+
+    protected function applyRejected(AbstractRejected $rejected)
+    {
+        $this->rejectedReason = $rejected->getReason();
+        $this->workflowStatus = WorkflowStatus::REJECTED();
     }
 
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
@@ -477,4 +510,9 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractApproved
      */
     abstract protected function createApprovedEvent();
+
+    /*
+     * @return AbstractRejected
+     */
+    abstract protected function createRejectedEvent(StringLiteral $reason);
 }

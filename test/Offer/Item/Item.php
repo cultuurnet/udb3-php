@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
@@ -189,5 +190,10 @@ class Item extends Offer
     protected function createApprovedEvent()
     {
         return new Approved($this->id);
+    }
+
+    protected function createRejectedEvent(StringLiteral $reason)
+    {
+        return new Rejected($this->id, $reason);
     }
 }

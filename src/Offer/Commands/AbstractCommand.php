@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 
-class AbstractCommand implements AuthorizableCommandInterface
+abstract class AbstractCommand implements AuthorizableCommandInterface
 {
     /**
      * @var string

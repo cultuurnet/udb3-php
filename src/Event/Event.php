@@ -30,6 +30,7 @@ use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -45,6 +46,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Theme;
@@ -636,5 +638,13 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createRejectedEvent(StringLiteral $reason)
     {
         return new Rejected($this->eventId, $reason);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsDuplicate()
+    {
+        return new FlaggedAsDuplicate($this->eventId);
     }
 }

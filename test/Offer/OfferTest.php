@@ -12,9 +12,9 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Item;
-use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -370,7 +370,7 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @expectedException        Exception
      * @expectedExceptionMessage The offer has already been rejected for another reason: The title is misleading.
      */
-    public function it_should_not_reject_an_offer_that_is_already_rejected_for_different_reason()
+    public function it_should_not_reject_an_offer_that_is_already_rejected_for_a_different_reason()
     {
         $itemId = UUID::generateAsString();
         $reason = new StringLiteral('The title is misleading.');
@@ -417,5 +417,57 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new Rejected($itemId, $reason)
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_flag_an_offer_that_is_waiting_for_validation_as_duplicate()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->flagAsDuplicate();
+                }
+            )
+            ->then(
+                [
+                    new FlaggedAsDuplicate($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage The offer has already been rejected for another reason: duplicate
+     */
+    public function it_should_reject_an_offer_when_it_is_flagged_as_duplicate()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The theme does not match the description.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new FlaggedAsDuplicate($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then([]);
     }
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventExport\Notification;
 
@@ -13,6 +10,15 @@ class DefaultPlainTextBodyFactory implements BodyFactoryInterface
         EventExportResult $eventExportResult
     ) {
         // Only put the URL in the mail, for now.
-        return $eventExportResult->getUrl();
+        //return $eventExportResult->getUrl();
+
+        return 'Beste,
+
+        Hierbij vind je de link naar de door jou geëxporteerde documenten uit UiTdatabank: ' . $eventExportResult->getUrl() . '
+
+        Mocht je vragen hebben, of meer informatie wensen over onze diensten, kan je terecht bij vragen@uitdatabank.be.
+
+        Met vriendelijke groeten,
+        Het UiTdatabank team';
     }
 }

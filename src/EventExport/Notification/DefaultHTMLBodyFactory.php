@@ -13,6 +13,8 @@ class DefaultHTMLBodyFactory implements BodyFactoryInterface
         EventExportResult $eventExportResult
     ) {
         $url = $eventExportResult->getUrl();
-        return  '<a href="' . $url . '">' . $url . '</a>';
+        return '<p>Beste, <br /><br />Hierbij vind je de link naar de door jou geëxporteerde documenten uit UiTdatabank: <a href="' . $url . '">' . $url . '</a><br /><br />
+        Mocht je vragen hebben, of meer informatie wensen over onze diensten, kan je terecht bij vragen@uitdatabank.be.<br /><br />
+        Met vriendelijke groeten,<br />Het UiTdatabank team</p>';
     }
 }

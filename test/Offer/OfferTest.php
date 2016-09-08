@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Item;
+use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -389,5 +390,32 @@ class OfferTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_reject_an_offer_that_is_waiting_for_validation_with_a_reason()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('You forgot to add an organizer.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then(
+                [
+                    new Rejected($itemId, $reason)
+                ]
+            );
     }
 }

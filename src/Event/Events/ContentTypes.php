@@ -2,6 +2,11 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
+
 class ContentTypes
 {
     /**
@@ -47,6 +52,11 @@ class ContentTypes
             TranslationDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-translation-deleted+json',
             TypicalAgeRangeUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-typical-age-range-updated+json',
             TypicalAgeRangeDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-typical-age-range-deleted+json',
+            // Moderation
+            Approved::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-approved+json',
+            Rejected::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-rejected+json',
+            FlaggedAsDuplicate::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-flagged-as-duplicate+json',
+            FlaggedAsInappropriate::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-flagged-as-inappropriate+json',
         ];
     }
 }

@@ -30,6 +30,7 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
@@ -216,6 +217,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getApprovedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getRejectedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -573,11 +579,35 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected function applyApproved(
         AbstractApproved $approved
     ) {
-        $document = $this->loadDocumentFromRepository($approved);
+        $this->applyEventTransformation($approved, function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::APPROVED;
+        });
+    }
+
+    /**
+     * @param AbstractRejected $rejected
+     */
+    protected function applyRejected(
+        AbstractRejected $rejected
+    ) {
+        $this->applyEventTransformation($rejected, function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::REJECTED;
+        });
+    }
+
+    /**
+     * @param AbstractEvent $event
+     * @param callable $transformation
+     *  a transformation that you want applied to the offer-ld document
+     *  the first parameter passed to the callback will be the document body
+     */
+    private function applyEventTransformation(AbstractEvent $event, callable $transformation)
+    {
+        $document = $this->loadDocumentFromRepository($event);
 
         $offerLd = $document->getBody();
 
-        $offerLd->workflowStatus = WorkflowStatus::APPROVED;
+        $transformation($offerLd);
 
         $this->repository->save($document->withBody($offerLd));
     }

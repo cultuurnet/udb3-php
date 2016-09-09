@@ -12,7 +12,7 @@ class DefaultPlainTextBodyFactoryTest extends \PHPUnit_Framework_TestCase
     public function it_returns_a_plain_text_body_message_with_download_link()
     {
         $eventExportResult = new EventExportResult('http://google.be');
-        $class = new DefaultPlainTextBodyFactory();
+        $defaultPlainTextBodyFactory = new DefaultPlainTextBodyFactory();
 
         $expectedBody = 'Beste,
 
@@ -23,7 +23,10 @@ class DefaultPlainTextBodyFactoryTest extends \PHPUnit_Framework_TestCase
         Met vriendelijke groeten,
         Het UiTdatabank team';
 
-        $this->assertEquals($expectedBody, $class->getBodyFor($eventExportResult));
+        $this->assertEquals(
+            $expectedBody,
+            $defaultPlainTextBodyFactory->getBodyFor($eventExportResult)
+        );
 
     }
 }

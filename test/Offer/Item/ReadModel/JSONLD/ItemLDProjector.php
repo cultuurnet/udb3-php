@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
@@ -130,5 +131,10 @@ class ItemLDProjector extends OfferLDProjector
     protected function getFlaggedAsDuplicateClassName()
     {
         return FlaggedAsDuplicate::class;
+    }
+
+    protected function getFlaggedAsInappropriateClassName()
+    {
+        return FlaggedAsInappropriate::class;
     }
 }

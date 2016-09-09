@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
@@ -906,6 +907,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'offer flagged as duplicate' => [
                 'itemId' => $itemId,
                 'event' => new FlaggedAsDuplicate($itemId)
+            ],
+            'offer flagged as inappropriate' => [
+                'itemId' => $itemId,
+                'event' => new FlaggedAsInappropriate($itemId)
             ]
         ];
     }

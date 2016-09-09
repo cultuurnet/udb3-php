@@ -31,6 +31,7 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -228,6 +229,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getFlaggedAsDuplicateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlaggedAsInappropriateClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -606,6 +612,15 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         AbstractFlaggedAsDuplicate $flaggedAsDuplicate
     ) {
         $this->applyEventTransformation($flaggedAsDuplicate, $this->reject());
+    }
+
+    /**
+     * @param AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+     */
+    protected function applyFlaggedAsInappropriate(
+        AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+    ) {
+        $this->applyEventTransformation($flaggedAsInappropriate, $this->reject());
     }
 
     /**

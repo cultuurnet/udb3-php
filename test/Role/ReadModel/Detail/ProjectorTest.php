@@ -353,7 +353,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new StringLiteral('roleName')
         );
 
-        $permission = Permission::AANBOD_INVOEREN();
+        $permission = Permission::AANBOD_BEWERKEN();
 
         $domainMessageCreated = $this->createDomainMessage(
             $this->uuid,
@@ -402,7 +402,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_the_removal_of_a_permission()
     {
-        $permission = Permission::AANBOD_INVOEREN();
+        $permission = Permission::AANBOD_BEWERKEN();
 
         $permissionAdded = new PermissionAdded(
             $this->uuid,

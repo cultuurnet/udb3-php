@@ -13,7 +13,6 @@ class PermissionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                Permission::AANBOD_INVOEREN()->getName() => Permission::AANBOD_INVOEREN,
                 Permission::AANBOD_BEWERKEN()->getName() => Permission::AANBOD_BEWERKEN,
                 Permission::AANBOD_MODEREREN()->getName() => Permission::AANBOD_MODEREREN,
                 Permission::AANBOD_VERWIJDEREN()->getName() => Permission::AANBOD_VERWIJDEREN,

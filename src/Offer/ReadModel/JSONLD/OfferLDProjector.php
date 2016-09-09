@@ -29,6 +29,8 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -209,6 +211,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getTypicalAgeRangeDeletedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getApprovedClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -556,6 +563,21 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
 
         unset($offerLd->typicalAgeRange);
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractApproved $approved
+     */
+    protected function applyApproved(
+        AbstractApproved $approved
+    ) {
+        $document = $this->loadDocumentFromRepository($approved);
+
+        $offerLd = $document->getBody();
+
+        $offerLd->workflowStatus = WorkflowStatus::APPROVED;
 
         $this->repository->save($document->withBody($offerLd));
     }

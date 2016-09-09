@@ -22,10 +22,12 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -825,5 +827,34 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $body = $this->project($organizerDeleted, $id);
 
         $this->assertEquals(new \stdClass(), $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_workflow_status_when_an_offer_is_approved()
+    {
+        $itemId = UUID::generateAsString();
+        
+        $approvedEvent = new Approved($itemId);
+        $itemDocumentReadyForValidation = new JsonDocument(
+            $itemId,
+            json_encode([
+                '@id' => $itemId,
+                '@type' => 'event',
+                'workflowStatus' => WorkflowStatus::READY_FOR_VALIDATION
+            ])
+        );
+        $expectedItem = (object)[
+            '@id' => $itemId,
+            '@type' => 'event',
+            'workflowStatus' => WorkflowStatus::APPROVED
+        ];
+
+        $this->documentRepository->save($itemDocumentReadyForValidation);
+
+        $approvedItem = $this->project($approvedEvent, $itemId);
+
+        $this->assertEquals($expectedItem, $approvedItem);
     }
 }

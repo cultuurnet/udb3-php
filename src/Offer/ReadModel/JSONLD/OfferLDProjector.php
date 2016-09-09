@@ -30,6 +30,7 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -222,6 +223,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getRejectedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlaggedAsDuplicateClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -590,9 +596,26 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected function applyRejected(
         AbstractRejected $rejected
     ) {
-        $this->applyEventTransformation($rejected, function ($offerLd) {
+        $this->applyEventTransformation($rejected, $this->reject());
+    }
+
+    /**
+     * @param AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+     */
+    protected function applyFlaggedAsDuplicate(
+        AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+    ) {
+        $this->applyEventTransformation($flaggedAsDuplicate, $this->reject());
+    }
+
+    /**
+     * @return callable
+     */
+    private function reject()
+    {
+        return function ($offerLd) {
             $offerLd->workflowStatus = WorkflowStatus::REJECTED;
-        });
+        };
     }
 
     /**

@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -23,6 +24,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
@@ -862,15 +864,12 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider rejectionEventsDataProvider
      */
-    public function it_should_update_the_workflow_status_when_an_offer_is_rejected()
-    {
-        $itemId = UUID::generateAsString();
-
-        $rejectedEvent = new Rejected(
-            $itemId,
-            new StringLiteral('Image contains nudity.')
-        );
+    public function it_should_update_the_workflow_status_when_an_offer_is_rejected(
+        $itemId,
+        AbstractEvent $rejectionEvent
+    ) {
         $itemDocumentReadyForValidation = new JsonDocument(
             $itemId,
             json_encode([
@@ -887,8 +886,27 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($itemDocumentReadyForValidation);
 
-        $approvedItem = $this->project($rejectedEvent, $itemId);
+        $rejectedItem = $this->project($rejectionEvent, $itemId);
 
-        $this->assertEquals($expectedItem, $approvedItem);
+        $this->assertEquals($expectedItem, $rejectedItem);
+    }
+
+    public function rejectionEventsDataProvider()
+    {
+        $itemId = UUID::generateAsString();
+
+        return [
+            'offer rejected' => [
+                'itemId' => $itemId,
+                'event' => new Rejected(
+                    $itemId,
+                    new StringLiteral('Image contains nudity.')
+                )
+            ],
+            'offer flagged as duplicate' => [
+                'itemId' => $itemId,
+                'event' => new FlaggedAsDuplicate($itemId)
+            ]
+        ];
     }
 }

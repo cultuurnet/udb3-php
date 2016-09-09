@@ -28,6 +28,7 @@ use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -769,5 +770,10 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getRejectedClassName()
     {
         return Rejected::class;
+    }
+
+    protected function getFlaggedAsDuplicateClassName()
+    {
+        return FlaggedAsDuplicate::class;
     }
 }

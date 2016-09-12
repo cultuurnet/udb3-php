@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jonas
- * Date: 27.10.15
- * Time: 14:04
- */
 
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\DBAL\Schema\Schema;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class DBALRepository implements PermissionRepositoryInterface, PermissionQueryInterface
 {
@@ -33,18 +26,21 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     protected $tableName;
 
     /**
-     * @param String $tableName
+     * @param StringLiteral $tableName
      *  The name of the table where the permissions are stored.
      *
      * @param Connection $connection
      *  A database connection.
      *
-     * @param String $idField
+     * @param StringLiteral $idField
      *  The name of the column that holds the offer identifier.
      *
      */
-    public function __construct(String $tableName, Connection $connection, String $idField)
-    {
+    public function __construct(
+        StringLiteral $tableName,
+        Connection $connection,
+        StringLiteral $idField
+    ) {
         $this->tableName = $tableName;
         $this->connection = $connection;
         $this->idField = $idField;
@@ -53,7 +49,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     /**
      * @inheritdoc
      */
-    public function getEditableOffers(String $uitId)
+    public function getEditableOffers(StringLiteral $uitId)
     {
         $q = $this->connection->createQueryBuilder();
         $q->select($this->idField->toNative())
@@ -65,7 +61,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
 
         $events = array();
         while ($id = $results->fetchColumn(0)) {
-            $events[] = new String($id);
+            $events[] = new StringLiteral($id);
         }
 
         return $events;
@@ -74,7 +70,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
     /**
      * @inheritdoc
      */
-    public function markOfferEditableByUser(String $eventId, String $uitId)
+    public function markOfferEditableByUser(StringLiteral $eventId, StringLiteral $uitId)
     {
         try {
             $this->connection->insert(

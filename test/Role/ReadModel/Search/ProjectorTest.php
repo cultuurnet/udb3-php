@@ -5,6 +5,10 @@ namespace CultuurNet\UDB3\Role\ReadModel\Search;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
+use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
@@ -73,7 +77,7 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
 
         $this->repository
             ->expects($this->once())
-            ->method('update')
+            ->method('updateName')
             ->with($this->uuid->toNative(), 'role_name');
 
         $this->projector->applyRoleRenamed($roleRenamed, $this->domainMessage);
@@ -94,5 +98,53 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
             ->with($this->uuid->toNative());
 
         $this->projector->applyRoleDeleted($roleDeleted, $this->domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_calls_update_role_on_constraint_updated_event()
+    {
+        $constraintUpdated = new ConstraintUpdated(
+            new UUID(),
+            new StringLiteral('zipCode:3000')
+        );
+        $domainMessage = $this->createDomainMessage($constraintUpdated);
+
+        $this->repository->expects($this->once())
+            ->method('updateConstraint')
+            ->with($constraintUpdated->getUuid(), $constraintUpdated->getQuery());
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_calls_remove_role_on_constraint_removed_event()
+    {
+        $constraintRemoved = new ConstraintRemoved(new UUID());
+        $domainMessage = $this->createDomainMessage($constraintRemoved);
+
+        $this->repository->expects($this->once())
+            ->method('updateConstraint')
+            ->with($constraintRemoved->getUuid());
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @param $payload
+     * @return DomainMessage
+     */
+    private function createDomainMessage($payload)
+    {
+        return new DomainMessage(
+            'id',
+            1,
+            new Metadata(),
+            $payload,
+            DateTime::now()
+        );
     }
 }

@@ -13,8 +13,9 @@ interface RepositoryInterface
     /**
      * @param string $uuid
      * @param string $name
+     * @param string|null $constraint
      */
-    public function save($uuid, $name);
+    public function save($uuid, $name, $constraint = null);
 
     /**
      * @param string $query
@@ -28,5 +29,11 @@ interface RepositoryInterface
      * @param string $uuid
      * @param string $name
      */
-    public function update($uuid, $name);
+    public function updateName($uuid, $name);
+
+    /**
+     * @param string $uuid
+     * @param string|null $constraint
+     */
+    public function updateConstraint($uuid, $constraint = null);
 }

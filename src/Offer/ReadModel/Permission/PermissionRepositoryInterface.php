@@ -2,14 +2,17 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission;
 
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 interface PermissionRepositoryInterface
 {
     /**
-     * @param String $offerId
-     * @param String $uitId
+     * @param StringLiteral $offerId
+     * @param StringLiteral $uitId
      * @return void
      */
-    public function markOfferEditableByUser(String $offerId, String $uitId);
+    public function markOfferEditableByUser(
+        StringLiteral $offerId,
+        StringLiteral $uitId
+    );
 }

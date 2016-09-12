@@ -523,4 +523,30 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then([]);
     }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage You can not reject an offer that is not ready for validation
+     */
+    public function it_should_not_reject_an_offer_that_is_not_waiting_for_validation()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('Yeah, but no, but yeah...');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new Approved($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then([]);
+    }
 }

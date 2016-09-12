@@ -82,6 +82,36 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     }
 
     /**
+     * @param StringLiteral $userId
+     * @param StringLiteral $name
+     * @return bool
+     */
+    public function canUseLabel(StringLiteral $userId, StringLiteral $name)
+    {
+        // A new label is always allowed.
+        $label = $this->getByName($name);
+        if ($label === null) {
+            return true;
+        }
+
+        // A public label is always allowed.
+        if ($label->getPrivacy() === Privacy::PRIVACY_PUBLIC()) {
+            return true;
+        }
+
+        // A private label is allowed if the user has a role with the label.
+        $query = new Query($name, $userId);
+        $foundLabels = $this->search($query);
+        foreach ($foundLabels as $foundLabel) {
+            if ($foundLabel->getName() === $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param Query $query
      * @return Entity[]|null
      */

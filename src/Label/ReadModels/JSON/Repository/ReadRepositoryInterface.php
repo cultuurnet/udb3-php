@@ -21,6 +21,13 @@ interface ReadRepositoryInterface
     public function getByName(StringLiteral $name);
 
     /**
+     * @param StringLiteral $userId
+     * @param StringLiteral $name
+     * @return bool
+     */
+    public function canUseLabel(StringLiteral $userId, StringLiteral $name);
+    
+    /**
      * @param Query $query
      * @return Entity[]|null
      */

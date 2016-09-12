@@ -31,7 +31,6 @@ use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
-use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -846,13 +845,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 '@id' => $itemId,
                 '@type' => 'event',
-                'workflowStatus' => WorkflowStatus::READY_FOR_VALIDATION
+                'workflowStatus' => 'READY_FOR_VALIDATION'
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
             '@type' => 'event',
-            'workflowStatus' => WorkflowStatus::APPROVED
+            'workflowStatus' => 'APPROVED'
         ];
 
         $this->documentRepository->save($itemDocumentReadyForValidation);
@@ -876,13 +875,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 '@id' => $itemId,
                 '@type' => 'event',
-                'workflowStatus' => WorkflowStatus::READY_FOR_VALIDATION
+                'workflowStatus' => 'READY_FOR_VALIDATION'
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
             '@type' => 'event',
-            'workflowStatus' => WorkflowStatus::REJECTED
+            'workflowStatus' => 'REJECTED'
         ];
 
         $this->documentRepository->save($itemDocumentReadyForValidation);

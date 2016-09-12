@@ -592,7 +592,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         AbstractApproved $approved
     ) {
         $this->applyEventTransformation($approved, function ($offerLd) {
-            $offerLd->workflowStatus = WorkflowStatus::APPROVED;
+            $offerLd->workflowStatus = WorkflowStatus::APPROVED()->getName();
         });
     }
 
@@ -629,7 +629,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     private function reject()
     {
         return function ($offerLd) {
-            $offerLd->workflowStatus = WorkflowStatus::REJECTED;
+            $offerLd->workflowStatus = WorkflowStatus::REJECTED()->getName();
         };
     }
 

@@ -74,7 +74,7 @@ class SecurityWithLabelPrivacy extends SecurityDecoratorBase
         } else {
             return $this->labelReadRepository->canUseLabel(
                 $this->userIdentification->getId(),
-                new StringLiteral($command->getLabel())
+                new StringLiteral((string)$command->getLabel())
             );
         }
     }

@@ -24,9 +24,9 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Organizer\Organizer;
 use ValueObjects\String\String as StringLiteral;
 
@@ -186,6 +186,21 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getApproveClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getRejectClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlagAsDuplicateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlagAsInappropriateClassName();
 
     /**
      * @param AbstractAddLabel $addLabel
@@ -408,16 +423,16 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->offerRepository->save($offer);
     }
 
-    private function handleFlaggedAsDuplicate(AbstractFlaggedAsDuplicate $flaggedAsDuplicate)
+    private function handleFlagAsDuplicate(AbstractFlagAsDuplicate $flagAsDuplicate)
     {
-        $offer = $this->load($flaggedAsDuplicate->getItemId());
+        $offer = $this->load($flagAsDuplicate->getItemId());
         $offer->flagAsDuplicate();
         $this->offerRepository->save($offer);
     }
 
-    private function handleFlaggedAsInappropriate(AbstractFlaggedAsInappropriate $flaggedAsInappropriate)
+    private function handleFlagAsInappropriate(AbstractFlagAsInappropriate $flagAsInappropriate)
     {
-        $offer = $this->load($flaggedAsInappropriate->getItemId());
+        $offer = $this->load($flagAsInappropriate->getItemId());
         $offer->flagAsInappropriate();
         $this->offerRepository->save($offer);
     }

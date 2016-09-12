@@ -215,19 +215,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     public function it_can_filter_private_labels_for_user_with_missing_role()
     {
         $userId = new StringLiteral('userId');
-        $roleId1 = new UUID();
-        $roleId2 = new UUID();
-
-        $this->insertUserRole($userId, $roleId1);
-
-        $this->insertLabelRole($this->entityPrivateAccess->getUuid(), $roleId1);
-
-        // Also add non private labels to a role to check if duplicates are avoided.
-        $this->insertLabelRole($this->entityByName->getUuid(), $roleId1);
-        $this->insertLabelRole($this->entityByUuid->getUuid(), $roleId2);
-
-        // And a private label but user has not the required role.
-        $this->insertLabelRole($this->entityPrivateNoAccess->getUuid(), $roleId2);
+        $this->seedRoles($userId);
 
         $search = new Query(
             new StringLiteral('ByNa'),
@@ -341,6 +329,47 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     }
 
     /**
+     * @test
+     */
+    public function a_new_label_can_be_used()
+    {
+        $this->assertTrue($this->dbalReadRepository->canUseLabel(
+            new StringLiteral('userId'),
+            new StringLiteral('newLabel')
+        ));
+    }
+
+    /**
+     * @test
+     */
+    public function a_public_label_can_be_used()
+    {
+        $this->assertTrue($this->dbalReadRepository->canUseLabel(
+            new StringLiteral('userId'),
+            new StringLiteral('label1')
+        ));
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_needs_permission_on_private_label()
+    {
+        $userId = new StringLiteral('userId');
+        $this->seedRoles($userId);
+
+        $this->assertTrue($this->dbalReadRepository->canUseLabel(
+            $userId,
+            $this->entityPrivateAccess->getName()
+        ));
+
+        $this->assertFalse($this->dbalReadRepository->canUseLabel(
+            $userId,
+            $this->entityPrivateNoAccess->getName()
+        ));
+    }
+
+    /**
      * @param UUID $labelId
      * @param UUID $roleId
      */
@@ -370,8 +399,23 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
         );
     }
 
-    private function configureSchema(StringLiteral $tableName)
+    /**
+     * @param StringLiteral $userId
+     */
+    private function seedRoles(StringLiteral $userId)
     {
+        $roleId1 = new UUID();
+        $roleId2 = new UUID();
 
+        $this->insertUserRole($userId, $roleId1);
+
+        $this->insertLabelRole($this->entityPrivateAccess->getUuid(), $roleId1);
+
+        // Also add non private labels to a role to check if duplicates are avoided.
+        $this->insertLabelRole($this->entityByName->getUuid(), $roleId1);
+        $this->insertLabelRole($this->entityByUuid->getUuid(), $roleId2);
+
+        // And a private label but user has not the required role.
+        $this->insertLabelRole($this->entityPrivateNoAccess->getUuid(), $roleId2);
     }
 }

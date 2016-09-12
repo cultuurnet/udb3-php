@@ -102,9 +102,12 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
         // A private label is allowed if the user has a role with the label.
         $query = new Query($name, $userId);
         $foundLabels = $this->search($query);
-        foreach ($foundLabels as $foundLabel) {
-            if ($foundLabel->getName() === $name) {
-                return true;
+
+        if ($foundLabels) {
+            foreach ($foundLabels as $foundLabel) {
+                if ($foundLabel->getName()->sameValueAs($name)) {
+                    return true;
+                }
             }
         }
 

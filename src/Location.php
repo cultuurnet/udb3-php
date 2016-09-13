@@ -80,12 +80,7 @@ class Location implements SerializableInterface
         return new static(
             $data['cdbid'],
             new StringLiteral($data['name']),
-            new Address(
-                new Street($data['address']['streetAddress']),
-                new PostalCode($data['address']['postalCode']),
-                new Locality($data['address']['addressLocality']),
-                Country::fromNative($data['address']['addressCountry'])
-            )
+            Address::deserialize($data['address'])
         );
     }
 }

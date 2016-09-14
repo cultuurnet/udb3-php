@@ -178,7 +178,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_search_on_exact_name()
     {
-        $search = new Query(new StringLiteral('label1'), null);
+        $search = new Query(new StringLiteral('label1'));
 
         $entities = $this->dbalReadRepository->search($search);
 
@@ -190,7 +190,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_search_on_name_part()
     {
-        $search = new Query(new StringLiteral('labe'), null);
+        $search = new Query(new StringLiteral('labe'));
 
         $entities = $this->dbalReadRepository->search($search);
 
@@ -202,7 +202,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_search_on_name_case_insensitive()
     {
-        $search = new Query(new StringLiteral('LAB'), null);
+        $search = new Query(new StringLiteral('LAB'));
 
         $entities = $this->dbalReadRepository->search($search);
 
@@ -297,7 +297,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_returns_null_when_nothing_matches_search()
     {
-        $search = new Query(new StringLiteral('nothing_please'), null);
+        $search = new Query(new StringLiteral('nothing_please'));
 
         $entities = $this->dbalReadRepository->search($search);
 
@@ -309,7 +309,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_get_total_items_of_search()
     {
-        $search = new Query(new StringLiteral('lab'), null);
+        $search = new Query(new StringLiteral('lab'));
 
         $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 
@@ -321,7 +321,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_returns_zero_for_total_items_when_search_did_match_nothing()
     {
-        $search = new Query(new StringLiteral('kroegentocht'), null);
+        $search = new Query(new StringLiteral('kroegentocht'));
 
         $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 

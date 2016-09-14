@@ -79,7 +79,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $this->entityByUuid = new Entity(
             new UUID(),
-            new StringLiteral('byUuid'),
+            new StringLiteral('bibliotheekweek'),
             Visibility::INVISIBLE(),
             Privacy::PRIVACY_PUBLIC(),
             new UUID()
@@ -88,7 +88,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $this->entityByName = new Entity(
             new UUID(),
-            new StringLiteral('byName'),
+            new StringLiteral('boswandeling'),
             Visibility::INVISIBLE(),
             Privacy::PRIVACY_PUBLIC(),
             new UUID()
@@ -97,7 +97,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $this->entityPrivateAccess = new Entity(
             new UUID(),
-            new StringLiteral('byName2'),
+            new StringLiteral('wandeltocht'),
             Visibility::INVISIBLE(),
             Privacy::PRIVACY_PRIVATE(),
             new UUID()
@@ -106,7 +106,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $this->entityPrivateNoAccess = new Entity(
             new UUID(),
-            new StringLiteral('byName3'),
+            new StringLiteral('stadswandeling'),
             Visibility::INVISIBLE(),
             Privacy::PRIVACY_PRIVATE(),
             new UUID()
@@ -167,7 +167,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     public function it_returns_null_when_not_found_by_name()
     {
         $entity = $this->dbalReadRepository->getByName(
-            new StringLiteral('notFoundName')
+            new StringLiteral('familievoorstelling')
         );
 
         $this->assertNull($entity);
@@ -214,11 +214,11 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_filter_private_labels_for_user_with_missing_role()
     {
-        $userId = new StringLiteral('userId');
+        $userId = new StringLiteral('70569052-37d5-4937-bf09-16c7a255c7d3');
         $this->seedRoles($userId);
 
         $search = new Query(
-            new StringLiteral('ByNa'),
+            new StringLiteral('wandel'),
             $userId
         );
 
@@ -321,7 +321,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_returns_zero_for_total_items_when_search_did_match_nothing()
     {
-        $search = new Query(new StringLiteral('nothing'), null);
+        $search = new Query(new StringLiteral('kroegentocht'), null);
 
         $totalLabels = $this->dbalReadRepository->searchTotalLabels($search);
 
@@ -334,8 +334,8 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     public function a_new_label_can_be_used()
     {
         $this->assertTrue($this->dbalReadRepository->canUseLabel(
-            new StringLiteral('userId'),
-            new StringLiteral('newLabel')
+            new StringLiteral('0092d9eb-7f91-4699-876a-21cc660925d4'),
+            new StringLiteral('fietstocht')
         ));
     }
 
@@ -345,8 +345,8 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     public function a_public_label_can_be_used()
     {
         $this->assertTrue($this->dbalReadRepository->canUseLabel(
-            new StringLiteral('userId'),
-            new StringLiteral('label1')
+            new StringLiteral('8d2f6739-7ba1-4c82-99f1-deca6cc79654'),
+            new StringLiteral('bibliotheekweek')
         ));
     }
 
@@ -355,7 +355,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
      */
     public function a_user_needs_permission_on_private_label()
     {
-        $userId = new StringLiteral('userId');
+        $userId = new StringLiteral('a02f67cb-3227-439b-861b-6ec24de7f0d1');
         $this->seedRoles($userId);
 
         $this->assertTrue($this->dbalReadRepository->canUseLabel(

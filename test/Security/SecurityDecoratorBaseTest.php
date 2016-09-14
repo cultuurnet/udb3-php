@@ -38,10 +38,13 @@ class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
      */
     public function it_calls_allows_update_with_cdbxml_from_decoratee()
     {
-        $this->decoratee->expects($this->once())
-            ->method('allowsUpdateWithCdbXml');
+        $offerId = new StringLiteral('a75bea80-bf8f-4c23-8368-e7153f9685b5');
 
-        $this->decoratorBase->allowsUpdateWithCdbXml(new StringLiteral('offerId'));
+        $this->decoratee->expects($this->once())
+            ->method('allowsUpdateWithCdbXml')
+            ->with($offerId);
+
+        $this->decoratorBase->allowsUpdateWithCdbXml($offerId);
     }
 
     /**
@@ -49,9 +52,9 @@ class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_allows_update_with_cdbxml_result_from_decoratee()
     {
-        $this->assertTrue($this->decoratorBase->allowsUpdateWithCdbXml(
-            new StringLiteral('offerId')
-        ));
+        $offerId = new StringLiteral('b83642be-2b56-43d2-93f4-2f1dd9f7529a');
+
+        $this->assertTrue($this->decoratorBase->allowsUpdateWithCdbXml($offerId));
     }
 
     /**
@@ -59,10 +62,12 @@ class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
      */
     public function it_calls_is_authorized_from_decoratee()
     {
-        $this->decoratee->expects($this->once())
-            ->method('isAuthorized');
-
         $command = $this->getMock(AuthorizableCommandInterface::class);
+
+        $this->decoratee->expects($this->once())
+            ->method('isAuthorized')
+            ->with($command);
+
         $this->decoratorBase->isAuthorized($command);
     }
 

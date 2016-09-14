@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
@@ -56,7 +57,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
             $this->labelReadRepository
         );
 
-        $this->addLabel = new AddLabel('itemId', new Label('labelName'));
+        $this->addLabel = new AddLabel('6a475eb2-04dd-41e3-95d1-225a1cd511f1', new Label('bibliotheekweek'));
     }
 
     /**
@@ -64,7 +65,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_allows_update_with_cdbxml_to_decoratee()
     {
-        $offerId = new StringLiteral('offerId');
+        $offerId = new StringLiteral('3650cf00-aa8a-4cf3-a928-a01c2eb3b0d8');
 
         $this->securityDecoratee->method('allowsUpdateWithCdbXml')
             ->with($offerId);
@@ -78,9 +79,9 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
     public function it_delegates_is_authorized_to_decoratee_when_not_a_label_command()
     {
         $translateTitle = new TranslateTitle(
-            'itemId',
+            'cc9b975b-80e3-47db-ae77-8a930e453232',
             new Language('nl'),
-            new StringLiteral('translated Title')
+            new StringLiteral('Hallo wereld')
         );
 
         $this->securityDecoratee->method('isAuthorized')
@@ -109,7 +110,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
         $this->mockIsGodUser(false);
 
         $this->userIdentification->method('getId')
-            ->willReturn(new StringLiteral('userId'));
+            ->willReturn(new StringLiteral('82650413-baf2-4257-a25b-d25dc18999dc'));
 
         $this->labelReadRepository->method('canUseLabel')
             ->willReturn(true);

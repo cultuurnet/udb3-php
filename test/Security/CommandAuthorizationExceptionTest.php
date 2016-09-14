@@ -35,9 +35,9 @@ class CommandAuthorizationExceptionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->userId = new StringLiteral('userId');
+        $this->userId = new StringLiteral('85b040e5-766a-4ca7-a01b-e21e9250165f');
         $this->permission = Permission::AANBOD_BEWERKEN();
-        $this->itemId = 'itemId';
+        $this->itemId = '69aa5d8d-5d56-4774-9320-d8e7c1721693';
 
         $this->command = $this->getMock(AuthorizableCommandInterface::class);
         $this->command->method('getPermission')
@@ -79,8 +79,8 @@ class CommandAuthorizationExceptionTest extends \PHPUnit_Framework_TestCase
     public function it_creates_a_message()
     {
         $expectedMessage = 'User with id: ' . $this->userId->toNative() .
-            ' has no permission: ' . $this->permission->toNative() .
-            ' on item: ' . $this->itemId .
+            ' has no permission: "' . $this->permission->toNative() .
+            '" on item: ' . $this->itemId .
             ' when executing command: ' . get_class($this->command);
 
         $this->assertEquals(

@@ -30,9 +30,9 @@ class Query
     /**
      * Query constructor.
      * @param StringLiteral $value
-     * @param StringLiteral $userId
-     * @param Natural $offset
-     * @param Natural $limit
+     * @param StringLiteral|null $userId
+     * @param Natural|null $offset
+     * @param Natural|null $limit
      */
     public function __construct(
         StringLiteral $value,
@@ -55,7 +55,7 @@ class Query
     }
 
     /**
-     * @return StringLiteral
+     * @return StringLiteral|null
      */
     public function getUserId()
     {
@@ -63,7 +63,7 @@ class Query
     }
 
     /**
-     * @return Natural
+     * @return Natural|null
      */
     public function getOffset()
     {
@@ -71,7 +71,7 @@ class Query
     }
 
     /**
-     * @return Natural
+     * @return Natural|null
      */
     public function getLimit()
     {

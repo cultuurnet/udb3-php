@@ -51,7 +51,7 @@ abstract class AbstractRejected extends AbstractEvent
     {
         return new static(
             $data['item_id'],
-            StringLiteral::fromNative($data['reason'])
+            new StringLiteral($data['reason'])
         );
     }
 }

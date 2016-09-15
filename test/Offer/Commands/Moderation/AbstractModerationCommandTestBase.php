@@ -18,7 +18,7 @@ abstract class AbstractModerationCommandTestBase extends \PHPUnit_Framework_Test
     /**
      * @return string
      */
-    public abstract function getModerationCommandClass();
+    abstract public function getModerationCommandClass();
 
     /**
      * @return AbstractModerationCommand

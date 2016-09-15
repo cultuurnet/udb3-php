@@ -2,14 +2,10 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-class UpdateFacilities
-{
-    /**
-     * Id that gets updated.
-     * @var string
-     */
-    protected $id;
+use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 
+class UpdateFacilities extends AbstractCommand
+{
     /**
      * Facilities to be added.
      * @var array
@@ -17,21 +13,13 @@ class UpdateFacilities
     protected $facilities;
 
     /**
-     * @param string $id
+     * @param string $itemId
      * @param array $facilities
      */
-    public function __construct($id, array $facilities)
+    public function __construct($itemId, array $facilities)
     {
-        $this->id = $id;
+        parent::__construct($itemId);
         $this->facilities = $facilities;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

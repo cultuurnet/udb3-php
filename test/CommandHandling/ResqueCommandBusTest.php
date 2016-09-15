@@ -1,13 +1,15 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\CommandHandling;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\EventDispatcher\EventDispatcherInterface;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Security\CommandAuthorizationException;
+use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use ValueObjects\String\String as StringLiteral;
 
 class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
 {
@@ -58,6 +60,43 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
             ->with($context);
 
         $this->commandBus->setContext($context);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_command_authorization_exception_when_decoratee_is_an_instance_of_authorized_command_bus_and_command_is_an_instance_of_authorizable_command()
+    {
+        $userIdentification = $this->getMock(UserIdentificationInterface::class);
+        $userIdentification->method('getId')
+            ->willReturn(new StringLiteral('userId'));
+
+        $decoratee = $this->getMock(AuthorizedCommandBusInterface::class);
+        $decoratee->method('isAuthorized')
+            ->willReturn(false);
+        $decoratee->method('getUserIdentification')
+            ->willReturn($userIdentification);
+
+        $queueName = 'test';
+
+        $commandBus = new ResqueCommandBus(
+            $decoratee,
+            $queueName,
+            $this->dispatcher
+        );
+
+        $command = $this->getMock(AuthorizableCommandInterface::class);
+        $command->method('getPermission')
+            ->willReturn(Permission::AANBOD_BEWERKEN());
+        $command->method('getItemId')
+            ->willReturn('itemId');
+
+        $decoratee->expects($this->once())
+            ->method('isAuthorized');
+
+        $this->setExpectedException(CommandAuthorizationException::class);
+
+        $commandBus->dispatch($command);
     }
 
     /**

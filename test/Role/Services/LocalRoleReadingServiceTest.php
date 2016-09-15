@@ -19,11 +19,6 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $rolePermissionsReadRepository;
-
-    /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
     private $roleLabelsReadRepository;
 
     /**
@@ -56,7 +51,6 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
         $this->roleReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->roleWriteRepository = $this->getMock(RepositoryInterface::class);
         $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
-        $this->rolePermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->roleLabelsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->roleUsersPermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->userRolesPermissionsReadRepository = $this->getMock(DocumentRepositoryInterface::class);
@@ -65,7 +59,6 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
             $this->roleReadRepository,
             $this->roleWriteRepository,
             $this->iriGenerator,
-            $this->rolePermissionsReadRepository,
             $this->roleLabelsReadRepository,
             $this->roleUsersPermissionsReadRepository,
             $this->userRolesPermissionsReadRepository
@@ -93,33 +86,6 @@ class LocalRoleReadingServiceTest extends \PHPUnit_Framework_TestCase
         $role = $this->readingService->getEntity($roleId);
 
         $this->assertEquals($expectedRole->getRawBody(), $role);
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_the_permissions_of_a_role()
-    {
-        /** @var Permission $permission1 */
-        $permission1 = Permission::AANBOD_INVOEREN();
-        /** @var Permission $permission2 */
-        $permission2 = Permission::AANBOD_BEWERKEN();
-        $roleId = new UUID('da114bb4-42bc-11e6-beb8-9e71128cae77');
-        $document = new JsonDocument('da114bb4-42bc-11e6-beb8-9e71128cae77');
-        $json = $document->getBody();
-        $json->{'@id'} = $roleId->toNative();
-        $json->permissions[$permission1->getName()] = $permission1->getValue();
-        $json->permissions[$permission2->getName()] = $permission2->getValue();
-        $expectedPermissions = $document->withBody($json);
-
-        $this->rolePermissionsReadRepository->expects($this->once())
-            ->method('get')
-            ->with($roleId)
-            ->willReturn($expectedPermissions);
-
-        $permissions = $this->readingService->getPermissionsByRoleUuid($roleId);
-
-        $this->assertEquals($expectedPermissions, $permissions);
     }
 
     /**

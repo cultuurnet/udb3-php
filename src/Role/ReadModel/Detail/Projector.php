@@ -5,6 +5,8 @@ namespace CultuurNet\UDB3\Role\ReadModel\Detail;
 use CultuurNet\UDB3\Role\Events\ConstraintCreated;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\Role\Events\PermissionAdded;
+use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
@@ -22,7 +24,7 @@ class Projector extends RoleProjector
             function (\stdClass $json) use ($roleCreated) {
                 $json->uuid = $roleCreated->getUuid()->toNative();
                 $json->name = $roleCreated->getName()->toNative();
-
+                $json->permissions = [];
                 return $json;
             }
         );
@@ -95,6 +97,52 @@ class Projector extends RoleProjector
 
         $json = $document->getBody();
         unset($json->constraint);
+
+        $this->repository->save($document->withBody($json));
+    }
+
+    /**
+     * @param PermissionAdded $permissionAdded
+     */
+    public function applyPermissionAdded(PermissionAdded $permissionAdded)
+    {
+        $document = $this->loadDocumentFromRepositoryByUuid(
+            $permissionAdded->getUuid()->toNative()
+        );
+
+        $permission = $permissionAdded->getPermission();
+
+        $json = $document->getBody();
+
+        $permissions = property_exists($json, 'permissions') ? $json->permissions : [];
+        array_push($permissions, $permission->getName());
+
+        $json->permissions = array_unique($permissions);
+
+        $this->repository->save($document->withBody($json));
+    }
+
+    /**
+     * @param PermissionRemoved $permissionRemoved
+     */
+    public function applyPermissionRemoved(PermissionRemoved $permissionRemoved)
+    {
+        $document = $this->loadDocumentFromRepositoryByUuid(
+            $permissionRemoved->getUuid()->toNative()
+        );
+
+        $permission = $permissionRemoved->getPermission();
+        $permissionName = $permission->getName();
+
+        $json = $document->getBody();
+        $json->permissions = array_values(
+            array_filter(
+                $json->permissions,
+                function ($item) use ($permissionName) {
+                    return $item !== $permissionName;
+                }
+            )
+        );
 
         $this->repository->save($document->withBody($json));
     }

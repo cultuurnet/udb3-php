@@ -67,7 +67,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
         );
         $expectedTheme = new Theme('themeid', 'theme_label');
 
-        $this->assertEquals($expectedId, $this->updateMajorInfo->getId());
+        $this->assertEquals($expectedId, $this->updateMajorInfo->getItemId());
         $this->assertEquals($expectedTitle, $this->updateMajorInfo->getTitle());
         $this->assertEquals($expectedEventType, $this->updateMajorInfo->getEventType());
         $this->assertEquals($expectedLocation, $this->updateMajorInfo->getLocation());

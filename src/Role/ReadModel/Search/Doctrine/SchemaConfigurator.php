@@ -10,9 +10,9 @@ use ValueObjects\String\String as StringLiteral;
 
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {
-    const UUID_COLUMN = 'uuid_col';
-    const RELATION_TYPE_COLUMN = 'relationType';
-    const RELATION_ID_COLUMN = 'relationId';
+    const UUID_COLUMN = 'uuid';
+    const NAME_COLUMN = 'name';
+    const CONSTRAINT_COLUMN = 'constraint_query';
 
     /**
      * @var StringLiteral
@@ -51,16 +51,19 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     {
         $table = $schema->createTable($tableName->toNative());
 
-        $table->addColumn('uuid', Type::GUID)
+        $table->addColumn(self::UUID_COLUMN, Type::GUID)
             ->setLength(36)
             ->setNotnull(true);
 
-        $table->addColumn('name', Type::STRING)
+        $table->addColumn(self::NAME_COLUMN, Type::STRING)
             ->setLength(255)
             ->setNotnull(true);
 
-        $table->setPrimaryKey(array('uuid'));
-        $table->addUniqueIndex(array('uuid', 'name'));
+        $table->addColumn(self::CONSTRAINT_COLUMN, Type::STRING)
+            ->setNotnull(false);
+
+        $table->setPrimaryKey([self::UUID_COLUMN]);
+        $table->addUniqueIndex([self::UUID_COLUMN, self::NAME_COLUMN]);
 
         return $table;
     }

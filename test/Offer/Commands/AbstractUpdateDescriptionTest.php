@@ -40,7 +40,7 @@ class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedDescription, $description);
 
-        $itemId = $this->updateDescriptionCommand->getId();
+        $itemId = $this->updateDescriptionCommand->getItemId();
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);

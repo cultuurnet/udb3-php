@@ -30,6 +30,6 @@ class DeleteTypicalAgeRangeTest extends \PHPUnit_Framework_TestCase
     public function it_can_return_its_id()
     {
         $expectedId = 'id';
-        $this->assertEquals($expectedId, $this->deleteTypicalAgeRange->getId());
+        $this->assertEquals($expectedId, $this->deleteTypicalAgeRange->getItemId());
     }
 }

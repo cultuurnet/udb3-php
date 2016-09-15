@@ -2,14 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-abstract class AbstractUpdateDescription
+abstract class AbstractUpdateDescription extends AbstractCommand
 {
-    /**
-     * Id that gets updated.
-     * @var string
-     */
-    protected $id;
-
     /**
      * Description to be added.
      * @var string
@@ -17,21 +11,13 @@ abstract class AbstractUpdateDescription
     protected $description;
 
     /**
-     * @param string $id
+     * @param string $itemId
      * @param string $description
      */
-    public function __construct($id, $description)
+    public function __construct($itemId, $description)
     {
-        $this->id = $id;
+        parent::__construct($itemId);
         $this->description = $description;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

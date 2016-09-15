@@ -23,6 +23,6 @@ class DeleteEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedId = 'id';
 
-        $this->assertEquals($expectedId, $this->deleteEvent->getId());
+        $this->assertEquals($expectedId, $this->deleteEvent->getItemId());
     }
 }

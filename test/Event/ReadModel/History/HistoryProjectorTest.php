@@ -164,7 +164,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             self::EVENT_ID_1,
             [
                 (object)[
-                    'description' => 'Updatet vanuit UDB2',
+                    'description' => 'Geüpdatet vanuit UDB2',
                     'date' => '2015-03-25T10:17:19+02:00'
                 ],
                 (object)[

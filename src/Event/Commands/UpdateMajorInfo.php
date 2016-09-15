@@ -1,29 +1,19 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Commands\UpdateMajorInfo.
- */
-
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 /**
  * Provides a command to update the major info of the event.
  */
-class UpdateMajorInfo
+class UpdateMajorInfo extends AbstractCommand
 {
-
-    /**
-     * @var string
-     */
-    private $id;
-
     /**
      * @var Title
      */
@@ -66,20 +56,12 @@ class UpdateMajorInfo
         CalendarInterface $calendar,
         Theme $theme = null
     ) {
-        $this->id = $eventId;
+        parent::__construct($eventId);
         $this->title = $title;
         $this->eventType = $eventType;
         $this->location = $location;
         $this->calendar = $calendar;
         $this->theme = $theme;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\Role\ReadModel\Search;
 use Broadway\EventHandling\EventListenerInterface;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
@@ -48,7 +51,7 @@ class Projector implements EventListenerInterface
         RoleRenamed $roleRenamed,
         DomainMessage $domainMessage
     ) {
-        $this->repository->update(
+        $this->repository->updateName(
             $roleRenamed->getUuid()->toNative(),
             $roleRenamed->getName()->toNative()
         );
@@ -63,5 +66,37 @@ class Projector implements EventListenerInterface
         DomainMessage $domainMessage
     ) {
         $this->repository->remove($roleDeleted->getUuid()->toNative());
+    }
+
+    /**
+     * @param ConstraintCreated $constraintCreated
+     */
+    protected function applyConstraintCreated(ConstraintCreated $constraintCreated)
+    {
+        $this->repository->updateConstraint(
+            $constraintCreated->getUuid(),
+            $constraintCreated->getQuery()
+        );
+    }
+
+    /**
+     * @param ConstraintUpdated $constraintUpdated
+     */
+    protected function applyConstraintUpdated(ConstraintUpdated $constraintUpdated)
+    {
+        $this->repository->updateConstraint(
+            $constraintUpdated->getUuid(),
+            $constraintUpdated->getQuery()
+        );
+    }
+
+    /**
+     * @param ConstraintRemoved $constraintRemoved
+     */
+    protected function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
+    {
+        $this->repository->updateConstraint(
+            $constraintRemoved->getUuid()
+        );
     }
 }

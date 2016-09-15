@@ -82,6 +82,7 @@ class CdbXMLImporter
         $this->cdbXMLItemBaseImporter->importPublicationInfo($item, $jsonLD);
         $this->cdbXMLItemBaseImporter->importAvailable($item, $jsonLD);
         $this->cdbXMLItemBaseImporter->importExternalId($item, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importWorkflowStatus($item, $jsonLD);
 
         // Address
         $contact_cdb = $item->getContactInfo();

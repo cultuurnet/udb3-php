@@ -138,12 +138,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->addPermission = new AddPermission(
             $this->uuid,
-            Permission::AANBOD_INVOEREN()
+            Permission::AANBOD_BEWERKEN()
         );
-        
+
         $this->removePermission = new RemovePermission(
             $this->uuid,
-            Permission::AANBOD_INVOEREN()
+            Permission::AANBOD_BEWERKEN()
         );
 
         $this->addLabel = new AddLabel(
@@ -178,7 +178,7 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_a_role()
     {
         $this->eventStore->trace();
-        
+
         $roleId = $this->roleEditingService->create(
             new StringLiteral('roleName')
         );
@@ -246,7 +246,7 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $commandId = $this->roleEditingService->addPermission(
             $this->uuid,
-            Permission::AANBOD_INVOEREN()
+            Permission::AANBOD_BEWERKEN()
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);
@@ -264,7 +264,7 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $commandId = $this->roleEditingService->removePermission(
             $this->uuid,
-            Permission::AANBOD_INVOEREN()
+            Permission::AANBOD_BEWERKEN()
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);

@@ -2,13 +2,13 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission;
 
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 interface PermissionQueryInterface
 {
     /**
-     * @param String $uitId
-     * @return String[] A list of offer ids.
+     * @param StringLiteral $uitId
+     * @return StringLiteral[] A list of offer ids.
      */
-    public function getEditableOffers(String $uitId);
+    public function getEditableOffers(StringLiteral $uitId);
 }

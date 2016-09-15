@@ -273,7 +273,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateDescription(AbstractUpdateDescription $updateDescription)
     {
-        $offer = $this->load($updateDescription->getId());
+        $offer = $this->load($updateDescription->getItemId());
 
         $offer->updateDescription(
             $updateDescription->getDescription()
@@ -289,7 +289,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateTypicalAgeRange(AbstractUpdateTypicalAgeRange $updateTypicalAgeRange)
     {
-        $offer = $this->load($updateTypicalAgeRange->getId());
+        $offer = $this->load($updateTypicalAgeRange->getItemId());
 
         $offer->updateTypicalAgeRange(
             $updateTypicalAgeRange->getTypicalAgeRange()
@@ -305,7 +305,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleDeleteTypicalAgeRange(AbstractDeleteTypicalAgeRange $deleteTypicalAgeRange)
     {
-        $offer = $this->load($deleteTypicalAgeRange->getId());
+        $offer = $this->load($deleteTypicalAgeRange->getItemId());
 
         $offer->deleteTypicalAgeRange();
 
@@ -319,7 +319,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateOrganizer(AbstractUpdateOrganizer $updateOrganizer)
     {
-        $offer = $this->load($updateOrganizer->getId());
+        $offer = $this->load($updateOrganizer->getItemId());
         $this->loadOrganizer($updateOrganizer->getOrganizerId());
 
         $offer->updateOrganizer(
@@ -335,7 +335,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleDeleteOrganizer(AbstractDeleteOrganizer $deleteOrganizer)
     {
-        $offer = $this->load($deleteOrganizer->getId());
+        $offer = $this->load($deleteOrganizer->getItemId());
 
         $offer->deleteOrganizer(
             $deleteOrganizer->getOrganizerId()
@@ -366,7 +366,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateBookingInfo(AbstractUpdateBookingInfo $updateBookingInfo)
     {
-        $offer = $this->load($updateBookingInfo->getId());
+        $offer = $this->load($updateBookingInfo->getItemId());
 
         $offer->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()
@@ -380,7 +380,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     private function handleDeleteOffer(AbstractDeleteOffer $deleteOffer)
     {
-        $offer = $this->load($deleteOffer->getId());
+        $offer = $this->load($deleteOffer->getItemId());
         $offer->delete();
         $this->offerRepository->save($offer);
     }

@@ -60,7 +60,7 @@ class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedBookingInfo, $bookingInfo);
 
-        $itemId = $this->updateBookingInfo->getId();
+        $itemId = $this->updateBookingInfo->getItemId();
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);

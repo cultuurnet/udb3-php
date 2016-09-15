@@ -38,7 +38,11 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             $this->getTableName()
         );
 
-        $this->role = array('uuid' => 'role_uuid', 'name' => 'role_name');
+        $this->role = array(
+            'uuid' => '8d17cffe-6f28-459c-8627-1f6345f8b296',
+            'name' => 'Leuven validatoren',
+            'constraint_query' => 'city:Leuven'
+        );
     }
 
     /**
@@ -50,7 +54,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->dbalRepository->save(
             $expectedRole['uuid'],
-            $expectedRole['name']
+            $expectedRole['name'],
+            $expectedRole['constraint_query']
         );
 
         $actualRole = $this->getLastRole();
@@ -67,12 +72,13 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->dbalRepository->save(
             $expectedRole['uuid'],
-            $expectedRole['name']
+            $expectedRole['name'],
+            $expectedRole['constraint_query']
         );
 
         $expectedRole['name'] = 'new_role_name';
 
-        $this->dbalRepository->update($expectedRole['uuid'], $expectedRole['name']);
+        $this->dbalRepository->updateName($expectedRole['uuid'], $expectedRole['name']);
 
         $actualRole = $this->getLastRole();
 
@@ -88,7 +94,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->dbalRepository->save(
             $expectedRole['uuid'],
-            $expectedRole['name']
+            $expectedRole['name'],
+            $expectedRole['constraint_query']
         );
 
         $this->dbalRepository->remove($expectedRole['uuid']);
@@ -101,15 +108,18 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_search()
     {
-        $expectedRole1 = $this->role;
-        $expectedRole2 = array(
-            'uuid' => 'role_uuid_1',
-            'name' => 'role_name with foo in it',
-        );
-        $expectedRole3 = array(
-            'uuid' => 'role_uuid_2',
-            'name' => 'role_name with bar in it',
-        );
+        $expectedRole1 = [
+            'uuid' => '8d17cffe-6f28-459c-8627-1f6345f8b296',
+            'name' => 'Leuven moderators',
+        ];
+        $expectedRole2 = [
+            'uuid' => '2ca57542-3b60-4984-b03f-48eca3ce0d35',
+            'name' => 'bar validator',
+        ];
+        $expectedRole3 = [
+            'uuid' => '317eb972-fe60-47b9-88c9-bc2e70fdf7a5',
+            'name' => 'foo validator',
+        ];
 
         $expectedRoles = array(
             $expectedRole1,
@@ -120,7 +130,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         foreach ($expectedRoles as $role) {
             $this->dbalRepository->save(
                 $role['uuid'],
-                $role['name']
+                $role['name'],
+                'foo:bar'
             );
         }
 
@@ -132,8 +143,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 $expectedRole1,
-                $expectedRole3,
                 $expectedRole2,
+                $expectedRole3,
             ),
             $actualResults->getMember()
         );
@@ -150,13 +161,13 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         // Search everything, results are sorted alphabetically.
         $this->connection->beginTransaction();
-        $actualResults = $this->dbalRepository->search('with', 5);
+        $actualResults = $this->dbalRepository->search('validator', 5);
         $this->connection->rollBack();
 
         $this->assertEquals(
             array(
-                $expectedRole3,
                 $expectedRole2,
+                $expectedRole3,
             ),
             $actualResults->getMember()
         );

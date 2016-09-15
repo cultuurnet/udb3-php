@@ -39,7 +39,7 @@ class DBALRepository implements RepositoryInterface
 
         $q
             ->delete($this->tableName->toNative())
-            ->where($expr->eq('uuid', ':role_id'))
+            ->where($expr->eq(SchemaConfigurator::UUID_COLUMN, ':role_id'))
             ->setParameter('role_id', $uuid);
         $q->execute();
     }
@@ -47,19 +47,21 @@ class DBALRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function save($uuid, $name)
+    public function save($uuid, $name, $constraint = null)
     {
         $q = $this->connection->createQueryBuilder();
         $q
             ->insert($this->tableName->toNative())
             ->values(
                 [
-                    'uuid' => ':role_id',
-                    'name' => ':role_name',
+                    SchemaConfigurator::UUID_COLUMN => ':role_id',
+                    SchemaConfigurator::NAME_COLUMN => ':role_name',
+                    SchemaConfigurator::CONSTRAINT_COLUMN => ':constraint'
                 ]
             )
             ->setParameter('role_id', $uuid)
-            ->setParameter('role_name', $name);
+            ->setParameter('role_name', $name)
+            ->setParameter('constraint', $constraint);
         $q->execute();
     }
 
@@ -107,18 +109,36 @@ class DBALRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function update($uuid, $name)
+    public function updateName($uuid, $name)
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $this->connection->getExpressionBuilder();
 
         $q
             ->update($this->tableName->toNative())
-            ->where($expr->eq('uuid', ':role_id'))
-            ->set('uuid', ':role_id')
-            ->set('name', ':role_name')
+            ->where($expr->eq(SchemaConfigurator::UUID_COLUMN, ':role_id'))
+            ->set(SchemaConfigurator::UUID_COLUMN, ':role_id')
+            ->set(SchemaConfigurator::NAME_COLUMN, ':role_name')
             ->setParameter('role_id', $uuid)
             ->setParameter('role_name', $name);
+        $q->execute();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateConstraint($uuid, $constraint = null)
+    {
+        $q = $this->connection->createQueryBuilder();
+        $expr = $this->connection->getExpressionBuilder();
+
+        $q
+            ->update($this->tableName->toNative())
+            ->where($expr->eq(SchemaConfigurator::UUID_COLUMN, ':role_id'))
+            ->set(SchemaConfigurator::UUID_COLUMN, ':role_id')
+            ->set(SchemaConfigurator::CONSTRAINT_COLUMN, ':constraint')
+            ->setParameter('role_id', $uuid)
+            ->setParameter('constraint', $constraint);
         $q->execute();
     }
 }

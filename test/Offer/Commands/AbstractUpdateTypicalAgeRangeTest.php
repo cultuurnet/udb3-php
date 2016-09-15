@@ -40,7 +40,7 @@ class AbstractUpdateTypicalAgeRangeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedTypicalAgeRange, $typicalAgeRange);
 
-        $itemId = $this->updateTypicalAgeRange->getId();
+        $itemId = $this->updateTypicalAgeRange->getItemId();
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);

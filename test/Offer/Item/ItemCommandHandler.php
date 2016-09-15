@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\Offer\Item;
 
-use CultuurNet\UDB3\Event\Events\MainImageSelected;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;

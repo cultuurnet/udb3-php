@@ -10,9 +10,6 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
@@ -186,16 +183,25 @@ class Item extends Offer
         return new BookingInfoUpdated($this->id, $bookingInfo);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function createOfferDeletedEvent()
     {
-        return new ItemDeleted();
+        return new ItemDeleted($this->id);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function createApprovedEvent()
     {
         return new Approved($this->id);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function createRejectedEvent(StringLiteral $reason)
     {
         return new Rejected($this->id, $reason);

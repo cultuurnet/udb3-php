@@ -409,6 +409,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->offerRepository->save($offer);
     }
 
+    /**
+     * @param AbstractApprove $approve
+     */
     private function handleApprove(AbstractApprove $approve)
     {
         $offer = $this->load($approve->getItemId());
@@ -416,6 +419,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->offerRepository->save($offer);
     }
 
+    /**
+     * @param AbstractReject $reject
+     */
     private function handleReject(AbstractReject $reject)
     {
         $offer = $this->load($reject->getItemId());
@@ -423,6 +429,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->offerRepository->save($offer);
     }
 
+    /**
+     * @param AbstractFlagAsDuplicate $flagAsDuplicate
+     */
     private function handleFlagAsDuplicate(AbstractFlagAsDuplicate $flagAsDuplicate)
     {
         $offer = $this->load($flagAsDuplicate->getItemId());
@@ -430,6 +439,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $this->offerRepository->save($offer);
     }
 
+    /**
+     * @param AbstractFlagAsInappropriate $flagAsInappropriate
+     */
     private function handleFlagAsInappropriate(AbstractFlagAsInappropriate $flagAsInappropriate)
     {
         $offer = $this->load($flagAsInappropriate->getItemId());

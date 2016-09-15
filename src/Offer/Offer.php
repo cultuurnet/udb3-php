@@ -338,19 +338,29 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function approve()
     {
+        $this->guardApprove() ?: $this->apply($this->createApprovedEvent());
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function guardApprove()
+    {
         if ($this->workflowStatus === WorkflowStatus::APPROVED()) {
-            return; // nothing left to do if the offer has already been approved
+            return true; // nothing left to do if the offer has already been approved
         }
 
         if ($this->workflowStatus !== WorkflowStatus::READY_FOR_VALIDATION()) {
             throw new Exception('You can not approve an offer that is not ready for validation');
         }
 
-        $this->apply($this->createApprovedEvent());
+        return false;
     }
 
     /**
      * Reject an offer that is waiting for validation with a given reason.
+     * @param StringLiteral $reason
      */
     public function reject(StringLiteral $reason)
     {
@@ -375,7 +385,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      *  false when the offer can still be rejected, true when the offer is already rejected for the same reason
      * @throws Exception
      */
-    protected function guardRejection(StringLiteral $reason)
+    private function guardRejection(StringLiteral $reason)
     {
         if ($this->workflowStatus === WorkflowStatus::REJECTED()) {
             if ($this->rejectedReason && $reason->sameValueAs($this->rejectedReason)) {

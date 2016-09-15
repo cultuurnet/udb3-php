@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Location;
 
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;

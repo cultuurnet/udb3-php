@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Title;
@@ -98,7 +98,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $locality = new Locality('Leuven');
         $postalCode = new PostalCode('3000');
         $country = Country::fromNative('BE');
-        
+
         $placeId = 'generated-uuid';
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');

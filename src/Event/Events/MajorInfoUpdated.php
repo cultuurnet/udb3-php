@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -39,7 +39,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
     private $theme = null;
 
     /**
-     * @var Location
+     * @var \CultuurNet\UDB3\Location\Location
      */
     private $location;
 
@@ -52,7 +52,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param \CultuurNet\UDB3\Location\Location $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */
@@ -106,7 +106,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
     }
 
     /**
-     * @return Location
+     * @return \CultuurNet\UDB3\Location\Location
      */
     public function getLocation()
     {

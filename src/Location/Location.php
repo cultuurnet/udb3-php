@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Location;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Address\Address;

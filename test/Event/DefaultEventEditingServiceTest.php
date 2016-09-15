@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PlaceService;
 use ValueObjects\Geography\Country;
@@ -96,7 +96,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
         );
-        
+
         $this->writeRepository = new EventRepository(
             $this->eventStore,
             new SimpleEventBus()

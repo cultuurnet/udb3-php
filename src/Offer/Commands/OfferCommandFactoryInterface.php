@@ -151,13 +151,13 @@ interface OfferCommandFactoryInterface
     public function createRejectCommand($id, StringLiteral $reason);
 
     /**
-     * @param $id
+     * @param string $id
      * @return AbstractFlagAsInappropriate
      */
     public function createFlagAsInappropriate($id);
 
     /**
-     * @param $id
+     * @param string $id
      * @return AbstractFlagAsDuplicate
      */
     public function createFlagAsDuplicate($id);

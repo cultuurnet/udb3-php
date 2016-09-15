@@ -12,8 +12,6 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
@@ -369,16 +367,25 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return new PlaceDeleted($this->actorId);
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function createApprovedEvent()
     {
         return new Approved($this->actorId);
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function createRejectedEvent(StringLiteral $reason)
     {
         return new Rejected($this->actorId, $reason);
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function createFlaggedAsDuplicate()
     {
         return new FlaggedAsDuplicate($this->actorId);

@@ -402,23 +402,35 @@ abstract class Offer extends EventSourcedAggregateRoot
         return false;
     }
 
+    /**
+     * @param AbstractApproved $approved
+     */
     protected function applyApproved(AbstractApproved $approved)
     {
         $this->workflowStatus = WorkflowStatus::APPROVED();
     }
 
+    /**
+     * @param AbstractRejected $rejected
+     */
     protected function applyRejected(AbstractRejected $rejected)
     {
         $this->rejectedReason = $rejected->getReason();
         $this->workflowStatus = WorkflowStatus::REJECTED();
     }
 
+    /**
+     * @param AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+     */
     protected function applyFlaggedAsDuplicate(AbstractFlaggedAsDuplicate $flaggedAsDuplicate)
     {
         $this->rejectedReason = new StringLiteral(self::DUPLICATE_REASON);
         $this->workflowStatus = WorkflowStatus::REJECTED();
     }
 
+    /**
+     * @param AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+     */
     protected function applyFlaggedAsInappropriate(AbstractFlaggedAsInappropriate $flaggedAsInappropriate)
     {
         $this->rejectedReason = new StringLiteral(self::INAPPROPRIATE_REASON);
@@ -561,7 +573,8 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     abstract protected function createApprovedEvent();
 
-    /*
+    /**
+     * @param StringLiteral $reason
      * @return AbstractRejected
      */
     abstract protected function createRejectedEvent(StringLiteral $reason);

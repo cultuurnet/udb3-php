@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "86f8fa8c351fd8e5a3741edc8d783ee9",
-    "content-hash": "bac7afefa8730fc3fd37035edc37cbf4",
+    "hash": "e06ae29cfeaef42ca2f413fd379d76e8",
+    "content-hash": "4868df939b447e5e24e2c3c11e8c2d98",
     "packages": [
         {
             "name": "2dotstwice/collection",
@@ -545,16 +545,16 @@
         },
         {
             "name": "cultuurnet/deserializer",
-            "version": "dev-master",
+            "version": "dev-feature/III-1325",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/deserializer.git",
-                "reference": "4880771a6f2b7a01e8f3624b35959132e0fc957a"
+                "reference": "6346791a5173067d45a11d662bbb221167a5eacc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/4880771a6f2b7a01e8f3624b35959132e0fc957a",
-                "reference": "4880771a6f2b7a01e8f3624b35959132e0fc957a",
+                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/6346791a5173067d45a11d662bbb221167a5eacc",
+                "reference": "6346791a5173067d45a11d662bbb221167a5eacc",
                 "shasum": ""
             },
             "require": {
@@ -588,7 +588,7 @@
                 }
             ],
             "description": "Internet media type deserialization library",
-            "time": "2016-03-31 09:45:40"
+            "time": "2016-09-15 10:31:43"
         },
         {
             "name": "cultuurnet/entry",
@@ -1608,6 +1608,7 @@
                 "rest",
                 "web service"
             ],
+            "abandoned": "guzzlehttp/guzzle",
             "time": "2015-03-18 18:23:50"
         },
         {
@@ -5240,6 +5241,12 @@
     ],
     "aliases": [
         {
+            "alias": "0.1",
+            "alias_normalized": "0.1.0.0",
+            "version": "dev-feature/III-1325",
+            "package": "cultuurnet/deserializer"
+        },
+        {
             "alias": "1.6",
             "alias_normalized": "1.6.0.0",
             "version": "9999999-dev",
@@ -5248,6 +5255,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "cultuurnet/deserializer": 20,
         "cultuurnet/culturefeed-php": 20
     },
     "prefer-stable": true,

@@ -262,7 +262,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_should_approve_an_offer_that_is_waiting_for_validation()
+    public function it_should_approve_an_offer_that_is_ready_for_validation()
     {
         $itemId = UUID::generateAsString();
 
@@ -396,7 +396,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_should_reject_an_offer_that_is_waiting_for_validation_with_a_reason()
+    public function it_should_reject_an_offer_that_is_ready_for_validation_with_a_reason()
     {
         $itemId = UUID::generateAsString();
         $reason = new StringLiteral('You forgot to add an organizer.');
@@ -423,7 +423,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_should_flag_an_offer_that_is_waiting_for_validation_as_duplicate()
+    public function it_should_flag_an_offer_that_is_ready_for_validation_as_duplicate()
     {
         $itemId = UUID::generateAsString();
 
@@ -475,7 +475,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_should_flag_an_offer_that_is_waiting_for_validation_as_inappropriate()
+    public function it_should_flag_an_offer_that_is_ready_for_validation_as_inappropriate()
     {
         $itemId = UUID::generateAsString();
 
@@ -503,7 +503,7 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @expectedException        Exception
      * @expectedExceptionMessage The offer has already been rejected for another reason: inappropriate
      */
-    public function it_should_reject_an_offer_when_it_is_flagged_as_inappropriate()
+    public function it_should_not_reject_an_offer_when_it_is_flagged_as_inappropriate()
     {
         $itemId = UUID::generateAsString();
         $reason = new StringLiteral('The theme does not match the description.');
@@ -529,7 +529,7 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @expectedException        Exception
      * @expectedExceptionMessage You can not reject an offer that is not ready for validation
      */
-    public function it_should_not_reject_an_offer_that_is_not_waiting_for_validation()
+    public function it_should_not_reject_an_offer_that_is_flagged_as_approved()
     {
         $itemId = UUID::generateAsString();
         $reason = new StringLiteral('Yeah, but no, but yeah...');

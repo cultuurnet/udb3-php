@@ -118,8 +118,8 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
     public function it_returns_empty_array_for_a_missing_permission()
     {
         $constraints = $this->userConstraintsReadRepository->getByUserAndPermission(
-            new StringLiteral('user1'),
-            Permission::AANBOD_INVOEREN()
+            new StringLiteral('user2'),
+            Permission::AANBOD_BEWERKEN()
         );
 
         $this->assertEmpty($constraints);

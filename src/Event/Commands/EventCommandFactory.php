@@ -23,10 +23,6 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
-use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
-use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
-use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -204,21 +200,38 @@ class EventCommandFactory implements OfferCommandFactoryInterface
         return new DeleteEvent($id);
     }
 
+    /**
+     * @param string $id
+     * @return Approve
+     */
     public function createApproveCommand($id)
     {
         return new Approve($id);
     }
 
+    /**
+     * @param string $id
+     * @param StringLiteral $reason
+     * @return Reject
+     */
     public function createRejectCommand($id, StringLiteral $reason)
     {
         return new Reject($id, $reason);
     }
 
+    /**
+     * @param string $id
+     * @return FlagAsInappropriate
+     */
     public function createFlagAsInappropriate($id)
     {
         return new FlagAsInappropriate($id);
     }
 
+    /**
+     * @param string $id
+     * @return FlagAsDuplicate
+     */
     public function createFlagAsDuplicate($id)
     {
         return new FlagAsDuplicate($id);

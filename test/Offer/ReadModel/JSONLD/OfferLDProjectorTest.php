@@ -6,8 +6,6 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\EntityNotFoundException;
-use CultuurNet\UDB3\EntityServiceInterface;
-use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -33,7 +31,6 @@ use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -838,7 +835,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_update_the_workflow_status_when_an_offer_is_approved()
     {
         $itemId = UUID::generateAsString();
-        
+
         $approvedEvent = new Approved($itemId);
         $itemDocumentReadyForValidation = new JsonDocument(
             $itemId,
@@ -865,6 +862,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider rejectionEventsDataProvider
+     * @param string $itemId
+     * @param AbstractEvent $rejectionEvent
      */
     public function it_should_update_the_workflow_status_when_an_offer_is_rejected(
         $itemId,
@@ -891,6 +890,9 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedItem, $rejectedItem);
     }
 
+    /**
+     * @return array
+     */
     public function rejectionEventsDataProvider()
     {
         $itemId = UUID::generateAsString();

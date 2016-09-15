@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
-use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -316,6 +315,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * Apply the ImageUpdated event to the item repository.
      *
      * @param AbstractImageUpdated $imageUpdated
+     * @throws \Exception
      */
     protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
     {
@@ -588,9 +588,8 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @param AbstractApproved $approved
      */
-    protected function applyApproved(
-        AbstractApproved $approved
-    ) {
+    protected function applyApproved(AbstractApproved $approved)
+    {
         $this->applyEventTransformation($approved, function ($offerLd) {
             $offerLd->workflowStatus = WorkflowStatus::APPROVED()->getName();
         });
@@ -599,9 +598,8 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @param AbstractRejected $rejected
      */
-    protected function applyRejected(
-        AbstractRejected $rejected
-    ) {
+    protected function applyRejected(AbstractRejected $rejected)
+    {
         $this->applyEventTransformation($rejected, $this->reject());
     }
 

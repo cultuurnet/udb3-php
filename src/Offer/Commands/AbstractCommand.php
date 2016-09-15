@@ -13,7 +13,7 @@ abstract class AbstractCommand implements AuthorizableCommandInterface
 
     /**
      * AbstractCommand constructor.
-     * @param $itemId
+     * @param string $itemId
      */
     public function __construct($itemId)
     {

@@ -14,7 +14,7 @@ abstract class AbstractReject extends AbstractModerationCommand
     private $reason;
 
     /**
-     * @param $itemId
+     * @param string $itemId
      *  The id of the item that is targeted by the command.
      *
      * @param StringLiteral $reason

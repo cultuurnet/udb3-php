@@ -4,10 +4,6 @@ namespace CultuurNet\UDB3\Location;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
-use ValueObjects\Geography\Country;
 use ValueObjects\String\String as StringLiteral;
 
 /**

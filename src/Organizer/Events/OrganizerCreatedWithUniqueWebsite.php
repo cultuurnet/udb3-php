@@ -1,0 +1,180 @@
+<?php
+
+namespace CultuurNet\UDB3\Organizer\Events;
+
+use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Title;
+use ValueObjects\Web\Url;
+
+/**
+ * Instantiates an OrganizerCreatedWithUniqueWebsite event
+ */
+class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
+{
+    /**
+     * @var Url
+     */
+    protected $website;
+
+    /**
+     * @var Title
+     */
+    public $title;
+
+    /**
+     * @var Address[]
+     */
+    public $addresses;
+
+    /**
+     * @var string[]
+     */
+    public $phones;
+
+    /**
+     * @var string[]
+     */
+    public $emails;
+
+    /**
+     * @var string[]
+     */
+    public $urls;
+
+    /**
+     * @param string $id
+     * @param Url $website
+     * @param Title $title
+     * @param Address[] $addresses
+     * @param string[] $phones
+     * @param string[] $emails
+     * @param string[] $urls
+     */
+    public function __construct(
+        $id,
+        Url $website,
+        Title $title,
+        array $addresses,
+        array $phones,
+        array $emails,
+        array $urls
+    ) {
+        parent::__construct($id);
+
+        $this->guardAddressTypes($addresses);
+
+        $this->website = $website;
+        $this->title = $title;
+        $this->addresses = $addresses;
+        $this->phones = $phones;
+        $this->emails = $emails;
+        $this->urls = $urls;
+    }
+
+    /**
+     * @param Address[] $addresses
+     */
+    private function guardAddressTypes(array $addresses)
+    {
+        foreach ($addresses as $address) {
+            if (!($address instanceof Address)) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        "Argument should be of type Address, %s given.",
+                        is_object($address) ? get_class($address) : 'scalar'
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * @return Url
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * @return Title
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return Address[]
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPhones()
+    {
+        return $this->phones;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getEmails()
+    {
+        return $this->emails;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getUrls()
+    {
+        return $this->urls;
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+
+        $addresses = array();
+        foreach ($this->getAddresses() as $address) {
+            $addresses[] = $address->serialize();
+        }
+
+        return parent::serialize() + array(
+            'website' => (string) $this->getWebsite(),
+            'title' => (string) $this->getTitle(),
+            'addresses' => $addresses,
+            'phones' => $this->getPhones(),
+            'emails' => $this->getEmails(),
+            'urls' => $this->getUrls(),
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
+    {
+
+        $addresses = array();
+        foreach ($data['addresses'] as $address) {
+            $addresses[] = Address::deserialize($address);
+        }
+
+        return new static(
+            $data['organizer_id'],
+            Url::fromNative($data['website']),
+            new Title($data['title']),
+            $addresses, $data['phones'],
+            $data['emails'],
+            $data['urls']
+        );
+    }
+}

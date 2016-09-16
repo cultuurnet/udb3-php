@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -215,6 +216,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         } elseif (isset($metaData['user_nick'])) {
             $jsonLD->creator = $metaData['user_nick'];
         }
+
+        $jsonLD->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
 
         $this->repository->save($document->withBody($jsonLD));
     }

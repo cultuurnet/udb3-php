@@ -48,6 +48,7 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
@@ -496,6 +497,8 @@ class EventLDProjector extends OfferLDProjector implements
                 } elseif (isset($metaData['user_nick'])) {
                     $jsonLD->creator = $metaData['user_nick'];
                 }
+
+                $jsonLD->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
 
                 return $jsonLD;
             }

@@ -144,6 +144,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
+        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
 
         $body = $this->project(
             $placeCreated,
@@ -200,6 +201,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
+        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
 
         $body = $this->project(
             $placeCreated,
@@ -251,6 +253,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->creator = '1 (Tester)';
+        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
 
         $metadata = new Metadata(
             [
@@ -344,7 +347,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $cdbXml,
             'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
         );
-        
+
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
         $this->assertEquals(
@@ -360,7 +363,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     {
         $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
         $actorId = $placeImportedFromUdb2->getActorId();
-        
+
         $placeDeleted = new PlaceDeleted($actorId);
         $this->project($placeDeleted, $actorId, null, null, false);
 

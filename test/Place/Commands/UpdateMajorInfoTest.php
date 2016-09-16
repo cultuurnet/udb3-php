@@ -2,11 +2,15 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Theme;
+use ValueObjects\Geography\Country;
 
 class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,10 +26,10 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
             new Title('title'),
             new EventType('bar_id', 'bar'),
             new Address(
-                'Bondgenotenlaan',
-                '3000',
-                'Leuven',
-                'Belgium'
+                new Street('Bondgenotenlaan'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
             ),
             new Calendar(
                 'permanent'
@@ -43,10 +47,10 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
         $expectedTitle = new Title('title');
         $expectedEventType = new EventType('bar_id', 'bar');
         $expectedAddress = new Address(
-            'Bondgenotenlaan',
-            '3000',
-            'Leuven',
-            'Belgium'
+            new Street('Bondgenotenlaan'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
         );
         $expectedCalendar = new Calendar(
             'permanent'

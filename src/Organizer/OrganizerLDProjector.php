@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
@@ -116,6 +117,57 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->repository->save($document->withBody($jsonLD));
     }
 
+    /**
+     * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
+     */
+    protected function applyOrganizerCreatedWithUniqueWebsite(
+        OrganizerCreatedWithUniqueWebsite $organizerCreated,
+        DomainMessage $domainMessage
+    ) {
+        $document = $this->newDocument($organizerCreated->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $organizerCreated->getOrganizerId()
+        );
+
+        $jsonLD->website = (string) $organizerCreated->getWebsite();
+
+        $jsonLD->name = $organizerCreated->getTitle();
+
+        $addresses = $organizerCreated->getAddresses();
+        $jsonLD->addresses = array();
+        foreach ($addresses as $address) {
+            $jsonLD->addresses[] = array(
+                'addressCountry' => $address->getCountry(),
+                'addressLocality' => $address->getLocality(),
+                'postalCode' => $address->getPostalCode(),
+                'streetAddress' => $address->getStreetAddress(),
+            );
+        }
+
+        $jsonLD->phone = $organizerCreated->getPhones();
+        $jsonLD->email = $organizerCreated->getEmails();
+        $jsonLD->url = $organizerCreated->getUrls();
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $jsonLD->created = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
+            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+     */
     public function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
     ) {

@@ -13,12 +13,14 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
 use stdClass;
+use ValueObjects\Web\Url;
 
 class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -108,7 +110,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $id = $uuidGenerator->generate();
         $created = '2015-01-20T13:25:21+01:00';
 
-        $placeCreated = new OrganizerCreated(
+        $organizerCreated = new OrganizerCreated(
             $id,
             new Title('some representative title'),
             [new Address('$street', '$postalCode', '$locality', '$country')],
@@ -146,7 +148,62 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 1,
                 new Metadata(),
-                $placeCreated,
+                $organizerCreated,
+                DateTime::fromString($created)
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_new_organizers_with_unique_website()
+    {
+        $uuidGenerator = new Version4Generator();
+        $id = $uuidGenerator->generate();
+        $created = '2015-01-20T13:25:21+01:00';
+
+        $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
+            $id,
+            Url::fromNative('http://www.stuk.be'),
+            new Title('some representative title'),
+            [new Address('$street', '$postalCode', '$locality', '$country')],
+            ['050/123'],
+            ['test@test.be', 'test2@test.be'],
+            ['http://www.google.be']
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
+        $jsonLD->{'@context'} = '/api/1.0/organizer.jsonld';
+        $jsonLD->website = 'http://www.stuk.be';
+        $jsonLD->name = 'some representative title';
+        $jsonLD->addresses = [
+            [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ]
+        ];
+        $jsonLD->phone = ['050/123'];
+        $jsonLD->email = ['test@test.be', 'test2@test.be'];
+        $jsonLD->url = ['http://www.google.be'];
+        $jsonLD->created = $created;
+
+        $expectedDocument = (new JsonDocument($id))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle(
+            new DomainMessage(
+                1,
+                1,
+                new Metadata(),
+                $organizerCreated,
                 DateTime::fromString($created)
             )
         );

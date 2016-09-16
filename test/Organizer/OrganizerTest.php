@@ -1,18 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nick
- * Date: 07/01/16
- * Time: 11:48
- */
 
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Web\Url;
 
 class OrganizerTest extends AggregateRootScenarioTestCase
 {
@@ -60,6 +56,44 @@ class OrganizerTest extends AggregateRootScenarioTestCase
     }
 
     /**
+     *
+     */
+    public function it_can_create_new_organizers()
+    {
+        $id = '123';
+        $website = Url::fromNative('http://www.stuk.be');
+        $title = new Title('Het Stuk');
+        $addresses = [new Address('$street', '$postalCode', '$locality', '$country')];
+        $phones = ['050/123'];
+        $emails = ['test@test.be', 'test2@test.be'];
+        $urls = ['http://www.google.be'];
+
+        $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
+            $id,
+            $website,
+            $title,
+            $addresses,
+            $phones,
+            $emails,
+            $urls
+        );
+
+        $this->scenario
+            ->when(function ($id, $website, $title, $addresses, $phones, $emails, $urls) {
+                return Organizer::create(
+                    $id,
+                    $website,
+                    $title,
+                    $addresses,
+                    $phones,
+                    $emails,
+                    $urls
+                );
+            })
+            ->then([$organizerCreated]);
+    }
+
+    /**
      * @test
      */
     public function it_can_be_deleted()
@@ -69,8 +103,9 @@ class OrganizerTest extends AggregateRootScenarioTestCase
         $this->scenario
             ->given(
                 [
-                    new OrganizerCreated(
+                    new OrganizerCreatedWithUniqueWebsite(
                         $id,
+                        Url::fromNative('http://www.stuk.be'),
                         new Title('Foo'),
                         [],
                         [],

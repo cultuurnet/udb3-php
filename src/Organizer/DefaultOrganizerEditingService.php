@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Organizer;
 
@@ -12,6 +9,7 @@ use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\Organizer\OrganizerEditingServiceInterface;
+use ValueObjects\Web\Url;
 
 class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
 {
@@ -49,11 +47,11 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function create(Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public function create(Url $website, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         $id = $this->uuidGenerator->generate();
 
-        $organizer = Organizer::create($id, $title, $addresses, $phones, $emails, $urls);
+        $organizer = Organizer::create($id, $website, $title, $addresses, $phones, $emails, $urls);
 
         $this->organizerRepository->save($organizer);
 

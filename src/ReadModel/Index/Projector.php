@@ -16,6 +16,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -354,6 +355,34 @@ class Projector implements EventListenerInterface
      */
     protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessage $domainMessage)
     {
+
+        $organizerId = $organizer->getOrganizerId();
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
+
+        $addresses = $organizer->getAddresses();
+        if (isset($addresses[0])) {
+            $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
+            $this->updateIndex(
+                $organizerId,
+                EntityType::ORGANIZER(),
+                $userId,
+                $organizer->getTitle(),
+                $addresses[0]->getPostalCode(),
+                $this->localDomain,
+                $creationDate
+            );
+        }
+    }
+
+    /**
+     * Listener for organizer created events.
+     */
+    protected function applyOrganizerCreatedWithUniqueWebsite(
+        OrganizerCreatedWithUniqueWebsite $organizer,
+        DomainMessage $domainMessage
+    ) {
 
         $organizerId = $organizer->getOrganizerId();
 

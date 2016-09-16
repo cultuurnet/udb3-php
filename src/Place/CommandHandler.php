@@ -4,6 +4,10 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
@@ -157,6 +161,26 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getDeleteOfferClassName()
     {
         return DeletePlace::class;
+    }
+
+    protected function getApproveClassName()
+    {
+        return Approve::class;
+    }
+
+    protected function getRejectClassName()
+    {
+        return Reject::class;
+    }
+
+    protected function getFlagAsDuplicateClassName()
+    {
+        return FlagAsDuplicate::class;
+    }
+
+    protected function getFlagAsInappropriateClassName()
+    {
+        return FlagAsInappropriate::class;
     }
 
     /**

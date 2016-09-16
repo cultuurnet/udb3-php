@@ -19,6 +19,10 @@ use CultuurNet\UDB3\Offer\Item\Events\ItemDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
@@ -179,8 +183,43 @@ class Item extends Offer
         return new BookingInfoUpdated($this->id, $bookingInfo);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function createOfferDeletedEvent()
     {
-        return new ItemDeleted();
+        return new ItemDeleted($this->id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createApprovedEvent()
+    {
+        return new Approved($this->id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createRejectedEvent(StringLiteral $reason)
+    {
+        return new Rejected($this->id, $reason);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsDuplicate()
+    {
+        return new FlaggedAsDuplicate($this->id);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsInappropriate()
+    {
+        return new FlaggedAsInappropriate($this->id);
     }
 }

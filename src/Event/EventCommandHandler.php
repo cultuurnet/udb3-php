@@ -9,6 +9,10 @@ use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
@@ -184,5 +188,25 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteOfferClassName()
     {
         return DeleteEvent::class;
+    }
+
+    protected function getApproveClassName()
+    {
+        return Approve::class;
+    }
+
+    protected function getRejectClassName()
+    {
+        return Reject::class;
+    }
+
+    protected function getFlagAsDuplicateClassName()
+    {
+        return FlagAsDuplicate::class;
+    }
+
+    protected function getFlagAsInappropriateClassName()
+    {
+        return FlagAsInappropriate::class;
     }
 }

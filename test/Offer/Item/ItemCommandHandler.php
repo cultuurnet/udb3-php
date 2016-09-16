@@ -2,14 +2,16 @@
 
 namespace CultuurNet\UDB3\Offer\Item;
 
-use CultuurNet\UDB3\Event\Events\MainImageSelected;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
@@ -108,5 +110,25 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getDeleteOfferClassName()
     {
         return DeleteItem::class;
+    }
+
+    protected function getApproveClassName()
+    {
+        return Approve::class;
+    }
+
+    protected function getRejectClassName()
+    {
+        return Reject::class;
+    }
+
+    protected function getFlagAsDuplicateClassName()
+    {
+        return FlagAsDuplicate::class;
+    }
+
+    protected function getFlagAsInappropriateClassName()
+    {
+        return FlagAsInappropriate::class;
     }
 }

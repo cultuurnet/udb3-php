@@ -11,8 +11,12 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Item;
-use PHPUnit_Framework_MockObject_MockObject;
+use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
@@ -96,7 +100,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
-     * @expectedException     \Exception
+     * @expectedException     Exception
      */
     public function it_should_throw_an_exception_when_selecting_an_unknown_main_image()
     {
@@ -253,5 +257,296 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new MainImageSelected('someId', $newMainImage),
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_approve_an_offer_that_is_ready_for_validation()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->approve();
+                }
+            )
+            ->then(
+                [
+                    new Approved($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_approve_an_offer_more_than_once()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->approve();
+                    $item->approve();
+                }
+            )
+            ->then(
+                [
+                    new Approved($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage You can not approve an offer that is not ready for validation
+     */
+    public function it_should_not_approve_an_offer_after_it_was_rejected()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('There are spelling mistakes in the description.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new Rejected($itemId, $reason)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->approve();
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_reject_an_offer_more_than_once_for_the_same_reason()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The title is misleading.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                    $item->reject($reason);
+                }
+            )
+            ->then(
+                [
+                    new Rejected($itemId, $reason)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage The offer has already been rejected for another reason: The title is misleading.
+     */
+    public function it_should_not_reject_an_offer_that_is_already_rejected_for_a_different_reason()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The title is misleading.');
+        $differentReason = new StringLiteral('I\'m afraid I can\'t let you do that.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new Rejected($itemId, $reason)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($differentReason) {
+                    $item->reject($differentReason);
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_reject_an_offer_that_is_ready_for_validation_with_a_reason()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('You forgot to add an organizer.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then(
+                [
+                    new Rejected($itemId, $reason)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_flag_an_offer_that_is_ready_for_validation_as_duplicate()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->flagAsDuplicate();
+                }
+            )
+            ->then(
+                [
+                    new FlaggedAsDuplicate($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage The offer has already been rejected for another reason: duplicate
+     */
+    public function it_should_reject_an_offer_when_it_is_flagged_as_duplicate()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The theme does not match the description.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new FlaggedAsDuplicate($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_flag_an_offer_that_is_ready_for_validation_as_inappropriate()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->flagAsInappropriate();
+                }
+            )
+            ->then(
+                [
+                    new FlaggedAsInappropriate($itemId)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage The offer has already been rejected for another reason: inappropriate
+     */
+    public function it_should_not_reject_an_offer_when_it_is_flagged_as_inappropriate()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('The theme does not match the description.');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new FlaggedAsInappropriate($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     * @expectedException        Exception
+     * @expectedExceptionMessage You can not reject an offer that is not ready for validation
+     */
+    public function it_should_not_reject_an_offer_that_is_flagged_as_approved()
+    {
+        $itemId = UUID::generateAsString();
+        $reason = new StringLiteral('Yeah, but no, but yeah...');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new Approved($itemId)
+                ]
+            )
+            ->when(
+                function (Item $item) use ($reason) {
+                    $item->reject($reason);
+                }
+            )
+            ->then([]);
     }
 }

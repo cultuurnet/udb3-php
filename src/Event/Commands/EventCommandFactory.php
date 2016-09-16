@@ -4,6 +4,10 @@ namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
@@ -194,5 +198,42 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     public function createDeleteOfferCommand($id)
     {
         return new DeleteEvent($id);
+    }
+
+    /**
+     * @param string $id
+     * @return Approve
+     */
+    public function createApproveCommand($id)
+    {
+        return new Approve($id);
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $reason
+     * @return Reject
+     */
+    public function createRejectCommand($id, StringLiteral $reason)
+    {
+        return new Reject($id, $reason);
+    }
+
+    /**
+     * @param string $id
+     * @return FlagAsInappropriate
+     */
+    public function createFlagAsInappropriate($id)
+    {
+        return new FlagAsInappropriate($id);
+    }
+
+    /**
+     * @param string $id
+     * @return FlagAsDuplicate
+     */
+    public function createFlagAsDuplicate($id)
+    {
+        return new FlagAsDuplicate($id);
     }
 }

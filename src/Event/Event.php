@@ -29,6 +29,10 @@ use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
@@ -623,5 +627,37 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createOfferDeletedEvent()
     {
         return new EventDeleted($this->eventId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createApprovedEvent()
+    {
+        return new Approved($this->eventId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createRejectedEvent(StringLiteral $reason)
+    {
+        return new Rejected($this->eventId, $reason);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsDuplicate()
+    {
+        return new FlaggedAsDuplicate($this->eventId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsInappropriate()
+    {
+        return new FlaggedAsInappropriate($this->eventId);
     }
 }

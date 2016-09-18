@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\DomainMessage;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 
 class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
@@ -61,10 +62,15 @@ class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
         $eventCreatedDomainMessage = $this->createDomainMessage($this, EventCreated::class);
         $placeCreatedDomainMessage = $this->createDomainMessage($this, PlaceCreated::class);
         $organizerCreatedDomainMessage = $this->createDomainMessage($this, OrganizerCreated::class);
+        $organizerCreatedWithUniqueWebsiteDomainMessage = $this->createDomainMessage(
+            $this,
+            OrganizerCreatedWithUniqueWebsite::class
+        );
 
         $this->assertTrue($this->compositeEnricher->supports($eventCreatedDomainMessage));
         $this->assertTrue($this->compositeEnricher->supports($placeCreatedDomainMessage));
         $this->assertFalse($this->compositeEnricher->supports($organizerCreatedDomainMessage));
+        $this->assertFalse($this->compositeEnricher->supports($organizerCreatedWithUniqueWebsiteDomainMessage));
     }
 
     /**
@@ -75,6 +81,11 @@ class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
         $eventCreatedDomainMessage = $this->createDomainMessage($this, EventCreated::class);
         $placeCreatedDomainMessage = $this->createDomainMessage($this, PlaceCreated::class);
         $organizerCreatedDomainMessage = $this->createDomainMessage($this, OrganizerCreated::class);
+        $organizerCreatedWithUniqueWebsiteDomainMessage = $this->createDomainMessage(
+            $this,
+            OrganizerCreatedWithUniqueWebsite::class
+        );
+
 
         $enrichedEventCreatedDomainMessage = clone $eventCreatedDomainMessage;
         $enrichedEventCreatedDomainMessage->extraProperty = true;
@@ -105,6 +116,16 @@ class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $organizerCreatedDomainMessage,
             $this->compositeEnricher->enrich($organizerCreatedDomainMessage)
+        );
+
+        $this->assertEquals(
+            $organizerCreatedDomainMessage,
+            $this->compositeEnricher->enrich($organizerCreatedDomainMessage)
+        );
+
+        $this->assertEquals(
+            $organizerCreatedWithUniqueWebsiteDomainMessage,
+            $this->compositeEnricher->enrich($organizerCreatedWithUniqueWebsiteDomainMessage)
         );
     }
 }

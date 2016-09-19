@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
@@ -26,7 +27,6 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
-use CultuurNet\UDB3\Place\ReadModel\JSONLD\PlaceLDProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -219,6 +219,64 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_handles_new_places_with_workflow_status()
+    {
+        $id = 'bar';
+        $created = '2015-01-20T13:25:21+01:00';
+
+        $placeCreated = new PlaceCreated(
+            $id,
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Address('$street', '$postalCode', '$locality', '$country'),
+            new Calendar('permanent'),
+            null,
+            WorkflowStatus::DRAFT()
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
+        $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
+        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
+        $jsonLD->address = (object)[
+            'addressCountry' => '$country',
+            'addressLocality' => '$locality',
+            'postalCode' => '$postalCode',
+            'streetAddress' => '$street',
+        ];
+        $jsonLD->calendarType = 'permanent';
+        $jsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+            (object)[
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
+            ]
+        ];
+        $jsonLD->created = $created;
+        $jsonLD->modified = $created;
+        $jsonLD->workflowStatus = 'DRAFT';
+
+        $body = $this->project(
+            $placeCreated,
+            $id,
+            null,
+            DateTime::fromString($created)
+        );
+
+        $this->assertEquals(
+            $jsonLD,
+            $body
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_handles_new_places_with_creator()
     {
         $id = 'foo';
@@ -387,6 +445,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      * @dataProvider descriptionSamplesProvider
+     * @param $fileName
+     * @param $expectedDescription
      */
     public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description($fileName, $expectedDescription)
     {

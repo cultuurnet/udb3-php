@@ -14,6 +14,117 @@ use DateTimeImmutable;
 class EventCreatedTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var Location
+     */
+    private $location;
+
+    /**
+     * @var DateTimeImmutable
+     */
+    private $publicationDate;
+
+    /**
+     * @var EventCreated
+     */
+    private $eventCreated;
+
+    protected function setUp()
+    {
+        $this->location = new Location(
+            'id',
+            'name',
+            'country',
+            'locality',
+            'postal',
+            'street'
+        );
+
+        $this->publicationDate = DateTimeImmutable::createFromFormat(
+            \DateTime::ISO8601,
+            '2016-08-01T00:00:00+0200'
+        );
+
+        $this->eventCreated = new EventCreated(
+            'id',
+            new Title('title'),
+            new EventType('id', 'label'),
+            $this->location,
+            new Calendar('permanent'),
+            new Theme('id', 'label'),
+            $this->publicationDate,
+            WorkflowStatus::DRAFT()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_id()
+    {
+        $this->assertEquals('id', $this->eventCreated->getEventId());
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_title()
+    {
+        $this->assertEquals(new Title('title'), $this->eventCreated->getTitle());
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_location()
+    {
+        $this->assertEquals($this->location, $this->eventCreated->getLocation());
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_calendar()
+    {
+        $this->assertEquals(
+            new Calendar('permanent'),
+            $this->eventCreated->getCalendar()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_publication_date()
+    {
+        $this->assertEquals(
+            $this->publicationDate,
+            $this->eventCreated->getPublicationDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_workflow_status()
+    {
+        $this->assertEquals(
+            WorkflowStatus::DRAFT(),
+            $this->eventCreated->getWorkflowStatus()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_theme()
+    {
+        $this->assertEquals(
+            new Theme('id', 'label'),
+            $this->eventCreated->getTheme()
+        );
+    }
+
+    /**
      * @test
      * @dataProvider serializationDataProvider
      * @param $expectedSerializedValue

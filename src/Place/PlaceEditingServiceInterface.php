@@ -9,12 +9,11 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 interface PlaceEditingServiceInterface
 {
@@ -26,10 +25,17 @@ interface PlaceEditingServiceInterface
      * @param Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
-     *
+     * @param WorkflowStatus $workflowStatus
      * @return string $eventId
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
+    public function createPlace(
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null,
+        WorkflowStatus $workflowStatus = null
+    );
 
     /**
      * @param string $id
@@ -118,10 +124,10 @@ interface PlaceEditingServiceInterface
      *
      * @param $id
      * @param Image $image
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      */
-    public function updateImage($id, Image $image, String $description, String $copyrightHolder);
+    public function updateImage($id, Image $image, StringLiteral $description, StringLiteral $copyrightHolder);
 
     /**
      * Remove an image from the place.

@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\Place\Commands\DeletePlace;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Theme;
@@ -49,11 +49,21 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
-        Theme $theme = null
+        Theme $theme = null,
+        WorkflowStatus $workflowStatus = null
     ) {
         $id = $this->uuidGenerator->generate();
 
-        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme, $this->publicationDate);
+        $place = Place::createPlace(
+            $id,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme,
+            $this->publicationDate,
+            $workflowStatus
+        );
 
         $this->writeRepository->save($place);
 

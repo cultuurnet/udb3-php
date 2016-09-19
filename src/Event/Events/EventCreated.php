@@ -7,6 +7,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
@@ -48,6 +49,11 @@ class EventCreated extends EventEvent
     private $publicationDate = null;
 
     /**
+     * @var WorkflowStatus
+     */
+    private $workflowStatus = null;
+
+    /**
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
@@ -55,6 +61,7 @@ class EventCreated extends EventEvent
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
+     * @param WorkflowStatus|null $workflowStatus
      */
     public function __construct(
         $eventId,
@@ -63,7 +70,8 @@ class EventCreated extends EventEvent
         Location $location,
         CalendarInterface $calendar,
         Theme $theme = null,
-        DateTimeImmutable $publicationDate = null
+        DateTimeImmutable $publicationDate = null,
+        WorkflowStatus $workflowStatus = null
     ) {
         parent::__construct($eventId);
 
@@ -73,6 +81,7 @@ class EventCreated extends EventEvent
         $this->calendar = $calendar;
         $this->theme = $theme;
         $this->publicationDate = $publicationDate;
+        $this->workflowStatus = $workflowStatus ? $workflowStatus : WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -124,6 +133,14 @@ class EventCreated extends EventEvent
     }
 
     /**
+     * @return WorkflowStatus
+     */
+    public function getWorkflowStatus()
+    {
+        return $this->workflowStatus;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
@@ -143,6 +160,7 @@ class EventCreated extends EventEvent
             'location' => $this->getLocation()->serialize(),
             'calendar' => $this->getCalendar()->serialize(),
             'publication_date' => $publicationDate,
+            'workflow_status' => $this->workflowStatus->toNative()
         );
     }
 
@@ -169,7 +187,8 @@ class EventCreated extends EventEvent
             Location::deserialize($data['location']),
             Calendar::deserialize($data['calendar']),
             $theme,
-            $publicationDate
+            $publicationDate,
+            WorkflowStatus::fromNative($data['workflow_status'])
         );
     }
 }

@@ -48,6 +48,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
@@ -79,13 +80,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * Factory method to create a new event.
      *
+     * @param $eventId
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param \DateTimeImmutable|null $publicationDate
-     *
+     * @param WorkflowStatus $workflowStatus
      * @return Event
      */
     public static function create(
@@ -95,7 +97,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Location $location,
         CalendarInterface $calendar,
         Theme $theme = null,
-        \DateTimeImmutable $publicationDate = null
+        \DateTimeImmutable $publicationDate = null,
+        WorkflowStatus $workflowStatus = null
     ) {
         if (!is_string($eventId)) {
             throw new \InvalidArgumentException(
@@ -113,7 +116,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
                 $location,
                 $calendar,
                 $theme,
-                $publicationDate
+                $publicationDate,
+                $workflowStatus
             )
         );
 
@@ -312,6 +316,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->workflowStatus = $eventCreated->getWorkflowStatus();
     }
 
     protected function applyEventImportedFromUDB2(

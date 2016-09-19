@@ -126,7 +126,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
+        $jsonLD->{'@context'} = '/contexts/place';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',
@@ -178,7 +178,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
+        $jsonLD->{'@context'} = '/contexts/place';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',

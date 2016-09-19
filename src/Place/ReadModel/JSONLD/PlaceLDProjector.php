@@ -160,9 +160,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $placeLd = $document->getBody();
         $placeLd->{'@id'} = $this->iriGenerator->iri($id);
-
-        // @todo provide Event-LD context here relative to the base URI
-        $placeLd->{'@context'} = '/api/1.0/place.jsonld';
+        $placeLd->{'@context'} = '/contexts/place';
 
         return $document->withBody($placeLd);
     }

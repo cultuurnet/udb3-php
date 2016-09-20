@@ -230,6 +230,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new EventType('0.50.4.0.0', 'concert'),
             new Address('$street', '$postalCode', '$locality', '$country'),
             new Calendar('permanent'),
+            new Theme('123', 'theme label'),
             null,
             WorkflowStatus::DRAFT()
         );

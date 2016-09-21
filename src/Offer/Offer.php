@@ -78,6 +78,7 @@ abstract class Offer extends EventSourcedAggregateRoot
     public function __construct()
     {
         $this->resetLabels();
+        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**

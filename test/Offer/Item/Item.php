@@ -49,6 +49,7 @@ class Item extends Offer
     protected function applyItemCreated(ItemCreated $created)
     {
         $this->id = $created->getItemId();
+        $this->workflowStatus = $created->getWorkflowStatus();
     }
 
     /**

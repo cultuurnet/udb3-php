@@ -335,6 +335,31 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * Publish the offer when it has workflowstatus draft.
+     */
+    public function publish()
+    {
+        $this->guardPublish() ?: $this->apply($this->createPublishedEvent());
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function guardPublish()
+    {
+        if ($this->workflowStatus === WorkflowStatus::READY_FOR_VALIDATION()) {
+            return true; // nothing left to do if the offer has already been published
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::DRAFT()) {
+            throw new Exception('You can not publish an offer that is not draft');
+        }
+
+        return false;
+    }
+
+    /**
      * Approve the offer when it's waiting for validation.
      */
     public function approve()
@@ -401,6 +426,14 @@ abstract class Offer extends EventSourcedAggregateRoot
         }
 
         return false;
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**

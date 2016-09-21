@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Item;
 use Exception;
@@ -257,6 +258,67 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new MainImageSelected('someId', $newMainImage),
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_publishes_an_offer_with_workflow_status_draft()
+    {
+        $itemId = 'itemId';
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId, WorkflowStatus::DRAFT())
+            ])
+            ->when(function (Item $item) {
+                $item->publish();
+            })
+            ->then([
+                new Published($itemId)
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_publish_an_offer_more_then_once()
+    {
+        $itemId = 'itemId';
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId, WorkflowStatus::DRAFT()),
+                new Published($itemId)
+            ])
+            ->when(function (Item $item) {
+                $item->publish();
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_when_trying_to_publish_a_non_draft_offer()
+    {
+        $this->setExpectedException(
+            Exception::class,
+            'You can not publish an offer that is not draft'
+        );
+
+        $itemId = 'itemId';
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId, WorkflowStatus::DRAFT()),
+                new Published($itemId),
+                new FlaggedAsDuplicate($itemId)
+            ])
+            ->when(function (Item $item) {
+                $item->publish();
+            })
+            ->then([]);
     }
 
     /**

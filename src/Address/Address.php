@@ -12,9 +12,9 @@ use ValueObjects\Geography\Country;
 class Address implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
-     * @var Country
+     * @var string
      */
-    protected $country;
+    protected $countryCode;
 
     /**
      * @var Locality
@@ -40,7 +40,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         $this->streetAddress = $streetAddress;
         $this->postalCode = $postalCode;
         $this->locality = $locality;
-        $this->country = $country;
+        $this->countryCode = $country->getCode()->toNative();
     }
 
     /**
@@ -48,7 +48,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
      */
     public function getCountry()
     {
-        return $this->country;
+        return Country::fromNative($this->countryCode);
     }
 
     /**
@@ -84,7 +84,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
           'streetAddress' => $this->streetAddress->toNative(),
           'postalCode' => $this->postalCode->toNative(),
           'addressLocality' => $this->locality->toNative(),
-          'addressCountry' => $this->country->getCode()->toNative(),
+          'addressCountry' => $this->countryCode,
         ];
     }
 
@@ -107,7 +107,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     public function toJsonLd()
     {
         return [
-            'addressCountry' => $this->country->getCode()->toNative(),
+            'addressCountry' => $this->countryCode,
             'addressLocality' => $this->locality->toNative(),
             'postalCode' => $this->postalCode->toNative(),
             'streetAddress' => $this->streetAddress->toNative()

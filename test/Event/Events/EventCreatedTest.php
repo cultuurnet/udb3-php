@@ -156,6 +156,61 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function it_can_handle_missing_workflow_status_when_deserializing()
+    {
+        $eventCreatedAsArray = [
+            'event_id' => 'test 456',
+            'title' => 'title',
+            'theme' => null,
+            'location' => array(
+                'cdbid' => 'cdbid',
+                'name' => 'Repeteerkot',
+                'address' => array(
+                    'addressCountry' => 'Belgium',
+                    'addressLocality' => 'Zottegem',
+                    'postalCode' => '9620',
+                    'streetAddress' => 'De straat'
+                ),
+            ),
+            'calendar' => array(
+                'type' => 'permanent',
+                'startDate' => '',
+                'endDate' => '',
+                'timestamps' => array(),
+                'openingHours' => array()
+            ),
+            'event_type' => array(
+                'id' => 'bar_id',
+                'label' => 'bar',
+                'domain' => 'eventtype'
+            ),
+        ];
+
+        $expectedEventCreated = new EventCreated(
+            'test 456',
+            new Title('title'),
+            new EventType('bar_id', 'bar'),
+            new Location(
+                'cdbid',
+                'Repeteerkot',
+                'Belgium',
+                'Zottegem',
+                '9620',
+                'De straat'
+            ),
+            new Calendar(
+                'permanent'
+            )
+        );
+
+        $eventCreated = EventCreated::deserialize($eventCreatedAsArray);
+
+        $this->assertEquals($expectedEventCreated, $eventCreated);
+    }
+
     public function serializationDataProvider()
     {
         return [

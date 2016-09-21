@@ -154,6 +154,55 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function it_can_handle_a_missing_workflow_status_when_deserializing()
+    {
+        $placeCreatedAsArray = [
+            'place_id' => 'test 456',
+            'title' => 'title',
+            'theme' => null,
+            'address' => array(
+                'streetAddress' => 'De straat',
+                'postalCode' => '9620',
+                'locality' => 'Zottegem',
+                'country' => 'Belgium',
+            ),
+            'calendar' => array(
+                'type' => 'permanent',
+                'startDate' => '',
+                'endDate' => '',
+                'timestamps' => array(),
+                'openingHours' => array()
+            ),
+            'event_type' => array(
+                'id' => 'bar_id',
+                'label' => 'bar',
+                'domain' => 'eventtype'
+            ),
+        ];
+
+        $expectedPlaceCreated = new PlaceCreated(
+            'test 456',
+            new Title('title'),
+            new EventType('bar_id', 'bar'),
+            new Address(
+                'De straat',
+                '9620',
+                'Zottegem',
+                'Belgium'
+            ),
+            new Calendar(
+                'permanent'
+            )
+        );
+
+        $placeCreated = PlaceCreated::deserialize($placeCreatedAsArray);
+
+        $this->assertEquals($expectedPlaceCreated, $placeCreated);
+    }
+
     public function serializationDataProvider()
     {
         return [

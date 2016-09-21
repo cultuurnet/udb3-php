@@ -179,6 +179,10 @@ class PlaceCreated extends PlaceEvent
                 $data['publication_date']
             );
         }
+
+        $workflowStatus = !empty($data['workflow_status']) ?
+            WorkflowStatus::fromNative($data['workflow_status']) : WorkflowStatus::READY_FOR_VALIDATION();
+
         return new static(
             $data['place_id'],
             new Title($data['title']),
@@ -187,7 +191,7 @@ class PlaceCreated extends PlaceEvent
             Calendar::deserialize($data['calendar']),
             $theme,
             $publicationDate,
-            WorkflowStatus::fromNative($data['workflow_status'])
+            $workflowStatus
         );
     }
 }

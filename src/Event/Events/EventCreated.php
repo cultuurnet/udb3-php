@@ -180,6 +180,10 @@ class EventCreated extends EventEvent
                 $data['publication_date']
             );
         }
+
+        $workflowStatus = !empty($data['workflow_status']) ?
+            WorkflowStatus::fromNative($data['workflow_status']) : WorkflowStatus::READY_FOR_VALIDATION();
+
         return new static(
             $data['event_id'],
             new Title($data['title']),
@@ -188,7 +192,7 @@ class EventCreated extends EventEvent
             Calendar::deserialize($data['calendar']),
             $theme,
             $publicationDate,
-            WorkflowStatus::fromNative($data['workflow_status'])
+            $workflowStatus
         );
     }
 }

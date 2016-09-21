@@ -125,7 +125,7 @@ class Projector implements EventListenerInterface
     {
         $this->repository->setUpdateDate($itemId, $dateUpdated);
     }
-    
+
     /**
      * @param \CultureFeed_Cdb_Item_Base $udb2Item
      *
@@ -318,7 +318,7 @@ class Projector implements EventListenerInterface
             EntityType::EVENT(),
             $userId,
             $eventCreated->getTitle(),
-            $location->getPostalcode(),
+            $location->getAddress()->getPostalCode(),
             $this->localDomain,
             $creationDate
         );
@@ -343,7 +343,7 @@ class Projector implements EventListenerInterface
             EntityType::PLACE(),
             $userId,
             $placeCreated->getTitle(),
-            $address->getPostalcode(),
+            $address->getPostalCode(),
             $this->localDomain,
             $creationDate
         );

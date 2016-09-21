@@ -21,12 +21,10 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
-use Guzzle\Tests\Http\DuplicateAggregatorTest;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 use ValueObjects\Web\Url;
@@ -49,6 +47,11 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     protected $event;
 
+    /**
+     * @var Event
+     */
+    private $draftEvent;
+
     public function setUp()
     {
         parent::setUp();
@@ -67,6 +70,52 @@ class EventTest extends AggregateRootScenarioTestCase
             ),
             new Calendar('permanent', '', '')
         );
+
+        $this->draftEvent = Event::create(
+            'foo',
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location(
+                'LOCATION-ABC-123',
+                '$name',
+                '$country',
+                '$locality',
+                '$postalcode',
+                '$street'
+            ),
+            new Calendar('permanent', '', ''),
+            null,
+            null,
+            WorkflowStatus::DRAFT()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_records_the_workflow_status_when_creating_an_event()
+    {
+        $this->scenario
+            ->when(function () {
+                return $this->draftEvent;
+            })
+            ->then([new EventCreated(
+                'foo',
+                new Title('some representative title'),
+                new EventType('0.50.4.0.0', 'concert'),
+                new Location(
+                    'LOCATION-ABC-123',
+                    '$name',
+                    '$country',
+                    '$locality',
+                    '$postalcode',
+                    '$street'
+                ),
+                new Calendar('permanent', '', ''),
+                null,
+                null,
+                WorkflowStatus::DRAFT()
+            )]);
     }
 
     /**

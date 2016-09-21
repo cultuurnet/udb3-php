@@ -7,14 +7,11 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\Event\EventNotFoundException;
-use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 interface EventEditingServiceInterface
 {
@@ -78,8 +75,8 @@ interface EventEditingServiceInterface
      *
      * @param $id
      * @param Image $image
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      *
      * @return string
      *  The command id for this task.
@@ -87,8 +84,8 @@ interface EventEditingServiceInterface
     public function updateImage(
         $id,
         Image $image,
-        String $description,
-        String $copyrightHolder
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     );
 
     /**
@@ -103,19 +100,26 @@ interface EventEditingServiceInterface
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
-     * @param CalendarBase $calendar
-     * @param Theme/null $theme
-     *
+     * @param CalendarInterface $calendar
+     * @param Theme /null $theme
+     * @param WorkflowStatus $workflowStatus
      * @return string $eventId
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+    public function createEvent(
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null,
+        WorkflowStatus $workflowStatus = null
+    );
 
     /**
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
-     * @param CalendarBase $calendar
+     * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
      * @return string $eventId

@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -77,7 +78,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
      *
-     * @return self
+     * @param WorkflowStatus $workflowStatus
+     * @return Place
      */
     public static function createPlace(
         $id,
@@ -86,7 +88,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         Address $address,
         CalendarInterface $calendar,
         Theme $theme = null,
-        DateTimeImmutable $publicationDate = null
+        DateTimeImmutable $publicationDate = null,
+        WorkflowStatus $workflowStatus = null
     ) {
         $place = new self();
         $place->apply(new PlaceCreated(
@@ -96,7 +99,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $address,
             $calendar,
             $theme,
-            $publicationDate
+            $publicationDate,
+            $workflowStatus
         ));
 
         return $place;
@@ -109,6 +113,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->actorId = $placeCreated->getPlaceId();
+        $this->workflowStatus = $placeCreated->getWorkflowStatus();
     }
 
     /**

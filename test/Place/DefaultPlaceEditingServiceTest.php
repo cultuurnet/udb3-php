@@ -12,8 +12,8 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Title;
 
@@ -114,6 +114,45 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $address,
                     $calendar,
                     $theme
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_create_a_new_place_with_specified_workflow_status()
+    {
+        $placeId = 'generated-uuid';
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $address = new Address('$street', '$postalcode', '$locality', '$country');
+        $calendar = new Calendar('permanent', '', '');
+        $theme = null;
+        $publicationDate = null;
+        $workflowStatus = WorkflowStatus::DRAFT();
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $this->eventStore->trace();
+
+        $this->placeEditingService->createPlace($title, $eventType, $address, $calendar, $theme, $workflowStatus);
+
+        $this->assertEquals(
+            [
+                new PlaceCreated(
+                    $placeId,
+                    $title,
+                    $eventType,
+                    $address,
+                    $calendar,
+                    $theme,
+                    $publicationDate,
+                    $workflowStatus
                 )
             ],
             $this->eventStore->getEvents()

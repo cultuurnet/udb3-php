@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -47,13 +48,19 @@ class PlaceCreated extends PlaceEvent
     private $publicationDate = null;
 
     /**
+     * @var WorkflowStatus|null
+     */
+    private $workflowStatus = null;
+
+    /**
      * @param string $eventId
      * @param Title $title
-     * @param Address $address
      * @param EventType $eventType
+     * @param Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
+     * @param WorkflowStatus $workflowStatus
      */
     public function __construct(
         $eventId,
@@ -62,7 +69,8 @@ class PlaceCreated extends PlaceEvent
         Address $address,
         CalendarInterface $calendar,
         Theme $theme = null,
-        DateTimeImmutable $publicationDate = null
+        DateTimeImmutable $publicationDate = null,
+        WorkflowStatus $workflowStatus = null
     ) {
         parent::__construct($eventId);
 
@@ -72,6 +80,7 @@ class PlaceCreated extends PlaceEvent
         $this->calendar = $calendar;
         $this->theme = $theme;
         $this->publicationDate = $publicationDate;
+        $this->workflowStatus = $workflowStatus ? $workflowStatus : WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -123,6 +132,14 @@ class PlaceCreated extends PlaceEvent
     }
 
     /**
+     * @return WorkflowStatus|null
+     */
+    public function getWorkflowStatus()
+    {
+        return $this->workflowStatus;
+    }
+
+    /**
      * @return array
      */
     public function serialize()
@@ -142,6 +159,7 @@ class PlaceCreated extends PlaceEvent
             'address' => $this->getAddress()->serialize(),
             'calendar' => $this->getCalendar()->serialize(),
             'publication_date' => $publicationDate,
+            'workflow_status' => $this->workflowStatus->toNative()
         );
     }
 
@@ -161,6 +179,10 @@ class PlaceCreated extends PlaceEvent
                 $data['publication_date']
             );
         }
+
+        $workflowStatus = !empty($data['workflow_status']) ?
+            WorkflowStatus::fromNative($data['workflow_status']) : WorkflowStatus::READY_FOR_VALIDATION();
+
         return new static(
             $data['place_id'],
             new Title($data['title']),
@@ -168,7 +190,8 @@ class PlaceCreated extends PlaceEvent
             Address::deserialize($data['address']),
             Calendar::deserialize($data['calendar']),
             $theme,
-            $publicationDate
+            $publicationDate,
+            $workflowStatus
         );
     }
 }

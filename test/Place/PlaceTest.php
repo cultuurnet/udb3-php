@@ -4,12 +4,44 @@ namespace CultuurNet\UDB3\Place;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Title;
 
 class PlaceTest extends AggregateRootScenarioTestCase
 {
+    /**
+     * @var Place
+     */
+    private $draftPlace;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->draftPlace = Place::createPlace(
+            'id',
+            new Title('title'),
+            new EventType('id', 'label'),
+            new Address(
+                'street',
+                'postalCode',
+                'locality',
+                'country'
+            ),
+            new Calendar('permanent'),
+            null,
+            null,
+            WorkflowStatus::DRAFT()
+        );
+    }
+
     /**
      * Returns a string representing the aggregate root
      *
@@ -25,6 +57,32 @@ class PlaceTest extends AggregateRootScenarioTestCase
         return file_get_contents(
             __DIR__ . $filename
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_records_the_workflow_status_when_creating_an_event()
+    {
+        $this->scenario
+            ->when(function () {
+                return $this->draftPlace;
+            })
+            ->then([new PlaceCreated(
+                'id',
+                new Title('title'),
+                new EventType('id', 'label'),
+                new Address(
+                    'street',
+                    'postalCode',
+                    'locality',
+                    'country'
+                ),
+                new Calendar('permanent'),
+                null,
+                null,
+                WorkflowStatus::DRAFT()
+            )]);
     }
 
     /**

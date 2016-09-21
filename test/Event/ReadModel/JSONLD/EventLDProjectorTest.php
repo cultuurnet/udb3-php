@@ -38,6 +38,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
@@ -260,6 +261,83 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+
+        // Set up the placeService so that it does not know about the JSON-LD
+        // representation of the Place yet and only returns the URI of the
+        // Place.
+        $this->placeService->expects($this->once())
+            ->method('getEntity')
+            ->with('LOCATION-ABC-123')
+            ->willThrowException(new EntityNotFoundException());
+        $this->placeService->expects($this->once())
+            ->method('iri')
+            ->willReturnCallback(
+                function ($argument) {
+                    return 'http://example.com/entity/' . $argument;
+                }
+            );
+
+        $body = $this->project(
+            $eventCreated,
+            $eventId,
+            null,
+            DateTime::fromString('2015-01-20T13:25:21+01:00')
+        );
+
+        $this->assertEquals(
+            $jsonLD,
+            $body
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_new_events_with_workflow_status()
+    {
+        $eventId = '1';
+
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
+            new Calendar('single', '2015-01-26T13:25:21+01:00'),
+            new Theme('123', 'theme label'),
+            null,
+            WorkflowStatus::DRAFT()
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
+        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->name = (object)[
+            'nl' => 'some representative title'
+        ];
+        $jsonLD->location = (object)[
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/LOCATION-ABC-123'
+        ];
+        $jsonLD->calendarType = 'single';
+        $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->sameAs = [
+            'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
+        ];
+        $jsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+            (object)[
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
+            ]
+        ];
+        $jsonLD->created = '2015-01-20T13:25:21+01:00';
+        $jsonLD->modified = '2015-01-20T13:25:21+01:00';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the

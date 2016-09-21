@@ -6,16 +6,15 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
 
@@ -40,6 +39,10 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
+     * @param DocumentRepositoryInterface $readRepository
+     * @param PlaceService $placeService
+     * @param OfferCommandFactoryInterface $commandFactory
+     * @param RepositoryInterface $writeRepository
      */
     public function __construct(
         EventServiceInterface $eventService,
@@ -71,7 +74,8 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        $theme = null,
+        WorkflowStatus $workflowStatus = null
     ) {
         $eventId = $this->uuidGenerator->generate();
 
@@ -82,7 +86,8 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $location,
             $calendar,
             $theme,
-            $this->publicationDate
+            $this->publicationDate,
+            $workflowStatus
         );
 
         $this->writeRepository->save($event);

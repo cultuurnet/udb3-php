@@ -21,6 +21,7 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PlaceService;
 use ValueObjects\String\String;
 use CultuurNet\UDB3\Title;
@@ -93,7 +94,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
         );
-        
+
         $this->writeRepository = new EventRepository(
             $this->eventStore,
             new SimpleEventBus()
@@ -246,6 +247,51 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $calendar,
                     $theme,
                     $publicationDate
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_create_a_new_event_with_a_specified_workflow_status()
+    {
+        $eventId = 'generated-uuid';
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
+        $calendar = new Calendar('permanent', '', '');
+        $theme = null;
+        $publicationDate = \DateTimeImmutable::createFromFormat(
+            \DateTime::ISO8601,
+            '2016-08-01T00:00:00+0000'
+        );
+        $workflowStatus = WorkflowStatus::DRAFT();
+
+        $this->eventEditingService = $this->eventEditingService
+            ->withFixedPublicationDateForNewOffers($publicationDate);
+
+        $this->eventStore->trace();
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme, $workflowStatus);
+
+        $this->assertEquals(
+            [
+                new EventCreated(
+                    $eventId,
+                    $title,
+                    $eventType,
+                    $location,
+                    $calendar,
+                    $theme,
+                    $publicationDate,
+                    $workflowStatus
                 )
             ],
             $this->eventStore->getEvents()

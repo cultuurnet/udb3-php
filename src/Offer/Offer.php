@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use Exception;
 use ValueObjects\Identity\UUID;
@@ -567,6 +568,11 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractBookingInfoUpdated
      */
     abstract protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo);
+
+    /**
+     * @return AbstractPublished
+     */
+    abstract protected function createPublishedEvent();
 
     /**
      * @return AbstractApproved

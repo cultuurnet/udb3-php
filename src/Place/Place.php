@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
 use CultuurNet\UDB3\Place\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -365,6 +366,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createOfferDeletedEvent()
     {
         return new PlaceDeleted($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createPublishedEvent()
+    {
+        return new Published($this->actorId);
     }
 
     /**

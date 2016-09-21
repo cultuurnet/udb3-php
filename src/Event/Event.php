@@ -32,6 +32,7 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -627,6 +628,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createOfferDeletedEvent()
     {
         return new EventDeleted($this->eventId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createPublishedEvent()
+    {
+        return new Published($this->eventId);
     }
 
     /**

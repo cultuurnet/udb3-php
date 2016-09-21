@@ -34,6 +34,7 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
 use CultuurNet\UDB3\Place\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -426,6 +427,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getTypicalAgeRangeDeletedClassName()
     {
         return TypicalAgeRangeDeleted::class;
+    }
+
+    protected function getPublishedClassName()
+    {
+        return Published::class;
     }
 
     protected function getApprovedClassName()

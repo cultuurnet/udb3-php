@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Commands\Moderation;
 
-use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractPublish;
 
-class Publish extends AbstractApprove
+class Publish extends AbstractPublish
 {
 
 }

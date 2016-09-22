@@ -34,6 +34,7 @@ use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use ValueObjects\String\String as StringLiteral;
 
 class Item extends Offer
@@ -49,7 +50,7 @@ class Item extends Offer
     protected function applyItemCreated(ItemCreated $created)
     {
         $this->id = $created->getItemId();
-        $this->workflowStatus = $created->getWorkflowStatus();
+        $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
     /**

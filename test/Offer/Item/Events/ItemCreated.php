@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Offer\Item\Events;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Offer\WorkflowStatus;
 
 class ItemCreated implements SerializableInterface
 {
@@ -13,20 +12,11 @@ class ItemCreated implements SerializableInterface
     protected $itemId;
 
     /**
-     * @var WorkflowStatus
-     */
-    protected $workflowStatus;
-
-    /**
      * @param string $itemId
-     * @param WorkflowStatus $workflowStatus
      */
-    public function __construct(
-        $itemId,
-        WorkflowStatus $workflowStatus = null
-    ) {
+    public function __construct($itemId)
+    {
         $this->itemId = $itemId;
-        $this->workflowStatus = $workflowStatus ? $workflowStatus : WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -38,23 +28,12 @@ class ItemCreated implements SerializableInterface
     }
 
     /**
-     * @return WorkflowStatus
-     */
-    public function getWorkflowStatus()
-    {
-        return $this->workflowStatus;
-    }
-
-    /**
      * @param array $data
      * @return static
      */
     public static function deserialize(array $data)
     {
-        return new static(
-            $data['itemId'],
-            !empty($data['workflow_status']) ? $data['workflow_status'] : null
-        );
+        return new static($data['itemId']);
     }
 
     /**
@@ -62,9 +41,6 @@ class ItemCreated implements SerializableInterface
      */
     public function serialize()
     {
-        return [
-            'itemId' => $this->itemId,
-            'workflow_status' => $this->workflowStatus->toNative()
-        ];
+        return ['itemId' => $this->itemId];
     }
 }

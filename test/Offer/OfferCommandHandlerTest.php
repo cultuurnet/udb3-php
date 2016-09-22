@@ -284,33 +284,13 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_publish_command_on_draft_item()
-    {
-        $draftItemCreated = new ItemCreated(
-            $this->id,
-            WorkflowStatus::DRAFT()
-        );
-
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given([
-                $draftItemCreated
-            ])
-            ->when(new Publish($this->id))
-            ->then([
-                new Published($this->id)
-            ]);
-    }
-
-    /**
-     * @test
-     */
     public function it_handles_approve_command_on_ready_for_validation_item()
     {
         $this->scenario
             ->withAggregateId($this->id)
             ->given([
-                $this->itemCreated
+                $this->itemCreated,
+                new Published($this->id)
             ])
             ->when(new Approve($this->id))
             ->then([
@@ -326,7 +306,8 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($this->id)
             ->given([
-                $this->itemCreated
+                $this->itemCreated,
+                new Published($this->id)
             ])
             ->when(new FlagAsDuplicate($this->id))
             ->then([
@@ -342,7 +323,8 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($this->id)
             ->given([
-                $this->itemCreated
+                $this->itemCreated,
+                new Published($this->id)
             ])
             ->when(new FlagAsInappropriate($this->id))
             ->then([
@@ -360,7 +342,8 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($this->id)
             ->given([
-                $this->itemCreated
+                $this->itemCreated,
+                new Published($this->id)
             ])
             ->when(new Reject($this->id, $reason))
             ->then([

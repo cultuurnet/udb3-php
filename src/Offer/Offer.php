@@ -67,7 +67,6 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected $workflowStatus;
 
-
     /**
      * @var StringLiteral|null
      */
@@ -79,7 +78,6 @@ abstract class Offer extends EventSourcedAggregateRoot
     public function __construct()
     {
         $this->resetLabels();
-        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**

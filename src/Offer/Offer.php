@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
@@ -330,6 +331,19 @@ abstract class Offer extends EventSourcedAggregateRoot
         $this->apply(
             $this->createOfferDeletedEvent()
         );
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     */
+    protected function importWorkflowStatus(CultureFeed_Cdb_Item_Base $cdbItem)
+    {
+        try {
+            $workflowStatus = WorkflowStatus::fromNative($cdbItem->getWfStatus());
+        } catch (\InvalidArgumentException $exception) {
+            $workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
+        }
+        $this->workflowStatus = $workflowStatus;
     }
 
     /**

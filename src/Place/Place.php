@@ -2,10 +2,12 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
@@ -198,16 +200,36 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
+    /**
+     * @param PlaceImportedFromUDB2 $placeImported
+     */
     public function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImported
     ) {
         $this->actorId = $placeImported->getActorId();
+
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $placeImported->getCdbXmlNamespaceUri(),
+            $placeImported->getCdbXml()
+        );
+
+        $this->importWorkflowStatus($udb2Actor);
     }
 
+    /**
+     * @param PlaceImportedFromUDB2Event $placeImported
+     */
     public function applyPlaceImportedFromUDB2Event(
         PlaceImportedFromUDB2Event $placeImported
     ) {
         $this->actorId = $placeImported->getActorId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $placeImported->getCdbXmlNamespaceUri(),
+            $placeImported->getCdbXml()
+        );
+
+        $this->importWorkflowStatus($udb2Event);
     }
 
     /**

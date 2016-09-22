@@ -81,16 +81,14 @@ class PlaceTest extends AggregateRootScenarioTestCase
 
     public function newPlaceProvider()
     {
-        $cdbXml = $this->getCdbXML(
-            '/ReadModel/JSONLD/place_with_long_description.cdbxml.xml'
-        );
-
         return [
             'actor' => [
                 '318F2ACB-F612-6F75-0037C9C29F44087A',
                 Place::importFromUDB2Actor(
                     '318F2ACB-F612-6F75-0037C9C29F44087A',
-                    $cdbXml,
+                    $this->getCdbXML(
+                        '/ReadModel/JSONLD/place_with_long_description.cdbxml.xml'
+                    ),
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                 )
             ],
@@ -98,7 +96,9 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
                 Place::importFromUDB2Event(
                     '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                    $cdbXml,
+                    $this->getCdbXML(
+                        '/event_with_cdb_externalid.cdbxml.xml'
+                    ),
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                 )
             ]

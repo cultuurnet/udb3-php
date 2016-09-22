@@ -499,7 +499,7 @@ class EventLDProjector extends OfferLDProjector implements
                     $jsonLD->creator = $metaData['user_nick'];
                 }
 
-                $jsonLD->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+                $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
                 return $jsonLD;
             }

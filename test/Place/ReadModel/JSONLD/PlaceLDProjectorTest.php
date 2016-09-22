@@ -26,7 +26,6 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
-use CultuurNet\UDB3\Place\ReadModel\JSONLD\PlaceLDProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -144,7 +143,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         $body = $this->project(
             $placeCreated,
@@ -201,7 +200,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         $body = $this->project(
             $placeCreated,

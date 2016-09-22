@@ -187,7 +187,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -259,7 +259,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -339,7 +339,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->creator = $expectedCreator;
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -459,7 +459,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->workflowStatus = 'DRAFT';
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the

@@ -218,7 +218,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $jsonLD->creator = $metaData['user_nick'];
         }
 
-        $jsonLD->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+        $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
         $this->repository->save($document->withBody($jsonLD));
     }

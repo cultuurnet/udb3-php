@@ -6,13 +6,8 @@ use Broadway\Serializer\SerializableInterface;
 use ValueObjects\Money\Currency;
 use ValueObjects\String\String as StringLiteral;
 
-class PriceInfoItem implements SerializableInterface
+class Tariff implements SerializableInterface
 {
-    /**
-     * @var string
-     */
-    private $priceCategoryString;
-
     /**
      * @var StringLiteral
      */
@@ -29,29 +24,18 @@ class PriceInfoItem implements SerializableInterface
     private $currencyCodeString;
 
     /**
-     * @param PriceCategory $category
      * @param StringLiteral $name
      * @param Price $price
      * @param Currency $currency
      */
     public function __construct(
-        PriceCategory $category,
         StringLiteral $name,
         Price $price,
         Currency $currency
     ) {
-        $this->priceCategoryString = $category->toNative();
         $this->name = $name;
         $this->price = $price;
         $this->currencyCodeString = $currency->getCode()->toNative();
-    }
-
-    /**
-     * @return PriceCategory
-     */
-    public function getCategory()
-    {
-        return PriceCategory::fromNative($this->priceCategoryString);
     }
 
     /**
@@ -84,7 +68,6 @@ class PriceInfoItem implements SerializableInterface
     public function serialize()
     {
         return [
-            'category' => $this->priceCategoryString,
             'name' => $this->name->toNative(),
             'price' => $this->price->toNative(),
             'currency' => $this->currencyCodeString,
@@ -93,12 +76,11 @@ class PriceInfoItem implements SerializableInterface
 
     /**
      * @param array $data
-     * @return PriceInfoItem
+     * @return Tariff
      */
     public static function deserialize(array $data)
     {
-        return new PriceInfoItem(
-            PriceCategory::fromNative($data['category']),
+        return new Tariff(
             new StringLiteral($data['name']),
             new Price($data['price']),
             Currency::fromNative($data['currency'])

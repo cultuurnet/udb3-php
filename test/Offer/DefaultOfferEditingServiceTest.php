@@ -13,10 +13,9 @@ use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
-use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use ValueObjects\Money\Currency;
 use ValueObjects\String\String as StringLiteral;
 
@@ -214,14 +213,10 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $expectedCommandId = 'f42802e4-c1f1-4aa6-9909-a08cfc66f355';
 
         $priceInfo = new PriceInfo(
-            [
-                new PriceInfoItem(
-                    PriceCategory::BASE(),
-                    new StringLiteral('Basistarief'),
-                    new Price(10.5),
-                    Currency::fromNative('EUR')
-                ),
-            ]
+            new BasePrice(
+                new Price(10.5),
+                Currency::fromNative('EUR')
+            )
         );
 
         $updatePriceInfoCommand = $this->getMockForAbstractClass(

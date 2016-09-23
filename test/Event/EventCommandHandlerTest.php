@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
-use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -30,10 +29,9 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
-use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -226,14 +224,10 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
 
         $priceInfo = new PriceInfo(
-            [
-                new PriceInfoItem(
-                    PriceCategory::BASE(),
-                    new StringLiteral('Basistarief'),
-                    new Price(10.5),
-                    Currency::fromNative('EUR')
-                ),
-            ]
+            new BasePrice(
+                new Price(10.5),
+                Currency::fromNative('EUR')
+            )
         );
 
         $this->scenario

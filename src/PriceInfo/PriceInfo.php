@@ -7,25 +7,49 @@ use Broadway\Serializer\SerializableInterface;
 class PriceInfo implements SerializableInterface
 {
     /**
-     * @var PriceInfoItem[]
+     * @var BasePrice
      */
-    private $items;
+    private $basePrice;
 
     /**
-     * @param PriceInfoItem[] $items
+     * @var Tariff[]
      */
-    public function __construct(array $items)
+    private $tariffs;
+
+    /**
+     * @param BasePrice $basePrice
+     */
+    public function __construct(BasePrice $basePrice)
     {
-        $this->guardPriceInfoItems($items);
-        $this->items = $items;
+        $this->basePrice = $basePrice;
+        $this->tariffs = [];
     }
 
     /**
-     * @return PriceInfoItem[]
+     * @param Tariff $tariff
+     * @return PriceInfo
      */
-    public function getItems()
+    public function withExtraTariff(Tariff $tariff)
     {
-        return $this->items;
+        $c = clone $this;
+        $c->tariffs[] = $tariff;
+        return $c;
+    }
+
+    /**
+     * @return BasePrice
+     */
+    public function getBasePrice()
+    {
+        return $this->basePrice;
+    }
+
+    /**
+     * @return Tariff[]
+     */
+    public function getTariffs()
+    {
+        return $this->tariffs;
     }
 
     /**
@@ -33,10 +57,13 @@ class PriceInfo implements SerializableInterface
      */
     public function serialize()
     {
-        $serialized = [];
+        $serialized = [
+            'base' => $this->basePrice->serialize(),
+            'tariffs' => [],
+        ];
 
-        foreach ($this->items as $item) {
-            $serialized[] = $item->serialize();
+        foreach ($this->tariffs as $tariff) {
+            $serialized['tariffs'][] = $tariff->serialize();
         }
 
         return $serialized;
@@ -48,36 +75,16 @@ class PriceInfo implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        $items = [];
+        $basePriceInfo = BasePrice::deserialize($data['base']);
 
-        foreach ($data as $itemData) {
-            $items[] = PriceInfoItem::deserialize($itemData);
-        }
+        $priceInfo = new PriceInfo($basePriceInfo);
 
-        return new PriceInfo($items);
-    }
-
-    /**
-     * @param array $items
-     */
-    private function guardPriceInfoItems(array $items)
-    {
-        $baseItems = 0;
-
-        foreach ($items as $item) {
-            if (!($item instanceof PriceInfoItem)) {
-                throw new \InvalidArgumentException('PriceInfo only allows PriceInfoItem children.');
-            }
-
-            if ($item->getCategory()->sameValueAs(PriceCategory::BASE())) {
-                $baseItems++;
-            }
-        }
-
-        if ($baseItems !== 1) {
-            throw new \InvalidArgumentException(
-                'PriceInfo should always contain exactly one PriceInfoItem with the "base" category.'
+        foreach ($data['tariffs'] as $tariffData) {
+            $priceInfo = $priceInfo->withExtraTariff(
+                Tariff::deserialize($tariffData)
             );
         }
+
+        return $priceInfo;
     }
 }

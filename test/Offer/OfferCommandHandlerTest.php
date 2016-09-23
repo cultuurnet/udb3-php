@@ -30,10 +30,9 @@ use CultuurNet\UDB3\Offer\Mock\Commands\DeleteLabel as DeleteLabelFromSomethingE
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSomethingElse;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
-use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -99,14 +98,10 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->itemCreated = new ItemCreated($this->id);
 
         $this->priceInfo = new PriceInfo(
-            [
-                new PriceInfoItem(
-                    PriceCategory::BASE(),
-                    new StringLiteral('Basistarief'),
-                    new Price(10.5),
-                    Currency::fromNative('EUR')
-                ),
-            ]
+            new BasePrice(
+                new Price(10.5),
+                Currency::fromNative('EUR')
+            )
         );
     }
 

@@ -24,7 +24,6 @@ use CultuurNet\UDB3\Place\Commands\TranslateDescription;
 use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
-use CultuurNet\UDB3\Place\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
@@ -34,10 +33,9 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
-use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -268,14 +266,10 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
 
         $priceInfo = new PriceInfo(
-            [
-                new PriceInfoItem(
-                    PriceCategory::BASE(),
-                    new StringLiteral('Basistarief'),
-                    new Price(10.5),
-                    Currency::fromNative('EUR')
-                ),
-            ]
+            new BasePrice(
+                new Price(10.5),
+                Currency::fromNative('EUR')
+            )
         );
 
         $this->scenario

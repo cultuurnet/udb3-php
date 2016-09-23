@@ -5,10 +5,9 @@ namespace CultuurNet\UDB3\Offer;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
-use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\Web\Url;
@@ -100,15 +99,11 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                 'updatePriceInfo',
                 [
                     'offer-id',
-                    new PriceInfo(
-                        [
-                            new PriceInfoItem(
-                                PriceCategory::BASE(),
-                                new StringLiteral('Basistarief'),
-                                new Price(10.5),
-                                Currency::fromNative('EUR')
-                            ),
-                        ]
+                    $priceInfo = new PriceInfo(
+                        new BasePrice(
+                            new Price(10.5),
+                            Currency::fromNative('EUR')
+                        )
                     )
                 ]
             ]

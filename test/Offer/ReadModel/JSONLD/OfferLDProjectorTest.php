@@ -31,10 +31,10 @@ use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
-use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
+use CultuurNet\UDB3\PriceInfo\Tariff;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use stdClass;
 use ValueObjects\Identity\UUID;
@@ -370,25 +370,23 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_projects_the_updated_price_info_and_overrides_the_base_price_name()
+    public function it_projects_the_updated_price_info()
     {
         $aggregateId = 'a5bafa9d-a71e-4624-835d-57db2832a7d8';
 
         $priceInfo = new PriceInfo(
-            [
-                new PriceInfoItem(
-                    PriceCategory::BASE(),
-                    new StringLiteral('Gewoon de normale prijs'),
-                    new Price(10.5),
-                    Currency::fromNative('EUR')
-                ),
-                new PriceInfoItem(
-                    PriceCategory::TARIFF(),
-                    new StringLiteral('Werkloze dodo kwekers'),
-                    new Price(0),
-                    Currency::fromNative('EUR')
-                ),
-            ]
+            new BasePrice(
+                new Price(10.5),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $priceInfo = $priceInfo->withExtraTariff(
+            new Tariff(
+                new StringLiteral('Werkloze dodo kwekers'),
+                new Price(0),
+                Currency::fromNative('EUR')
+            )
         );
 
         $priceInfoUpdated = new PriceInfoUpdated($aggregateId, $priceInfo);

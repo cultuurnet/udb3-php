@@ -539,18 +539,21 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
         $offerLd->priceInfo = [];
 
-        foreach ($priceInfoUpdated->getPriceInfo()->getItems() as $item) {
-            if ($item->getCategory()->sameValueAs(PriceCategory::BASE())) {
-                $name = 'Basistarief';
-            } else {
-                $name = $item->getName()->toNative();
-            }
+        $basePrice = $priceInfoUpdated->getPriceInfo()->getBasePrice();
 
+        $offerLd->priceInfo[] = [
+            'category' => 'base',
+            'name' => 'Basistarief',
+            'price' => $basePrice->getPrice()->toNative(),
+            'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
+        ];
+
+        foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
             $offerLd->priceInfo[] = [
-                'category' => $item->getCategory()->toNative(),
-                'name' => $name,
-                'price' => $item->getPrice()->toNative(),
-                'priceCurrency' => $item->getCurrency()->getCode()->toNative(),
+                'category' => 'tariff',
+                'name' => $tariff->getName()->toNative(),
+                'price' => $tariff->getPrice()->toNative(),
+                'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
             ];
         }
 

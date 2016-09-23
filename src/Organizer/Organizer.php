@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
@@ -66,9 +67,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * @param Url $website
      * @param Title $title
      * @param array $addresses
-     * @param array $phones
-     * @param array $emails
-     * @param array $urls
+     * @param ContactPoint $contactPoint
      * @return Organizer
      */
     public static function create(
@@ -76,13 +75,11 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         Url $website,
         Title $title,
         array $addresses,
-        array $phones,
-        array $emails,
-        array $urls
+        ContactPoint $contactPoint
     ) {
         $organizer = new self();
         $organizer->apply(
-            new OrganizerCreatedWithUniqueWebsite($id, $website, $title, $addresses, $phones, $emails, $urls)
+            new OrganizerCreatedWithUniqueWebsite($id, $website, $title, $addresses, $contactPoint)
         );
 
         return $organizer;

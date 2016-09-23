@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
@@ -67,27 +68,24 @@ class OrganizerTest extends AggregateRootScenarioTestCase
         $phones = ['050/123'];
         $emails = ['test@test.be', 'test2@test.be'];
         $urls = ['http://www.google.be'];
+        $contactPoint = new ContactPoint($phones, $emails, $urls);
 
         $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
             $id,
             $website,
             $title,
             $addresses,
-            $phones,
-            $emails,
-            $urls
+            $contactPoint
         );
 
         $this->scenario
-            ->when(function ($id, $website, $title, $addresses, $phones, $emails, $urls) {
+            ->when(function ($id, $website, $title, $addresses, $contactPoint) {
                 return Organizer::create(
                     $id,
                     $website,
                     $title,
                     $addresses,
-                    $phones,
-                    $emails,
-                    $urls
+                    $contactPoint
                 );
             })
             ->then([$organizerCreated]);
@@ -108,9 +106,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         Url::fromNative('http://www.stuk.be'),
                         new Title('Foo'),
                         [],
-                        [],
-                        [],
-                        []
+                        new ContactPoint([], [], [])
                     )
                 ]
             )

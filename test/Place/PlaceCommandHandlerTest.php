@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
+use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
 use CultuurNet\UDB3\Place\Commands\TranslateDescription;
 use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
@@ -46,6 +47,11 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 
+    /**
+     * @var PlaceCommandFactory
+     */
+    private $commandFactory;
+
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
@@ -66,6 +72,8 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 Visibility::VISIBLE(),
                 Privacy::PRIVACY_PUBLIC()
             ));
+
+        $this->commandFactory = new PlaceCommandFactory();
 
         return new CommandHandler(
             $repository,
@@ -277,7 +285,9 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                     $this->factorOfferCreated($id),
                 ]
             )
-            ->when(new UpdatePriceInfo($id, $priceInfo))
+            ->when(
+                $this->commandFactory->createUpdatePriceInfoCommand($id, $priceInfo)
+            )
             ->then(
                 [
                     new PriceInfoUpdated($id, $priceInfo),

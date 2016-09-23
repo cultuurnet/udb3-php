@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
@@ -42,6 +43,11 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 
+    /**
+     * @var EventCommandFactory
+     */
+    private $commandFactory;
+
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
@@ -62,6 +68,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 Visibility::VISIBLE(),
                 Privacy::PRIVACY_PUBLIC()
             ));
+
+        $this->commandFactory = new EventCommandFactory();
 
         return new EventCommandHandler(
             $repository,
@@ -235,7 +243,9 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     $this->factorOfferCreated($id),
                 ]
             )
-            ->when(new UpdatePriceInfo($id, $priceInfo))
+            ->when(
+                $this->commandFactory->createUpdatePriceInfoCommand($id, $priceInfo)
+            )
             ->then(
                 [
                     new PriceInfoUpdated($id, $priceInfo),

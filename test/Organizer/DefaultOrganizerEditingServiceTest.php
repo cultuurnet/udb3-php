@@ -9,6 +9,7 @@ use Broadway\EventStore\TraceableEventStore;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
@@ -74,9 +75,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk'),
             [new Address('$street', '$postalCode', '$locality', '$country')],
-            ['050/123'],
-            ['test@test.be', 'test2@test.be'],
-            ['http://www.google.be']
+            new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
         );
 
         $expectedUuid = '9196cb78-4381-11e6-beb8-9e71128cae77';
@@ -88,9 +87,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
                     Url::fromNative('http://www.stuk.be'),
                     new Title('Het Stuk'),
                     [new Address('$street', '$postalCode', '$locality', '$country')],
-                    ['050/123'],
-                    ['test@test.be', 'test2@test.be'],
-                    ['http://www.google.be']
+                    new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
                 )
             ],
             $this->eventStore->getEvents()

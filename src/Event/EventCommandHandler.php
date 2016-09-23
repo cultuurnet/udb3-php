@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Label as Label;
@@ -180,6 +181,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getUpdateBookingInfoClassName()
     {
         return UpdateBookingInfo::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdatePriceInfoClassName()
+    {
+        return UpdatePriceInfo::class;
     }
 
     /**

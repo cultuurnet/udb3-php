@@ -35,6 +35,7 @@ use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
@@ -48,6 +49,7 @@ use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
@@ -619,6 +621,15 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo)
     {
         return new BookingInfoUpdated($this->eventId, $bookingInfo);
+    }
+
+    /**
+     * @param PriceInfo $priceInfo
+     * @return PriceInfoUpdated
+     */
+    protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo)
+    {
+        return new PriceInfoUpdated($this->eventId, $priceInfo);
     }
 
     /**

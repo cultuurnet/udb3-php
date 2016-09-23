@@ -16,10 +16,12 @@ use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ItemCommandHandler;
 use CultuurNet\UDB3\Offer\Item\ItemRepository;
@@ -27,9 +29,15 @@ use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel as AddLabelToSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\DeleteLabel as DeleteLabelFromSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
+use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSomethingElse;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceCategory;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\Money\Currency;
+use ValueObjects\String\String as StringLiteral;
 
 class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -49,14 +57,19 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $language;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $title;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $description;
+
+    /**
+     * @var PriceInfo
+     */
+    protected $priceInfo;
 
     /**
      * @var ItemCreated
@@ -80,10 +93,21 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->id = '123';
         $this->label = new Label('foo');
         $this->language = new Language('en');
-        $this->title = new String('English title');
-        $this->description = new String('English description');
+        $this->title = new StringLiteral('English title');
+        $this->description = new StringLiteral('English description');
 
         $this->itemCreated = new ItemCreated($this->id);
+
+        $this->priceInfo = new PriceInfo(
+            [
+                new PriceInfoItem(
+                    PriceCategory::BASE(),
+                    new StringLiteral('Basistarief'),
+                    new Price(10.5),
+                    Currency::fromNative('EUR')
+                ),
+            ]
+        );
     }
 
     protected function createCommandHandler(
@@ -94,10 +118,10 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
-            ->with(new String('foo'))
+            ->with(new StringLiteral('foo'))
             ->willReturn(new Entity(
                 new UUID(),
-                new String('foo'),
+                new StringLiteral('foo'),
                 Visibility::VISIBLE(),
                 Privacy::PRIVACY_PUBLIC()
             ));
@@ -268,6 +292,42 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when(
                 new TranslateDescriptionOnSomethingElse($this->id, $this->language, $this->description)
             )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_price_info_commands_from_the_correct_namespace()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                ]
+            )
+            ->when(new UpdatePriceInfo($this->id, $this->priceInfo))
+            ->then(
+                [
+                    new PriceInfoUpdated($this->id, $this->priceInfo),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_ignores_price_info_commands_from_incorrect_namespace()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                ]
+            )
+            ->when(new UpdatePriceInfoOnSomethingElse($this->id, $this->priceInfo))
             ->then([]);
     }
 }

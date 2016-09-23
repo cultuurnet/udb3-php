@@ -7,6 +7,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\String\String as StringLiteral;
 
 trait OfferEditingServiceDecoratorTrait
@@ -104,5 +105,11 @@ trait OfferEditingServiceDecoratorTrait
     {
         return $this->getDecoratedEditingService()
             ->updateBookingInfo($id, $bookingInfo);
+    }
+
+    public function updatePriceInfo($id, PriceInfo $priceInfo)
+    {
+        return $this->getDecoratedEditingService()
+            ->updatePriceInfo($id, $priceInfo);
     }
 }

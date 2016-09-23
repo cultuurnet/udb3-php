@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
@@ -25,6 +26,7 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
@@ -32,6 +34,7 @@ use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\String\String as StringLiteral;
 
 class Item extends Offer
@@ -181,6 +184,15 @@ class Item extends Offer
     protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo)
     {
         return new BookingInfoUpdated($this->id, $bookingInfo);
+    }
+
+    /**
+     * @param PriceInfo $priceInfo
+     * @return PriceInfoUpdated
+     */
+    protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo)
+    {
+        return new PriceInfoUpdated($this->id, $priceInfo);
     }
 
     /**

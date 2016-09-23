@@ -1,6 +1,7 @@
 <?php
 
 namespace CultuurNet\UDB3;
+use DateTimeInterface;
 
 /**
  * Interface for calendars.
@@ -10,21 +11,21 @@ interface CalendarInterface
     /**
      * Get current calendar type.
      *
-     * @return string
+     * @return CalendarType
      */
     public function getType();
 
     /**
      * Get the start date.
      *
-     * @return string
+     * @return DateTimeInterface
      */
     public function getStartDate();
 
     /**
      * Get the end date.
      *
-     * @return string
+     * @return DateTimeInterface
      */
     public function getEndDate();
 

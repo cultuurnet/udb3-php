@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Timestamp;
+use DateTime;
+use DateTimeInterface;
 
 /**
  * Calendar for events and places.
@@ -11,22 +14,22 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
 {
 
     /**
-     * @var string
+     * @var CalendarType
      */
     protected $type = null;
 
     /**
-     * @var string
+     * @var DateTimeInterface
      */
     protected $startDate = null;
 
     /**
-     * @var string
+     * @var DateTimeInterface
      */
     protected $endDate = null;
 
     /**
-     * @var \CultuurNet\UDB3\Timestamp[]
+     * @var Timestamp[]
      */
     protected $timestamps = array();
 
@@ -41,31 +44,24 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     const PERMANENT = "permanent";
 
     /**
-     * @param string $calendarType
-     * @param string $startDate
-     * @param string $endDate
-     * @param array $timestamps
+     * @param CalendarType $type
+     * @param DateTimeInterface|null $startDate
+     * @param DateTimeInterface|null $endDate
+     * @param Timestamp[] $timestamps
      * @param array $openingHours
      */
     public function __construct(
-        $calendarType,
-        $startDate = '',
-        $endDate = '',
-        $timestamps = array(),
-        $openingHours = array()
+        CalendarType $type,
+        DateTimeInterface $startDate = null,
+        DateTimeInterface $endDate = null,
+        array $timestamps = array(),
+        array $openingHours = array()
     ) {
-        if ($calendarType != self::PERMANENT &&
-            $calendarType != self::MULTIPLE &&
-            $calendarType != self::PERIODIC &&
-            $calendarType != self::SINGLE) {
-            throw new \UnexpectedValueException('Invalid calendar type: ' . $calendarType . '==' . self::PERMANENT . ' given.');
+        if (($type->is(CalendarType::MULTIPLE()) || $type->is(CalendarType::SINGLE())) && isNull($startDate)) {
+            throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
         }
 
-        if (($calendarType == self::MULTIPLE || $calendarType == self::SINGLE) && empty($startDate)) {
-            throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $calendarType . '.');
-        }
-
-        $this->type = $calendarType;
+        $this->type = $type;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->timestamps = $timestamps;
@@ -92,13 +88,16 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             $this->timestamps
         );
 
-        return [
-          'type' => $this->getType(),
-          'startDate' => $this->startDate,
-          'endDate' => $this->endDate,
-          'timestamps' => $serializedTimestamps,
-          'openingHours' => $this->openingHours,
+        $calendar = [
+          'type' => $this->getType()->toNative(),
         ];
+
+        isNull($this->startDate) ?: $calendar['startDate'] = $this->startDate;
+        isNull($this->endDate) ?: $calendar['endDate'] = $this->endDate;
+        isEmpty($serializedTimestamps) ?: $calendar['timestamps'] = $serializedTimestamps;
+        isEmpty($this->openingHours) ?: $calendar['openingHours'] = $this->openingHours;
+
+        return $calendar;
     }
 
     /**
@@ -106,16 +105,17 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public static function deserialize(array $data)
     {
-        foreach ($data['timestamps'] as $key => $timestamp) {
-            $data['timestamps'][$key] = Timestamp::deserialize($timestamp);
-        }
-
         return new static(
-            $data['type'],
-            $data['startDate'],
-            $data['endDate'],
-            $data['timestamps'],
-            $data['openingHours']
+            CalendarType::fromNative($data['type']),
+            isset($data['startDate']) ? DateTime::createFromFormat('c', $data['startDate']) : null,
+            isset($data['endDate']) ? DateTime::createFromFormat('c', $data['endDate']) : null,
+            isset($data['timestamps']) ? array_map(
+                function (Timestamp $timestamp) {
+                    return $timestamp->serialize();
+                },
+                $data['timestamps']
+            ) : [],
+            isset($data['openingHours']) ? $data['openingHours'] : []
         );
     }
 
@@ -128,7 +128,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     }
 
     /**
-     * Get the end date
+     * @inheritdoc
      */
     public function getEndDate()
     {
@@ -158,21 +158,14 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     {
         $jsonLd = [];
 
-        $startDate = $this->getStartDate();
-        $endDate = $this->getEndDate();
-
-        $jsonLd['calendarType'] = $this->getType();
+        $jsonLd['calendarType'] = $this->getType()->toNative();
         // All calendar types allow startDate (and endDate).
         // One timestamp - full day.
         // One timestamp - start hour.
         // One timestamp - start and end hour.
-        if (!empty($startDate)) {
-            $jsonLd['startDate'] = $startDate;
-        }
+        isNull($this->startDate) ?: $jsonLd['startDate'] = $this->startDate;
+        isNull($this->endDate) ?: $jsonLd['endDate'] = $this->startDate;
 
-        if (!empty($endDate)) {
-            $jsonLd['endDate'] = $endDate;
-        }
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {

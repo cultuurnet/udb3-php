@@ -66,7 +66,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_update()
+    public function it_can_update_a_role_name()
     {
         $expectedRole = $this->role;
 
@@ -76,7 +76,32 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             $expectedRole['constraint_query']
         );
 
-        $expectedRole['name'] = 'new_role_name';
+        $expectedRole['constraint_query'] = 'zipcode:3000';
+
+        $this->dbalRepository->updateConstraint(
+            $expectedRole['uuid'],
+            $expectedRole['constraint_query']
+        );
+
+        $actualRole = $this->getLastRole();
+
+        $this->assertEquals($expectedRole, $actualRole);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_a_role_constraint()
+    {
+        $expectedRole = $this->role;
+
+        $this->dbalRepository->save(
+            $expectedRole['uuid'],
+            $expectedRole['name'],
+            $expectedRole['constraint_query']
+        );
+
+        $expectedRole['constraint_query'] = 'new_role_name';
 
         $this->dbalRepository->updateName($expectedRole['uuid'], $expectedRole['name']);
 

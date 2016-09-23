@@ -8,6 +8,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
@@ -168,15 +169,13 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             Url::fromNative('http://www.stuk.be'),
             new Title('some representative title'),
             [new Address('$street', '$postalCode', '$locality', '$country')],
-            ['050/123'],
-            ['test@test.be', 'test2@test.be'],
-            ['http://www.google.be']
+            new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
         );
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/api/1.0/organizer.jsonld';
-        $jsonLD->website = 'http://www.stuk.be';
+        $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name = 'some representative title';
         $jsonLD->addresses = [
             [
@@ -186,9 +185,15 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 'streetAddress' => '$street',
             ]
         ];
-        $jsonLD->phone = ['050/123'];
-        $jsonLD->email = ['test@test.be', 'test2@test.be'];
-        $jsonLD->url = ['http://www.google.be'];
+        //$jsonLD->contactPoint->phone = ['050/123'];
+        //$jsonLD->contactPoint->email = ['test@test.be', 'test2@test.be'];
+        //$jsonLD->contactPoint->url = ['http://www.google.be'];
+        $jsonLD->contactPoint = [
+            'phone' => ['050/123'],
+            'email' => ['test@test.be', 'test2@test.be'],
+            'url' => ['http://www.google.be'],
+            'type' => '',
+        ];
         $jsonLD->created = $created;
 
         $expectedDocument = (new JsonDocument($id))

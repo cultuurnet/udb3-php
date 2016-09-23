@@ -119,6 +119,7 @@ class OrganizerLDProjector extends ActorLDProjector
 
     /**
      * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyOrganizerCreatedWithUniqueWebsite(
         OrganizerCreatedWithUniqueWebsite $organizerCreated,
@@ -132,7 +133,7 @@ class OrganizerLDProjector extends ActorLDProjector
             $organizerCreated->getOrganizerId()
         );
 
-        $jsonLD->website = (string) $organizerCreated->getWebsite();
+        $jsonLD->url = (string) $organizerCreated->getWebsite();
 
         $jsonLD->name = $organizerCreated->getTitle();
 
@@ -147,9 +148,8 @@ class OrganizerLDProjector extends ActorLDProjector
             );
         }
 
-        $jsonLD->phone = $organizerCreated->getPhones();
-        $jsonLD->email = $organizerCreated->getEmails();
-        $jsonLD->url = $organizerCreated->getUrls();
+        // Add ContactPoint.
+        $jsonLD->contactPoint = $organizerCreated->getContactPoint()->toJsonLd();
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(

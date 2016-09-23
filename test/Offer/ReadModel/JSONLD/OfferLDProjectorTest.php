@@ -27,12 +27,18 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceCategory;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\PriceInfo\PriceInfoItem;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use stdClass;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
 use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -359,6 +365,64 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             ],
             $body
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updated_price_info_and_overrides_the_base_price_name()
+    {
+        $aggregateId = 'a5bafa9d-a71e-4624-835d-57db2832a7d8';
+
+        $priceInfo = new PriceInfo(
+            [
+                new PriceInfoItem(
+                    PriceCategory::BASE(),
+                    new StringLiteral('Gewoon de normale prijs'),
+                    new Price(10.5),
+                    Currency::fromNative('EUR')
+                ),
+                new PriceInfoItem(
+                    PriceCategory::TARIFF(),
+                    new StringLiteral('Werkloze dodo kwekers'),
+                    new Price(0),
+                    Currency::fromNative('EUR')
+                ),
+            ]
+        );
+
+        $priceInfoUpdated = new PriceInfoUpdated($aggregateId, $priceInfo);
+
+        $initialDocument = (new JsonDocument($aggregateId))
+            ->withBody(
+                (object) [
+                    '@id' => 'http://example.com/offer/a5bafa9d-a71e-4624-835d-57db2832a7d8',
+                ]
+            );
+
+        $expectedBody = (object) [
+            '@id' => 'http://example.com/offer/a5bafa9d-a71e-4624-835d-57db2832a7d8',
+            'priceInfo' => [
+                (object) [
+                    'category' => 'base',
+                    'name' => 'Basistarief',
+                    'price' => 10.5,
+                    'priceCurrency' => 'EUR',
+                ],
+                (object) [
+                    'category' => 'tariff',
+                    'name' => 'Werkloze dodo kwekers',
+                    'price' => 0,
+                    'priceCurrency' => 'EUR',
+                ],
+            ],
+        ];
+
+        $this->documentRepository->save($initialDocument);
+
+        $actualBody = $this->project($priceInfoUpdated, $aggregateId);
+
+        $this->assertEquals($expectedBody, $actualBody);
     }
 
     /**

@@ -103,7 +103,25 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_calls_update_role_on_constraint_updated_event()
+    public function it_calls_update_constraint_on_constraint_created_event()
+    {
+        $constraintCreated = new ConstraintCreated(
+            new UUID(),
+            new StringLiteral('zipCode:3000')
+        );
+        $domainMessage = $this->createDomainMessage($constraintCreated);
+
+        $this->repository->expects($this->once())
+            ->method('updateConstraint')
+            ->with($constraintCreated->getUuid(), $constraintCreated->getQuery());
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_calls_update_constraint_on_constraint_updated_event()
     {
         $constraintUpdated = new ConstraintUpdated(
             new UUID(),
@@ -121,7 +139,7 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_calls_remove_role_on_constraint_removed_event()
+    public function it_calls_update_constraint_on_constraint_removed_event()
     {
         $constraintRemoved = new ConstraintRemoved(new UUID());
         $domainMessage = $this->createDomainMessage($constraintRemoved);

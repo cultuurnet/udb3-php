@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -177,6 +178,16 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     public function createUpdateBookingInfoCommand($id, BookingInfo $bookingInfo)
     {
         return new UpdateBookingInfo($id, $bookingInfo);
+    }
+
+    /**
+     * @param $id
+     * @param PriceInfo $priceInfo
+     * @return UpdatePriceInfo
+     */
+    public function createUpdatePriceInfoCommand($id, PriceInfo $priceInfo)
+    {
+        return new UpdatePriceInfo($id, $priceInfo);
     }
 
     /**

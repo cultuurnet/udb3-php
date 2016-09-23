@@ -24,6 +24,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Place\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -153,6 +154,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getUpdateBookingInfoClassName()
     {
         return UpdateBookingInfo::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUpdatePriceInfoClassName()
+    {
+        return UpdatePriceInfo::class;
     }
 
     /**

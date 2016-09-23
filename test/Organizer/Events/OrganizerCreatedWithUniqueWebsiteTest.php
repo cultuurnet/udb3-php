@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
@@ -25,12 +26,14 @@ class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
         $emails = ['foo@bar.com'];
         $urls = ['http://bar.com'];
 
+        $contactPoint = new ContactPoint($phones, $emails, $urls);
+
         $this->setExpectedException(
             \InvalidArgumentException::class,
             'Argument should be of type Address, stdClass given.'
         );
 
-        new OrganizerCreatedWithUniqueWebsite($id, $website, $title, $addresses, $phones, $emails, $urls);
+        new OrganizerCreatedWithUniqueWebsite($id, $website, $title, $addresses, $contactPoint);
     }
 
     /**
@@ -81,14 +84,17 @@ class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
                             'country' => 'Belgium',
                         ],
                     ],
-                    'phones' => [
-                        '0123456789',
-                    ],
-                    'emails' => [
-                        'foo@bar.com',
-                    ],
-                    'urls' => [
-                        'http://foo.bar',
+                    'contactPoint' => [
+                        'phone' => [
+                            '0123456789',
+                        ],
+                        'email' => [
+                            'foo@bar.com',
+                        ],
+                        'url' => [
+                            'http://foo.bar',
+                        ],
+                        'type' => '',
                     ],
                 ],
                 new OrganizerCreatedWithUniqueWebsite(
@@ -96,9 +102,7 @@ class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
                     Url::fromNative('http://www.stuk.be'),
                     new Title('title'),
                     array(new Address('streetAddress', '3000', 'Leuven', 'Belgium')),
-                    array('0123456789'),
-                    array('foo@bar.com'),
-                    array('http://foo.bar')
+                    new ContactPoint(array('0123456789'), array('foo@bar.com'), array('http://foo.bar'))
                 ),
             ],
         ];

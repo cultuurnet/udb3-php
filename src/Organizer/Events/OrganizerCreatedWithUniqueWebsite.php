@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
@@ -27,37 +28,23 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     public $addresses;
 
     /**
-     * @var string[]
+     * @var ContactPoint
      */
-    public $phones;
-
-    /**
-     * @var string[]
-     */
-    public $emails;
-
-    /**
-     * @var string[]
-     */
-    public $urls;
+    private $contactPoint;
 
     /**
      * @param string $id
      * @param Url $website
      * @param Title $title
      * @param Address[] $addresses
-     * @param string[] $phones
-     * @param string[] $emails
-     * @param string[] $urls
+     * @param ContactPoint $contactPoint
      */
     public function __construct(
         $id,
         Url $website,
         Title $title,
         array $addresses,
-        array $phones,
-        array $emails,
-        array $urls
+        ContactPoint $contactPoint
     ) {
         parent::__construct($id);
 
@@ -66,9 +53,7 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
         $this->website = $website;
         $this->title = $title;
         $this->addresses = $addresses;
-        $this->phones = $phones;
-        $this->emails = $emails;
-        $this->urls = $urls;
+        $this->contactPoint = $contactPoint;
     }
 
     /**
@@ -113,27 +98,11 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     }
 
     /**
-     * @return string[]
+     * @return ContactPoint
      */
-    public function getPhones()
+    public function getContactPoint()
     {
-        return $this->phones;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getEmails()
-    {
-        return $this->emails;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getUrls()
-    {
-        return $this->urls;
+        return $this->contactPoint;
     }
 
     /**
@@ -151,9 +120,7 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
             'website' => (string) $this->getWebsite(),
             'title' => (string) $this->getTitle(),
             'addresses' => $addresses,
-            'phones' => $this->getPhones(),
-            'emails' => $this->getEmails(),
-            'urls' => $this->getUrls(),
+            'contactPoint' => $this->contactPoint->serialize(),
         );
     }
 
@@ -172,9 +139,8 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
             $data['organizer_id'],
             Url::fromNative($data['website']),
             new Title($data['title']),
-            $addresses, $data['phones'],
-            $data['emails'],
-            $data['urls']
+            $addresses,
+            ContactPoint::deserialize($data['contactPoint'])
         );
     }
 }

@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -30,6 +31,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -219,6 +221,16 @@ abstract class Offer extends EventSourcedAggregateRoot
     {
         $this->apply(
             $this->createBookingInfoUpdatedEvent($bookingInfo)
+        );
+    }
+
+    /**
+     * @param PriceInfo $priceInfo
+     */
+    public function updatePriceInfo(PriceInfo $priceInfo)
+    {
+        $this->apply(
+            $this->createPriceInfoUpdatedEvent($priceInfo)
         );
     }
 
@@ -567,6 +579,12 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractBookingInfoUpdated
      */
     abstract protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo);
+
+    /**
+     * @param PriceInfo $priceInfo
+     * @return AbstractPriceInfoUpdated
+     */
+    abstract protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo);
 
     /**
      * @return AbstractApproved

@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -280,7 +281,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('permanent', '', '')
+            new Calendar(
+                CalendarType::PERMANENT()
+            )
         );
 
         $msg = DomainMessage::recordNow(

@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Theme;
@@ -59,10 +60,6 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
@@ -82,7 +79,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                         Country::fromNative('BE')
                     ),
                     new Calendar(
-                        'permanent'
+                        CalendarType::PERMANENT()
                     )
                 ),
             ],
@@ -103,10 +100,6 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
@@ -126,7 +119,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                         Country::fromNative('BE')
                     ),
                     new Calendar(
-                        'permanent'
+                        CalendarType::PERMANENT()
                     ),
                     new Theme('123', 'foo')
                 ),
@@ -144,17 +137,13 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype'
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+0200'
+                    'publication_date' => '2016-08-01T00:00:00+02:00'
                 ],
                 new PlaceCreated(
                     'test 456',
@@ -167,12 +156,12 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                         Country::fromNative('BE')
                     ),
                     new Calendar(
-                        'permanent'
+                        CalendarType::PERMANENT()
                     ),
                     null,
                     \DateTimeImmutable::createFromFormat(
-                        \DateTime::ISO8601,
-                        '2016-08-01T00:00:00+0200'
+                        \DateTime::ATOM,
+                        '2016-08-01T00:00:00+02:00'
                     )
                 ),
             ],

@@ -134,7 +134,7 @@ class EventCreated extends EventEvent
         }
         $publicationDate = null;
         if (!is_null($this->getPublicationDate())) {
-            $publicationDate = $this->getPublicationDate()->format(\DateTime::ISO8601);
+            $publicationDate = $this->getPublicationDate()->format(\DateTime::ATOM);
         }
         return parent::serialize() + array(
             'title' => (string)$this->getTitle(),
@@ -158,7 +158,7 @@ class EventCreated extends EventEvent
         $publicationDate = null;
         if (!empty($data['publication_date'])) {
             $publicationDate = DateTimeImmutable::createFromFormat(
-                \DateTime::ISO8601,
+                \DateTime::ATOM,
                 $data['publication_date']
             );
         }

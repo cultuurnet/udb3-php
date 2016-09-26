@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -174,7 +175,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('single', '2015-01-26T13:25:21+01:00')
+            new Calendar(
+                CalendarType::SINGLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+            )
         );
 
         $jsonLD = new stdClass();
@@ -248,7 +252,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('single', '2015-01-26T13:25:21+01:00'),
+            new Calendar(
+                CalendarType::SINGLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+            ),
             new Theme('123', 'theme label')
         );
 
@@ -335,7 +342,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('single', '2015-01-26T13:25:21+01:00'),
+            new Calendar(
+                CalendarType::SINGLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+            ),
             new Theme('123', 'theme label')
         );
 
@@ -425,16 +435,16 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_handles_new_events_with_multiple_timestamps()
     {
-        $eventId = '1';
+        $eventId = '926fca95-010e-46b1-8b8e-abe757dd32d5';
 
         $timestamps = [
             new Timestamp(
-                '2015-01-26T13:25:21+01:00',
-                '2015-01-27T13:25:21+01:00'
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-27T13:25:21+01:00')
             ),
             new Timestamp(
-                '2015-01-28T13:25:21+01:00',
-                '2015-01-29T13:25:21+01:00'
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-28T13:25:21+01:00'),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-29T13:25:21+01:00')
             ),
         ];
         $eventCreated = new EventCreated(
@@ -451,7 +461,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('multiple', '2015-01-26T13:25:21+01:00', '2015-01-29T13:25:21+01:00', $timestamps),
+            new Calendar(
+                CalendarType::MULTIPLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-29T13:25:21+01:00'),
+                $timestamps
+            ),
             new Theme('123', 'theme label')
         );
 
@@ -1134,7 +1149,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 Country::fromNative('BE')
             )
         );
-        $calendar = new Calendar('single', '2015-01-26T13:25:21+01:00', '2015-02-26T13:25:21+01:00');
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM,'2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM,'2015-02-26T13:25:21+01:00')
+        );
         $theme = new Theme('123', 'theme label');
         $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $location, $calendar, $theme);
 

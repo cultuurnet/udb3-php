@@ -70,10 +70,6 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',

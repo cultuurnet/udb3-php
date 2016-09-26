@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -191,7 +192,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $country = Country::fromNative('BE');
         $address = new Address($street, $postalCode, $locality, $country);
         $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
-        $calendar = new Calendar('permanent', '', '');
+        $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
         $this->eventStore->trace();
@@ -231,11 +232,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $country = Country::fromNative('BE');
         $address = new Address($street, $postalCode, $locality, $country);
         $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
-        $calendar = new Calendar('permanent', '', '');
+        $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
         $publicationDate = \DateTimeImmutable::createFromFormat(
-            \DateTime::ISO8601,
-            '2016-08-01T00:00:00+0000'
+            \DateTime::ATOM,
+            '2016-08-01T00:00:00+00:00'
         );
 
         $this->eventEditingService = $this->eventEditingService

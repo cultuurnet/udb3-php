@@ -67,10 +67,6 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
@@ -119,10 +115,6 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
@@ -168,17 +160,13 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype'
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+0200'
+                    'publication_date' => '2016-08-01T00:00:00+02:00'
                 ],
                 new EventCreated(
                     'test 456',
@@ -199,8 +187,8 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     null,
                     DateTimeImmutable::createFromFormat(
-                        \DateTime::ISO8601,
-                        '2016-08-01T00:00:00+0200'
+                        \DateTime::ATOM,
+                        '2016-08-01T00:00:00+02:00'
                     )
                 ),
             ],

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -137,7 +138,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             $this->address,
-            new Calendar('permanent')
+            new Calendar(CalendarType::PERMANENT())
         );
 
         $jsonLD = new stdClass();
@@ -187,7 +188,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             $this->address,
-            new Calendar('permanent'),
+            new Calendar(CalendarType::PERMANENT()),
             new Theme('123', 'theme label')
         );
 
@@ -243,7 +244,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             $this->address,
-            new Calendar('permanent')
+            new Calendar(CalendarType::PERMANENT())
         );
 
         $jsonLD = new stdClass();
@@ -421,7 +422,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $id = 'foo';
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $calendar = new Calendar('single', '2015-01-26T13:25:21+01:00', '2015-02-26T13:25:21+01:00');
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-02-26T13:25:21+01:00')
+        );
         $theme = new Theme('123', 'theme label');
         $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $this->address, $calendar, $theme);
 

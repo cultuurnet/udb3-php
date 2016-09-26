@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
@@ -38,7 +39,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
                 )
             ),
             new Calendar(
-                'permanent'
+                CalendarType::PERMANENT()
             ),
             new Theme('themeid', 'theme_label')
         );
@@ -63,7 +64,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
             )
         );
         $expectedCalendar = new Calendar(
-            'permanent'
+            CalendarType::PERMANENT()
         );
         $expectedTheme = new Theme('themeid', 'theme_label');
 

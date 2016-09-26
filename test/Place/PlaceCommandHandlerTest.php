@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
@@ -83,7 +84,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 new Locality('Leuven'),
                 Country::fromNative('BE')
             ),
-            new Calendar('permanent', '', '')
+            new Calendar(CalendarType::PERMANENT())
         );
     }
 
@@ -101,7 +102,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             new Locality('Leuven'),
             Country::fromNative('BE')
         );
-        $calendar = new Calendar('permanent', '', '');
+        $calendar = new Calendar(CalendarType::PERMANENT());
 
         $this->scenario
             ->withAggregateId($id)

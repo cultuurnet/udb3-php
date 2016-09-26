@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
@@ -103,7 +104,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $address = new Address($street, $postalCode, $locality, $country);
-        $calendar = new Calendar('permanent', '', '');
+        $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
         $this->uuidGenerator->expects($this->once())
@@ -134,7 +135,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_create_a_new_place_with_a_fixed_publication_date()
     {
-        $publicationDate = \DateTimeImmutable::createFromFormat(\DateTime::ISO8601, '2016-08-01T00:00:00+0200');
+        $publicationDate = \DateTimeImmutable::createFromFormat(\DateTime::ATOM, '2016-08-01T00:00:00+0200');
 
         $street = new Street('Kerkstraat 69');
         $locality = new Locality('Leuven');
@@ -144,7 +145,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $address = new Address($street, $postalCode, $locality, $country);
-        $calendar = new Calendar('permanent', '', '');
+        $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
         $this->uuidGenerator->expects($this->once())

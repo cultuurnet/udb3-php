@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializableInterface;
 use DateTime;
 use DateTimeInterface;
+use ValueObjects\DateTime\Date;
 
 /**
  * Provices a class for a timestamp.
@@ -28,8 +29,10 @@ class Timestamp implements SerializableInterface
      * @param DateTimeInterface $startDate
      * @param DateTimeInterface $endDate
      */
-    public function __construct($startDate, $endDate)
-    {
+    public function __construct(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate
+    ) {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
     }
@@ -56,8 +59,8 @@ class Timestamp implements SerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-            DateTime::createFromFormat('c', $data['startDate']),
-            DateTime::createFromFormat('c', $data['endDate'])
+            DateTime::createFromFormat(DateTime::ATOM, $data['startDate']),
+            DateTime::createFromFormat(DateTime::ATOM, $data['endDate'])
         );
     }
 
@@ -67,8 +70,8 @@ class Timestamp implements SerializableInterface
     public function serialize()
     {
         return [
-            'startDate' => $this->startDate->format('c'),
-            'endDate' => $this->endDate->format('c'),
+            'startDate' => $this->startDate->format(DateTime::ATOM),
+            'endDate' => $this->endDate->format(DateTime::ATOM),
         ];
     }
 }

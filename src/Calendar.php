@@ -6,6 +6,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use DateTimeInterface;
+use ValueObjects\DateTime\Date;
 
 /**
  * Calendar for events and places.
@@ -57,7 +58,10 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         array $timestamps = array(),
         array $openingHours = array()
     ) {
-        if (($type->is(CalendarType::MULTIPLE()) || $type->is(CalendarType::SINGLE())) && isNull($startDate)) {
+        if (
+            ($type->is(CalendarType::MULTIPLE()) || $type->is(CalendarType::SINGLE()))
+            && empty($startDate)
+        ) {
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
         }
 
@@ -92,10 +96,10 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
           'type' => $this->getType()->toNative(),
         ];
 
-        isNull($this->startDate) ?: $calendar['startDate'] = $this->startDate;
-        isNull($this->endDate) ?: $calendar['endDate'] = $this->endDate;
-        isEmpty($serializedTimestamps) ?: $calendar['timestamps'] = $serializedTimestamps;
-        isEmpty($this->openingHours) ?: $calendar['openingHours'] = $this->openingHours;
+        empty($this->startDate) ?: $calendar['startDate'] = $this->startDate->format(DateTime::ATOM);
+        empty($this->endDate) ?: $calendar['endDate'] = $this->endDate->format(DateTime::ATOM);
+        empty($serializedTimestamps) ?: $calendar['timestamps'] = $serializedTimestamps;
+        empty($this->openingHours) ?: $calendar['openingHours'] = $this->openingHours;
 
         return $calendar;
     }
@@ -107,15 +111,15 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     {
         return new static(
             CalendarType::fromNative($data['type']),
-            isset($data['startDate']) ? DateTime::createFromFormat('c', $data['startDate']) : null,
-            isset($data['endDate']) ? DateTime::createFromFormat('c', $data['endDate']) : null,
-            isset($data['timestamps']) ? array_map(
-                function (Timestamp $timestamp) {
-                    return $timestamp->serialize();
+            !empty($data['startDate']) ? DateTime::createFromFormat(DateTime::ATOM, $data['startDate']) : null,
+            !empty($data['endDate']) ? DateTime::createFromFormat(DateTime::ATOM, $data['endDate']) : null,
+            !empty($data['timestamps']) ? array_map(
+                function ($timestamp) {
+                    return Timestamp::deserialize($timestamp);
                 },
                 $data['timestamps']
             ) : [],
-            isset($data['openingHours']) ? $data['openingHours'] : []
+            !empty($data['openingHours']) ? $data['openingHours'] : []
         );
     }
 
@@ -163,8 +167,8 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         // One timestamp - full day.
         // One timestamp - start hour.
         // One timestamp - start and end hour.
-        isNull($this->startDate) ?: $jsonLd['startDate'] = $this->startDate;
-        isNull($this->endDate) ?: $jsonLd['endDate'] = $this->startDate;
+        empty($this->startDate) ?: $jsonLd['startDate'] = $this->startDate->format(DateTime::ATOM);
+        empty($this->endDate) ?: $jsonLd['endDate'] = $this->endDate->format(DateTime::ATOM);
 
 
         $timestamps = $this->getTimestamps();
@@ -173,8 +177,8 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             foreach ($timestamps as $timestamp) {
                 $jsonLd['subEvent'][] = array(
                   '@type' => 'Event',
-                  'startDate' => $timestamp->getStartDate(),
-                  'endDate' => $timestamp->getEndDate(),
+                  'startDate' => $timestamp->getStartDate()->format(DateTime::ATOM),
+                  'endDate' => $timestamp->getEndDate()->format(DateTime::ATOM),
                 );
             }
         }

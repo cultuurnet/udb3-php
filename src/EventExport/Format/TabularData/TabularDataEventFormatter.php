@@ -64,7 +64,7 @@ class TabularDataEventFormatter
     protected function formatDate($date)
     {
         $timezone = new \DateTimeZone('Europe/Brussels');
-        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, $date, $timezone);
+        $datetime = \DateTime::createFromFormat(\DateTime::ATOM, $date, $timezone);
         return $datetime->format('Y-m-d H:i');
     }
 
@@ -75,7 +75,7 @@ class TabularDataEventFormatter
     protected function formatDateWithoutTime($date)
     {
         $timezone = new \DateTimeZone('Europe/Brussels');
-        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, $date, $timezone);
+        $datetime = \DateTime::createFromFormat(\DateTime::ATOM, $date, $timezone);
         return $datetime->format('Y-m-d');
     }
 

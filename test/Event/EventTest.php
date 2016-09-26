@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
@@ -72,7 +73,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('permanent', '', '')
+            new Calendar(CalendarType::PERMANENT())
         );
     }
 
@@ -100,7 +101,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar('permanent', '', '')
+            new Calendar(CalendarType::PERMANENT())
         );
     }
 

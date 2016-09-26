@@ -38,7 +38,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         $this->calendar = new Calendar(
             CalendarType::MULTIPLE(),
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
-                DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
             array(
                 self::TIMESTAMP_1 => $timestamp1,
                 self::TIMESTAMP_2 => $timestamp2
@@ -50,13 +50,13 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider calendarTypesWithStartDateProvider
      * @param CalendarType $calendarType
-     * @param DateTimeInterface|null $startDate
      * @param string $expectedMessage
+     * @param DateTimeInterface|null $startDate
      */
     public function it_should_expect_a_start_date_for_some_calendar_types(
-      CalendarType $calendarType,
-      DateTimeInterface $startDate = null,
-      $expectedMessage
+        CalendarType $calendarType,
+        $expectedMessage,
+        DateTimeInterface $startDate = null
     ) {
         $this->setExpectedException(UnexpectedValueException::class, $expectedMessage);
         new Calendar($calendarType, $startDate);
@@ -67,13 +67,13 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         return [
             'for MULTIPLE calendar type' => [
                 'calendarType' => CalendarType::MULTIPLE(),
+                'expectedMessage' => 'Start date can not be empty for calendar type: multiple.',
                 'startDate' => null,
-                'expectedMessage' => 'Start date can not be empty for calendar type: multiple.'
             ],
             'for SINGLE calendar type' => [
                 'calendarType' => CalendarType::SINGLE(),
+                'expectedMessage' => 'Start date can not be empty for calendar type: single.',
                 'startDate' => null,
-                'expectedMessage' => 'Start date can not be empty for calendar type: single.'
             ],
         ];
     }
@@ -90,5 +90,66 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         $deserialized = Calendar::deserialize($jsonDecoded);
 
         $this->assertEquals($this->calendar, $deserialized);
+    }
+
+    /**
+     * @test
+     * @dataProvider jsonldCalendarProvider
+     */
+    public function it_should_generate_the_expected_json_for_a_calendar_of_each_type(
+        Calendar $calendar,
+        $jsonld
+    ) {
+        $this->assertEquals($jsonld, $calendar->toJsonLd());
+    }
+
+    public function jsonldCalendarProvider()
+    {
+        return [
+            'single' => [
+                'calendar' => new Calendar(
+                    CalendarType::SINGLE(),
+                    DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+                    DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
+                ),
+                'jsonld' => [
+                    'calendarType' => 'single',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2016-03-13T12:00:00+01:00',
+                ]
+            ],
+            'multiple' => [
+                'calendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+                    DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
+                ),
+                'jsonld' => [
+                    'calendarType' => 'multiple',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2016-03-13T12:00:00+01:00',
+                ]
+            ],
+            'periodic' => [
+                'calendar' => new Calendar(
+                    CalendarType::PERIODIC(),
+                    DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+                    DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
+                ),
+                'jsonld' => [
+                    'calendarType' => 'periodic',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2016-03-13T12:00:00+01:00',
+                ]
+            ],
+            'permanent' => [
+                'calendar' => new Calendar(
+                    CalendarType::PERMANENT()
+                ),
+                'jsonld' => [
+                    'calendarType' => 'permanent',
+                ]
+            ],
+        ];
     }
 }

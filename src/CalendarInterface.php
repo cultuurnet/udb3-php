@@ -1,6 +1,7 @@
 <?php
 
 namespace CultuurNet\UDB3;
+
 use DateTimeInterface;
 
 /**

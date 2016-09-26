@@ -58,10 +58,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         array $timestamps = array(),
         array $openingHours = array()
     ) {
-        if (
-            ($type->is(CalendarType::MULTIPLE()) || $type->is(CalendarType::SINGLE()))
-            && empty($startDate)
-        ) {
+        if (($type->is(CalendarType::MULTIPLE()) || $type->is(CalendarType::SINGLE())) && empty($startDate)) {
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
         }
 
@@ -167,8 +164,8 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         // One timestamp - full day.
         // One timestamp - start hour.
         // One timestamp - start and end hour.
-        empty($this->startDate) ?: $jsonLd['startDate'] = $this->startDate->format(DateTime::ATOM);
-        empty($this->endDate) ?: $jsonLd['endDate'] = $this->endDate->format(DateTime::ATOM);
+        empty($this->startDate) ?: $jsonLd['startDate'] = $this->getStartDate()->format(DateTime::ATOM);
+        empty($this->endDate) ?: $jsonLd['endDate'] = $this->getEndDate()->format(DateTime::ATOM);
 
 
         $timestamps = $this->getTimestamps();

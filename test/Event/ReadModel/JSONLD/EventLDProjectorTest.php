@@ -1151,8 +1151,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
         $calendar = new Calendar(
             CalendarType::SINGLE(),
-            \DateTime::createFromFormat(\DateTime::ATOM,'2015-01-26T13:25:21+01:00'),
-            \DateTime::createFromFormat(\DateTime::ATOM,'2015-02-26T13:25:21+01:00')
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-02-26T13:25:21+01:00')
         );
         $theme = new Theme('123', 'theme label');
         $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $location, $calendar, $theme);

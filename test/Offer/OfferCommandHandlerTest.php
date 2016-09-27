@@ -313,6 +313,23 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_does_not_update_price_info_if_there_were_no_changes()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                    new PriceInfoUpdated($this->id, $this->priceInfo),
+                ]
+            )
+            ->when(new UpdatePriceInfo($this->id, $this->priceInfo))
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
     public function it_ignores_price_info_commands_from_incorrect_namespace()
     {
         $this->scenario

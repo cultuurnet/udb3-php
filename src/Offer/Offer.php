@@ -75,6 +75,11 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $rejectedReason;
 
     /**
+     * @var PriceInfo
+     */
+    protected $priceInfo;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -229,9 +234,19 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function updatePriceInfo(PriceInfo $priceInfo)
     {
-        $this->apply(
-            $this->createPriceInfoUpdatedEvent($priceInfo)
-        );
+        if (is_null($this->priceInfo) || $priceInfo->serialize() !== $this->priceInfo->serialize()) {
+            $this->apply(
+                $this->createPriceInfoUpdatedEvent($priceInfo)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     */
+    protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
+    {
+        $this->priceInfo = $priceInfoUpdated->getPriceInfo();
     }
 
     /**

@@ -6,7 +6,6 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use DateTimeInterface;
-use ValueObjects\DateTime\Date;
 
 /**
  * Calendar for events and places.
@@ -39,11 +38,6 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     protected $openingHours = array();
 
-    const SINGLE = "single";
-    const MULTIPLE = "multiple";
-    const PERIODIC = "periodic";
-    const PERMANENT = "permanent";
-
     /**
      * @param CalendarType $type
      * @param DateTimeInterface|null $startDate
@@ -62,7 +56,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
         }
 
-        $this->type = $type;
+        $this->type = $type->toNative();
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->timestamps = $timestamps;
@@ -74,7 +68,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function getType()
     {
-        return $this->type;
+        return CalendarType::fromNative($this->type);
     }
 
     /**
@@ -90,7 +84,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         );
 
         $calendar = [
-          'type' => $this->getType()->toNative(),
+          'type' => $this->type,
         ];
 
         empty($this->startDate) ?: $calendar['startDate'] = $this->startDate->format(DateTime::ATOM);

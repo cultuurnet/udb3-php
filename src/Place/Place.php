@@ -68,7 +68,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param string $id
      * @param Title $title
      * @param EventType $eventType
-     * @param \CultuurNet\UDB3\Address\Address $address
+     * @param Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
@@ -122,12 +122,17 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      *
      * @param Title $title
      * @param EventType $eventType
-     * @param \CultuurNet\UDB3\Address\Address $address
+     * @param Address $address
      * @param CalendarInterface $calendar
-     * @param type $theme
+     * @param Theme $theme
      */
-    public function updateMajorInfo(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
-    {
+    public function updateMajorInfo(
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
     }
 

@@ -22,12 +22,12 @@ class UpdateMajorInfo extends AbstractCommand
     /**
      * @var EventType
      */
-    private $eventType = null;
+    private $eventType;
 
     /**
-     * @var Theme
+     * @var Theme|null
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var Location
@@ -41,10 +41,10 @@ class UpdateMajorInfo extends AbstractCommand
 
     /**
      * UpdateMajorInfo constructor.
-     * @param $eventId
+     * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param \CultuurNet\UDB3\Location\Location $location
+     * @param Location $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */

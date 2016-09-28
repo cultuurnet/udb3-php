@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 
 class OrganizerCommandHandler implements CommandHandlerInterface
@@ -46,6 +47,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         return [
             DeleteOrganizer::class => 'deleteOrganizer',
+            AddLabel::class => 'addLabel'
         ];
     }
 
@@ -61,6 +63,18 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             $method = $handlers[$class];
             $this->{$method}($command);
         }
+    }
+
+    /**
+     * @param AddLabel $addLabel
+     */
+    private function addLabel(AddLabel $addLabel)
+    {
+        $organizer = $this->loadOrganizer($addLabel->getOrganizerId());
+
+        $organizer->addLabel($addLabel->getLabelId());
+
+        $this->organizerRepository->save($organizer);
     }
 
     /**

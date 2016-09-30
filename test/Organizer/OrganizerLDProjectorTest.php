@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
@@ -375,6 +376,36 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $organizerWithLabelJson = file_get_contents(__DIR__ . '/Samples/organizer_with_label.json');
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with(new JsonDocument($organizerId, $organizerWithLabelJson));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_label_removed()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $labelId = new UUID('00a91b64-e9f8-4213-a4a7-a21d633e65d6');
+
+        $organizerJson = file_get_contents(__DIR__ . '/Samples/organizer_with_label.json');
+        $this->documentRepository->method('get')
+            ->with($organizerId)
+            ->willReturn(new JsonDocument($organizerId, $organizerJson));
+
+        $labelRemoved = new LabelRemoved($organizerId, $labelId);
+        $domainMessage = new DomainMessage(
+            $labelRemoved->getOrganizerId(),
+            0,
+            new Metadata(),
+            $labelRemoved,
+            BroadwayDateTime::now()
+        );
+
+        $organizerWithLabelJson = file_get_contents(__DIR__ . '/Samples/organizer.json');
         $this->documentRepository->expects($this->once())
             ->method('save')
             ->with(new JsonDocument($organizerId, $organizerWithLabelJson));

@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
@@ -182,6 +183,35 @@ class OrganizerLDProjector extends ActorLDProjector
         $jsonLD->labels = $labels;
 
         $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param LabelRemoved $labelRemoved
+     */
+    public function applyLabelRemoved(LabelRemoved $labelRemoved)
+    {
+        $document = $this->repository->get($labelRemoved->getOrganizerId());
+        $jsonLD = $document->getBody();
+
+        if (isset($jsonLD->labels)) {
+            $labels = $jsonLD->labels;
+
+            for ($index = 0; $index < count($labels); $index++) {
+                $label = $labels[$index];
+                if ($label->uuid === $labelRemoved->getLabelId()->toNative()) {
+                    unset($labels[$index]);
+                    break;
+                }
+            }
+
+            if (count($labels) === 0) {
+                unset($jsonLD->labels);
+            } else {
+                $jsonLD->labels = $labels;
+            }
+
+            $this->repository->save($document->withBody($jsonLD));
+        }
     }
 
     /**

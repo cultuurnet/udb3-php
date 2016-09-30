@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Organizer\OrganizerLDProjector.
- */
-
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\Domain\DateTime;
@@ -18,6 +13,8 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
@@ -32,10 +29,23 @@ class OrganizerLDProjector extends ActorLDProjector
      */
     private $cdbXMLImporter;
 
+    /**
+     * @var ReadRepositoryInterface
+     */
+    private $labelRepository;
+
+    /**
+     * OrganizerLDProjector constructor.
+     * @param DocumentRepositoryInterface $repository
+     * @param IriGeneratorInterface $iriGenerator
+     * @param EventBusInterface $eventBus
+     * @param ReadRepositoryInterface $labelRepository
+     */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EventBusInterface $eventBus
+        EventBusInterface $eventBus,
+        ReadRepositoryInterface $labelRepository
     ) {
         parent::__construct(
             $repository,
@@ -44,6 +54,8 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $this->cdbXMLImporter = new CdbXMLImporter();
+
+        $this->labelRepository = $labelRepository;
     }
 
     /**
@@ -116,6 +128,9 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->repository->save($document->withBody($jsonLD));
     }
 
+    /**
+     * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+     */
     public function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
     ) {
@@ -146,6 +161,27 @@ class OrganizerLDProjector extends ActorLDProjector
         $this->publishJSONLDUpdated(
             $organizerUpdatedFromUDB2->getActorId()
         );
+    }
+
+    /**
+     * @param LabelAdded $labelAdded
+     */
+    public function applyLabelAdded(LabelAdded $labelAdded)
+    {
+        $document = $this->repository->get($labelAdded->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+        $labels = isset($jsonLD->labels) ? $jsonLD->labels : [];
+
+        $label = $this->labelRepository->getByUuid($labelAdded->getLabelId());
+        $labels[] = [
+            'uuid' => $label->getUuid()->toNative(),
+            'name' => $label->getName()->toNative()
+        ];
+
+        $jsonLD->labels = $labels;
+
+        $this->repository->save($document->withBody($jsonLD));
     }
 
     /**

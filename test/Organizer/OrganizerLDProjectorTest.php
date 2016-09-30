@@ -162,7 +162,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 new Metadata(),
                 $placeCreated,
-                DateTime::fromString($created)
+                BroadwayDateTime::fromString($created)
             )
         );
     }

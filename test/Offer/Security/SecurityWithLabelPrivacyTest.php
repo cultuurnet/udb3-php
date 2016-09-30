@@ -5,8 +5,10 @@ namespace CultuurNet\UDB3\Offer\Security;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
+use CultuurNet\UDB3\Security\LabelSecurityInterface;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\Identity\UUID;
@@ -76,7 +78,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_delegates_is_authorized_to_decoratee_when_not_a_label_command()
+    public function it_delegates_is_authorized_to_decoratee_when_not_label_security_command()
     {
         $translateTitle = new TranslateTitle(
             'cc9b975b-80e3-47db-ae77-8a930e453232',
@@ -88,6 +90,28 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
             ->with($translateTitle);
 
         $this->securityWithLabelPrivacy->isAuthorized($translateTitle);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_is_authorized_when_label_security_command()
+    {
+        $labelSecurity = $this->getMockForAbstractClass(
+            AbstractLabelCommand::class,
+            [
+                '6a475eb2-04dd-41e3-95d1-225a1cd511f1',
+                new Label('bibliotheekweek')
+            ]
+        );
+
+        $this->userIdentification->method('getId')
+            ->willReturn(new StringLiteral('82650413-baf2-4257-a25b-d25dc18999dc'));
+
+        $this->labelReadRepository->expects($this->once())
+            ->method('canUseLabel');
+
+        $this->securityWithLabelPrivacy->isAuthorized($labelSecurity);
     }
 
     /**

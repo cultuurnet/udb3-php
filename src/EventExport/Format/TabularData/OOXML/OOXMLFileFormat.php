@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\EventExport\Format\TabularData\OOXML;
 
 use CultuurNet\UDB3\EventExport\FileFormatInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\Format\TabularData\TabularDataFileWriter;
 
 class OOXMLFileFormat implements FileFormatInterface
@@ -16,11 +17,18 @@ class OOXMLFileFormat implements FileFormatInterface
     protected $include;
 
     /**
-     * @param string[] $include
+     * @var EventInfoServiceInterface;
      */
-    public function __construct($include = null)
+    protected $uitpas;
+
+    /**
+     * @param EventInfoServiceInterface|null $uitpas
+     * @param string[]|null $include
+     */
+    public function __construct($include = null, EventInfoServiceInterface $uitpas = null)
     {
         $this->include = $include;
+        $this->uitpas = $uitpas;
     }
     
     /**
@@ -38,7 +46,8 @@ class OOXMLFileFormat implements FileFormatInterface
     {
         return new TabularDataFileWriter(
             new OOXMLFileWriterFactory(),
-            $this->include
+            $this->include,
+            $this->uitpas
         );
     }
 }

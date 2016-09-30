@@ -2,6 +2,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\TabularData;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\PriceFormatter;
+use CultuurNet\UDB3\EventExport\UitpasInfoFormatter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 
 class TabularDataEventFormatter
@@ -19,12 +22,27 @@ class TabularDataEventFormatter
     protected $includedProperties;
 
     /**
-     * @param string[] $include A list of properties to include
+     * @var UitpasInfoFormatter
      */
-    public function __construct($include)
-    {
+    protected $uitpasInfoFormatter;
+
+    /**
+     * @var EventInfoServiceInterface|null
+     */
+    protected $uitpas;
+
+    /**
+     * @param string[] $include A list of properties to include
+     * @param EventInfoServiceInterface|null $uitpas
+     */
+    public function __construct(
+        array $include,
+        EventInfoServiceInterface $uitpas = null
+    ) {
         $this->htmlFilter = new StripHtmlStringFilter();
         $this->includedProperties = $this->includedOrDefaultProperties($include);
+        $this->uitpas = $uitpas;
+        $this->uitpasInfoFormatter = new UitpasInfoFormatter(new PriceFormatter(2, ',', '.', 'Gratis'));
     }
 
     public function formatHeader()
@@ -183,6 +201,38 @@ class TabularDataEventFormatter
                     }
                 },
                 'property' => 'bookingInfo'
+            ],
+            'kansentarief' => [
+                'name' => 'kansentarief',
+                'include' => function ($event) {
+                    $eventUri = $event->{'@id'};
+                    $uriParts = explode('/', $eventUri);
+                    $eventId = array_pop($uriParts);
+
+                    $uitpasInfo = $this->uitpas->getEventInfo($eventId);
+                    if ($uitpasInfo) {
+                        $uitpasInfo = $this->uitpasInfoFormatter->format($uitpasInfo);
+
+                        $cardSystems = array_reduce($uitpasInfo['prices'], function ($cardSystems, $tariff) {
+                            $cardSystem = isset($cardSystems[$tariff['cardSystem']]) ? $cardSystems[$tariff['cardSystem']] : '';
+                            $cardSystem = empty($cardSystem)
+                                ? $tariff['cardSystem'] .': € ' . $tariff['price']
+                                : $cardSystem . ' / € ' . $tariff['price'];
+
+                            $cardSystems[$tariff['cardSystem']] = $cardSystem;
+                            return $cardSystems;
+                        }, []);
+
+                        $formattedTariffs = array_reduce($cardSystems, function ($tariffs, $cardSystemPrices) {
+                            return $tariffs ? $tariffs . ' | ' . $cardSystemPrices : $cardSystemPrices;
+                        });
+
+                        if (!empty($formattedTariffs)) {
+                            return $formattedTariffs;
+                        }
+                    }
+                },
+                'property' => 'kansentarief'
             ],
             'bookingInfo.url' => [
                 'name' => 'ticket link',

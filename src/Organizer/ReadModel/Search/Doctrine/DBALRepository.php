@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Organizer\ReadModel\Search\Doctrine;
 
-use CultuurNet\UDB3\Role\ReadModel\Search\RepositoryInterface;
-use CultuurNet\UDB3\Role\ReadModel\Search\Results;
+use CultuurNet\UDB3\Organizer\ReadModel\Search\RepositoryInterface;
+use CultuurNet\UDB3\Organizer\ReadModel\Search\Results;
 use Doctrine\DBAL\Connection;
 use ValueObjects\String\String as StringLiteral;
 

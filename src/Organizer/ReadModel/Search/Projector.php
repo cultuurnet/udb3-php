@@ -44,7 +44,7 @@ class Projector implements EventListenerInterface
      * @param OrganizerDeleted $organizerDeleted
      * @param DomainMessage $domainMessage
      */
-    public function applyRoleDeleted(
+    public function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted,
         DomainMessage $domainMessage
     ) {

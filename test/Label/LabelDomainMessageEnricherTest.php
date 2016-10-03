@@ -2,19 +2,15 @@
 
 namespace CultuurNet\UDB3\Label;
 
-use Broadway\Domain\DateTime as BroaddwayDateTime;
+use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
-use CultuurNet\UDB3\Label\ValueObjects\Privacy;
-use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class LabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,42 +22,16 @@ class LabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
     private $readRepository;
 
     /**
-     * @var LabelDomainMessageEnricher|\PHPUnit_Framework_MockObject_MockObject
+     * @var LabelDomainMessageEnricher
      */
     private $enricher;
 
-    /**
-     * @var Entity
-     */
-    private $label;
-
-    /**
-     * @var DomainMessage
-     */
-    private $domainMessage;
 
     public function setUp()
     {
         $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
 
         $this->enricher = new LabelDomainMessageEnricher($this->readRepository);
-
-        $uuid = new UUID();
-
-        $this->label = new Entity(
-            $uuid,
-            new StringLiteral('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-
-        $this->domainMessage = new DomainMessage(
-            $uuid->toNative(),
-            1,
-            new Metadata(),
-            new MadeVisible($uuid),
-            BroaddwayDateTime::now()
-        );
     }
 
     /**
@@ -91,56 +61,20 @@ class LabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->enricher->supports($supported));
     }
 
-    /**
-     * @test
-     */
-    public function it_enriches_visibility_events()
+    public function it_returns_uuid_from_supported_domain_message()
     {
-        $this->mockGetByUuid($this->label);
+        $labelId = new UUID();
 
-        $expectedDomainMessage = $this->domainMessage->andMetadata(
-            new Metadata([
-                LabelDomainMessageEnricher::LABEL_NAME => $this->label->getName()
-            ])
+        $domainMessage = new DomainMessage(
+            $labelId,
+            1,
+            new Metadata(),
+            new MadeVisible($labelId),
+            BroadwayDateTime::now()
         );
 
-        $actualDomainMessage = $this->enricher->enrich($this->domainMessage);
+        $uuid = $this->enricher->getLabelUuid($domainMessage);
 
-        $this->assertEquals($expectedDomainMessage, $actualDomainMessage);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_enrich_unsupported_events()
-    {
-        $unsupported = $this->createDomainMessage($this, MadePrivate::class);
-        $enriched = $this->enricher->enrich($unsupported);
-
-        $this->assertEquals($unsupported, $enriched);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_enrich_when_label_can_not_be_resolved()
-    {
-        $this->mockGetByUuid(null);
-
-        $expectedDomainMessage = $this->domainMessage;
-
-        $actualDomainMessage = $this->enricher->enrich($this->domainMessage);
-
-        $this->assertEquals($expectedDomainMessage, $actualDomainMessage);
-    }
-
-    /**
-     * @param Entity|null $label
-     */
-    private function mockGetByUuid(Entity $label = null)
-    {
-        $this->readRepository->expects($this->once())
-            ->method('getByUuid')
-            ->willReturn($label);
+        $this->assertEquals($labelId, $uuid);
     }
 }

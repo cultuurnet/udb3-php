@@ -53,5 +53,5 @@ abstract class AbstractLabelDomainMessageEnricher implements DomainMessageEnrich
      * @param DomainMessage $domainMessage
      * @return UUID
      */
-    abstract protected function getLabelUuid(DomainMessage $domainMessage);
+    abstract public function getLabelUuid(DomainMessage $domainMessage);
 }

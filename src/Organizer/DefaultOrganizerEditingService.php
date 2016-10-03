@@ -10,6 +10,7 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
 
@@ -67,6 +68,16 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     {
         return $this->commandBus->dispatch(
             new AddLabel($organizerId, $labelId)
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeLabel($organizerId, UUID $labelId)
+    {
+        return $this->commandBus->dispatch(
+            new RemoveLabel($organizerId, $labelId)
         );
     }
 

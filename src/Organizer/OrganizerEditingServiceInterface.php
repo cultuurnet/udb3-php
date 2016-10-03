@@ -29,6 +29,12 @@ interface OrganizerEditingServiceInterface
     public function addLabel($organizerId, UUID $labelId);
 
     /**
+     * @param $organizerId
+     * @param UUID $labelId
+     */
+    public function removeLabel($organizerId, UUID $labelId);
+
+    /**
      * @param $id
      */
     public function delete($id);

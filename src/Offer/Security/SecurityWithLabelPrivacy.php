@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
-use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Security\LabelSecurityInterface;
 use CultuurNet\UDB3\Security\SecurityDecoratorBase;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
@@ -47,7 +47,7 @@ class SecurityWithLabelPrivacy extends SecurityDecoratorBase
     public function isAuthorized(AuthorizableCommandInterface $command)
     {
         if ($this->isLabelCommand($command)) {
-            /** @var AbstractLabelCommand $command */
+            /** @var LabelSecurityInterface $command */
             return $this->canUseLabel($command);
         } else {
             return parent::isAuthorized($command);
@@ -60,22 +60,55 @@ class SecurityWithLabelPrivacy extends SecurityDecoratorBase
      */
     private function isLabelCommand(AuthorizableCommandInterface $command)
     {
-        return ($command instanceof AbstractLabelCommand);
+        return ($command instanceof LabelSecurityInterface);
     }
 
     /**
-     * @param AbstractLabelCommand $command
+     * @param LabelSecurityInterface $command
      * @return bool
+     * @throws \InvalidArgumentException
      */
-    private function canUseLabel(AbstractLabelCommand $command)
+    private function canUseLabel(LabelSecurityInterface $command)
     {
+        $this->guardLabel($command);
+
         if ($this->userIdentification->isGodUser()) {
             return true;
         } else {
             return $this->labelReadRepository->canUseLabel(
                 $this->userIdentification->getId(),
-                new StringLiteral((string)$command->getLabel())
+                $this->getLabelName($command)
             );
+        }
+    }
+
+    /**
+     * @param LabelSecurityInterface $command
+     * @return StringLiteral
+     */
+    private function getLabelName(LabelSecurityInterface $command)
+    {
+        if ($command->isIdentifiedByUuid()) {
+            $label = $this->labelReadRepository->getByUuid($command->getUuid());
+            return $label->getName();
+        } else {
+            return $command->getName();
+        }
+    }
+
+    /**
+     * @param LabelSecurityInterface $command
+     * @throws \InvalidArgumentException
+     */
+    private function guardLabel(LabelSecurityInterface $command)
+    {
+        if ($command->isIdentifiedByUuid()) {
+            $label = $this->labelReadRepository->getByUuid($command->getUuid());
+            if ($label === null) {
+                throw new \InvalidArgumentException(
+                    'Did not find a label with uuid: ' . $command->getUuid()->toNative()
+                );
+            }
         }
     }
 }

@@ -65,7 +65,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonPlaceFromCdbXml('place_with_long_description.cdbxml.xml');
 
-        $this->assertEquals(WorkflowStatus::READY_FOR_VALIDATION, $jsonEvent->workflowStatus);
+        $this->assertEquals('READY_FOR_VALIDATION', $jsonEvent->workflowStatus);
     }
 
     /**
@@ -75,7 +75,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonPlaceFromCdbXml('place_with_image.cdbxml.xml');
 
-        $this->assertEquals(WorkflowStatus::APPROVED, $jsonEvent->workflowStatus);
+        $this->assertEquals('APPROVED', $jsonEvent->workflowStatus);
     }
 
     /**

@@ -431,44 +431,82 @@ class TabularDataEventFormatter
             'contactPoint.email' => [
                 'name' => 'e-mail',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event);
-                    if (property_exists($contact, 'email')) {
-                        return implode("\r\n", $contact->email);
-                    }
+                    return $this->listContactPointProperty(
+                        $contactPoint($event),
+                        'email'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.telephone' => [
                 'name' => 'telefoon',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event);
-                    if (property_exists($contact, 'telephone')) {
-                        return implode("\r\n", $contact->telephone);
-                    }
+                    return $this->listContactPointProperty(
+                        $contactPoint($event),
+                        'telephone'
+                    );
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.url' => [
+                'name' => 'url',
+                'include' => function ($event) use ($contactPoint) {
+                    return $this->listContactPointProperty(
+                        $contactPoint($event),
+                        'url'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.email' => [
                 'name' => 'e-mail reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event, 'Reservations');
-                    if (property_exists($contact, 'email')) {
-                        return implode("\r\n", $contact->email);
-                    }
+                    return $this->listContactPointProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'email'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.telephone' => [
                 'name' => 'telefoon reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event, 'Reservations');
-                    if (property_exists($contact, 'telephone')) {
-                        return implode("\r\n", $contact->telephone);
-                    }
+                    return $this->listContactPointProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'telephone'
+                    );
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.reservations.url' => [
+                'name' => 'online reservaties',
+                'include' => function ($event) use ($contactPoint) {
+                    return $this->listContactPointProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'url'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
         ];
+    }
+
+    /**
+     * @param object $contactPoint
+     *  An object that contains the contact point info.
+     *
+     * @param string $propertyName
+     *  The name of the property that contains an array of values.
+     *
+     * @return string
+     */
+    private function listContactPointProperty($contactPoint, $propertyName)
+    {
+        if (property_exists($contactPoint, $propertyName)) {
+            return implode("\r\n", $contactPoint->{$propertyName});
+        } else {
+            return '';
+        }
     }
 
     /**

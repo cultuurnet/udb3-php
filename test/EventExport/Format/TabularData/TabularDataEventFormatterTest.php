@@ -293,4 +293,28 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
     }
+
+
+    /**
+     * @test
+     */
+    public function it_should_format_contact_and_reservation_urls_when_included_for_export()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.url',
+            'contactPoint.reservations.url'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_contact_and_reservation_urls.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"4e24ac6e-8b95-4be6-b2e7-1892869adde3",
+            "contactPoint.url" => "http://du.de\r\nhttp://foo.bar",
+            "contactPoint.reservations.url" => "http://du.de\r\nhttp://foo.bar",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
 }

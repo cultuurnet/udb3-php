@@ -61,6 +61,9 @@ class LabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->enricher->supports($supported));
     }
 
+    /**
+     * @test
+     */
     public function it_returns_uuid_from_supported_domain_message()
     {
         $labelId = new UUID();

@@ -397,6 +397,9 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->handle($domainMessage);
     }
 
+    /**
+     * @return array
+     */
     public function labelRemovedDataProvider()
     {
         return [
@@ -409,6 +412,50 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 new UUID('8e382f93-843b-4e7a-af9a-5cf213df5b9a'),
                 'organizer_with_multiple_labels.json',
                 'organizer_with_label.json'
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider labelRepositoryDataProvider
+     * @param DomainMessage $domainMessage
+     */
+    public function it_throws_for_label_events_without_label_repository(
+        DomainMessage $domainMessage
+    ) {
+        $organizerLDProjector = new OrganizerLDProjector(
+            $this->documentRepository,
+            $this->iriGenerator,
+            $this->eventBus
+        );
+
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'A label repository is needed for the labelling events.'
+        );
+
+        $organizerLDProjector->handle($domainMessage);
+    }
+
+    /**
+     * @return array
+     */
+    public function labelRepositoryDataProvider()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $labelId = new UUID('00a91b64-e9f8-4213-a4a7-a21d633e65d6');
+
+        return [
+            [
+                $this->createDomainMessage(
+                    new LabelAdded($organizerId, $labelId)
+                )
+            ],
+            [
+                $this->createDomainMessage(
+                    new LabelRemoved($organizerId, $labelId)
+                )
             ]
         ];
     }

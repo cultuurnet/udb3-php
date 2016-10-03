@@ -40,13 +40,13 @@ class OrganizerLDProjector extends ActorLDProjector
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventBusInterface $eventBus
-     * @param ReadRepositoryInterface $labelRepository
+     * @param ReadRepositoryInterface|null $labelRepository
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EventBusInterface $eventBus,
-        ReadRepositoryInterface $labelRepository
+        ReadRepositoryInterface $labelRepository = null
     ) {
         parent::__construct(
             $repository,
@@ -169,6 +169,8 @@ class OrganizerLDProjector extends ActorLDProjector
      */
     public function applyLabelAdded(LabelAdded $labelAdded)
     {
+        $this->guardLabelRepository();
+
         $document = $this->repository->get($labelAdded->getOrganizerId());
 
         $jsonLD = $document->getBody();
@@ -190,6 +192,8 @@ class OrganizerLDProjector extends ActorLDProjector
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
+        $this->guardLabelRepository();
+
         $document = $this->repository->get($labelRemoved->getOrganizerId());
         $jsonLD = $document->getBody();
 
@@ -259,5 +263,15 @@ class OrganizerLDProjector extends ActorLDProjector
         $organizerLd->{'@context'} = '/api/1.0/organizer.jsonld';
 
         return $document->withBody($organizerLd);
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    private function guardLabelRepository()
+    {
+        if ($this->labelRepository === null) {
+            throw new \InvalidArgumentException('A label repository is needed for the labelling events.');
+        }
     }
 }

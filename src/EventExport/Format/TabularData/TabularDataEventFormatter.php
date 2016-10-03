@@ -497,18 +497,18 @@ class TabularDataEventFormatter
     }
 
     /**
-     * @param object $contactPoint
-     *  An object that contains the contact point info.
+     * @param object $jsonldData
+     *  An object that contains the jsonld data.
      *
      * @param string $propertyName
      *  The name of the property that contains an array of values.
      *
      * @return string
      */
-    private function listJsonldProperty($contactPoint, $propertyName)
+    private function listJsonldProperty($jsonldData, $propertyName)
     {
-        if (property_exists($contactPoint, $propertyName)) {
-            return implode("\r\n", $contactPoint->{$propertyName});
+        if (property_exists($jsonldData, $propertyName)) {
+            return implode("\r\n", $jsonldData->{$propertyName});
         } else {
             return '';
         }

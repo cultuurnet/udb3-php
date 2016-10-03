@@ -314,6 +314,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->assertEquals('Invoerders Algemeen ', $body->publisher);
         $this->assertEquals('Vuur, vakmanschap en', $body->name->nl);
         $this->assertContains('764066ab-826f-48c2-897d-a329ebce953f', $body->{'@id'});
+        $this->assertEquals('APPROVED', $body->workflowStatus);
     }
 
     /**

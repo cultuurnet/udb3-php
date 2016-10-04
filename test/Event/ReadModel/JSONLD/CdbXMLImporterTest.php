@@ -381,6 +381,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
 
-        $this->assertEquals(WorkflowStatus::APPROVED, $jsonEvent->workflowStatus);
+        $this->assertEquals('APPROVED', $jsonEvent->workflowStatus);
     }
 }

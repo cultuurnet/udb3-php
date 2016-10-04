@@ -3,16 +3,32 @@
 namespace CultuurNet\UDB3\PriceInfo;
 
 use ValueObjects\Exception\InvalidNativeArgumentException;
-use ValueObjects\Number\Real;
+use ValueObjects\Number\Natural;
 
-class Price extends Real
+/**
+ * Price expressed in its lowest unit, eg cents.
+ */
+class Price extends Natural
 {
-    public function __construct($value)
+    /**
+     * @param float $value
+     * @return Price
+     */
+    public static function fromFloat($value)
     {
-        parent::__construct($value);
-
-        if ($value < 0) {
-            throw new InvalidNativeArgumentException($value, ['float (>=0)']);
+        if (!is_float($value)) {
+            throw new InvalidNativeArgumentException($value, ['float']);
         }
+
+        $precision = 0;
+        return new Price((int) round($value * 100, $precision));
+    }
+
+    /**
+     * @return float
+     */
+    public function toFloat()
+    {
+        return $this->toNative() / 100;
     }
 }

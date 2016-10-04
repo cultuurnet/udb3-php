@@ -225,7 +225,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $priceInfo = new PriceInfo(
             new BasePrice(
-                new Price(10.5),
+                Price::fromFloat(10.5),
                 Currency::fromNative('EUR')
             )
         );

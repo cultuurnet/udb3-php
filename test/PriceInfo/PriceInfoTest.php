@@ -13,7 +13,7 @@ class PriceInfoTest extends \PHPUnit_Framework_TestCase
     private $basePrice;
 
     /**
-     * @var Tariffs
+     * @var Tariff[]
      */
     private $tariffs;
 
@@ -25,7 +25,7 @@ class PriceInfoTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->basePrice = new BasePrice(
-            new Price(10.5),
+            Price::fromFloat(10.5),
             Currency::fromNative('EUR')
         );
 

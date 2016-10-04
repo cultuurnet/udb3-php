@@ -41,6 +41,6 @@ class ItemCreated implements SerializableInterface
      */
     public function serialize()
     {
-        return array('itemId' => $this->itemId);
+        return ['itemId' => $this->itemId];
     }
 }

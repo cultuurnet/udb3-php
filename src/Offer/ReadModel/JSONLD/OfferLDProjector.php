@@ -31,6 +31,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -213,6 +214,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getTypicalAgeRangeDeletedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getPublishedClassName();
 
     /**
      * @return string
@@ -583,6 +589,16 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         unset($offerLd->typicalAgeRange);
 
         $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->applyEventTransformation($published, function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+        });
     }
 
     /**

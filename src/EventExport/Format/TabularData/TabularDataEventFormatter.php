@@ -104,8 +104,10 @@ class TabularDataEventFormatter
             'contactPoint' => [
                 'contactPoint.email',
                 'contactPoint.telephone',
+                'contactPoint.url',
                 'contactPoint.reservations.email',
                 'contactPoint.reservations.telephone',
+                'contactPoint.reservations.url',
             ],
             'bookingInfo' => [
                 'bookingInfo.price',
@@ -431,44 +433,85 @@ class TabularDataEventFormatter
             'contactPoint.email' => [
                 'name' => 'e-mail',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event);
-                    if (property_exists($contact, 'email')) {
-                        return implode("\r\n", $contact->email);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event),
+                        'email'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.telephone' => [
                 'name' => 'telefoon',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event);
-                    if (property_exists($contact, 'telephone')) {
-                        return implode("\r\n", $contact->telephone);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event),
+                        'telephone'
+                    );
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.url' => [
+                'name' => 'url',
+                'include' => function ($event) use ($contactPoint) {
+                    $contactUrls = $this->listJsonldProperty(
+                        $contactPoint($event),
+                        'url'
+                    );
+                    $seeAlsoUrls = $this->listJsonldProperty($event, 'seeAlso');
+                    $urls = array_filter([$contactUrls, $seeAlsoUrls]);
+                    return implode("\r\n", $urls);
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.email' => [
                 'name' => 'e-mail reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event, 'Reservations');
-                    if (property_exists($contact, 'email')) {
-                        return implode("\r\n", $contact->email);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'email'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.telephone' => [
                 'name' => 'telefoon reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event, 'Reservations');
-                    if (property_exists($contact, 'telephone')) {
-                        return implode("\r\n", $contact->telephone);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'telephone'
+                    );
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.reservations.url' => [
+                'name' => 'online reservaties',
+                'include' => function ($event) use ($contactPoint) {
+                    return $this->listJsonldProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'url'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
         ];
+    }
+
+    /**
+     * @param object $jsonldData
+     *  An object that contains the jsonld data.
+     *
+     * @param string $propertyName
+     *  The name of the property that contains an array of values.
+     *
+     * @return string
+     */
+    private function listJsonldProperty($jsonldData, $propertyName)
+    {
+        if (property_exists($jsonldData, $propertyName)) {
+            return implode("\r\n", $jsonldData->{$propertyName});
+        } else {
+            return '';
+        }
     }
 
     /**

@@ -293,4 +293,53 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_format_contact_and_reservation_urls_when_included_for_export()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.url',
+            'contactPoint.reservations.url'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_contact_and_reservation_urls.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"4e24ac6e-8b95-4be6-b2e7-1892869adde3",
+            "contactPoint.url" => "http://du.de\r\nhttp://foo.bar\r\nhttp://www.debijloke.be/concerts/karbido-ensemble",
+            "contactPoint.reservations.url" => "http://du.de\r\nhttp://foo.bar",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_format_seeAlso_urls_imported_from_udb2_when_contact_info_is_included()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_see_also_imported_from_udb2.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            'id' => 'b68fddc3-3b85-4e8e-83bc-600ace8eb558',
+            'contactPoint.url' => 'http://denegger.be',
+            'contactPoint.email' => 'info@denegger.be',
+            'contactPoint.telephone' => '013460650',
+            'contactPoint.reservations.email' => '',
+            'contactPoint.reservations.telephone' => '',
+            'contactPoint.reservations.url' => '',
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
 }

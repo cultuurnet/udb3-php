@@ -8,9 +8,12 @@ use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use ValueObjects\Identity\UUID;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
@@ -94,6 +97,40 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($expectedUuid, $organizerId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_a_add_label_command()
+    {
+        $organizerId = 'organizerId';
+        $labelId = new UUID();
+
+        $expectedAddLabel = new AddLabel($organizerId, $labelId);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedAddLabel);
+
+        $this->service->addLabel($organizerId, $labelId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_a_remove_label_command()
+    {
+        $organizerId = 'organizerId';
+        $labelId = new UUID();
+
+        $expectedRemoveLabel = new RemoveLabel($organizerId, $labelId);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedRemoveLabel);
+
+        $this->service->removeLabel($organizerId, $labelId);
     }
 
     /**

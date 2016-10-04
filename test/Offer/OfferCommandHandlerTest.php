@@ -14,12 +14,22 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Publish;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ItemCommandHandler;
 use CultuurNet\UDB3\Offer\Item\ItemRepository;
@@ -269,5 +279,75 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new TranslateDescriptionOnSomethingElse($this->id, $this->language, $this->description)
             )
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_approve_command_on_ready_for_validation_item()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given([
+                $this->itemCreated,
+                new Published($this->id)
+            ])
+            ->when(new Approve($this->id))
+            ->then([
+                new Approved($this->id)
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_flag_as_duplicate_command_on_ready_for_validation_item()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given([
+                $this->itemCreated,
+                new Published($this->id)
+            ])
+            ->when(new FlagAsDuplicate($this->id))
+            ->then([
+                new FlaggedAsDuplicate($this->id)
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_flag_as_inappropriate_command_on_ready_for_validation_item()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given([
+                $this->itemCreated,
+                new Published($this->id)
+            ])
+            ->when(new FlagAsInappropriate($this->id))
+            ->then([
+                new FlaggedAsInappropriate($this->id)
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_reject_command_on_ready_for_validation_item()
+    {
+        $reason = new String('reject reason');
+
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given([
+                $this->itemCreated,
+                new Published($this->id)
+            ])
+            ->when(new Reject($this->id, $reason))
+            ->then([
+                new Rejected($this->id, $reason)
+            ]);
     }
 }

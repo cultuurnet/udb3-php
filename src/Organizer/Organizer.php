@@ -5,6 +5,8 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
@@ -12,6 +14,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
+use ValueObjects\Identity\UUID;
 
 class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
@@ -21,6 +24,11 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * @var string
      */
     protected $actorId;
+
+    /**
+     * @var UUID[]
+     */
+    private $labelIds = [];
 
     /**
      * {@inheritdoc}
@@ -85,6 +93,26 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         return $organizer;
     }
 
+    /**
+     * @param UUID $labelId
+     */
+    public function addLabel(UUID $labelId)
+    {
+        if (!in_array($labelId, $this->labelIds)) {
+            $this->apply(new LabelAdded($this->actorId, $labelId));
+        }
+    }
+
+    /**
+     * @param UUID $labelId
+     */
+    public function removeLabel(UUID $labelId)
+    {
+        if (in_array($labelId, $this->labelIds)) {
+            $this->apply(new LabelRemoved($this->actorId, $labelId));
+        }
+    }
+
     public function delete()
     {
         $this->apply(
@@ -114,6 +142,23 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         OrganizerImportedFromUDB2 $organizerImported
     ) {
         $this->actorId = (string) $organizerImported->getActorId();
+    }
+
+    /**
+     * @param LabelAdded $labelAdded
+     */
+    public function applyLabelAdded(LabelAdded $labelAdded)
+    {
+        $this->labelIds[] = $labelAdded->getLabelId();
+    }
+
+    /**
+     * @param LabelRemoved $labelRemoved
+     */
+    public function applyLabelRemoved(LabelRemoved $labelRemoved)
+    {
+        $labelId = $labelRemoved->getLabelId();
+        $this->labelIds = array_diff($this->labelIds, [$labelId]);
     }
 
     /**

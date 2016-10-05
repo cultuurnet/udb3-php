@@ -22,15 +22,15 @@ class OOXMLFileFormat implements FileFormatInterface
     protected $uitpas;
 
     /**
-     * @param EventInfoServiceInterface|null $uitpas
      * @param string[]|null $include
+     * @param EventInfoServiceInterface|null $uitpas
      */
     public function __construct($include = null, EventInfoServiceInterface $uitpas = null)
     {
         $this->include = $include;
         $this->uitpas = $uitpas;
     }
-    
+
     /**
      * @inheritdoc
      */

@@ -16,7 +16,6 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\Has4Taaliconen;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasUiTPASBrand;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications\HasVliegBrand;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
-use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 use CultuurNet\UDB3\EventExport\PriceFormatter;
 use CultuurNet\UDB3\EventExport\UitpasInfoFormatter;
@@ -64,6 +63,7 @@ class HTMLEventFormatter
 
     /**
      * @param EventInfoServiceInterface|null $uitpas
+     * @param CalendarRepositoryInterface $calendarRepository
      */
     public function __construct(
         EventInfoServiceInterface $uitpas = null,

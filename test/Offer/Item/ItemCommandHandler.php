@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
@@ -110,6 +111,11 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getDeleteOfferClassName()
     {
         return DeleteItem::class;
+    }
+
+    protected function getPublishClassName()
+    {
+        return Publish::class;
     }
 
     protected function getApproveClassName()

@@ -3,6 +3,10 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\TabularData;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+
 class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -289,6 +293,157 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         $expectedFormatting = array(
             'id' =>'ee7c4030-d69f-4584-b0f2-a700955c7df2',
             'description' => $expectedDescription
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     * @dataProvider kansentariefEventInfoProvider
+     * @param EventInfo $eventInfo
+     * @param array $expectedFormatting
+     */
+    public function it_should_add_a_kansentarief_column_when_kansentarief_is_included(
+        EventInfo $eventInfo,
+        array $expectedFormatting
+    ) {
+        $eventInfoService = $this->getMock(EventInfoServiceInterface::class);
+        $eventInfoService
+            ->method('getEventInfo')
+            ->willReturn($eventInfo);
+
+        $includedProperties = [
+            'id',
+            'kansentarief'
+        ];
+
+        $eventWithTerms = $this->getJSONEventFromFile('event_with_price.json');
+        $formatter = new TabularDataEventFormatter($includedProperties, $eventInfoService);
+        $formattedEvent = $formatter->formatEvent($eventWithTerms);
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    public function it_should_format_contact_and_reservation_urls_when_included_for_export()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint.url',
+            'contactPoint.reservations.url'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_contact_and_reservation_urls.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            "id" =>"4e24ac6e-8b95-4be6-b2e7-1892869adde3",
+            "contactPoint.url" => "http://du.de\r\nhttp://foo.bar\r\nhttp://www.debijloke.be/concerts/karbido-ensemble",
+            "contactPoint.reservations.url" => "http://du.de\r\nhttp://foo.bar",
+        );
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    public function kansentariefEventInfoProvider()
+    {
+        return [
+            'one card system , single tariff' => [
+                'eventInfo' => new EventInfo(
+                    [
+                        [
+                            'price' => '1.5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ]
+                    ],
+                    [
+                        EventAdvantage::KANSENTARIEF()
+                    ],
+                    [
+                        '12 punten: Een voordeel van 12 punten.'
+                    ]
+                ),
+                'expectedFormatting' => [
+                    "id" => "d1f0e71d-a9a8-4069-81fb-530134502c58",
+                    "kansentarief" => "UiTPAS Regio Aalst: € 1,5",
+                ]
+            ],
+            'one card system , multiple tariffs' => [
+                'eventInfo' => new EventInfo(
+                    [
+                        [
+                            'price' => '1.5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ],
+                        [
+                            'price' => '5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ]
+                    ],
+                    [
+                        EventAdvantage::KANSENTARIEF()
+                    ],
+                    [
+                        '12 punten: Een voordeel van 12 punten.'
+                    ]
+                ),
+                'expectedFormatting' => [
+                    "id" => "d1f0e71d-a9a8-4069-81fb-530134502c58",
+                    "kansentarief" => "UiTPAS Regio Aalst: € 1,5 / € 5",
+                ]
+            ],
+            'multiple card systems , multiple tariffs' => [
+                'eventInfo' => new EventInfo(
+                    [
+                        [
+                            'price' => '1.5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ],
+                        [
+                            'price' => '5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ],
+                        [
+                            'price' => '0.50',
+                            'cardSystem' => 'UiTPAS Regio Diest'
+                        ]
+                    ],
+                    [
+                        EventAdvantage::KANSENTARIEF()
+                    ],
+                    [
+                        '12 punten: Een voordeel van 12 punten.'
+                    ]
+                ),
+                'expectedFormatting' => [
+                    "id" => "d1f0e71d-a9a8-4069-81fb-530134502c58",
+                    "kansentarief" => "UiTPAS Regio Aalst: € 1,5 / € 5 | UiTPAS Regio Diest: € 0,5",
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_format_seeAlso_urls_imported_from_udb2_when_contact_info_is_included()
+    {
+        $includedProperties = [
+            'id',
+            'contactPoint'
+        ];
+        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_see_also_imported_from_udb2.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+        $expectedFormatting = array(
+            'id' => 'b68fddc3-3b85-4e8e-83bc-600ace8eb558',
+            'contactPoint.url' => 'http://denegger.be',
+            'contactPoint.email' => 'info@denegger.be',
+            'contactPoint.telephone' => '013460650',
+            'contactPoint.reservations.email' => '',
+            'contactPoint.reservations.telephone' => '',
+            'contactPoint.reservations.url' => '',
         );
 
         $this->assertEquals($expectedFormatting, $formattedEvent);

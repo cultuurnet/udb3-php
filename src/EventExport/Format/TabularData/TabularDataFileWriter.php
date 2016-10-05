@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\EventExport\Format\TabularData;
 
 use CultuurNet\UDB3\EventExport\FileWriterInterface;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
 
 class TabularDataFileWriter implements FileWriterInterface
 {
@@ -26,10 +27,11 @@ class TabularDataFileWriter implements FileWriterInterface
 
     public function __construct(
         TabularDataFileWriterFactoryInterface $tabularDataFileWriterFactory,
-        $include
+        $include,
+        EventInfoServiceInterface $uitpas
     ) {
         $this->tabularDataFileWriterFactory = $tabularDataFileWriterFactory;
-        $this->eventFormatter = new TabularDataEventFormatter($include);
+        $this->eventFormatter = new TabularDataEventFormatter($include, $uitpas);
     }
 
     /**

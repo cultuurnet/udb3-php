@@ -3,6 +3,10 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\TabularData;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+
 class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -296,7 +300,31 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider kansentariefEventInfoProvider
+     * @param EventInfo $eventInfo
+     * @param array $expectedFormatting
      */
+    public function it_should_add_a_kansentarief_column_when_kansentarief_is_included(
+        EventInfo $eventInfo,
+        array $expectedFormatting
+    ) {
+        $eventInfoService = $this->getMock(EventInfoServiceInterface::class);
+        $eventInfoService
+            ->method('getEventInfo')
+            ->willReturn($eventInfo);
+
+        $includedProperties = [
+            'id',
+            'kansentarief'
+        ];
+
+        $eventWithTerms = $this->getJSONEventFromFile('event_with_price.json');
+        $formatter = new TabularDataEventFormatter($includedProperties, $eventInfoService);
+        $formattedEvent = $formatter->formatEvent($eventWithTerms);
+
+        $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
     public function it_should_format_contact_and_reservation_urls_when_included_for_export()
     {
         $includedProperties = [
@@ -315,6 +343,84 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    public function kansentariefEventInfoProvider()
+    {
+        return [
+            'one card system , single tariff' => [
+                'eventInfo' => new EventInfo(
+                    [
+                        [
+                            'price' => '1.5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ]
+                    ],
+                    [
+                        EventAdvantage::KANSENTARIEF()
+                    ],
+                    [
+                        '12 punten: Een voordeel van 12 punten.'
+                    ]
+                ),
+                'expectedFormatting' => [
+                    "id" => "d1f0e71d-a9a8-4069-81fb-530134502c58",
+                    "kansentarief" => "UiTPAS Regio Aalst: € 1,5",
+                ]
+            ],
+            'one card system , multiple tariffs' => [
+                'eventInfo' => new EventInfo(
+                    [
+                        [
+                            'price' => '1.5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ],
+                        [
+                            'price' => '5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ]
+                    ],
+                    [
+                        EventAdvantage::KANSENTARIEF()
+                    ],
+                    [
+                        '12 punten: Een voordeel van 12 punten.'
+                    ]
+                ),
+                'expectedFormatting' => [
+                    "id" => "d1f0e71d-a9a8-4069-81fb-530134502c58",
+                    "kansentarief" => "UiTPAS Regio Aalst: € 1,5 / € 5",
+                ]
+            ],
+            'multiple card systems , multiple tariffs' => [
+                'eventInfo' => new EventInfo(
+                    [
+                        [
+                            'price' => '1.5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ],
+                        [
+                            'price' => '5',
+                            'cardSystem' => 'UiTPAS Regio Aalst'
+                        ],
+                        [
+                            'price' => '0.50',
+                            'cardSystem' => 'UiTPAS Regio Diest'
+                        ]
+                    ],
+                    [
+                        EventAdvantage::KANSENTARIEF()
+                    ],
+                    [
+                        '12 punten: Een voordeel van 12 punten.'
+                    ]
+                ),
+                'expectedFormatting' => [
+                    "id" => "d1f0e71d-a9a8-4069-81fb-530134502c58",
+                    "kansentarief" => "UiTPAS Regio Aalst: € 1,5 / € 5 | UiTPAS Regio Diest: € 0,5",
+                ]
+            ],
+        ];
     }
 
     /**

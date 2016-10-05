@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
@@ -30,6 +31,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use Exception;
@@ -68,7 +70,6 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected $workflowStatus;
 
-
     /**
      * @var StringLiteral|null
      */
@@ -85,7 +86,6 @@ abstract class Offer extends EventSourcedAggregateRoot
     public function __construct()
     {
         $this->resetLabels();
-        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -361,6 +361,44 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     */
+    protected function importWorkflowStatus(CultureFeed_Cdb_Item_Base $cdbItem)
+    {
+        try {
+            $workflowStatus = WorkflowStatus::fromNative($cdbItem->getWfStatus());
+        } catch (\InvalidArgumentException $exception) {
+            $workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
+        }
+        $this->workflowStatus = $workflowStatus;
+    }
+
+    /**
+     * Publish the offer when it has workflowstatus draft.
+     */
+    public function publish()
+    {
+        $this->guardPublish() ?: $this->apply($this->createPublishedEvent());
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function guardPublish()
+    {
+        if ($this->workflowStatus === WorkflowStatus::READY_FOR_VALIDATION()) {
+            return true; // nothing left to do if the offer has already been published
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::DRAFT()) {
+            throw new Exception('You can not publish an offer that is not draft');
+        }
+
+        return false;
+    }
+
+    /**
      * Approve the offer when it's waiting for validation.
      */
     public function approve()
@@ -427,6 +465,14 @@ abstract class Offer extends EventSourcedAggregateRoot
         }
 
         return false;
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -600,6 +646,11 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractPriceInfoUpdated
      */
     abstract protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo);
+
+    /**
+     * @return AbstractPublished
+     */
+    abstract protected function createPublishedEvent();
 
     /**
      * @return AbstractApproved

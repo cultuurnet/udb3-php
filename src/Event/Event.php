@@ -32,6 +32,7 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -50,6 +51,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
@@ -314,6 +316,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
     protected function applyEventImportedFromUDB2(
@@ -342,6 +345,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCdbXML->getCdbXmlNamespaceUri(),
             $eventCdbXML->getCdbXml()
         );
+
+        $this->importWorkflowStatus($udb2Event);
 
         $this->setLabelsFromUDB2Event($udb2Event);
     }
@@ -638,6 +643,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createOfferDeletedEvent()
     {
         return new EventDeleted($this->eventId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createPublishedEvent()
+    {
+        return new Published($this->eventId);
     }
 
     /**

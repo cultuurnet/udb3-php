@@ -172,6 +172,11 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
         return DeletePlace::class;
     }
 
+    protected function getPublishClassName()
+    {
+        return Publish::class;
+    }
+
     protected function getApproveClassName()
     {
         return Approve::class;

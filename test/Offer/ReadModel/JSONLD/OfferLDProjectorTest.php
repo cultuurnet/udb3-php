@@ -24,6 +24,7 @@ use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
@@ -889,6 +890,35 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $body = $this->project($organizerDeleted, $id);
 
         $this->assertEquals(new \stdClass(), $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_the_workflow_status_when_an_offer_is_published()
+    {
+        $itemId = UUID::generateAsString();
+
+        $publishedEvent = new Published($itemId);
+        $itemDocumentReadyDraft = new JsonDocument(
+            $itemId,
+            json_encode([
+                '@id' => $itemId,
+                '@type' => 'event',
+                'workflowStatus' => 'DRAFT'
+            ])
+        );
+        $expectedItem = (object)[
+            '@id' => $itemId,
+            '@type' => 'event',
+            'workflowStatus' => 'READY_FOR_VALIDATION'
+        ];
+
+        $this->documentRepository->save($itemDocumentReadyDraft);
+
+        $approvedItem = $this->project($publishedEvent, $itemId);
+
+        $this->assertEquals($expectedItem, $approvedItem);
     }
 
     /**

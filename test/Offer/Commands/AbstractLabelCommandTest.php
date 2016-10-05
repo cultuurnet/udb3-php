@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use ValueObjects\String\String as StringLiteral;
 
 class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,5 +58,32 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
         $expectedPermission = Permission::AANBOD_BEWERKEN();
 
         $this->assertEquals($expectedPermission, $permission);
+    }
+
+    /**
+     * @test
+     */
+    public function it_is_not_identified_by_uuid()
+    {
+        $this->assertFalse($this->labelCommand->isIdentifiedByUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_use_label_name()
+    {
+        $this->assertEquals(
+            new StringLiteral('LabelTest'),
+            $this->labelCommand->getName()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_use_label_uuid()
+    {
+        $this->assertNull($this->labelCommand->getUuid());
     }
 }

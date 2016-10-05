@@ -2,6 +2,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\TabularData;
 
+use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
+use CultuurNet\UDB3\EventExport\PriceFormatter;
+use CultuurNet\UDB3\EventExport\UitpasInfoFormatter;
 use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 
 class TabularDataEventFormatter
@@ -19,12 +22,27 @@ class TabularDataEventFormatter
     protected $includedProperties;
 
     /**
-     * @param string[] $include A list of properties to include
+     * @var UitpasInfoFormatter
      */
-    public function __construct($include)
-    {
+    protected $uitpasInfoFormatter;
+
+    /**
+     * @var EventInfoServiceInterface|null
+     */
+    protected $uitpas;
+
+    /**
+     * @param string[] $include A list of properties to include
+     * @param EventInfoServiceInterface|null $uitpas
+     */
+    public function __construct(
+        array $include,
+        EventInfoServiceInterface $uitpas = null
+    ) {
         $this->htmlFilter = new StripHtmlStringFilter();
         $this->includedProperties = $this->includedOrDefaultProperties($include);
+        $this->uitpas = $uitpas;
+        $this->uitpasInfoFormatter = new UitpasInfoFormatter(new PriceFormatter(2, ',', '.', 'Gratis'));
     }
 
     public function formatHeader()
@@ -104,8 +122,10 @@ class TabularDataEventFormatter
             'contactPoint' => [
                 'contactPoint.email',
                 'contactPoint.telephone',
+                'contactPoint.url',
                 'contactPoint.reservations.email',
                 'contactPoint.reservations.telephone',
+                'contactPoint.reservations.url',
             ],
             'bookingInfo' => [
                 'bookingInfo.price',
@@ -183,6 +203,38 @@ class TabularDataEventFormatter
                     }
                 },
                 'property' => 'bookingInfo'
+            ],
+            'kansentarief' => [
+                'name' => 'kansentarief',
+                'include' => function ($event) {
+                    $eventUri = $event->{'@id'};
+                    $uriParts = explode('/', $eventUri);
+                    $eventId = array_pop($uriParts);
+
+                    $uitpasInfo = $this->uitpas->getEventInfo($eventId);
+                    if ($uitpasInfo) {
+                        $uitpasInfo = $this->uitpasInfoFormatter->format($uitpasInfo);
+
+                        $cardSystems = array_reduce($uitpasInfo['prices'], function ($cardSystems, $tariff) {
+                            $cardSystem = isset($cardSystems[$tariff['cardSystem']]) ? $cardSystems[$tariff['cardSystem']] : '';
+                            $cardSystem = empty($cardSystem)
+                                ? $tariff['cardSystem'] .': € ' . $tariff['price']
+                                : $cardSystem . ' / € ' . $tariff['price'];
+
+                            $cardSystems[$tariff['cardSystem']] = $cardSystem;
+                            return $cardSystems;
+                        }, []);
+
+                        $formattedTariffs = array_reduce($cardSystems, function ($tariffs, $cardSystemPrices) {
+                            return $tariffs ? $tariffs . ' | ' . $cardSystemPrices : $cardSystemPrices;
+                        });
+
+                        if (!empty($formattedTariffs)) {
+                            return $formattedTariffs;
+                        }
+                    }
+                },
+                'property' => 'kansentarief'
             ],
             'bookingInfo.url' => [
                 'name' => 'ticket link',
@@ -431,44 +483,85 @@ class TabularDataEventFormatter
             'contactPoint.email' => [
                 'name' => 'e-mail',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event);
-                    if (property_exists($contact, 'email')) {
-                        return implode("\r\n", $contact->email);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event),
+                        'email'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.telephone' => [
                 'name' => 'telefoon',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event);
-                    if (property_exists($contact, 'telephone')) {
-                        return implode("\r\n", $contact->telephone);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event),
+                        'telephone'
+                    );
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.url' => [
+                'name' => 'url',
+                'include' => function ($event) use ($contactPoint) {
+                    $contactUrls = $this->listJsonldProperty(
+                        $contactPoint($event),
+                        'url'
+                    );
+                    $seeAlsoUrls = $this->listJsonldProperty($event, 'seeAlso');
+                    $urls = array_filter([$contactUrls, $seeAlsoUrls]);
+                    return implode("\r\n", $urls);
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.email' => [
                 'name' => 'e-mail reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event, 'Reservations');
-                    if (property_exists($contact, 'email')) {
-                        return implode("\r\n", $contact->email);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'email'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.telephone' => [
                 'name' => 'telefoon reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    $contact = $contactPoint($event, 'Reservations');
-                    if (property_exists($contact, 'telephone')) {
-                        return implode("\r\n", $contact->telephone);
-                    }
+                    return $this->listJsonldProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'telephone'
+                    );
+                },
+                'property' => 'contactPoint'
+            ],
+            'contactPoint.reservations.url' => [
+                'name' => 'online reservaties',
+                'include' => function ($event) use ($contactPoint) {
+                    return $this->listJsonldProperty(
+                        $contactPoint($event, 'Reservations'),
+                        'url'
+                    );
                 },
                 'property' => 'contactPoint'
             ],
         ];
+    }
+
+    /**
+     * @param object $jsonldData
+     *  An object that contains the jsonld data.
+     *
+     * @param string $propertyName
+     *  The name of the property that contains an array of values.
+     *
+     * @return string
+     */
+    private function listJsonldProperty($jsonldData, $propertyName)
+    {
+        if (property_exists($jsonldData, $propertyName)) {
+            return implode("\r\n", $jsonldData->{$propertyName});
+        } else {
+            return '';
+        }
     }
 
     /**

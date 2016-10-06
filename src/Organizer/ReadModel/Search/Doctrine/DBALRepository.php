@@ -2,9 +2,11 @@
 
 namespace CultuurNet\UDB3\Organizer\ReadModel\Search\Doctrine;
 
+use CultuurNet\UDB3\Organizer\ReadModel\Search\Query;
 use CultuurNet\UDB3\Organizer\ReadModel\Search\RepositoryInterface;
 use CultuurNet\UDB3\Organizer\ReadModel\Search\Results;
 use Doctrine\DBAL\Connection;
+use ValueObjects\Number\Natural;
 use ValueObjects\String\String as StringLiteral;
 
 class DBALRepository implements RepositoryInterface
@@ -68,23 +70,32 @@ class DBALRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function search($query = '', $limit = 10, $start = 0)
+    public function search(Query $query)
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $this->connection->getExpressionBuilder();
+        $limit = $query->getLimit()->toNative();
+        $parameters = array();
+
+        if (!empty($query->getWebsite())) {
+            $expr = $expr->andX($expr->eq('website', ':website'));
+            $parameters['website'] = (string) $query->getWebsite();
+        }
+
+        if (!empty($query->getName())) {
+            $expr = $expr->andX($expr->like('title', ':name'));
+            $parameters['name'] = '%' . $query->getName() . '%';
+        }
 
         // Results.
         $q
             ->select('uuid', 'title', 'website')
             ->from($this->tableName->toNative())
+            ->where($expr)
             ->orderBy('title', 'ASC')
             ->setMaxResults($limit)
-            ->setFirstResult($start);
-
-        if (!empty($query)) {
-            $q->where($expr->eq('website', ':website'));
-            $q->setParameter('website', '%' . $query . '%');
-        }
+            ->setFirstResult($query->getOffset()->toNative())
+            ->setParameters($parameters);
 
         $results = $q->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -94,16 +105,13 @@ class DBALRepository implements RepositoryInterface
         $q
             ->resetQueryParts()
             ->select('COUNT(*) AS total')
-            ->from($this->tableName->toNative());
-
-        if (!empty($query)) {
-            $q->where($expr->eq('website', ':website'));
-            $q->setParameter('website', '%' . $query . '%');
-        }
+            ->where($expr)
+            ->from($this->tableName->toNative())
+            ->setParameters($parameters);
 
         $total = $q->execute()->fetchColumn();
 
-        return new Results($limit, $results, $total);
+        return new Results($query->getLimit(), $results, Natural::fromNative($total));
     }
 
     /**

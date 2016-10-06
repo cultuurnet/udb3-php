@@ -18,12 +18,10 @@ interface RepositoryInterface
     public function save($uuid, $name, $constraint = null);
 
     /**
-     * @param string $query
-     * @param int $limit
-     * @param int $start
+     * @param Query $query
      * @return Results
      */
-    public function search($query = '', $limit = 10, $start = 0);
+    public function search(Query $query);
 
     /**
      * @param string $uuid

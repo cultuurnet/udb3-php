@@ -2,11 +2,13 @@
 
 namespace CultuurNet\UDB3\Organizer\ReadModel\Search;
 
+use ValueObjects\Number\Natural;
+
 class Results
 {
 
     /**
-     * @var int
+     * @var Natural
      */
     private $itemsPerPage;
 
@@ -16,16 +18,16 @@ class Results
     private $member;
 
     /**
-     * @var int
+     * @var Natural
      */
     private $totalItems;
 
     /**
-     * @param int $itemsPerPage
+     * @param Natural $itemsPerPage
      * @param array $member
-     * @param int $totalItems
+     * @param Natural $totalItems
      */
-    public function __construct($itemsPerPage, $member, $totalItems)
+    public function __construct(Natural $itemsPerPage, array $member, Natural $totalItems)
     {
         $this->itemsPerPage = $itemsPerPage;
         $this->member = $member;
@@ -33,7 +35,7 @@ class Results
     }
 
     /**
-     * @return int
+     * @return Natural
      */
     public function getItemsPerPage()
     {
@@ -49,7 +51,7 @@ class Results
     }
 
     /**
-     * @return int
+     * @return Natural
      */
     public function getTotalItems()
     {

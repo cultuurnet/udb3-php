@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
 
@@ -71,7 +68,7 @@ class LabelCollection implements \Countable
     }
 
     /**
-     * @param Label[] $label
+     * @param Label $label
      * @return bool
      */
     public function contains(Label $label)
@@ -95,7 +92,7 @@ class LabelCollection implements \Countable
     }
 
     /**
-     * @param LabelCollection $labelCollection
+     * @param LabelCollection $labelCollectionToMerge
      * @return LabelCollection
      */
     public function merge(LabelCollection $labelCollectionToMerge)
@@ -119,15 +116,19 @@ class LabelCollection implements \Countable
 
     /**
      * @param string[] $strings
+     * @return LabelCollection
      */
     public static function fromStrings(array $strings)
     {
         $labelCollection = new LabelCollection();
 
         foreach ($strings as $string) {
-            $label = new Label($string);
+            try {
+                $label = new Label($string);
+                $labelCollection = $labelCollection->with($label);
+            } catch (\InvalidArgumentException $exception) {
 
-            $labelCollection = $labelCollection->with($label);
+            }
         }
 
         return $labelCollection;

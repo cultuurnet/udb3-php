@@ -127,7 +127,6 @@ class LabelCollection implements \Countable
                 $label = new Label($string);
                 $labelCollection = $labelCollection->with($label);
             } catch (\InvalidArgumentException $exception) {
-
             }
         }
 

@@ -387,6 +387,9 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ]);
     }
 
+    /**
+     * @test
+     */
     public function it_handles_flag_as_inappropriate_command_on_ready_for_validation_item()
     {
         $this->scenario

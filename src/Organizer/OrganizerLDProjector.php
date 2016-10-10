@@ -79,10 +79,6 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $this->repository->save($document->withBody($actorLd));
-
-        $this->publishJSONLDUpdated(
-            $organizerImportedFromUDB2->getActorId()
-        );
     }
 
     /**
@@ -158,10 +154,6 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $this->repository->save($document->withBody($actorLd));
-
-        $this->publishJSONLDUpdated(
-            $organizerUpdatedFromUDB2->getActorId()
-        );
     }
 
     /**
@@ -225,27 +217,6 @@ class OrganizerLDProjector extends ActorLDProjector
         OrganizerDeleted $organizerDeleted
     ) {
         $this->repository->remove($organizerDeleted->getOrganizerId());
-    }
-
-    /**
-     * @param string $id
-     * @todo Move broadcasting functionality to a decorator.
-     */
-    protected function publishJSONLDUpdated($id)
-    {
-        $generator = new Version4Generator();
-        $events = [
-            DomainMessage::recordNow(
-                $generator->generate(),
-                1,
-                new Metadata(),
-                new OrganizerProjectedToJSONLD($id)
-            )
-        ];
-
-        $this->eventBus->publish(
-            new DomainEventStream($events)
-        );
     }
 
     /**

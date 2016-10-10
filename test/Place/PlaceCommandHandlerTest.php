@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
+use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
 use CultuurNet\UDB3\Place\Commands\TranslateDescription;
 use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
@@ -34,15 +35,25 @@ use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\Money\Currency;
+use ValueObjects\String\String as StringLiteral;
 
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
+
+    /**
+     * @var PlaceCommandFactory
+     */
+    private $commandFactory;
 
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
@@ -57,13 +68,15 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
-            ->with(new String('foo'))
+            ->with(new StringLiteral('foo'))
             ->willReturn(new Entity(
                 new UUID(),
-                new String('foo'),
+                new StringLiteral('foo'),
                 Visibility::VISIBLE(),
                 Privacy::PRIVACY_PUBLIC()
             ));
+
+        $this->commandFactory = new PlaceCommandFactory();
 
         return new CommandHandler(
             $repository,
@@ -226,7 +239,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_title_of_an_event()
     {
         $id = '1';
-        $title = new String('Voorbeeld');
+        $title = new StringLiteral('Voorbeeld');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -249,7 +262,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_description_of_an_event()
     {
         $id = '1';
-        $description = new String('Lorem ipsum dolor si amet...');
+        $description = new StringLiteral('Lorem ipsum dolor si amet...');
         $language = new Language('nl');
         $this->scenario
             ->withAggregateId($id)
@@ -258,5 +271,36 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->when(new TranslateDescription($id, $language, $description))
             ->then([new DescriptionTranslated($id, $language, $description)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_price_info_commands()
+    {
+        $id = '1';
+
+        $priceInfo = new PriceInfo(
+            new BasePrice(
+                Price::fromFloat(10.5),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                ]
+            )
+            ->when(
+                $this->commandFactory->createUpdatePriceInfoCommand($id, $priceInfo)
+            )
+            ->then(
+                [
+                    new PriceInfoUpdated($id, $priceInfo),
+                ]
+            );
     }
 }

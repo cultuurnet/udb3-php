@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
-use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -22,6 +21,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -29,6 +29,13 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -193,6 +200,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @return string
      */
+    abstract protected function getPriceInfoUpdatedClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getContactPointUpdatedClassName();
 
     /**
@@ -209,6 +221,31 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getTypicalAgeRangeDeletedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getPublishedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getApprovedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getRejectedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlaggedAsDuplicateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlaggedAsInappropriateClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -291,6 +328,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * Apply the ImageUpdated event to the item repository.
      *
      * @param AbstractImageUpdated $imageUpdated
+     * @throws \Exception
      */
     protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
     {
@@ -498,6 +536,37 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
+     * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     */
+    protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($priceInfoUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->priceInfo = [];
+
+        $basePrice = $priceInfoUpdated->getPriceInfo()->getBasePrice();
+
+        $offerLd->priceInfo[] = [
+            'category' => 'base',
+            'name' => 'Basistarief',
+            'price' => $basePrice->getPrice()->toFloat(),
+            'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
+        ];
+
+        foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
+            $offerLd->priceInfo[] = [
+                'category' => 'tariff',
+                'name' => $tariff->getName()->toNative(),
+                'price' => $tariff->getPrice()->toFloat(),
+                'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
+            ];
+        }
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
      * Apply the contact point updated event to the offer repository.
      * @param AbstractContactPointUpdated $contactPointUpdated
      */
@@ -556,6 +625,79 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
 
         unset($offerLd->typicalAgeRange);
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->applyEventTransformation($published, function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+        });
+    }
+
+    /**
+     * @param AbstractApproved $approved
+     */
+    protected function applyApproved(AbstractApproved $approved)
+    {
+        $this->applyEventTransformation($approved, function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::APPROVED()->getName();
+        });
+    }
+
+    /**
+     * @param AbstractRejected $rejected
+     */
+    protected function applyRejected(AbstractRejected $rejected)
+    {
+        $this->applyEventTransformation($rejected, $this->reject());
+    }
+
+    /**
+     * @param AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+     */
+    protected function applyFlaggedAsDuplicate(
+        AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+    ) {
+        $this->applyEventTransformation($flaggedAsDuplicate, $this->reject());
+    }
+
+    /**
+     * @param AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+     */
+    protected function applyFlaggedAsInappropriate(
+        AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+    ) {
+        $this->applyEventTransformation($flaggedAsInappropriate, $this->reject());
+    }
+
+    /**
+     * @return callable
+     */
+    private function reject()
+    {
+        return function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::REJECTED()->getName();
+        };
+    }
+
+    /**
+     * @param AbstractEvent $event
+     * @param callable $transformation
+     *  a transformation that you want applied to the offer-ld document
+     *  the first parameter passed to the callback will be the document body
+     */
+    private function applyEventTransformation(AbstractEvent $event, callable $transformation)
+    {
+        $document = $this->loadDocumentFromRepository($event);
+
+        $offerLd = $document->getBody();
+
+        $transformation($offerLd);
 
         $this->repository->save($document->withBody($offerLd));
     }

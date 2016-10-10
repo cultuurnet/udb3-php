@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
@@ -19,6 +20,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -26,11 +28,21 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 abstract class Offer extends EventSourcedAggregateRoot
 {
+    const DUPLICATE_REASON = 'duplicate';
+    const INAPPROPRIATE_REASON = 'inappropriate';
+
     /**
      * @var LabelCollection
      */
@@ -52,6 +64,21 @@ abstract class Offer extends EventSourcedAggregateRoot
      * Organizer ids can come from UDB2 which does not strictly use UUIDs.
      */
     protected $organizerId;
+
+    /**
+     * @var WorkflowStatus
+     */
+    protected $workflowStatus;
+
+    /**
+     * @var StringLiteral|null
+     */
+    protected $rejectedReason;
+
+    /**
+     * @var PriceInfo
+     */
+    protected $priceInfo;
 
     /**
      * Offer constructor.
@@ -203,6 +230,26 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param PriceInfo $priceInfo
+     */
+    public function updatePriceInfo(PriceInfo $priceInfo)
+    {
+        if (is_null($this->priceInfo) || $priceInfo->serialize() !== $this->priceInfo->serialize()) {
+            $this->apply(
+                $this->createPriceInfoUpdatedEvent($priceInfo)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     */
+    protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
+    {
+        $this->priceInfo = $priceInfoUpdated->getPriceInfo();
+    }
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
@@ -311,6 +358,156 @@ abstract class Offer extends EventSourcedAggregateRoot
         $this->apply(
             $this->createOfferDeletedEvent()
         );
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     */
+    protected function importWorkflowStatus(CultureFeed_Cdb_Item_Base $cdbItem)
+    {
+        try {
+            $workflowStatus = WorkflowStatus::fromNative($cdbItem->getWfStatus());
+        } catch (\InvalidArgumentException $exception) {
+            $workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
+        }
+        $this->workflowStatus = $workflowStatus;
+    }
+
+    /**
+     * Publish the offer when it has workflowstatus draft.
+     */
+    public function publish()
+    {
+        $this->guardPublish() ?: $this->apply($this->createPublishedEvent());
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function guardPublish()
+    {
+        if ($this->workflowStatus === WorkflowStatus::READY_FOR_VALIDATION()) {
+            return true; // nothing left to do if the offer has already been published
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::DRAFT()) {
+            throw new Exception('You can not publish an offer that is not draft');
+        }
+
+        return false;
+    }
+
+    /**
+     * Approve the offer when it's waiting for validation.
+     */
+    public function approve()
+    {
+        $this->guardApprove() ?: $this->apply($this->createApprovedEvent());
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function guardApprove()
+    {
+        if ($this->workflowStatus === WorkflowStatus::APPROVED()) {
+            return true; // nothing left to do if the offer has already been approved
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::READY_FOR_VALIDATION()) {
+            throw new Exception('You can not approve an offer that is not ready for validation');
+        }
+
+        return false;
+    }
+
+    /**
+     * Reject an offer that is waiting for validation with a given reason.
+     * @param StringLiteral $reason
+     */
+    public function reject(StringLiteral $reason)
+    {
+        $this->guardRejection($reason) ?: $this->apply($this->createRejectedEvent($reason));
+    }
+
+    public function flagAsDuplicate()
+    {
+        $reason = new StringLiteral(self::DUPLICATE_REASON);
+        $this->guardRejection($reason) ?: $this->apply($this->createFlaggedAsDuplicate());
+    }
+
+    public function flagAsInappropriate()
+    {
+        $reason = new StringLiteral(self::INAPPROPRIATE_REASON);
+        $this->guardRejection($reason) ?: $this->apply($this->createFlaggedAsInappropriate());
+    }
+
+    /**
+     * @param StringLiteral $reason
+     * @return bool
+     *  false when the offer can still be rejected, true when the offer is already rejected for the same reason
+     * @throws Exception
+     */
+    private function guardRejection(StringLiteral $reason)
+    {
+        if ($this->workflowStatus === WorkflowStatus::REJECTED()) {
+            if ($this->rejectedReason && $reason->sameValueAs($this->rejectedReason)) {
+                return true; // nothing left to do if the offer has already been rejected for the same reason
+            } else {
+                throw new Exception('The offer has already been rejected for another reason: ' . $this->rejectedReason);
+            }
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::READY_FOR_VALIDATION()) {
+            throw new Exception('You can not reject an offer that is not ready for validation');
+        }
+
+        return false;
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
+    }
+
+    /**
+     * @param AbstractApproved $approved
+     */
+    protected function applyApproved(AbstractApproved $approved)
+    {
+        $this->workflowStatus = WorkflowStatus::APPROVED();
+    }
+
+    /**
+     * @param AbstractRejected $rejected
+     */
+    protected function applyRejected(AbstractRejected $rejected)
+    {
+        $this->rejectedReason = $rejected->getReason();
+        $this->workflowStatus = WorkflowStatus::REJECTED();
+    }
+
+    /**
+     * @param AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+     */
+    protected function applyFlaggedAsDuplicate(AbstractFlaggedAsDuplicate $flaggedAsDuplicate)
+    {
+        $this->rejectedReason = new StringLiteral(self::DUPLICATE_REASON);
+        $this->workflowStatus = WorkflowStatus::REJECTED();
+    }
+
+    /**
+     * @param AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+     */
+    protected function applyFlaggedAsInappropriate(AbstractFlaggedAsInappropriate $flaggedAsInappropriate)
+    {
+        $this->rejectedReason = new StringLiteral(self::INAPPROPRIATE_REASON);
+        $this->workflowStatus = WorkflowStatus::REJECTED();
     }
 
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
@@ -443,4 +640,36 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractBookingInfoUpdated
      */
     abstract protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo);
+
+    /**
+     * @param PriceInfo $priceInfo
+     * @return AbstractPriceInfoUpdated
+     */
+    abstract protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo);
+
+    /**
+     * @return AbstractPublished
+     */
+    abstract protected function createPublishedEvent();
+
+    /**
+     * @return AbstractApproved
+     */
+    abstract protected function createApprovedEvent();
+
+    /**
+     * @param StringLiteral $reason
+     * @return AbstractRejected
+     */
+    abstract protected function createRejectedEvent(StringLiteral $reason);
+
+    /**
+     * @return AbstractFlaggedAsDuplicate
+     */
+    abstract protected function createFlaggedAsDuplicate();
+
+    /**
+     * @return AbstractFlaggedAsInappropriate
+     */
+    abstract protected function createFlaggedAsInappropriate();
 }

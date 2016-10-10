@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -30,6 +31,11 @@ use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\Moderation\Approved;
+use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
+use CultuurNet\UDB3\Place\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -37,6 +43,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
@@ -211,6 +218,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         } elseif (isset($metaData['user_nick'])) {
             $jsonLD->creator = $metaData['user_nick'];
         }
+
+        $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
         $this->repository->save($document->withBody($jsonLD));
     }
@@ -401,6 +410,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         return BookingInfoUpdated::class;
     }
 
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
+    }
+
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
@@ -419,5 +436,30 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getTypicalAgeRangeDeletedClassName()
     {
         return TypicalAgeRangeDeleted::class;
+    }
+
+    protected function getPublishedClassName()
+    {
+        return Published::class;
+    }
+
+    protected function getApprovedClassName()
+    {
+        return Approved::class;
+    }
+
+    protected function getRejectedClassName()
+    {
+        return Rejected::class;
+    }
+
+    protected function getFlaggedAsDuplicateClassName()
+    {
+        return FlaggedAsDuplicate::class;
+    }
+
+    protected function getFlaggedAsInappropriateClassName()
+    {
+        return FlaggedAsInappropriate::class;
     }
 }

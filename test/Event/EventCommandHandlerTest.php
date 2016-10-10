@@ -15,6 +15,7 @@ use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
@@ -24,6 +25,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -32,14 +34,23 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
 use ValueObjects\String\String as StringLiteral;
 
 class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
     use \CultuurNet\UDB3\OfferCommandHandlerTestTrait;
+
+    /**
+     * @var EventCommandFactory
+     */
+    private $commandFactory;
 
     protected function createCommandHandler(
         EventStoreInterface $eventStore,
@@ -61,6 +72,8 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 Visibility::VISIBLE(),
                 Privacy::PRIVACY_PUBLIC()
             ));
+
+        $this->commandFactory = new EventCommandFactory();
 
         return new EventCommandHandler(
             $repository,
@@ -225,6 +238,37 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
             )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_price_info()
+    {
+        $id = '1';
+
+        $priceInfo = new PriceInfo(
+            new BasePrice(
+                Price::fromFloat(10.5),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                ]
+            )
+            ->when(
+                $this->commandFactory->createUpdatePriceInfoCommand($id, $priceInfo)
+            )
+            ->then(
+                [
+                    new PriceInfoUpdated($id, $priceInfo),
+                ]
+            );
     }
 
     /**

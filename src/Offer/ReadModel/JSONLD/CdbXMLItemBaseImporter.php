@@ -97,8 +97,8 @@ class CdbXMLItemBaseImporter
     ) {
         $wfStatus = $item->getWfStatus();
 
-        $workflowStatus = $wfStatus ? WorkflowStatus::fromNative($wfStatus) : WorkflowStatus::APPROVED();
+        $workflowStatus = $wfStatus ? WorkflowStatus::fromNative($wfStatus) : WorkflowStatus::READY_FOR_VALIDATION();
 
-        $jsonLD->workflowStatus = $workflowStatus->getValue();
+        $jsonLD->workflowStatus = $workflowStatus->getName();
     }
 }

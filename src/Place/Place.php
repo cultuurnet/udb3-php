@@ -3,9 +3,11 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
@@ -14,6 +16,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -26,6 +29,11 @@ use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\Moderation\Approved;
+use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
+use CultuurNet\UDB3\Place\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -33,9 +41,11 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
@@ -105,6 +115,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->actorId = $placeCreated->getPlaceId();
+        $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
     /**
@@ -196,16 +207,36 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
+    /**
+     * @param PlaceImportedFromUDB2 $placeImported
+     */
     public function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImported
     ) {
         $this->actorId = $placeImported->getActorId();
+
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $placeImported->getCdbXmlNamespaceUri(),
+            $placeImported->getCdbXml()
+        );
+
+        $this->importWorkflowStatus($udb2Actor);
     }
 
+    /**
+     * @param PlaceImportedFromUDB2Event $placeImported
+     */
     public function applyPlaceImportedFromUDB2Event(
         PlaceImportedFromUDB2Event $placeImported
     ) {
         $this->actorId = $placeImported->getActorId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $placeImported->getCdbXmlNamespaceUri(),
+            $placeImported->getCdbXml()
+        );
+
+        $this->importWorkflowStatus($udb2Event);
     }
 
     /**
@@ -361,10 +392,59 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
+     * @param PriceInfo $priceInfo
+     * @return PriceInfoUpdated
+     */
+    protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo)
+    {
+        return new PriceInfoUpdated($this->actorId, $priceInfo);
+    }
+
+    /**
      * @return PlaceDeleted
      */
     protected function createOfferDeletedEvent()
     {
         return new PlaceDeleted($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createPublishedEvent()
+    {
+        return new Published($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createApprovedEvent()
+    {
+        return new Approved($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createRejectedEvent(StringLiteral $reason)
+    {
+        return new Rejected($this->actorId, $reason);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsDuplicate()
+    {
+        return new FlaggedAsDuplicate($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createFlaggedAsInappropriate()
+    {
+        return new FlaggedAsInappropriate($this->actorId);
     }
 }

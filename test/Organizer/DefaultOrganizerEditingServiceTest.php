@@ -5,7 +5,10 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use ValueObjects\Identity\UUID;
 
 class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,6 +43,40 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->uuidGenerator,
             $this->organizerRepository
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_a_add_label_command()
+    {
+        $organizerId = 'organizerId';
+        $labelId = new UUID();
+
+        $expectedAddLabel = new AddLabel($organizerId, $labelId);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedAddLabel);
+
+        $this->service->addLabel($organizerId, $labelId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sends_a_remove_label_command()
+    {
+        $organizerId = 'organizerId';
+        $labelId = new UUID();
+
+        $expectedRemoveLabel = new RemoveLabel($organizerId, $labelId);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedRemoveLabel);
+
+        $this->service->removeLabel($organizerId, $labelId);
     }
 
     /**

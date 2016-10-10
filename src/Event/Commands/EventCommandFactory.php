@@ -4,6 +4,10 @@ namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
+use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
+use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
@@ -18,8 +22,10 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -188,11 +194,58 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     }
 
     /**
+     * @param $id
+     * @param PriceInfo $priceInfo
+     * @return UpdatePriceInfo
+     */
+    public function createUpdatePriceInfoCommand($id, PriceInfo $priceInfo)
+    {
+        return new UpdatePriceInfo($id, $priceInfo);
+    }
+
+    /**
      * @param string $id
      * @return AbstractDeleteOffer
      */
     public function createDeleteOfferCommand($id)
     {
         return new DeleteEvent($id);
+    }
+
+    /**
+     * @param string $id
+     * @return Approve
+     */
+    public function createApproveCommand($id)
+    {
+        return new Approve($id);
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $reason
+     * @return Reject
+     */
+    public function createRejectCommand($id, StringLiteral $reason)
+    {
+        return new Reject($id, $reason);
+    }
+
+    /**
+     * @param string $id
+     * @return FlagAsInappropriate
+     */
+    public function createFlagAsInappropriate($id)
+    {
+        return new FlagAsInappropriate($id);
+    }
+
+    /**
+     * @param string $id
+     * @return FlagAsDuplicate
+     */
+    public function createFlagAsDuplicate($id)
+    {
+        return new FlagAsDuplicate($id);
     }
 }

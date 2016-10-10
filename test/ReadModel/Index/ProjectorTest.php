@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -381,6 +382,22 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->handle(
             $this->domainMessage(
                 new PlaceDeleted('6ecf5da4-220d-4486-9327-17c7ec8fa070')
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_remove_the_index_of_deleted_organizer()
+    {
+        $this->repository->expects($this->once())
+            ->method('deleteIndex')
+            ->with('6ecf5da4-220d-4486-9327-17c7ec8fa070');
+
+        $this->projector->handle(
+            $this->domainMessage(
+                new OrganizerDeleted('6ecf5da4-220d-4486-9327-17c7ec8fa070')
             )
         );
     }

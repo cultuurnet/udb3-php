@@ -7,6 +7,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\String\String as StringLiteral;
 
 interface OfferEditingServiceInterface
@@ -122,4 +123,10 @@ interface OfferEditingServiceInterface
      * @return string
      */
     public function updateBookingInfo($id, BookingInfo $bookingInfo);
+
+    /**
+     * @param $id
+     * @param PriceInfo $priceInfo
+     */
+    public function updatePriceInfo($id, PriceInfo $priceInfo);
 }

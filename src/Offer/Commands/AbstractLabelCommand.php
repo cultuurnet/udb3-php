@@ -3,8 +3,10 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Security\LabelSecurityInterface;
+use ValueObjects\String\String as StringLiteral;
 
-abstract class AbstractLabelCommand extends AbstractCommand
+abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecurityInterface
 {
     /**
      * @var Label
@@ -39,5 +41,29 @@ abstract class AbstractLabelCommand extends AbstractCommand
     public function getLabel()
     {
         return $this->label;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isIdentifiedByUuid()
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getName()
+    {
+        return new StringLiteral((string)$this->label);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUuid()
+    {
+        return null;
     }
 }

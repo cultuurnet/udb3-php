@@ -30,7 +30,6 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
-use CultuurNet\UDB3\Place\ReadModel\JSONLD\PlaceLDProjector;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -161,6 +160,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
+        $jsonLD->workflowStatus = 'DRAFT';
 
         $body = $this->project(
             $placeCreated,
@@ -217,6 +217,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
+        $jsonLD->workflowStatus = 'DRAFT';
 
         $body = $this->project(
             $placeCreated,
@@ -268,6 +269,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->creator = '1 (Tester)';
+        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
 
         $metadata = new Metadata(
             [
@@ -329,6 +331,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->assertEquals('Invoerders Algemeen ', $body->publisher);
         $this->assertEquals('Vuur, vakmanschap en', $body->name->nl);
         $this->assertContains('764066ab-826f-48c2-897d-a329ebce953f', $body->{'@id'});
+        $this->assertEquals('APPROVED', $body->workflowStatus);
     }
 
     /**
@@ -361,7 +364,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $cdbXml,
             'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
         );
-        
+
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
         $this->assertEquals(
@@ -377,7 +380,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     {
         $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
         $actorId = $placeImportedFromUdb2->getActorId();
-        
+
         $placeDeleted = new PlaceDeleted($actorId);
         $this->project($placeDeleted, $actorId, null, null, false);
 

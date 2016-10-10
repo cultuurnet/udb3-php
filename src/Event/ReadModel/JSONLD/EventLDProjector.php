@@ -27,8 +27,14 @@ use CultuurNet\UDB3\Event\Events\LabelDeleted;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
+use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
+use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
@@ -44,6 +50,7 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
@@ -493,6 +500,8 @@ class EventLDProjector extends OfferLDProjector implements
                     $jsonLD->creator = $metaData['user_nick'];
                 }
 
+                $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
+
                 return $jsonLD;
             }
         );
@@ -739,6 +748,14 @@ class EventLDProjector extends OfferLDProjector implements
         return BookingInfoUpdated::class;
     }
 
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
+    }
+
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
@@ -757,5 +774,30 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getTypicalAgeRangeDeletedClassName()
     {
         return TypicalAgeRangeDeleted::class;
+    }
+
+    protected function getPublishedClassName()
+    {
+        return Published::class;
+    }
+
+    protected function getApprovedClassName()
+    {
+        return Approved::class;
+    }
+
+    protected function getRejectedClassName()
+    {
+        return Rejected::class;
+    }
+
+    protected function getFlaggedAsDuplicateClassName()
+    {
+        return FlaggedAsDuplicate::class;
+    }
+
+    protected function getFlaggedAsInappropriateClassName()
+    {
+        return FlaggedAsInappropriate::class;
     }
 }

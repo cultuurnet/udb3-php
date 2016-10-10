@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
@@ -23,6 +24,11 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractPublish;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
 use CultuurNet\UDB3\Organizer\Organizer;
 use ValueObjects\String\String as StringLiteral;
 
@@ -176,7 +182,37 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
+    abstract protected function getUpdatePriceInfoClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getDeleteOfferClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getPublishClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getApproveClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getRejectClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlagAsDuplicateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFlagAsInappropriateClassName();
 
     /**
      * @param AbstractAddLabel $addLabel
@@ -376,12 +412,76 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
+     * @param AbstractUpdatePriceInfo $updatePriceInfo
+     */
+    private function handleUpdatePriceInfo(AbstractUpdatePriceInfo $updatePriceInfo)
+    {
+        $offer = $this->load($updatePriceInfo->getItemId());
+
+        $offer->updatePriceInfo(
+            $updatePriceInfo->getPriceInfo()
+        );
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
      * @param AbstractDeleteOffer $deleteOffer
      */
     private function handleDeleteOffer(AbstractDeleteOffer $deleteOffer)
     {
         $offer = $this->load($deleteOffer->getItemId());
         $offer->delete();
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractPublish $publish
+     */
+    private function handlePublish(AbstractPublish $publish)
+    {
+        $offer = $this->load($publish->getItemId());
+        $offer->publish();
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractApprove $approve
+     */
+    private function handleApprove(AbstractApprove $approve)
+    {
+        $offer = $this->load($approve->getItemId());
+        $offer->approve();
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractReject $reject
+     */
+    private function handleReject(AbstractReject $reject)
+    {
+        $offer = $this->load($reject->getItemId());
+        $offer->reject($reject->getReason());
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractFlagAsDuplicate $flagAsDuplicate
+     */
+    private function handleFlagAsDuplicate(AbstractFlagAsDuplicate $flagAsDuplicate)
+    {
+        $offer = $this->load($flagAsDuplicate->getItemId());
+        $offer->flagAsDuplicate();
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractFlagAsInappropriate $flagAsInappropriate
+     */
+    private function handleFlagAsInappropriate(AbstractFlagAsInappropriate $flagAsInappropriate)
+    {
+        $offer = $this->load($flagAsInappropriate->getItemId());
+        $offer->flagAsInappropriate();
         $this->offerRepository->save($offer);
     }
 

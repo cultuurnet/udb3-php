@@ -27,6 +27,7 @@ class ContentTypes
     {
         return [
             BookingInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-booking-info-updated+json',
+            PriceInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-price-info-updated.json',
             CollaborationDataAdded::class => 'application/vnd.cultuurnet.udb3-events.event-collaboration-data-added+json',
             ContactPointUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-contact-point-updated+json',
             DescriptionTranslated::class => 'application/vnd.cultuurnet.udb3-events.event-description-translated+json',

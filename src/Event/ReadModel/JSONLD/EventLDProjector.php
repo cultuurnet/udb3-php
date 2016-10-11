@@ -34,6 +34,7 @@ use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
@@ -745,6 +746,14 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getBookingInfoUpdatedClassName()
     {
         return BookingInfoUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
     }
 
     protected function getContactPointUpdatedClassName()

@@ -22,8 +22,10 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -189,6 +191,16 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     public function createUpdateBookingInfoCommand($id, BookingInfo $bookingInfo)
     {
         return new UpdateBookingInfo($id, $bookingInfo);
+    }
+
+    /**
+     * @param $id
+     * @param PriceInfo $priceInfo
+     * @return UpdatePriceInfo
+     */
+    public function createUpdatePriceInfoCommand($id, PriceInfo $priceInfo)
+    {
+        return new UpdatePriceInfo($id, $priceInfo);
     }
 
     /**

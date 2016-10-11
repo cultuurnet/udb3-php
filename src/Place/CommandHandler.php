@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Place\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\AddLabel;

@@ -1,16 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\ContactPoint.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 
 /**
  * ContactPoint info.
+ * @todo Remove $type? Seems unused throughout the rest of the codebase.
+ * @see https://jira.uitdatabank.be/browse/III-1508
  */
 class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {

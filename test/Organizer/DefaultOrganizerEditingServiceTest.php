@@ -13,6 +13,8 @@ use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use ValueObjects\Identity\UUID;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
@@ -70,14 +72,42 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_create_an_organizer()
+    public function it_can_create_an_organizer_with_a_unique_website()
+    {
+        $this->eventStore->trace();
+
+        $organizerId = $this->service->create(
+            Url::fromNative('http://www.stuk.be'),
+            new Title('Het Stuk')
+        );
+
+        $expectedUuid = '9196cb78-4381-11e6-beb8-9e71128cae77';
+
+        $this->assertEquals(
+            [
+                new OrganizerCreatedWithUniqueWebsite(
+                    '9196cb78-4381-11e6-beb8-9e71128cae77',
+                    Url::fromNative('http://www.stuk.be'),
+                    new Title('Het Stuk')
+                ),
+            ],
+            $this->eventStore->getEvents()
+        );
+
+        $this->assertEquals($expectedUuid, $organizerId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_create_an_organizer_with_a_unique_website_plus_contact_point_and_address()
     {
         $this->eventStore->trace();
 
         $organizerId = $this->service->create(
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk'),
-            [new Address('$street', '$postalCode', '$locality', '$country')],
+            new Address('$street', '$postalCode', '$locality', '$country'),
             new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
         );
 
@@ -88,10 +118,16 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
                 new OrganizerCreatedWithUniqueWebsite(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',
                     Url::fromNative('http://www.stuk.be'),
-                    new Title('Het Stuk'),
-                    [new Address('$street', '$postalCode', '$locality', '$country')],
+                    new Title('Het Stuk')
+                ),
+                new AddressUpdated(
+                    '9196cb78-4381-11e6-beb8-9e71128cae77',
+                    new Address('$street', '$postalCode', '$locality', '$country')
+                ),
+                new ContactPointUpdated(
+                    '9196cb78-4381-11e6-beb8-9e71128cae77',
                     new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );

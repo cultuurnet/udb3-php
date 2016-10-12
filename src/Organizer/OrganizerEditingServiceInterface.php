@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
@@ -9,15 +10,14 @@ use ValueObjects\Identity\UUID;
 
 interface OrganizerEditingServiceInterface
 {
-
     /**
      * @param Url $website
      * @param Title $title
-     * @param array $addresses
-     * @param ContactPoint $contactPoint
+     * @param Address|null $address
+     * @param ContactPoint|null $contactPoint
      * @return string $organizerId
      */
-    public function create(Url $website, Title $title, array $addresses, ContactPoint $contactPoint);
+    public function create(Url $website, Title $title, Address $address = null, ContactPoint $contactPoint = null);
 
     /**
      * @param $organizerId

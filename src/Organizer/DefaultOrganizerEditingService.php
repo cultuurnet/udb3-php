@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -49,11 +50,19 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function create(Url $website, Title $title, array $addresses, ContactPoint $contactPoint)
+    public function create(Url $website, Title $title, Address $address = null, ContactPoint $contactPoint = null)
     {
         $id = $this->uuidGenerator->generate();
 
-        $organizer = Organizer::create($id, $website, $title, $addresses, $contactPoint);
+        $organizer = Organizer::create($id, $website, $title);
+
+        if (!is_null($address)) {
+            $organizer->updateAddress($address);
+        }
+
+        if (!is_null($contactPoint)) {
+            $organizer->updateContactPoint($contactPoint);
+        }
 
         $this->organizerRepository->save($organizer);
 

@@ -10,10 +10,13 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -143,22 +146,10 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
-
         $jsonLD->name = $organizerCreated->getTitle();
 
-        $addresses = $organizerCreated->getAddresses();
-        $jsonLD->addresses = array();
-        foreach ($addresses as $address) {
-            $jsonLD->addresses[] = array(
-                'addressCountry' => $address->getCountry(),
-                'addressLocality' => $address->getLocality(),
-                'postalCode' => $address->getPostalCode(),
-                'streetAddress' => $address->getStreetAddress(),
-            );
-        }
-
-        // Add ContactPoint.
-        $jsonLD->contactPoint = $organizerCreated->getContactPoint()->toJsonLd();
+        // @todo Is this required or can we leave it out?
+        $jsonLD->contactPoint = (new ContactPoint())->toJsonLd();
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
@@ -170,6 +161,38 @@ class OrganizerLDProjector extends ActorLDProjector
         if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
             $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
         }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     */
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $organizerId = $addressUpdated->getOrganizerId();
+        $address = $addressUpdated->getAddress();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+        $jsonLD->address = $address->toJsonLd();
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param ContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+        $organizerId = $contactPointUpdated->getOrganizerId();
+        $contactPoint = $contactPointUpdated->getContactPoint();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+        $jsonLD->contactPoint = $contactPoint->toJsonLd();
 
         $this->repository->save($document->withBody($jsonLD));
     }

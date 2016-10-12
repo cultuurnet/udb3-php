@@ -184,9 +184,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
             $id,
             Url::fromNative('http://www.stuk.be'),
-            new Title('some representative title'),
-            [new Address('$street', '$postalCode', '$locality', '$country')],
-            new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
+            new Title('some representative title')
         );
 
         $jsonLD = new stdClass();
@@ -194,21 +192,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->{'@context'} = '/api/1.0/organizer.jsonld';
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name = 'some representative title';
-        $jsonLD->addresses = [
-            [
-                'addressCountry' => '$country',
-                'addressLocality' => '$locality',
-                'postalCode' => '$postalCode',
-                'streetAddress' => '$street',
-            ]
-        ];
-        //$jsonLD->contactPoint->phone = ['050/123'];
-        //$jsonLD->contactPoint->email = ['test@test.be', 'test2@test.be'];
-        //$jsonLD->contactPoint->url = ['http://www.google.be'];
         $jsonLD->contactPoint = [
-            'phone' => ['050/123'],
-            'email' => ['test@test.be', 'test2@test.be'],
-            'url' => ['http://www.google.be'],
+            'phone' => [],
+            'email' => [],
+            'url' => [],
             'type' => '',
         ];
         $jsonLD->created = $created;

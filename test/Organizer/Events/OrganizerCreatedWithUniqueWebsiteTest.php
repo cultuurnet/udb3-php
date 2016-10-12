@@ -11,33 +11,6 @@ class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     */
-    public function it_throws_an_exception_if_an_address_of_an_incorrect_type_is_provided()
-    {
-        $id = '123';
-        $website = Url::fromNative('http://www.stuk.be');
-        $title = new Title('Test');
-
-        $addresses = [
-            new \stdClass(),
-        ];
-
-        $phones = ['12345678'];
-        $emails = ['foo@bar.com'];
-        $urls = ['http://bar.com'];
-
-        $contactPoint = new ContactPoint($phones, $emails, $urls);
-
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Argument should be of type Address, stdClass given.'
-        );
-
-        new OrganizerCreatedWithUniqueWebsite($id, $website, $title, $addresses, $contactPoint);
-    }
-
-    /**
-     * @test
      * @dataProvider serializationDataProvider
      * @param array $expectedSerializedValue
      * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
@@ -76,33 +49,11 @@ class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
                     'organizer_id' => 'organizer_id',
                     'website' => 'http://www.stuk.be',
                     'title' => 'title',
-                    'addresses' => [
-                        0 => [
-                            'streetAddress' => 'streetAddress',
-                            'postalCode' => '3000',
-                            'locality' => 'Leuven',
-                            'country' => 'Belgium',
-                        ],
-                    ],
-                    'contactPoint' => [
-                        'phone' => [
-                            '0123456789',
-                        ],
-                        'email' => [
-                            'foo@bar.com',
-                        ],
-                        'url' => [
-                            'http://foo.bar',
-                        ],
-                        'type' => '',
-                    ],
                 ],
                 new OrganizerCreatedWithUniqueWebsite(
                     'organizer_id',
                     Url::fromNative('http://www.stuk.be'),
-                    new Title('title'),
-                    array(new Address('streetAddress', '3000', 'Leuven', 'Belgium')),
-                    new ContactPoint(array('0123456789'), array('foo@bar.com'), array('http://foo.bar'))
+                    new Title('title')
                 ),
             ],
         ];

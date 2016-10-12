@@ -10,7 +10,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Title;
@@ -102,7 +102,7 @@ interface EventEditingServiceInterface
     /**
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param \CultuurNet\UDB3\Location\Location $location
      * @param CalendarBase $calendar
      * @param Theme/null $theme
      *
@@ -114,7 +114,7 @@ interface EventEditingServiceInterface
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param \CultuurNet\UDB3\Location\Location $location
      * @param CalendarBase $calendar
      * @param Theme/null $theme
      *

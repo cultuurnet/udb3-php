@@ -7,6 +7,10 @@ use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\Label;
 use ValueObjects\String\String as StringLiteral;
 
+/**
+ * @todo Move to udb3-symfony-php.
+ * @see https://jira.uitdatabank.be/browse/III-1436
+ */
 class AddLabelToQueryJSONDeserializer extends JSONDeserializer
 {
     public function deserialize(StringLiteral $data)

@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\PlaceService;

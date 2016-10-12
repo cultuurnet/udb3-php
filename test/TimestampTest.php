@@ -7,8 +7,8 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     const START_DATE_KEY = 'startDate';
     const END_DATE_KEY = 'endDate';
 
-    const START_DATE = '2016-01-03T01:01:01';
-    const END_DATE = '2016-01-07T01:01:01';
+    const START_DATE = '2016-01-03T01:01:01+01:00';
+    const END_DATE = '2016-01-07T01:01:01+01:00';
 
     /**
      * @var Timestamp
@@ -17,7 +17,10 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->timestamp = new Timestamp(self::START_DATE, self::END_DATE);
+        $this->timestamp = new Timestamp(
+            \DateTime::createFromFormat(\DateTime::ATOM, self::START_DATE),
+            \DateTime::createFromFormat(\DateTime::ATOM, self::END_DATE)
+        );
     }
 
     /**
@@ -25,8 +28,15 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_start_and_end_date()
     {
-        $this->assertEquals(self::START_DATE, $this->timestamp->getStartDate());
-        $this->assertEquals(self::END_DATE, $this->timestamp->getEndDate());
+        $this->assertEquals(
+            \DateTime::createFromFormat(\DateTime::ATOM, self::START_DATE),
+            $this->timestamp->getStartDate()
+        );
+
+        $this->assertEquals(
+            \DateTime::createFromFormat(\DateTime::ATOM, self::END_DATE),
+            $this->timestamp->getEndDate()
+        );
     }
 
     /**

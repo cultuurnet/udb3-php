@@ -1,64 +1,75 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Address.
- */
-
-namespace CultuurNet\UDB3;
+namespace CultuurNet\UDB3\Address;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\JsonLdSerializableInterface;
+use ValueObjects\Geography\Country;
 
 /**
  * Value object for address information.
  */
 class Address implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
      * @var string
      */
-    protected $country;
+    protected $countryCode;
 
     /**
-     * @var string
+     * @var Locality
      */
     protected $locality;
 
     /**
-     * @var string
+     * @var PostalCode
      */
     protected $postalCode;
 
     /**
-     * @var string
+     * @var Street
      */
     protected $streetAddress;
 
-
-    public function __construct($streetAddress, $postalCode, $locality, $country)
-    {
+    public function __construct(
+        Street $streetAddress,
+        PostalCode $postalCode,
+        Locality $locality,
+        Country $country
+    ) {
         $this->streetAddress = $streetAddress;
         $this->postalCode = $postalCode;
         $this->locality = $locality;
-        $this->country = $country;
+        $this->countryCode = $country->getCode()->toNative();
     }
 
+    /**
+     * @return Country
+     */
     public function getCountry()
     {
-        return $this->country;
+        return Country::fromNative($this->countryCode);
     }
 
+    /**
+     * @return Locality
+     */
     public function getLocality()
     {
         return $this->locality;
     }
 
+    /**
+     * @return PostalCode
+     */
     public function getPostalCode()
     {
         return $this->postalCode;
     }
 
+    /**
+     * @return Street
+     */
     public function getStreetAddress()
     {
         return $this->streetAddress;
@@ -70,10 +81,10 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     public function serialize()
     {
         return [
-          'streetAddress' => $this->streetAddress,
-          'postalCode' => $this->postalCode,
-          'locality' => $this->locality,
-          'country' => $this->country,
+          'streetAddress' => $this->streetAddress->toNative(),
+          'postalCode' => $this->postalCode->toNative(),
+          'addressLocality' => $this->locality->toNative(),
+          'addressCountry' => $this->countryCode,
         ];
     }
 
@@ -83,7 +94,10 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-                $data['streetAddress'], $data['postalCode'], $data['locality'], $data['country']
+            new Street($data['streetAddress']),
+            new PostalCode($data['postalCode']),
+            new Locality($data['addressLocality']),
+            Country::fromNative($data['addressCountry'])
         );
     }
 
@@ -93,10 +107,10 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     public function toJsonLd()
     {
         return [
-            'addressCountry' => $this->country,
-            'addressLocality' => $this->locality,
-            'postalCode' => $this->postalCode,
-            'streetAddress' => $this->streetAddress
+            'addressCountry' => $this->countryCode,
+            'addressLocality' => $this->locality->toNative(),
+            'postalCode' => $this->postalCode->toNative(),
+            'streetAddress' => $this->streetAddress->toNative()
         ];
     }
 

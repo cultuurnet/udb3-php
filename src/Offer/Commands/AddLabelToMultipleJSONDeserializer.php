@@ -10,6 +10,10 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use ValueObjects\String\String as StringLiteral;
 
+/**
+ * @todo Move to udb3-symfony-php.
+ * @see https://jira.uitdatabank.be/browse/III-1436
+ */
 class AddLabelToMultipleJSONDeserializer extends JSONDeserializer
 {
     /**

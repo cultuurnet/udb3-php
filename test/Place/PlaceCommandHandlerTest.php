@@ -6,8 +6,12 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
@@ -37,6 +41,7 @@ use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\String\String as StringLiteral;
@@ -86,8 +91,13 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             $id,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('$street', '$postalcode', '$locality', '$country'),
-            new Calendar('permanent', '', '')
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            ),
+            new Calendar(CalendarType::PERMANENT())
         );
     }
 
@@ -99,8 +109,13 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
         $title = new Title('foo');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $address = new Address('$street', '$postalcode', '$locality', '$country');
-        $calendar = new Calendar('permanent', '', '');
+        $address = new Address(
+            new Street('Kerkstraat 69'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
 
         $this->scenario
             ->withAggregateId($id)

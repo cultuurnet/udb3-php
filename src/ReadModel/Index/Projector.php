@@ -127,7 +127,7 @@ class Projector implements EventListenerInterface
     {
         $this->repository->setUpdateDate($itemId, $dateUpdated);
     }
-    
+
     /**
      * @param \CultureFeed_Cdb_Item_Base $udb2Item
      *
@@ -347,105 +347,6 @@ class Projector implements EventListenerInterface
             $placeCreated->getTitle(),
             $address->getPostalcode(),
             $this->localDomain,
-            $creationDate
-        );
-    }
-
-    /**
-     * Listener for organizer created commands.
-     */
-    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessage $domainMessage)
-    {
-
-        $organizerId = $organizer->getOrganizerId();
-
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
-
-        $addresses = $organizer->getAddresses();
-        if (isset($addresses[0])) {
-            $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-            $this->updateIndex(
-                $organizerId,
-                EntityType::ORGANIZER(),
-                $userId,
-                $organizer->getTitle(),
-                $addresses[0]->getPostalCode(),
-                $this->localDomain,
-                $creationDate
-            );
-        }
-    }
-
-    /**
-     * Listener for organizer created events.
-     */
-    protected function applyOrganizerCreatedWithUniqueWebsite(
-        OrganizerCreatedWithUniqueWebsite $organizer,
-        DomainMessage $domainMessage
-    ) {
-
-        $organizerId = $organizer->getOrganizerId();
-
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
-
-        $addresses = $organizer->getAddresses();
-        if (isset($addresses[0])) {
-            $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-            $this->updateIndex(
-                $organizerId,
-                EntityType::ORGANIZER(),
-                $userId,
-                $organizer->getTitle(),
-                $addresses[0]->getPostalCode(),
-                $this->localDomain,
-                $creationDate
-            );
-        }
-    }
-
-    protected function applyOrganizerImportedFromUDB2(OrganizerImportedFromUDB2 $organizerImportedFromUDB2)
-    {
-
-        $organizerId = $organizerImportedFromUDB2->getActorId();
-        /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
-        $detail = null;
-        $postalCode = '';
-
-        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
-            $organizerImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $organizerImportedFromUDB2->getCdbXml()
-        );
-
-        $userId = $this->resolveUserId($udb2Actor);
-
-        $details = $udb2Actor->getDetails();
-        foreach ($details as $languageDetail) {
-            // The first language detail found will be used.
-            $detail = $languageDetail;
-            break;
-        }
-
-        $name = trim($detail->getTitle());
-
-        // Ignore items without a name. They might occur in UDB2 although this
-        // is not considered normal.
-        if (empty($name)) {
-            return;
-        }
-
-        $creationDate = $this->dateTimeFromUDB2DateString(
-            $udb2Actor->getCreationDate()
-        );
-
-        $this->updateIndex(
-            $organizerId,
-            EntityType::ORGANIZER(),
-            $userId,
-            $name,
-            $postalCode,
-            $this->UDB2Domain,
             $creationDate
         );
     }

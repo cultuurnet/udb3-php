@@ -34,9 +34,9 @@
     },
     {
         "entity_id": "abc",
-        "entity_type": "organizer",
+        "entity_type": "event",
         "uid": "foo",
-        "title": "Test abc organizer",
+        "title": "Test abc event",
         "zip": 3040,
         "created": 0,
         "owning_domain": "udb.be",
@@ -56,9 +56,9 @@
     },
     {
         "entity_id": "blub",
-        "entity_type": "organizer",
+        "entity_type": "event",
         "uid": "foo",
-        "title": "Test abc organizer",
+        "title": "Test blub event",
         "zip": 3040,
         "created": 0,
         "owning_domain": "",

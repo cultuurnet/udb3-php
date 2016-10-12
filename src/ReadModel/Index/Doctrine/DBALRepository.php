@@ -21,7 +21,7 @@ use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 
-class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, OrganizerLookupServiceInterface, DashboardItemLookupServiceInterface
+class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, DashboardItemLookupServiceInterface
 {
     /**
      * @var Connection
@@ -242,31 +242,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
 
         $q->setParameter('entity_type', EntityType::PLACE()->toNative());
         $q->setParameter('zip', $postalCode);
-
-        $results = $q->execute();
-
-        return $results->fetchAll(\PDO::FETCH_COLUMN);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findOrganizersByPartOfTitle($part)
-    {
-        $q = $this->connection->createQueryBuilder();
-        $expr = $q->expr();
-
-        $q->select('entity_id')
-            ->from($this->tableName->toNative())
-            ->where(
-                $expr->andX(
-                    $expr->eq('entity_type', ':entity_type'),
-                    $expr->like('title', ':title')
-                )
-            );
-
-        $q->setParameter('entity_type', EntityType::ORGANIZER()->toNative());
-        $q->setParameter('title', '%' . $part . '%');
 
         $results = $q->execute();
 

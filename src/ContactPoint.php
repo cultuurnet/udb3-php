@@ -94,4 +94,13 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
         // Serialized version is the same.
         return $this->serialize();
     }
+
+    /**
+     * @param ContactPoint $otherContactPoint
+     * @return bool
+     */
+    public function sameAs(ContactPoint $otherContactPoint)
+    {
+        return $this->toJsonLd() == $otherContactPoint->toJsonLd();
+    }
 }

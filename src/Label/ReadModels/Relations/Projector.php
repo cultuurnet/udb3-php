@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Label\LabelEventOfferTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
@@ -73,6 +75,23 @@ class Projector extends AbstractProjector
                 new StringLiteral($labelDeleted->getItemId())
             );
         }
+    }
+
+    /**
+     * @param EventImportedFromUDB2 $eventImportedFromUDB2
+     */
+    public function applyEventImportedFromUDB2(
+        EventImportedFromUDB2 $eventImportedFromUDB2,
+        Metadata $metadata
+    ) {
+        $eventId = $eventImportedFromUDB2->getEventId();
+
+        $udb2Event = EventItemFactory::createEventFromCdbXml(
+            $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
+            $eventImportedFromUDB2->getCdbXml()
+        );
+
+        $keywords = $udb2Event->getKeywords();
     }
 
     /**

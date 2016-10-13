@@ -148,9 +148,6 @@ class OrganizerLDProjector extends ActorLDProjector
         $jsonLD->url = (string) $organizerCreated->getWebsite();
         $jsonLD->name = $organizerCreated->getTitle();
 
-        // @todo Is this required or can we leave it out?
-        $jsonLD->contactPoint = (new ContactPoint())->toJsonLd();
-
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
             DateTime::FORMAT_STRING,

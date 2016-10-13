@@ -192,12 +192,6 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->{'@context'} = '/api/1.0/organizer.jsonld';
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name = 'some representative title';
-        $jsonLD->contactPoint = [
-            'phone' => [],
-            'email' => [],
-            'url' => [],
-            'type' => '',
-        ];
         $jsonLD->created = $created;
 
         $expectedDocument = (new JsonDocument($id))

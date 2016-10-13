@@ -260,6 +260,28 @@ class BackwardsCompatiblePayloadSerializerFactory
             );
         }
 
+        /**
+         * PlaceCreated
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\PlaceCreated',
+            function (array $serializedObject) {
+                $serializedObject = self::replaceAddressKey(
+                    'locality',
+                    'addressLocality',
+                    $serializedObject
+                );
+
+                $serializedObject = self::replaceAddressKey(
+                    'country',
+                    'addressCountry',
+                    $serializedObject
+                );
+
+                return $serializedObject;
+            }
+        );
+
         return $payloadManipulatingSerializer;
     }
 
@@ -307,6 +329,23 @@ class BackwardsCompatiblePayloadSerializerFactory
         $keyword = $serializedObject['payload']['keyword'];
         $serializedObject['payload']['label'] = $keyword;
         unset($serializedObject['payload']['keyword']);
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param string $oldKey
+     * @param string $newKey
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function replaceAddressKey($oldKey, $newKey, $serializedObject)
+    {
+        if (isset($serializedObject['payload']['address'][$oldKey])) {
+            $value = $serializedObject['payload']['address'][$oldKey];
+            $serializedObject['payload']['address'][$newKey] = $value;
+            unset($serializedObject['payload']['address'][$oldKey]);
+        }
 
         return $serializedObject;
     }

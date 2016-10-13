@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;

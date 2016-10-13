@@ -3,7 +3,10 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
@@ -11,6 +14,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
 
 class OrganizerTest extends AggregateRootScenarioTestCase
@@ -106,17 +110,17 @@ class OrganizerTest extends AggregateRootScenarioTestCase
     public function it_can_set_an_initial_address_and_update_it_later_if_changed()
     {
         $initialAddress = new Address(
-            'Wetstraat 1',
-            '1000',
-            'Brussel',
-            'BE'
+            new Street('Wetstraat 1'),
+            new PostalCode('1000'),
+            new Locality('Brussel'),
+            Country::fromNative('BE')
         );
 
         $updatedAddress = new Address(
-            'Martelarenlaan 1',
-            '3000',
-            'Leuven',
-            'BE'
+            new Street('Martelarenlaan 1'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
         );
 
         $this->scenario

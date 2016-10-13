@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 
 class AddressUpdated extends OrganizerEvent
 {

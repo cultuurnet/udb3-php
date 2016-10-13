@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-use CultuurNet\UDB3\Address;
-use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 

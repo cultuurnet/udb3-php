@@ -8,13 +8,17 @@ use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
@@ -107,7 +111,12 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         $organizerId = $this->service->create(
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk'),
-            new Address('$street', '$postalCode', '$locality', '$country'),
+            new Address(
+                new Street('Wetstraat 1'),
+                new PostalCode('1000'),
+                new Locality('Brussel'),
+                Country::fromNative('BE')
+            ),
             new ContactPoint(['050/123'], ['test@test.be', 'test2@test.be'], ['http://www.google.be'])
         );
 
@@ -122,7 +131,12 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
                 ),
                 new AddressUpdated(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',
-                    new Address('$street', '$postalCode', '$locality', '$country')
+                    new Address(
+                        new Street('Wetstraat 1'),
+                        new PostalCode('1000'),
+                        new Locality('Brussel'),
+                        Country::fromNative('BE')
+                    )
                 ),
                 new ContactPointUpdated(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',

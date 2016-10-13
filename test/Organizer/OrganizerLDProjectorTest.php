@@ -7,12 +7,14 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
-use CultuurNet\UDB3\Address;
-use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
@@ -29,6 +31,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
 use stdClass;
 use ValueObjects\Web\Url;
+use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -128,10 +131,15 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $id = $uuidGenerator->generate();
         $created = '2015-01-20T13:25:21+01:00';
 
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+
         $organizerCreated = new OrganizerCreated(
             $id,
             new Title('some representative title'),
-            [new Address('$street', '$postalCode', '$locality', '$country')],
+            [new Address($street, $postalCode, $locality, $country)],
             ['050/123'],
             ['test@test.be', 'test2@test.be'],
             ['http://www.google.be']
@@ -143,10 +151,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->name = 'some representative title';
         $jsonLD->addresses = [
             [
-                'addressCountry' => '$country',
-                'addressLocality' => '$locality',
-                'postalCode' => '$postalCode',
-                'streetAddress' => '$street',
+                'addressCountry' => $country,
+                'addressLocality' => $locality,
+                'postalCode' => $postalCode,
+                'streetAddress' => $street,
             ]
         ];
         $jsonLD->phone = ['050/123'];

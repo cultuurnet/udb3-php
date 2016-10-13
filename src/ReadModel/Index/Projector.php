@@ -320,7 +320,7 @@ class Projector implements EventListenerInterface
             EntityType::EVENT(),
             $userId,
             $eventCreated->getTitle(),
-            $location->getPostalcode(),
+            $location->getAddress()->getPostalCode(),
             $this->localDomain,
             $creationDate
         );
@@ -345,7 +345,7 @@ class Projector implements EventListenerInterface
             EntityType::PLACE(),
             $userId,
             $placeCreated->getTitle(),
-            $address->getPostalcode(),
+            $address->getPostalCode(),
             $this->localDomain,
             $creationDate
         );

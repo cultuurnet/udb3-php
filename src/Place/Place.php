@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
@@ -135,10 +135,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param EventType $eventType
      * @param Address $address
      * @param CalendarInterface $calendar
-     * @param type $theme
+     * @param Theme $theme
      */
-    public function updateMajorInfo(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
-    {
+    public function updateMajorInfo(
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
     }
 

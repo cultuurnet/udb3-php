@@ -14,6 +14,10 @@ use JsonSchema\Validator;
 use ValueObjects\String\String;
 use stdClass;
 
+/**
+ * @todo Move to udb3-symfony-php.
+ * @see https://jira.uitdatabank.be/browse/III-1436
+ */
 class CreateOfferVariationJSONDeserializer extends JSONDeserializer
 {
     /**

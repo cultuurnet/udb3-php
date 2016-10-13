@@ -8,8 +8,11 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -21,6 +24,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
+use ValueObjects\Geography\Country;
 
 class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -84,7 +88,12 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->organizerCreated = new OrganizerCreated(
             new UUID(),
             new Title('Organizer Title'),
-            [new Address('street', 'postal', 'locality', 'country')],
+            [new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9630'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )],
             ['phone'],
             ['email'],
             ['url']
@@ -109,34 +118,6 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventStore,
             $eventBus
         ));
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_delete_commands()
-    {
-        $id = '123';
-        $this->createOrganizer($id);
-
-        $this->eventStore->trace();
-
-        $this->eventOrganizerRelationService->expects($this->once())
-            ->method('deleteOrganizer')
-            ->with($id);
-
-        $this->placeOrganizerRelationService->expects($this->once())
-            ->method('deleteOrganizer')
-            ->with($id);
-
-        $command = new DeleteOrganizer($id);
-        $this->commandHandler->handle($command);
-
-        $expectedEvents = [
-            new OrganizerDeleted($id),
-        ];
-
-        $this->assertEquals($expectedEvents, $this->eventStore->getEvents());
     }
 
     /**
@@ -233,16 +214,31 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_handles_delete_commands()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario->withAggregateId($organizerId)
+            ->given([$this->organizerCreated])
+            ->when(new DeleteOrganizer($organizerId))
+            ->then([new OrganizerDeleted($organizerId)]);
+    }
+
+    /**
+     * @test
      * @dataProvider deleteFromOfferDataProvider
      *
      * @param AbstractDeleteOrganizer $deleteOrganizer
      */
     public function it_ignores_delete_from_offer_commands(AbstractDeleteOrganizer $deleteOrganizer)
     {
-        $this->createOrganizer($deleteOrganizer->getOrganizerId());
-        $this->eventStore->trace();
-        $this->commandHandler->handle($deleteOrganizer);
-        $this->assertEmpty($this->eventStore->getEvents());
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario->withAggregateId($organizerId)
+            ->given([$this->organizerCreated])
+            ->when($deleteOrganizer)
+            ->then([]);
     }
 
     /**
@@ -258,37 +254,5 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new \CultuurNet\UDB3\Event\Commands\DeleteOrganizer('place-id', 'organizer-id'),
             ],
         ];
-    }
-
-    /**
-     * @param $id
-     * @param Title|null $title
-     * @param Url|null $website
-     * @param Address[] $addresses
-     * @param array $phones
-     * @param array $emails
-     * @param array $urls
-     * @return Organizer
-     */
-    private function createOrganizer(
-        $id,
-        Title $title = null,
-        Url $website = null,
-        array $addresses = [],
-        array $phones = [],
-        array $emails = [],
-        array $urls = []
-    ) {
-        if (is_null($title)) {
-            $title = $this->defaultTitle;
-        }
-
-        $website = $website ? $website : Url::fromNative('http://du.de');
-        $contactPoint = new ContactPoint($phones, $emails, $urls);
-
-        $organizer = Organizer::create($id, $website, $title, $addresses, $contactPoint);
-        $this->repository->save($organizer);
-
-        return $organizer;
     }
 }

@@ -2,11 +2,18 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
+use ValueObjects\Geography\Country;
+use ValueObjects\String\String as StringLiteral;
 
 class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,15 +29,17 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
             new Title('title'),
             new EventType('bar_id', 'bar'),
             new Location(
-                'cdbid',
-                'Repeteerkot',
-                'Belgium',
-                'Zottegem',
-                '9620',
-                'De straat'
+                '335be568-aaf0-4147-80b6-9267daafe23b',
+                new StringLiteral('Repeteerkot'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('9630'),
+                    new Locality('Zottegem'),
+                    Country::fromNative('BE')
+                )
             ),
             new Calendar(
-                'permanent'
+                CalendarType::PERMANENT()
             ),
             new Theme('themeid', 'theme_label')
         );
@@ -45,15 +54,17 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
         $expectedTitle = new Title('title');
         $expectedEventType = new EventType('bar_id', 'bar');
         $expectedLocation = new Location(
-            'cdbid',
-            'Repeteerkot',
-            'Belgium',
-            'Zottegem',
-            '9620',
-            'De straat'
+            '335be568-aaf0-4147-80b6-9267daafe23b',
+            new StringLiteral('Repeteerkot'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9630'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )
         );
         $expectedCalendar = new Calendar(
-            'permanent'
+            CalendarType::PERMANENT()
         );
         $expectedTheme = new Theme('themeid', 'theme_label');
 

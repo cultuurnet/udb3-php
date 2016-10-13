@@ -2,13 +2,20 @@
 
 namespace test\Event\Events;
 
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
+use ValueObjects\Geography\Country;
+use ValueObjects\String\String as StringLiteral;
 
 class EventCreatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,12 +37,14 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->location = new Location(
-            'id',
-            'name',
-            'country',
-            'locality',
-            'postal',
-            'street'
+            '335be568-aaf0-4147-80b6-9267daafe23b',
+            new StringLiteral('Repeteerkot'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9630'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )
         );
 
         $this->publicationDate = DateTimeImmutable::createFromFormat(
@@ -48,7 +57,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
             new Title('title'),
             new EventType('id', 'label'),
             $this->location,
-            new Calendar('permanent'),
+            new Calendar(CalendarType::PERMANENT()),
             new Theme('id', 'label'),
             $this->publicationDate
         );
@@ -84,7 +93,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
     public function it_stores_an_event_calendar()
     {
         $this->assertEquals(
-            new Calendar('permanent'),
+            new Calendar(CalendarType::PERMANENT()),
             $this->eventCreated->getCalendar()
         );
     }
@@ -141,21 +150,17 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     'title' => 'title',
                     'theme' => null,
                     'location' => array(
-                        'cdbid' => 'cdbid',
+                        'cdbid' => 'd379187b-7f71-4403-8fff-645a28be8fd0',
                         'name' => 'Repeteerkot',
                         'address' => array(
-                            'addressCountry' => 'Belgium',
+                            'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
+                            'streetAddress' => 'Kerkstraat 69'
                         ),
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
@@ -169,15 +174,17 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
-                        '9620',
-                        'De straat'
+                        'd379187b-7f71-4403-8fff-645a28be8fd0',
+                        new StringLiteral('Repeteerkot'),
+                        new Address(
+                            new Street('Kerkstraat 69'),
+                            new PostalCode('9620'),
+                            new Locality('Zottegem'),
+                            Country::fromNative('BE')
+                        )
                     ),
                     new Calendar(
-                        'permanent'
+                        CalendarType::PERMANENT()
                     )
                 ),
             ],
@@ -191,21 +198,17 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                         'domain' => 'theme',
                     ],
                     'location' => array(
-                        'cdbid' => 'cdbid',
+                        'cdbid' => 'd379187b-7f71-4403-8fff-645a28be8fd0',
                         'name' => 'Repeteerkot',
                         'address' => array(
-                            'addressCountry' => 'Belgium',
+                            'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
+                            'streetAddress' => 'Kerkstraat 69'
                         ),
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
@@ -219,15 +222,17 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
-                        '9620',
-                        'De straat'
+                        'd379187b-7f71-4403-8fff-645a28be8fd0',
+                        new StringLiteral('Repeteerkot'),
+                        new Address(
+                            new Street('Kerkstraat 69'),
+                            new PostalCode('9620'),
+                            new Locality('Zottegem'),
+                            Country::fromNative('BE')
+                        )
                     ),
                     new Calendar(
-                        'permanent'
+                        CalendarType::PERMANENT()
                     ),
                     new Theme('123', 'foo')
                 ),
@@ -238,48 +243,46 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     'title' => 'title',
                     'theme' => null,
                     'location' => array(
-                        'cdbid' => 'cdbid',
+                        'cdbid' => 'd379187b-7f71-4403-8fff-645a28be8fd0',
                         'name' => 'Repeteerkot',
                         'address' => array(
-                            'addressCountry' => 'Belgium',
+                            'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'De straat'
+                            'streetAddress' => 'Kerkstraat 69'
                         ),
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
-                        'startDate' => '',
-                        'endDate' => '',
-                        'timestamps' => array(),
-                        'openingHours' => array()
                     ),
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype'
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+0200'
+                    'publication_date' => '2016-08-01T00:00:00+02:00'
                 ],
                 new EventCreated(
                     'test 456',
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(
-                        'cdbid',
-                        'Repeteerkot',
-                        'Belgium',
-                        'Zottegem',
-                        '9620',
-                        'De straat'
+                        'd379187b-7f71-4403-8fff-645a28be8fd0',
+                        new StringLiteral('Repeteerkot'),
+                        new Address(
+                            new Street('Kerkstraat 69'),
+                            new PostalCode('9620'),
+                            new Locality('Zottegem'),
+                            Country::fromNative('BE')
+                        )
                     ),
                     new Calendar(
-                        'permanent'
+                        CalendarType::PERMANENT()
                     ),
                     null,
                     DateTimeImmutable::createFromFormat(
-                        \DateTime::ISO8601,
-                        '2016-08-01T00:00:00+0200'
+                        \DateTime::ATOM,
+                        '2016-08-01T00:00:00+02:00'
                     )
                 ),
             ],

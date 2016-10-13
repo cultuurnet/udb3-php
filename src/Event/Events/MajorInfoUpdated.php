@@ -1,17 +1,12 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Events\MajorInfoUpdated.
- */
 namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -31,12 +26,12 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
     /**
      * @var EventType
      */
-    private $eventType = null;
+    private $eventType;
 
     /**
-     * @var Theme
+     * @var Theme|null
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var Location
@@ -137,17 +132,13 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        $theme = null;
-        if (!empty($data['theme'])) {
-            $theme = Theme::deserialize($data['theme']);
-        }
         return new static(
             $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Location::deserialize($data['location']),
             Calendar::deserialize($data['calendar']),
-            $theme
+            empty($data['theme']) ? null : Theme::deserialize($data['theme'])
         );
     }
 }

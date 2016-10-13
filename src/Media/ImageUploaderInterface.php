@@ -5,6 +5,10 @@ namespace CultuurNet\UDB3\Media;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\String\String;
 
+/**
+ * @todo Move to udb3-symfony
+ * @see https://jira.uitdatabank.be/browse/III-1513
+ */
 interface ImageUploaderInterface
 {
     /**

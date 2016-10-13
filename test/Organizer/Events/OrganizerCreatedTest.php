@@ -2,9 +2,13 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 
 class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -73,10 +77,10 @@ class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
                     'title' => 'title',
                     'addresses' => [
                         0 => [
-                            'streetAddress' => 'streetAddress',
+                            'streetAddress' => 'Kerkstraat 69',
                             'postalCode' => '3000',
-                            'locality' => 'Leuven',
-                            'country' => 'Belgium',
+                            'addressLocality' => 'Leuven',
+                            'addressCountry' => 'BE',
                         ],
                     ],
                     'phones' => [
@@ -92,7 +96,14 @@ class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
                 new OrganizerCreated(
                     'organizer_id',
                     new Title('title'),
-                    array(new Address('streetAddress', '3000', 'Leuven', 'Belgium')),
+                    array(
+                        new Address(
+                            new Street('Kerkstraat 69'),
+                            new PostalCode('3000'),
+                            new Locality('Leuven'),
+                            Country::fromNative('BE')
+                        )
+                    ),
                     array('0123456789'),
                     array('foo@bar.com'),
                     array('http://foo.bar')

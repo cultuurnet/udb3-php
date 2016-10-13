@@ -3,7 +3,12 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
@@ -19,7 +24,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\CollaborationData;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -27,8 +32,9 @@ use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Translation;
 use Guzzle\Tests\Http\DuplicateAggregatorTest;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 class EventTest extends AggregateRootScenarioTestCase
@@ -58,14 +64,16 @@ class EventTest extends AggregateRootScenarioTestCase
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
-                'LOCATION-ABC-123',
-                '$name',
-                '$country',
-                '$locality',
-                '$postalcode',
-                '$street'
+                UUID::generateAsString(),
+                new StringLiteral('P-P-Partyzone'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
             ),
-            new Calendar('permanent', '', '')
+            new Calendar(CalendarType::PERMANENT())
         );
     }
 
@@ -84,14 +92,16 @@ class EventTest extends AggregateRootScenarioTestCase
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
-                'LOCATION-ABC-123',
-                '$name',
-                '$country',
-                '$locality',
-                '$postalcode',
-                '$street'
+                UUID::generateAsString(),
+                new StringLiteral('P-P-Partyzone'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
             ),
-            new Calendar('permanent', '', '')
+            new Calendar(CalendarType::PERMANENT())
         );
     }
 
@@ -193,9 +203,9 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $expectedLabels = [
@@ -217,17 +227,17 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $cdbXmlEdited = $this->getSample('event_entryapi_valid_with_keywords_edited.xml');
 
         $event->updateFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXmlEdited),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $expectedLabels = [
@@ -291,7 +301,7 @@ class EventTest extends AggregateRootScenarioTestCase
                 [
                     $eventImportedFromUdb2,
                     new LabelsMerged(
-                        new String($id),
+                        new StringLiteral($id),
                         new LabelCollection(
                             [
                                 $label
@@ -425,9 +435,9 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $labels = new LabelCollection(
@@ -465,9 +475,9 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(
+            new StringLiteral(
                 self::NS_CDBXML_3_3
             )
         );
@@ -483,25 +493,25 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $event->applyTranslation(
             new Language('fr'),
-            new String('Dizorkestra en concert'),
-            new String('Concert Dizôrkestra, un groupe qui.'),
-            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+            new StringLiteral('Dizorkestra en concert'),
+            new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
+            new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
         );
 
         $this->assertEquals(
             array(
                 'fr' => new Translation(
                     new Language('fr'),
-                    new String('Dizorkestra en concert'),
-                    new String('Concert Dizôrkestra, un groupe qui.'),
-                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                    new StringLiteral('Dizorkestra en concert'),
+                    new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
+                    new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
                 ),
             ),
             $event->getTranslations()
@@ -516,27 +526,27 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(
+            new StringLiteral(
                 self::NS_CDBXML_3_3
             )
         );
 
         $event->applyTranslation(
             new Language('fr'),
-            new String('Dizorkestra en concert'),
-            new String('Concert Dizôrkestra, un groupe qui.'),
-            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+            new StringLiteral('Dizorkestra en concert'),
+            new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
+            new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
         );
 
         $this->assertEquals(
             array(
                 'fr' => new Translation(
                     new Language('fr'),
-                    new String('Dizorkestra en concert'),
-                    new String('Concert Dizôrkestra, un groupe qui.'),
-                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                    new StringLiteral('Dizorkestra en concert'),
+                    new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
+                    new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
                 ),
             ),
             $event->getTranslations()
@@ -544,18 +554,18 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $event->applyTranslation(
             new Language('fr'),
-            new String('Nicorkestra en concert'),
-            new String('Concert Nicôrkestra, un groupe qui.'),
-            new String('Concert Nicôrkestra, un groupe qui se montre inventif.')
+            new StringLiteral('Nicorkestra en concert'),
+            new StringLiteral('Concert Nicôrkestra, un groupe qui.'),
+            new StringLiteral('Concert Nicôrkestra, un groupe qui se montre inventif.')
         );
 
         $this->assertEquals(
             array(
                 'fr' => new Translation(
                     new Language('fr'),
-                    new String('Nicorkestra en concert'),
-                    new String('Concert Nicôrkestra, un groupe qui.'),
-                    new String('Concert Nicôrkestra, un groupe qui se montre inventif.')
+                    new StringLiteral('Nicorkestra en concert'),
+                    new StringLiteral('Concert Nicôrkestra, un groupe qui.'),
+                    new StringLiteral('Concert Nicôrkestra, un groupe qui se montre inventif.')
                 ),
             ),
             $event->getTranslations()
@@ -570,25 +580,25 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $event->applyTranslation(
             new Language('fr'),
-            new String('Dizorkestra en concert'),
-            new String('Concert Dizôrkestra, un groupe qui.'),
-            new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+            new StringLiteral('Dizorkestra en concert'),
+            new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
+            new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
         );
 
         $this->assertEquals(
             array(
                 'fr' => new Translation(
                     new Language('fr'),
-                    new String('Dizorkestra en concert'),
-                    new String('Concert Dizôrkestra, un groupe qui.'),
-                    new String('Concert Dizôrkestra, un groupe qui se montre inventif.')
+                    new StringLiteral('Dizorkestra en concert'),
+                    new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
+                    new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
                 ),
             ),
             $event->getTranslations()
@@ -612,9 +622,9 @@ class EventTest extends AggregateRootScenarioTestCase
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
 
         $event = Event::createFromCdbXml(
-            new String('someId'),
+            new StringLiteral('someId'),
             new EventXmlString($cdbXml),
-            new String(self::NS_CDBXML_3_3)
+            new StringLiteral(self::NS_CDBXML_3_3)
         );
 
         $this->assertEquals(
@@ -671,9 +681,9 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new EventCreatedFromCdbXml(
-                        new String('someId'),
+                        new StringLiteral('someId'),
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     )
                 ]
             )
@@ -693,12 +703,12 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new CollaborationDataAdded(
-                        new String('someId'),
+                        new StringLiteral('someId'),
                         $french,
                         $collaborationData
                     ),
                     new CollaborationDataAdded(
-                        new String('someId'),
+                        new StringLiteral('someId'),
                         $french,
                         $secondCollaborationData
                     ),
@@ -713,7 +723,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
 
-        $eventId = new String('someId');
+        $eventId = new StringLiteral('someId');
 
         $french = new Language('fr');
 
@@ -737,7 +747,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     new EventCreatedFromCdbXml(
                         $eventId,
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     ),
                     new CollaborationDataAdded(
                         $eventId,
@@ -769,7 +779,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $french = new Language('fr');
         $english = new Language('en');
 
-        $eventId = new String('someId');
+        $eventId = new StringLiteral('someId');
 
         $collaborationData = CollaborationData::deserialize(
             [
@@ -791,7 +801,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     new EventCreatedFromCdbXml(
                         $eventId,
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     ),
                     new CollaborationDataAdded(
                         $eventId,
@@ -830,7 +840,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $french = new Language('fr');
 
-        $eventId = new String('someId');
+        $eventId = new StringLiteral('someId');
 
         $collaborationData = CollaborationData::deserialize(
             [
@@ -847,12 +857,12 @@ class EventTest extends AggregateRootScenarioTestCase
 
         // Update with all data different, except for sub brand.
         $updatedCollaborationData = $collaborationData
-            ->withTitle(new String('title bis'))
-            ->withText(new String('description EN bis'))
-            ->withCopyright(new String('copyright bis'))
-            ->withKeyword(new String('Lorem bis'))
-            ->withImage(new String('/image.en.bis.png'))
-            ->withArticle(new String('Ipsum bis'))
+            ->withTitle(new StringLiteral('title bis'))
+            ->withText(new StringLiteral('description EN bis'))
+            ->withCopyright(new StringLiteral('copyright bis'))
+            ->withKeyword(new StringLiteral('Lorem bis'))
+            ->withImage(new StringLiteral('/image.en.bis.png'))
+            ->withArticle(new StringLiteral('Ipsum bis'))
             ->withLink(Url::fromNative('http://google.bis.com'));
 
         $otherSubBrandCollaborationData = CollaborationData::deserialize(
@@ -875,7 +885,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     new EventCreatedFromCdbXml(
                         $eventId,
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     ),
                     new CollaborationDataAdded(
                         $eventId,
@@ -921,8 +931,8 @@ class EventTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new String('sexy ladies without clothes'),
-            new String('Bart Ramakers'),
+            new StringLiteral('sexy ladies without clothes'),
+            new StringLiteral('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
@@ -935,9 +945,9 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new EventCreatedFromCdbXml(
-                        new String('foo'),
+                        new StringLiteral('foo'),
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     ),
                     new ImageAdded(
                         'foo',
@@ -967,8 +977,8 @@ class EventTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new String('sexy ladies without clothes'),
-            new String('Bart Ramakers'),
+            new StringLiteral('sexy ladies without clothes'),
+            new StringLiteral('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
@@ -977,9 +987,9 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new EventCreatedFromCdbXml(
-                        new String('foo'),
+                        new StringLiteral('foo'),
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     ),
                     new ImageAdded(
                         'foo',
@@ -1016,8 +1026,8 @@ class EventTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new String('sexy ladies without clothes'),
-            new String('Bart Ramakers'),
+            new StringLiteral('sexy ladies without clothes'),
+            new StringLiteral('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
@@ -1026,9 +1036,9 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new EventCreatedFromCdbXml(
-                        new String('foo'),
+                        new StringLiteral('foo'),
                         new EventXmlString($cdbXml),
-                        new String('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
                     ),
                 ]
             )

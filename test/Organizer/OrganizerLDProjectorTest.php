@@ -232,7 +232,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $emails = $body->email;
+                $emails = $body->contactPoint->email;
                 $expectedEmails = [
                     'info@villanella.be'
                 ];
@@ -256,7 +256,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                return !property_exists($body, 'email');
+                return !property_exists($body->contactPoint, 'email');
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -274,7 +274,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $emails = $body->email;
+                $emails = $body->contactPoint->email;
                 $expectedEmails = [
                     'info@villanella.be',
                     'dirk@dirkinc.be'
@@ -299,7 +299,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $phones = $body->phone;
+                $phones = $body->contactPoint->phone;
                 $expectedPhones = [
                     '+32 3 260 96 10'
                 ];
@@ -323,7 +323,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $phones = $body->phone;
+                $phones = $body->contactPoint;
                 $expectedPhones = [
                     '+32 3 260 96 10',
                     '+32 3 062 69 01'
@@ -348,7 +348,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                return !property_exists($body, 'phone');
+                return !property_exists($body->contactPoint, 'phone');
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);

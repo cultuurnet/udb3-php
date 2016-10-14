@@ -256,7 +256,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                return !property_exists($body->contactPoint, 'email');
+                return empty($body->contactPoint->email);
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -304,8 +304,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                     '+32 3 260 96 10'
                 ];
 
-                return is_array($phones) &&
-                $phones == $expectedPhones;
+                return is_array($phones) && $phones == $expectedPhones;
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -323,14 +322,13 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $phones = $body->contactPoint;
+                $phones = $body->contactPoint->phone;
                 $expectedPhones = [
                     '+32 3 260 96 10',
                     '+32 3 062 69 01'
                 ];
 
-                return is_array($phones) &&
-                $phones == $expectedPhones;
+                return is_array($phones) && $phones == $expectedPhones;
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -348,7 +346,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                return !property_exists($body->contactPoint, 'phone');
+                return empty($body->contactPoint->phone);
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);

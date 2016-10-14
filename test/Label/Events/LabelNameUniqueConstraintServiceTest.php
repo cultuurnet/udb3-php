@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class UniqueHelperTest extends \PHPUnit_Framework_TestCase
+class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var StringLiteral

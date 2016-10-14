@@ -3,16 +3,16 @@
 namespace CultuurNet\UDB3\Label\Events;
 
 use Broadway\Domain\DomainMessage;
-use CultuurNet\UDB3\EventSourcing\DBAL\UniqueHelperInterface;
+use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintServiceInterface;
 use ValueObjects\String\String as StringLiteral;
 
-class UniqueHelper implements UniqueHelperInterface
+class LabelNameUniqueConstraintService implements UniqueConstraintServiceInterface
 {
     /**
      * @param DomainMessage $domainMessage
      * @return bool
      */
-    public function requiresUnique(DomainMessage $domainMessage)
+    public function hasUniqueConstraint(DomainMessage $domainMessage)
     {
         $event = $domainMessage->getPayload();
 
@@ -24,7 +24,7 @@ class UniqueHelper implements UniqueHelperInterface
      * @param DomainMessage $domainMessage
      * @return StringLiteral
      */
-    public function getUnique(DomainMessage $domainMessage)
+    public function getUniqueConstraintValue(DomainMessage $domainMessage)
     {
         /** @var Created|CopyCreated $event */
         $event = $domainMessage->getPayload();

@@ -7,6 +7,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventStore\DBALEventStore;
 use CultuurNet\UDB3\EventSourcing\AbstractEventStoreDecorator;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Type;
 use ValueObjects\String\String as StringLiteral;
@@ -32,29 +33,29 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
     private $uniqueTableName;
 
     /**
-     * @var UniqueHelperInterface
+     * @var UniqueConstraintServiceInterface
      */
-    private $uniqueHelper;
+    private $uniqueConstraintService;
 
     /**
      * UniqueNameDBALEventStoreDecorator constructor.
      * @param DBALEventStore $dbalEventStore
      * @param Connection $connection
      * @param StringLiteral $uniqueTableName
-     * @param UniqueHelperInterface $uniqueHelper
+     * @param UniqueConstraintServiceInterface $uniqueConstraintService
      */
     public function __construct(
         DBALEventStore $dbalEventStore,
         Connection $connection,
         StringLiteral $uniqueTableName,
-        UniqueHelperInterface $uniqueHelper
+        UniqueConstraintServiceInterface $uniqueConstraintService
     ) {
         parent::__construct($dbalEventStore);
 
         $this->dbalEventStore = $dbalEventStore;
         $this->connection = $connection;
         $this->uniqueTableName = $uniqueTableName;
-        $this->uniqueHelper = $uniqueHelper;
+        $this->uniqueConstraintService = $uniqueConstraintService;
     }
 
     /**
@@ -71,10 +72,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
             parent::append($id, $eventStream);
 
             foreach ($eventStream as $domainMessage) {
-                $this->processDomainMessage(
-                    $this->uniqueHelper,
-                    $domainMessage
-                );
+                $this->processUniqueConstraint($domainMessage);
             }
 
             $this->connection->commit();
@@ -127,68 +125,29 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
     }
 
     /**
-     * @param UniqueHelperInterface $uniqueHelper
      * @param DomainMessage $domainMessage
      * @throws UniqueConstraintException
      */
-    private function processDomainMessage(
-        UniqueHelperInterface $uniqueHelper,
+    private function processUniqueConstraint(
         DomainMessage $domainMessage
     ) {
-        if ($uniqueHelper->requiresUnique($domainMessage)) {
-            $unique = $uniqueHelper->getUnique($domainMessage);
+        if ($this->uniqueConstraintService->hasUniqueConstraint($domainMessage)) {
+            $uniqueValue = $this->uniqueConstraintService->getUniqueConstraintValue($domainMessage);
 
-            if ($this->isUnique($unique->toNative())) {
-                $this->insertUuidAndUnique(
-                    $domainMessage->getId(),
-                    $unique->toNative()
+            try {
+                $this->connection->insert(
+                    $this->uniqueTableName,
+                    [
+                        self::UUID_COLUMN => $domainMessage->getId(),
+                        self::UNIQUE_COLUMN => $uniqueValue->toNative(),
+                    ]
                 );
-            } else {
+            } catch(DBALException $e) {
                 throw new UniqueConstraintException(
                     $domainMessage->getId(),
-                    $unique
+                    $uniqueValue
                 );
             }
         }
-    }
-
-    /**
-     * @param string $unique
-     * @return bool
-     */
-    private function isUnique($unique)
-    {
-        $queryBuilder = $this->connection->createQueryBuilder();
-
-        $queryBuilder->select(self::UUID_COLUMN)
-            ->from($this->uniqueTableName->toNative())
-            ->where(self::UNIQUE_COLUMN . ' = ?')
-            ->setParameters([$unique]);
-
-        $statement = $queryBuilder->execute();
-        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
-
-        return (count($rows) < 1);
-    }
-
-    /**
-     * @param string $uuid
-     * @param string $unique
-     */
-    private function insertUuidAndUnique($uuid, $unique)
-    {
-        $queryBuilder = $this->connection->createQueryBuilder();
-
-        $queryBuilder->insert($this->uniqueTableName)
-            ->values([
-                self::UUID_COLUMN => '?',
-                self::UNIQUE_COLUMN => '?'
-            ])
-            ->setParameters([
-                $uuid,
-                $unique
-            ]);
-
-        $queryBuilder->execute();
     }
 }

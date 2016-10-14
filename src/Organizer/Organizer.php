@@ -53,6 +53,10 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     public function __construct()
     {
+        // Contact points can be empty, but we only want to start recording
+        // ContactPointUpdated events as soon as the organizer is updated
+        // with a non-empty contact point. To enforce this we initialize the
+        // aggregate state with an empty contact point.
         $this->contactPoint = new ContactPoint();
     }
 

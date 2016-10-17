@@ -5,9 +5,13 @@ namespace CultuurNet\UDB3\Offer;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
 use ValueObjects\Web\Url;
-use ValueObjects\String as StringLiteral;
+use ValueObjects\String\String as StringLiteral;
 
 class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
 {
@@ -88,6 +92,18 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                         new StringLiteral('my pic'),
                         new StringLiteral('Dirk Dirkington'),
                         Url::fromNative('http://foo.bar/media/my_pic.jpg')
+                    )
+                ]
+            ],
+            [
+                'updatePriceInfo',
+                [
+                    'offer-id',
+                    $priceInfo = new PriceInfo(
+                        new BasePrice(
+                            Price::fromFloat(10.5),
+                            Currency::fromNative('EUR')
+                        )
                     )
                 ]
             ]

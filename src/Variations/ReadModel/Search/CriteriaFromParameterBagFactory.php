@@ -10,6 +10,10 @@ use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+/**
+ * @todo Move to udb3-symfony
+ * @see https://jira.uitdatabank.be/browse/III-1512
+ */
 class CriteriaFromParameterBagFactory
 {
     /**

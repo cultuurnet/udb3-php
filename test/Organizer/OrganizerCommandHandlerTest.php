@@ -8,7 +8,10 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -19,6 +22,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Geography\Country;
 
 class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -82,7 +86,12 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->organizerCreated = new OrganizerCreated(
             new UUID(),
             new Title('Organizer Title'),
-            [new Address('street', 'postal', 'locality', 'country')],
+            [new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9630'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )],
             ['phone'],
             ['email'],
             ['url']

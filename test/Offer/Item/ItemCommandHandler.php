@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\SelectMainImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 
@@ -106,6 +107,11 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getUpdateBookingInfoClassName()
     {
         return UpdateBookingInfo::class;
+    }
+
+    protected function getUpdatePriceInfoClassName()
+    {
+        return UpdatePriceInfo::class;
     }
 
     protected function getDeleteOfferClassName()

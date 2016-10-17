@@ -43,6 +43,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
@@ -407,6 +408,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getBookingInfoUpdatedClassName()
     {
         return BookingInfoUpdated::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
     }
 
     protected function getContactPointUpdatedClassName()

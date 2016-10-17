@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\UDB3\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
@@ -41,9 +41,11 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
@@ -133,10 +135,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param EventType $eventType
      * @param Address $address
      * @param CalendarInterface $calendar
-     * @param type $theme
+     * @param Theme $theme
      */
-    public function updateMajorInfo(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
-    {
+    public function updateMajorInfo(
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
     }
 
@@ -382,6 +389,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo)
     {
         return new BookingInfoUpdated($this->actorId, $bookingInfo);
+    }
+
+    /**
+     * @param PriceInfo $priceInfo
+     * @return PriceInfoUpdated
+     */
+    protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo)
+    {
+        return new PriceInfoUpdated($this->actorId, $priceInfo);
     }
 
     /**

@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\Address;
 
-use CultuurNet\UDB3\Address;
-
 class DefaultAddressFormatter implements AddressFormatterInterface
 {
     /**
@@ -15,6 +13,6 @@ class DefaultAddressFormatter implements AddressFormatterInterface
         return $address->getStreetAddress() . ', ' .
             $address->getPostalCode() . ' ' .
             $address->getLocality() . ', ' .
-            $address->getCountry();
+            $address->getCountry()->getCode();
     }
 }

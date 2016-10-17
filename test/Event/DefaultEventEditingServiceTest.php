@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
@@ -9,7 +6,12 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\EventHandling\SimpleEventBus;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -19,10 +21,12 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PlaceService;
-use ValueObjects\String\String;
+use ValueObjects\Geography\Country;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
@@ -93,7 +97,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
         );
-        
+
         $this->writeRepository = new EventRepository(
             $this->eventStore,
             new SimpleEventBus()
@@ -124,7 +128,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->translateTitle(
             $id,
             new Language('nl'),
-            new String('new title')
+            new StringLiteral('new title')
         );
     }
 
@@ -142,7 +146,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventEditingService->translateDescription(
             $id,
             new Language('nl'),
-            new String('new description')
+            new StringLiteral('new description')
         );
     }
 
@@ -182,8 +186,13 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $eventId = 'generated-uuid';
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
-        $calendar = new Calendar('permanent', '', '');
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+        $address = new Address($street, $postalCode, $locality, $country);
+        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
         $this->eventStore->trace();
@@ -217,12 +226,17 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $eventId = 'generated-uuid';
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street');
-        $calendar = new Calendar('permanent', '', '');
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+        $address = new Address($street, $postalCode, $locality, $country);
+        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
         $publicationDate = \DateTimeImmutable::createFromFormat(
-            \DateTime::ISO8601,
-            '2016-08-01T00:00:00+0000'
+            \DateTime::ATOM,
+            '2016-08-01T00:00:00+00:00'
         );
 
         $this->eventEditingService = $this->eventEditingService

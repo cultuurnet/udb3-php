@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
@@ -177,6 +178,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getUpdateBookingInfoClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdatePriceInfoClassName();
 
     /**
      * @return string
@@ -400,6 +406,20 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
 
         $offer->updateBookingInfo(
             $updateBookingInfo->getBookingInfo()
+        );
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractUpdatePriceInfo $updatePriceInfo
+     */
+    private function handleUpdatePriceInfo(AbstractUpdatePriceInfo $updatePriceInfo)
+    {
+        $offer = $this->load($updatePriceInfo->getItemId());
+
+        $offer->updatePriceInfo(
+            $updatePriceInfo->getPriceInfo()
         );
 
         $this->offerRepository->save($offer);

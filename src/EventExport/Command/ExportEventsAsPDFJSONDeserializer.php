@@ -16,6 +16,10 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Title;
 use ValueObjects\String\String;
 use ValueObjects\Web\EmailAddress;
 
+/**
+ * @todo Move to udb3-symfony-php.
+ * @see https://jira.uitdatabank.be/browse/III-1436
+ */
 class ExportEventsAsPDFJSONDeserializer extends JSONDeserializer
 {
     /**

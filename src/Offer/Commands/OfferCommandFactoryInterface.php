@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 use CultuurNet\UDB3\Language;
@@ -130,6 +131,13 @@ interface OfferCommandFactoryInterface
      * @return AbstractUpdateBookingInfo
      */
     public function createUpdateBookingInfoCommand($id, BookingInfo $bookingInfo);
+
+    /**
+     * @param $id
+     * @param PriceInfo $priceInfo
+     * @return AbstractUpdatePriceInfo
+     */
+    public function createUpdatePriceInfoCommand($id, PriceInfo $priceInfo);
 
     /**
      * @param string $id

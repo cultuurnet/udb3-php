@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -34,6 +35,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -194,6 +196,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getBookingInfoUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getPriceInfoUpdatedClassName();
 
     /**
      * @return string
@@ -524,6 +531,37 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
         $offerLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     */
+    protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($priceInfoUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->priceInfo = [];
+
+        $basePrice = $priceInfoUpdated->getPriceInfo()->getBasePrice();
+
+        $offerLd->priceInfo[] = [
+            'category' => 'base',
+            'name' => 'Basistarief',
+            'price' => $basePrice->getPrice()->toFloat(),
+            'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
+        ];
+
+        foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
+            $offerLd->priceInfo[] = [
+                'category' => 'tariff',
+                'name' => $tariff->getName()->toNative(),
+                'price' => $tariff->getPrice()->toFloat(),
+                'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
+            ];
+        }
 
         $this->repository->save($document->withBody($offerLd));
     }

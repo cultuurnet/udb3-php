@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -31,8 +32,10 @@ use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -197,6 +200,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @return string
      */
+    abstract protected function getPriceInfoUpdatedClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getContactPointUpdatedClassName();
 
     /**
@@ -213,6 +221,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getTypicalAgeRangeDeletedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getPublishedClassName();
 
     /**
      * @return string
@@ -523,6 +536,37 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
+     * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     */
+    protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($priceInfoUpdated);
+
+        $offerLd = $document->getBody();
+        $offerLd->priceInfo = [];
+
+        $basePrice = $priceInfoUpdated->getPriceInfo()->getBasePrice();
+
+        $offerLd->priceInfo[] = [
+            'category' => 'base',
+            'name' => 'Basistarief',
+            'price' => $basePrice->getPrice()->toFloat(),
+            'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
+        ];
+
+        foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
+            $offerLd->priceInfo[] = [
+                'category' => 'tariff',
+                'name' => $tariff->getName()->toNative(),
+                'price' => $tariff->getPrice()->toFloat(),
+                'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
+            ];
+        }
+
+        $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
      * Apply the contact point updated event to the offer repository.
      * @param AbstractContactPointUpdated $contactPointUpdated
      */
@@ -583,6 +627,16 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         unset($offerLd->typicalAgeRange);
 
         $this->repository->save($document->withBody($offerLd));
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->applyEventTransformation($published, function ($offerLd) {
+            $offerLd->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+        });
     }
 
     /**

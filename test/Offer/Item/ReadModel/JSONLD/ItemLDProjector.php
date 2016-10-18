@@ -12,9 +12,11 @@ use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
@@ -22,6 +24,7 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 
 class ItemLDProjector extends OfferLDProjector
 {
@@ -98,6 +101,14 @@ class ItemLDProjector extends OfferLDProjector
         return BookingInfoUpdated::class;
     }
 
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
+    }
+
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
@@ -116,6 +127,11 @@ class ItemLDProjector extends OfferLDProjector
     protected function getTypicalAgeRangeDeletedClassName()
     {
         return TypicalAgeRangeDeleted::class;
+    }
+
+    protected function getPublishedClassName()
+    {
+        return Published::class;
     }
 
     protected function getApprovedClassName()

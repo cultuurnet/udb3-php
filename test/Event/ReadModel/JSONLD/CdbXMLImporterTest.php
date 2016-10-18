@@ -367,11 +367,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_import_a_new_event_with_semicolons_in_keyword_tag()
     {
-        $this->setExpectedException('InvalidArgumentException');
-
-        $this->createJsonEventFromCdbXml(
+        $jsonEvent = $this->createJsonEventFromCdbXml(
             'event_with_semicolon_in_keyword_tag_but_too_new.cdbxml.xml'
         );
+
+        $this->assertEquals(['Franse kennis'], $jsonEvent->labels);
     }
 
     /**
@@ -381,6 +381,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
 
-        $this->assertEquals(WorkflowStatus::APPROVED, $jsonEvent->workflowStatus);
+        $this->assertEquals('APPROVED', $jsonEvent->workflowStatus);
     }
 }

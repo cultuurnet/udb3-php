@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Place\Commands;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
@@ -19,12 +19,12 @@ class UpdateMajorInfo extends AbstractCommand
     /**
      * @var EventType
      */
-    private $eventType = null;
+    private $eventType;
 
     /**
-     * @var Theme
+     * @var Theme|null
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var Address
@@ -37,12 +37,12 @@ class UpdateMajorInfo extends AbstractCommand
     private $calendar;
 
     /**
-     * @param $placeId
+     * @param string $placeId
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
      * @param CalendarInterface $calendar
-     * @param null $theme
+     * @param Theme|null $theme
      */
     public function __construct(
         $placeId,
@@ -50,7 +50,7 @@ class UpdateMajorInfo extends AbstractCommand
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null
     ) {
         parent::__construct($placeId);
         $this->title = $title;
@@ -77,7 +77,7 @@ class UpdateMajorInfo extends AbstractCommand
     }
 
     /**
-     * @return Theme | null
+     * @return Theme|null
      */
     public function getTheme()
     {

@@ -1,13 +1,15 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\ReadModel\Permission;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -15,10 +17,11 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\EventXmlString;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String;
+use ValueObjects\Geography\Country;
+use ValueObjects\String\String as StringLiteral;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -68,17 +71,17 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $payload
         );
 
-        $userId = new String('123');
+        $userId = new StringLiteral('123');
 
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
-            ->with(new String('gentonfiles@gmail.com'))
+            ->with(new StringLiteral('gentonfiles@gmail.com'))
             ->willReturn($userId);
 
         $this->repository->expects($this->once())
             ->method('markOfferEditableByUser')
             ->with(
-                new String('dcd1ef37-0608-4824-afe3-99124feda64b'),
+                new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b'),
                 $userId
             );
 
@@ -107,7 +110,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
-            ->with(new String('gentonfiles@gmail.com'))
+            ->with(new StringLiteral('gentonfiles@gmail.com'))
             ->willReturn(null);
 
         $this->repository->expects($this->never())
@@ -122,8 +125,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_permission_to_the_user_identified_by_the_createdby_element_for_events_created_from_cdbxml()
     {
         $cdbXmlVersion = '3.2';
-        $eventId = new String('dcd1ef37-0608-4824-afe3-99124feda64b');
-        $createdBy = new String('gentonfiles@gmail.com');
+        $eventId = new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b');
+        $createdBy = new StringLiteral('gentonfiles@gmail.com');
 
         $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
 
@@ -138,7 +141,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $payload = new EventCreatedFromCdbXml(
             $eventId,
             new EventXmlString((string)$cdbXml),
-            new String(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
+            new StringLiteral(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
         );
 
         $msg = DomainMessage::recordNow(
@@ -148,7 +151,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $payload
         );
 
-        $userId = new String('123');
+        $userId = new StringLiteral('123');
 
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
@@ -171,8 +174,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_any_permissions_for_events_created_from_cdbxml_with_unresolvable_createdby_value()
     {
         $cdbXmlVersion = '3.2';
-        $eventId = new String('dcd1ef37-0608-4824-afe3-99124feda64b');
-        $createdBy = new String('gentonfiles@gmail.com');
+        $eventId = new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b');
+        $createdBy = new StringLiteral('gentonfiles@gmail.com');
 
         $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
 
@@ -187,7 +190,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $payload = new EventCreatedFromCdbXml(
             $eventId,
             new EventXmlString((string)$cdbXml),
-            new String(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
+            new StringLiteral(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
         );
 
         $msg = DomainMessage::recordNow(
@@ -214,8 +217,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_permission_to_the_user_that_submitted_the_cdbxml_for_events_created_from_cdbxml_without_createdby()
     {
         $cdbXmlVersion = '3.2';
-        $eventId = new String('dcd1ef37-0608-4824-afe3-99124feda64b');
-        $userIdWhileSubmittingCdbXml = new String('foo');
+        $eventId = new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b');
+        $userIdWhileSubmittingCdbXml = new StringLiteral('foo');
 
         $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
 
@@ -231,7 +234,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $payload = new EventCreatedFromCdbXml(
             $eventId,
             new EventXmlString((string)$cdbXml),
-            new String(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
+            new StringLiteral(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
         );
 
         $msg = DomainMessage::recordNow(
@@ -261,15 +264,26 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_add_permission_to_the_user_that_created_an_event()
     {
-        $userId = new String('user-id');
-        $eventId = new String('event-id');
+        $userId = new StringLiteral('user-id');
+        $eventId = new StringLiteral('event-id');
 
         $payload = new EventCreated(
             $eventId->toNative(),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location('LOCATION-ABC-123', '$name', '$country', '$locality', '$postalcode', '$street'),
-            new Calendar('permanent', '', '')
+            new Location(
+                '395fe7eb-9bac-4647-acae-316b6446a85e',
+                new StringLiteral('Repeteerkot'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('9620'),
+                    new Locality('Zottegem'),
+                    Country::fromNative('BE')
+                )
+            ),
+            new Calendar(
+                CalendarType::PERMANENT()
+            )
         );
 
         $msg = DomainMessage::recordNow(

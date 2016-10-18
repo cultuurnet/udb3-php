@@ -7,8 +7,12 @@ namespace CultuurNet\UDB3\Place\ReadModel\Permission;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -16,12 +20,13 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\EventXmlString;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 use ValueObjects\String\String;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
@@ -200,8 +205,13 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $placeId->toNative(),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Address('$street', '$postalcode', '$locality', '$country'),
-            new Calendar('permanent', '', '')
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            ),
+            new Calendar(CalendarType::PERMANENT())
         );
 
         $msg = DomainMessage::recordNow(

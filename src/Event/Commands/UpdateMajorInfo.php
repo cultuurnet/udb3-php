@@ -1,15 +1,10 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Event\Commands\UpdateMajorInfo.
- */
-
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -27,12 +22,12 @@ class UpdateMajorInfo extends AbstractCommand
     /**
      * @var EventType
      */
-    private $eventType = null;
+    private $eventType;
 
     /**
-     * @var Theme
+     * @var Theme|null
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var Location
@@ -46,7 +41,7 @@ class UpdateMajorInfo extends AbstractCommand
 
     /**
      * UpdateMajorInfo constructor.
-     * @param $eventId
+     * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location

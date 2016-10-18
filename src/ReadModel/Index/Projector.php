@@ -16,6 +16,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -125,7 +126,7 @@ class Projector implements EventListenerInterface
     {
         $this->repository->setUpdateDate($itemId, $dateUpdated);
     }
-    
+
     /**
      * @param \CultureFeed_Cdb_Item_Base $udb2Item
      *
@@ -318,7 +319,7 @@ class Projector implements EventListenerInterface
             EntityType::EVENT(),
             $userId,
             $eventCreated->getTitle(),
-            $location->getPostalcode(),
+            $location->getAddress()->getPostalCode(),
             $this->localDomain,
             $creationDate
         );
@@ -343,7 +344,7 @@ class Projector implements EventListenerInterface
             EntityType::PLACE(),
             $userId,
             $placeCreated->getTitle(),
-            $address->getPostalcode(),
+            $address->getPostalCode(),
             $this->localDomain,
             $creationDate
         );
@@ -472,5 +473,16 @@ class Projector implements EventListenerInterface
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
         $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
+    }
+
+    /**
+     * @param OrganizerDeleted $organizerDeleted
+     */
+    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
+    {
+        $this->repository->deleteIndex(
+            $organizerDeleted->getOrganizerId(),
+            EntityType::ORGANIZER()
+        );
     }
 }

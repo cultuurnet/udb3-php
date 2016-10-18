@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Place\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
@@ -24,6 +25,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Place\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -158,9 +160,22 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     /**
      * @return string
      */
+    protected function getUpdatePriceInfoClassName()
+    {
+        return UpdatePriceInfo::class;
+    }
+
+    /**
+     * @return string
+     */
     protected function getDeleteOfferClassName()
     {
         return DeletePlace::class;
+    }
+
+    protected function getPublishClassName()
+    {
+        return Publish::class;
     }
 
     protected function getApproveClassName()

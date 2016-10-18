@@ -1,19 +1,14 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Place;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
 interface PlaceEditingServiceInterface
@@ -44,7 +39,7 @@ interface PlaceEditingServiceInterface
      * @param string $id
      * @param Title $title
      * @param EventType $eventType
-     * @param Address $address
+     * @param \CultuurNet\UDB3\Address\Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */

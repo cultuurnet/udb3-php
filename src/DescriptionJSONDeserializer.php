@@ -6,6 +6,10 @@ use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
 use ValueObjects\String\String as StringLiteral;
 
+/**
+ * @todo Move to udb3-symfony-php.
+ * @see https://jira.uitdatabank.be/browse/III-1436
+ */
 class DescriptionJSONDeserializer extends JSONDeserializer
 {
     /**

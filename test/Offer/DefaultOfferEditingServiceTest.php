@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
@@ -12,8 +11,13 @@ use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
-use ValueObjects\String\String;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use ValueObjects\Money\Currency;
+use ValueObjects\String\String as StringLiteral;
 
 class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -86,12 +90,12 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->translateTitleCommand = $this->getMockForAbstractClass(
             AbstractTranslateTitle::class,
-            array('foo', new Language('en'), new String('English title'))
+            array('foo', new Language('en'), new StringLiteral('English title'))
         );
 
         $this->translateDescriptionCommand = $this->getMockForAbstractClass(
             AbstractTranslateDescription::class,
-            array('foo', new Language('en'), new String('English description'))
+            array('foo', new Language('en'), new StringLiteral('English description'))
         );
 
         $this->offerEditingService = new DefaultOfferEditingService(
@@ -161,14 +165,14 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->expects($this->once())
             ->method('createTranslateTitleCommand')
-            ->with('foo', new Language('en'), new String('English title'))
+            ->with('foo', new Language('en'), new StringLiteral('English title'))
             ->willReturn($this->translateTitleCommand);
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->willReturn($this->expectedCommandId);
 
-        $commandId = $this->offerEditingService->translateTitle('foo', new Language('en'), new String('English title'));
+        $commandId = $this->offerEditingService->translateTitle('foo', new Language('en'), new StringLiteral('English title'));
 
         $this->assertEquals($this->expectedCommandId, $commandId);
     }
@@ -184,7 +188,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->expects($this->once())
             ->method('createTranslateDescriptionCommand')
-            ->with('foo', new Language('en'), new String('English description'))
+            ->with('foo', new Language('en'), new StringLiteral('English description'))
             ->willReturn($this->translateDescriptionCommand);
 
         $this->commandBus->expects($this->once())
@@ -194,9 +198,47 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $commandId = $this->offerEditingService->translateDescription(
             'foo',
             new Language('en'),
-            new String('English description')
+            new StringLiteral('English description')
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_price_info()
+    {
+        $aggregateId = '940ce4d1-740b-43d2-a1a6-85be04a3eb30';
+        $expectedCommandId = 'f42802e4-c1f1-4aa6-9909-a08cfc66f355';
+
+        $priceInfo = new PriceInfo(
+            new BasePrice(
+                Price::fromFloat(10.5),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $updatePriceInfoCommand = $this->getMockForAbstractClass(
+            AbstractUpdatePriceInfo::class,
+            array($aggregateId, $priceInfo)
+        );
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdatePriceInfoCommand')
+            ->with($aggregateId, $priceInfo)
+            ->willReturn($updatePriceInfoCommand);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updatePriceInfoCommand)
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->offerEditingService->updatePriceInfo(
+            $aggregateId,
+            $priceInfo
+        );
+
+        $this->assertEquals($expectedCommandId, $commandId);
     }
 }

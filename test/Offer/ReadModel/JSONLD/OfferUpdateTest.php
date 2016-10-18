@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class OfferUpdateTest extends \PHPUnit_Framework_TestCase
@@ -12,9 +13,7 @@ class OfferUpdateTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_remove_all_existing_opening_hours_when_we_update_the_calendar()
     {
-        $calendar = new Calendar(
-            'permanent'
-        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
 
         $initialDocument = new JsonDocument(
             'some_id',

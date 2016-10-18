@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 
 class ContentTypes
@@ -26,6 +27,7 @@ class ContentTypes
     {
         return [
             BookingInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-booking-info-updated+json',
+            PriceInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-price-info-updated.json',
             CollaborationDataAdded::class => 'application/vnd.cultuurnet.udb3-events.event-collaboration-data-added+json',
             ContactPointUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-contact-point-updated+json',
             DescriptionTranslated::class => 'application/vnd.cultuurnet.udb3-events.event-description-translated+json',
@@ -53,6 +55,7 @@ class ContentTypes
             TypicalAgeRangeUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-typical-age-range-updated+json',
             TypicalAgeRangeDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-typical-age-range-deleted+json',
             // Moderation
+            Published::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-published+json',
             Approved::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-approved+json',
             Rejected::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-rejected+json',
             FlaggedAsDuplicate::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-flagged-as-duplicate+json',

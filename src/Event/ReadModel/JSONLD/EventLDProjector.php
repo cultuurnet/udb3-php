@@ -30,9 +30,11 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Event\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
@@ -498,7 +500,7 @@ class EventLDProjector extends OfferLDProjector implements
                     $jsonLD->creator = $metaData['user_nick'];
                 }
 
-                $jsonLD->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+                $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
                 return $jsonLD;
             }
@@ -746,6 +748,14 @@ class EventLDProjector extends OfferLDProjector implements
         return BookingInfoUpdated::class;
     }
 
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
+    }
+
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
@@ -764,6 +774,11 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getTypicalAgeRangeDeletedClassName()
     {
         return TypicalAgeRangeDeleted::class;
+    }
+
+    protected function getPublishedClassName()
+    {
+        return Published::class;
     }
 
     protected function getApprovedClassName()

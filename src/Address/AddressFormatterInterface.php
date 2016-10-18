@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\Address;
 
-use CultuurNet\UDB3\Address;
-
 interface AddressFormatterInterface
 {
     /**

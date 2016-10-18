@@ -34,6 +34,7 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
 use CultuurNet\UDB3\Place\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
@@ -42,6 +43,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
@@ -215,7 +217,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $jsonLD->creator = $metaData['user_nick'];
         }
 
-        $jsonLD->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+        $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
         $this->repository->save($document->withBody($jsonLD));
     }
@@ -406,6 +408,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         return BookingInfoUpdated::class;
     }
 
+    /**
+     * @return string
+     */
+    protected function getPriceInfoUpdatedClassName()
+    {
+        return PriceInfoUpdated::class;
+    }
+
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
@@ -424,6 +434,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getTypicalAgeRangeDeletedClassName()
     {
         return TypicalAgeRangeDeleted::class;
+    }
+
+    protected function getPublishedClassName()
+    {
+        return Published::class;
     }
 
     protected function getApprovedClassName()

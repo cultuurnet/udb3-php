@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
@@ -26,6 +27,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
+use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractPublish;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
 use CultuurNet\UDB3\Organizer\Organizer;
 use ValueObjects\String\String as StringLiteral;
@@ -180,7 +182,17 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
+    abstract protected function getUpdatePriceInfoClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getDeleteOfferClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getPublishClassName();
 
     /**
      * @return string
@@ -400,12 +412,36 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
+     * @param AbstractUpdatePriceInfo $updatePriceInfo
+     */
+    private function handleUpdatePriceInfo(AbstractUpdatePriceInfo $updatePriceInfo)
+    {
+        $offer = $this->load($updatePriceInfo->getItemId());
+
+        $offer->updatePriceInfo(
+            $updatePriceInfo->getPriceInfo()
+        );
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
      * @param AbstractDeleteOffer $deleteOffer
      */
     private function handleDeleteOffer(AbstractDeleteOffer $deleteOffer)
     {
         $offer = $this->load($deleteOffer->getItemId());
         $offer->delete();
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractPublish $publish
+     */
+    private function handlePublish(AbstractPublish $publish)
+    {
+        $offer = $this->load($publish->getItemId());
+        $offer->publish();
         $this->offerRepository->save($offer);
     }
 

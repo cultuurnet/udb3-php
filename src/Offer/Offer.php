@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
@@ -19,6 +20,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -29,7 +31,9 @@ use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
+use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -66,11 +70,15 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected $workflowStatus;
 
-
     /**
      * @var StringLiteral|null
      */
     protected $rejectedReason;
+
+    /**
+     * @var PriceInfo
+     */
+    protected $priceInfo;
 
     /**
      * Offer constructor.
@@ -78,7 +86,6 @@ abstract class Offer extends EventSourcedAggregateRoot
     public function __construct()
     {
         $this->resetLabels();
-        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -223,6 +230,26 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param PriceInfo $priceInfo
+     */
+    public function updatePriceInfo(PriceInfo $priceInfo)
+    {
+        if (is_null($this->priceInfo) || $priceInfo->serialize() !== $this->priceInfo->serialize()) {
+            $this->apply(
+                $this->createPriceInfoUpdatedEvent($priceInfo)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     */
+    protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
+    {
+        $this->priceInfo = $priceInfoUpdated->getPriceInfo();
+    }
+
+    /**
      * @param AbstractLabelAdded $labelAdded
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
@@ -334,6 +361,44 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param CultureFeed_Cdb_Item_Base $cdbItem
+     */
+    protected function importWorkflowStatus(CultureFeed_Cdb_Item_Base $cdbItem)
+    {
+        try {
+            $workflowStatus = WorkflowStatus::fromNative($cdbItem->getWfStatus());
+        } catch (\InvalidArgumentException $exception) {
+            $workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
+        }
+        $this->workflowStatus = $workflowStatus;
+    }
+
+    /**
+     * Publish the offer when it has workflowstatus draft.
+     */
+    public function publish()
+    {
+        $this->guardPublish() ?: $this->apply($this->createPublishedEvent());
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function guardPublish()
+    {
+        if ($this->workflowStatus === WorkflowStatus::READY_FOR_VALIDATION()) {
+            return true; // nothing left to do if the offer has already been published
+        }
+
+        if ($this->workflowStatus !== WorkflowStatus::DRAFT()) {
+            throw new Exception('You can not publish an offer that is not draft');
+        }
+
+        return false;
+    }
+
+    /**
      * Approve the offer when it's waiting for validation.
      */
     public function approve()
@@ -400,6 +465,14 @@ abstract class Offer extends EventSourcedAggregateRoot
         }
 
         return false;
+    }
+
+    /**
+     * @param AbstractPublished $published
+     */
+    protected function applyPublished(AbstractPublished $published)
+    {
+        $this->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION();
     }
 
     /**
@@ -567,6 +640,17 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractBookingInfoUpdated
      */
     abstract protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo);
+
+    /**
+     * @param PriceInfo $priceInfo
+     * @return AbstractPriceInfoUpdated
+     */
+    abstract protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo);
+
+    /**
+     * @return AbstractPublished
+     */
+    abstract protected function createPublishedEvent();
 
     /**
      * @return AbstractApproved

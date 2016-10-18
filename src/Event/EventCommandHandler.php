@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Event\Commands\DeleteLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsInappropriate;
+use CultuurNet\UDB3\Event\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
@@ -27,6 +28,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateImage;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
+use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Label as Label;
@@ -185,9 +187,22 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     /**
      * @return string
      */
+    protected function getUpdatePriceInfoClassName()
+    {
+        return UpdatePriceInfo::class;
+    }
+
+    /**
+     * @return string
+     */
     protected function getDeleteOfferClassName()
     {
         return DeleteEvent::class;
+    }
+
+    protected function getPublishClassName()
+    {
+        return Publish::class;
     }
 
     protected function getApproveClassName()

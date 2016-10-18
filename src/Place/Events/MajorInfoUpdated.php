@@ -1,16 +1,11 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Place\Events\MajorInfoUpdated.
- */
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\UDB3\Address;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -29,12 +24,12 @@ class MajorInfoUpdated extends PlaceEvent
     /**
      * @var EventType
      */
-    private $eventType = null;
+    private $eventType;
 
     /**
-     * @var Theme
+     * @var Theme|null
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var Address
@@ -49,11 +44,19 @@ class MajorInfoUpdated extends PlaceEvent
     /**
      * @param string $placeId
      * @param Title $title
-     * @param string $location
+     * @param EventType $eventType
+     * @param Address $address
      * @param CalendarInterface $calendar
+     * @param Theme|null $theme
      */
-    public function __construct($placeId, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, $theme = null)
-    {
+    public function __construct(
+        $placeId,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
         parent::__construct($placeId);
 
         $this->title = $title;
@@ -127,17 +130,13 @@ class MajorInfoUpdated extends PlaceEvent
      */
     public static function deserialize(array $data)
     {
-        $theme = null;
-        if (!empty($data['theme'])) {
-            $theme = Theme::deserialize($data['theme']);
-        }
         return new static(
             $data['place_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Address::deserialize($data['address']),
             Calendar::deserialize($data['calendar']),
-            $theme
+            empty($data['theme']) ? null : Theme::deserialize($data['theme'])
         );
     }
 }

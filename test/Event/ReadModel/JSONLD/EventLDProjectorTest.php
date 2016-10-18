@@ -183,7 +183,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/1';
-        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->{'@context'} = '/contexts/event';
         $jsonLD->name = (object)[
             'nl' => 'some representative title'
         ];
@@ -262,7 +262,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
-        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->{'@context'} = '/contexts/event';
         $jsonLD->name = (object)[
             'nl' => 'some representative title'
         ];
@@ -353,7 +353,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
-        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->{'@context'} = '/contexts/event';
         $jsonLD->name = (object)[
             'nl' => 'some representative title'
         ];
@@ -475,7 +475,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $eventId;
-        $jsonLD->{'@context'} = '/api/1.0/event.jsonld';
+        $jsonLD->{'@context'} = '/contexts/event';
         $jsonLD->name = (object)[
             'nl' => 'some representative title'
         ];

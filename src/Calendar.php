@@ -124,15 +124,11 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         $dateTime = DateTime::createFromFormat(DateTime::ATOM, $dateTimeData);
 
         if($dateTime === false) {
-            $timestamp = strtotime($dateTimeData);
+            $dateTime = DateTime::createFromFormat('Y-m-d\TH:i:s', $dateTimeData, new DateTimeZone('Europe/Brussels'));
 
-            if (!$timestamp) {
+            if (!$dateTime) {
                 throw new InvalidArgumentException('Invalid date string provided for timestamp, ISO8601 expected!');
             }
-
-            $dateTime = (new DateTime())
-                ->setTimezone(new DateTimeZone('Europe/Brussels'))
-                ->setTimestamp($timestamp);
         }
 
         return $dateTime;

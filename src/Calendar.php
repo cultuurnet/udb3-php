@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
@@ -36,7 +35,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     protected $timestamps = array();
 
     /**
-     * @var Array
+     * @var array
      */
     protected $openingHours = array();
 

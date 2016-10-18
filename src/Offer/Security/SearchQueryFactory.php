@@ -46,7 +46,7 @@ class SearchQueryFactory implements SearchQueryFactoryInterface
         StringLiteral $constraint,
         StringLiteral $offerId
     ) {
-        $constraintStr = strtolower($constraint->toNative());
+        $constraintStr = '(' . strtolower($constraint->toNative()) . ')';
         $offerIdStr = $offerId->toNative();
 
         return '(' . $constraintStr . ' AND cdbid:' . $offerIdStr . ')';

@@ -30,4 +30,27 @@ class ContactPointUpdated extends OrganizerEvent
     {
         return $this->contactPoint;
     }
+
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + [
+            'contactPoint' => $this->contactPoint->serialize(),
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['organizer_id'],
+            ContactPoint::deserialize($data['contactPoint'])
+        );
+    }
 }

@@ -21,6 +21,7 @@ class ContentTypes
     {
         return [
             OrganizerCreated::class => 'application/vnd.cultuurnet.udb3-events.organizer-created+json',
+            OrganizerCreatedWithUniqueWebsite::class => 'application/vnd.cultuurnet.udb3-events.organizer-created-with-unique-website+json',
             OrganizerDeleted::class => 'application/vnd.cultuurnet.udb3-events.organizer-deleted+json',
             OrganizerImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.organizer-imported-from-udb2+json',
             OrganizerUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.organizer-updated-from-udb2+json',

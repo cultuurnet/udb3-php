@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use DateTimeInterface;
+use DateTimeZone;
+use InvalidArgumentException;
 
 /**
  * Calendar for events and places.
@@ -34,7 +35,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     protected $timestamps = array();
 
     /**
-     * @var Array
+     * @var array
      */
     protected $openingHours = array();
 
@@ -102,8 +103,8 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     {
         return new static(
             CalendarType::fromNative($data['type']),
-            !empty($data['startDate']) ? DateTime::createFromFormat(DateTime::ATOM, $data['startDate']) : null,
-            !empty($data['endDate']) ? DateTime::createFromFormat(DateTime::ATOM, $data['endDate']) : null,
+            !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null,
+            !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null,
             !empty($data['timestamps']) ? array_map(
                 function ($timestamp) {
                     return Timestamp::deserialize($timestamp);
@@ -112,6 +113,31 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             ) : [],
             !empty($data['openingHours']) ? $data['openingHours'] : []
         );
+    }
+
+    /**
+     * This deserialization function takes into account old data that might be missing a timezone.
+     * It will fall back to creating a DateTime object and assume Brussels.
+     * If this still fails an error will be thrown.
+     *
+     * @param $dateTimeData
+     * @return DateTime
+     *
+     * @throws InvalidArgumentException
+     */
+    private static function deserializeDateTime($dateTimeData)
+    {
+        $dateTime = DateTime::createFromFormat(DateTime::ATOM, $dateTimeData);
+
+        if ($dateTime === false) {
+            $dateTime = DateTime::createFromFormat('Y-m-d\TH:i:s', $dateTimeData, new DateTimeZone('Europe/Brussels'));
+
+            if (!$dateTime) {
+                throw new InvalidArgumentException('Invalid date string provided for timestamp, ISO8601 expected!');
+            }
+        }
+
+        return $dateTime;
     }
 
     /**

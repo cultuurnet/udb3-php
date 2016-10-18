@@ -117,13 +117,20 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     }
 
     /**
+     * This deserialization function takes into account old data that might be missing a timezone.
+     * It will fall back to creating a DateTime object and assume Brussels.
+     * If this still fails an error will be thrown.
+     *
      * @param $dateTimeData
      * @return DateTime
+     *
+     * @throws InvalidArgumentException
      */
-    private static function deserializeDateTime($dateTimeData) {
+    private static function deserializeDateTime($dateTimeData)
+    {
         $dateTime = DateTime::createFromFormat(DateTime::ATOM, $dateTimeData);
 
-        if($dateTime === false) {
+        if ($dateTime === false) {
             $dateTime = DateTime::createFromFormat('Y-m-d\TH:i:s', $dateTimeData, new DateTimeZone('Europe/Brussels'));
 
             if (!$dateTime) {

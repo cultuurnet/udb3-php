@@ -152,4 +152,28 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             ],
         ];
     }
+
+    /**
+     * @test
+     */
+    public function it_should_assume_the_timezone_is_Brussels_when_none_is_provided_when_deserializing()
+    {
+        $oldCalendarData = [
+            'type' => 'single',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => '2016-03-13T12:00:00',
+            'timestamps' => []
+        ];
+
+        $expectedCalendar = new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
+        );
+
+        $calendar = Calendar::deserialize($oldCalendarData);
+
+
+        $this->assertEquals($expectedCalendar, $calendar);
+    }
 }

@@ -6,6 +6,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use DateTimeInterface;
+use InvalidArgumentException;
 
 /**
  * Calendar for events and places.
@@ -102,8 +103,8 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     {
         return new static(
             CalendarType::fromNative($data['type']),
-            !empty($data['startDate']) ? DateTime::createFromFormat(DateTime::ATOM, $data['startDate']) : null,
-            !empty($data['endDate']) ? DateTime::createFromFormat(DateTime::ATOM, $data['endDate']) : null,
+            !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null,
+            !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null,
             !empty($data['timestamps']) ? array_map(
                 function ($timestamp) {
                     return Timestamp::deserialize($timestamp);
@@ -112,6 +113,26 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             ) : [],
             !empty($data['openingHours']) ? $data['openingHours'] : []
         );
+    }
+
+    /**
+     * @param $dateTimeData
+     * @return DateTime
+     */
+    private static function deserializeDateTime($dateTimeData) {
+        $dateTime = DateTime::createFromFormat(DateTime::ATOM, $dateTimeData);
+
+        if($dateTime === false) {
+            $timestamp = strtotime($dateTimeData);
+
+            if (!$timestamp) {
+                throw new InvalidArgumentException('Invalid date string provided for timestamp, ISO8601 expected!');
+            }
+
+            $dateTime = (new DateTime())->setTimestamp($timestamp);
+        }
+
+        return $dateTime;
     }
 
     /**

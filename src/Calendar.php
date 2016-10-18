@@ -6,6 +6,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use DateTimeInterface;
+use DateTimeZone;
 use InvalidArgumentException;
 
 /**
@@ -129,7 +130,9 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
                 throw new InvalidArgumentException('Invalid date string provided for timestamp, ISO8601 expected!');
             }
 
-            $dateTime = (new DateTime())->setTimestamp($timestamp);
+            $dateTime = (new DateTime())
+                ->setTimezone(new DateTimeZone('Europe/Brussels'))
+                ->setTimestamp($timestamp);
         }
 
         return $dateTime;

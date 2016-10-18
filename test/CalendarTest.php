@@ -62,6 +62,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         new Calendar($calendarType, $startDate);
     }
 
+    /**
+     * @return array
+     */
     public function calendarTypesWithStartDateProvider()
     {
         return [
@@ -95,6 +98,8 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider jsonldCalendarProvider
+     * @param Calendar $calendar
+     * @param $jsonld
      */
     public function it_should_generate_the_expected_json_for_a_calendar_of_each_type(
         Calendar $calendar,
@@ -103,6 +108,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($jsonld, $calendar->toJsonLd());
     }
 
+    /**
+     * @return array
+     */
     public function jsonldCalendarProvider()
     {
         return [
@@ -173,7 +181,40 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
 
         $calendar = Calendar::deserialize($oldCalendarData);
 
-
         $this->assertEquals($expectedCalendar, $calendar);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_invalid_argument_exception_when_start_date_can_not_be_converted()
+    {
+        $invalidCalendarData = [
+            'type' => 'single',
+            'startDate' => '2016-03-06 10:00:00',
+            'endDate' => '2016-03-13T12:00:00',
+            'timestamps' => []
+        ];
+
+        $this->setExpectedException(\InvalidArgumentException::class);
+
+        Calendar::deserialize($invalidCalendarData);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_invalid_argument_exception_when_end_date_can_not_be_converted()
+    {
+        $invalidCalendarData = [
+            'type' => 'single',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => '2016-03-13 12:00:00',
+            'timestamps' => []
+        ];
+
+        $this->setExpectedException(\InvalidArgumentException::class);
+
+        Calendar::deserialize($invalidCalendarData);
     }
 }

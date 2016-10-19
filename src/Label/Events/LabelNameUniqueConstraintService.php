@@ -4,13 +4,11 @@ namespace CultuurNet\UDB3\Label\Events;
 
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintServiceInterface;
-use ValueObjects\String\String as StringLiteral;
 
 class LabelNameUniqueConstraintService implements UniqueConstraintServiceInterface
 {
     /**
-     * @param DomainMessage $domainMessage
-     * @return bool
+     * @inheritdoc
      */
     public function hasUniqueConstraint(DomainMessage $domainMessage)
     {
@@ -21,8 +19,7 @@ class LabelNameUniqueConstraintService implements UniqueConstraintServiceInterfa
     }
 
     /**
-     * @param DomainMessage $domainMessage
-     * @return StringLiteral
+     * @inheritdoc
      */
     public function getUniqueConstraintValue(DomainMessage $domainMessage)
     {

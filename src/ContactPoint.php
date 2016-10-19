@@ -11,7 +11,6 @@ use Broadway\Serializer\SerializableInterface;
  */
 class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
      * @var array
      */
@@ -34,6 +33,10 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 
     /**
      * Constructor.
+     * @param array $phones
+     * @param array $emails
+     * @param array $urls
+     * @param string $type
      */
     public function __construct(array $phones = array(), array $emails = array(), array $urls = array(), $type = '')
     {
@@ -43,21 +46,33 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
         $this->type = $type;
     }
 
+    /**
+     * @return array
+     */
     public function getPhones()
     {
         return $this->phones;
     }
 
+    /**
+     * @return array
+     */
     public function getEmails()
     {
         return $this->emails;
     }
 
+    /**
+     * @return array
+     */
     public function getUrls()
     {
         return $this->urls;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;

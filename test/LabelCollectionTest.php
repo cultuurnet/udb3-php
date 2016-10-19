@@ -1,11 +1,12 @@
 <?php
+
 namespace CultuurNet\UDB3;
 
-/**
- * @file
- */
 class LabelCollectionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @return array
+     */
     public function notALabelProvider()
     {
         return [
@@ -47,5 +48,27 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
 
         $unchangedCollection = $existingCollection->with(new Label('keyword 1'));
         $this->assertEquals($existingCollection, $unchangedCollection);
+    }
+
+    /**
+     * @test
+     */
+    public function it_ignores_invalid_labels_when_creating_from_string_array()
+    {
+        $labelsAsStrings = [
+            'Correct label',
+            'FF',
+            'This label is much too long and will also be ignored, just like the label FF which is too short. But a few more extra characters are needed to make it fail! Like many aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'Another correct label'
+        ];
+
+        $labelCollection = LabelCollection::fromStrings($labelsAsStrings);
+
+        $expectedLabelCollection = new LabelCollection([
+            new Label('Correct label'),
+            new Label('Another correct label')
+        ]);
+
+        $this->assertEquals($expectedLabelCollection, $labelCollection);
     }
 }

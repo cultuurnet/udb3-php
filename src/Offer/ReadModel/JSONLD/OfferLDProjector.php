@@ -712,9 +712,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
         $offerLd->{'@id'} = $this->iriGenerator->iri($id);
-
-        // @todo provide Event-LD context here relative to the base URI
-        $offerLd->{'@context'} = '/api/1.0/event.jsonld';
+        $offerLd->{'@context'} = '/contexts/event';
 
         return $document->withBody($offerLd);
     }

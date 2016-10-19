@@ -69,6 +69,6 @@ class SearchQueryFactoryTest extends \PHPUnit_Framework_TestCase
         $constraintStr = strtolower($constraint->toNative());
         $offerIdStr = $offerId->toNative();
 
-        return '(' . $constraintStr . ' AND cdbid:' . $offerIdStr . ')';
+        return '((' . $constraintStr . ') AND cdbid:' . $offerIdStr . ')';
     }
 }

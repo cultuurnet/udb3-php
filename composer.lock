@@ -401,12 +401,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/Cdb.git",
-                "reference": "28287770c45603f50acacbf68d187350d072f2d1"
+                "reference": "e9942f3acb33e0893d69985b44a11d6f615cbc9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/28287770c45603f50acacbf68d187350d072f2d1",
-                "reference": "28287770c45603f50acacbf68d187350d072f2d1",
+                "url": "https://api.github.com/repos/cultuurnet/Cdb/zipball/e9942f3acb33e0893d69985b44a11d6f615cbc9c",
+                "reference": "e9942f3acb33e0893d69985b44a11d6f615cbc9c",
                 "shasum": ""
             },
             "require-dev": {
@@ -428,7 +428,7 @@
                 "Apache-2.0"
             ],
             "description": "PHP library for hydrating/manipulating CultuurNet's Cdb XML documents",
-            "time": "2016-06-29 13:21:51"
+            "time": "2016-10-17 14:17:27"
         },
         {
             "name": "cultuurnet/clock",
@@ -545,12 +545,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/deserializer.git",
-                "reference": "6cbd59cfdc22e5067413df64887affacd5f22798"
+                "reference": "8428e1bc9e0447dee18ed9bee0f66d112c8285ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/6cbd59cfdc22e5067413df64887affacd5f22798",
-                "reference": "6cbd59cfdc22e5067413df64887affacd5f22798",
+                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/8428e1bc9e0447dee18ed9bee0f66d112c8285ed",
+                "reference": "8428e1bc9e0447dee18ed9bee0f66d112c8285ed",
                 "shasum": ""
             },
             "require": {
@@ -575,7 +575,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-3.0"
+                "Apache-2.0"
             ],
             "authors": [
                 {
@@ -584,7 +584,7 @@
                 }
             ],
             "description": "Internet media type deserialization library",
-            "time": "2016-10-12 14:56:22"
+            "time": "2016-10-19 08:49:50"
         },
         {
             "name": "cultuurnet/entry",
@@ -1833,20 +1833,20 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.28",
+            "version": "1.0.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "a9663643ff2d16d7f66ed1e0d3212c5491bc9044"
+                "reference": "75138bb14160f3ba963750aa95e08d1d394fb198"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a9663643ff2d16d7f66ed1e0d3212c5491bc9044",
-                "reference": "a9663643ff2d16d7f66ed1e0d3212c5491bc9044",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/75138bb14160f3ba963750aa95e08d1d394fb198",
+                "reference": "75138bb14160f3ba963750aa95e08d1d394fb198",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
+                "php": ">=5.5.9"
             },
             "conflict": {
                 "league/flysystem-sftp": "<1.0.6"
@@ -1912,7 +1912,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2016-10-07 12:20:37"
+            "time": "2016-10-18 16:20:02"
         },
         {
             "name": "league/flysystem-ziparchive",
@@ -3766,16 +3766,16 @@
         },
         {
             "name": "phing/phing",
-            "version": "2.15.1",
+            "version": "2.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phingofficial/phing.git",
-                "reference": "16f6372d9bf71783abea98fdd8cd9cb4ecb3bf41"
+                "reference": "0999ab4e94e609dc00998e3d1b88df843054db7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phingofficial/phing/zipball/16f6372d9bf71783abea98fdd8cd9cb4ecb3bf41",
-                "reference": "16f6372d9bf71783abea98fdd8cd9cb4ecb3bf41",
+                "url": "https://api.github.com/repos/phingofficial/phing/zipball/0999ab4e94e609dc00998e3d1b88df843054db7c",
+                "reference": "0999ab4e94e609dc00998e3d1b88df843054db7c",
                 "shasum": ""
             },
             "require": {
@@ -3855,7 +3855,7 @@
                 "task",
                 "tool"
             ],
-            "time": "2016-10-11 09:24:10"
+            "time": "2016-10-13 09:01:45"
         },
         {
             "name": "phpdocumentor/reflection-common",

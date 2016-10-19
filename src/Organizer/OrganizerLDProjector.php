@@ -295,9 +295,7 @@ class OrganizerLDProjector extends ActorLDProjector
 
         $organizerLd = $document->getBody();
         $organizerLd->{'@id'} = $this->iriGenerator->iri($id);
-
-        // @todo provide Event-LD context here relative to the base URI
-        $organizerLd->{'@context'} = '/api/1.0/organizer.jsonld';
+        $organizerLd->{'@context'} = '/contexts/organizer';
 
         return $document->withBody($organizerLd);
     }

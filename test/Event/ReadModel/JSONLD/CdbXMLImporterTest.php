@@ -3,7 +3,9 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Cdb\ExternalId\ArrayMappingService;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
@@ -34,7 +36,10 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter());
+        $this->importer = new CdbXMLImporter(
+            new CdbXMLItemBaseImporter(),
+            new EventCdbIdExtractor()
+        );
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
         $this->slugger = $this->getMock(SluggerInterface::class);

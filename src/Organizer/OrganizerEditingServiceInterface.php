@@ -20,13 +20,13 @@ interface OrganizerEditingServiceInterface
     public function create(Url $website, Title $title, Address $address = null, ContactPoint $contactPoint = null);
 
     /**
-     * @param $organizerId
+     * @param string $organizerId
      * @param UUID $labelId
      */
     public function addLabel($organizerId, UUID $labelId);
 
     /**
-     * @param $organizerId
+     * @param string $organizerId
      * @param UUID $labelId
      */
     public function removeLabel($organizerId, UUID $labelId);

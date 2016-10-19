@@ -83,7 +83,8 @@ class AuthorizedCommandBus extends CommandBusDecoratorBase implements Authorized
      *
      * @return void
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger)
+    {
         $this->decoratee->setLogger($logger);
     }
 }

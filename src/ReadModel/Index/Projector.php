@@ -15,10 +15,7 @@ use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
-use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
-use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
-use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -79,6 +76,10 @@ class Projector implements EventListenerInterface
 
     /**
      * @param RepositoryInterface $repository
+     * @param CreatedByToUserIdResolverInterface $createdByToUserIdResolver
+     * @param Domain $localDomain
+     * @param Domain $UDB2Domain
+     * @param IriOfferIdentifierFactoryInterface $identifierFactory
      */
     public function __construct(
         RepositoryInterface $repository,
@@ -302,6 +303,8 @@ class Projector implements EventListenerInterface
 
     /**
      * Listener for event created commands.
+     * @param EventCreated $eventCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyEventCreated(EventCreated $eventCreated, DomainMessage $domainMessage)
     {
@@ -328,6 +331,8 @@ class Projector implements EventListenerInterface
 
     /**
      * Listener for place created commands.
+     * @param PlaceCreated $placeCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
@@ -368,6 +373,13 @@ class Projector implements EventListenerInterface
 
     /**
      * Update the index
+     * @param $id
+     * @param EntityType $type
+     * @param $userId
+     * @param $name
+     * @param $postalCode
+     * @param Domain $owningDomain
+     * @param DateTimeInterface $creationDate
      */
     protected function updateIndex(
         $id,
@@ -391,6 +403,8 @@ class Projector implements EventListenerInterface
 
     /**
      * Remove the index for events
+     * @param EventDeleted $eventDeleted
+     * @param DomainMessage $domainMessage
      */
     public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage)
     {
@@ -399,20 +413,11 @@ class Projector implements EventListenerInterface
 
     /**
      * Remove the index for places
+     * @param PlaceDeleted $placeDeleted
+     * @param DomainMessage $domainMessage
      */
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
         $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
-    }
-
-    /**
-     * @param OrganizerDeleted $organizerDeleted
-     */
-    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
-    {
-        $this->repository->deleteIndex(
-            $organizerDeleted->getOrganizerId(),
-            EntityType::ORGANIZER()
-        );
     }
 }

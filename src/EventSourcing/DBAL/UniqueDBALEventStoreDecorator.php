@@ -7,7 +7,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventStore\DBALEventStore;
 use CultuurNet\UDB3\EventSourcing\AbstractEventStoreDecorator;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Type;
 use ValueObjects\String\String as StringLiteral;
@@ -142,7 +142,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
                         self::UNIQUE_COLUMN => $uniqueValue->toNative(),
                     ]
                 );
-            } catch (DBALException $e) {
+            } catch (UniqueConstraintViolationException $e) {
                 throw new UniqueConstraintException(
                     $domainMessage->getId(),
                     $uniqueValue

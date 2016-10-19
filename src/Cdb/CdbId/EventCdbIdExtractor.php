@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Cdb\CdbId;
 
+use CultuurNet\UDB3\Cdb\ExternalId\ArrayMappingService;
 use CultuurNet\UDB3\Cdb\ExternalId\MappingServiceInterface;
 
 class EventCdbIdExtractor implements EventCdbIdExtractorInterface
@@ -12,11 +13,15 @@ class EventCdbIdExtractor implements EventCdbIdExtractorInterface
     private $externalIdMappingService;
 
     /**
-     * @param MappingServiceInterface $externalIdMappingService
+     * @param MappingServiceInterface|null $externalIdMappingService
      */
     public function __construct(
-        MappingServiceInterface $externalIdMappingService
+        MappingServiceInterface $externalIdMappingService = null
     ) {
+        if (is_null($externalIdMappingService)) {
+            $externalIdMappingService = new ArrayMappingService([]);
+        }
+
         $this->externalIdMappingService = $externalIdMappingService;
     }
 

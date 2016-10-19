@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Cdb\CdbId;
 
 use CultuurNet\UDB3\Cdb\ExternalId\ArrayMappingService;
 
-class EventRelatedCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
+class EventCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ArrayMappingService
@@ -12,7 +12,7 @@ class EventRelatedCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
     private $externalIdMappingService;
 
     /**
-     * @var EventRelatedCdbIdExtractor
+     * @var EventCdbIdExtractor
      */
     private $cdbIdExtractor;
 
@@ -25,7 +25,7 @@ class EventRelatedCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->cdbIdExtractor = new EventRelatedCdbIdExtractor($this->externalIdMappingService);
+        $this->cdbIdExtractor = new EventCdbIdExtractor($this->externalIdMappingService);
     }
 
     /**

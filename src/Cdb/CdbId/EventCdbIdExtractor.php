@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Cdb\CdbId;
 
 use CultuurNet\UDB3\Cdb\ExternalId\MappingServiceInterface;
 
-class EventRelatedCdbIdExtractor implements EventRelatedCdbIdExtractorInterface
+class EventCdbIdExtractor implements EventCdbIdExtractorInterface
 {
     /**
      * @var MappingServiceInterface

@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Cdb\CdbId;
 
-interface EventRelatedCdbIdExtractorInterface
+interface EventCdbIdExtractorInterface
 {
     /**
      * @param \CultureFeed_Cdb_Item_Event $cdbEvent

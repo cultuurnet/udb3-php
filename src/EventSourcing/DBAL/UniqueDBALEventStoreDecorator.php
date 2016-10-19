@@ -142,7 +142,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
                         self::UNIQUE_COLUMN => $uniqueValue->toNative(),
                     ]
                 );
-            } catch(DBALException $e) {
+            } catch (DBALException $e) {
                 throw new UniqueConstraintException(
                     $domainMessage->getId(),
                     $uniqueValue

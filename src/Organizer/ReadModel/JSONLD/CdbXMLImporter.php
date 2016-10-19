@@ -1,9 +1,7 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Organizer\ReadModel\JSONLD;
+
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;

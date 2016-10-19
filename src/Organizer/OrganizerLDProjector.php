@@ -3,14 +3,10 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
-use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -87,6 +83,7 @@ class OrganizerLDProjector extends ActorLDProjector
 
     /**
      * @param OrganizerCreated $organizerCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
     {
@@ -280,7 +277,7 @@ class OrganizerLDProjector extends ActorLDProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Organizer\Events\OrganizerDeleted $organizerDeleted
+     * @param OrganizerDeleted $organizerDeleted
      */
     public function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted

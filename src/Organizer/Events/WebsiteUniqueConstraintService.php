@@ -9,8 +9,7 @@ use ValueObjects\String\String as StringLiteral;
 class WebsiteUniqueConstraintService implements UniqueConstraintServiceInterface
 {
     /**
-     * @param DomainMessage $domainMessage
-     * @return bool
+     * @inheritdoc
      */
     public function hasUniqueConstraint(DomainMessage $domainMessage)
     {
@@ -18,8 +17,7 @@ class WebsiteUniqueConstraintService implements UniqueConstraintServiceInterface
     }
 
     /**
-     * @param DomainMessage $domainMessage
-     * @return StringLiteral
+     * @inheritdoc
      */
     public function getUniqueConstraintValue(DomainMessage $domainMessage)
     {

@@ -93,7 +93,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     /**
      * Factory method to create a new Organizer.
      *
-     * @param String $id
+     * @param string $id
      * @param Url $website
      * @param Title $title
      * @return Organizer

@@ -1,0 +1,27 @@
+{
+  "class": "CultuurNet\\UDB3\\Place\\Events\\PlaceCreated",
+  "payload": {
+    "place_id": "00249b55-7f08-42b9-afa6-e34f016191e7",
+    "title": "Louvain",
+    "event_type": {
+      "id": "OyaPaf64AEmEAYXHeLMAtA",
+      "label": "Zaal of expohal",
+      "domain": "eventtype"
+    },
+    "theme": null,
+    "address": {
+      "streetAddress": "Louvainstraat 100",
+      "postalCode": "3000",
+      "locality": "Leuven",
+      "country": "BE"
+    },
+    "calendar": {
+      "type": "permanent",
+      "startDate": "",
+      "endDate": "",
+      "timestamps": [],
+      "openingHours": []
+    },
+    "publication_date": null
+  }
+}

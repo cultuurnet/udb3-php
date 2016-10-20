@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
@@ -11,9 +12,11 @@ use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\Created;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\Geography\Country;
 use ValueObjects\String\String;
 
 class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
@@ -323,6 +326,47 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     {
         $sampleFile = $this->sampleDir . 'serialized_event_description_updated_class.json';
         $this->assertEventIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_place_created_locality_with_address_locality()
+    {
+        $placeCreated = $this->getPlaceCreated();
+
+        $this->assertEquals(
+            new Locality('Leuven'),
+            $placeCreated->getAddress()->getLocality()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_place_created_country_with_address_country()
+    {
+        $placeCreated = $this->getPlaceCreated();
+
+        $this->assertEquals(
+            Country::fromNative('BE'),
+            $placeCreated->getAddress()->getCountry()
+        );
+    }
+
+    /**
+     * @return PlaceCreated
+     */
+    private function getPlaceCreated()
+    {
+        $sampleFile = $this->sampleDir . '/place/place_created.class.json';
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /** @var PlaceCreated $placeCreated */
+        $placeCreated = $this->serializer->deserialize($decoded);
+
+        return $placeCreated;
     }
 
     /**

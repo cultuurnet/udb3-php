@@ -15,9 +15,7 @@ use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
-use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
-use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -78,6 +76,10 @@ class Projector implements EventListenerInterface
 
     /**
      * @param RepositoryInterface $repository
+     * @param CreatedByToUserIdResolverInterface $createdByToUserIdResolver
+     * @param Domain $localDomain
+     * @param Domain $UDB2Domain
+     * @param IriOfferIdentifierFactoryInterface $identifierFactory
      */
     public function __construct(
         RepositoryInterface $repository,
@@ -301,6 +303,8 @@ class Projector implements EventListenerInterface
 
     /**
      * Listener for event created commands.
+     * @param EventCreated $eventCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyEventCreated(EventCreated $eventCreated, DomainMessage $domainMessage)
     {
@@ -327,6 +331,8 @@ class Projector implements EventListenerInterface
 
     /**
      * Listener for place created commands.
+     * @param PlaceCreated $placeCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
@@ -351,77 +357,6 @@ class Projector implements EventListenerInterface
     }
 
     /**
-     * Listener for organizer created commands.
-     */
-    protected function applyOrganizerCreated(OrganizerCreated $organizer, DomainMessage $domainMessage)
-    {
-
-        $organizerId = $organizer->getOrganizerId();
-
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
-
-        $addresses = $organizer->getAddresses();
-        if (isset($addresses[0])) {
-            $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-            $this->updateIndex(
-                $organizerId,
-                EntityType::ORGANIZER(),
-                $userId,
-                $organizer->getTitle(),
-                $addresses[0]->getPostalCode(),
-                $this->localDomain,
-                $creationDate
-            );
-        }
-    }
-
-    protected function applyOrganizerImportedFromUDB2(OrganizerImportedFromUDB2 $organizerImportedFromUDB2)
-    {
-
-        $organizerId = $organizerImportedFromUDB2->getActorId();
-        /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
-        $detail = null;
-        $postalCode = '';
-
-        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
-            $organizerImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $organizerImportedFromUDB2->getCdbXml()
-        );
-
-        $userId = $this->resolveUserId($udb2Actor);
-
-        $details = $udb2Actor->getDetails();
-        foreach ($details as $languageDetail) {
-            // The first language detail found will be used.
-            $detail = $languageDetail;
-            break;
-        }
-
-        $name = trim($detail->getTitle());
-
-        // Ignore items without a name. They might occur in UDB2 although this
-        // is not considered normal.
-        if (empty($name)) {
-            return;
-        }
-
-        $creationDate = $this->dateTimeFromUDB2DateString(
-            $udb2Actor->getCreationDate()
-        );
-
-        $this->updateIndex(
-            $organizerId,
-            EntityType::ORGANIZER(),
-            $userId,
-            $name,
-            $postalCode,
-            $this->UDB2Domain,
-            $creationDate
-        );
-    }
-
-    /**
      * @param $dateString
      *  A UDB2 formatted date string
      *
@@ -438,6 +373,13 @@ class Projector implements EventListenerInterface
 
     /**
      * Update the index
+     * @param $id
+     * @param EntityType $type
+     * @param $userId
+     * @param $name
+     * @param $postalCode
+     * @param Domain $owningDomain
+     * @param DateTimeInterface $creationDate
      */
     protected function updateIndex(
         $id,
@@ -461,6 +403,8 @@ class Projector implements EventListenerInterface
 
     /**
      * Remove the index for events
+     * @param EventDeleted $eventDeleted
+     * @param DomainMessage $domainMessage
      */
     public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage)
     {
@@ -469,20 +413,11 @@ class Projector implements EventListenerInterface
 
     /**
      * Remove the index for places
+     * @param PlaceDeleted $placeDeleted
+     * @param DomainMessage $domainMessage
      */
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
         $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
-    }
-
-    /**
-     * @param OrganizerDeleted $organizerDeleted
-     */
-    public function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
-    {
-        $this->repository->deleteIndex(
-            $organizerDeleted->getOrganizerId(),
-            EntityType::ORGANIZER()
-        );
     }
 }

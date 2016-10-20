@@ -1,35 +1,32 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Organizer;
 
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Web\Url;
 use ValueObjects\Identity\UUID;
 
 interface OrganizerEditingServiceInterface
 {
-
     /**
+     * @param Url $website
      * @param Title $title
-     * @param array $addresses
-     * @param array $phones
-     * @param array $emails
-     * @param array $urls
-     *
+     * @param Address|null $address
+     * @param ContactPoint|null $contactPoint
      * @return string $organizerId
      */
-    public function create(Title $title, array $addresses, array $phones, array $emails, array $urls);
+    public function create(Url $website, Title $title, Address $address = null, ContactPoint $contactPoint = null);
 
     /**
-     * @param $organizerId
+     * @param string $organizerId
      * @param UUID $labelId
      */
     public function addLabel($organizerId, UUID $labelId);
 
     /**
-     * @param $organizerId
+     * @param string $organizerId
      * @param UUID $labelId
      */
     public function removeLabel($organizerId, UUID $labelId);

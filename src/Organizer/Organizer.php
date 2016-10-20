@@ -3,14 +3,20 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
+use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Web\Url;
 use ValueObjects\Identity\UUID;
 
 class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
@@ -23,6 +29,16 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected $actorId;
 
     /**
+     * @var Address|null
+     */
+    private $address;
+
+    /**
+     * @var ContactPoint
+     */
+    private $contactPoint;
+
+    /**
      * @var UUID[]
      */
     private $labelIds = [];
@@ -33,6 +49,15 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     public function getAggregateRootId()
     {
         return $this->actorId;
+    }
+
+    public function __construct()
+    {
+        // Contact points can be empty, but we only want to start recording
+        // ContactPointUpdated events as soon as the organizer is updated
+        // with a non-empty contact point. To enforce this we initialize the
+        // aggregate state with an empty contact point.
+        $this->contactPoint = new ContactPoint();
     }
 
     /**
@@ -68,21 +93,47 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     /**
      * Factory method to create a new Organizer.
      *
-     * @param String $id
+     * @param string $id
+     * @param Url $website
      * @param Title $title
-     * @param array $addresses
-     * @param array $phones
-     * @param array $emails
-     * @param array $urls
-     *
      * @return Organizer
      */
-    public static function create($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
-    {
+    public static function create(
+        $id,
+        Url $website,
+        Title $title
+    ) {
         $organizer = new self();
-        $organizer->apply(new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls));
+
+        $organizer->apply(
+            new OrganizerCreatedWithUniqueWebsite($id, $website, $title)
+        );
 
         return $organizer;
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function updateAddress(Address $address)
+    {
+        if (is_null($this->address) || !$this->address->sameAs($address)) {
+            $this->apply(
+                new AddressUpdated($this->actorId, $address)
+            );
+        }
+    }
+
+    /**
+     * @param ContactPoint $contactPoint
+     */
+    public function updateContactPoint(ContactPoint $contactPoint)
+    {
+        if (!$this->contactPoint->sameAs($contactPoint)) {
+            $this->apply(
+                new ContactPointUpdated($this->actorId, $contactPoint)
+            );
+        }
     }
 
     /**
@@ -121,6 +172,19 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         $this->actorId = $organizerCreated->getOrganizerId();
     }
 
+    /**
+     * Apply the organizer created event.
+     * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
+     */
+    protected function applyOrganizerCreatedWithUniqueWebsite(OrganizerCreatedWithUniqueWebsite $organizerCreated)
+    {
+        $this->actorId = $organizerCreated->getOrganizerId();
+    }
+
+    /**
+     * @todo make protected or private
+     * @param OrganizerImportedFromUDB2 $organizerImported
+     */
     public function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImported
     ) {
@@ -128,6 +192,23 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
+     * @param AddressUpdated $addressUpdated
+     */
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $this->address = $addressUpdated->getAddress();
+    }
+
+    /**
+     * @param ContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+        $this->contactPoint = $contactPointUpdated->getContactPoint();
+    }
+
+    /**
+     * @todo make protected or private
      * @param LabelAdded $labelAdded
      */
     public function applyLabelAdded(LabelAdded $labelAdded)
@@ -136,6 +217,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
+     * @todo make protected or private
      * @param LabelRemoved $labelRemoved
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)

@@ -125,9 +125,9 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->repository->updateIndex(
             'abc',
-            EntityType::ORGANIZER(),
+            EntityType::EVENT(),
             'bar',
-            'Test organizer abc update',
+            'Test event abc update',
             '3020',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
@@ -137,7 +137,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $expectedData[3] = [
             'uid' => 'bar',
-            'title' => 'Test organizer abc update',
+            'title' => 'Test event abc update',
             'created' => '100',
             'zip' => '3020'
         ] + (array) $expectedData[3];
@@ -158,9 +158,9 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->repository->updateIndex(
             'blub',
-            EntityType::ORGANIZER(),
+            EntityType::EVENT(),
             'bar',
-            'Test organizer abc update',
+            'Test event abc update',
             '3020',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
@@ -170,7 +170,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $expectedData[5] = [
                 'uid' => 'bar',
-                'title' => 'Test organizer abc update',
+                'title' => 'Test event abc update',
                 'created' => '100',
                 'zip' => '3020',
                 'owning_domain' => 'udb.be',
@@ -245,7 +245,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertCurrentData($expectedData);
 
-        $this->repository->deleteIndex('abc', EntityType::ORGANIZER());
+        $this->repository->deleteIndex('abc', EntityType::EVENT());
 
         unset($expectedData[3]);
 
@@ -345,6 +345,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $pagedCollection = $this->repository->findByUser($userId, $limit, $start);
 
-        $this->assertEquals(Integer::fromNative(3), $pagedCollection->getTotalItems());
+        $this->assertEquals(Integer::fromNative(5), $pagedCollection->getTotalItems());
     }
 }

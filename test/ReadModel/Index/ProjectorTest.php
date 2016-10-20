@@ -21,8 +21,6 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
-use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
-use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -201,41 +199,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_add_an_indexed_item_when_importing_an_organizer_from_udb2()
-    {
-        $this->userIdResolver->expects($this->once())
-            ->method('resolveCreatedByToUserId')
-            ->willReturn('user-id-one-two-three');
-
-        $this->repository->expects($this->once())
-            ->method('updateIndex')
-            ->with(
-                'some-orga-nizer-id',
-                EntityType::ORGANIZER(),
-                'user-id-one-two-three',
-                'DE Studio',
-                '',
-                Domain::specifyType('udb.be'),
-                new \DateTime(
-                    '2010-01-06T13:46:00+0100',
-                    new \DateTimeZone('Europe/Brussels')
-                )
-            );
-
-        $this->projector->handle(
-            $this->domainMessage(
-                new OrganizerImportedFromUDB2(
-                    'some-orga-nizer-id',
-                    file_get_contents(__DIR__ . '/udb2_organizer.xml'),
-                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                )
-            )
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_should_add_an_indexed_item_when_an_event_is_created()
     {
         $this->repository->expects($this->once())
@@ -312,6 +275,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider indexUpdateEventsDataProvider
+     *
+     * @param DomainMessage $domainMessage
+     * @param string $itemId
      */
     public function it_should_set_the_update_date_when_indexed_items_change(
         DomainMessage $domainMessage,
@@ -382,22 +348,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->handle(
             $this->domainMessage(
                 new PlaceDeleted('6ecf5da4-220d-4486-9327-17c7ec8fa070')
-            )
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_remove_the_index_of_deleted_organizer()
-    {
-        $this->repository->expects($this->once())
-            ->method('deleteIndex')
-            ->with('6ecf5da4-220d-4486-9327-17c7ec8fa070');
-
-        $this->projector->handle(
-            $this->domainMessage(
-                new OrganizerDeleted('6ecf5da4-220d-4486-9327-17c7ec8fa070')
             )
         );
     }

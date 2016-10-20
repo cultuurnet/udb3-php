@@ -1,20 +1,16 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\ContactPoint.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 
 /**
  * ContactPoint info.
+ * @todo Remove $type? Seems unused throughout the rest of the codebase.
+ * @see https://jira.uitdatabank.be/browse/III-1508
  */
 class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
      * @var array
      */
@@ -37,6 +33,10 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 
     /**
      * Constructor.
+     * @param array $phones
+     * @param array $emails
+     * @param array $urls
+     * @param string $type
      */
     public function __construct(array $phones = array(), array $emails = array(), array $urls = array(), $type = '')
     {
@@ -46,21 +46,33 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
         $this->type = $type;
     }
 
+    /**
+     * @return array
+     */
     public function getPhones()
     {
         return $this->phones;
     }
 
+    /**
+     * @return array
+     */
     public function getEmails()
     {
         return $this->emails;
     }
 
+    /**
+     * @return array
+     */
     public function getUrls()
     {
         return $this->urls;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
@@ -96,5 +108,14 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
     {
         // Serialized version is the same.
         return $this->serialize();
+    }
+
+    /**
+     * @param ContactPoint $otherContactPoint
+     * @return bool
+     */
+    public function sameAs(ContactPoint $otherContactPoint)
+    {
+        return $this->toJsonLd() == $otherContactPoint->toJsonLd();
     }
 }

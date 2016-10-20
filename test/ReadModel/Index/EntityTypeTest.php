@@ -17,7 +17,6 @@ class EntityTypeTest extends PHPUnit_Framework_TestCase
     {
         return [
             ['EVENT'],
-            ['ORGANIZER'],
             ['PLACE'],
         ];
     }
@@ -53,11 +52,6 @@ class EntityTypeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             'place',
             EntityType::PLACE()->toNative()
-        );
-
-        $this->assertEquals(
-            'organizer',
-            EntityType::ORGANIZER()->toNative()
         );
     }
 }

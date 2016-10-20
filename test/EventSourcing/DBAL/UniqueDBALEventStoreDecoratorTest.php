@@ -16,9 +16,9 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     use DBALTestConnectionTrait;
 
     const ID = 'id';
-    const UNIQUE = 'unique';
+    const UNIQUE_VALUE = 'unique';
     const OTHER_ID = 'otherId';
-    const OTHER_UNIQUE = 'otherUnique';
+    const OTHER_UNIQUE_VALUE = 'otherUnique';
 
     /**
      * @var UniqueDBALEventStoreDecorator
@@ -31,9 +31,9 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     private $dbalEventStore;
 
     /**
-     * @var UniqueHelperInterface|\PHPUnit_Framework_MockObject_MockObject $uniqueHelper
+     * @var UniqueConstraintServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uniqueConstraintService
      */
-    private $uniqueHelper;
+    private $uniqueConstraintService;
 
     /**
      * @var StringLiteral
@@ -52,15 +52,21 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->uniqueTableName = new StringLiteral('uniqueTableName');
 
-        $this->uniqueHelper = $this->getMock(UniqueHelperInterface::class);
-        $this->mockRequiresUnique();
-        $this->mockGetUnique();
+        $this->uniqueConstraintService = $this->getMock(UniqueConstraintServiceInterface::class);
+
+        $this->uniqueConstraintService->expects($this->any())
+            ->method('hasUniqueConstraint')
+            ->willReturn(true);
+
+        $this->uniqueConstraintService->expects($this->any())
+            ->method('getUniqueConstraintValue')
+            ->willReturn(new StringLiteral(self::UNIQUE_VALUE));
 
         $this->uniqueDBALEventStoreDecorator = new UniqueDBALEventStoreDecorator(
             $this->dbalEventStore,
             $this->connection,
             $this->uniqueTableName,
-            $this->uniqueHelper
+            $this->uniqueConstraintService
         );
 
         $schemaManager = $this->getConnection()->getSchemaManager();
@@ -76,9 +82,9 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_append_unique()
+    public function it_can_append_domain_messages_with_a_unique_value_if_the_unique_value_has_not_been_used_before()
     {
-        $this->insert(self::OTHER_ID, self::OTHER_UNIQUE);
+        $this->insert(self::OTHER_ID, self::OTHER_UNIQUE_VALUE);
 
         $domainMessage = new DomainMessage(
             self::ID,
@@ -95,15 +101,15 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $unique = $this->select(self::ID);
 
-        $this->assertEquals(self::UNIQUE, $unique);
+        $this->assertEquals(self::UNIQUE_VALUE, $unique);
     }
 
     /**
      * @test
      */
-    public function it_does_not_append_non_unique()
+    public function it_does_not_append_domain_messages_with_a_unique_value_if_the_unique_value_has_been_used_before()
     {
-        $this->insert(self::OTHER_ID, self::UNIQUE);
+        $this->insert(self::OTHER_ID, self::UNIQUE_VALUE);
 
         $domainMessage = new DomainMessage(
             self::ID,
@@ -113,27 +119,30 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             BroadwayDateTime::now()
         );
 
-        $this->setExpectedException(
-            UniqueConstraintException::class,
-            'Not unique: uuid = ' . self::ID . ', unique value = ' . self::UNIQUE
-        );
+        try {
+            $this->uniqueDBALEventStoreDecorator->append(
+                $domainMessage->getId(),
+                new DomainEventStream([$domainMessage])
+            );
+            $this->fail('Did not throw expected UniqueConstraintException.');
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(UniqueConstraintException::class, $e);
+            $this->assertEquals(
+                'Not unique: uuid = ' . self::ID . ', unique value = ' . self::UNIQUE_VALUE,
+                $e->getMessage()
+            );
 
-        $this->uniqueDBALEventStoreDecorator->append(
-            $domainMessage->getId(),
-            new DomainEventStream([$domainMessage])
-        );
-    }
+            // Make sure no events were appended to the event store.
+            $rowCountResult = $this->connection->createQueryBuilder()
+                ->select('count(*) as total')
+                ->from('labelsEventStore')
+                ->execute()
+                ->fetch();
 
-    private function mockRequiresUnique()
-    {
-        $this->uniqueHelper->method('requiresUnique')
-            ->willReturn(true);
-    }
+            $rowCount = $rowCountResult['total'];
 
-    private function mockGetUnique()
-    {
-        $this->uniqueHelper->method('getUnique')
-            ->willReturn(new StringLiteral(self::UNIQUE));
+            $this->assertEquals(0, $rowCount);
+        }
     }
 
     /**

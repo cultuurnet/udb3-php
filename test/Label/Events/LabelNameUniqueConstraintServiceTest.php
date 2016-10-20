@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class UniqueHelperTest extends \PHPUnit_Framework_TestCase
+class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var StringLiteral
@@ -28,7 +28,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
     private $copyCreated;
 
     /**
-     * @var UniqueHelper
+     * @var LabelNameUniqueConstraintService
      */
     private $uniqueHelper;
 
@@ -51,7 +51,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
             new UUID()
         ));
 
-        $this->uniqueHelper = new UniqueHelper();
+        $this->uniqueHelper = new LabelNameUniqueConstraintService();
     }
 
     /**
@@ -59,7 +59,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function it_requires_unique_for_created()
     {
-        $this->assertTrue($this->uniqueHelper->requiresUnique($this->created));
+        $this->assertTrue($this->uniqueHelper->hasUniqueConstraint($this->created));
     }
 
     /**
@@ -67,7 +67,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function it_requires_unique_for_copy_created()
     {
-        $this->assertTrue($this->uniqueHelper->requiresUnique(
+        $this->assertTrue($this->uniqueHelper->hasUniqueConstraint(
             $this->copyCreated
         ));
     }
@@ -77,7 +77,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_require_unique_for_made_invisible()
     {
-        $this->assertFalse($this->uniqueHelper->requiresUnique(
+        $this->assertFalse($this->uniqueHelper->hasUniqueConstraint(
             $this->createDomainMessage(new MadeInvisible(new UUID()))
         ));
     }
@@ -89,7 +89,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->name,
-            $this->uniqueHelper->getUnique($this->created)
+            $this->uniqueHelper->getUniqueConstraintValue($this->created)
         );
     }
 
@@ -100,7 +100,7 @@ class UniqueHelperTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->name,
-            $this->uniqueHelper->getUnique($this->copyCreated)
+            $this->uniqueHelper->getUniqueConstraintValue($this->copyCreated)
         );
     }
 

@@ -21,11 +21,14 @@ class ContentTypes
     {
         return [
             OrganizerCreated::class => 'application/vnd.cultuurnet.udb3-events.organizer-created+json',
+            OrganizerCreatedWithUniqueWebsite::class => 'application/vnd.cultuurnet.udb3-events.organizer-created-with-unique-website+json',
             OrganizerDeleted::class => 'application/vnd.cultuurnet.udb3-events.organizer-deleted+json',
             OrganizerImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.organizer-imported-from-udb2+json',
             OrganizerUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.organizer-updated-from-udb2+json',
             LabelAdded::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-added+json',
             LabelRemoved::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-removed+json',
+            AddressUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-address-updated+json',
+            ContactPointUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-contact-point-updated+json',
         ];
     }
 }

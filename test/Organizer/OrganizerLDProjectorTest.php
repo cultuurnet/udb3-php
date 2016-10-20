@@ -6,7 +6,6 @@ use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
-use Broadway\Serializer\SerializableInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -24,12 +23,14 @@ use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
 use stdClass;
+use ValueObjects\Web\Url;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -129,13 +130,13 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $uuidGenerator = new Version4Generator();
         $id = $uuidGenerator->generate();
         $created = '2015-01-20T13:25:21+01:00';
-        
+
         $street = new Street('Kerkstraat 69');
         $locality = new Locality('Leuven');
         $postalCode = new PostalCode('3000');
         $country = Country::fromNative('BE');
 
-        $placeCreated = new OrganizerCreated(
+        $organizerCreated = new OrganizerCreated(
             $id,
             new Title('some representative title'),
             [new Address($street, $postalCode, $locality, $country)],
@@ -173,7 +174,47 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 1,
                 new Metadata(),
-                $placeCreated,
+                $organizerCreated,
+                BroadwayDateTime::fromString($created)
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_new_organizers_with_unique_website()
+    {
+        $uuidGenerator = new Version4Generator();
+        $id = $uuidGenerator->generate();
+        $created = '2015-01-20T13:25:21+01:00';
+
+        $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
+            $id,
+            Url::fromNative('http://www.stuk.be'),
+            new Title('some representative title')
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
+        $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->url = 'http://www.stuk.be';
+        $jsonLD->name = 'some representative title';
+        $jsonLD->created = $created;
+
+        $expectedDocument = (new JsonDocument($id))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle(
+            new DomainMessage(
+                1,
+                1,
+                new Metadata(),
+                $organizerCreated,
                 BroadwayDateTime::fromString($created)
             )
         );
@@ -191,7 +232,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $emails = $body->email;
+                $emails = $body->contactPoint->email;
                 $expectedEmails = [
                     'info@villanella.be'
                 ];
@@ -215,7 +256,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                return !property_exists($body, 'email');
+                return empty($body->contactPoint->email);
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -233,7 +274,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $emails = $body->email;
+                $emails = $body->contactPoint->email;
                 $expectedEmails = [
                     'info@villanella.be',
                     'dirk@dirkinc.be'
@@ -258,13 +299,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $phones = $body->phone;
+                $phones = $body->contactPoint->phone;
                 $expectedPhones = [
                     '+32 3 260 96 10'
                 ];
 
-                return is_array($phones) &&
-                $phones == $expectedPhones;
+                return is_array($phones) && $phones == $expectedPhones;
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -282,14 +322,13 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                $phones = $body->phone;
+                $phones = $body->contactPoint->phone;
                 $expectedPhones = [
                     '+32 3 260 96 10',
                     '+32 3 062 69 01'
                 ];
 
-                return is_array($phones) &&
-                $phones == $expectedPhones;
+                return is_array($phones) && $phones == $expectedPhones;
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);
@@ -307,7 +346,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->callback(function (JsonDocument $document) {
                 $body = $document->getBody();
 
-                return !property_exists($body, 'phone');
+                return empty($body->contactPoint->phone);
             }));
 
         $this->projector->applyOrganizerImportedFromUDB2($event);

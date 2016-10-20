@@ -7,8 +7,10 @@ use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
-class AuthorizedCommandBus extends CommandBusDecoratorBase implements AuthorizedCommandBusInterface
+class AuthorizedCommandBus extends CommandBusDecoratorBase implements AuthorizedCommandBusInterface, LoggerAwareInterface
 {
     /**
      * @var UserIdentificationInterface
@@ -72,5 +74,17 @@ class AuthorizedCommandBus extends CommandBusDecoratorBase implements Authorized
     public function getUserIdentification()
     {
         return $this->userIdentification;
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->decoratee->setLogger($logger);
     }
 }

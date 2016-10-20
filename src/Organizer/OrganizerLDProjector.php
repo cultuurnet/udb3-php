@@ -3,20 +3,20 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
-use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Actor\ActorLDProjector;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
@@ -83,6 +83,7 @@ class OrganizerLDProjector extends ActorLDProjector
 
     /**
      * @param OrganizerCreated $organizerCreated
+     * @param DomainMessage $domainMessage
      */
     protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
     {
@@ -121,6 +122,71 @@ class OrganizerLDProjector extends ActorLDProjector
         if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
             $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
         }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyOrganizerCreatedWithUniqueWebsite(
+        OrganizerCreatedWithUniqueWebsite $organizerCreated,
+        DomainMessage $domainMessage
+    ) {
+        $document = $this->newDocument($organizerCreated->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $organizerCreated->getOrganizerId()
+        );
+
+        $jsonLD->url = (string) $organizerCreated->getWebsite();
+        $jsonLD->name = $organizerCreated->getTitle();
+
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+        $jsonLD->created = \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
+            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
+        }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     */
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $organizerId = $addressUpdated->getOrganizerId();
+        $address = $addressUpdated->getAddress();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+        $jsonLD->address = $address->toJsonLd();
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param ContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    {
+        $organizerId = $contactPointUpdated->getOrganizerId();
+        $contactPoint = $contactPointUpdated->getContactPoint();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+        $jsonLD->contactPoint = $contactPoint->toJsonLd();
 
         $this->repository->save($document->withBody($jsonLD));
     }
@@ -211,7 +277,7 @@ class OrganizerLDProjector extends ActorLDProjector
     }
 
     /**
-     * @param \CultuurNet\UDB3\Organizer\Events\OrganizerDeleted $organizerDeleted
+     * @param OrganizerDeleted $organizerDeleted
      */
     public function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted

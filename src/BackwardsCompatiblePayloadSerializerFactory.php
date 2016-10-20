@@ -229,8 +229,14 @@ class BackwardsCompatiblePayloadSerializerFactory
         foreach ($refactoredEventEvents as $refactoredEventEvent) {
             $payloadManipulatingSerializer->manipulateEventsOfClass(
                 $refactoredEventEvent,
-                function (array $serializedObject) {
+                function (array $serializedObject) use ($refactoredEventEvent){
                     $serializedObject = self::replaceEventIdWithItemId($serializedObject);
+
+                    if ($refactoredEventEvent instanceof MajorInfoUpdated) {
+                        $prefixer = self::getLocationKeyPrefixer();
+                        $serializedObject = $prefixer($serializedObject);
+                    }
+
                     return $serializedObject;
                 }
             );
@@ -261,28 +267,65 @@ class BackwardsCompatiblePayloadSerializerFactory
         }
 
         /**
-         * PlaceCreated
+         * Place
          */
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Place\Events\PlaceCreated',
-            function (array $serializedObject) {
-                $serializedObject = self::replaceAddressKey(
-                    'locality',
-                    'addressLocality',
-                    $serializedObject
-                );
+            self::getAddressKeyPrefixer()
+        );
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\MajorInfoUpdated',
+            self::getAddressKeyPrefixer()
+        );
 
-                $serializedObject = self::replaceAddressKey(
-                    'country',
-                    'addressCountry',
-                    $serializedObject
-                );
-
-                return $serializedObject;
-            }
+        /**
+         * Event
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\Events\EventCreated',
+            self::getLocationKeyPrefixer()
         );
 
         return $payloadManipulatingSerializer;
+    }
+
+    private static function getAddressKeyPrefixer()
+    {
+        return function (array $serializedObject) {
+            $serializedObject = self::replaceAddressKey(
+                'locality',
+                'addressLocality',
+                $serializedObject
+            );
+
+            $serializedObject = self::replaceAddressKey(
+                'country',
+                'addressCountry',
+                $serializedObject
+            );
+
+            return $serializedObject;
+        };
+    }
+
+
+    private static function getLocationKeyPrefixer()
+    {
+        return function (array $serializedObject) {
+            $serializedObject = self::replaceLocationKey(
+                'locality',
+                'addressLocality',
+                $serializedObject
+            );
+
+            $serializedObject = self::replaceLocationKey(
+                'country',
+                'addressCountry',
+                $serializedObject
+            );
+
+            return $serializedObject;
+        };
     }
 
     /**
@@ -345,6 +388,23 @@ class BackwardsCompatiblePayloadSerializerFactory
             $value = $serializedObject['payload']['address'][$oldKey];
             $serializedObject['payload']['address'][$newKey] = $value;
             unset($serializedObject['payload']['address'][$oldKey]);
+        }
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param string $oldKey
+     * @param string $newKey
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function replaceLocationKey($oldKey, $newKey, $serializedObject)
+    {
+        if (isset($serializedObject['payload']['location']['address'][$oldKey])) {
+            $value = $serializedObject['payload']['location']['address'][$oldKey];
+            $serializedObject['payload']['location']['address'][$newKey] = $value;
+            unset($serializedObject['payload']['location']['address'][$oldKey]);
         }
 
         return $serializedObject;

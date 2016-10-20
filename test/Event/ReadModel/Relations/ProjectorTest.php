@@ -11,8 +11,12 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
+use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\EventServiceInterface;
@@ -33,44 +37,35 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $projector;
 
-    /**
-     * @var EventServiceInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $eventService;
-
     public function setUp()
     {
         $this->repository = $this->getMock(
             RepositoryInterface::class
         );
 
-        $this->eventService = $this->getMock(
-            EventServiceInterface::class
-        );
-
         $this->projector = new Projector(
             $this->repository,
-            $this->eventService
+            new EventCdbIdExtractor()
         );
     }
 
     /**
      * @test
+     * @dataProvider cdbXmlDataProvider
+     *
+     * @param string $aggregateId
+     * @param mixed $event
+     * @param string $expectedEventId
+     * @param string $expectedPlaceId
+     * @param string $expectedOrganizerId
      */
-    public function it_stores_relations_when_creating_event_from_cdbxml_with_place_and_without_organizer()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_with_placeid_and_without_organiserid.xml');
-
-        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
-            new String('foo'),
-            new EventXmlString($xml),
-            new String(self::CDBXML_NAMESPACE_33)
-        );
-
-        $expectedEventId = 'foo';
-        $expectedPlaceId = 'bcb983d2-ffba-457d-a023-a821aa841fba';
-        $expectedOrganizerId = null;
-
+    public function it_stores_relations_when_creating_or_updating_events_from_udb2_or_cdbxml(
+        $aggregateId,
+        $event,
+        $expectedEventId,
+        $expectedPlaceId,
+        $expectedOrganizerId
+    ) {
         $this->repository
             ->expects($this->once())
             ->method('storeRelations')
@@ -80,212 +75,162 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo($expectedOrganizerId)
             );
 
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
+        $dateTime = '2015-03-01T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $eventCreatedFromCdbXml->getEventId()->toNative(),
+            $aggregateId,
             1,
             new Metadata(),
-            $eventCreatedFromCdbXml,
-            DateTime::fromString($importedDate)
+            $event,
+            DateTime::fromString($dateTime)
         );
 
         $this->projector->handle($domainMessage);
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function it_stores_relations_when_creating_event_from_cdbxml_with_place_and_organizer()
+    public function cdbXmlDataProvider()
     {
-        $xml = file_get_contents(__DIR__ . '/event_with_placeid_and_organiserid.xml');
+        $withNone = file_get_contents(__DIR__ . '/event_without_placeid_and_without_organiserid.xml');
+        $withPlace = file_get_contents(__DIR__ . '/event_with_placeid_and_without_organiserid.xml');
+        $withBoth = file_get_contents(__DIR__ . '/event_with_placeid_and_organiserid.xml');
 
-        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
-            new String('foo'),
-            new EventXmlString($xml),
-            new String(self::CDBXML_NAMESPACE_33)
-        );
-
-        $expectedEventId = 'foo';
-        $expectedPlaceId = 'bcb983d2-ffba-457d-a023-a821aa841fba';
-        $expectedOrganizerId = 'test-de-bijloke';
-
-        $this->repository
-            ->expects($this->once())
-            ->method('storeRelations')
-            ->with(
-                $this->equalTo($expectedEventId),
-                $this->equalTo($expectedPlaceId),
-                $this->equalTo($expectedOrganizerId)
-            );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $domainMessage = new DomainMessage(
-            $eventCreatedFromCdbXml->getEventId()->toNative(),
-            1,
-            new Metadata(),
-            $eventCreatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->projector->handle($domainMessage);
-    }
-
-    /**
-     * @test
-     */
-    public function it_stores_relations_when_creating_event_from_cdbxml_without_place_and_without_organizer()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_without_placeid_and_without_organiserid.xml');
-
-        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
-            new String('foo'),
-            new EventXmlString($xml),
-            new String(self::CDBXML_NAMESPACE_33)
-        );
-
-        $expectedEventId = 'foo';
-        $expectedPlaceId = null;
-        $expectedOrganizerId = null;
-
-        $this->repository
-            ->expects($this->once())
-            ->method('storeRelations')
-            ->with(
-                $this->equalTo($expectedEventId),
-                $this->equalTo($expectedPlaceId),
-                $this->equalTo($expectedOrganizerId)
-            );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $domainMessage = new DomainMessage(
-            $eventCreatedFromCdbXml->getEventId()->toNative(),
-            1,
-            new Metadata(),
-            $eventCreatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->projector->handle($domainMessage);
-    }
-
-    /**
-     * @test
-     */
-    public function it_stores_relations_when_updating_event_from_cdbxml_with_place_and_without_organizer()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_with_placeid_and_without_organiserid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new String('foo'),
-            new EventXmlString($xml),
-            new String(self::CDBXML_NAMESPACE_33)
-        );
-
-        $expectedEventId = 'foo';
-        $expectedPlaceId = 'bcb983d2-ffba-457d-a023-a821aa841fba';
-        $expectedOrganizerId = null;
-
-        $this->repository
-            ->expects($this->once())
-            ->method('storeRelations')
-            ->with(
-                $this->equalTo($expectedEventId),
-                $this->equalTo($expectedPlaceId),
-                $this->equalTo($expectedOrganizerId)
-            );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $domainMessage = new DomainMessage(
-            $eventUpdatedFromCdbXml->getEventId()->toNative(),
-            1,
-            new Metadata(),
-            $eventUpdatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->projector->handle($domainMessage);
-    }
-
-    /**
-     * @test
-     */
-    public function it_stores_relations_when_updating_event_from_cdbxml_with_place_and_organizer()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_with_placeid_and_organiserid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new String('foo'),
-            new EventXmlString($xml),
-            new String(self::CDBXML_NAMESPACE_33)
-        );
-
-        $expectedEventId = 'foo';
-        $expectedPlaceId = 'bcb983d2-ffba-457d-a023-a821aa841fba';
-        $expectedOrganizerId = 'test-de-bijloke';
-
-        $this->repository
-            ->expects($this->once())
-            ->method('storeRelations')
-            ->with(
-                $this->equalTo($expectedEventId),
-                $this->equalTo($expectedPlaceId),
-                $this->equalTo($expectedOrganizerId)
-            );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $domainMessage = new DomainMessage(
-            $eventUpdatedFromCdbXml->getEventId()->toNative(),
-            1,
-            new Metadata(),
-            $eventUpdatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->projector->handle($domainMessage);
-    }
-
-    /**
-     * @test
-     */
-    public function it_stores_relations_when_updating_event_from_cdbxml_without_place_and_without_organizer()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_without_placeid_and_without_organiserid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new String('foo'),
-            new EventXmlString($xml),
-            new String(self::CDBXML_NAMESPACE_33)
-        );
-
-        $expectedEventId = 'foo';
-        $expectedPlaceId = null;
-        $expectedOrganizerId = null;
-
-        $this->repository
-            ->expects($this->once())
-            ->method('storeRelations')
-            ->with(
-                $this->equalTo($expectedEventId),
-                $this->equalTo($expectedPlaceId),
-                $this->equalTo($expectedOrganizerId)
-            );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $domainMessage = new DomainMessage(
-            $eventUpdatedFromCdbXml->getEventId()->toNative(),
-            1,
-            new Metadata(),
-            $eventUpdatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->projector->handle($domainMessage);
+        return [
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventImportedFromUDB2(
+                    'foo',
+                    $withNone,
+                    self::CDBXML_NAMESPACE_33
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => null,
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventImportedFromUDB2(
+                    'foo',
+                    $withPlace,
+                    self::CDBXML_NAMESPACE_33
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventImportedFromUDB2(
+                    'foo',
+                    $withBoth,
+                    self::CDBXML_NAMESPACE_33
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => 'test-de-bijloke',
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventUpdatedFromUDB2(
+                    'foo',
+                    $withNone,
+                    self::CDBXML_NAMESPACE_33
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => null,
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventUpdatedFromUDB2(
+                    'foo',
+                    $withPlace,
+                    self::CDBXML_NAMESPACE_33
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventUpdatedFromUDB2(
+                    'foo',
+                    $withBoth,
+                    self::CDBXML_NAMESPACE_33
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => 'test-de-bijloke',
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventCreatedFromCdbXml(
+                    new String('foo'),
+                    new EventXmlString($withNone),
+                    new String(self::CDBXML_NAMESPACE_33)
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => null,
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventCreatedFromCdbXml(
+                    new String('foo'),
+                    new EventXmlString($withPlace),
+                    new String(self::CDBXML_NAMESPACE_33)
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventCreatedFromCdbXml(
+                    new String('foo'),
+                    new EventXmlString($withBoth),
+                    new String(self::CDBXML_NAMESPACE_33)
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => 'test-de-bijloke',
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventUpdatedFromCdbXml(
+                    new String('foo'),
+                    new EventXmlString($withNone),
+                    new String(self::CDBXML_NAMESPACE_33)
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => null,
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventUpdatedFromCdbXml(
+                    new String('foo'),
+                    new EventXmlString($withPlace),
+                    new String(self::CDBXML_NAMESPACE_33)
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => null,
+            ],
+            [
+                'aggregateId' => 'foo',
+                'event' => new EventUpdatedFromCdbXml(
+                    new String('foo'),
+                    new EventXmlString($withBoth),
+                    new String(self::CDBXML_NAMESPACE_33)
+                ),
+                'expectedEventId' => 'foo',
+                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
+                'expectedOrganizerId' => 'test-de-bijloke',
+            ],
+        ];
     }
 
     /**

@@ -229,7 +229,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         foreach ($refactoredEventEvents as $refactoredEventEvent) {
             $payloadManipulatingSerializer->manipulateEventsOfClass(
                 $refactoredEventEvent,
-                function (array $serializedObject) use ($refactoredEventEvent){
+                function (array $serializedObject) use ($refactoredEventEvent) {
                     $serializedObject = self::replaceEventIdWithItemId($serializedObject);
 
                     if ($refactoredEventEvent instanceof MajorInfoUpdated) {

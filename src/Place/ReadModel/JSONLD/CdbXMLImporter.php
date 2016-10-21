@@ -203,7 +203,7 @@ class CdbXMLImporter
             $mainPicture = count($pictures) > 0 ? $pictures->current() : null;
         }
 
-        if($mainPicture) {
+        if ($mainPicture) {
             $jsonLD->image = $mainPicture->getHLink();
         }
     }

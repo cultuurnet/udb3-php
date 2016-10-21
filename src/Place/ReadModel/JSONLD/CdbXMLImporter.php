@@ -5,6 +5,7 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
+use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 
 /**
@@ -42,7 +43,7 @@ class CdbXMLImporter
         \CultureFeed_Cdb_Item_Base $item
     ) {
         $jsonLD = clone $base;
-        
+
         $detail = null;
 
         /** @var \CultureFeed_Cdb_Data_ActorDetail[] $details */
@@ -123,15 +124,7 @@ class CdbXMLImporter
         }
         $jsonLD->bookingInfo = $bookingInfo;
 
-        // Image.
-        $images = $detail->getMedia()->byMediaType(
-            \CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO
-        );
-        $images->rewind();
-        $image = count($images) > 0 ? $images->current() : null;
-        if ($image) {
-            $jsonLD->image = $image->getHLink();
-        }
+        $this->importPicture($detail, $jsonLD);
 
         $this->importTerms($item, $jsonLD);
 
@@ -166,5 +159,52 @@ class CdbXMLImporter
             }
         }
         $jsonLD->terms = $categories;
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_ActorDetail $detail
+     * @param \stdClass $jsonLD
+     *
+     * This is based on code found in the culturefeed theme.
+     * @see https://github.com/cultuurnet/culturefeed/blob/master/culturefeed_agenda/theme/theme.inc#L266-L284
+     */
+    private function importPicture($detail, $jsonLD)
+    {
+        $mainPicture = null;
+
+        // first check if there is a media file that is main and has the PHOTO media type
+        $photos = $detail->getMedia()->byMediaType(CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO);
+        foreach ($photos as $photo) {
+            if ($photo->isMain()) {
+                $mainPicture = $photo;
+            }
+        }
+
+        // the IMAGEWEB media type is deprecated but can still be used as a main image if there is no PHOTO
+        if (empty($mainPicture)) {
+            $images = $detail->getMedia()->byMediaType(CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB);
+            foreach ($images as $image) {
+                if ($image->isMain()) {
+                    $mainPicture = $image;
+                }
+            }
+        }
+
+        // if there is no explicit main image we just use the oldest picture of any type
+        if (empty($mainPicture)) {
+            $pictures = $detail->getMedia()->byMediaTypes(
+                [
+                    CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO,
+                    CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB
+                ]
+            );
+
+            $pictures->rewind();
+            $mainPicture = count($pictures) > 0 ? $pictures->current() : null;
+        }
+
+        if ($mainPicture) {
+            $jsonLD->image = $mainPicture->getHLink();
+        }
     }
 }

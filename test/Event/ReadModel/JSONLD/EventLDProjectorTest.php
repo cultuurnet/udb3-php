@@ -658,6 +658,40 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_should_add_the_main_udb2_imageweb_as_an_image_property_when_there_is_no_main_photo()
+    {
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_with_main_imageweb.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals(
+            '//media.uitdatabank.be/20141109/a684be82-525a-462a-955f-b64745c16c56.jpg',
+            $body->image
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_add_the_oldest_picture_as_an_image_property_when_there_is_no_main_picture()
+    {
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_without_main_picture.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals(
+            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
+            $body->image
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_a_bookingInfo_property_when_cdbxml_has_pricevalue()
     {
         $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(

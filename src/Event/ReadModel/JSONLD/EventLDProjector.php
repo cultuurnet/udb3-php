@@ -6,8 +6,8 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Cdb\ExternalId\MappingServiceInterface;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
@@ -96,7 +96,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param OrganizerService $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
-     * @param MappingServiceInterface|null $externalIdMappingService
+     * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -106,14 +106,14 @@ class EventLDProjector extends OfferLDProjector implements
         OrganizerService $organizerService,
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
-        MappingServiceInterface $externalIdMappingService = null
+        EventCdbIdExtractorInterface $eventCdbIdExtractor
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            $externalIdMappingService
+            $eventCdbIdExtractor
         );
 
         $this->placeService = $placeService;

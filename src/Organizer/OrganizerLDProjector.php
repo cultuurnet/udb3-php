@@ -256,14 +256,12 @@ class OrganizerLDProjector extends ActorLDProjector
         $jsonLD = $document->getBody();
 
         if (isset($jsonLD->labels)) {
-            $labels = $jsonLD->labels;
-
-            $modifiedLabels = [];
-            foreach ($labels as $label) {
-                if ($label->uuid !== $labelRemoved->getLabelId()->toNative()) {
-                    $modifiedLabels[] = $label;
+            $modifiedLabels = array_filter(
+                $jsonLD->labels,
+                function ($label) use ($labelRemoved) {
+                    return $label->uuid !== $labelRemoved->getLabelId()->toNative();
                 }
-            }
+            );
 
             if (count($modifiedLabels) === 0) {
                 unset($jsonLD->labels);

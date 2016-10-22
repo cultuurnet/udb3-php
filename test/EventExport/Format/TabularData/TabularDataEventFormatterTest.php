@@ -104,30 +104,72 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider eventDateProvider
+     *
+     * @param $eventFile
+     * @param array $expectedFormattedEvent
      */
-    public function it_formats_dates($eventFile, $created, $startDate, $endDate, $modified)
+    public function it_formats_dates($eventFile, $expectedFormattedEvent)
     {
-        $expectedFormatting = [
-            'created' => $created,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'modified' => $modified
-        ];
-
-        $includedProperties = [
-            'created',
-            'startDate',
-            'endDate',
-            'modified'
-        ];
         $event = $this->getJSONEventFromFile($eventFile);
-        $formatter = new TabularDataEventFormatter($includedProperties);
+
+        $formatter = new TabularDataEventFormatter(
+            array_keys($expectedFormattedEvent)
+        );
+
         $formattedEvent = $formatter->formatEvent($event);
 
         // We do not care about the event 'id' here, which is always included.
         unset($formattedEvent['id']);
 
-        $this->assertEquals($expectedFormatting, $formattedEvent);
+        $this->assertEquals($expectedFormattedEvent, $formattedEvent);
+    }
+
+    /**
+     * Test data provider for it_formats_dates().
+     *
+     * @return array
+     *   Array of individual arrays, each containing the arguments for the test method.
+     */
+    public function eventDateProvider()
+    {
+        return [
+            [
+                'event_with_dates.json',
+                [
+                    'created' => '2014-12-11 17:30',
+                    'startDate' => '2015-03-02 13:30',
+                    'endDate' => '2015-03-30 16:30',
+                    'modified' => '',
+                ],
+            ],
+            [
+                'event_without_end_date.json',
+                [
+                    'created' => '2014-12-11 17:30',
+                    'startDate' => '2015-03-02 13:30',
+                    'endDate' => '',
+                    'modified' => '',
+                ],
+            ],
+            [
+                'event_with_modified_date.json',
+                [
+                    'created' => '2015-10-13 14:27',
+                    'startDate' => '2015-10-29 20:00',
+                    'endDate' => '',
+                    'modified' => '2015-10-13 14:27',
+                ],
+            ],
+            [
+                'event_with_outdated_start_and_end_date_format.json',
+                [
+                    'created' => '2014-12-11 17:30',
+                    'startDate' => '2015-03-02 13:30',
+                    'endDate' => '2015-03-30 16:30',
+                    'modified' => '',
+                ],
+            ],
+        ];
     }
 
     /**
@@ -252,21 +294,6 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
-    }
-
-    /**
-     * Test data provider for it_formats_dates().
-     *
-     * @return array
-     *   Array of individual arrays, each containing the arguments for the test method.
-     */
-    public function eventDateProvider()
-    {
-        return array(
-            array('event_with_dates.json', '2014-12-11 17:30', '2015-03-02 13:30', '2015-03-30 16:30', ''),
-            array('event_without_end_date.json', '2014-12-11 17:30', '2015-03-02 13:30', '', ''),
-            array('event_with_modified_date.json', '2015-10-13 14:27', '2015-10-29 20:00', '', '2015-10-13 14:27'),
-        );
     }
 
     /**

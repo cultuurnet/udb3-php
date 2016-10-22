@@ -416,7 +416,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $labelAdded = new LabelAdded($organizerId, $labelId);
         $domainMessage = $this->createDomainMessage($labelAdded);
 
-        $this->expectSave($organizerId, 'organizer_with_label.json');
+        $this->expectSave($organizerId, 'organizer_with_one_label.json');
 
         $this->projector->handle($domainMessage);
     }
@@ -453,13 +453,18 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 new UUID('00a91b64-e9f8-4213-a4a7-a21d633e65d6'),
-                'organizer_with_label.json',
+                'organizer_with_one_label.json',
                 'organizer.json'
             ],
             [
                 new UUID('8e382f93-843b-4e7a-af9a-5cf213df5b9a'),
-                'organizer_with_multiple_labels.json',
-                'organizer_with_label.json'
+                'organizer_with_two_labels.json',
+                'organizer_with_one_label.json'
+            ],
+            [
+                new UUID('5bf32266-96d6-11e6-ae22-56b6b6499611'),
+                'organizer_with_three_labels.json',
+                'organizer_with_two_labels.json'
             ]
         ];
     }

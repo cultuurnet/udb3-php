@@ -169,6 +169,15 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
                     'modified' => '',
                 ],
             ],
+            [
+                'event_with_incorrect_start_and_end_date_format.json',
+                [
+                    'created' => '2014-12-11 17:30',
+                    'startDate' => '',
+                    'endDate' => '',
+                    'modified' => '',
+                ],
+            ],
         ];
     }
 

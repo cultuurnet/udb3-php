@@ -57,6 +57,10 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
         }
 
+        if ($type->is(CalendarType::PERIODIC()) && (empty($startDate) || empty($endDate))) {
+            throw new \UnexpectedValueException('A period should have a start- and end-date.');
+        }
+
         $this->type = $type->toNative();
         $this->startDate = $startDate;
         $this->endDate = $endDate;

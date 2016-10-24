@@ -217,4 +217,41 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
 
         Calendar::deserialize($invalidCalendarData);
     }
+
+    /**
+     * @test
+     * @dataProvider periodicCalendarWithMissingDatesDataProvider
+     */
+    public function it_should_not_create_a_periodic_calendar_with_missing_dates($calendarData)
+    {
+        $this->setExpectedException(
+            \UnexpectedValueException::class,
+            'A period should have a start- and end-date.'
+        );
+
+        Calendar::deserialize($calendarData);
+    }
+
+    public function periodicCalendarWithMissingDatesDataProvider()
+    {
+        return [
+            'no dates' => [
+                'calendarData' => [
+                    'type' => 'periodic'
+                ]
+            ],
+            'start date missing' => [
+                'calendarData' => [
+                    'type' => 'periodic',
+                    'endDate' => '2016-03-13T12:00:00',
+                ]
+            ],
+            'end date missing' => [
+                'calendarData' => [
+                    'type' => 'periodic',
+                    'startDate' => '2016-03-06T10:00:00',
+                ]
+            ]
+        ];
+    }
 }

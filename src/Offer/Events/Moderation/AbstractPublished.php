@@ -36,8 +36,7 @@ abstract class AbstractPublished extends AbstractEvent
     {
         $asArray = parent::serialize();
 
-        if (!is_null($this->embargoDate))
-        {
+        if (!is_null($this->embargoDate)) {
             $asArray['embargo_date'] = $this->embargoDate->format(\DateTime::ATOM);
         }
 

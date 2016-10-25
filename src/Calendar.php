@@ -57,6 +57,10 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
         }
 
+        if ($type->is(CalendarType::PERIODIC()) && (empty($startDate) || empty($endDate))) {
+            throw new \UnexpectedValueException('A period should have a start- and end-date.');
+        }
+
         $this->type = $type->toNative();
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -206,17 +210,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         // Permanent - with openingtimes
         $openingHours = $this->getOpeningHours();
         if (!empty($openingHours)) {
-            $jsonLd['openingHours'] = array();
-            foreach ($openingHours as $openingHour) {
-                $schedule = array('dayOfWeek' => $openingHour->dayOfWeek);
-                if (!empty($openingHour->opens)) {
-                    $schedule['opens'] = $openingHour->opens;
-                }
-                if (!empty($openingHour->closes)) {
-                    $schedule['closes'] = $openingHour->closes;
-                }
-                $jsonLd['openingHours'][] = $schedule;
-            }
+            $jsonLd['openingHours'] = (array) $openingHours;
         }
 
         return $jsonLd;

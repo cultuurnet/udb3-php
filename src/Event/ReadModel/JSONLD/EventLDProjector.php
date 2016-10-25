@@ -46,6 +46,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -470,8 +471,8 @@ class EventLDProjector extends OfferLDProjector implements
                 $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
                 $jsonLD = (object)array_merge((array)$jsonLD, $calendarJsonLD);
 
-                $availableTo = $this->getAvailableToFromCalendar($eventCreated->getCalendar());
-                $jsonLD->availableTo = $availableTo->format(\DateTime::ATOM);
+                $availableTo = AvailableTo::createFromCalendar($eventCreated->getCalendar());
+                $jsonLD->availableTo = (string)$availableTo;
 
                 // Same as.
                 $jsonLD->sameAs = $this->generateSameAs(
@@ -534,8 +535,8 @@ class EventLDProjector extends OfferLDProjector implements
           '@type' => 'Place',
         ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
 
-        $availableTo = $this->getAvailableToFromCalendar($majorInfoUpdated->getCalendar());
-        $jsonLD->availableTo = $availableTo->format(\DateTime::ATOM);
+        $availableTo = AvailableTo::createFromCalendar($majorInfoUpdated->getCalendar());
+        $jsonLD->availableTo = (string)$availableTo;
 
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {

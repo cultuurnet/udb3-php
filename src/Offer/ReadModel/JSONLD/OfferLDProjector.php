@@ -763,21 +763,4 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             );
         }
     }
-
-    /**
-     * @param CalendarInterface $calendar
-     * @return \DateTimeInterface
-     */
-    protected function getAvailableToFromCalendar(CalendarInterface $calendar)
-    {
-        if ($calendar->getType() === CalendarType::PERMANENT()) {
-            $availableTo = new \DateTime('2100-01-01T00:00:00Z');
-        } else if ($calendar->getType() === CalendarType::SINGLE()) {
-            $availableTo = $calendar->getStartDate();
-        } else {
-            $availableTo = $calendar->getEndDate();
-        }
-
-        return $availableTo;
-    }
 }

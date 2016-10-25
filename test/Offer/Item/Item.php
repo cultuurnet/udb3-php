@@ -207,11 +207,11 @@ class Item extends Offer
     }
 
     /**
-     * @return AbstractPublished
+     * @inheritdoc
      */
-    protected function createPublishedEvent()
+    protected function createPublishedEvent(\DateTimeInterface $embargoDate)
     {
-        return new Published($this->id);
+        return new Published($this->id, $embargoDate);
     }
 
     /**

@@ -411,9 +411,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * @inheritDoc
      */
-    protected function createPublishedEvent()
+    protected function createPublishedEvent(\DateTimeInterface $embargoDate)
     {
-        return new Published($this->actorId);
+        return new Published($this->actorId, $embargoDate);
     }
 
     /**

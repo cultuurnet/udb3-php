@@ -12,9 +12,9 @@ abstract class AbstractPublished extends AbstractEvent
     /**
      * AbstractPublish constructor.
      * @param string $itemId
-     * @param \DateTimeInterface|null $embargoDate
+     * @param \DateTimeInterface
      */
-    public function __construct($itemId, \DateTimeInterface $embargoDate = null)
+    public function __construct($itemId, \DateTimeInterface $embargoDate)
     {
         parent::__construct($itemId);
 
@@ -34,13 +34,9 @@ abstract class AbstractPublished extends AbstractEvent
      */
     public function serialize()
     {
-        $asArray = parent::serialize();
-
-        if (!is_null($this->embargoDate)) {
-            $asArray['embargo_date'] = $this->embargoDate->format(\DateTime::ATOM);
-        }
-
-        return $asArray;
+        return parent::serialize() + [
+            'embargo_date' => $this->embargoDate->format(\DateTime::ATOM)
+        ];
     }
 
     /**

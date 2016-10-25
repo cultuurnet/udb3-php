@@ -441,7 +441,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     private function handlePublish(AbstractPublish $publish)
     {
         $offer = $this->load($publish->getItemId());
-        $offer->publish();
+        $offer->publish($publish->getEmbargoDate());
         $this->offerRepository->save($offer);
     }
 

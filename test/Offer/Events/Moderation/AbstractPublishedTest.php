@@ -21,11 +21,6 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
      */
     private $abstractPublished;
 
-    /**
-     * @var AbstractPublished|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $abstractPublishedDefaultEmbargo;
-
     protected function setUp()
     {
         $this->itemId = '3dc2b894-9a80-11e6-9f33-a24fc0d9649c';
@@ -35,11 +30,6 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
         $this->abstractPublished = $this->getMockForAbstractClass(
             AbstractPublished::class,
             [$this->itemId, $this->embargoDate]
-        );
-
-        $this->abstractPublishedDefaultEmbargo = $this->getMockForAbstractClass(
-            AbstractPublished::class,
-            [$this->itemId]
         );
     }
 
@@ -79,17 +69,6 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_has_a_default_embargo_date_of_null()
-    {
-        $this->assertEquals(
-            null,
-            $this->abstractPublishedDefaultEmbargo->getEmbargoDate()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_can_serialize()
     {
         $expectedArray = [
@@ -98,20 +77,6 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
         ];
 
         $actualArray = $this->abstractPublished->serialize();
-
-        $this->assertEquals($expectedArray, $actualArray);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_serialize_with_default_embargo_date()
-    {
-        $expectedArray = [
-            'item_id' => $this->itemId
-        ];
-
-        $actualArray = $this->abstractPublishedDefaultEmbargo->serialize();
 
         $this->assertEquals($expectedArray, $actualArray);
     }

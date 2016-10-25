@@ -898,8 +898,9 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_updates_the_workflow_status_when_an_offer_is_published()
     {
         $itemId = UUID::generateAsString();
+        $now = new \DateTime();
 
-        $publishedEvent = new Published($itemId);
+        $publishedEvent = new Published($itemId, $now);
         $itemDocumentReadyDraft = new JsonDocument(
             $itemId,
             json_encode([

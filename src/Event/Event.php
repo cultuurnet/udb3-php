@@ -648,9 +648,9 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * @inheritdoc
      */
-    protected function createPublishedEvent()
+    protected function createPublishedEvent(\DateTimeInterface $embargoDate)
     {
-        return new Published($this->eventId);
+        return new Published($this->eventId, $embargoDate);
     }
 
     /**

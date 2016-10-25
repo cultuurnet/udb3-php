@@ -362,7 +362,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id)
+                new Published($this->id, new \DateTime())
             ])
             ->when(new Approve($this->id))
             ->then([
@@ -379,7 +379,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id)
+                new Published($this->id, new \DateTime())
             ])
             ->when(new FlagAsDuplicate($this->id))
             ->then([
@@ -396,7 +396,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id)
+                new Published($this->id, new \DateTime())
             ])
             ->when(new FlagAsInappropriate($this->id))
             ->then([
@@ -415,7 +415,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id)
+                new Published($this->id, new \DateTime())
             ])
             ->when(new Reject($this->id, $reason))
             ->then([

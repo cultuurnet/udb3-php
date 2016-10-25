@@ -266,16 +266,17 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_publishes_an_offer_with_workflow_status_draft()
     {
         $itemId = 'itemId';
+        $now = new \DateTime();
 
         $this->scenario
             ->given([
                 new ItemCreated($itemId)
             ])
-            ->when(function (Item $item) {
-                $item->publish();
+            ->when(function (Item $item) use ($now) {
+                $item->publish($now);
             })
             ->then([
-                new Published($itemId)
+                new Published($itemId, $now)
             ]);
     }
 
@@ -285,14 +286,15 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_does_not_publish_an_offer_more_then_once()
     {
         $itemId = 'itemId';
+        $now = new \DateTime();
 
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
-                new Published($itemId)
+                new Published($itemId, $now)
             ])
-            ->when(function (Item $item) {
-                $item->publish();
+            ->when(function (Item $item) use ($now) {
+                $item->publish($now);
             })
             ->then([]);
     }
@@ -308,15 +310,16 @@ class OfferTest extends AggregateRootScenarioTestCase
         );
 
         $itemId = 'itemId';
+        $now = new \DateTime();
 
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
-                new Published($itemId),
+                new Published($itemId, $now),
                 new FlaggedAsDuplicate($itemId)
             ])
-            ->when(function (Item $item) {
-                $item->publish();
+            ->when(function (Item $item) use ($now) {
+                $item->publish($now);
             })
             ->then([]);
     }
@@ -327,13 +330,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_should_approve_an_offer_that_is_ready_for_validation()
     {
         $itemId = UUID::generateAsString();
+        $now = new \DateTime();
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId)
+                    new Published($itemId, $now)
                 ]
             )
             ->when(
@@ -354,13 +358,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_should_not_approve_an_offer_more_than_once()
     {
         $itemId = UUID::generateAsString();
+        $now = new \DateTime();
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId)
+                    new Published($itemId, $now)
                 ]
             )
             ->when(
@@ -409,13 +414,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     {
         $itemId = UUID::generateAsString();
         $reason = new StringLiteral('The title is misleading.');
+        $now = new \DateTime();
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId)
+                    new Published($itemId, $now)
                 ]
             )
             ->when(
@@ -465,13 +471,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     {
         $itemId = UUID::generateAsString();
         $reason = new StringLiteral('You forgot to add an organizer.');
+        $now = new \DateTime();
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId)
+                    new Published($itemId, $now)
                 ]
             )
             ->when(
@@ -492,13 +499,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_should_flag_an_offer_that_is_ready_for_validation_as_duplicate()
     {
         $itemId = UUID::generateAsString();
+        $now = new \DateTime();
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId)
+                    new Published($itemId, $now)
                 ]
             )
             ->when(
@@ -545,13 +553,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_should_flag_an_offer_that_is_ready_for_validation_as_inappropriate()
     {
         $itemId = UUID::generateAsString();
+        $now = new \DateTime();
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId)
+                    new Published($itemId, $now)
                 ]
             )
             ->when(

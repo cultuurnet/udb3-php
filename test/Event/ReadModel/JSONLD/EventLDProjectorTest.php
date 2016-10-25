@@ -193,6 +193,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->availableTo = $jsonLD->startDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/1',
         ];
@@ -272,6 +273,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->availableTo = $jsonLD->startDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -363,6 +365,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
+        $jsonLD->availableTo = $jsonLD->startDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -498,6 +501,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'endDate' => '2015-01-29T13:25:21+01:00',
             ]
         ];
+        $jsonLD->availableTo = $jsonLD->endDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];

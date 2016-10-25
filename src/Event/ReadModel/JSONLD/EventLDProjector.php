@@ -470,6 +470,9 @@ class EventLDProjector extends OfferLDProjector implements
                 $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
                 $jsonLD = (object)array_merge((array)$jsonLD, $calendarJsonLD);
 
+                $availableTo = $this->getAvailableToFromCalendar($eventCreated->getCalendar());
+                $jsonLD->availableTo = $availableTo->format(\DateTime::ATOM);
+
                 // Same as.
                 $jsonLD->sameAs = $this->generateSameAs(
                     $eventCreated->getEventId(),

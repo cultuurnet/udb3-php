@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
+use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -35,7 +37,6 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
-use CultuurNet\UDB3\PriceInfo\PriceCategory;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -761,5 +762,22 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
                 '@id' => $this->organizerService->iri($organizerId)
             );
         }
+    }
+
+    /**
+     * @param CalendarInterface $calendar
+     * @return \DateTimeInterface
+     */
+    protected function getAvailableToFromCalendar(CalendarInterface $calendar)
+    {
+        if ($calendar->getType() === CalendarType::PERMANENT()) {
+            $availableTo = new \DateTime('2100-01-01T00:00:00Z');
+        } else if ($calendar->getType() === CalendarType::SINGLE()) {
+            $availableTo = $calendar->getStartDate();
+        } else {
+            $availableTo = $calendar->getEndDate();
+        }
+
+        return $availableTo;
     }
 }

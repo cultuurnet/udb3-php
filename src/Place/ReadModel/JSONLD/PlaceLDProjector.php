@@ -192,6 +192,9 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $calendarJsonLD = $placeCreated->getCalendar()->toJsonLd();
         $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
 
+        $availableTo = $this->getAvailableToFromCalendar($placeCreated->getCalendar());
+        $jsonLD->availableTo = $availableTo->format(\DateTime::ATOM);
+
         $eventType = $placeCreated->getEventType();
         $jsonLD->terms = [
             $eventType->toJsonLd()

@@ -151,6 +151,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
           'streetAddress' => 'Kerkstraat 69',
         ];
         $jsonLD->calendarType = 'permanent';
+        $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
@@ -203,6 +204,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             'streetAddress' => 'Kerkstraat 69',
         ];
         $jsonLD->calendarType = 'permanent';
+        $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',

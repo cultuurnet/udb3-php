@@ -534,6 +534,9 @@ class EventLDProjector extends OfferLDProjector implements
           '@type' => 'Place',
         ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
 
+        $availableTo = $this->getAvailableToFromCalendar($majorInfoUpdated->getCalendar());
+        $jsonLD->availableTo = $availableTo->format(\DateTime::ATOM);
+
         // Remove old theme and event type.
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {
             return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;

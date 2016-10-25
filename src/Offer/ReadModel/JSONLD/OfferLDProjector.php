@@ -634,8 +634,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      */
     protected function applyPublished(AbstractPublished $published)
     {
-        $this->applyEventTransformation($published, function ($offerLd) {
+        $this->applyEventTransformation($published, function ($offerLd) use ($published) {
             $offerLd->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+
+            $publicationDate = $published->getPublicationDate();
+            $offerLd->availableFrom = $publicationDate->format(\DateTime::ATOM);
         });
     }
 

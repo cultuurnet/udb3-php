@@ -895,7 +895,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_updates_the_workflow_status_when_an_offer_is_published()
+    public function it_updates_the_workflow_status_and_available_from_when_an_offer_is_published()
     {
         $itemId = UUID::generateAsString();
         $now = new \DateTime();
@@ -912,6 +912,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $expectedItem = (object)[
             '@id' => $itemId,
             '@type' => 'event',
+            'availableFrom' => $now->format(\DateTime::ATOM),
             'workflowStatus' => 'READY_FOR_VALIDATION'
         ];
 

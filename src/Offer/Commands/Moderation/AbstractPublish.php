@@ -16,6 +16,9 @@ abstract class AbstractPublish extends AbstractModerationCommand
     {
         parent::__construct($itemId);
 
+        if (is_null($embargoDate)) {
+            $embargoDate = new \DateTime();
+        }
         $this->embargoDate = $embargoDate;
     }
 

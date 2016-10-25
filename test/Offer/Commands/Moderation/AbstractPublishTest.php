@@ -51,16 +51,15 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_has_a_default_embargo_date_of_null()
+    public function it_has_a_default_embargo_date_of_now()
     {
+        $now = new \DateTime();
+
         $abstractPublish = $this->getMockForAbstractClass(
             AbstractPublish::class,
             [new UUID()]
         );
 
-        $this->assertEquals(
-            null,
-            $abstractPublish->getEmbargoDate()
-        );
+        $this->assertEquals($now, $abstractPublish->getEmbargoDate());
     }
 }

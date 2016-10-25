@@ -14,7 +14,7 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \DateTimeInterface
      */
-    private $embargoDate;
+    private $publicationDate;
 
     /**
      * @var AbstractPublished|\PHPUnit_Framework_MockObject_MockObject
@@ -25,11 +25,11 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
     {
         $this->itemId = '3dc2b894-9a80-11e6-9f33-a24fc0d9649c';
 
-        $this->embargoDate = new \DateTime();
+        $this->publicationDate = new \DateTime();
 
         $this->abstractPublished = $this->getMockForAbstractClass(
             AbstractPublished::class,
-            [$this->itemId, $this->embargoDate]
+            [$this->itemId, $this->publicationDate]
         );
     }
 
@@ -58,11 +58,11 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_an_embargo_date()
+    public function it_stores_an_publication_date()
     {
         $this->assertEquals(
-            $this->embargoDate,
-            $this->abstractPublished->getEmbargoDate()
+            $this->publicationDate,
+            $this->abstractPublished->getPublicationDate()
         );
     }
 
@@ -73,7 +73,7 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedArray = [
             'item_id' => $this->itemId,
-            'embargo_date' => $this->embargoDate->format(\DateTime::ATOM)
+            'publication_date' => $this->publicationDate->format(\DateTime::ATOM)
         ];
 
         $actualArray = $this->abstractPublished->serialize();

@@ -209,9 +209,9 @@ class Item extends Offer
     /**
      * @inheritdoc
      */
-    protected function createPublishedEvent(\DateTimeInterface $embargoDate)
+    protected function createPublishedEvent(\DateTimeInterface $publicationDate)
     {
-        return new Published($this->id, $embargoDate);
+        return new Published($this->id, $publicationDate);
     }
 
     /**

@@ -7,26 +7,26 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 abstract class AbstractPublished extends AbstractEvent
 {
     /** @var  \DateTimeInterface */
-    private $embargoDate;
+    private $publicationDate;
 
     /**
      * AbstractPublish constructor.
      * @param string $itemId
      * @param \DateTimeInterface
      */
-    public function __construct($itemId, \DateTimeInterface $embargoDate)
+    public function __construct($itemId, \DateTimeInterface $publicationDate)
     {
         parent::__construct($itemId);
 
-        $this->embargoDate = $embargoDate;
+        $this->publicationDate = $publicationDate;
     }
 
     /**
      * @return \DateTimeInterface
      */
-    public function getEmbargoDate()
+    public function getPublicationDate()
     {
-        return $this->embargoDate;
+        return $this->publicationDate;
     }
 
     /**
@@ -35,7 +35,7 @@ abstract class AbstractPublished extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-            'embargo_date' => $this->embargoDate->format(\DateTime::ATOM)
+            'publication_date' => $this->publicationDate->format(\DateTime::ATOM)
         ];
     }
 
@@ -44,6 +44,6 @@ abstract class AbstractPublished extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['item_id'], $data['embargo_date']);
+        return new static($data['item_id'], $data['publication_date']);
     }
 }

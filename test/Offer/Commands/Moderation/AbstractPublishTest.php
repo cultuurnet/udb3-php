@@ -9,7 +9,7 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \DateTimeInterface
      */
-    private $embargoDate;
+    private $publicationDate;
 
     /**
      * @var AbstractPublish|\PHPUnit_Framework_MockObject_MockObject
@@ -18,11 +18,11 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->embargoDate = new \DateTime();
+        $this->publicationDate = new \DateTime();
 
         $this->abstractPublish = $this->getMockForAbstractClass(
             AbstractPublish::class,
-            [new UUID(), $this->embargoDate]
+            [new UUID(), $this->publicationDate]
         );
     }
 
@@ -40,18 +40,18 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_store_an_embargo_date()
+    public function it_can_store_an_publication_date()
     {
         $this->assertEquals(
-            $this->embargoDate,
-            $this->abstractPublish->getEmbargoDate()
+            $this->publicationDate,
+            $this->abstractPublish->getPublicationDate()
         );
     }
 
     /**
      * @test
      */
-    public function it_has_a_default_embargo_date_of_now()
+    public function it_has_a_default_publication_date_of_now()
     {
         $now = new \DateTime();
 
@@ -60,6 +60,6 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
             [new UUID()]
         );
 
-        $this->assertEquals($now, $abstractPublish->getEmbargoDate());
+        $this->assertEquals($now, $abstractPublish->getPublicationDate());
     }
 }

@@ -375,12 +375,12 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     /**
      * Publish the offer when it has workflowstatus draft.
-     * @param \DateTimeInterface $embargoDate
+     * @param \DateTimeInterface $publicationDate
      */
-    public function publish(\DateTimeInterface $embargoDate)
+    public function publish(\DateTimeInterface $publicationDate)
     {
         $this->guardPublish() ?: $this->apply(
-            $this->createPublishedEvent($embargoDate)
+            $this->createPublishedEvent($publicationDate)
         );
     }
 
@@ -651,10 +651,10 @@ abstract class Offer extends EventSourcedAggregateRoot
     abstract protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo);
 
     /**
-     * @param \DateTimeInterface $embargoDate
+     * @param \DateTimeInterface $publicationDate
      * @return AbstractPublished
      */
-    abstract protected function createPublishedEvent(\DateTimeInterface $embargoDate);
+    abstract protected function createPublishedEvent(\DateTimeInterface $publicationDate);
 
     /**
      * @return AbstractApproved

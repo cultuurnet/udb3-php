@@ -5,28 +5,28 @@ namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 abstract class AbstractPublish extends AbstractModerationCommand
 {
     /** @var  \DateTimeInterface */
-    private $embargoDate;
+    private $publicationDate;
 
     /**
      * AbstractPublish constructor.
      * @param string $itemId
-     * @param \DateTimeInterface|null $embargoDate
+     * @param \DateTimeInterface|null $publicationDate
      */
-    public function __construct($itemId, \DateTimeInterface $embargoDate = null)
+    public function __construct($itemId, \DateTimeInterface $publicationDate = null)
     {
         parent::__construct($itemId);
 
-        if (is_null($embargoDate)) {
-            $embargoDate = new \DateTime();
+        if (is_null($publicationDate)) {
+            $publicationDate = new \DateTime();
         }
-        $this->embargoDate = $embargoDate;
+        $this->publicationDate = $publicationDate;
     }
 
     /**
      * @return \DateTimeInterface
      */
-    public function getEmbargoDate()
+    public function getPublicationDate()
     {
-        return $this->embargoDate;
+        return $this->publicationDate;
     }
 }

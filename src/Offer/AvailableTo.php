@@ -16,7 +16,8 @@ class AvailableTo
      * AvailableTo constructor.
      * @param \DateTimeInterface $availableTo
      */
-    private function __construct(\DateTimeInterface $availableTo) {
+    private function __construct(\DateTimeInterface $availableTo)
+    {
         $this->availableTo = $availableTo;
     }
 
@@ -24,7 +25,7 @@ class AvailableTo
      * @param CalendarInterface $calendar
      * @return AvailableTo
      */
-    static public function createFromCalendar(CalendarInterface $calendar)
+    public static function createFromCalendar(CalendarInterface $calendar)
     {
         if ($calendar->getType() === CalendarType::PERMANENT()) {
             $availableTo = new \DateTime('2100-01-01T00:00:00Z');

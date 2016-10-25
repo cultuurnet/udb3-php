@@ -34,9 +34,14 @@ abstract class AbstractPublished extends AbstractEvent
      */
     public function serialize()
     {
-        return parent::serialize() + [
-            'embargo_date' => $this->embargoDate->format(\DateTime::ATOM)
-        ];
+        $asArray = parent::serialize();
+
+        if (!is_null($this->embargoDate))
+        {
+            $asArray['embargo_date'] = $this->embargoDate->format(\DateTime::ATOM);
+        }
+
+        return $asArray;
     }
 
     /**

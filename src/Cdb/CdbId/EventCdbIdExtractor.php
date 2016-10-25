@@ -10,19 +10,30 @@ class EventCdbIdExtractor implements EventCdbIdExtractorInterface
     /**
      * @var MappingServiceInterface
      */
-    private $externalIdMappingService;
+    private $placeExternalIdMappingService;
 
     /**
-     * @param MappingServiceInterface|null $externalIdMappingService
+     * @var MappingServiceInterface
+     */
+    private $organizerExternalIdMappingService;
+
+    /**
+     * @param MappingServiceInterface|null $placeExternalIdMappingService
+     * @param MappingServiceInterface $organizerExternalIdMappingService
      */
     public function __construct(
-        MappingServiceInterface $externalIdMappingService = null
+        MappingServiceInterface $placeExternalIdMappingService = null,
+        MappingServiceInterface $organizerExternalIdMappingService = null
     ) {
-        if (is_null($externalIdMappingService)) {
-            $externalIdMappingService = new ArrayMappingService([]);
+        if (is_null($placeExternalIdMappingService)) {
+            $placeExternalIdMappingService = new ArrayMappingService([]);
+        }
+        if (is_null($organizerExternalIdMappingService)) {
+            $organizerExternalIdMappingService = new ArrayMappingService([]);
         }
 
-        $this->externalIdMappingService = $externalIdMappingService;
+        $this->placeExternalIdMappingService = $placeExternalIdMappingService;
+        $this->organizerExternalIdMappingService = $organizerExternalIdMappingService;
     }
 
     /**
@@ -34,7 +45,10 @@ class EventCdbIdExtractor implements EventCdbIdExtractorInterface
         $cdbPlace = $cdbEvent->getLocation();
 
         if (!is_null($cdbPlace)) {
-            return $this->getCdbIdFromEmbeddedLocationOrOrganizer($cdbPlace);
+            return $this->getCdbIdFromEmbeddedLocationOrOrganizer(
+                $cdbPlace,
+                $this->placeExternalIdMappingService
+            );
         } else {
             return null;
         }
@@ -49,7 +63,10 @@ class EventCdbIdExtractor implements EventCdbIdExtractorInterface
         $cdbOrganizer = $cdbEvent->getOrganiser();
 
         if (!is_null($cdbOrganizer)) {
-            return $this->getCdbIdFromEmbeddedLocationOrOrganizer($cdbOrganizer);
+            return $this->getCdbIdFromEmbeddedLocationOrOrganizer(
+                $cdbOrganizer,
+                $this->organizerExternalIdMappingService
+            );
         } else {
             return null;
         }
@@ -57,16 +74,19 @@ class EventCdbIdExtractor implements EventCdbIdExtractorInterface
 
     /**
      * @param \CultureFeed_Cdb_Data_Location|\CultureFeed_Cdb_Data_Organiser $embeddedCdb
-     * @return string|null
+     * @param MappingServiceInterface $externalIdMappingService
+     * @return null|string
      */
-    private function getCdbIdFromEmbeddedLocationOrOrganizer($embeddedCdb)
-    {
+    private function getCdbIdFromEmbeddedLocationOrOrganizer(
+        $embeddedCdb,
+        MappingServiceInterface $externalIdMappingService
+    ) {
         if (!is_null($embeddedCdb->getCdbid())) {
             return $embeddedCdb->getCdbid();
         }
 
         if (!is_null($embeddedCdb->getExternalId())) {
-            return $this->externalIdMappingService->getCdbId(
+            return $externalIdMappingService->getCdbId(
                 $embeddedCdb->getExternalId()
             );
         }
@@ -76,7 +96,7 @@ class EventCdbIdExtractor implements EventCdbIdExtractorInterface
         }
 
         if (!is_null($embeddedCdb->getActor()) && !is_null($embeddedCdb->getActor()->getExternalId())) {
-            return $this->externalIdMappingService->getCdbId(
+            return $externalIdMappingService->getCdbId(
                 $embeddedCdb->getActor()->getExternalId()
             );
         }

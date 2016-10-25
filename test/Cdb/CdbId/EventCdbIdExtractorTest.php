@@ -9,7 +9,12 @@ class EventCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @var ArrayMappingService
      */
-    private $externalIdMappingService;
+    private $placeExternalIdMappingService;
+
+    /**
+     * @var ArrayMappingService
+     */
+    private $organizerExternalIdMappingService;
 
     /**
      * @var EventCdbIdExtractor
@@ -18,14 +23,31 @@ class EventCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->externalIdMappingService = new ArrayMappingService(
+        $this->placeExternalIdMappingService = new ArrayMappingService(
             [
                 'external-id-1' => '9434513c-0f86-4085-83ac-dc4b64b44185',
-                'external-id-2' => '46573cf5-d279-4baf-8ad4-9e7d7f312100',
             ]
         );
 
-        $this->cdbIdExtractor = new EventCdbIdExtractor($this->externalIdMappingService);
+        $this->organizerExternalIdMappingService = new ArrayMappingService(
+            [
+                'external-id-1' => '46573cf5-d279-4baf-8ad4-9e7d7f312100',
+            ]
+        );
+
+        $this->cdbIdExtractor = new EventCdbIdExtractor(
+            $this->placeExternalIdMappingService,
+            $this->organizerExternalIdMappingService
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_instantiated_without_external_id_mapping_services()
+    {
+        $cdbIdExtractor = new EventCdbIdExtractor();
+        $this->assertInstanceOf(EventCdbIdExtractor::class, $cdbIdExtractor);
     }
 
     /**
@@ -104,7 +126,7 @@ class EventCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_a_cdbid_derived_from_the_external_id_if_the_related_organiser_has_one_on_its_label()
     {
-        $organiserExternalId = 'external-id-2';
+        $organiserExternalId = 'external-id-1';
         $organiserCdbId = '46573cf5-d279-4baf-8ad4-9e7d7f312100';
 
         $cdbOrganiser = new \CultureFeed_Cdb_Data_Organiser();
@@ -183,7 +205,7 @@ class EventCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_a_cdbid_derived_from_the_external_id_if_the_related_organiser_has_one_on_its_actor()
     {
-        $organiserExternalId = 'external-id-2';
+        $organiserExternalId = 'external-id-1';
         $organiserCdbId = '46573cf5-d279-4baf-8ad4-9e7d7f312100';
 
         $cdbActor = new \CultureFeed_Cdb_Item_Actor();

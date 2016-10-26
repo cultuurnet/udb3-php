@@ -54,7 +54,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2013-07-18T09:04:37+02:00', $jsonPlace->modified);
         $this->assertEquals('cultuurnet001', $jsonPlace->creator);
         $this->assertEquals('Invoerders Algemeen ', $jsonPlace->publisher);
-        $this->assertEquals('2013-07-18T09:04:07+02:00', $jsonPlace->available);
+        $this->assertEquals('2013-07-18T09:04:07+02:00', $jsonPlace->availableFrom);
         $this->assertEquals(['Cultuurnet:organisation_1565'], $jsonPlace->sameAs);
     }
 

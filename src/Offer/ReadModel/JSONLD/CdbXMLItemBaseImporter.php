@@ -57,7 +57,7 @@ class CdbXMLItemBaseImporter
                 $availableString
             );
 
-            $jsonLD->available = $available->format('c');
+            $jsonLD->availableFrom = $available->format('c');
         }
     }
 

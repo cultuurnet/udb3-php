@@ -44,6 +44,9 @@ abstract class AbstractPublished extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static($data['item_id'], $data['publication_date']);
+        return new static(
+            $data['item_id'],
+            \DateTime::createFromFormat(\DateTime::ATOM, $data['publication_date'])
+        );
     }
 }

@@ -22,19 +22,29 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
      */
     public function it_refuses_value_containing_a_semicolon()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $value = ';';
 
-        new LabelName(';');
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            "Value for argument $value should not contain semicolons."
+        );
+
+        new LabelName($value);
     }
 
     /**
      * @test
      */
-    public function it_refuses_value_with_length_less_than_three()
+    public function it_refuses_value_with_length_less_than_two()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $value = 'k';
 
-        new LabelName('k');
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            "Value for argument $value should not be shorter than 2 chars."
+        );
+
+        new LabelName($value);
     }
 
     /**
@@ -42,10 +52,15 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
      */
     public function it_refuses_value_with_length_longer_than_255()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $value = 'turnip greens yarrow ricebean rutabaga endive cauliflower sea lettuce kohlrabi amaranth water spinach avocado daikon napa cabbage asparagus winter purslane kale celery potato scallion desert raisin horseradish spinach carrot soko Lotus root water spinach fennel';
+
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            "Value for argument $value should not be longer than 255 chars."
+        );
 
         new LabelName(
-            'turnip greens yarrow ricebean rutabaga endive cauliflower sea lettuce kohlrabi amaranth water spinach avocado daikon napa cabbage asparagus winter purslane kale celery potato scallion desert raisin horseradish spinach carrot soko Lotus root water spinach fennel'
+            $value
         );
     }
 

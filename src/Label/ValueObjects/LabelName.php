@@ -20,20 +20,20 @@ class LabelName extends StringLiteral
 
         if (false !== strpos($value, ';')) {
             throw new \InvalidArgumentException(
-                'Value for argument $value should not contain semicolons.'
+                "Value for argument $value should not contain semicolons."
             );
         }
 
         $length = mb_strlen($value);
-        if ($length < 3) {
+        if ($length < 2) {
             throw new \InvalidArgumentException(
-                'Value for argument $value should not be shorter than 3 chars.'
+                "Value for argument $value should not be shorter than 2 chars."
             );
         }
 
         if ($length > 255) {
             throw new \InvalidArgumentException(
-                'Value for argument $value should not be longer than 255 chars.'
+                "Value for argument $value should not be longer than 255 chars."
             );
         }
     }

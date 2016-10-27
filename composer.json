@@ -22,7 +22,7 @@
     "cultuurnet/auth": "~1.2",
     "cultuurnet/search": "~1.1",
     "cultuurnet/entry": "~0.1",
-    "cultuurnet/cdb": "dev-feature/III-1452 as 2.2.0",
+    "cultuurnet/cdb": "~2.2.0",
     "cultuurnet/deserializer": "~0.1",
     "cultuurnet/clock": "~0.1",
     "cultuurnet/symfony-security-jwt": "~0.1",

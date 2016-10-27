@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
 use CultureFeed_Cdb_Data_Keyword;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
@@ -22,11 +23,20 @@ class CdbXMLImporter
     private $cdbXMLItemBaseImporter;
 
     /**
-     * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
+     * @var EventCdbIdExtractorInterface
      */
-    public function __construct(CdbXMLItemBaseImporter $dbXMLItemBaseImporter)
-    {
+    private $cdbIdExtractor;
+
+    /**
+     * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
+     * @param EventCdbIdExtractorInterface $cdbIdExtractor
+     */
+    public function __construct(
+        CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
+        EventCdbIdExtractorInterface $cdbIdExtractor
+    ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
+        $this->cdbIdExtractor = $cdbIdExtractor;
     }
 
     /**
@@ -278,12 +288,12 @@ class CdbXMLImporter
         $location = array();
         $location['@type'] = 'Place';
 
-        $location_cdb = $event->getLocation();
-        $location_id = $location_cdb->getCdbid();
+        $location_id = $this->cdbIdExtractor->getRelatedPlaceCdbId($event);
 
         if ($location_id) {
             $location += (array)$placeManager->placeJSONLD($location_id);
         } else {
+            $location_cdb = $event->getLocation();
             $location['name']['nl'] = $location_cdb->getLabel();
             $address = $location_cdb->getAddress()->getPhysicalAddress();
             if ($address) {
@@ -310,34 +320,35 @@ class CdbXMLImporter
         OrganizerServiceInterface $organizerManager,
         $jsonLD
     ) {
-// Organizer.
+        $organizer = null;
+        $organizer_id = $this->cdbIdExtractor->getRelatedOrganizerCdbId($event);
         $organizer_cdb = $event->getOrganiser();
         $contact_info_cdb = $event->getContactInfo();
 
-        if ($organizer_cdb && $contact_info_cdb) {
-            $organizer_id = $organizer_cdb->getCdbid();
-            if ($organizer_id) {
-                $organizer = (array)$organizerManager->organizerJSONLD($organizer_id);
-            } else {
-                $organizer = array();
-                $organizer['name'] = $organizer_cdb->getLabel();
+        if ($organizer_id) {
+            $organizer = (array)$organizerManager->organizerJSONLD($organizer_id);
+        } elseif ($organizer_cdb && $contact_info_cdb) {
+            $organizer = array();
+            $organizer['name'] = $organizer_cdb->getLabel();
 
-                $emails_cdb = $contact_info_cdb->getMails();
-                if (count($emails_cdb) > 0) {
-                    $organizer['email'] = array();
-                    foreach ($emails_cdb as $email) {
-                        $organizer['email'][] = $email->getMailAddress();
-                    }
-                }
-
-                $phones_cdb = $contact_info_cdb->getPhones();
-                if (count($phones_cdb) > 0) {
-                    $organizer['phone'] = array();
-                    foreach ($phones_cdb as $phone) {
-                        $organizer['phone'][] = $phone->getNumber();
-                    }
+            $emails_cdb = $contact_info_cdb->getMails();
+            if (count($emails_cdb) > 0) {
+                $organizer['email'] = array();
+                foreach ($emails_cdb as $email) {
+                    $organizer['email'][] = $email->getMailAddress();
                 }
             }
+
+            $phones_cdb = $contact_info_cdb->getPhones();
+            if (count($phones_cdb) > 0) {
+                $organizer['phone'] = array();
+                foreach ($phones_cdb as $phone) {
+                    $organizer['phone'][] = $phone->getNumber();
+                }
+            }
+        }
+
+        if (!is_null($organizer)) {
             $organizer['@type'] = 'Organizer';
             $jsonLD->organizer = $organizer;
         }

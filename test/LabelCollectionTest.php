@@ -57,8 +57,8 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $labelsAsStrings = [
             'Correct label',
-            'FF',
-            'This label is much too long and will also be ignored, just like the label FF which is too short. But a few more extra characters are needed to make it fail! Like many aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'F',
+            'This label is much too long and will also be ignored, just like the label F which is too short. But a few more extra characters are needed to make it fail! Like many aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
             'Another correct label'
         ];
 

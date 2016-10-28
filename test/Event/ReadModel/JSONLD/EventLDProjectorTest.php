@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -150,7 +151,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->placeService,
             $this->organizerService,
             $this->serializer,
-            $this->iriOfferIdentifierFactory
+            $this->iriOfferIdentifierFactory,
+            new EventCdbIdExtractor()
         );
     }
 

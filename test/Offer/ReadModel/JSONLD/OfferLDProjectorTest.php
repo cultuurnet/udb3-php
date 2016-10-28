@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
@@ -97,7 +98,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
-            $this->serializer
+            $this->serializer,
+            new EventCdbIdExtractor()
         );
     }
 

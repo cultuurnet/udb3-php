@@ -82,8 +82,21 @@ class TabularDataEventFormatter
     protected function formatDate($date)
     {
         $timezone = new \DateTimeZone('Europe/Brussels');
-        $datetime = \DateTime::createFromFormat(\DateTime::ATOM, $date, $timezone);
-        return $datetime->format('Y-m-d H:i');
+
+        // Try to create from various formats to maintain backwards
+        // compatibility with external systems with older json-ld
+        // projections (eg. OMD).
+        $formats = [\DateTime::ATOM, \DateTime::ISO8601, 'Y-m-d\TH:i:s'];
+
+        do {
+            $datetime = \DateTime::createFromFormat(current($formats), $date, $timezone);
+        } while ($datetime === false && next($formats));
+
+        if ($datetime instanceof \DateTime) {
+            return $datetime->format('Y-m-d H:i');
+        } else {
+            return '';
+        }
     }
 
     /**

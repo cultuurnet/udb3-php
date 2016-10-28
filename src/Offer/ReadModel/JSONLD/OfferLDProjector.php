@@ -3,8 +3,7 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
-use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -83,20 +82,25 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
+     * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer
+        SerializerInterface $mediaObjectSerializer,
+        EventCdbIdExtractorInterface $eventCdbIdExtractor
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->slugger = new CulturefeedSlugger();
+
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter()
+            new CdbXMLItemBaseImporter(),
+            $eventCdbIdExtractor
         );
+
         $this->mediaObjectSerializer = $mediaObjectSerializer;
     }
 

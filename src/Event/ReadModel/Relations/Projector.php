@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -13,6 +14,7 @@ use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -27,12 +29,43 @@ class Projector implements EventListenerInterface
      */
     protected $repository;
 
-    public function __construct($repository)
-    {
+    /**
+     * @var EventCdbIdExtractorInterface
+     */
+    protected $cdbIdExtractor;
+
+    /**
+     * @param RepositoryInterface $repository
+     * @param EventCdbIdExtractorInterface $cdbIdExtractor
+     */
+    public function __construct(
+        RepositoryInterface $repository,
+        EventCdbIdExtractorInterface $cdbIdExtractor
+    ) {
         $this->repository = $repository;
+        $this->cdbIdExtractor = $cdbIdExtractor;
     }
 
+    /**
+     * @param EventImportedFromUDB2 $event
+     */
     protected function applyEventImportedFromUDB2(EventImportedFromUDB2 $event)
+    {
+        $this->applyEventDataFromUDB2($event);
+    }
+
+    /**
+     * @param EventUpdatedFromUDB2 $event
+     */
+    protected function applyEventUpdatedFromUDB2(EventUpdatedFromUDB2 $event)
+    {
+        $this->applyEventDataFromUDB2($event);
+    }
+
+    /**
+     * @param EventImportedFromUDB2|EventUpdatedFromUDB2 $event
+     */
+    protected function applyEventDataFromUDB2($event)
     {
         $eventId = $event->getEventId();
 
@@ -41,8 +74,8 @@ class Projector implements EventListenerInterface
             $event->getCdbXml()
         );
 
-        $placeId = $this->getPlaceId($udb2Event);
-        $organizerId = $this->getOrganizerId($udb2Event);
+        $placeId = $this->cdbIdExtractor->getRelatedPlaceCdbId($udb2Event);
+        $organizerId = $this->cdbIdExtractor->getRelatedOrganizerCdbId($udb2Event);
 
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
@@ -59,7 +92,7 @@ class Projector implements EventListenerInterface
         }
 
     }
-    
+
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         $eventId = $majorInfoUpdated->getItemId();
@@ -104,17 +137,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyEventCreatedFromCdbXml(EventCreatedFromCdbXml $eventCreatedFromCdbXml)
     {
-        $eventId = $eventCreatedFromCdbXml->getEventId();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $placeId = $this->getPlaceId($udb2Event);
-        $organizerId = $this->getOrganizerId($udb2Event);
-
-        $this->storeRelations($eventId, $placeId, $organizerId);
+        $this->applyEventDataFromCdbXml($eventCreatedFromCdbXml);
     }
 
     /**
@@ -122,47 +145,24 @@ class Projector implements EventListenerInterface
     */
     protected function applyEventUpdatedFromCdbXml(EventUpdatedFromCdbXml $eventUpdatedFromCdbXml)
     {
-        $eventId = $eventUpdatedFromCdbXml->getEventId();
+        $this->applyEventDataFromCdbXml($eventUpdatedFromCdbXml);
+    }
+
+    /**
+     * @param EventCreatedFromCdbXml|EventUpdatedFromCdbXml $eventFromCdbXml
+     */
+    protected function applyEventDataFromCdbXml($eventFromCdbXml)
+    {
+        $eventId = $eventFromCdbXml->getEventId();
 
         $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
-            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
+            $eventFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
+            $eventFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $placeId = $this->getPlaceId($udb2Event);
-        $organizerId = $this->getOrganizerId($udb2Event);
+        $placeId = $this->cdbIdExtractor->getRelatedPlaceCdbId($udb2Event);
+        $organizerId = $this->cdbIdExtractor->getRelatedOrganizerCdbId($udb2Event);
 
         $this->storeRelations($eventId, $placeId, $organizerId);
-    }
-
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $udb2Event
-     * @return string
-     */
-    protected function getPlaceId(\CultureFeed_Cdb_Item_Event $udb2Event)
-    {
-        $location = $udb2Event->getLocation();
-        $placeId = null;
-        if ($location->getCdbid()) {
-            $placeId = $location->getCdbid();
-        }
-
-        return $placeId;
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $udb2Event
-     * @return string
-     */
-    protected function getOrganizerId(\CultureFeed_Cdb_Item_Event $udb2Event)
-    {
-        $organizer = $udb2Event->getOrganiser();
-        $organizerId = null;
-        if ($organizer && $organizer->getCdbid()) {
-            $organizerId = $organizer->getCdbid();
-        }
-
-        return $organizerId;
     }
 }

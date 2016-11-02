@@ -25,7 +25,7 @@ class LabelCollection implements \Countable
             }
         );
 
-        $this->labels = $labels;
+        $this->labels = array_values($labels);
     }
 
     /**
@@ -112,6 +112,22 @@ class LabelCollection implements \Countable
         $mergedLabels = array_merge($mergedLabels, $add);
 
         return new LabelCollection($mergedLabels);
+    }
+
+    /**
+     * @param LabelCollection $labelCollection
+     * @return LabelCollection
+     */
+    public function intersect(LabelCollection $labelCollection)
+    {
+        $intersectLabels = array_filter(
+            $this->labels,
+            function ($label) use ($labelCollection) {
+                return $labelCollection->contains($label);
+            }
+        );
+
+        return new LabelCollection($intersectLabels);
     }
 
     /**

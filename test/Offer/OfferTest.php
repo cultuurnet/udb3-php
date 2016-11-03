@@ -652,4 +652,29 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then([]);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_update_an_offer_with_the_same_organizer_after_removing_it()
+    {
+        $itemId = UUID::generateAsString();
+        $organizerId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new OrganizerUpdated($itemId, $organizerId),
+                    new OrganizerDeleted($itemId, $organizerId),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($organizerId) {
+                    $item->updateOrganizer($organizerId);
+                }
+            )
+            ->then([new OrganizerUpdated($itemId, $organizerId)]);
+    }
 }

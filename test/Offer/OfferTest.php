@@ -16,6 +16,8 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
 use Exception;
 use ValueObjects\Identity\UUID;
@@ -622,6 +624,30 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->when(
                 function (Item $item) use ($reason) {
                     $item->reject($reason);
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_update_an_offer_with_an_organizer_when_it_is_already_set()
+    {
+        $itemId = UUID::generateAsString();
+        $organizerId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new OrganizerUpdated($itemId, $organizerId),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($organizerId) {
+                    $item->updateOrganizer($organizerId);
                 }
             )
             ->then([]);

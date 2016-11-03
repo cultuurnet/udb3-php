@@ -546,6 +546,11 @@ abstract class Offer extends EventSourcedAggregateRoot
         $this->organizerId = $organizerUpdated->getOrganizerId();
     }
 
+    protected function applyOrganizerDeleted(AbstractOrganizerDeleted $organizerDeleted)
+    {
+        $this->organizerId = null;
+    }
+
     /**
      * @param Label $label
      * @return AbstractLabelAdded

@@ -38,6 +38,21 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_can_intersect_a_label_collection()
+    {
+        $foodCollection = LabelCollection::fromStrings(['meat', 'pie', 'carrot', 'lettuce']);
+        $plantCollection = LabelCollection::fromStrings(['carrot', 'lettuce', 'tree']);
+
+        $ediblePlantCollection = $foodCollection->intersect($plantCollection);
+
+        $expectedEdiblePlantCollection = LabelCollection::fromStrings(['carrot', 'lettuce']);
+
+        $this->assertEquals($expectedEdiblePlantCollection, $ediblePlantCollection);
+    }
+
+    /**
+     * @test
+     */
     public function it_ignores_keywords_already_contained_in_the_current_collection()
     {
         $existingCollection = new LabelCollection(

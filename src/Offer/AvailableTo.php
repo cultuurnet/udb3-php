@@ -35,6 +35,18 @@ class AvailableTo
             $availableTo = $calendar->getEndDate();
         }
 
+        if ($availableTo->format('Y') != 2010 &&
+            $availableTo->format('m') != 1 &&
+            $availableTo->format('d') != 1 &&
+            $availableTo->format('H') == 0 &&
+            $availableTo->format('i') == 0 &&
+            $availableTo->format('s') == 0) {
+            $availableToWithHours = new \DateTime();
+            $availableToWithHours->setTimestamp($availableTo->getTimestamp());
+            $availableToWithHours->add(new \DateInterval("P0000-00-00T23:59:59"));
+            $availableTo = $availableToWithHours;
+        }
+
         return new self($availableTo);
     }
 

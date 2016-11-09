@@ -266,7 +266,7 @@ class OrganizerLDProjector extends ActorLDProjector
             if (count($modifiedLabels) === 0) {
                 unset($jsonLD->labels);
             } else {
-                $jsonLD->labels = $modifiedLabels;
+                $jsonLD->labels = array_values($modifiedLabels);
             }
 
             $this->repository->save($document->withBody($jsonLD));

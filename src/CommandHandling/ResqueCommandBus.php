@@ -17,7 +17,7 @@ use Broadway\EventDispatcher\EventDispatcherInterface;
 /**
  * Command bus decorator for asynchronous processing with PHP-Resque.
  */
-class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareInterface, LoggerAwareInterface
+class ResqueCommandBus extends CommandBusDecoratorBase implements ContextAwareCommandBusInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

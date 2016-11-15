@@ -3,13 +3,14 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Cdb\ExternalId\ArrayMappingService;
-use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,7 +39,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $this->importer = new CdbXMLImporter(
             new CdbXMLItemBaseImporter(),
-            new EventCdbIdExtractor()
+            new EventCdbIdExtractor(),
+            new PriceDescriptionParser(
+                new NumberFormatRepository(),
+                new CurrencyRepository()
+            )
         );
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
@@ -387,5 +392,57 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info.cdbxml.xml');
 
         $this->assertEquals('APPROVED', $jsonEvent->workflowStatus);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uses_a_properly_formatted_price_description()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_properly_formatted_price_description.cdbxml.xml');
+
+        $this->assertEquals(
+            [
+                [
+                    'category' => 'base',
+                    'name' => 'Basistarief',
+                    'price' => 12.5,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'name' => 'Met kinderen',
+                    'category' => 'tariff',
+                    'price' => 20.0,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'name' => 'Senioren',
+                    'category' => 'tariff',
+                    'price' => 30.0,
+                    'priceCurrency' => 'EUR',
+                ],
+            ],
+            $jsonEvent->priceInfo
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_falls_back_to_price_value_without_proper_description()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_properly_formatted_price_description.cdbxml.xml');
+
+        $this->assertEquals(
+            [
+                [
+                    'category' => 'base',
+                    'name' => 'Basistarief',
+                    'price' => 12.5,
+                    'priceCurrency' => 'EUR',
+                ],
+            ],
+            $jsonEvent->priceInfo
+        );
     }
 }

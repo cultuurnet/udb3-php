@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand as OfferAbstractLabelCommand;
+use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
 use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand as OrganizerAbstractLabelCommand;
@@ -167,6 +168,18 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(
             $this->securityWithLabelPrivacy->isAuthorized($this->addLabel)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_authorizes_a_label_command_that_is_always_allowed()
+    {
+        $alwaysAllowedAddLabel = $this->addLabel->withAlwaysAllowed(true);
+
+        $this->assertTrue(
+            $this->securityWithLabelPrivacy->isAuthorized($alwaysAllowedAddLabel)
         );
     }
 

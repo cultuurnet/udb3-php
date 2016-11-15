@@ -57,7 +57,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     /**
      * @inheritdoc
      */
-    protected function getSyncLabelClassName()
+    protected function getSyncLabelsClassName()
     {
         return SyncLabels::class;
     }

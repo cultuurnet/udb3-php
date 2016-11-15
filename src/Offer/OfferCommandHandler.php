@@ -118,7 +118,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
-    abstract protected function getSyncLabelClassName();
+    abstract protected function getSyncLabelsClassName();
 
     /**
      * @return string

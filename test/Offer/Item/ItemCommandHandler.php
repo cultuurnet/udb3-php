@@ -39,7 +39,7 @@ class ItemCommandHandler extends OfferCommandHandler
         return DeleteLabel::class;
     }
 
-    protected function getSyncLabelClassName()
+    protected function getSyncLabelsClassName()
     {
         return SyncLabels::class;
     }

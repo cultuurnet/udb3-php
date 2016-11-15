@@ -78,7 +78,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     /**
      * @inheritdoc
      */
-    protected function getSyncLabelClassName()
+    protected function getSyncLabelsClassName()
     {
         return SyncLabels::class;
     }

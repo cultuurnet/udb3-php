@@ -46,6 +46,13 @@ class CultureFeedUserIdentification implements UserIdentificationInterface
      */
     public function getId()
     {
-        return new StringLiteral($this->cultureFeedUser->id);
+        // The default constructor of CultureFeed_User sets all data members to null.
+        // This would result in a crash of the StringLiteral constructor for the id.
+        // Solved by creating the StringLiteral with an empty string instead of null.
+        if (empty($this->cultureFeedUser->id)) {
+            return new StringLiteral('');
+        } else {
+            return new StringLiteral($this->cultureFeedUser->id);
+        }
     }
 }

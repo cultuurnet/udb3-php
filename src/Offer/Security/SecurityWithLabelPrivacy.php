@@ -72,7 +72,8 @@ class SecurityWithLabelPrivacy extends SecurityDecoratorBase
     {
         $this->guardLabel($command);
 
-        if ($this->userIdentification->isGodUser()) {
+        if ($command->isAlwaysAllowed() ||
+            $this->userIdentification->isGodUser()) {
             return true;
         } else {
             return $this->labelReadRepository->canUseLabel(

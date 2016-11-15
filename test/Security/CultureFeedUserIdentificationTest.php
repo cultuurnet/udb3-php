@@ -68,4 +68,33 @@ class CultureFeedUserIdentificationTest extends \PHPUnit_Framework_TestCase
             $this->cultureFeedUserIdentification->getId()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_has_an_empty_id_for_empty_culture_feed_user()
+    {
+        $cultureFeedUserIdentification = new CultureFeedUserIdentification(
+            new \CultureFeed_User(),
+            $this->permissionList
+        );
+
+        $this->assertEquals(
+            new StringLiteral(''),
+            $cultureFeedUserIdentification->getId()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_false_for_god_user_of_an_empty_culture_feed_user()
+    {
+        $cultureFeedUserIdentification = new CultureFeedUserIdentification(
+            new \CultureFeed_User(),
+            $this->permissionList
+        );
+
+        $this->assertFalse($cultureFeedUserIdentification->isGodUser());
+    }
 }

@@ -15,6 +15,11 @@ abstract class AbstractLabelCommand extends AbstractOrganizerCommand implements 
     private $labelId;
 
     /**
+     * @var bool
+     */
+    private $allwaysAllowed = false;
+
+    /**
      * @param string $organizerId
      * @param UUID $labelId
      */
@@ -24,6 +29,17 @@ abstract class AbstractLabelCommand extends AbstractOrganizerCommand implements 
     ) {
         parent::__construct($organizerId);
         $this->labelId = $labelId;
+    }
+
+    /**
+     * @param bool $alwaysAllowed
+     * @return AbstractLabelCommand
+     */
+    public function withAlwaysAllowed($alwaysAllowed)
+    {
+        $c = clone $this;
+        $c->allwaysAllowed = $alwaysAllowed;
+        return $c;
     }
 
     /**
@@ -72,5 +88,13 @@ abstract class AbstractLabelCommand extends AbstractOrganizerCommand implements 
     public function getUuid()
     {
         return $this->labelId;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAlwaysAllowed()
+    {
+        return $this->allwaysAllowed;
     }
 }

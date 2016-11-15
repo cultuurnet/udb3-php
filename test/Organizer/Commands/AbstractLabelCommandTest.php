@@ -104,4 +104,22 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
             $this->abstractLabelCommand->getUuid()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_is_not_always_allowed()
+    {
+        $this->assertFalse($this->abstractLabelCommand->isAlwaysAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_made_always_allowed()
+    {
+        $labelCommand = $this->abstractLabelCommand->withAlwaysAllowed(true);
+
+        $this->assertTrue($labelCommand->isAlwaysAllowed());
+    }
 }

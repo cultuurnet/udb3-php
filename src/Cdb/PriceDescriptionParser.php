@@ -8,11 +8,9 @@ namespace CultuurNet\UDB3\Cdb;
 use CommerceGuys\Intl\Currency\CurrencyRepositoryInterface;
 use CommerceGuys\Intl\Formatter\NumberFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepositoryInterface;
-use CultureFeed_Cdb_Data_Price;
 
 /**
- * Parses a cdbxml <pricedescription> string into multiple
- * CultureFeed_Cdb_Data_Price objects.
+ * Parses a cdbxml <pricedescription> string into name value pairs.
  */
 class PriceDescriptionParser
 {
@@ -37,7 +35,8 @@ class PriceDescriptionParser
     /**
      * @param string $description
      *
-     * @return CultureFeed_Cdb_Data_Price[]
+     * @return array
+     *   An array of price name value pairs.
      */
     public function parse($description)
     {
@@ -81,11 +80,9 @@ class PriceDescriptionParser
                     continue;
                 }
 
-                $price = new CultureFeed_Cdb_Data_Price();
-                $price->setTitle($priceName);
-                $price->setValue(floatval($priceValue));
-
-                $prices[] = $price;
+                if (!isset($prices[$priceName])) {
+                    $prices[$priceName] = floatval($priceValue);
+                }
             }
         }
 

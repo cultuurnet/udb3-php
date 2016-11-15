@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "86f8fa8c351fd8e5a3741edc8d783ee9",
-    "content-hash": "bac7afefa8730fc3fd37035edc37cbf4",
+    "hash": "f791b2a155199419d750f357fccfd6b6",
+    "content-hash": "03f9879654866b6989af8d3e5e7e6795",
     "packages": [
         {
             "name": "2dotstwice/collection",
@@ -276,6 +276,50 @@
             "time": "2012-10-13 07:28:16"
         },
         {
+            "name": "commerceguys/intl",
+            "version": "v0.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/commerceguys/intl.git",
+                "reference": "ebeeb62fb08fe5842f064acd8163d7c7a1534fe0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/commerceguys/intl/zipball/ebeeb62fb08fe5842f064acd8163d7c7a1534fe0",
+                "reference": "ebeeb62fb08fe5842f064acd8163d7c7a1534fe0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.*",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CommerceGuys\\Intl\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bojan Zivanovic"
+                }
+            ],
+            "description": "Internationalization library powered by CLDR data.",
+            "time": "2016-10-26 12:26:01"
+        },
+        {
             "name": "container-interop/container-interop",
             "version": "1.1.0",
             "source": {
@@ -477,12 +521,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/culturefeed-php.git",
-                "reference": "929b2580b21ad67882c061dbf694cc547205fd9d"
+                "reference": "30a0fb439312612450f6220ebc1f59edd4b90840"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/929b2580b21ad67882c061dbf694cc547205fd9d",
-                "reference": "929b2580b21ad67882c061dbf694cc547205fd9d",
+                "url": "https://api.github.com/repos/cultuurnet/culturefeed-php/zipball/30a0fb439312612450f6220ebc1f59edd4b90840",
+                "reference": "30a0fb439312612450f6220ebc1f59edd4b90840",
                 "shasum": ""
             },
             "require": {
@@ -537,7 +581,7 @@
                 }
             ],
             "description": "Culturefeed PHP library",
-            "time": "2016-08-05 11:22:45"
+            "time": "2016-11-03 00:26:03"
         },
         {
             "name": "cultuurnet/deserializer",
@@ -688,12 +732,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/symfony-security-jwt.git",
-                "reference": "8e79565b80bfb091da02677c605973f468e9392f"
+                "reference": "a6aed851723228d05897ce99bf7f33272523faaf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/symfony-security-jwt/zipball/8e79565b80bfb091da02677c605973f468e9392f",
-                "reference": "8e79565b80bfb091da02677c605973f468e9392f",
+                "url": "https://api.github.com/repos/cultuurnet/symfony-security-jwt/zipball/a6aed851723228d05897ce99bf7f33272523faaf",
+                "reference": "a6aed851723228d05897ce99bf7f33272523faaf",
                 "shasum": ""
             },
             "require": {
@@ -722,7 +766,7 @@
                 "Apache-2.0"
             ],
             "description": "JWT implementation for the Symfony Security component",
-            "time": "2016-05-02 14:33:28"
+            "time": "2016-11-08 13:53:56"
         },
         {
             "name": "cultuurnet/symfony-security-oauth",

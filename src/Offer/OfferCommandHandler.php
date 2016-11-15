@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
+use CultuurNet\UDB3\Offer\Commands\AbstractSyncLabels;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
@@ -113,6 +114,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getDeleteLabelClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getSyncLabelClassName();
 
     /**
      * @return string
@@ -239,6 +245,16 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($deleteLabel->getItemId());
         $offer->deleteLabel($deleteLabel->getLabel());
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractSyncLabels $syncLabels
+     */
+    protected function handleSyncLabels(AbstractSyncLabels $syncLabels)
+    {
+        $offer = $this->load($syncLabels->getItemId());
+        $offer->syncLabels($syncLabels->getLabels());
         $this->offerRepository->save($offer);
     }
 

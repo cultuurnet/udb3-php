@@ -21,4 +21,9 @@ interface LabelSecurityInterface
      * @return UUID|null
      */
     public function getUuid();
+
+    /**
+     * @return bool
+     */
+    public function isAlwaysAllowed();
 }

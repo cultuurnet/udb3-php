@@ -14,6 +14,11 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     protected $label;
 
     /**
+     * @var bool
+     */
+    private $alwaysAllowed = false;
+
+    /**
      * @param $itemId
      *  The id of the item that is targeted by the command.
      *
@@ -25,6 +30,17 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
         parent::__construct($itemId);
         $this->label = $label;
         $this->itemId = $itemId;
+    }
+
+    /**
+     * @param bool $alwaysAllowed
+     * @return AbstractLabelCommand
+     */
+    public function withAlwaysAllowed($alwaysAllowed)
+    {
+        $c = clone $this;
+        $c->alwaysAllowed = $alwaysAllowed;
+        return $c;
     }
 
     /**
@@ -65,5 +81,13 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     public function getUuid()
     {
         return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAlwaysAllowed()
+    {
+        return $this->alwaysAllowed;
     }
 }

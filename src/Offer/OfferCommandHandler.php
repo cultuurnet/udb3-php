@@ -254,7 +254,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     protected function handleSyncLabels(AbstractSyncLabels $syncLabels)
     {
         $offer = $this->load($syncLabels->getItemId());
-        $offer->syncLabels($syncLabels->getLabels());
+        $offer->syncLabels($syncLabels->getLabelCollection());
         $this->offerRepository->save($offer);
     }
 

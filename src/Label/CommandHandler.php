@@ -97,7 +97,7 @@ class CommandHandler extends AbstractCommandHandler
     public function handleSyncLabels(AbstractSyncLabels $mergeLabels)
     {
         array_walk(
-            $mergeLabels->getLabels()->asArray(),
+            $mergeLabels->getLabelCollection()->asArray(),
             function (Label $label) {
                 $this->createLabel($label);
             }

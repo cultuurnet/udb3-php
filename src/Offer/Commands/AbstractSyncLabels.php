@@ -9,23 +9,23 @@ abstract class AbstractSyncLabels extends AbstractCommand
     /**
      * @var LabelCollection
      */
-    protected $labels;
+    protected $labelCollection;
 
     /**
      * @param string $itemId
-     * @param LabelCollection $labels
+     * @param LabelCollection $labelCollection
      */
-    public function __construct($itemId, LabelCollection $labels)
+    public function __construct($itemId, LabelCollection $labelCollection)
     {
         parent::__construct($itemId);
-        $this->labels = $labels;
+        $this->labelCollection = $labelCollection;
     }
 
     /**
      * @return LabelCollection
      */
-    public function getLabels()
+    public function getLabelCollection()
     {
-        return $this->labels;
+        return $this->labelCollection;
     }
 }

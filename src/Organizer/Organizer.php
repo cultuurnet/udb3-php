@@ -6,6 +6,7 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -17,7 +18,6 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
-use ValueObjects\Identity\UUID;
 
 class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
 {
@@ -39,9 +39,9 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     private $contactPoint;
 
     /**
-     * @var UUID[]
+     * @var Label[]
      */
-    private $labelIds = [];
+    private $labels = [];
 
     /**
      * {@inheritdoc}
@@ -137,22 +137,22 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
-     * @param UUID $labelId
+     * @param Label $label
      */
-    public function addLabel(UUID $labelId)
+    public function addLabel(Label $label)
     {
-        if (!in_array($labelId, $this->labelIds)) {
-            $this->apply(new LabelAdded($this->actorId, $labelId));
+        if (!in_array($label, $this->labels)) {
+            $this->apply(new LabelAdded($this->actorId, $label));
         }
     }
 
     /**
-     * @param UUID $labelId
+     * @param Label $label
      */
-    public function removeLabel(UUID $labelId)
+    public function removeLabel(Label $label)
     {
-        if (in_array($labelId, $this->labelIds)) {
-            $this->apply(new LabelRemoved($this->actorId, $labelId));
+        if (in_array($label, $this->labels)) {
+            $this->apply(new LabelRemoved($this->actorId, $label));
         }
     }
 
@@ -213,7 +213,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     public function applyLabelAdded(LabelAdded $labelAdded)
     {
-        $this->labelIds[] = $labelAdded->getLabelId();
+        $this->labels[] = $labelAdded->getLabel();
     }
 
     /**
@@ -222,8 +222,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
-        $labelId = $labelRemoved->getLabelId();
-        $this->labelIds = array_diff($this->labelIds, [$labelId]);
+        $label = $labelRemoved->getLabel();
+        $this->labels = array_diff($this->labels, [$label]);
     }
 
     /**

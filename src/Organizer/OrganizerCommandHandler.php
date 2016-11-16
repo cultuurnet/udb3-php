@@ -74,7 +74,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = $this->loadOrganizer($addLabel->getOrganizerId());
 
-        $organizer->addLabel($addLabel->getLabelId());
+        $organizer->addLabel($addLabel->getLabel());
 
         $this->organizerRepository->save($organizer);
     }
@@ -86,7 +86,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = $this->loadOrganizer($removeLabel->getOrganizerId());
 
-        $organizer->removeLabel($removeLabel->getLabelId());
+        $organizer->removeLabel($removeLabel->getLabel());
 
         $this->organizerRepository->save($organizer);
     }

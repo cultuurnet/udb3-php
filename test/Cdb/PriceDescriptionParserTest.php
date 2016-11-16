@@ -47,4 +47,14 @@ class PriceDescriptionParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEmpty($this->parser->parse($description));
     }
+
+    /**
+     * @test
+     */
+    public function it_ignores_invalid_prices()
+    {
+        $description = 'Met kinderen: € 0,20,0';
+
+        $this->assertEmpty($this->parser->parse($description));
+    }
 }

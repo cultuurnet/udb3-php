@@ -2,8 +2,9 @@
 
 namespace CultuurNet\UDB3\Organizer\Commands;
 
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,9 +14,9 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     private $organizerId;
 
     /**
-     * @var UUID
+     * @var Label
      */
-    private $labelId;
+    private $label;
 
     /**
      * @var AbstractLabelCommand
@@ -26,11 +27,11 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->organizerId = 'organizerId';
 
-        $this->labelId = new UUID();
+        $this->label = new Label('foo');
 
         $this->abstractLabelCommand = $this->getMockForAbstractClass(
             AbstractLabelCommand::class,
-            [$this->organizerId, $this->labelId]
+            [$this->organizerId, $this->label]
         );
     }
 
@@ -48,11 +49,11 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_a_label_id()
+    public function it_stores_a_label()
     {
         $this->assertEquals(
-            $this->labelId,
-            $this->abstractLabelCommand->getLabelId()
+            $this->label,
+            $this->abstractLabelCommand->getLabel()
         );
     }
 
@@ -81,27 +82,24 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_is_identified_by_uuid()
+    public function it_is_not_identified_by_uuid()
     {
-        $this->assertTrue($this->abstractLabelCommand->isIdentifiedByUuid());
+        $this->assertFalse($this->abstractLabelCommand->isIdentifiedByUuid());
     }
 
     /**
      * @test
      */
-    public function it_does_not_use_label_name()
+    public function it_identifies_by_label_name()
     {
-        $this->assertNull($this->abstractLabelCommand->getName());
+        $this->assertEquals($this->abstractLabelCommand->getName(), new StringLiteral('foo'));
     }
 
     /**
      * @test
      */
-    public function it_does_use_label_uuid()
+    public function it_does_not_have_a_label_uuid()
     {
-        $this->assertEquals(
-            $this->labelId,
-            $this->abstractLabelCommand->getUuid()
-        );
+        $this->assertNull($this->abstractLabelCommand->getUuid());
     }
 }

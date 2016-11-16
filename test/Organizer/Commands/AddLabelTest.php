@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer\Commands;
 
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label;
 
 class AddLabelTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class AddLabelTest extends \PHPUnit_Framework_TestCase
      */
     public function it_derives_from_abstract_label_command()
     {
-        $addLabel = new AddLabel('organizerId', new UUID());
+        $addLabel = new AddLabel('organizerId', new Label('foo'));
 
         $this->assertInstanceOf(AbstractLabelCommand::class, $addLabel);
     }

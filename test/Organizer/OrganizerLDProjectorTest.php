@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
@@ -53,11 +54,6 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     private $eventBus;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $labelRepository;
-
-    /**
      * @var IriGeneratorInterface
      */
     private $iriGenerator;
@@ -74,13 +70,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             }
         );
 
-        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
-
         $this->projector = new OrganizerLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->eventBus,
-            $this->labelRepository
+            $this->eventBus
         );
     }
 
@@ -399,21 +392,11 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_handles_label_added()
     {
         $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
-        $labelId = new UUID('00a91b64-e9f8-4213-a4a7-a21d633e65d6');
+        $label = new Label('labelName');
 
         $this->mockGet($organizerId, 'organizer.json');
 
-        $label = new Entity(
-            $labelId,
-            new StringLiteral('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-        $this->labelRepository->method('getByUuid')
-            ->with($labelId)
-            ->willReturn($label);
-
-        $labelAdded = new LabelAdded($organizerId, $labelId);
+        $labelAdded = new LabelAdded($organizerId, $label);
         $domainMessage = $this->createDomainMessage($labelAdded);
 
         $this->expectSave($organizerId, 'organizer_with_one_label.json');
@@ -424,12 +407,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider labelRemovedDataProvider
-     * @param UUID $labelId
+     * @param Label $label
      * @param string $originalFile
      * @param string $finalFile
      */
     public function it_handles_label_removed(
-        UUID $labelId,
+        Label $label,
         $originalFile,
         $finalFile
     ) {
@@ -437,7 +420,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->mockGet($organizerId, $originalFile);
 
-        $labelRemoved = new LabelRemoved($organizerId, $labelId);
+        $labelRemoved = new LabelRemoved($organizerId, $label);
         $domainMessage = $this->createDomainMessage($labelRemoved);
 
         $this->expectSave($organizerId, $finalFile);
@@ -452,63 +435,19 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                new UUID('00a91b64-e9f8-4213-a4a7-a21d633e65d6'),
+                new Label('labelName'),
                 'organizer_with_one_label.json',
                 'organizer.json'
             ],
             [
-                new UUID('8e382f93-843b-4e7a-af9a-5cf213df5b9a'),
+                new Label('anotherLabel'),
                 'organizer_with_two_labels.json',
                 'organizer_with_one_label.json'
             ],
             [
-                new UUID('5bf32266-96d6-11e6-ae22-56b6b6499611'),
+                new Label('yetAnotherLabel'),
                 'organizer_with_three_labels.json',
                 'organizer_with_two_labels.json'
-            ]
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider labelRepositoryDataProvider
-     * @param DomainMessage $domainMessage
-     */
-    public function it_throws_for_label_events_without_label_repository(
-        DomainMessage $domainMessage
-    ) {
-        $organizerLDProjector = new OrganizerLDProjector(
-            $this->documentRepository,
-            $this->iriGenerator,
-            $this->eventBus
-        );
-
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'A label repository is needed for the labelling events.'
-        );
-
-        $organizerLDProjector->handle($domainMessage);
-    }
-
-    /**
-     * @return array
-     */
-    public function labelRepositoryDataProvider()
-    {
-        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
-        $labelId = new UUID('00a91b64-e9f8-4213-a4a7-a21d633e65d6');
-
-        return [
-            [
-                $this->createDomainMessage(
-                    new LabelAdded($organizerId, $labelId)
-                )
-            ],
-            [
-                $this->createDomainMessage(
-                    new LabelRemoved($organizerId, $labelId)
-                )
             ]
         ];
     }

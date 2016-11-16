@@ -7,12 +7,13 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Title;
-use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
 class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
@@ -34,18 +35,26 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     protected $organizerRepository;
 
     /**
+     * @var LabelServiceInterface
+     */
+    protected $labelService;
+
+    /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
      * @param RepositoryInterface $organizerRepository
+     * @param LabelServiceInterface $labelService
      */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
-        RepositoryInterface $organizerRepository
+        RepositoryInterface $organizerRepository,
+        LabelServiceInterface $labelService
     ) {
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
         $this->organizerRepository = $organizerRepository;
+        $this->labelService = $labelService;
     }
 
     /**
@@ -75,6 +84,10 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
      */
     public function addLabel($organizerId, Label $label)
     {
+        $this->labelService->createLabelAggregateIfNew(
+            new LabelName((string) $label)
+        );
+
         return $this->commandBus->dispatch(
             new AddLabel($organizerId, $label)
         );

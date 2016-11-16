@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Organizer;
 
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 use ValueObjects\Identity\UUID;
@@ -21,15 +22,17 @@ interface OrganizerEditingServiceInterface
 
     /**
      * @param string $organizerId
-     * @param UUID $labelId
+     * @param Label $label
+     * @return
      */
-    public function addLabel($organizerId, UUID $labelId);
+    public function addLabel($organizerId, Label $label);
 
     /**
      * @param string $organizerId
-     * @param UUID $labelId
+     * @param Label $label
+     * @return
      */
-    public function removeLabel($organizerId, UUID $labelId);
+    public function removeLabel($organizerId, Label $label);
 
     /**
      * @param $id

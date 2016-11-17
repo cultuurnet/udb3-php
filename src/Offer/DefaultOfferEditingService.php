@@ -8,6 +8,8 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
@@ -37,6 +39,11 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     protected $commandFactory;
 
     /**
+     * @var LabelServiceInterface
+     */
+    private $labelService;
+
+    /**
      * @var \DateTimeImmutable|null
      */
     protected $publicationDate;
@@ -46,17 +53,20 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
      * @param UuidGeneratorInterface $uuidGenerator
      * @param DocumentRepositoryInterface $readRepository
      * @param OfferCommandFactoryInterface $commandFactory
+     * @param LabelServiceInterface $labelService
      */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
         DocumentRepositoryInterface $readRepository,
-        OfferCommandFactoryInterface $commandFactory
+        OfferCommandFactoryInterface $commandFactory,
+        LabelServiceInterface $labelService
     ) {
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
         $this->readRepository = $readRepository;
         $this->commandFactory = $commandFactory;
+        $this->labelService = $labelService;
         $this->publicationDate = null;
     }
 
@@ -80,6 +90,10 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     public function addLabel($id, Label $label)
     {
         $this->guardId($id);
+
+        $this->labelService->createLabelAggregateIfNew(
+            new LabelName((string) $label)
+        );
 
         return $this->commandBus->dispatch(
             $this->commandFactory->createAddLabelCommand(

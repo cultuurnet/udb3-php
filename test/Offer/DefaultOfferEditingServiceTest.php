@@ -6,6 +6,8 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
@@ -40,6 +42,11 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
      * @var OfferCommandFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $commandFactory;
+
+    /**
+     * @var LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $labelService;
 
     /**
      * @var DefaultOfferEditingService
@@ -77,6 +84,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
         $this->offerRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
+        $this->labelService = $this->getMock(LabelServiceInterface::class);
 
         $this->addLabelCommand = $this->getMockForAbstractClass(
             AbstractAddLabel::class,
@@ -102,7 +110,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->commandBus,
             $this->uuidGenerator,
             $this->offerRepository,
-            $this->commandFactory
+            $this->commandFactory,
+            $this->labelService
         );
 
         $this->expectedCommandId = '123456';
@@ -116,6 +125,10 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->offerRepository->expects($this->once())
             ->method('get')
             ->with('foo');
+
+        $this->labelService->expects($this->once())
+            ->method('createLabelAggregateIfNew')
+            ->with(new LabelName('label1'));
 
         $this->commandFactory->expects($this->once())
             ->method('createAddLabelCommand')

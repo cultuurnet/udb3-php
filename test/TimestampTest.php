@@ -2,6 +2,9 @@
 
 namespace CultuurNet\UDB3;
 
+use DateTime;
+use InvalidArgumentException;
+
 class TimestampTest extends \PHPUnit_Framework_TestCase
 {
     const START_DATE_KEY = 'startDate';
@@ -18,8 +21,8 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->timestamp = new Timestamp(
-            \DateTime::createFromFormat(\DateTime::ATOM, self::START_DATE),
-            \DateTime::createFromFormat(\DateTime::ATOM, self::END_DATE)
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
         );
     }
 
@@ -29,12 +32,12 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_start_and_end_date()
     {
         $this->assertEquals(
-            \DateTime::createFromFormat(\DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             $this->timestamp->getStartDate()
         );
 
         $this->assertEquals(
-            \DateTime::createFromFormat(\DateTime::ATOM, self::END_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
             $this->timestamp->getEndDate()
         );
     }
@@ -51,5 +54,20 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
         $deserialized = Timestamp::deserialize($jsonDecoded);
 
         $this->assertEquals($this->timestamp, $deserialized);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_create_a_timestamp_that_ends_in_the_past()
+    {
+        $pastDate = '2016-01-03T00:01:01+01:00';
+
+        $this->setExpectedException(InvalidArgumentException::class, 'A timestamp can not end in the past.');
+
+        new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, $pastDate)
+        );
     }
 }

@@ -12,7 +12,7 @@ class LabelEventIsOfPlaceType implements LabelEventSpecificationInterface
      * @param AbstractLabelEvent $labelEvent
      * @return bool
      */
-    public function isSatisfiedBy(AbstractLabelEvent $labelEvent)
+    public function isSatisfiedBy($labelEvent)
     {
         return ($labelEvent instanceof LabelAdded || $labelEvent instanceof LabelDeleted);
     }

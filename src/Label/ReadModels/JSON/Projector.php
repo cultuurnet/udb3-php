@@ -113,7 +113,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
+    public function applyLabelAdded($labelAdded, Metadata $metadata)
     {
         $uuid = $this->getUuid($labelAdded);
 
@@ -125,7 +125,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
+    public function applyLabelDeleted($labelDeleted, Metadata $metadata)
     {
         $uuid = $this->getUuid($labelDeleted);
 

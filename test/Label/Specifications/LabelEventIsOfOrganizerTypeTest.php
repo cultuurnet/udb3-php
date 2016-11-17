@@ -2,21 +2,21 @@
 
 namespace CultuurNet\UDB3\Label\Specifications;
 
-use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted as EventLabelDeleted;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved as OrganizerLabelRemoved;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
 
-class LabelEventIsOfEventTypeTest extends \PHPUnit_Framework_TestCase
+class LabelEventIsOfOrganizerTypeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var LabelEventIsOfEventType
+     * @var LabelEventIsOfOrganizerType
      */
-    private $labelEventIsOfEventType;
+    private $labelEventIsOfOrganizerType;
 
     protected function setUp()
     {
-        $this->labelEventIsOfEventType = new LabelEventIsOfEventType();
+        $this->labelEventIsOfOrganizerType = new LabelEventIsOfOrganizerType();
     }
 
     /**
@@ -24,9 +24,9 @@ class LabelEventIsOfEventTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_satisfied_by_label_added_on_event()
     {
-        $labelAdded = $this->createEvent(EventLabelAdded::class);
+        $labelAdded = $this->createEvent(OrganizerLabelAdded::class);
 
-        $this->assertTrue($this->labelEventIsOfEventType->isSatisfiedBy(
+        $this->assertTrue($this->labelEventIsOfOrganizerType->isSatisfiedBy(
             $labelAdded
         ));
     }
@@ -36,9 +36,9 @@ class LabelEventIsOfEventTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function it_is_satisfied_by_label_deleted_from_event()
     {
-        $labelDeleted = $this->createEvent(EventLabelDeleted::class);
+        $labelDeleted = $this->createEvent(OrganizerLabelRemoved::class);
 
-        $this->assertTrue($this->labelEventIsOfEventType->isSatisfiedBy(
+        $this->assertTrue($this->labelEventIsOfOrganizerType->isSatisfiedBy(
             $labelDeleted
         ));
     }
@@ -50,7 +50,7 @@ class LabelEventIsOfEventTypeTest extends \PHPUnit_Framework_TestCase
     {
         $labelAdded = $this->createEvent(PlaceLabelAdded::class);
 
-        $this->assertFalse($this->labelEventIsOfEventType->isSatisfiedBy(
+        $this->assertFalse($this->labelEventIsOfOrganizerType->isSatisfiedBy(
             $labelAdded
         ));
     }
@@ -62,7 +62,7 @@ class LabelEventIsOfEventTypeTest extends \PHPUnit_Framework_TestCase
     {
         $labelDeleted = $this->createEvent(PlaceLabelDeleted::class);
 
-        $this->assertFalse($this->labelEventIsOfEventType->isSatisfiedBy(
+        $this->assertFalse($this->labelEventIsOfOrganizerType->isSatisfiedBy(
             $labelDeleted
         ));
     }

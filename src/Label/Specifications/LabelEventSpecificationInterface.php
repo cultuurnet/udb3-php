@@ -2,13 +2,14 @@
 
 namespace CultuurNet\UDB3\Label\Specifications;
 
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent as EventAbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent as OrganizerAbstractLabelEvent;
 
 interface LabelEventSpecificationInterface
 {
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param EventAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
      * @return bool
      */
-    public function isSatisfiedBy(AbstractLabelEvent $labelEvent);
+    public function isSatisfiedBy($labelEvent);
 }

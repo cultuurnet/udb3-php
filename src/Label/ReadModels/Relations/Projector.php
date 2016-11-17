@@ -7,9 +7,8 @@ use CultuurNet\UDB3\Label\LabelEventRelationTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent as OfferAbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent as OrganizerAbstractLabelEvent;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -43,9 +42,9 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
+    public function applyLabelAdded($labelAdded, Metadata $metadata)
     {
-        $LabelRelation = $this->createOfferLabelRelation($labelAdded, $metadata);
+        $LabelRelation = $this->createLabelRelation($labelAdded, $metadata);
 
         try {
             if (!is_null($LabelRelation)) {
@@ -63,9 +62,9 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
+    public function applyLabelDeleted($labelDeleted, Metadata $metadata)
     {
-        $labelRelation = $this->createOfferLabelRelation($labelDeleted, $metadata);
+        $labelRelation = $this->createLabelRelation($labelDeleted, $metadata);
 
         if (!is_null($labelRelation)) {
             $this->writeRepository->deleteByUuidAndRelationId(
@@ -76,14 +75,12 @@ class Projector extends AbstractProjector
     }
 
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param OfferAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
      * @param Metadata $metadata
      * @return LabelRelation
      */
-    private function createOfferLabelRelation(
-        AbstractLabelEvent $labelEvent,
-        Metadata $metadata
-    ) {
+    private function createLabelRelation($labelEvent, Metadata $metadata)
+    {
         $labelRelation = null;
 
         $metadataArray = $metadata->serialize();

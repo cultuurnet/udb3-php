@@ -12,11 +12,11 @@ class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @var LabelEventIsOfPlaceType
      */
-    private $offerLabelEventIsOfPlaceType;
+    private $labelEventIsOfPlaceType;
 
     protected function setUp()
     {
-        $this->offerLabelEventIsOfPlaceType = new LabelEventIsOfPlaceType();
+        $this->labelEventIsOfPlaceType = new LabelEventIsOfPlaceType();
     }
 
     /**
@@ -26,7 +26,7 @@ class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
     {
         $labelAdded = $this->createEvent(PlaceLabelAdded::class);
 
-        $this->assertTrue($this->offerLabelEventIsOfPlaceType->isSatisfiedBy(
+        $this->assertTrue($this->labelEventIsOfPlaceType->isSatisfiedBy(
             $labelAdded
         ));
     }
@@ -38,7 +38,7 @@ class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
     {
         $labelDeleted = $this->createEvent(PlaceLabelDeleted::class);
 
-        $this->assertTrue($this->offerLabelEventIsOfPlaceType->isSatisfiedBy(
+        $this->assertTrue($this->labelEventIsOfPlaceType->isSatisfiedBy(
             $labelDeleted
         ));
     }
@@ -50,7 +50,7 @@ class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
     {
         $labelAdded = $this->createEvent(EventLabelAdded::class);
 
-        $this->assertFalse($this->offerLabelEventIsOfPlaceType->isSatisfiedBy(
+        $this->assertFalse($this->labelEventIsOfPlaceType->isSatisfiedBy(
             $labelAdded
         ));
     }
@@ -62,7 +62,7 @@ class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
     {
         $labelDeleted = $this->createEvent(EventLabelDeleted::class);
 
-        $this->assertFalse($this->offerLabelEventIsOfPlaceType->isSatisfiedBy(
+        $this->assertFalse($this->labelEventIsOfPlaceType->isSatisfiedBy(
             $labelDeleted
         ));
     }

@@ -15,7 +15,6 @@ use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\LabelEventOfferTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -217,7 +216,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadeVisible($this->uuid)
+            new MadeVisible($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -234,7 +233,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadeInvisible($this->uuid)
+            new MadeInvisible($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -251,7 +250,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadePublic($this->uuid)
+            new MadePublic($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -268,7 +267,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadePrivate($this->uuid)
+            new MadePrivate($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())

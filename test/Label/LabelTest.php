@@ -132,7 +132,7 @@ class LabelTest extends AggregateRootScenarioTestCase
                 /** @var Label $label */
                 $label->makeVisible();
             })
-            ->then([new MadeVisible($this->uuid)]);
+            ->then([new MadeVisible($this->uuid, $this->name)]);
     }
 
     /**
@@ -142,15 +142,15 @@ class LabelTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(function ($label) {
                 /** @var Label $label */
                 $label->makeInvisible();
                 $label->makeVisible();
             })
             ->then([
-                new MadeInvisible($this->uuid),
-                new MadeVisible($this->uuid)
+                new MadeInvisible($this->uuid, $this->name),
+                new MadeVisible($this->uuid, $this->name)
             ]);
     }
 
@@ -161,7 +161,7 @@ class LabelTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(function ($label) {
                 /** @var Label $label */
                 $label->makeVisible();
@@ -176,12 +176,12 @@ class LabelTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(function ($label) {
                 /** @var Label $label */
                 $label->makeInvisible();
             })
-            ->then([new MadeInvisible($this->uuid)]);
+            ->then([new MadeInvisible($this->uuid, $this->name)]);
     }
 
     /**
@@ -211,7 +211,7 @@ class LabelTest extends AggregateRootScenarioTestCase
                 /** @var Label $label */
                 $label->makePublic();
             })
-            ->then([new MadePublic($this->uuid)]);
+            ->then([new MadePublic($this->uuid, $this->name)]);
     }
 
     /**
@@ -221,15 +221,15 @@ class LabelTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(function ($label) {
                 /** @var Label $label */
                 $label->makePrivate();
                 $label->makePublic();
             })
             ->then([
-                new MadePrivate($this->uuid),
-                new MadePublic($this->uuid)
+                new MadePrivate($this->uuid, $this->name),
+                new MadePublic($this->uuid, $this->name)
             ]);
     }
 
@@ -240,7 +240,7 @@ class LabelTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(function ($label) {
                 /** @var Label $label */
                 $label->makePublic();
@@ -255,12 +255,12 @@ class LabelTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(function ($label) {
                 /** @var Label $label */
                 $label->makePrivate();
             })
-            ->then([new MadePrivate($this->uuid)]);
+            ->then([new MadePrivate($this->uuid, $this->name)]);
     }
 
     /**

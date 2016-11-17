@@ -3,15 +3,16 @@
 namespace CultuurNet\UDB3\Label\Events;
 
 use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 class MadePrivateTestAbstract extends AbstractExtendsTest
 {
     /**
      * @inheritdoc
      */
-    public function createEvent(UUID $uuid)
+    public function createEvent(UUID $uuid, StringLiteral $name)
     {
-        return new MadePrivate($uuid);
+        return new MadePrivate($uuid, $name);
     }
 
     /**
@@ -20,7 +21,10 @@ class MadePrivateTestAbstract extends AbstractExtendsTest
     public function deserialize(array $array)
     {
         return MadePrivate::deserialize(
-            [AbstractEvent::UUID => $this->uuid->toNative()]
+            [
+                'uuid' => $this->uuid->toNative(),
+                'name' => $this->name->toNative(),
+            ]
         );
     }
 }

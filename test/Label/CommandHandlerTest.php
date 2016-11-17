@@ -152,7 +152,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->uuid)
             ->given([$this->created])
             ->when(new MakeVisible($this->uuid))
-            ->then([new MadeVisible($this->uuid)]);
+            ->then([new MadeVisible($this->uuid, $this->name)]);
     }
 
     /**
@@ -162,7 +162,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(new MakeVisible($this->uuid))
             ->then([]);
     }
@@ -174,9 +174,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(new MakeInvisible($this->uuid))
-            ->then([new MadeInvisible($this->uuid)]);
+            ->then([new MadeInvisible($this->uuid, $this->name)]);
     }
 
     /**
@@ -200,7 +200,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->uuid)
             ->given([$this->created])
             ->when(new MakePublic($this->uuid))
-            ->then([new MadePublic($this->uuid)]);
+            ->then([new MadePublic($this->uuid, $this->name)]);
     }
 
     /**
@@ -210,7 +210,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(new MakePublic($this->uuid))
             ->then([]);
     }
@@ -222,9 +222,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(new MakePrivate($this->uuid))
-            ->then([new MadePrivate($this->uuid)]);
+            ->then([new MadePrivate($this->uuid, $this->name)]);
     }
 
     /**

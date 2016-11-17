@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 class LabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
 {
@@ -72,7 +73,7 @@ class LabelDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
             $labelId,
             1,
             new Metadata(),
-            new MadeVisible($labelId),
+            new MadeVisible($labelId, new StringLiteral('2dotstwice')),
             BroadwayDateTime::now()
         );
 

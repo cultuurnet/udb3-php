@@ -9,14 +9,8 @@ use ValueObjects\String\String as StringLiteral;
 
 class Created extends AbstractEvent
 {
-    const NAME = 'name';
     const VISIBILITY = 'visibility';
     const PRIVACY = 'privacy';
-
-    /**
-     * @var StringLiteral
-     */
-    private $name;
 
     /**
      * @var Visibility
@@ -41,19 +35,10 @@ class Created extends AbstractEvent
         Visibility $visibility,
         Privacy $privacy
     ) {
-        parent::__construct($uuid);
+        parent::__construct($uuid, $name);
 
-        $this->name = $name;
         $this->visibility = $visibility;
         $this->privacy = $privacy;
-    }
-
-    /**
-     * @return StringLiteral
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -91,7 +76,6 @@ class Created extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-            self::NAME => $this->getName()->toNative(),
             self::VISIBILITY => $this->getVisibility()->toNative(),
             self::PRIVACY => $this->getPrivacy()->toNative()
         ];

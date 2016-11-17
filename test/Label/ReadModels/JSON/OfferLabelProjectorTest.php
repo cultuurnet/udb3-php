@@ -79,7 +79,10 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $labelId = new UUID();
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeVisible($labelId);
+        $madeVisibleEvent = new MadeVisible(
+            $labelId,
+            new StringLiteral('black')
+        );
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -122,7 +125,10 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $labelId = new UUID();
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeInvisibleEvent = new MadeInvisible($labelId);
+        $madeInvisibleEvent = new MadeInvisible(
+            $labelId,
+            new StringLiteral('black')
+        );
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -165,7 +171,10 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $labelId = new UUID();
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeVisible($labelId);
+        $madeVisibleEvent = new MadeVisible(
+            $labelId,
+            new StringLiteral('black')
+        );
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -208,7 +217,10 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $labelId = new UUID();
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeInvisible($labelId);
+        $madeVisibleEvent = new MadeInvisible(
+            $labelId,
+            new StringLiteral('black')
+        );
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -252,7 +264,10 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $labelId = new UUID();
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeInvisible($labelId);
+        $madeVisibleEvent = new MadeInvisible(
+            $labelId,
+            new StringLiteral('black')
+        );
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -295,7 +310,10 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $labelId = new UUID();
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeInvisible($labelId);
+        $madeVisibleEvent = new MadeInvisible(
+            $labelId,
+            new StringLiteral('foo')
+        );
 
         /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
         $logger = $this->getMock(AbstractLogger::class);

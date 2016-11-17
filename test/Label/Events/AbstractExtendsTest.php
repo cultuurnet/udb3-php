@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Label\Events;
 
 use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,6 +11,11 @@ abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
      * @var UUID
      */
     protected $uuid;
+
+    /**
+     * @var StringLiteral
+     */
+    protected $name;
 
     /**
      * @var AbstractEvent
@@ -20,7 +26,9 @@ abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID();
 
-        $this->event = $this->createEvent($this->uuid);
+        $this->name = new StringLiteral('2dotstwice');
+
+        $this->event = $this->createEvent($this->uuid, $this->name);
     }
 
     /**
@@ -40,7 +48,10 @@ abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
     public function it_can_deserialize()
     {
         $actualEvent = $this->deserialize(
-            [AbstractEvent::UUID => $this->uuid->toNative()]
+            [
+                'uuid' => $this->uuid->toNative(),
+                'name' => $this->name->toNative(),
+            ]
         );
 
         $this->assertEquals($this->event, $actualEvent);
@@ -48,9 +59,10 @@ abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param UUID $uuid
+     * @param StringLiteral $name
      * @return AbstractEvent
      */
-    abstract public function createEvent(UUID $uuid);
+    abstract public function createEvent(UUID $uuid, StringLiteral $name);
 
     /**
      * @param array $array

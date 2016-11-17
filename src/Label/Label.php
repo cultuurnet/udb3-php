@@ -105,21 +105,21 @@ class Label extends EventSourcedAggregateRoot
     public function makeVisible()
     {
         if ($this->visibility !== Visibility::VISIBLE()) {
-            $this->apply(new MadeVisible($this->uuid));
+            $this->apply(new MadeVisible($this->uuid, $this->name));
         }
     }
 
     public function makeInvisible()
     {
         if ($this->visibility !== Visibility::INVISIBLE()) {
-            $this->apply(new MadeInvisible($this->uuid));
+            $this->apply(new MadeInvisible($this->uuid, $this->name));
         }
     }
 
     public function makePublic()
     {
         if ($this->privacy !== Privacy::PRIVACY_PUBLIC()) {
-            $this->apply(new MadePublic($this->uuid));
+            $this->apply(new MadePublic($this->uuid, $this->name));
         }
 
     }
@@ -127,7 +127,7 @@ class Label extends EventSourcedAggregateRoot
     public function makePrivate()
     {
         if ($this->privacy !== Privacy::PRIVACY_PRIVATE()) {
-            $this->apply(new MadePrivate($this->uuid));
+            $this->apply(new MadePrivate($this->uuid, $this->name));
         }
     }
 

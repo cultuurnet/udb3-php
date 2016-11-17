@@ -78,7 +78,12 @@ class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_require_unique_for_made_invisible()
     {
         $this->assertFalse($this->uniqueHelper->hasUniqueConstraint(
-            $this->createDomainMessage(new MadeInvisible(new UUID()))
+            $this->createDomainMessage(
+                new MadeInvisible(
+                    new UUID(),
+                    new StringLiteral('2dotstwice')
+                )
+            )
         ));
     }
 

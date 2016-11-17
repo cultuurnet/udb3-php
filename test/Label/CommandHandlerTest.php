@@ -5,8 +5,6 @@ namespace CultuurNet\UDB3\Label;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Event\Commands\AddLabel as EventAddLabel;
 use CultuurNet\UDB3\Label as OfferLabel;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\CreateCopy;
@@ -23,7 +21,6 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
-use CultuurNet\UDB3\Place\Commands\AddLabel as PlaceAddLabel;
 use ValueObjects\Identity\UUID;
 
 class CommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -97,14 +94,8 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
     ) {
-        /** @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject $uuidGenerator */
-        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $uuidGenerator->method('generate')
-            ->willReturn($this->uuid);
-
         return new CommandHandler(
-            new LabelRepository($eventStore, $eventBus),
-            $uuidGenerator
+            new LabelRepository($eventStore, $eventBus)
         );
     }
 
@@ -237,43 +228,5 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given([$this->created])
             ->when(new MakePrivate($this->uuid))
             ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_label_added_on_event()
-    {
-        $created = new Created(
-            $this->uuid,
-            new LabelName('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([])
-            ->when(new EventAddLabel('eventId', new OfferLabel('labelName')))
-            ->then([$created]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_label_added_on_place()
-    {
-        $created = new Created(
-            $this->uuid,
-            new LabelName('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([])
-            ->when(new PlaceAddLabel('placeId', new OfferLabel('labelName')))
-            ->then([$created]);
     }
 }

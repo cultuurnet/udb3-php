@@ -26,33 +26,12 @@ class CommandHandler extends AbstractCommandHandler
     private $repository;
 
     /**
-     * @var UuidGeneratorInterface
-     */
-    private $uuidGenerator;
-
-    /**
-     * CommandHandler constructor.
      * @param RepositoryInterface $repository
-     * @param UuidGeneratorInterface $uuidGenerator
      */
     public function __construct(
-        RepositoryInterface $repository,
-        UuidGeneratorInterface $uuidGenerator
+        RepositoryInterface $repository
     ) {
         $this->repository = $repository;
-        $this->uuidGenerator = $uuidGenerator;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function handle($command)
-    {
-        if (is_a($command, AbstractAddLabel::class)) {
-            $this->handleAddLabel($command);
-        } else {
-            parent::handle($command);
-        }
     }
 
     /**
@@ -84,11 +63,6 @@ class CommandHandler extends AbstractCommandHandler
         );
 
         $this->save($label);
-    }
-
-    public function handleAddLabel(AbstractAddLabel $addLabel)
-    {
-        $this->createLabel($addLabel);
     }
 
     /**
@@ -154,22 +128,5 @@ class CommandHandler extends AbstractCommandHandler
     private function save(Label $label)
     {
         $this->repository->save($label);
-    }
-
-    /**
-     * @param AbstractAddLabel $addLabel
-     */
-    private function createLabel(AbstractAddLabel $addLabel)
-    {
-        $label = Label::create(
-            new UUID($this->uuidGenerator->generate()),
-            new LabelName((string)$addLabel->getLabel()),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-        try {
-            $this->save($label);
-        } catch (UniqueConstraintException $exception) {
-        }
     }
 }

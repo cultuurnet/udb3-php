@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use ValueObjects\String\String as StringLiteral;
 
 abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -35,9 +35,9 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OfferLabelRelation $offerLabelRelation
+     * @param LabelRelation $offerLabelRelation
      */
-    protected function saveOfferLabelRelation(OfferLabelRelation $offerLabelRelation)
+    protected function saveOfferLabelRelation(LabelRelation $offerLabelRelation)
     {
         $values = $this->offerLabelRelationToValues($offerLabelRelation);
 
@@ -47,20 +47,20 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OfferLabelRelation $offerLabelRelation
+     * @param LabelRelation $offerLabelRelation
      * @return array
      */
-    protected function offerLabelRelationToValues(OfferLabelRelation $offerLabelRelation)
+    protected function offerLabelRelationToValues(LabelRelation $offerLabelRelation)
     {
         return [
             $offerLabelRelation->getUuid()->toNative(),
-            $offerLabelRelation->getOfferType()->toNative(),
-            $offerLabelRelation->getOfferId()
+            $offerLabelRelation->getRelationType()->toNative(),
+            $offerLabelRelation->getRelationId()
         ];
     }
 
     /**
-     * @return OfferLabelRelation
+     * @return LabelRelation
      */
     protected function getLastOfferLabelRelation()
     {
@@ -69,6 +69,6 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $statement = $this->connection->executeQuery($sql);
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $rows ? OfferLabelRelation::fromRelationalData($rows[count($rows) - 1]) : null;
+        return $rows ? LabelRelation::fromRelationalData($rows[count($rows) - 1]) : null;
     }
 }

@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
 use ValueObjects\Identity\UUID;
 
@@ -12,7 +12,7 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
     /**
      * @inheritdoc
      */
-    public function getOfferLabelRelations(UUID $labelId)
+    public function getLabelRelations(UUID $labelId)
     {
         $aliases = $this->getAliases();
         $whereUuid = SchemaConfigurator::UUID_COLUMN . ' = ?';
@@ -25,8 +25,8 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
         $statement = $queryBuilder->execute();
 
         while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $offerLabelRelation = OfferLabelRelation::fromRelationalData($row);
-            yield $offerLabelRelation;
+            $labelRelation = LabelRelation::fromRelationalData($row);
+            yield $labelRelation;
         }
     }
 
@@ -37,8 +37,8 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
     {
         return [
             SchemaConfigurator::UUID_COLUMN,
-            SchemaConfigurator::OFFER_TYPE_COLUMN,
-            SchemaConfigurator::OFFER_ID_COLUMN
+            SchemaConfigurator::RELATION_TYPE_COLUMN,
+            SchemaConfigurator::RELATION_ID_COLUMN
         ];
     }
 }

@@ -11,8 +11,8 @@ use ValueObjects\String\String as StringLiteral;
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {
     const UUID_COLUMN = 'uuid_col';
-    const OFFER_TYPE_COLUMN = 'offerType';
-    const OFFER_ID_COLUMN = 'offerId';
+    const RELATION_TYPE_COLUMN = 'relationType';
+    const RELATION_ID_COLUMN = 'relationId';
 
     /**
      * @var StringLiteral
@@ -55,19 +55,19 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             ->setLength(36)
             ->setNotnull(true);
 
-        $table->addColumn(self::OFFER_TYPE_COLUMN, Type::STRING)
+        $table->addColumn(self::RELATION_TYPE_COLUMN, Type::STRING)
             ->setLength(255)
             ->setNotnull(true);
 
-        $table->addColumn(self::OFFER_ID_COLUMN, Type::GUID)
+        $table->addColumn(self::RELATION_ID_COLUMN, Type::GUID)
             ->setLength(36)
             ->setNotnull(true);
 
         $table->addIndex([self::UUID_COLUMN]);
         $table->addUniqueIndex([
             self::UUID_COLUMN,
-            self::OFFER_TYPE_COLUMN,
-            self::OFFER_ID_COLUMN,
+            self::RELATION_TYPE_COLUMN,
+            self::RELATION_ID_COLUMN,
         ]);
 
         return $table;

@@ -4,20 +4,20 @@ namespace CultuurNet\UDB3\Label;
 
 use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted as EventLabelDeleted;
-use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
 
-class LabelEventOfferTypeResolverTest extends \PHPUnit_Framework_TestCase
+class LabelEventRelationTypeResolverTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var LabelEventOfferTypeResolver
+     * @var LabelEventRelationTypeResolver
      */
     private $labelEventOfferTypeResolver;
 
     protected function setUp()
     {
-        $this->labelEventOfferTypeResolver = new LabelEventOfferTypeResolver();
+        $this->labelEventOfferTypeResolver = new LabelEventRelationTypeResolver();
     }
 
     /**
@@ -28,8 +28,8 @@ class LabelEventOfferTypeResolverTest extends \PHPUnit_Framework_TestCase
         $labelAdded = $this->createEvent(EventLabelAdded::class);
 
         $this->assertEquals(
-            OfferType::EVENT(),
-            $this->labelEventOfferTypeResolver->getOfferType($labelAdded)
+            RelationType::EVENT(),
+            $this->labelEventOfferTypeResolver->getRelationType($labelAdded)
         );
     }
 
@@ -41,8 +41,8 @@ class LabelEventOfferTypeResolverTest extends \PHPUnit_Framework_TestCase
         $labelDeleted = $this->createEvent(EventLabelDeleted::class);
 
         $this->assertEquals(
-            OfferType::EVENT(),
-            $this->labelEventOfferTypeResolver->getOfferType($labelDeleted)
+            RelationType::EVENT(),
+            $this->labelEventOfferTypeResolver->getRelationType($labelDeleted)
         );
     }
 
@@ -54,8 +54,8 @@ class LabelEventOfferTypeResolverTest extends \PHPUnit_Framework_TestCase
         $labelAdded = $this->createEvent(PlaceLabelAdded::class);
 
         $this->assertEquals(
-            OfferType::PLACE(),
-            $this->labelEventOfferTypeResolver->getOfferType($labelAdded)
+            RelationType::PLACE(),
+            $this->labelEventOfferTypeResolver->getRelationType($labelAdded)
         );
     }
 
@@ -67,8 +67,8 @@ class LabelEventOfferTypeResolverTest extends \PHPUnit_Framework_TestCase
         $labelDeleted = $this->createEvent(PlaceLabelDeleted::class);
 
         $this->assertEquals(
-            OfferType::PLACE(),
-            $this->labelEventOfferTypeResolver->getOfferType($labelDeleted)
+            RelationType::PLACE(),
+            $this->labelEventOfferTypeResolver->getRelationType($labelDeleted)
         );
     }
 
@@ -80,7 +80,7 @@ class LabelEventOfferTypeResolverTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(\InvalidArgumentException::class);
 
         $dummyLabelEvent = $this->createEvent(DummyLabelEvent::class);
-        $this->labelEventOfferTypeResolver->getOfferType($dummyLabelEvent);
+        $this->labelEventOfferTypeResolver->getRelationType($dummyLabelEvent);
     }
 
     /**

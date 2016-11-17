@@ -7,16 +7,16 @@ use CultuurNet\UDB3\Event\Events\LabelDeleted as EventLabelDeleted;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
 
-class OfferLabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
+class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var OfferLabelEventIsOfPlaceType
+     * @var LabelEventIsOfPlaceType
      */
     private $offerLabelEventIsOfPlaceType;
 
     protected function setUp()
     {
-        $this->offerLabelEventIsOfPlaceType = new OfferLabelEventIsOfPlaceType();
+        $this->offerLabelEventIsOfPlaceType = new LabelEventIsOfPlaceType();
     }
 
     /**

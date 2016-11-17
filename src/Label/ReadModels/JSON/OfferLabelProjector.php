@@ -114,19 +114,19 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     private function getRelatedOffers(UUID $uuid)
     {
-        $offerRelations = $this->relationRepository->getOfferLabelRelations($uuid);
+        $labelRelations = $this->relationRepository->getLabelRelations($uuid);
 
-        foreach ($offerRelations as $offerRelation) {
+        foreach ($labelRelations as $labelRelation) {
             try {
-                $offer = $this->offerRepository->get((string) $offerRelation->getOfferId());
+                $offer = $this->offerRepository->get((string) $labelRelation->getRelationId());
 
                 if ($offer) {
                     yield $offer;
                 }
             } catch (DocumentGoneException $exception) {
                 $this->logger->alert(
-                    'Can not update visibility of label: "'. $offerRelation->getUuid() . '"'
-                    . ' for the offer with id: "' . $offerRelation->getOfferId() . '"'
+                    'Can not update visibility of label: "'. $labelRelation->getUuid() . '"'
+                    . ' for the relation with id: "' . $labelRelation->getRelationId() . '"'
                     . ' because the document could not be retrieved.'
                 );
             }

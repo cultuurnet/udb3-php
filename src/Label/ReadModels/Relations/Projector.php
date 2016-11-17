@@ -3,9 +3,9 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Label\LabelEventOfferTypeResolverInterface;
+use CultuurNet\UDB3\Label\LabelEventRelationTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
@@ -22,18 +22,18 @@ class Projector extends AbstractProjector
     private $writeRepository;
 
     /**
-     * @var LabelEventOfferTypeResolverInterface
+     * @var LabelEventRelationTypeResolverInterface
      */
     private $offerTypeResolver;
 
     /**
      * Projector constructor.
      * @param WriteRepositoryInterface $writeRepository
-     * @param LabelEventOfferTypeResolverInterface $labelEventOfferTypeResolver
+     * @param LabelEventRelationTypeResolverInterface $labelEventOfferTypeResolver
      */
     public function __construct(
         WriteRepositoryInterface $writeRepository,
-        LabelEventOfferTypeResolverInterface $labelEventOfferTypeResolver
+        LabelEventRelationTypeResolverInterface $labelEventOfferTypeResolver
     ) {
         $this->writeRepository = $writeRepository;
         $this->offerTypeResolver = $labelEventOfferTypeResolver;
@@ -45,14 +45,14 @@ class Projector extends AbstractProjector
      */
     public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
     {
-        $offerLabelRelation = $this->createOfferLabelRelation($labelAdded, $metadata);
+        $LabelRelation = $this->createOfferLabelRelation($labelAdded, $metadata);
 
         try {
-            if (!is_null($offerLabelRelation)) {
+            if (!is_null($LabelRelation)) {
                 $this->writeRepository->save(
-                    $offerLabelRelation->getUuid(),
-                    $offerLabelRelation->getOfferType(),
-                    $offerLabelRelation->getOfferId()
+                    $LabelRelation->getUuid(),
+                    $LabelRelation->getRelationType(),
+                    $LabelRelation->getRelationId()
                 );
             }
         } catch (UniqueConstraintViolationException $exception) {
@@ -65,11 +65,11 @@ class Projector extends AbstractProjector
      */
     public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
     {
-        $offerLabelRelation = $this->createOfferLabelRelation($labelDeleted, $metadata);
+        $labelRelation = $this->createOfferLabelRelation($labelDeleted, $metadata);
 
-        if (!is_null($offerLabelRelation)) {
-            $this->writeRepository->deleteByUuidAndOfferId(
-                $offerLabelRelation->getUuid(),
+        if (!is_null($labelRelation)) {
+            $this->writeRepository->deleteByUuidAndRelationId(
+                $labelRelation->getUuid(),
                 new StringLiteral($labelDeleted->getItemId())
             );
         }
@@ -78,28 +78,28 @@ class Projector extends AbstractProjector
     /**
      * @param AbstractLabelEvent $labelEvent
      * @param Metadata $metadata
-     * @return OfferLabelRelation
+     * @return LabelRelation
      */
     private function createOfferLabelRelation(
         AbstractLabelEvent $labelEvent,
         Metadata $metadata
     ) {
-        $offerLabelRelation = null;
+        $labelRelation = null;
 
         $metadataArray = $metadata->serialize();
 
         $uuid = isset($metadataArray['labelUuid']) ? new UUID($metadataArray['labelUuid']) : null;
-        $offerType = $this->offerTypeResolver->getOfferType($labelEvent);
-        $offerId = new StringLiteral($labelEvent->getItemId());
+        $relationType = $this->offerTypeResolver->getRelationType($labelEvent);
+        $relationId = new StringLiteral($labelEvent->getItemId());
 
         if (!is_null($uuid)) {
-            $offerLabelRelation = new OfferLabelRelation(
+            $labelRelation = new LabelRelation(
                 $uuid,
-                $offerType,
-                $offerId
+                $relationType,
+                $relationId
             );
         }
 
-        return $offerLabelRelation;
+        return $labelRelation;
     }
 }

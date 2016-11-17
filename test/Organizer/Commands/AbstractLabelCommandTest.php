@@ -82,24 +82,8 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_is_not_identified_by_uuid()
-    {
-        $this->assertFalse($this->abstractLabelCommand->isIdentifiedByUuid());
-    }
-
-    /**
-     * @test
-     */
     public function it_identifies_by_label_name()
     {
         $this->assertEquals($this->abstractLabelCommand->getName(), new StringLiteral('foo'));
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_have_a_label_uuid()
-    {
-        $this->assertNull($this->abstractLabelCommand->getUuid());
     }
 }

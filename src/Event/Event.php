@@ -347,8 +347,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
-
-        $this->setLabelsFromUDB2Event($udb2Event);
     }
 
     /**

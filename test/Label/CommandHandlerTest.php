@@ -31,6 +31,11 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $uuid;
 
     /**
+     * @var UUID
+     */
+    private $extraUuid;
+
+    /**
      * @var LabelName
      */
     private $name;
@@ -63,6 +68,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     public function setUp()
     {
         $this->uuid = new UUID();
+        $this->extraUuid = new UUID();
         $this->name = new LabelName('labelName');
         $this->visibility = Visibility::INVISIBLE();
         $this->privacy = Privacy::PRIVACY_PRIVATE();

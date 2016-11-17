@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelDeleted;
 
-class OfferLabelEventIsOfPlaceType implements OfferLabelEventSpecificationInterface
+class LabelEventIsOfPlaceType implements LabelEventSpecificationInterface
 {
     /**
      * @param AbstractLabelEvent $labelEvent

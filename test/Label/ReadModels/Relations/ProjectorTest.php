@@ -8,14 +8,14 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\LabelAdded as LabelAddedToEvent;
 use CultuurNet\UDB3\Event\Events\LabelDeleted as LabelDeletedFromEvent;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Label\LabelEventOfferTypeResolver;
+use CultuurNet\UDB3\Label\LabelEventRelationTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as LabelDeletedFromPlace;
 use ValueObjects\Identity\UUID;
@@ -44,7 +44,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $readRepository;
 
     /**
-     * @var LabelEventOfferTypeResolver
+     * @var LabelEventRelationTypeResolver
      */
     private $offerTypeResolver;
 
@@ -60,7 +60,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->writeRepository = $this->getMock(WriteRepositoryInterface::class);
         $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
-        $this->offerTypeResolver = new LabelEventOfferTypeResolver();
+        $this->offerTypeResolver = new LabelEventRelationTypeResolver();
 
         $this->projector = new Projector(
             $this->writeRepository,
@@ -73,11 +73,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @dataProvider labelAddedEventDataProvider
      *
      * @param AbstractLabelAdded $labelAdded
-     * @param OfferType $offerType
+     * @param RelationType $relationType
      */
     public function it_handles_label_added_events(
         AbstractLabelAdded $labelAdded,
-        OfferType $offerType
+        RelationType $relationType
     ) {
         $domainMessage = $this->createDomainMessage(
             $labelAdded->getItemId(),
@@ -88,7 +88,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->method('save')
             ->with(
                 $this->uuid,
-                $offerType,
+                $relationType,
                 new StringLiteral($this->offerId)
             );
 
@@ -110,7 +110,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->writeRepository->expects($this->once())
-            ->method('deleteByUuidAndOfferId')
+            ->method('deleteByUuidAndRelationId')
             ->with($this->uuid, new StringLiteral($labelDeleted->getItemId()));
 
         $this->projector->handle($domainMessage);
@@ -127,14 +127,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     $this->getOfferId(),
                     new Label('labelName')
                 ),
-                OfferType::EVENT(),
+                RelationType::EVENT(),
             ],
             [
                 new LabelAddedToPlace(
                     $this->getOfferId(),
                     new Label('labelName')
                 ),
-                OfferType::PLACE(),
+                RelationType::PLACE(),
             ],
         ];
     }

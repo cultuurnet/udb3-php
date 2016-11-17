@@ -2,40 +2,40 @@
 
 namespace CultuurNet\UDB3\Label;
 
-use CultuurNet\UDB3\Label\Specifications\OfferLabelEventIsOfEventType;
-use CultuurNet\UDB3\Label\Specifications\OfferLabelEventIsOfPlaceType;
+use CultuurNet\UDB3\Label\Specifications\LabelEventIsOfEventType;
+use CultuurNet\UDB3\Label\Specifications\LabelEventIsOfPlaceType;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
-use CultuurNet\UDB3\Offer\OfferType;
 
-class LabelEventOfferTypeResolver implements LabelEventOfferTypeResolverInterface
+class LabelEventRelationTypeResolver implements LabelEventRelationTypeResolverInterface
 {
     /**
-     * @var OfferLabelEventIsOfEventType
+     * @var LabelEventIsOfEventType
      */
     private $eventTypeSpecification;
 
     /**
-     * @var OfferLabelEventIsOfPlaceType
+     * @var LabelEventIsOfPlaceType
      */
     private $placeTypeSpecification;
 
     public function __construct()
     {
-        $this->eventTypeSpecification = new OfferLabelEventIsOfEventType();
-        $this->placeTypeSpecification = new OfferLabelEventIsOfPlaceType();
+        $this->eventTypeSpecification = new LabelEventIsOfEventType();
+        $this->placeTypeSpecification = new LabelEventIsOfPlaceType();
     }
 
     /**
      * @param AbstractLabelEvent $labelEvent
-     * @return OfferType
+     * @return RelationType
      * @throws \InvalidArgumentException
      */
-    public function getOfferType(AbstractLabelEvent $labelEvent)
+    public function getRelationType($labelEvent)
     {
         if ($this->eventTypeSpecification->isSatisfiedBy($labelEvent)) {
-            $offerType = OfferType::EVENT();
+            $offerType = RelationType::EVENT();
         } else if ($this->placeTypeSpecification->isSatisfiedBy($labelEvent)) {
-            $offerType = OfferType::PLACE();
+            $offerType = RelationType::PLACE();
         } else {
             $message = $this->createIllegalArgumentMessage($labelEvent);
             throw new \InvalidArgumentException($message);

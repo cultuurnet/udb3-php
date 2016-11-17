@@ -8,7 +8,7 @@ interface ReadRepositoryInterface
 {
     /**
      * @param UUID $labelId
-     * @return \Generator|OfferLabelRelation[]
+     * @return \Generator|LabelRelation[]
      */
-    public function getOfferLabelRelations(UUID $labelId);
+    public function getLabelRelations(UUID $labelId);
 }

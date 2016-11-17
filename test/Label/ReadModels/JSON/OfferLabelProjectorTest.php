@@ -10,11 +10,11 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Log\AbstractLogger;
@@ -54,13 +54,13 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->relationRepository
             ->expects($this->once())
-            ->method('getOfferLabelRelations')
+            ->method('getLabelRelations')
             ->with($labelId)
             ->willReturn(
                 [
-                    new OfferLabelRelation(
+                    new LabelRelation(
                         $labelId,
-                        OfferType::PLACE(),
+                        RelationType::PLACE(),
                         new StringLiteral($jsonDocument->getId())
                     ),
                 ]
@@ -327,13 +327,13 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->relationRepository
             ->expects($this->once())
-            ->method('getOfferLabelRelations')
+            ->method('getLabelRelations')
             ->with($labelId)
             ->willReturn(
                 [
-                    new OfferLabelRelation(
+                    new LabelRelation(
                         $labelId,
-                        OfferType::PLACE(),
+                        RelationType::PLACE(),
                         new StringLiteral((string) $placeId)
                     ),
                 ]

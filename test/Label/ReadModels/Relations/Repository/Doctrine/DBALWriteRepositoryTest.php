@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
-use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -30,16 +30,16 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save()
     {
-        $expectedOfferLabelRelation = new OfferLabelRelation(
+        $expectedOfferLabelRelation = new LabelRelation(
             new UUID(),
-            OfferType::PLACE(),
+            RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getOfferType(),
-            $expectedOfferLabelRelation->getOfferId()
+            $expectedOfferLabelRelation->getRelationType(),
+            $expectedOfferLabelRelation->getRelationId()
         );
 
         $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
@@ -52,24 +52,24 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save_same_uuid_but_different_relation_type_and_relation_id()
     {
-        $offerLabelRelation = new OfferLabelRelation(
+        $offerLabelRelation = new LabelRelation(
             new UUID(),
-            OfferType::PLACE(),
+            RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->saveOfferLabelRelation($offerLabelRelation);
 
-        $expectedOfferLabelRelation = new OfferLabelRelation(
+        $expectedOfferLabelRelation = new LabelRelation(
             $offerLabelRelation->getUuid(),
-            OfferType::EVENT(),
+            RelationType::EVENT(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getOfferType(),
-            $expectedOfferLabelRelation->getOfferId()
+            $expectedOfferLabelRelation->getRelationType(),
+            $expectedOfferLabelRelation->getRelationId()
         );
 
         $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
@@ -82,24 +82,24 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_save_same_uuid_and_relation_type_but_different_relation_id()
     {
-        $offerLabelRelation = new OfferLabelRelation(
+        $offerLabelRelation = new LabelRelation(
             new UUID(),
-            OfferType::PLACE(),
+            RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->saveOfferLabelRelation($offerLabelRelation);
 
-        $expectedOfferLabelRelation = new OfferLabelRelation(
+        $expectedOfferLabelRelation = new LabelRelation(
             $offerLabelRelation->getUuid(),
-            $offerLabelRelation->getOfferType(),
+            $offerLabelRelation->getRelationType(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getUuid(),
-            $expectedOfferLabelRelation->getOfferType(),
-            $expectedOfferLabelRelation->getOfferId()
+            $expectedOfferLabelRelation->getRelationType(),
+            $expectedOfferLabelRelation->getRelationId()
         );
 
         $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
@@ -112,26 +112,26 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_not_save_same_offer_label_relation()
     {
-        $offerLabelRelation = new OfferLabelRelation(
+        $offerLabelRelation = new LabelRelation(
             new UUID(),
-            OfferType::PLACE(),
+            RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
         $this->saveOfferLabelRelation($offerLabelRelation);
 
-        $sameOfferLabelRelation = new OfferLabelRelation(
+        $sameOfferLabelRelation = new LabelRelation(
             $offerLabelRelation->getUuid(),
-            $offerLabelRelation->getOfferType(),
-            $offerLabelRelation->getOfferId()
+            $offerLabelRelation->getRelationType(),
+            $offerLabelRelation->getRelationId()
         );
 
         $this->setExpectedException(UniqueConstraintViolationException::class);
 
         $this->dbalWriteRepository->save(
             $sameOfferLabelRelation->getUuid(),
-            $sameOfferLabelRelation->getOfferType(),
-            $sameOfferLabelRelation->getOfferId()
+            $sameOfferLabelRelation->getRelationType(),
+            $sameOfferLabelRelation->getRelationId()
         );
     }
 
@@ -140,24 +140,24 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_delete_based_on_uuid()
     {
-        $OfferLabelRelation1 = new OfferLabelRelation(
+        $OfferLabelRelation1 = new LabelRelation(
             new UUID(),
-            OfferType::PLACE(),
+            RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $OfferLabelRelation2 = new OfferLabelRelation(
+        $OfferLabelRelation2 = new LabelRelation(
             new UUID(),
-            OfferType::PLACE(),
+            RelationType::PLACE(),
             new StringLiteral('otherRelationId')
         );
 
         $this->saveOfferLabelRelation($OfferLabelRelation1);
         $this->saveOfferLabelRelation($OfferLabelRelation2);
 
-        $this->dbalWriteRepository->deleteByUuidAndOfferId(
+        $this->dbalWriteRepository->deleteByUuidAndRelationId(
             $OfferLabelRelation1->getUuid(),
-            $OfferLabelRelation1->getOfferId()
+            $OfferLabelRelation1->getRelationId()
         );
 
         $this->assertEquals(

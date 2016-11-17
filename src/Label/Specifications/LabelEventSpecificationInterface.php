@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\Specifications;
 
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 
-interface OfferLabelEventSpecificationInterface
+interface LabelEventSpecificationInterface
 {
     /**
      * @param AbstractLabelEvent $labelEvent

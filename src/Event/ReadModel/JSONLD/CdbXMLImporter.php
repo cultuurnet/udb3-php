@@ -6,6 +6,7 @@ use CultureFeed_Cdb_Data_File;
 use CultureFeed_Cdb_Data_Keyword;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
@@ -28,15 +29,22 @@ class CdbXMLImporter
     private $cdbIdExtractor;
 
     /**
+     * @var PriceDescriptionParser
+     */
+    private $priceDescriptionParser;
+
+    /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      */
     public function __construct(
         CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
-        EventCdbIdExtractorInterface $cdbIdExtractor
+        EventCdbIdExtractorInterface $cdbIdExtractor,
+        PriceDescriptionParser $priceDescriptionParser
     ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
+        $this->priceDescriptionParser = $priceDescriptionParser;
     }
 
     /**
@@ -104,6 +112,8 @@ class CdbXMLImporter
         $this->importOrganizer($event, $organizerManager, $jsonLD);
 
         $this->importBookingInfo($event, $detail, $jsonLD);
+
+        $this->importPriceInfo($detail, $jsonLD);
 
         $this->importTerms($event, $jsonLD);
 
@@ -351,6 +361,58 @@ class CdbXMLImporter
         if (!is_null($organizer)) {
             $organizer['@type'] = 'Organizer';
             $jsonLD->organizer = $organizer;
+        }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_EventDetail $detail
+     * @param \stdClass $jsonLD
+     */
+    private function importPriceInfo(
+        \CultureFeed_Cdb_Data_EventDetail $detail,
+        $jsonLD
+    ) {
+        $prices = array();
+
+        $price = $detail->getPrice();
+
+        if ($price) {
+            $description = $price->getDescription();
+
+            if ($description) {
+                $prices = $this->priceDescriptionParser->parse($description);
+            }
+
+            // If price description was not interpretable, fall back to
+            // price title and value.
+            if (empty($prices) && $price->getValue() !== null) {
+                $prices['Basistarief'] = floatval($price->getValue());
+            }
+        }
+
+        if (!empty($prices)) {
+            $priceInfo = array();
+
+            /** @var \CultureFeed_Cdb_Data_Price $price */
+            foreach ($prices as $title => $value) {
+                $priceInfoItem = array(
+                    'name' => $title,
+                    'priceCurrency' => 'EUR',
+                    'price' => $value,
+                );
+
+                $priceInfoItem['category'] = 'tariff';
+
+                if ($priceInfoItem['name'] === 'Basistarief') {
+                    $priceInfoItem['category'] = 'base';
+                }
+
+                $priceInfo[] = $priceInfoItem;
+            }
+
+            if (!empty($priceInfo)) {
+                $jsonLD->priceInfo = $priceInfo;
+            }
         }
     }
 

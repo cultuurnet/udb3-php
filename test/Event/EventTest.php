@@ -168,7 +168,7 @@ class EventTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_be_imported_from_udb2_cdbxml()
+    public function it_can_be_imported_from_udb2_cdbxml_without_any_labels()
     {
         $cdbXml = $this->getSample('EventTest.cdbxml.xml');
 
@@ -178,16 +178,7 @@ class EventTest extends AggregateRootScenarioTestCase
             self::NS_CDBXML_3_2
         );
 
-        $expectedLabels = [
-            new Label('kunst'),
-            new Label('tentoonstelling'),
-            new Label('brugge'),
-            new Label('grafiek'),
-            new Label('oud sint jan'),
-            new Label('TRAEGHE GENUINE ARTS'),
-            new Label('janine de conink'),
-            new Label('brugge oktober'),
-        ];
+        $expectedLabels = [];
 
         $this->assertEquals(
             new LabelCollection($expectedLabels),
@@ -292,6 +283,10 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $cdbXmlWithFooKeyword,
                         $ns
+                    ),
+                    new LabelAdded(
+                        $id,
+                        $label
                     ),
                 ]
             ],
@@ -401,7 +396,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     new LabelDeleted(
                         $id,
                         $label
-                    )
+                    ),
                 ]
             ]
         ];

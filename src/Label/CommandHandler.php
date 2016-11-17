@@ -3,19 +3,14 @@
 namespace CultuurNet\UDB3\Label;
 
 use Broadway\Repository\RepositoryInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
-use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintException;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\CreateCopy;
 use CultuurNet\UDB3\Label\Commands\MakeInvisible;
 use CultuurNet\UDB3\Label\Commands\MakePrivate;
 use CultuurNet\UDB3\Label\Commands\MakePublic;
 use CultuurNet\UDB3\Label\Commands\MakeVisible;
-use CultuurNet\UDB3\Label\ValueObjects\Privacy;
-use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Label\ValueObjects\LabelName;
-use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
+use CultuurNet\UDB3\Label\Label as LabelAggregate;
 use ValueObjects\Identity\UUID;
 
 class CommandHandler extends AbstractCommandHandler
@@ -26,33 +21,12 @@ class CommandHandler extends AbstractCommandHandler
     private $repository;
 
     /**
-     * @var UuidGeneratorInterface
-     */
-    private $uuidGenerator;
-
-    /**
-     * CommandHandler constructor.
      * @param RepositoryInterface $repository
-     * @param UuidGeneratorInterface $uuidGenerator
      */
     public function __construct(
-        RepositoryInterface $repository,
-        UuidGeneratorInterface $uuidGenerator
+        RepositoryInterface $repository
     ) {
         $this->repository = $repository;
-        $this->uuidGenerator = $uuidGenerator;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function handle($command)
-    {
-        if (is_a($command, AbstractAddLabel::class)) {
-            $this->handleAddLabel($command);
-        } else {
-            parent::handle($command);
-        }
     }
 
     /**
@@ -60,7 +34,7 @@ class CommandHandler extends AbstractCommandHandler
      */
     public function handleCreate(Create $create)
     {
-        $label = Label::create(
+        $label = LabelAggregate::create(
             $create->getUuid(),
             $create->getName(),
             $create->getVisibility(),
@@ -75,7 +49,7 @@ class CommandHandler extends AbstractCommandHandler
      */
     public function handleCreateCopy(CreateCopy $createCopy)
     {
-        $label = Label::createCopy(
+        $label = LabelAggregate::createCopy(
             $createCopy->getUuid(),
             $createCopy->getName(),
             $createCopy->getVisibility(),
@@ -84,11 +58,6 @@ class CommandHandler extends AbstractCommandHandler
         );
 
         $this->save($label);
-    }
-
-    public function handleAddLabel(AbstractAddLabel $addLabel)
-    {
-        $this->createLabel($addLabel);
     }
 
     /**
@@ -141,7 +110,7 @@ class CommandHandler extends AbstractCommandHandler
 
     /**
      * @param UUID $uuid
-     * @return Label
+     * @return LabelAggregate
      */
     private function load(UUID $uuid)
     {
@@ -149,27 +118,10 @@ class CommandHandler extends AbstractCommandHandler
     }
 
     /**
-     * @param Label $label
+     * @param LabelAggregate $label
      */
-    private function save(Label $label)
+    private function save(LabelAggregate $label)
     {
         $this->repository->save($label);
-    }
-
-    /**
-     * @param AbstractAddLabel $addLabel
-     */
-    private function createLabel(AbstractAddLabel $addLabel)
-    {
-        $label = Label::create(
-            new UUID($this->uuidGenerator->generate()),
-            new LabelName((string)$addLabel->getLabel()),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-        try {
-            $this->save($label);
-        } catch (UniqueConstraintException $exception) {
-        }
     }
 }

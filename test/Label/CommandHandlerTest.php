@@ -23,6 +23,8 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Offer\Item\Commands\SyncLabels;
 use CultuurNet\UDB3\Place\Commands\AddLabel as PlaceAddLabel;
 use ValueObjects\Identity\UUID;
 
@@ -32,6 +34,11 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
      * @var UUID
      */
     private $uuid;
+
+    /**
+     * @var UUID
+     */
+    private $extraUuid;
 
     /**
      * @var LabelName
@@ -66,6 +73,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     public function setUp()
     {
         $this->uuid = new UUID();
+        $this->extraUuid = new UUID();
         $this->name = new LabelName('labelName');
         $this->visibility = Visibility::INVISIBLE();
         $this->privacy = Privacy::PRIVACY_PRIVATE();
@@ -99,8 +107,14 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     ) {
         /** @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject $uuidGenerator */
         $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $uuidGenerator->method('generate')
-            ->willReturn($this->uuid);
+        $uuidGenerator
+            ->method('generate')
+            ->will(
+                $this->onConsecutiveCalls(
+                    $this->uuid->toNative(),
+                    $this->extraUuid->toNative()
+                )
+            );
 
         return new CommandHandler(
             new LabelRepository($eventStore, $eventBus),
@@ -141,6 +155,43 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $this->parentUuid
             ))
             ->then([$this->copyCreated]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_sync_labels()
+    {
+        $createdCarrotLabel = new Created(
+            $this->uuid,
+            new LabelName('carrot'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC()
+        );
+        $createdPotatoLabel = new Created(
+            $this->extraUuid,
+            new LabelName('potato'),
+            Visibility::VISIBLE(),
+            Privacy::PRIVACY_PUBLIC()
+        );
+
+        $this->scenario
+            ->given([])
+            ->when(new SyncLabels(
+                new UUID(),
+                LabelCollection::fromStrings(
+                    [
+                        'carrot',
+                        'potato',
+                    ]
+                )
+            ))
+            ->then(
+                [
+                    $createdCarrotLabel,
+                    $createdPotatoLabel,
+                ]
+            );
     }
 
     /**

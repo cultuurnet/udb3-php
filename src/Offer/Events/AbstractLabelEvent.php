@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Label;
 
 abstract class AbstractLabelEvent extends AbstractEvent

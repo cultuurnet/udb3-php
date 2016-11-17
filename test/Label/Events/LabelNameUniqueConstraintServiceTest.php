@@ -5,15 +5,15 @@ namespace CultuurNet\UDB3\Label\Events;
 use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $name;
 
@@ -34,7 +34,7 @@ class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->name = new StringLiteral('labelName');
+        $this->name = new LabelName('labelName');
 
         $this->created = $this->createDomainMessage(new Created(
             new UUID(),
@@ -81,7 +81,7 @@ class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
             $this->createDomainMessage(
                 new MadeInvisible(
                     new UUID(),
-                    new StringLiteral('2dotstwice')
+                    new LabelName('2dotstwice')
                 )
             )
         ));

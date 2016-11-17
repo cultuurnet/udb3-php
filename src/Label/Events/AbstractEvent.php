@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3\Label\Events;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 abstract class AbstractEvent implements SerializableInterface
 {
@@ -17,16 +17,16 @@ abstract class AbstractEvent implements SerializableInterface
     private $uuid;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $name;
 
     /**
      * AbstractEvent constructor.
      * @param UUID $uuid
-     * @param StringLiteral $name
+     * @param LabelName $name
      */
-    public function __construct(UUID $uuid, StringLiteral $name)
+    public function __construct(UUID $uuid, LabelName $name)
     {
         $this->uuid = $uuid;
         $this->name = $name;
@@ -41,7 +41,7 @@ abstract class AbstractEvent implements SerializableInterface
     }
 
     /**
-     * @return StringLiteral
+     * @return LabelName
      */
     public function getName()
     {
@@ -55,7 +55,7 @@ abstract class AbstractEvent implements SerializableInterface
     {
         return new static(
             new UUID($data[self::UUID]),
-            new StringLiteral($data[self::NAME])
+            new LabelName($data[self::NAME])
         );
     }
 

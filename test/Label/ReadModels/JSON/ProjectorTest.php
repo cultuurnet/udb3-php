@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -41,12 +42,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $unknownId;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $labelName;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $unknownLabelName;
 
@@ -75,8 +76,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->uuid = new UUID('EC1697B7-7E2B-4462-A901-EC20E2A0AAFC');
         $this->unknownId = new UUID('ACFCFE56-3D16-48FB-A053-FAA9950720DC');
 
-        $this->labelName = new StringLiteral('labelName');
-        $this->unknownLabelName = new StringLiteral('unknownLabelName');
+        $this->labelName = new LabelName('labelName');
+        $this->unknownLabelName = new LabelName('unknownLabelName');
 
         $this->writeRepository = $this->getMock(
             WriteRepositoryInterface::class
@@ -115,7 +116,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $created = new Created(
             $this->unknownId,
-            $this->entity->getName(),
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy()
         );
@@ -140,8 +141,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_handle_created_when_uuid_not_unique()
     {
         $created = new Created(
-            $this->entity->getUuid(),
-            $this->entity->getName(),
+            $this->uuid,
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy()
         );
@@ -161,7 +162,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $copyCreated = new CopyCreated(
             $this->unknownId,
-            $this->entity->getName(),
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy(),
             $this->entity->getParentUuid()
@@ -191,8 +192,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_handle_copy_created_when_uuid_not_unique()
     {
         $copyCreated = new CopyCreated(
-            $this->entity->getUuid(),
-            $this->entity->getName(),
+            $this->uuid,
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy(),
             $this->entity->getParentUuid()
@@ -376,7 +377,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->readRepository->expects($this->once())
             ->method('getByName')
-            ->with($this->labelName)
+            ->with(new StringLiteral($this->labelName->toNative()))
             ->willReturn($this->entity);
 
         $this->writeRepository->expects($this->once())

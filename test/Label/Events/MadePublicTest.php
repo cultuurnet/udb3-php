@@ -2,15 +2,15 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class MadePublicTestAbstract extends AbstractExtendsTest
 {
     /**
      * @inheritdoc
      */
-    public function createEvent(UUID $uuid, StringLiteral $name)
+    public function createEvent(UUID $uuid, LabelName $name)
     {
         return new MadePublic($uuid, $name);
     }

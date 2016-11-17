@@ -2,10 +2,10 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class Created extends AbstractEvent
 {
@@ -25,13 +25,13 @@ class Created extends AbstractEvent
     /**
      * Created constructor.
      * @param UUID $uuid
-     * @param StringLiteral $name
+     * @param LabelName $name
      * @param Visibility $visibility
      * @param Privacy $privacy
      */
     public function __construct(
         UUID $uuid,
-        StringLiteral $name,
+        LabelName $name,
         Visibility $visibility,
         Privacy $privacy
     ) {
@@ -64,7 +64,7 @@ class Created extends AbstractEvent
     {
         return new static(
             new UUID($data[self::UUID]),
-            new StringLiteral($data[self::NAME]),
+            new LabelName($data[self::NAME]),
             Visibility::fromNative($data[self::VISIBILITY]),
             Privacy::fromNative($data[self::PRIVACY])
         );

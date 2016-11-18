@@ -7,7 +7,6 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
-use ValueObjects\Identity\UUID;
 
 interface OrganizerEditingServiceInterface
 {

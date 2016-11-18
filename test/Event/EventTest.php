@@ -178,10 +178,19 @@ class EventTest extends AggregateRootScenarioTestCase
             self::NS_CDBXML_3_2
         );
 
-        $expectedLabels = [];
+        $expectedLabels = [
+            'kunst',
+            'tentoonstelling',
+            'brugge',
+            'grafiek',
+            'oud sint jan',
+            'TRAEGHE GENUINE ARTS',
+            'janine de conink',
+            'brugge oktober',
+        ];
 
         $this->assertEquals(
-            new LabelCollection($expectedLabels),
+            LabelCollection::fromStrings($expectedLabels),
             $event->getLabels()
         );
     }
@@ -283,10 +292,6 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $cdbXmlWithFooKeyword,
                         $ns
-                    ),
-                    new LabelAdded(
-                        $id,
-                        $label
                     ),
                 ]
             ],

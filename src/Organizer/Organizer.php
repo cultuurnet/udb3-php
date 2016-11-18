@@ -4,9 +4,11 @@ namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -113,6 +115,20 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
+     * @inheritdoc
+     */
+    public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
+    {
+        $this->apply(
+            new OrganizerUpdatedFromUDB2(
+                $this->actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
+    }
+
+    /**
      * @param Address $address
      */
     public function updateAddress(Address $address)
@@ -182,13 +198,33 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
-     * @todo make protected or private
      * @param OrganizerImportedFromUDB2 $organizerImported
      */
-    public function applyOrganizerImportedFromUDB2(
+    protected function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImported
     ) {
         $this->actorId = (string) $organizerImported->getActorId();
+
+        $actor = ActorItemFactory::createActorFromCdbXml(
+            $organizerImported->getCdbXmlNamespaceUri(),
+            $organizerImported->getCdbXml()
+        );
+
+        $this->setLabelsFromUDB2Item($actor);
+    }
+
+    /**
+     * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+     */
+    protected function applyOrganizerUpdatedFromUDB2(
+        OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+    ) {
+        $actor = ActorItemFactory::createActorFromCdbXml(
+            $organizerUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $organizerUpdatedFromUDB2->getCdbXml()
+        );
+
+        $this->setLabelsFromUDB2Item($actor);
     }
 
     /**
@@ -208,35 +244,35 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
-     * @todo make protected or private
      * @param LabelAdded $labelAdded
      */
-    public function applyLabelAdded(LabelAdded $labelAdded)
+    protected function applyLabelAdded(LabelAdded $labelAdded)
     {
         $this->labels[] = $labelAdded->getLabel();
     }
 
     /**
-     * @todo make protected or private
      * @param LabelRemoved $labelRemoved
      */
-    public function applyLabelRemoved(LabelRemoved $labelRemoved)
+    protected function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
         $label = $labelRemoved->getLabel();
         $this->labels = array_diff($this->labels, [$label]);
     }
 
     /**
-     * @inheritdoc
+     * @param \CultureFeed_Cdb_Item_Base $udb2Item
      */
-    public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
+    protected function setLabelsFromUDB2Item(\CultureFeed_Cdb_Item_Base $udb2Item)
     {
-        $this->apply(
-            new OrganizerUpdatedFromUDB2(
-                $this->actorId,
-                $cdbXml,
-                $cdbXmlNamespaceUri
-            )
-        );
+        $this->labels = [];
+
+        /** @var \CultureFeed_Cdb_Data_Keyword $udb2Keyword */
+        foreach (array_values($udb2Item->getKeywords(true)) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword->getValue());
+            if ($keyword) {
+                $this->labels[] = new Label($keyword, $udb2Keyword->isVisible());
+            }
+        }
     }
 }

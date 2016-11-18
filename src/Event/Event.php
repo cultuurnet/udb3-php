@@ -347,6 +347,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
+        $this->setLabelsFromUDB2Item($udb2Event);
     }
 
     /**
@@ -368,24 +369,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
     }
 
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $udb2Event
-     */
-    protected function setLabelsFromUDB2Event(\CultureFeed_Cdb_Item_Event $udb2Event)
-    {
-        $this->resetLabels();
-
-        /** @var \CultureFeed_Cdb_Data_Keyword $udb2Keyword */
-        foreach (array_values($udb2Event->getKeywords(true)) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword->getValue());
-            if ($keyword) {
-                $this->labels = $this->labels->with(
-                    new Label($keyword, $udb2Keyword->isVisible())
-                );
-            }
-        }
-    }
-
     protected function applyEventCreatedFromCdbXml(
         EventCreatedFromCdbXml $eventCreatedFromCdbXml
     ) {
@@ -396,7 +379,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->setLabelsFromUDB2Event($udb2Event);
+        $this->setLabelsFromUDB2Item($udb2Event);
     }
 
     protected function applyEventUpdatedFromCdbXml(
@@ -409,7 +392,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->setLabelsFromUDB2Event($udb2Event);
+        $this->setLabelsFromUDB2Item($udb2Event);
     }
 
     protected function applyLabelsMerged(

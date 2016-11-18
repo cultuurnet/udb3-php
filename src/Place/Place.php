@@ -157,8 +157,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param string $cdbXmlNamespaceUri
      *   The cdb xml namespace uri.
      *
-     * @return Actor
-     *   The actor.
+     * @return Place
      */
     public static function importFromUDB2Actor(
         $actorId,
@@ -188,7 +187,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      *   The cdb xml namespace uri.
      *
      * @return Place
-     *   The actor.
      */
     public static function importFromUDB2Event(
         $placeId,
@@ -221,6 +219,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Actor);
+        $this->setLabelsFromUDB2Item($udb2Actor);
     }
 
     /**
@@ -237,6 +236,22 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
+        $this->setLabelsFromUDB2Item($udb2Event);
+    }
+
+    /**
+     * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+     */
+    public function applyPlaceUpdatedFromUDB2Event(
+        PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+    ) {
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $placeUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $placeUpdatedFromUDB2->getCdbXml()
+        );
+
+        $this->importWorkflowStatus($udb2Actor);
+        $this->setLabelsFromUDB2Item($udb2Actor);
     }
 
     /**

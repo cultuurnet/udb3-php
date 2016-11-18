@@ -97,6 +97,24 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param \CultureFeed_Cdb_Item_Base $udb2Item
+     */
+    protected function setLabelsFromUDB2Item(\CultureFeed_Cdb_Item_Base $udb2Item)
+    {
+        $this->resetLabels();
+
+        /** @var \CultureFeed_Cdb_Data_Keyword $udb2Keyword */
+        foreach (array_values($udb2Item->getKeywords(true)) as $udb2Keyword) {
+            $keyword = trim($udb2Keyword->getValue());
+            if ($keyword) {
+                $this->labels = $this->labels->with(
+                    new Label($keyword, $udb2Keyword->isVisible())
+                );
+            }
+        }
+    }
+
+    /**
      * Get the id of the main image if one is selected for this offer.
      *
      * @return UUID|null

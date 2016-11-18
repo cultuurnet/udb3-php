@@ -76,6 +76,7 @@ Then the description of this event in UDB3 equals:
     hendrerit. Nullam non purus vel lacus dignissim cursus eu ac est.
     Nulla tellus mauris, maximus sed faucibus non, egestas quis eros.
     Ut massa purus, luctus non ex tempor, suscipit efficitur mi.</p>
+    <p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/een-piano-in-de-tu-n-joodse-rituelen-en-gebruiken/3aee552e-2071-46a1-beff-d73b31718ea6">UiTinVlaanderen.be</a></p>
     """
 
 @issue-III-165
@@ -149,4 +150,5 @@ Then the description of this event in UDB3 equals:
     hendrerit. Nullam non purus vel lacus dignissim cursus eu ac est.
     Nulla tellus mauris, maximus sed faucibus non, egestas quis eros.
     Ut massa purus, luctus non ex tempor, suscipit efficitur mi.</p>
+    <p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/een-piano-in-de-tu-n-joodse-rituelen-en-gebruiken/3aee552e-2071-46a1-beff-d73b31718ea6">UiTinVlaanderen.be</a></p>
     """

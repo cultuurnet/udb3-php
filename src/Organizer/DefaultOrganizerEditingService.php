@@ -85,7 +85,8 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     public function addLabel($organizerId, Label $label)
     {
         $this->labelService->createLabelAggregateIfNew(
-            new LabelName((string) $label)
+            new LabelName((string) $label),
+            $label->isVisible()
         );
 
         return $this->commandBus->dispatch(

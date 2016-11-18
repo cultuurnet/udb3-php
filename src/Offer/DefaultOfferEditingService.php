@@ -92,7 +92,8 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         $this->guardId($id);
 
         $this->labelService->createLabelAggregateIfNew(
-            new LabelName((string) $label)
+            new LabelName((string) $label),
+            $label->isVisible()
         );
 
         return $this->commandBus->dispatch(

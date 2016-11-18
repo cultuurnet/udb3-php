@@ -33,9 +33,10 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_creates_a_new_label_aggregate_for_a_given_label_name()
+    public function it_creates_a_new_label_aggregate_for_a_given_label_name_and_visibility()
     {
         $labelName = new LabelName('foo');
+        $visibility = false;
         $expectedUuid = new UUID('b67d6f8b-fe08-44c9-a0a7-8e6b47dab0ff');
 
         $traceableEventStore = new TraceableEventStore($this->getMock(EventStoreInterface::class));
@@ -50,7 +51,7 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
 
         $service = $this->createService($repository);
 
-        $returnValue = $service->createLabelAggregateIfNew($labelName);
+        $returnValue = $service->createLabelAggregateIfNew($labelName, $visibility);
 
         $this->assertEquals($expectedUuid, $returnValue);
 
@@ -59,7 +60,7 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
                 new Created(
                     $expectedUuid,
                     $labelName,
-                    Visibility::VISIBLE(),
+                    Visibility::INVISIBLE(),
                     Privacy::PRIVACY_PUBLIC()
                 )
             ],
@@ -82,7 +83,7 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
 
         $service = $this->createService($repository);
 
-        $returnValue = $service->createLabelAggregateIfNew($labelName);
+        $returnValue = $service->createLabelAggregateIfNew($labelName, false);
 
         $this->assertNull($returnValue);
     }

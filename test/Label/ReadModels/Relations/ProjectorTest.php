@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations;
 use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded as LabelAddedToEvent;
 use CultuurNet\UDB3\Event\Events\LabelDeleted as LabelDeletedFromEvent;
 use CultuurNet\UDB3\Label;
@@ -13,12 +16,14 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
 use CultuurNet\UDB3\Place\Events\LabelDeleted as LabelDeletedFromPlace;
+use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -103,27 +108,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     * @dataProvider labelDeletedEventDataProvider
-     *
-     * @param AbstractLabelDeleted $labelDeleted
-     */
-    public function it_handles_label_deleted_events(
-        AbstractLabelDeleted $labelDeleted
-    ) {
-        $domainMessage = $this->createDomainMessage(
-            $labelDeleted->getItemId(),
-            $labelDeleted
-        );
-
-        $this->writeRepository->expects($this->once())
-            ->method('deleteByLabelNameAndRelationId')
-            ->with($this->labelName, new StringLiteral($labelDeleted->getItemId()));
-
-        $this->projector->handle($domainMessage);
-    }
-
-    /**
      * @return array
      */
     public function labelAddedEventDataProvider()
@@ -144,6 +128,27 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 RelationType::PLACE(),
             ],
         ];
+    }
+
+    /**
+     * @test
+     * @dataProvider labelDeletedEventDataProvider
+     *
+     * @param AbstractLabelDeleted $labelDeleted
+     */
+    public function it_handles_label_deleted_events(
+        AbstractLabelDeleted $labelDeleted
+    ) {
+        $domainMessage = $this->createDomainMessage(
+            $labelDeleted->getItemId(),
+            $labelDeleted
+        );
+
+        $this->writeRepository->expects($this->once())
+            ->method('deleteByLabelNameAndRelationId')
+            ->with($this->labelName, new StringLiteral($labelDeleted->getItemId()));
+
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -168,6 +173,113 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @dataProvider fromUdb2DataProvider
+     *
+     * @param StringLiteral $itemId
+     * @param SerializableInterface $payload
+     * @param RelationType $relationType
+     */
+    public function it_handles_import_and_update_events_from_udb2(
+        StringLiteral $itemId,
+        SerializableInterface $payload,
+        RelationType $relationType
+    ) {
+        $domainMessage = $this->createDomainMessage(
+            $itemId->toNative(),
+            $payload
+        );
+
+        $this->writeRepository->expects($this->at(0))
+            ->method('deleteByRelationId')
+            ->with($itemId);
+
+        $this->writeRepository->expects($this->at(1))
+            ->method('save')
+            ->with(
+                new LabelName('2dotstwice'),
+                $relationType,
+                $itemId
+            );
+
+        $this->writeRepository->expects($this->at(2))
+            ->method('save')
+            ->with(
+                new LabelName('cultuurnet'),
+                $relationType,
+                $itemId
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @return array
+     */
+    public function fromUdb2DataProvider()
+    {
+        $itemId = new StringLiteral('d53c2bc9-8f0e-4c9a-8457-77e8b3cab3d1');
+        $cdbXmlNamespaceUri = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3');
+
+        return [
+            [
+                $itemId,
+                new EventImportedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/event.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::EVENT(),
+            ],
+            [
+                $itemId,
+                new PlaceImportedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/place.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::PLACE(),
+            ],
+            [
+                $itemId,
+                new OrganizerImportedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/organizer.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::ORGANIZER(),
+            ],
+            [
+                $itemId,
+                new EventUpdatedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/event.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::EVENT(),
+            ],
+            [
+                $itemId,
+                new PlaceUpdatedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/place.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::PLACE(),
+            ],
+            [
+                $itemId,
+                new OrganizerUpdatedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/organizer.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::ORGANIZER(),
+            ],
+        ];
+    }
+
+    /**
      * @return string
      */
     private function getOfferId()
@@ -177,10 +289,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $id
-     * @param AbstractEvent|AbstractLabelEvent $payload
+     * @param SerializableInterface $payload
      * @return DomainMessage
      */
-    private function createDomainMessage($id, $payload)
+    private function createDomainMessage($id, SerializableInterface $payload)
     {
         return new DomainMessage(
             $id,

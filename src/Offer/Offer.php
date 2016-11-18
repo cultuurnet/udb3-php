@@ -131,26 +131,6 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param LabelCollection $newLabelCollection
-     */
-    public function syncLabels(LabelCollection $newLabelCollection)
-    {
-        // Apply the label added, part of the new label collections but not the existing.
-        foreach ($newLabelCollection->asArray() as $newLabel) {
-            if (!$this->labels->contains($newLabel)) {
-                $this->apply($this->createLabelAddedEvent($newLabel));
-            }
-        }
-
-        // Apply the label removed, part of the existing label collection but not of the old.
-        foreach ($this->labels->asArray() as $oldLabel) {
-            if (!$newLabelCollection->contains($oldLabel)) {
-                $this->apply($this->createLabelDeletedEvent($oldLabel));
-            }
-        }
-    }
-
-    /**
      * @param Language $language
      * @param StringLiteral $title
      */

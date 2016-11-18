@@ -11,7 +11,6 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
@@ -19,7 +18,6 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
-use CultuurNet\UDB3\Offer\Item\Commands\SyncLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
@@ -219,88 +217,6 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new DeleteLabelFromSomethingElse($this->id, $this->label)
             )
             ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_sync_labels_with_all_new_labels()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given([$this->itemCreated])
-            ->when(
-                new SyncLabels(
-                    $this->id,
-                    LabelCollection::fromStrings(
-                        [
-                            '2dotstwice',
-                            'cultuurnet',
-                        ]
-                    )
-                )
-            )
-            ->then(
-                [
-                    new LabelAdded($this->id, new Label('2dotstwice')),
-                    new LabelAdded($this->id, new Label('cultuurnet')),
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_sync_labels_with_all_deleted_labels()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given(
-                [
-                    $this->itemCreated,
-                    new LabelAdded($this->id, new Label('2dotstwice')),
-                    new LabelAdded($this->id, new Label('cultuurnet')),
-                ]
-            )
-            ->when(
-                new SyncLabels(
-                    $this->id,
-                    LabelCollection::fromStrings([])
-                )
-            )
-            ->then(
-                [
-                    new LabelDeleted($this->id, new Label('2dotstwice')),
-                    new LabelDeleted($this->id, new Label('cultuurnet')),
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_sync_labels_with_both_added_and_deleted_labels()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given(
-                [
-                    $this->itemCreated,
-                    new LabelAdded($this->id, new Label('2dotstwice')),
-                ]
-            )
-            ->when(
-                new SyncLabels(
-                    $this->id,
-                    LabelCollection::fromStrings(['cultuurnet'])
-                )
-            )
-            ->then(
-                [
-                    new LabelAdded($this->id, new Label('cultuurnet')),
-                    new LabelDeleted($this->id, new Label('2dotstwice')),
-                ]
-            );
     }
 
     /**

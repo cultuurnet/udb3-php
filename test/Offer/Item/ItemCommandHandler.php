@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveImage;
-use CultuurNet\UDB3\Offer\Item\Commands\SyncLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
@@ -37,11 +36,6 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
-    }
-
-    protected function getSyncLabelsClassName()
-    {
-        return SyncLabels::class;
     }
 
     protected function getAddImageClassName()

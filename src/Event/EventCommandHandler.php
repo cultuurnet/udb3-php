@@ -16,7 +16,6 @@ use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\SelectMainImage;
-use CultuurNet\UDB3\Event\Commands\SyncLabels;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
@@ -73,14 +72,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getSyncLabelsClassName()
-    {
-        return SyncLabels::class;
     }
 
     /**

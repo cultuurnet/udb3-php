@@ -35,11 +35,11 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param LabelRelation $offerLabelRelation
+     * @param LabelRelation $labelRelation
      */
-    protected function saveOfferLabelRelation(LabelRelation $offerLabelRelation)
+    protected function saveLabelRelation(LabelRelation $labelRelation)
     {
-        $values = $this->offerLabelRelationToValues($offerLabelRelation);
+        $values = $this->labelRelationToValues($labelRelation);
 
         $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?)';
 
@@ -50,7 +50,7 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
      * @param LabelRelation $offerLabelRelation
      * @return array
      */
-    protected function offerLabelRelationToValues(LabelRelation $offerLabelRelation)
+    protected function labelRelationToValues(LabelRelation $offerLabelRelation)
     {
         return [
             $offerLabelRelation->getLabelName()->toNative(),
@@ -60,15 +60,20 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return LabelRelation
+     * @return LabelRelation[]
      */
-    protected function getLastOfferLabelRelation()
+    protected function getLabelRelations()
     {
         $sql = 'SELECT * FROM ' . $this->tableName;
 
         $statement = $this->connection->executeQuery($sql);
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $rows ? LabelRelation::fromRelationalData($rows[count($rows) - 1]) : null;
+        $labelRelations = [];
+        foreach ($rows as $row) {
+            $labelRelations[] = LabelRelation::fromRelationalData($row);
+        }
+
+        return $labelRelations;
     }
 }

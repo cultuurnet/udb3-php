@@ -27,4 +27,9 @@ interface WriteRepositoryInterface
         LabelName $labelName,
         StringLiteral $relationId
     );
+
+    /**
+     * @param StringLiteral $relationId
+     */
+    public function deleteByRelationId(StringLiteral $relationId);
 }

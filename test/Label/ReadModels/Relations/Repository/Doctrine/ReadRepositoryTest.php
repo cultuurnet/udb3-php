@@ -94,8 +94,8 @@ class ReadRepositoryTest extends BaseDBALRepositoryTest
             new StringLiteral('298A39A1-8D1E-4F5D-B05E-811B6459EA36')
         );
 
-        $this->saveOfferLabelRelation($this->relation1);
-        $this->saveOfferLabelRelation($this->relation2);
-        $this->saveOfferLabelRelation($relation3);
+        $this->saveLabelRelation($this->relation1);
+        $this->saveLabelRelation($this->relation2);
+        $this->saveLabelRelation($relation3);
     }
 }

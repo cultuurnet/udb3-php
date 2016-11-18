@@ -42,69 +42,81 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             $expectedOfferLabelRelation->getRelationId()
         );
 
-        $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
+        $actualOfferLabelRelation = $this->getLabelRelations();
 
-        $this->assertEquals($expectedOfferLabelRelation, $actualOfferLabelRelation);
+        $this->assertEquals([$expectedOfferLabelRelation], $actualOfferLabelRelation);
     }
 
     /**
      * @test
      */
-    public function it_can_save_same_uuid_but_different_relation_type_and_relation_id()
+    public function it_can_save_same_label_name_but_different_relation_type_and_relation_id()
     {
-        $offerLabelRelation = new LabelRelation(
+        $labelRelation1 = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $this->saveOfferLabelRelation($offerLabelRelation);
+        $this->saveLabelRelation($labelRelation1);
 
-        $expectedOfferLabelRelation = new LabelRelation(
-            $offerLabelRelation->getLabelName(),
+        $labelRelation2 = new LabelRelation(
+            $labelRelation1->getLabelName(),
             RelationType::EVENT(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
-            $expectedOfferLabelRelation->getLabelName(),
-            $expectedOfferLabelRelation->getRelationType(),
-            $expectedOfferLabelRelation->getRelationId()
+            $labelRelation2->getLabelName(),
+            $labelRelation2->getRelationType(),
+            $labelRelation2->getRelationId()
         );
 
-        $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
+        $actualOfferLabelRelation = $this->getLabelRelations();
 
-        $this->assertEquals($expectedOfferLabelRelation, $actualOfferLabelRelation);
+        $this->assertEquals(
+            [
+                $labelRelation1,
+                $labelRelation2,
+            ],
+            $actualOfferLabelRelation
+        );
     }
 
     /**
      * @test
      */
-    public function it_can_save_same_uuid_and_relation_type_but_different_relation_id()
+    public function it_can_save_same_label_name_and_relation_type_but_different_relation_id()
     {
-        $offerLabelRelation = new LabelRelation(
+        $labelRelation1 = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
             new StringLiteral('relationId')
         );
 
-        $this->saveOfferLabelRelation($offerLabelRelation);
+        $this->saveLabelRelation($labelRelation1);
 
-        $expectedOfferLabelRelation = new LabelRelation(
-            $offerLabelRelation->getLabelName(),
-            $offerLabelRelation->getRelationType(),
+        $labelRelation2 = new LabelRelation(
+            $labelRelation1->getLabelName(),
+            $labelRelation1->getRelationType(),
             new StringLiteral('otherId')
         );
 
         $this->dbalWriteRepository->save(
-            $expectedOfferLabelRelation->getLabelName(),
-            $expectedOfferLabelRelation->getRelationType(),
-            $expectedOfferLabelRelation->getRelationId()
+            $labelRelation2->getLabelName(),
+            $labelRelation2->getRelationType(),
+            $labelRelation2->getRelationId()
         );
 
-        $actualOfferLabelRelation = $this->getLastOfferLabelRelation();
+        $actualOfferLabelRelation = $this->getLabelRelations();
 
-        $this->assertEquals($expectedOfferLabelRelation, $actualOfferLabelRelation);
+        $this->assertEquals(
+            [
+                $labelRelation1,
+                $labelRelation2,
+            ],
+            $actualOfferLabelRelation
+        );
     }
 
     /**
@@ -118,7 +130,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             new StringLiteral('relationId')
         );
 
-        $this->saveOfferLabelRelation($offerLabelRelation);
+        $this->saveLabelRelation($offerLabelRelation);
 
         $sameOfferLabelRelation = new LabelRelation(
             $offerLabelRelation->getLabelName(),
@@ -138,7 +150,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
     /**
      * @test
      */
-    public function it_can_delete_based_on_uuid()
+    public function it_can_delete_based_on_label_name_and_relation_id()
     {
         $OfferLabelRelation1 = new LabelRelation(
             new LabelName('2dotstwice'),
@@ -152,17 +164,68 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             new StringLiteral('otherRelationId')
         );
 
-        $this->saveOfferLabelRelation($OfferLabelRelation1);
-        $this->saveOfferLabelRelation($OfferLabelRelation2);
+        $this->saveLabelRelation($OfferLabelRelation1);
+        $this->saveLabelRelation($OfferLabelRelation2);
 
         $this->dbalWriteRepository->deleteByLabelNameAndRelationId(
             $OfferLabelRelation1->getLabelName(),
             $OfferLabelRelation1->getRelationId()
         );
 
+        $labelRelations = $this->getLabelRelations();
+
+        $this->assertCount(1, $labelRelations);
+
         $this->assertEquals(
             $OfferLabelRelation2->getLabelName(),
-            $this->getLastOfferLabelRelation()->getLabelName()
+            $labelRelations[0]->getLabelName()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_based_on_relation_id()
+    {
+        $LabelRelation1 = new LabelRelation(
+            new LabelName('2dotstwice'),
+            RelationType::PLACE(),
+            new StringLiteral('relationId')
+        );
+
+        $labelRelation2 = new LabelRelation(
+            new LabelName('cultuurnet'),
+            RelationType::PLACE(),
+            new StringLiteral('otherRelationId')
+        );
+
+        $labelRelation3 = new LabelRelation(
+            new LabelName('cultuurnet'),
+            RelationType::PLACE(),
+            new StringLiteral('relationId')
+        );
+
+        $labelRelation4 = new LabelRelation(
+            new LabelName('foo'),
+            RelationType::PLACE(),
+            new StringLiteral('fooId')
+        );
+
+        $this->saveLabelRelation($LabelRelation1);
+        $this->saveLabelRelation($labelRelation2);
+        $this->saveLabelRelation($labelRelation3);
+        $this->saveLabelRelation($labelRelation4);
+
+        $this->dbalWriteRepository->deleteByRelationId($LabelRelation1->getRelationId());
+
+        $labelRelations = $this->getLabelRelations();
+
+        $this->assertEquals(
+            [
+                $labelRelation2,
+                $labelRelation4,
+            ],
+            $labelRelations
         );
     }
 }

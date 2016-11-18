@@ -5,22 +5,22 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 
-class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInterface
+class DBALReadRepository extends AbstractDBALRepository implements ReadRepositoryInterface
 {
     /**
      * @inheritdoc
      */
-    public function getLabelRelations(UUID $labelId)
+    public function getLabelRelations(LabelName $labelName)
     {
         $aliases = $this->getAliases();
-        $whereUuid = SchemaConfigurator::UUID_COLUMN . ' = ?';
+        $whereUuid = SchemaConfigurator::LABEL_NAME . ' = ?';
 
         $queryBuilder = $this->createQueryBuilder()->select($aliases)
             ->from($this->getTableName()->toNative())
             ->where($whereUuid)
-            ->setParameters([$labelId]);
+            ->setParameters([$labelName->toNative()]);
 
         $statement = $queryBuilder->execute();
 
@@ -36,9 +36,9 @@ class ReadRepository extends AbstractDBALRepository implements ReadRepositoryInt
     private function getAliases()
     {
         return [
-            SchemaConfigurator::UUID_COLUMN,
-            SchemaConfigurator::RELATION_TYPE_COLUMN,
-            SchemaConfigurator::RELATION_ID_COLUMN
+            SchemaConfigurator::LABEL_NAME,
+            SchemaConfigurator::RELATION_TYPE,
+            SchemaConfigurator::RELATION_ID
         ];
     }
 }

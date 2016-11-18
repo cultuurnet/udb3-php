@@ -53,7 +53,7 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     protected function offerLabelRelationToValues(LabelRelation $offerLabelRelation)
     {
         return [
-            $offerLabelRelation->getUuid()->toNative(),
+            $offerLabelRelation->getLabelName()->toNative(),
             $offerLabelRelation->getRelationType()->toNative(),
             $offerLabelRelation->getRelationId()
         ];

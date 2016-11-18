@@ -7,10 +7,10 @@ use CultuurNet\UDB3\Label\LabelEventRelationTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent as OfferAbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent as OrganizerAbstractLabelEvent;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class Projector extends AbstractProjector
@@ -44,12 +44,12 @@ class Projector extends AbstractProjector
      */
     public function applyLabelAdded($labelAdded, Metadata $metadata)
     {
-        $LabelRelation = $this->createLabelRelation($labelAdded, $metadata);
+        $LabelRelation = $this->createLabelRelation($labelAdded);
 
         try {
             if (!is_null($LabelRelation)) {
                 $this->writeRepository->save(
-                    $LabelRelation->getUuid(),
+                    $LabelRelation->getLabelName(),
                     $LabelRelation->getRelationType(),
                     $LabelRelation->getRelationId()
                 );
@@ -64,11 +64,11 @@ class Projector extends AbstractProjector
      */
     public function applyLabelDeleted($labelDeleted, Metadata $metadata)
     {
-        $labelRelation = $this->createLabelRelation($labelDeleted, $metadata);
+        $labelRelation = $this->createLabelRelation($labelDeleted);
 
         if (!is_null($labelRelation)) {
-            $this->writeRepository->deleteByUuidAndRelationId(
-                $labelRelation->getUuid(),
+            $this->writeRepository->deleteByLabelNameAndRelationId(
+                $labelRelation->getLabelName(),
                 new StringLiteral($labelDeleted->getItemId())
             );
         }
@@ -76,26 +76,21 @@ class Projector extends AbstractProjector
 
     /**
      * @param OfferAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
-     * @param Metadata $metadata
      * @return LabelRelation
      */
-    private function createLabelRelation($labelEvent, Metadata $metadata)
+    private function createLabelRelation($labelEvent)
     {
         $labelRelation = null;
 
-        $metadataArray = $metadata->serialize();
-
-        $uuid = isset($metadataArray['labelUuid']) ? new UUID($metadataArray['labelUuid']) : null;
+        $labelName = new LabelName((string) $labelEvent->getLabel());
         $relationType = $this->offerTypeResolver->getRelationType($labelEvent);
         $relationId = new StringLiteral($labelEvent->getItemId());
 
-        if (!is_null($uuid)) {
-            $labelRelation = new LabelRelation(
-                $uuid,
-                $relationType,
-                $relationId
-            );
-        }
+        $labelRelation = new LabelRelation(
+            $labelName,
+            $relationType,
+            $relationId
+        );
 
         return $labelRelation;
     }

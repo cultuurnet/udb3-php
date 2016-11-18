@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -27,6 +28,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @var UUID
      */
     private $uuid;
+
+    /**
+     * @var LabelName
+     */
+    private $labelName;
 
     /**
      * @var string
@@ -56,6 +62,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->uuid = new UUID('A0ED6941-180A-40E3-BD1B-E875FC6D1F25');
+        $this->labelName = new LabelName('labelName');
         $this->offerId = $this->getOfferId();
 
         $this->writeRepository = $this->getMock(WriteRepositoryInterface::class);
@@ -87,7 +94,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->writeRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->uuid,
+                $this->labelName,
                 $relationType,
                 new StringLiteral($this->offerId)
             );
@@ -110,8 +117,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->writeRepository->expects($this->once())
-            ->method('deleteByUuidAndRelationId')
-            ->with($this->uuid, new StringLiteral($labelDeleted->getItemId()));
+            ->method('deleteByLabelNameAndRelationId')
+            ->with($this->labelName, new StringLiteral($labelDeleted->getItemId()));
 
         $this->projector->handle($domainMessage);
     }
@@ -178,7 +185,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         return new DomainMessage(
             $id,
             0,
-            new Metadata(['labelUuid' => (string) $this->uuid]),
+            new Metadata(),
             $payload,
             BroadwayDateTime::now()
         );

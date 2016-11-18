@@ -50,16 +50,20 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    private function mockRelatedPlaceDocument(UUID $labelId, JsonDocument $jsonDocument)
+    /**
+     * @param LabelName $labelName
+     * @param JsonDocument $jsonDocument
+     */
+    private function mockRelatedPlaceDocument(LabelName $labelName, JsonDocument $jsonDocument)
     {
         $this->relationRepository
             ->expects($this->once())
             ->method('getLabelRelations')
-            ->with($labelId)
+            ->with($labelName)
             ->willReturn(
                 [
                     new LabelRelation(
-                        $labelId,
+                        $labelName,
                         RelationType::PLACE(),
                         new StringLiteral($jsonDocument->getId())
                     ),
@@ -79,11 +83,9 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_update_the_projection_of_offers_which_have_a_label_made_visible()
     {
         $labelId = new UUID();
+        $labelName = new LabelName('black');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeVisible(
-            $labelId,
-            new LabelName('black')
-        );
+        $madeVisibleEvent = new MadeVisible($labelId, $labelName);
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -94,7 +96,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -125,11 +127,9 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_updates_the_projection_of_offers_which_have_a_label_made_invisible()
     {
         $labelId = new UUID();
+        $labelName = new LabelName('black');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeInvisibleEvent = new MadeInvisible(
-            $labelId,
-            new LabelName('black')
-        );
+        $madeInvisibleEvent = new MadeInvisible($labelId, $labelName);
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -140,7 +140,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -171,11 +171,9 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_remove_the_hidden_labels_property_of_an_offer_when_the_last_hidden_label_is_made_visible()
     {
         $labelId = new UUID();
+        $labelName = new LabelName('black');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeVisible(
-            $labelId,
-            new LabelName('black')
-        );
+        $madeVisibleEvent = new MadeVisible($labelId, $labelName);
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -187,7 +185,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -217,11 +215,9 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_update_the_projection_of_offers_which_have_a_label_made_invisible()
     {
         $labelId = new UUID();
+        $labelName = new LabelName('black');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeInvisible(
-            $labelId,
-            new LabelName('black')
-        );
+        $madeVisibleEvent = new MadeInvisible($labelId, $labelName);
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -233,7 +229,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -264,11 +260,9 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_remove_the_labels_property_of_an_offer_when_the_last_shown_label_is_made_invisible()
     {
         $labelId = new UUID();
+        $labelName = new LabelName('black');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeInvisible(
-            $labelId,
-            new LabelName('black')
-        );
+        $madeVisibleEvent = new MadeInvisible($labelId, $labelName);
 
         $existingPlaceDocument = new JsonDocument(
             (string) $placeId,
@@ -280,7 +274,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelId, $existingPlaceDocument);
+        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -310,29 +304,27 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_log_the_absence_of_an_offer_document_when_the_visibility_of_its_labels_changes()
     {
         $labelId = new UUID();
+        $labelName = new LabelName('foo');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
-        $madeVisibleEvent = new MadeInvisible(
-            $labelId,
-            new LabelName('foo')
-        );
+        $madeVisibleEvent = new MadeInvisible($labelId, $labelName);
 
         /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
         $logger = $this->getMock(AbstractLogger::class);
         $logger
             ->expects($this->once())
             ->method('alert')
-            ->with('Can not update visibility of label: "'. $labelId . '" for the relation with id: "B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A" because the document could not be retrieved.');
+            ->with('Can not update visibility of label: "'. $labelName . '" for the relation with id: "B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A" because the document could not be retrieved.');
 
         $this->projector->setLogger($logger);
 
         $this->relationRepository
             ->expects($this->once())
             ->method('getLabelRelations')
-            ->with($labelId)
+            ->with($labelName)
             ->willReturn(
                 [
                     new LabelRelation(
-                        $labelId,
+                        $labelName,
                         RelationType::PLACE(),
                         new StringLiteral((string) $placeId)
                     ),

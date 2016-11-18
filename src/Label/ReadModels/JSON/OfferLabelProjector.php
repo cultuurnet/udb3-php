@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -62,7 +63,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     public function applyMadeVisible(MadeVisible $madeVisible)
     {
-        $this->updateLabels($madeVisible->getUuid(), $madeVisible->getName(), true);
+        $this->updateLabels($madeVisible->getName(), true);
     }
 
     /**
@@ -70,20 +71,16 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     public function applyMadeInvisible(MadeInvisible $madeInvisible)
     {
-        $this->updateLabels($madeInvisible->getUuid(), $madeInvisible->getName(), false);
+        $this->updateLabels($madeInvisible->getName(), false);
     }
 
     /**
-     * @param UUID $uuid
-     * @param StringLiteral $labelName
+     * @param LabelName $labelName
      * @param bool $madeVisible
      */
-    private function updateLabels(
-        UUID $uuid,
-        StringLiteral $labelName,
-        $madeVisible
-    ) {
-        $offers = $this->getRelatedOffers($uuid);
+    private function updateLabels(LabelName $labelName, $madeVisible)
+    {
+        $offers = $this->getRelatedOffers($labelName);
 
         $removeFrom = $madeVisible ? 'hiddenLabels' : 'labels';
         $addTo = $madeVisible ? 'labels' : 'hiddenLabels';
@@ -109,12 +106,12 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
     }
 
     /**
-     * @param UUID $uuid
+     * @param LabelName $labelName
      * @return \CultuurNet\UDB3\ReadModel\JsonDocument[]|\Generator
      */
-    private function getRelatedOffers(UUID $uuid)
+    private function getRelatedOffers(LabelName $labelName)
     {
-        $labelRelations = $this->relationRepository->getLabelRelations($uuid);
+        $labelRelations = $this->relationRepository->getLabelRelations($labelName);
 
         foreach ($labelRelations as $labelRelation) {
             try {
@@ -125,7 +122,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
                 }
             } catch (DocumentGoneException $exception) {
                 $this->logger->alert(
-                    'Can not update visibility of label: "'. $labelRelation->getUuid() . '"'
+                    'Can not update visibility of label: "'. $labelRelation->getLabelName() . '"'
                     . ' for the relation with id: "' . $labelRelation->getRelationId() . '"'
                     . ' because the document could not be retrieved.'
                 );

@@ -4,8 +4,8 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class DBALWriteRepository extends AbstractDBALRepository implements WriteRepositoryInterface
@@ -14,19 +14,19 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
      * @inheritdoc
      */
     public function save(
-        UUID $uuid,
+        LabelName $labelName,
         RelationType $relationType,
         StringLiteral $relationId
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())
             ->values([
-                SchemaConfigurator::UUID_COLUMN => '?',
-                SchemaConfigurator::RELATION_TYPE_COLUMN => '?',
-                SchemaConfigurator::RELATION_ID_COLUMN => '?'
+                SchemaConfigurator::LABEL_NAME => '?',
+                SchemaConfigurator::RELATION_TYPE => '?',
+                SchemaConfigurator::RELATION_ID => '?'
             ])
             ->setParameters([
-                $uuid->toNative(),
+                $labelName->toNative(),
                 $relationType->toNative(),
                 $relationId->toNative()
             ]);
@@ -37,15 +37,15 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     /**
      * @inheritdoc
      */
-    public function deleteByUuidAndRelationId(
-        UUID $uuid,
+    public function deleteByLabelNameAndRelationId(
+        LabelName $labelName,
         StringLiteral $relationId
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->delete($this->getTableName())
-            ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
-            ->andWhere(SchemaConfigurator::RELATION_ID_COLUMN . ' = ?')
-            ->setParameters([$uuid->toNative(), $relationId->toNative()]);
+            ->where(SchemaConfigurator::LABEL_NAME . ' = ?')
+            ->andWhere(SchemaConfigurator::RELATION_ID . ' = ?')
+            ->setParameters([$labelName->toNative(), $relationId->toNative()]);
 
         $queryBuilder->execute();
     }

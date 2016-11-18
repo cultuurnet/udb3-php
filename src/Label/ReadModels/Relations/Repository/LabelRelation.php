@@ -3,20 +3,16 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine\SchemaConfigurator;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class LabelRelation implements \JsonSerializable
 {
-    const UUID = 'uuid';
-    const RELATION_TYPE = 'relationType';
-    const RELATION_ID = 'relationId';
-
     /**
-     * @var UUID
+     * @var LabelName
      */
-    private $uuid;
+    private $labelName;
 
     /**
      * @var RelationType
@@ -30,26 +26,26 @@ class LabelRelation implements \JsonSerializable
 
     /**
      * Entity constructor.
-     * @param UUID $uuid
+     * @param LabelName $labelName
      * @param RelationType $relationType
      * @param StringLiteral $relationId
      */
     public function __construct(
-        UUID $uuid,
+        LabelName $labelName,
         RelationType $relationType,
         StringLiteral $relationId
     ) {
-        $this->uuid = $uuid;
+        $this->labelName = $labelName;
         $this->relationType = $relationType;
         $this->relationId = $relationId;
     }
 
     /**
-     * @return UUID
+     * @return LabelName
      */
-    public function getUuid()
+    public function getLabelName()
     {
-        return $this->uuid;
+        return $this->labelName;
     }
 
     /**
@@ -74,9 +70,9 @@ class LabelRelation implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            self::UUID => $this->uuid->toNative(),
-            self::RELATION_TYPE => $this->relationType->toNative(),
-            self::RELATION_ID => $this->relationId->toNative()
+            SchemaConfigurator::LABEL_NAME => $this->labelName->toNative(),
+            SchemaConfigurator::RELATION_TYPE => $this->relationType->toNative(),
+            SchemaConfigurator::RELATION_ID => $this->relationId->toNative()
         ];
     }
 
@@ -87,9 +83,9 @@ class LabelRelation implements \JsonSerializable
     public static function fromRelationalData(array $relation)
     {
         return new static(
-            new UUID($relation[SchemaConfigurator::UUID_COLUMN]),
-            RelationType::fromNative($relation[SchemaConfigurator::RELATION_TYPE_COLUMN]),
-            new StringLiteral($relation[SchemaConfigurator::RELATION_ID_COLUMN])
+            new LabelName($relation[SchemaConfigurator::LABEL_NAME]),
+            RelationType::fromNative($relation[SchemaConfigurator::RELATION_TYPE]),
+            new StringLiteral($relation[SchemaConfigurator::RELATION_ID])
         );
     }
 }

@@ -26,7 +26,7 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->organizerId = 'organizerId';
 
-        $this->label = new Label('foo');
+        $this->label = new Label('foo', false);
 
         $this->abstractLabelEvent = $this->getMockForAbstractClass(
             AbstractLabelEvent::class,
@@ -63,7 +63,8 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedArray = [
             'organizer_id' => $this->organizerId,
-            'label' => (string) $this->label
+            'label' => (string) $this->label,
+            'visibility' => false,
         ];
 
         $this->assertEquals(

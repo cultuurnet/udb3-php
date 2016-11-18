@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -56,6 +57,11 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
     protected $writeRepository;
 
     /**
+     * @var LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $labelService;
+
+    /**
      * @var TraceableEventStore
      */
     protected $eventStore;
@@ -81,12 +87,15 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus()
         );
 
+        $this->labelService = $this->getMock(LabelServiceInterface::class);
+
         $this->placeEditingService = new DefaultPlaceEditingService(
             $this->commandBus,
             $this->uuidGenerator,
             $this->readRepository,
             $this->commandFactory,
-            $this->writeRepository
+            $this->writeRepository,
+            $this->labelService
         );
     }
 

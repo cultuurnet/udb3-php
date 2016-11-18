@@ -38,7 +38,10 @@ abstract class AbstractLabelEvent extends OrganizerEvent
     {
         return new static(
             $data['organizer_id'],
-            new Label($data['label'])
+            new Label(
+                $data['label'],
+                isset($data['visibility']) ? $data['visibility'] : true
+            )
         );
     }
 
@@ -48,7 +51,8 @@ abstract class AbstractLabelEvent extends OrganizerEvent
     public function serialize()
     {
         return parent::serialize() + [
-            'label' => (string) $this->label
+            'label' => (string) $this->label,
+            'visibility' => $this->label->isVisible(),
         ];
     }
 }

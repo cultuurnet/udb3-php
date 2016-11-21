@@ -51,7 +51,7 @@
                 <cdb:zipcode>2800</cdb:zipcode>
             </cdb:physical>
         </cdb:address>
-        <cdb:phone reservation="true" type="phone">0475 82 21 36</cdb:phone>
+        <cdb:phone type="phone">0475 82 21 36</cdb:phone>
     </cdb:contactinfo>
     <cdb:eventdetails>
         <cdb:eventdetail lang="nl">

@@ -481,9 +481,6 @@ class CdbXMLImporter
         if (!empty($bookingInfo)) {
             $jsonLD->bookingInfo = $bookingInfo;
         }
-        else {
-            $jsonLD->bookingInfo = array();
-        }
     }
 
     /**

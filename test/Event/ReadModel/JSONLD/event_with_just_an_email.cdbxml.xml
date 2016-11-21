@@ -51,7 +51,7 @@
                 <cdb:zipcode>2800</cdb:zipcode>
             </cdb:physical>
         </cdb:address>
-        <cdb:mail reservation="true">kgielens@stichtingtegenkanker.be</cdb:mail>
+        <cdb:mail>kgielens@stichtingtegenkanker.be</cdb:mail>
     </cdb:contactinfo>
     <cdb:eventdetails>
         <cdb:eventdetail lang="nl">

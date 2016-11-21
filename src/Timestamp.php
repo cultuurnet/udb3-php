@@ -36,7 +36,7 @@ class Timestamp implements SerializableInterface
         DateTimeInterface $endDate
     ) {
         if ($endDate < $startDate) {
-            throw new InvalidArgumentException('A timestamp can not end in the past.');
+            throw new InvalidArgumentException('End date can not be earlier than start date.');
         }
 
         $this->startDate = $startDate;

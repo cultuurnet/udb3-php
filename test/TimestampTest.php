@@ -59,11 +59,11 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_not_create_a_timestamp_that_ends_in_the_past()
+    public function its_end_date_can_not_be_earlier_than_start_date()
     {
         $pastDate = '2016-01-03T00:01:01+01:00';
 
-        $this->setExpectedException(InvalidArgumentException::class, 'A timestamp can not end in the past.');
+        $this->setExpectedException(InvalidArgumentException::class, 'End date can not be earlier than start date.');
 
         new Timestamp(
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),

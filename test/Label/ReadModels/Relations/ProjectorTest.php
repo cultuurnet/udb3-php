@@ -18,6 +18,9 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded as LabelAddedToOrganizer;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved as LabelRemovedFromOrganizer;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
@@ -42,7 +45,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    private $offerId;
+    private $relationId;
+
+    /**
+     * @var string
+     */
+    private $organizerId;
 
     /**
      * @var WriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -68,7 +76,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID('A0ED6941-180A-40E3-BD1B-E875FC6D1F25');
         $this->labelName = new LabelName('labelName');
-        $this->offerId = $this->getOfferId();
+
+        $this->relationId = $this->getRelationId();
 
         $this->writeRepository = $this->getMock(WriteRepositoryInterface::class);
         $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
@@ -84,15 +93,17 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider labelAddedEventDataProvider
      *
-     * @param AbstractLabelAdded $labelAdded
+     * @param string $relationId
+     * @param AbstractLabelAdded|LabelAdded $labelAdded
      * @param RelationType $relationType
      */
     public function it_handles_label_added_events(
-        AbstractLabelAdded $labelAdded,
+        $relationId,
+        $labelAdded,
         RelationType $relationType
     ) {
         $domainMessage = $this->createDomainMessage(
-            $labelAdded->getItemId(),
+            $relationId,
             $labelAdded
         );
 
@@ -101,7 +112,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->labelName,
                 $relationType,
-                new StringLiteral($this->offerId)
+                new StringLiteral($this->relationId)
             );
 
         $this->projector->handle($domainMessage);
@@ -114,19 +125,29 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
+                $this->getRelationId(),
                 new LabelAddedToEvent(
-                    $this->getOfferId(),
+                    $this->getRelationId(),
                     new Label('labelName')
                 ),
                 RelationType::EVENT(),
             ],
             [
+                $this->getRelationId(),
                 new LabelAddedToPlace(
-                    $this->getOfferId(),
+                    $this->getRelationId(),
                     new Label('labelName')
                 ),
                 RelationType::PLACE(),
             ],
+            [
+                $this->getRelationId(),
+                new LabelAddedToOrganizer(
+                    $this->getRelationId(),
+                    new Label('labelName')
+                ),
+                RelationType::ORGANIZER(),
+            ]
         ];
     }
 
@@ -134,19 +155,21 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider labelDeletedEventDataProvider
      *
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param string $relationId
+     * @param AbstractLabelDeleted|LabelRemovedFromOrganizer $labelDeleted
      */
     public function it_handles_label_deleted_events(
-        AbstractLabelDeleted $labelDeleted
+        $relationId,
+        $labelDeleted
     ) {
         $domainMessage = $this->createDomainMessage(
-            $labelDeleted->getItemId(),
+            $relationId,
             $labelDeleted
         );
 
         $this->writeRepository->expects($this->once())
             ->method('deleteByLabelNameAndRelationId')
-            ->with($this->labelName, new StringLiteral($labelDeleted->getItemId()));
+            ->with($this->labelName, new StringLiteral($relationId));
 
         $this->projector->handle($domainMessage);
     }
@@ -158,14 +181,23 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
+                $this->getRelationId(),
                 new LabelDeletedFromEvent(
-                    $this->getOfferId(),
+                    $this->getRelationId(),
                     new Label('labelName')
                 ),
             ],
             [
+                $this->getRelationId(),
                 new LabelDeletedFromPlace(
-                    $this->getOfferId(),
+                    $this->getRelationId(),
+                    new Label('labelName')
+                ),
+            ],
+            [
+                $this->getRelationId(),
+                new LabelRemovedFromOrganizer(
+                    $this->getRelationId(),
                     new Label('labelName')
                 ),
             ],
@@ -282,7 +314,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return string
      */
-    private function getOfferId()
+    private function getRelationId()
     {
         return 'E4CA9DB5-DEE3-42F0-B04A-547DFC3CB2EE';
     }

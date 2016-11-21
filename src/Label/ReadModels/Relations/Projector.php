@@ -78,7 +78,7 @@ class Projector extends AbstractProjector
         if (!is_null($labelRelation)) {
             $this->writeRepository->deleteByLabelNameAndRelationId(
                 $labelRelation->getLabelName(),
-                new StringLiteral($labelDeleted->getItemId())
+                $labelRelation->getRelationId()
             );
         }
     }
@@ -199,7 +199,11 @@ class Projector extends AbstractProjector
 
         $labelName = new LabelName((string) $labelEvent->getLabel());
         $relationType = $this->offerTypeResolver->getRelationType($labelEvent);
-        $relationId = new StringLiteral($labelEvent->getItemId());
+        if ($labelEvent instanceof OrganizerAbstractLabelEvent) {
+            $relationId = new StringLiteral($labelEvent->getOrganizerId());
+        } else {
+            $relationId = new StringLiteral($labelEvent->getItemId());
+        }
 
         $labelRelation = new LabelRelation(
             $labelName,

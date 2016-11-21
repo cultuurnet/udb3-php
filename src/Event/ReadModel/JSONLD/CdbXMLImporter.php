@@ -425,12 +425,11 @@ class CdbXMLImporter
         \CultureFeed_Cdb_Data_EventDetail $detail,
         $jsonLD
     ) {
-        $price = $detail->getPrice();
+        $bookingInfo = array();
 
+        $price = $detail->getPrice();
         if ($price) {
-            $jsonLD->bookingInfo = array();
-            // Booking info.
-            $bookingInfo = array();
+
             if ($price->getDescription()) {
                 $bookingInfo['description'] = $price->getDescription();
             }
@@ -448,16 +447,42 @@ class CdbXMLImporter
                 $bookingInfo['availabilityStarts'] = $startDate->format('c');
                 $bookingInfo['availabilityEnds'] = $endDate->format('c');
             }
+        }
 
-            // Add reservation URL
-            if ($contactInfo = $event->getContactInfo()) {
-                $bookingUrl = $contactInfo->getReservationUrl();
-                if ($bookingUrl) {
-                    $bookingInfo['url'] = $bookingUrl;
+        // Add reservation contact data.
+        $contactInfo = $event->getContactInfo();
+        if ($contactInfo) {
+            foreach ($contactInfo->getUrls() as $url) {
+                if ($url->isForReservations()) {
+                    $bookingInfo['url'] = $url->getUrl();
+                    break;
                 }
             }
 
-            $jsonLD->bookingInfo[] = $bookingInfo;
+            if (array_key_exists('url', $bookingInfo)) {
+                $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
+            }
+
+            foreach ($contactInfo->getPhones() as $phone) {
+                if ($phone->isForReservations()) {
+                    $bookingInfo['phone'] = $phone->getNumber();
+                    break;
+                }
+            }
+
+            foreach ($contactInfo->getMails() as $mail) {
+                if ($mail->isForReservations()) {
+                    $bookingInfo['email'] = $mail->getMailAddress();
+                    break;
+                }
+            }
+        }
+
+        if (!empty($bookingInfo)) {
+            $jsonLD->bookingInfo = $bookingInfo;
+        }
+        else {
+            $jsonLD->bookingInfo = array();
         }
     }
 

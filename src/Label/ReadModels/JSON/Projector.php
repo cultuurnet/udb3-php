@@ -12,9 +12,8 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent as OfferAbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent as OrganizerAbstractLabelEvent;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -135,10 +134,10 @@ class Projector extends AbstractProjector
     }
 
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param OfferAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
      * @return UUID|null
      */
-    private function getUuid(AbstractLabelEvent $labelEvent)
+    private function getUuid($labelEvent)
     {
         $uuid = null;
 

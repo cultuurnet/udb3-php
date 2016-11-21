@@ -493,7 +493,8 @@ class CdbXMLImporter
     ) {
         $contactInfo = $event->getContactInfo();
 
-        $notForReservations = function (\CultureFeed_Cdb_Data_UseableForReservations $item) {
+        $notForReservations = function ($item) {
+            /** @var \CultureFeed_Cdb_Data_Url|\CultureFeed_Cdb_Data_Phone|\CultureFeed_Cdb_Data_Mail $item */
             return !$item->isForReservations();
         };
 

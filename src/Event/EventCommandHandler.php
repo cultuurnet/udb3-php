@@ -3,8 +3,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
@@ -17,9 +15,8 @@ use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
-use CultuurNet\UDB3\Event\Commands\LabelEvents;
-use CultuurNet\UDB3\Event\Commands\LabelQuery;
 use CultuurNet\UDB3\Event\Commands\SelectMainImage;
+use CultuurNet\UDB3\Event\Commands\SyncLabels;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
@@ -30,8 +27,6 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Event\Events\MainImageSelected;
-use CultuurNet\UDB3\Label as Label;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -78,6 +73,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteLabelClassName()
     {
         return DeleteLabel::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getSyncLabelsClassName()
+    {
+        return SyncLabels::class;
     }
 
     /**

@@ -1613,10 +1613,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     private function singleDayWithoutEndTime()
     {
-      return new Calendar(
-        CalendarType::SINGLE(),
-        \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
-        \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T23:59:59+01:00')
-      );
+        return new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T23:59:59+01:00')
+        );
     }
 }

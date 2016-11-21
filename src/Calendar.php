@@ -58,7 +58,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         }
 
         if ($type->is(CalendarType::SINGLE()) && empty($endDate)) {
-          throw new \UnexpectedValueException('End date can not be empty for calendar type: ' . $type . '.');
+            throw new \UnexpectedValueException('End date can not be empty for calendar type: ' . $type . '.');
         }
 
         if ($type->is(CalendarType::PERIODIC()) && (empty($startDate) || empty($endDate))) {

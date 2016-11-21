@@ -445,4 +445,39 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             $jsonEvent->priceInfo
         );
     }
+
+    /**
+     * @test
+     * @group issue-III-1636
+     */
+    public function it_splits_contactinfo_into_contactpoint_and_bookinginfo()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info_2.cdbxml.xml');
+
+        $this->assertEquals(
+            [
+                [
+                    'phone' => ['0473233773'],
+                    'email' => ['bibliotheek@hasselt.be'],
+                    'url' => ['http://google.be'],
+                    'type' => '',
+                ]
+            ],
+            $jsonEvent->contactPoint
+        );
+
+        $this->assertEquals(
+            [
+                'phone' => '987654321',
+                'email' => 'tickets@test.com',
+                'url' => 'http://www.test.be',
+                'urlLabel' => 'Reserveer plaatsen',
+                'name' => '',
+                'description' => '',
+                'availabilityStarts' => '',
+                'availabilityEnds' => '',
+            ],
+            $jsonEvent->bookingInfo
+        );
+    }
 }

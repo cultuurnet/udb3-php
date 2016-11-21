@@ -451,7 +451,8 @@ class CdbXMLImporter
 
             // Add reservation URL
             if ($contactInfo = $event->getContactInfo()) {
-                if ($bookingUrl = $contactInfo->getReservationUrl()) {
+                $bookingUrl = $contactInfo->getReservationUrl();
+                if ($bookingUrl) {
                     $bookingInfo['url'] = $bookingUrl;
                 }
             }
@@ -470,41 +471,53 @@ class CdbXMLImporter
     ) {
         $contactInfo = $event->getContactInfo();
 
+        $notForReservations = function (\CultureFeed_Cdb_Data_UseableForReservations $item) {
+            return !$item->isForReservations();
+        };
+
         if ($contactInfo) {
-            $reservationContactPoint = array();
-            $leftoverContactPoint = array();
+            $contactPoint = array();
 
-            foreach ($contactInfo->getMails() as $email) {
-                /** @var \CultureFeed_Cdb_Data_Mail $email */
-                $emailAddress = $email->getMailAddress();
+            $emails = array_filter($contactInfo->getMails(), $notForReservations);
 
-                if ($email->isForReservations()) {
-                    $reservationContactPoint['email'][] = $emailAddress;
-                } else {
-                    $leftoverContactPoint['email'][] = $emailAddress;
-                }
+            if (!empty($emails)) {
+                $contactPoint['email'] = array_map(
+                    function (\CultureFeed_Cdb_Data_Mail $email) {
+                        return $email->getMailAddress();
+                    },
+                    $emails
+                );
+                $contactPoint['email'] = array_values($contactPoint['email']);
             }
 
-            foreach ($contactInfo->getPhones() as $phone) {
-                /** @var \CultureFeed_Cdb_Data_Phone $phone */
-                $phoneNumber = $phone->getNumber();
+            $phones = array_filter($contactInfo->getPhones(), $notForReservations);
 
-                if ($phone->isForReservations()) {
-                    $reservationContactPoint['telephone'][] = $phoneNumber;
-                } else {
-                    $leftoverContactPoint['telephone'][] = $phoneNumber;
-                }
+            if (!empty($phones)) {
+                $contactPoint['phone'] = array_map(
+                    function (\CultureFeed_Cdb_Data_phone $phone) {
+                        return $phone->getNumber();
+                    },
+                    $phones
+                );
+                $contactPoint['phone'] = array_values($contactPoint['phone']);
             }
 
-            array_filter($reservationContactPoint);
-            if (count($reservationContactPoint) > 0) {
-                $reservationContactPoint['contactType'] = "Reservations";
-                $jsonLD->contactPoint[] = $reservationContactPoint;
+            $urls = array_filter($contactInfo->getUrls(), $notForReservations);
+
+            if (!empty($urls)) {
+                $contactPoint['url'] = array_map(
+                    function (\CultureFeed_Cdb_Data_Url $url) {
+                        return $url->getUrl();
+                    },
+                    $urls
+                );
+                $contactPoint['url'] = array_values($contactPoint['url']);
             }
 
-            array_filter($leftoverContactPoint);
-            if (count($leftoverContactPoint) > 0) {
-                $jsonLD->contactPoint[] = $leftoverContactPoint;
+            array_filter($contactPoint);
+            if (count($contactPoint) > 0) {
+                $contactPoint['type'] = '';
+                $jsonLD->contactPoint[] = $contactPoint;
             }
         }
     }

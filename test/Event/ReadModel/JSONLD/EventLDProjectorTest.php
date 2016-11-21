@@ -177,10 +177,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar(
-                CalendarType::SINGLE(),
-                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
-            )
+            $this->singleDayWithoutEndTime()
         );
 
         $jsonLD = new stdClass();
@@ -195,7 +192,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
-        $jsonLD->availableTo = $jsonLD->startDate;
+        $jsonLD->endDate = '2015-01-26T23:59:59+01:00';
+        $jsonLD->availableTo = $jsonLD->endDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/1',
         ];
@@ -256,10 +254,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar(
-                CalendarType::SINGLE(),
-                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
-            ),
+            $this->singleDayWithoutEndTime(),
             new Theme('123', 'theme label')
         );
 
@@ -275,7 +270,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
-        $jsonLD->availableTo = $jsonLD->startDate;
+        $jsonLD->endDate = '2015-01-26T23:59:59+01:00';
+        $jsonLD->availableTo = $jsonLD->endDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -348,10 +344,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            new Calendar(
-                CalendarType::SINGLE(),
-                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
-            ),
+            $this->singleDayWithoutEndTime(),
             new Theme('123', 'theme label')
         );
 
@@ -367,7 +360,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
-        $jsonLD->availableTo = $jsonLD->startDate;
+        $jsonLD->endDate = '2015-01-26T23:59:59+01:00';
+        $jsonLD->availableTo = $jsonLD->endDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -1246,7 +1240,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
-        $expectedJsonLD->availableTo = $expectedJsonLD->startDate;
+        $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
 
         $body = $this->project($majorInfoUpdated, $id);
 
@@ -1610,5 +1604,19 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 $expectedMediaObjects
             ]
         ];
+    }
+
+    /**
+     * Returns a single day calendar without end hours.
+     *
+     * @return Calendar
+     */
+    private function singleDayWithoutEndTime()
+    {
+      return new Calendar(
+        CalendarType::SINGLE(),
+        \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+        \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T23:59:59+01:00')
+      );
     }
 }

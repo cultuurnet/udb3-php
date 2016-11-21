@@ -301,6 +301,51 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_keeps_a_flat_label_array_when_modifying_label_visibility()
+    {
+        $labelId = new UUID();
+        $labelName = new LabelName('black');
+        $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
+        $madeVisibleEvent = new MadeInvisible($labelId, $labelName);
+
+        $existingPlaceDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode(
+                (object) [
+                    'labels' => ['black', 'red', 'green'],
+                    'hiddenLabels' => ['orange', 'blue', 'purple'],
+                ]
+            )
+        );
+
+        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+
+        $domainMessage = $this->createDomainMessage(
+            (string) $labelId,
+            $madeVisibleEvent
+        );
+
+        $expectedDocument = new JsonDocument(
+            (string) $placeId,
+            json_encode(
+                (object) [
+                    'labels' => ['red', 'green'],
+                    'hiddenLabels' => ['orange', 'blue', 'purple', 'black'],
+                ]
+            )
+        );
+
+        $this->offerRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($expectedDocument);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_log_the_absence_of_an_offer_document_when_the_visibility_of_its_labels_changes()
     {
         $labelId = new UUID();

@@ -91,10 +91,12 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
             $addToArray = isset($offerLd->{$addTo}) ? (array) $offerLd->{$addTo} : [];
 
             $addToArray[] = $labelName->toNative();
-            $offerLd->{$addTo} = array_unique($addToArray);
+            $offerLd->{$addTo} = array_values(array_unique($addToArray));
 
             if (isset($offerLd->{$removeFrom})) {
-                $offerLd->{$removeFrom} = array_diff((array) $offerLd->{$removeFrom}, [$labelName]);
+                $offerLd->{$removeFrom} = array_values(
+                    array_diff((array) $offerLd->{$removeFrom}, [$labelName])
+                );
 
                 if (count($offerLd->{$removeFrom}) === 0) {
                     unset($offerLd->{$removeFrom});

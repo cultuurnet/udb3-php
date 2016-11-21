@@ -4,10 +4,10 @@ Feature: import of contactInfo from UDB2 to UDB3
     Given an event in UDB2
     And this event has the following contact info:
     """
-    <contactinfo>
-      <phone type="phone">0473233773</phone>
-      <url>http://www.test.be</url>
-      <mail>bibliotheek@hasselt.be</mail>
+    <cdb:contactinfo>
+      <cdb:phone type="phone">0473233773</phone>
+      <cdb:url reservation="true">http://www.test.be</url>
+      <cdb:mail>bibliotheek@hasselt.be</mail>
     </contactinfo>
     """
     When this event is imported in UDB3
@@ -20,5 +20,4 @@ Feature: import of contactInfo from UDB2 to UDB3
       "type": “”
     }
     """
-
-  // TODO write scenario for seeAlso. See comment https://jira.uitdatabank.be/browse/III-1636
+    And we can ignore the reservation info from UDB2 because it is parsed to bookingInfo in UDB3

@@ -170,7 +170,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            $this->singleDayWithoutEndTime()
+            new Calendar(
+                CalendarType::SINGLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+            )
         );
 
         $jsonLD = new stdClass();
@@ -185,8 +188,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
-        $jsonLD->endDate = '2015-01-26T23:59:59+01:00';
-        $jsonLD->availableTo = $jsonLD->endDate;
+        $jsonLD->availableTo = $jsonLD->startDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/1',
         ];
@@ -247,7 +249,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            $this->singleDayWithoutEndTime(),
+            new Calendar(
+                CalendarType::SINGLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+            ),
             new Theme('123', 'theme label')
         );
 
@@ -263,8 +268,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
-        $jsonLD->endDate = '2015-01-26T23:59:59+01:00';
-        $jsonLD->availableTo = $jsonLD->endDate;
+        $jsonLD->availableTo = $jsonLD->startDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -337,7 +341,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     Country::fromNative('BE')
                 )
             ),
-            $this->singleDayWithoutEndTime(),
+            new Calendar(
+                CalendarType::SINGLE(),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+            ),
             new Theme('123', 'theme label')
         );
 
@@ -353,8 +360,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
-        $jsonLD->endDate = '2015-01-26T23:59:59+01:00';
-        $jsonLD->availableTo = $jsonLD->endDate;
+        $jsonLD->availableTo = $jsonLD->startDate;
         $jsonLD->sameAs = [
             'http://www.uitinvlaanderen.be/agenda/e/some-representative-title/' . $eventId,
         ];
@@ -1233,7 +1239,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
-        $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
+        $expectedJsonLD->availableTo = $expectedJsonLD->startDate;
 
         $body = $this->project($majorInfoUpdated, $id);
 
@@ -1506,6 +1512,9 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      * @dataProvider eventUpdateDataProvider
+     * @param $documentWithUDB3Media
+     * @param $domainMessage
+     * @param $expectedMediaObjects
      */
     public function it_prioritizes_udb3_media_when_updating_an_event(
         $documentWithUDB3Media,
@@ -1597,19 +1606,5 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 $expectedMediaObjects
             ]
         ];
-    }
-
-    /**
-     * Returns a single day calendar without end hours.
-     *
-     * @return Calendar
-     */
-    private function singleDayWithoutEndTime()
-    {
-        return new Calendar(
-            CalendarType::SINGLE(),
-            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
-            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T23:59:59+01:00')
-        );
     }
 }

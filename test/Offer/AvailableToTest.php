@@ -44,8 +44,8 @@ class AvailableToTest extends \PHPUnit_Framework_TestCase
                 new \DateTime('2100-01-01T00:00:00Z')
             ],
             [
-                new Calendar(CalendarType::SINGLE(), $startDate, $endDate),
-                $endDate
+                new Calendar(CalendarType::SINGLE(), $startDate),
+                $startDate
             ],
             [
                 new Calendar(CalendarType::PERIODIC(), $startDate, $endDate),

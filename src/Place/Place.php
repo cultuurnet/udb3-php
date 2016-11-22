@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
@@ -219,7 +220,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Actor);
-        $this->setLabelsFromUDB2Item($udb2Actor);
+        $this->labels = LabelCollection::fromStrings($udb2Actor->getKeywords());
     }
 
     /**
@@ -236,7 +237,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
-        $this->setLabelsFromUDB2Item($udb2Event);
+        $this->labels = LabelCollection::fromStrings($udb2Event->getKeywords());
     }
 
     /**
@@ -251,7 +252,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Actor);
-        $this->setLabelsFromUDB2Item($udb2Actor);
+        $this->labels = LabelCollection::fromStrings($udb2Actor->getKeywords());
     }
 
     /**

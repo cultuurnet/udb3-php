@@ -85,7 +85,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function __construct()
     {
-        $this->resetLabels();
+        $this->labels = new LabelCollection();
     }
 
     /**
@@ -94,24 +94,6 @@ abstract class Offer extends EventSourcedAggregateRoot
     public function getLabels()
     {
         return $this->labels;
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Base $udb2Item
-     */
-    protected function setLabelsFromUDB2Item(\CultureFeed_Cdb_Item_Base $udb2Item)
-    {
-        $this->resetLabels();
-
-        /** @var \CultureFeed_Cdb_Data_Keyword $udb2Keyword */
-        foreach (array_values($udb2Item->getKeywords(true)) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword->getValue());
-            if ($keyword) {
-                $this->labels = $this->labels->with(
-                    new Label($keyword, $udb2Keyword->isVisible())
-                );
-            }
-        }
     }
 
     /**
@@ -272,11 +254,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
     {
-        $newLabel = $labelAdded->getLabel();
-
-        if (!$this->labels->contains($newLabel)) {
-            $this->labels = $this->labels->with($newLabel);
-        }
+        $this->labels = $this->labels->with($labelAdded->getLabel());
     }
 
     /**
@@ -284,14 +262,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
     {
-        $this->labels = $this->labels->without(
-            $labelDeleted->getLabel()
-        );
-    }
-
-    protected function resetLabels()
-    {
-        $this->labels = new LabelCollection();
+        $this->labels = $this->labels->without($labelDeleted->getLabel());
     }
 
     /**

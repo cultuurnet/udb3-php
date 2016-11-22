@@ -13,8 +13,7 @@ use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent as OfferAbstractLabelEvent;
-use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent as OrganizerAbstractLabelEvent;
+use CultuurNet\UDB3\LabelEventInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -51,7 +50,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded($labelAdded, Metadata $metadata)
+    public function applyLabelAdded(LabelEventInterface $labelAdded, Metadata $metadata)
     {
         $LabelRelation = $this->createLabelRelation($labelAdded);
 
@@ -71,7 +70,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted($labelDeleted, Metadata $metadata)
+    public function applyLabelDeleted(LabelEventInterface $labelDeleted, Metadata $metadata)
     {
         $labelRelation = $this->createLabelRelation($labelDeleted);
 
@@ -190,20 +189,16 @@ class Projector extends AbstractProjector
     }
 
     /**
-     * @param OfferAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
+     * @param LabelEventInterface $labelEvent
      * @return LabelRelation
      */
-    private function createLabelRelation($labelEvent)
+    private function createLabelRelation(LabelEventInterface $labelEvent)
     {
         $labelRelation = null;
 
         $labelName = new LabelName((string) $labelEvent->getLabel());
         $relationType = $this->offerTypeResolver->getRelationType($labelEvent);
-        if ($labelEvent instanceof OrganizerAbstractLabelEvent) {
-            $relationId = new StringLiteral($labelEvent->getOrganizerId());
-        } else {
-            $relationId = new StringLiteral($labelEvent->getItemId());
-        }
+        $relationId = new StringLiteral($labelEvent->getItemId());
 
         $labelRelation = new LabelRelation(
             $labelName,

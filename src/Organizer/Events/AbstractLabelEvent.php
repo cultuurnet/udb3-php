@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelEventInterface;
 
-abstract class AbstractLabelEvent extends OrganizerEvent
+abstract class AbstractLabelEvent extends OrganizerEvent implements LabelEventInterface
 {
     /**
      * @var Label
@@ -21,6 +22,14 @@ abstract class AbstractLabelEvent extends OrganizerEvent
     ) {
         parent::__construct($organizerId);
         $this->label = $label;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getItemId()
+    {
+        return $this->getOrganizerId();
     }
 
     /**

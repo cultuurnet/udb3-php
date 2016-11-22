@@ -6,6 +6,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\LabelEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded as OfferAbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted as OfferAbstractLabelDeleted;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
@@ -40,16 +41,16 @@ abstract class AbstractProjector implements EventListenerInterface
     }
 
     /**
-     * @param OfferAbstractLabelAdded|OrganizerLabelAdded $labelAdded
+     * @param LabelEventInterface $labelAdded
      * @param Metadata $metadata
      */
-    abstract public function applyLabelAdded($labelAdded, Metadata $metadata);
+    abstract public function applyLabelAdded(LabelEventInterface $labelAdded, Metadata $metadata);
 
     /**
-     * @param OfferAbstractLabelDeleted|OrganizerLabelRemoved $labelDeleted
+     * @param LabelEventInterface $labelDeleted
      * @param Metadata $metadata
      */
-    abstract public function applyLabelDeleted($labelDeleted, Metadata $metadata);
+    abstract public function applyLabelDeleted(LabelEventInterface $labelDeleted, Metadata $metadata);
 
     /**
      * @param $payload

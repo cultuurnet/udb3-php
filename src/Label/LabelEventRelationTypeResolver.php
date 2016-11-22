@@ -6,8 +6,7 @@ use CultuurNet\UDB3\Label\Specifications\LabelEventIsOfEventType;
 use CultuurNet\UDB3\Label\Specifications\LabelEventIsOfOrganizerType;
 use CultuurNet\UDB3\Label\Specifications\LabelEventIsOfPlaceType;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent as EventAbstractLabelEvent;
-use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent as OrganizerAbstractLabelEvent;
+use CultuurNet\UDB3\LabelEventInterface;
 
 class LabelEventRelationTypeResolver implements LabelEventRelationTypeResolverInterface
 {
@@ -34,11 +33,11 @@ class LabelEventRelationTypeResolver implements LabelEventRelationTypeResolverIn
     }
 
     /**
-     * @param EventAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
+     * @param LabelEventInterface $labelEvent
      * @return RelationType
      * @throws \InvalidArgumentException
      */
-    public function getRelationType($labelEvent)
+    public function getRelationType(LabelEventInterface $labelEvent)
     {
         if ($this->eventTypeSpecification->isSatisfiedBy($labelEvent)) {
             $relationType = RelationType::EVENT();
@@ -55,7 +54,7 @@ class LabelEventRelationTypeResolver implements LabelEventRelationTypeResolverIn
     }
 
     /**
-     * @param EventAbstractLabelEvent|OrganizerAbstractLabelEvent $labelEvent
+     * @param LabelEventInterface $labelEvent
      * @return string
      */
     private function createIllegalArgumentMessage($labelEvent)

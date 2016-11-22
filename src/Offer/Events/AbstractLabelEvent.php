@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelEventInterface;
 
-abstract class AbstractLabelEvent extends AbstractEvent
+abstract class AbstractLabelEvent extends AbstractEvent implements LabelEventInterface
 {
     /**
      * @var Label

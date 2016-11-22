@@ -4,15 +4,15 @@ namespace CultuurNet\UDB3\Label\Specifications;
 
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelDeleted;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\LabelEventInterface;
 
 class LabelEventIsOfEventType implements LabelEventSpecificationInterface
 {
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param LabelEventInterface $labelEvent
      * @return bool
      */
-    public function isSatisfiedBy($labelEvent)
+    public function isSatisfiedBy(LabelEventInterface $labelEvent)
     {
         return ($labelEvent instanceof LabelAdded || $labelEvent instanceof LabelDeleted);
     }

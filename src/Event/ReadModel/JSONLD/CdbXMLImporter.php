@@ -429,7 +429,6 @@ class CdbXMLImporter
 
         $price = $detail->getPrice();
         if ($price) {
-
             if ($price->getDescription()) {
                 $bookingInfo['description'] = $price->getDescription();
             }

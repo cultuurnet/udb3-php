@@ -19,8 +19,7 @@ Feature: import of contactInfo from UDB2 to UDB3
     "contactPoint": {
       "phone": ["0473233773"],
       "email": ["bibliotheek@hasselt.be"],
-      "url": ["http://google.be"],
-      "type": ""
+      "url": ["http://google.be"]
     }
     """
     And the booking info of this event in UDB3 equals:
@@ -29,6 +28,6 @@ Feature: import of contactInfo from UDB2 to UDB3
       "phone":"987654321",
       "email":"tickets@test.com",
       "url":"http://www.test.be",
-      "urlLabel":"Reserveer plaatsen",
+      "urlLabel":"Reserveer plaatsen"
    }
     """

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializableInterface;
 use DateTime;
 use DateTimeInterface;
-use ValueObjects\DateTime\Date;
+use InvalidArgumentException;
 
 /**
  * Provices a class for a timestamp.
@@ -28,11 +28,17 @@ class Timestamp implements SerializableInterface
      *
      * @param DateTimeInterface $startDate
      * @param DateTimeInterface $endDate
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate
     ) {
+        if ($endDate < $startDate) {
+            throw new InvalidArgumentException('End date can not be earlier than start date.');
+        }
+
         $this->startDate = $startDate;
         $this->endDate = $endDate;
     }

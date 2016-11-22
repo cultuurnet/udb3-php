@@ -33,6 +33,10 @@ class AvailableToTest extends \PHPUnit_Framework_TestCase
     {
         $startDate = new \DateTime('2016-10-10T18:19:20');
         $endDate = new \DateTime('2016-10-18T20:19:18');
+        $startDateNoHours = new \DateTime('2016-10-10');
+        $endDateNoHours = new \DateTime('2016-10-18');
+        $startDateAlmostMidnight = new \DateTime('2016-10-10T23:59:59');
+        $endDateAlmostMidnight = new \DateTime('2016-10-18T23:59:59');
 
         return [
             [
@@ -50,7 +54,19 @@ class AvailableToTest extends \PHPUnit_Framework_TestCase
             [
                 new Calendar(CalendarType::MULTIPLE(), $startDate, $endDate),
                 $endDate
-            ]
+            ],
+            [
+            new Calendar(CalendarType::SINGLE(), $startDateNoHours),
+                $startDateAlmostMidnight
+            ],
+            [
+                new Calendar(CalendarType::PERIODIC(), $startDate, $endDateNoHours),
+                $endDateAlmostMidnight
+            ],
+            [
+                new Calendar(CalendarType::MULTIPLE(), $startDate, $endDateNoHours),
+                $endDateAlmostMidnight
+            ],
         ];
     }
 }

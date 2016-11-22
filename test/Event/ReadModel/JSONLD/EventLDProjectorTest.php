@@ -712,9 +712,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedBookingInfo->priceCurrency = 'EUR';
         $expectedBookingInfo->price = 0;
 
-        $this->assertInternalType('array', $bookingInfo);
-        $this->assertCount(1, $bookingInfo);
-        $this->assertEquals($expectedBookingInfo, $bookingInfo[0]);
+        $this->assertInternalType('object', $bookingInfo);
+        $this->assertEquals($expectedBookingInfo, $bookingInfo);
     }
 
     /**
@@ -735,9 +734,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedBookingInfo->price = 0;
         $expectedBookingInfo->description = 'Gratis voor iedereen!';
 
-        $this->assertInternalType('array', $bookingInfo);
-        $this->assertCount(1, $bookingInfo);
-        $this->assertEquals($expectedBookingInfo, $bookingInfo[0]);
+        $this->assertInternalType('object', $bookingInfo);
+        $this->assertEquals($expectedBookingInfo, $bookingInfo);
     }
 
     /**
@@ -756,15 +754,14 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedBookingInfo = new stdClass();
         $expectedBookingInfo->description = 'Gratis voor iedereen!';
 
-        $this->assertInternalType('array', $bookingInfo);
-        $this->assertCount(1, $bookingInfo);
-        $this->assertEquals($expectedBookingInfo, $bookingInfo[0]);
+        $this->assertInternalType('object', $bookingInfo);
+        $this->assertEquals($expectedBookingInfo, $bookingInfo);
     }
 
     /**
      * @test
      */
-    public function it_does_not_add_booking_info_when_price_is_missing()
+    public function it_does_not_add_booking_info_when_price_and_reservation_contact_channels_are_missing()
     {
         $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
             'samples/event_without_price.cdbxml.xml'

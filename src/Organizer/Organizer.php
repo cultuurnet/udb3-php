@@ -41,9 +41,9 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     private $contactPoint;
 
     /**
-     * @var Label[]
+     * @var LabelCollection
      */
-    private $labels = [];
+    private $labels;
 
     /**
      * {@inheritdoc}
@@ -60,6 +60,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         // with a non-empty contact point. To enforce this we initialize the
         // aggregate state with an empty contact point.
         $this->contactPoint = new ContactPoint();
+        $this->labels = new LabelCollection();
     }
 
     /**
@@ -157,7 +158,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     public function addLabel(Label $label)
     {
-        if (!in_array($label, $this->labels)) {
+        if (!$this->labels->contains($label)) {
             $this->apply(new LabelAdded($this->actorId, $label));
         }
     }
@@ -167,7 +168,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     public function removeLabel(Label $label)
     {
-        if (in_array($label, $this->labels)) {
+        if ($this->labels->contains($label)) {
             $this->apply(new LabelRemoved($this->actorId, $label));
         }
     }
@@ -210,7 +211,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerImported->getCdbXml()
         );
 
-        $this->setLabelsFromUDB2Item($actor);
+        $this->labels = LabelCollection::fromStrings($actor->getKeywords());
     }
 
     /**
@@ -224,7 +225,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerUpdatedFromUDB2->getCdbXml()
         );
 
-        $this->setLabelsFromUDB2Item($actor);
+        $this->labels = LabelCollection::fromStrings($actor->getKeywords());
     }
 
     /**
@@ -248,7 +249,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     protected function applyLabelAdded(LabelAdded $labelAdded)
     {
-        $this->labels[] = $labelAdded->getLabel();
+        $this->labels = $this->labels->with($labelAdded->getLabel());
     }
 
     /**
@@ -256,23 +257,6 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     protected function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
-        $label = $labelRemoved->getLabel();
-        $this->labels = array_diff($this->labels, [$label]);
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Base $udb2Item
-     */
-    protected function setLabelsFromUDB2Item(\CultureFeed_Cdb_Item_Base $udb2Item)
-    {
-        $this->labels = [];
-
-        /** @var \CultureFeed_Cdb_Data_Keyword $udb2Keyword */
-        foreach (array_values($udb2Item->getKeywords(true)) as $udb2Keyword) {
-            $keyword = trim($udb2Keyword->getValue());
-            if ($keyword) {
-                $this->labels[] = new Label($keyword, $udb2Keyword->isVisible());
-            }
-        }
+        $this->labels = $this->labels->without($labelRemoved->getLabel());
     }
 }

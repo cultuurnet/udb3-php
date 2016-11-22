@@ -20,7 +20,7 @@ Feature: import of contactInfo from UDB2 to UDB3
       "phone": ["0473233773"],
       "email": ["bibliotheek@hasselt.be"],
       "url": ["http://google.be"],
-      "type": “”
+      "type": ""
     }
     """
     And the booking info of this event in UDB3 equals:
@@ -30,9 +30,5 @@ Feature: import of contactInfo from UDB2 to UDB3
       "email":"tickets@test.com",
       "url":"http://www.test.be",
       "urlLabel":"Reserveer plaatsen",
-      "name":"",
-      "description":"",
-      "availabilityStarts":"",
-      "availabilityEnds":""
    }
     """

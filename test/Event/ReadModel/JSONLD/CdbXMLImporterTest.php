@@ -469,10 +469,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'email' => 'tickets@test.com',
                 'url' => 'http://www.test.be',
                 'urlLabel' => 'Reserveer plaatsen',
-                'name' => '',
-                'description' => '',
-                'availabilityStarts' => '',
-                'availabilityEnds' => '',
             ],
             $jsonEvent->bookingInfo
         );

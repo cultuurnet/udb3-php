@@ -13,12 +13,15 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
-class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterface
+class ItemVisibilityProjector implements EventListenerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    private $itemRepository;
 
     /**
      * @var ReadRepositoryInterface
@@ -26,20 +29,14 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
     private $relationRepository;
 
     /**
-     * @var DocumentRepositoryInterface
-     */
-    private $offerRepository;
-
-    /**
-     * OfferLabelProjector constructor.
-     * @param DocumentRepositoryInterface $offerRepository
+     * @param DocumentRepositoryInterface $itemRepository
      * @param ReadRepositoryInterface $relationRepository
      */
     public function __construct(
-        DocumentRepositoryInterface $offerRepository,
+        DocumentRepositoryInterface $itemRepository,
         ReadRepositoryInterface $relationRepository
     ) {
-        $this->offerRepository = $offerRepository;
+        $this->itemRepository = $itemRepository;
         $this->relationRepository = $relationRepository;
         $this->logger = new NullLogger();
     }
@@ -80,13 +77,13 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      */
     private function updateLabels(LabelName $labelName, $madeVisible)
     {
-        $offers = $this->getRelatedOffers($labelName);
+        $items = $this->getRelatedItems($labelName);
 
         $removeFrom = $madeVisible ? 'hiddenLabels' : 'labels';
         $addTo = $madeVisible ? 'labels' : 'hiddenLabels';
 
-        foreach ($offers as $offer) {
-            $offerLd = $offer->getBody();
+        foreach ($items as $item) {
+            $offerLd = $item->getBody();
 
             $addToArray = isset($offerLd->{$addTo}) ? (array) $offerLd->{$addTo} : [];
 
@@ -103,7 +100,7 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
                 }
             }
 
-            $this->offerRepository->save($offer->withBody($offerLd));
+            $this->itemRepository->save($item->withBody($offerLd));
         }
     }
 
@@ -111,16 +108,16 @@ class OfferLabelProjector implements EventListenerInterface, LoggerAwareInterfac
      * @param LabelName $labelName
      * @return \CultuurNet\UDB3\ReadModel\JsonDocument[]|\Generator
      */
-    private function getRelatedOffers(LabelName $labelName)
+    private function getRelatedItems(LabelName $labelName)
     {
         $labelRelations = $this->relationRepository->getLabelRelations($labelName);
 
         foreach ($labelRelations as $labelRelation) {
             try {
-                $offer = $this->offerRepository->get((string) $labelRelation->getRelationId());
+                $document = $this->itemRepository->get((string)$labelRelation->getRelationId());
 
-                if ($offer) {
-                    yield $offer;
+                if ($document) {
+                    yield $document;
                 }
             } catch (DocumentGoneException $exception) {
                 $this->logger->alert(

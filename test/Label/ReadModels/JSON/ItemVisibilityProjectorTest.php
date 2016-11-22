@@ -16,36 +16,35 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
-class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
+class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var OfferLabelProjector
+     * @var ItemVisibilityProjector
      */
     private $projector;
 
     /**
-     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $offerRepository;
+    private $itemRepository;
 
     /**
-     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $relationRepository;
 
     protected function setUp()
     {
+        $this->itemRepository = $this->getMock(DocumentRepositoryInterface::class);
         $this->relationRepository = $this->getMock(ReadRepositoryInterface::class);
-        $this->offerRepository = $this->getMock(DocumentRepositoryInterface::class);
 
-        $this->projector = new OfferLabelProjector(
-            $this->offerRepository,
+        $this->projector = new ItemVisibilityProjector(
+            $this->itemRepository,
             $this->relationRepository
         );
     }
@@ -53,9 +52,13 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @param LabelName $labelName
      * @param JsonDocument $jsonDocument
+     * @param RelationType $relationType
      */
-    private function mockRelatedPlaceDocument(LabelName $labelName, JsonDocument $jsonDocument)
-    {
+    private function mockRelatedDocument(
+        LabelName $labelName,
+        JsonDocument $jsonDocument,
+        RelationType $relationType
+    ){
         $this->relationRepository
             ->expects($this->once())
             ->method('getLabelRelations')
@@ -64,13 +67,13 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
                 [
                     new LabelRelation(
                         $labelName,
-                        RelationType::PLACE(),
+                        $relationType,
                         new StringLiteral($jsonDocument->getId())
                     ),
                 ]
             );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('get')
             ->with($jsonDocument->getId())
@@ -79,9 +82,12 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider relationTypeProvider
+     * @param RelationType $relationType
      */
-    public function it_should_update_the_projection_of_offers_which_have_a_label_made_visible()
-    {
+    public function it_should_update_the_projection_of_offers_which_have_a_label_made_visible(
+        RelationType $relationType
+    ) {
         $labelId = new UUID();
         $labelName = new LabelName('black');
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
@@ -96,7 +102,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+        $this->mockRelatedDocument(
+            $labelName,
+            $existingPlaceDocument,
+            $relationType
+        );
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -113,12 +123,30 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
 
         $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @return RelationType[]
+     */
+    public function relationTypeProvider()
+    {
+        return [
+            [
+                RelationType::EVENT(),
+            ],
+            [
+                RelationType::PLACE(),
+            ],
+            [
+                RelationType::ORGANIZER(),
+            ]
+        ];
     }
 
     /**
@@ -140,7 +168,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+        $this->mockRelatedDocument(
+            $labelName,
+            $existingPlaceDocument,
+            RelationType::PLACE()
+        );
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -157,7 +189,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
@@ -185,7 +217,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+        $this->mockRelatedDocument(
+            $labelName,
+            $existingPlaceDocument,
+            RelationType::PLACE()
+        );
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -201,7 +237,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
@@ -229,7 +265,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+        $this->mockRelatedDocument(
+            $labelName,
+            $existingPlaceDocument,
+            RelationType::PLACE()
+        );
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -246,7 +286,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
@@ -274,7 +314,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+        $this->mockRelatedDocument(
+            $labelName,
+            $existingPlaceDocument,
+            RelationType::PLACE()
+        );
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -290,7 +334,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
@@ -318,7 +362,11 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->mockRelatedPlaceDocument($labelName, $existingPlaceDocument);
+        $this->mockRelatedDocument(
+            $labelName,
+            $existingPlaceDocument,
+            RelationType::PLACE()
+        );
 
         $domainMessage = $this->createDomainMessage(
             (string) $labelId,
@@ -335,7 +383,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('save')
             ->with($expectedDocument);
@@ -376,7 +424,7 @@ class OfferLabelProjectorTest extends \PHPUnit_Framework_TestCase
                 ]
             );
 
-        $this->offerRepository
+        $this->itemRepository
             ->expects($this->once())
             ->method('get')
             ->willThrowException(new DocumentGoneException());

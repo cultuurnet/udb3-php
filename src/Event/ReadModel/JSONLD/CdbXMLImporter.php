@@ -537,9 +537,8 @@ class CdbXMLImporter
             }
 
             array_filter($contactPoint);
-            if (count($contactPoint) > 0) {
-                $contactPoint['type'] = '';
-                $jsonLD->contactPoint[] = $contactPoint;
+            if (!empty($contactPoint)) {
+                $jsonLD->contactPoint = $contactPoint;
             }
         }
     }

@@ -58,7 +58,7 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
         LabelName $labelName,
         JsonDocument $jsonDocument,
         RelationType $relationType
-    ){
+    ) {
         $this->relationRepository
             ->expects($this->once())
             ->method('getLabelRelations')

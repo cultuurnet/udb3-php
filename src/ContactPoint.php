@@ -6,8 +6,6 @@ use Broadway\Serializer\SerializableInterface;
 
 /**
  * ContactPoint info.
- * @todo Remove $type? Seems unused throughout the rest of the codebase.
- * @see https://jira.uitdatabank.be/browse/III-1508
  */
 class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
@@ -27,23 +25,16 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
     protected $urls = array();
 
     /**
-     * @var string
-     */
-    protected $type = '';
-
-    /**
      * Constructor.
      * @param array $phones
      * @param array $emails
      * @param array $urls
-     * @param string $type
      */
-    public function __construct(array $phones = array(), array $emails = array(), array $urls = array(), $type = '')
+    public function __construct(array $phones = array(), array $emails = array(), array $urls = array())
     {
         $this->phones = $phones;
         $this->emails = $emails;
         $this->urls = $urls;
-        $this->type = $type;
     }
 
     /**
@@ -71,14 +62,6 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function serialize()
@@ -87,7 +70,6 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
           'phone' => $this->phones,
           'email' => $this->emails,
           'url' => $this->urls,
-          'type' => $this->type,
         ];
     }
 
@@ -97,7 +79,7 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-            $data['phone'], $data['email'], $data['url'], $data['type']
+            $data['phone'], $data['email'], $data['url']
         );
     }
 

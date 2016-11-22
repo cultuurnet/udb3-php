@@ -8,10 +8,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand as OfferAbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
-use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand as OrganizerAbstractLabelCommand;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
-use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase

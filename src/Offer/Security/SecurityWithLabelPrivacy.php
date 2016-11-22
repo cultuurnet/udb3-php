@@ -8,7 +8,6 @@ use CultuurNet\UDB3\Security\LabelSecurityInterface;
 use CultuurNet\UDB3\Security\SecurityDecoratorBase;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
-use ValueObjects\String\String as StringLiteral;
 
 class SecurityWithLabelPrivacy extends SecurityDecoratorBase
 {

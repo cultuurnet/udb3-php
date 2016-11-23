@@ -629,10 +629,12 @@ class CdbXMLImporter
         }
 
         // TODO Get the opening hours from weekscheme
+        $cdbCalendar->rewind();
         $openingHours = [];
-        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            /** @var $weekscheme \CultureFeed_Cdb_Data_Calendar_Weekscheme */
-            $weekscheme = $cdbCalendar->getWeekScheme();
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            /** @var \CultureFeed_Cdb_Data_Calendar_Period $period */
+            $period = $cdbCalendar->current();
+            $weekscheme = $period->getWeekScheme();
 
             /** \CultureFeed_Cdb_Data_Calendar_SchemeDay */
         }

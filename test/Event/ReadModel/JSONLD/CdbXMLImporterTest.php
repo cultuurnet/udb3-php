@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
@@ -465,6 +466,57 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'urlLabel' => 'Reserveer plaatsen',
             ],
             $jsonEvent->bookingInfo
+        );
+    }
+
+    /**
+     * @test
+     * @group issue-III-165
+     */
+    public function it_combines_short_and_long_description_as_description()
+    {
+        // @todo Move this to CdbXmlImporter
+        $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
+
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_short_and_long_description.cdbxml.xml');
+
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/description.txt'),
+            $jsonEvent->description['nl']
+        );
+    }
+
+    /**
+     * @test
+     * @group issue-III-165
+     */
+    public function it_only_uses_long_description_when_short_description_is_missing()
+    {
+        // @todo Move this to CdbXmlImporter
+        $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
+
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_short_description.cdbxml.xml');
+
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/description_from_only_long_description.txt'),
+            $jsonEvent->description['nl']
+        );
+    }
+
+    /**
+     * @test
+     * @group issue-III-165
+     */
+    public function it_only_uses_long_description_when_it_includes_short_description()
+    {
+        // @todo Move this to CdbXmlImporter
+        $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
+
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_short_description_included_in_long_description.cdbxml.xml');
+
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/description.txt'),
+            $jsonEvent->description['nl']
         );
     }
 }

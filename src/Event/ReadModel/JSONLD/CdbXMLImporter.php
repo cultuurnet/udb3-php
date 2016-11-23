@@ -34,6 +34,11 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
+     * @var StringFilterInterface[]
+     */
+    private $descriptionFilters = [];
+
+    /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      */
@@ -46,11 +51,6 @@ class CdbXMLImporter
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
     }
-
-    /**
-     * @var StringFilterInterface[]
-     */
-    private $descriptionFilters = [];
 
     /**
      * Imports a UDB2 event into a UDB3 JSON-LD document.
@@ -169,16 +169,27 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $descriptions = [
-            $languageDetail->getShortDescription(),
-            $languageDetail->getLongDescription()
-        ];
-        $descriptions = array_filter($descriptions);
-        $description = implode('<br/>', $descriptions);
+        $longDescription = trim($languageDetail->getLongDescription());
+        $shortDescription = $languageDetail->getShortDescription();
+
+        $descriptions = [];
+
+        if ($shortDescription) {
+            $shortDescription = trim($shortDescription);
+
+            if (0 !== strncmp($longDescription, $shortDescription, mb_strlen($shortDescription))) {
+                $descriptions[] = $shortDescription;
+            }
+        }
 
         foreach ($this->descriptionFilters as $descriptionFilter) {
-            $description = $descriptionFilter->filter($description);
+            $longDescription = $descriptionFilter->filter($longDescription);
         };
+
+        $descriptions[] = $longDescription;
+
+        $descriptions = array_filter($descriptions);
+        $description = implode("\n\n", $descriptions);
 
         $jsonLD->description[$language] = $description;
     }

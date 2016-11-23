@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\Specifications;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved as OrganizerLabelRemoved;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted as PlaceLabelDeleted;
+use CultuurNet\UDB3\Place\Events\LabelRemoved as PlaceLabelRemoved;
 
 class LabelEventIsOfOrganizerTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,12 +34,12 @@ class LabelEventIsOfOrganizerTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_is_satisfied_by_label_deleted_from_event()
+    public function it_is_satisfied_by_label_removed_from_event()
     {
-        $labelDeleted = $this->createEvent(OrganizerLabelRemoved::class);
+        $labelRemoved = $this->createEvent(OrganizerLabelRemoved::class);
 
         $this->assertTrue($this->labelEventIsOfOrganizerType->isSatisfiedBy(
-            $labelDeleted
+            $labelRemoved
         ));
     }
 
@@ -58,12 +58,12 @@ class LabelEventIsOfOrganizerTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_is_not_satisfied_by_label_deleted_from_place()
+    public function it_is_not_satisfied_by_label_removed_from_place()
     {
-        $labelDeleted = $this->createEvent(PlaceLabelDeleted::class);
+        $labelRemoved = $this->createEvent(PlaceLabelRemoved::class);
 
         $this->assertFalse($this->labelEventIsOfOrganizerType->isSatisfiedBy(
-            $labelDeleted
+            $labelRemoved
         ));
     }
 

@@ -22,7 +22,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
@@ -162,7 +162,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @return string
      */
-    abstract protected function getLabelDeletedClassName();
+    abstract protected function getLabelRemovedClassName();
 
     /**
      * @return string
@@ -281,22 +281,22 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     }
 
     /**
-     * @param AbstractLabelDeleted $deleteLabel
+     * @param AbstractLabelRemoved $labelRemoved
      */
-    protected function applyLabelDeleted(AbstractLabelDeleted $deleteLabel)
+    protected function applyLabelRemoved(AbstractLabelRemoved $labelRemoved)
     {
-        $document = $this->loadDocumentFromRepository($deleteLabel);
+        $document = $this->loadDocumentFromRepository($labelRemoved);
 
         $offerLd = $document->getBody();
 
         // Check the visibility of the label to update the right property.
-        $labelsProperty = $deleteLabel->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
+        $labelsProperty = $labelRemoved->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
 
         if (isset($offerLd->{$labelsProperty}) && is_array($offerLd->{$labelsProperty})) {
             $offerLd->{$labelsProperty} = array_filter(
                 $offerLd->{$labelsProperty},
-                function ($label) use ($deleteLabel) {
-                    return !$deleteLabel->getLabel()->equals(
+                function ($label) use ($labelRemoved) {
+                    return !$labelRemoved->getLabel()->equals(
                         new Label($label)
                     );
                 }

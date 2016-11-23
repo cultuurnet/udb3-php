@@ -8,7 +8,7 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\LabelEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded as OfferAbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted as OfferAbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved as OfferAbstractLabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved as OrganizerLabelRemoved;
 
@@ -30,8 +30,8 @@ abstract class AbstractProjector implements EventListenerInterface
                 $domainMessage->getPayload(),
                 $domainMessage->getMetadata()
             );
-        } else if ($this->isLabelDeleted($payload)) {
-            $this->applyLabelDeleted(
+        } else if ($this->isLabelRemoved($payload)) {
+            $this->applyLabelRemoved(
                 $domainMessage->getPayload(),
                 $domainMessage->getMetadata()
             );
@@ -47,10 +47,10 @@ abstract class AbstractProjector implements EventListenerInterface
     abstract public function applyLabelAdded(LabelEventInterface $labelAdded, Metadata $metadata);
 
     /**
-     * @param LabelEventInterface $labelDeleted
+     * @param LabelEventInterface $labelRemoved
      * @param Metadata $metadata
      */
-    abstract public function applyLabelDeleted(LabelEventInterface $labelDeleted, Metadata $metadata);
+    abstract public function applyLabelRemoved(LabelEventInterface $labelRemoved, Metadata $metadata);
 
     /**
      * @param $payload
@@ -66,9 +66,9 @@ abstract class AbstractProjector implements EventListenerInterface
      * @param $payload
      * @return bool
      */
-    private function isLabelDeleted($payload)
+    private function isLabelRemoved($payload)
     {
-        return ($payload instanceof OfferAbstractLabelDeleted ||
+        return ($payload instanceof OfferAbstractLabelRemoved ||
             $payload instanceof OrganizerLabelRemoved);
     }
 }

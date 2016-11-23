@@ -28,7 +28,7 @@ use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted;
+use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
@@ -292,11 +292,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     /**
      * @param Label $label
-     * @return LabelDeleted
+     * @return LabelRemoved
      */
-    protected function createLabelDeletedEvent(Label $label)
+    protected function createLabelRemovedEvent(Label $label)
     {
-        return new LabelDeleted($this->actorId, $label);
+        return new LabelRemoved($this->actorId, $label);
     }
 
     protected function createImageAddedEvent(Image $image)

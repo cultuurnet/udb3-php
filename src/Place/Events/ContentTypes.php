@@ -36,7 +36,7 @@ class ContentTypes
             ImageRemoved::class => 'application/vnd.cultuurnet.udb3-events.place-image-removed+json',
             ImageUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-image-updated+json',
             LabelAdded::class => 'application/vnd.cultuurnet.udb3-events.place-label-added+json',
-            LabelDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-label-deleted+json',
+            LabelRemoved::class => 'application/vnd.cultuurnet.udb3-events.place-label-removed+json',
             MainImageSelected::class => 'application/vnd.cultuurnet.udb3-events.place-main-image-selected+json',
             MajorInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-major-info-updated+json',
             OrganizerDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-organizer-deleted+json',

@@ -9,7 +9,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded as LabelAddedToEvent;
-use CultuurNet\UDB3\Event\Events\LabelDeleted as LabelDeletedFromEvent;
+use CultuurNet\UDB3\Event\Events\LabelRemoved as LabelRemovedFromEvent;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -17,14 +17,14 @@ use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterfa
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded as LabelAddedToOrganizer;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved as LabelRemovedFromOrganizer;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
-use CultuurNet\UDB3\Place\Events\LabelDeleted as LabelDeletedFromPlace;
+use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use ValueObjects\Identity\UUID;
@@ -153,18 +153,18 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @dataProvider labelDeletedEventDataProvider
+     * @dataProvider labelRemovedEventDataProvider
      *
      * @param string $relationId
-     * @param AbstractLabelDeleted|LabelRemovedFromOrganizer $labelDeleted
+     * @param AbstractLabelRemoved|LabelRemovedFromOrganizer $labelRemoved
      */
     public function it_handles_label_deleted_events(
         $relationId,
-        $labelDeleted
+        $labelRemoved
     ) {
         $domainMessage = $this->createDomainMessage(
             $relationId,
-            $labelDeleted
+            $labelRemoved
         );
 
         $this->writeRepository->expects($this->once())
@@ -177,19 +177,19 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function labelDeletedEventDataProvider()
+    public function labelRemovedEventDataProvider()
     {
         return [
             [
                 $this->getRelationId(),
-                new LabelDeletedFromEvent(
+                new LabelRemovedFromEvent(
                     $this->getRelationId(),
                     new Label('labelName')
                 ),
             ],
             [
                 $this->getRelationId(),
-                new LabelDeletedFromPlace(
+                new LabelRemovedFromPlace(
                     $this->getRelationId(),
                     new Label('labelName')
                 ),

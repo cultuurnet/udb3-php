@@ -70,9 +70,9 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(LabelEventInterface $labelDeleted, Metadata $metadata)
+    public function applyLabelRemoved(LabelEventInterface $labelRemoved, Metadata $metadata)
     {
-        $labelRelation = $this->createLabelRelation($labelDeleted);
+        $labelRelation = $this->createLabelRelation($labelRemoved);
 
         if (!is_null($labelRelation)) {
             $this->writeRepository->deleteByLabelNameAndRelationId(

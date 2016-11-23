@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
@@ -89,14 +89,6 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return LabelCollection
-     */
-    public function getLabels()
-    {
-        return $this->labels;
-    }
-
-    /**
      * Get the id of the main image if one is selected for this offer.
      *
      * @return UUID|null
@@ -125,7 +117,7 @@ abstract class Offer extends EventSourcedAggregateRoot
     {
         if ($this->labels->contains($label)) {
             $this->apply(
-                $this->createLabelDeletedEvent($label)
+                $this->createLabelRemovedEvent($label)
             );
         }
     }
@@ -258,11 +250,11 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param AbstractLabelRemoved $labelRemoved
      */
-    protected function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
+    protected function applyLabelRemoved(AbstractLabelRemoved $labelRemoved)
     {
-        $this->labels = $this->labels->without($labelDeleted->getLabel());
+        $this->labels = $this->labels->without($labelRemoved->getLabel());
     }
 
     /**
@@ -548,9 +540,9 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     /**
      * @param Label $label
-     * @return AbstractLabelDeleted
+     * @return AbstractLabelRemoved
      */
-    abstract protected function createLabelDeletedEvent(Label $label);
+    abstract protected function createLabelRemovedEvent(Label $label);
 
     /**
      * @param Language $language

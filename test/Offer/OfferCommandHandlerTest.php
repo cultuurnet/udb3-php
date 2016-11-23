@@ -24,7 +24,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
@@ -195,7 +195,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->then(
                 [
-                    new LabelDeleted($this->id, $this->label)
+                    new LabelRemoved($this->id, $this->label)
                 ]
             );
     }

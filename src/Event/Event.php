@@ -25,7 +25,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
@@ -478,11 +478,11 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
 
     /**
      * @param Label $label
-     * @return LabelDeleted
+     * @return LabelRemoved
      */
-    protected function createLabelDeletedEvent(Label $label)
+    protected function createLabelRemovedEvent(Label $label)
     {
-        return new LabelDeleted($this->eventId, $label);
+        return new LabelRemoved($this->eventId, $label);
     }
 
     /**

@@ -31,7 +31,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted;
+use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -196,7 +196,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(new DeleteLabel($id, new Label('foo')))
-            ->then([new LabelDeleted($id, new Label('foo'))]);
+            ->then([new LabelRemoved($id, new Label('foo'))]);
     }
 
     /**
@@ -226,7 +226,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     $this->factorOfferCreated($id),
                     new LabelAdded($id, new Label('foo')),
-                    new LabelDeleted($id, new Label('foo'))
+                    new LabelRemoved($id, new Label('foo'))
                 ]
             )
             ->when(new DeleteLabel($id, new Label('foo')))

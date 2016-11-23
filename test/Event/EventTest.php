@@ -13,12 +13,13 @@ use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
@@ -77,6 +78,26 @@ class EventTest extends AggregateRootScenarioTestCase
         );
     }
 
+    private function getCreationEvent()
+    {
+        return new EventCreated(
+            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location(
+                UUID::generateAsString(),
+                new StringLiteral('P-P-Partyzone'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
+            ),
+            new Calendar(CalendarType::PERMANENT())
+        );
+    }
+
     /**
      * @test
      */
@@ -110,24 +131,20 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_tagged_with_multiple_labels()
     {
-        $this->event->addLabel(new Label('foo'));
-
-        $this->assertEquals(
-            (new LabelCollection())->with(new Label('foo')),
-            $this->event->getLabels()
-        );
-
-        $this->event->addLabel(new Label('bar'));
-
-        $this->assertEquals(
-            new LabelCollection(
-                [
-                    new Label('foo'),
-                    new Label('bar')
-                ]
-            ),
-            $this->event->getLabels()
-        );
+        $this->scenario
+            ->given([
+                $this->getCreationEvent()
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->addLabel(new Label('foo'));
+                    $event->addLabel(new Label('bar'));
+                }
+            )
+            ->then([
+                new LabelAdded('d2b41f1d-598c-46af-a3a5-10e373faa6fe', new Label('foo')),
+                new LabelAdded('d2b41f1d-598c-46af-a3a5-10e373faa6fe', new Label('bar')),
+            ]);
     }
 
     /**
@@ -135,13 +152,19 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_only_applies_the_same_tag_once()
     {
-        $this->event->addLabel(new Label('foo'));
-        $this->event->addLabel(new Label('foo'));
-
-        $this->assertEquals(
-            (new LabelCollection())->with(new Label('foo')),
-            $this->event->getLabels()
-        );
+        $this->scenario
+            ->given([
+                $this->getCreationEvent()
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->addLabel(new Label('foo'));
+                    $event->addLabel(new Label('foo'));
+                }
+            )
+            ->then([
+                new LabelAdded('d2b41f1d-598c-46af-a3a5-10e373faa6fe', new Label('foo')),
+            ]);
     }
 
     /**
@@ -149,20 +172,22 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_does_not_add_similar_labels_with_different_letter_casing()
     {
-        $this->event->addLabel(new Label('Foo'));
-        $this->event->addLabel(new Label('foo'));
-        $this->event->addLabel(new Label('België'));
-        $this->event->addLabel(new Label('BelgiË'));
-
-        $expectedLabels = [
-            new Label('Foo'),
-            new Label('België')
-        ];
-
-        $this->assertEquals(
-            new LabelCollection($expectedLabels),
-            $this->event->getLabels()
-        );
+        $this->scenario
+            ->given([
+                $this->getCreationEvent()
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->addLabel(new Label('Foo'));
+                    $event->addLabel(new Label('foo'));
+                    $event->addLabel(new Label('België'));
+                    $event->addLabel(new Label('BelgiË'));
+                }
+            )
+            ->then([
+                new LabelAdded('d2b41f1d-598c-46af-a3a5-10e373faa6fe', new Label('Foo')),
+                new LabelAdded('d2b41f1d-598c-46af-a3a5-10e373faa6fe', new Label('België')),
+            ]);
     }
 
     /**
@@ -170,29 +195,27 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_imported_from_udb2_cdbxml_without_any_labels()
     {
-        $cdbXml = $this->getSample('EventTest.cdbxml.xml');
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $eventId = 'a2d50a8d-5b83-4c8b-84e6-e9c0bacbb1a3';
+        $xmlNamespace = self::NS_CDBXML_3_2;
 
-        $event = Event::importFromUDB2(
-            'someId',
-            $cdbXml,
-            self::NS_CDBXML_3_2
-        );
-
-        $expectedLabels = [
-            'kunst',
-            'tentoonstelling',
-            'brugge',
-            'grafiek',
-            'oud sint jan',
-            'TRAEGHE GENUINE ARTS',
-            'janine de conink',
-            'brugge oktober',
-        ];
-
-        $this->assertEquals(
-            LabelCollection::fromStrings($expectedLabels),
-            $event->getLabels()
-        );
+        $this->scenario
+            ->given([
+                new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace)
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->addLabel(new Label('kunst'));
+                    $event->addLabel(new Label('tentoonstelling'));
+                    $event->addLabel(new Label('brugge'));
+                    $event->addLabel(new Label('grafiek'));
+                    $event->addLabel(new Label('oud sint jan'));
+                    $event->addLabel(new Label('TRAEGHE GENUINE ARTS'));
+                    $event->addLabel(new Label('janine de conink'));
+                    $event->addLabel(new Label('brugge oktober'));
+                }
+            )
+            ->then([]);
     }
 
     /**
@@ -201,22 +224,21 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_can_be_created_from_cdbxml()
     {
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+        $eventId = new StringLiteral('someId');
+        $xmlData = new EventXmlString($cdbXml);
+        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
 
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
-
-        $expectedLabels = [
-            new Label('polen'),
-            new Label('slagwerk'),
-        ];
-
-        $this->assertEquals(
-            new LabelCollection($expectedLabels),
-            $event->getLabels()
-        );
+        $this->scenario
+            ->given([
+                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->addLabel(new Label('polen'));
+                    $event->addLabel(new Label('slagwerk'));
+                }
+            )
+            ->then([]);
     }
 
     /**
@@ -224,33 +246,31 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_can_be_updated_from_cdbxml()
     {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
-
         $cdbXmlEdited = $this->getSample('event_entryapi_valid_with_keywords_edited.xml');
 
-        $event->updateFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXmlEdited),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
+        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
+        $eventId = new StringLiteral('someId');
+        $xmlData = new EventXmlString($cdbXml);
+        $editedxmlData = new EventXmlString($cdbXmlEdited);
+        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
 
-        $expectedLabels = [
-            new Label('polen'),
-            new Label('slagwerk'),
-            new Label('test'),
-            new Label('aangepast'),
-        ];
+        $this->scenario
+            ->given([
+                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
+            ])
+            ->when(
+                function (Event $event) use ($eventId, $editedxmlData, $xmlNamespace) {
+                    $event->updateFromCdbXml($eventId, $editedxmlData, $xmlNamespace);
 
-        $this->assertEquals(
-            new LabelCollection($expectedLabels),
-            $event->getLabels()
-        );
+                    $event->addLabel(new Label('polen'));
+                    $event->addLabel(new Label('slagwerk'));
+                    $event->addLabel(new Label('test'));
+                    $event->addLabel(new Label('aangepast'));
+                }
+            )
+            ->then([
+                new EventUpdatedFromCdbXml($eventId, $editedxmlData, $xmlNamespace)
+            ]);
     }
 
     /**
@@ -345,7 +365,7 @@ class EventTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new LabelDeleted($id, $label)
+                    new LabelRemoved($id, $label)
                 ]
             );
     }
@@ -398,7 +418,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $label
                     ),
-                    new LabelDeleted(
+                    new LabelRemoved(
                         $id,
                         $label
                     ),
@@ -433,13 +453,9 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_can_have_labels_merged()
     {
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
-
+        $eventId = new StringLiteral('004aea08-e13d-48c9-b9eb-a18f20e6d44e');
+        $xmlData = new EventXmlString($cdbXml);
+        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
         $labels = new LabelCollection(
             [
                 new Label('muziek', true),
@@ -447,19 +463,23 @@ class EventTest extends AggregateRootScenarioTestCase
             ]
         );
 
-        $event->mergeLabels($labels);
+        $this->scenario
+            ->given([
+                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
+            ])
+            ->when(
+                function (Event $event) use ($labels) {
+                    $event->mergeLabels($labels);
 
-        $expectedLabels = [
-            new Label('polen'),
-            new Label('slagwerk'),
-            new Label('muziek'),
-            new Label('orkest', false),
-        ];
-
-        $this->assertEquals(
-            new LabelCollection($expectedLabels),
-            $event->getLabels()
-        );
+                    $event->addLabel(new Label('polen'));
+                    $event->addLabel(new Label('slagwerk'));
+                    $event->addLabel(new Label('muziek'));
+                    $event->addLabel(new Label('orkest', false));
+                }
+            )
+            ->then([
+                new LabelsMerged($eventId, $labels)
+            ]);
     }
 
     /**

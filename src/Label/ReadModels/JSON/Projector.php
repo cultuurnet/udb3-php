@@ -123,9 +123,9 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(LabelEventInterface $labelDeleted, Metadata $metadata)
+    public function applyLabelRemoved(LabelEventInterface $labelRemoved, Metadata $metadata)
     {
-        $uuid = $this->getUuid($labelDeleted);
+        $uuid = $this->getUuid($labelRemoved);
 
         if ($uuid) {
             $this->writeRepository->updateCountDecrement($uuid);

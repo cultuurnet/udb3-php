@@ -6,7 +6,7 @@ use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\LabelAdded as LabelAddedToEvent;
-use CultuurNet\UDB3\Event\Events\LabelDeleted as LabelDeletedFromEvent;
+use CultuurNet\UDB3\Event\Events\LabelRemoved as LabelRemovedFromEvent;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\CopyCreated;
@@ -22,10 +22,10 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
-use CultuurNet\UDB3\Place\Events\LabelDeleted as LabelDeletedFromPlace;
+use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -294,14 +294,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_label_deleted_from_event()
+    public function it_handles_label_removed_from_event()
     {
-        $labelDeleted = new LabelDeletedFromEvent(
+        $labelRemoved = new LabelRemovedFromEvent(
             'itemId',
             new Label('labelName')
         );
 
-        $this->handleDeleting($labelDeleted);
+        $this->handleDeleting($labelRemoved);
     }
 
     /**
@@ -320,14 +320,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_label_deleted_from_place()
+    public function it_handles_label_removed_from_place()
     {
-        $labelDeleted = new LabelDeletedFromPlace(
+        $labelRemoved = new LabelRemovedFromPlace(
             'itemId',
             new Label('labelName')
         );
 
-        $this->handleDeleting($labelDeleted);
+        $this->handleDeleting($labelRemoved);
     }
 
     /**
@@ -355,11 +355,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param AbstractLabelRemoved $labelRemoved
      */
-    private function handleDeleting(AbstractLabelDeleted $labelDeleted)
+    private function handleDeleting(AbstractLabelRemoved $labelRemoved)
     {
-        $this->handleLabelMovement($labelDeleted, 'updateCountDecrement');
+        $this->handleLabelMovement($labelRemoved, 'updateCountDecrement');
     }
 
     /**

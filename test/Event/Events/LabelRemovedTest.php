@@ -4,21 +4,21 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Label;
 
-class LabelDeletedTest extends \PHPUnit_Framework_TestCase
+class LabelRemovedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      * @dataProvider serializationDataProvider
      * @param array $expectedSerializedValue
-     * @param LabelDeleted $unlabelled
+     * @param LabelRemoved $labelRemoved
      */
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
-        LabelDeleted $unlabelled
+        LabelRemoved $labelRemoved
     ) {
         $this->assertEquals(
             $expectedSerializedValue,
-            $unlabelled->serialize()
+            $labelRemoved->serialize()
         );
     }
 
@@ -26,28 +26,28 @@ class LabelDeletedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider serializationDataProvider
      * @param array $serializedValue
-     * @param LabelDeleted $expectedUnlabelled
+     * @param LabelRemoved $expectedLabelRemovedEvent
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
-        LabelDeleted $expectedUnlabelled
+        LabelRemoved $expectedLabelRemovedEvent
     ) {
         $this->assertEquals(
-            $expectedUnlabelled,
-            LabelDeleted::deserialize($serializedValue)
+            $expectedLabelRemovedEvent,
+            LabelRemoved::deserialize($serializedValue)
         );
     }
 
     public function serializationDataProvider()
     {
         return [
-            'unlabelled' => [
+            'label removed event' => [
                 [
                     'item_id' => 'foo',
                     'label' => 'Label1',
                     'visibility' => true,
                 ],
-                new LabelDeleted(
+                new LabelRemoved(
                     'foo',
                     new Label('Label1')
                 ),

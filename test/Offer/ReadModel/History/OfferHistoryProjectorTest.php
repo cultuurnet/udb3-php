@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Offer\Item\ReadModel\History\ItemHistoryProjector;
@@ -114,7 +114,7 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_logs_the_removal_of_a_label()
     {
-        $labelDeleted = new LabelDeleted(
+        $labelRemoved = new LabelRemoved(
             self::EVENT_ID_1,
             new Label('foo')
         );
@@ -130,10 +130,10 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $tagErasedDate = '2015-03-27T10:17:19.176169+02:00';
 
         $domainMessage = new DomainMessage(
-            $labelDeleted->getItemId(),
+            $labelRemoved->getItemId(),
             2,
             new Metadata(['user_nick' => 'Jan Janssen']),
-            $labelDeleted,
+            $labelRemoved,
             DateTime::fromString($tagErasedDate)
         );
 

@@ -23,7 +23,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
@@ -172,7 +172,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(new DeleteLabel($id, new Label('foo')))
-            ->then([new LabelDeleted($id, new Label('foo'))]);
+            ->then([new LabelRemoved($id, new Label('foo'))]);
     }
 
     /**
@@ -202,7 +202,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     $this->factorOfferCreated($id),
                     new LabelAdded($id, new Label('foo')),
-                    new LabelDeleted($id, new Label('foo'))
+                    new LabelRemoved($id, new Label('foo'))
                 ]
             )
             ->when(new DeleteLabel($id, new Label('foo')))

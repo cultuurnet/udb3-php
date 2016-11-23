@@ -592,7 +592,7 @@ class CdbXMLImporter
             if ($timestamp->getEndTime()) {
                 $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
             } else {
-                $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : 'T00:00:00';
+                $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : '00:00:00';
                 $endDateString = $timestamp->getDate() . 'T' . $endTime;
             }
         }
@@ -607,17 +607,16 @@ class CdbXMLImporter
                 $timestamp = $cdbCalendar->current();
                 $cdbCalendar->next();
 
+
                 if ($timestamp->getStartTime()) {
                     $startDateString = $timestamp->getDate() . 'T' . $timestamp->getStartTime();
-                } else {
-                    $startDateString = $timestamp->getDate() . 'T00:00:00';
-                }
 
-                if ($timestamp->getEndTime()) {
-                    $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
-                } else {
-                    $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : 'T00:00:00';
-                    $endDateString = $timestamp->getDate() . 'T' . $endTime;
+                    if ($timestamp->getEndTime()) {
+                        $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
+                    } else {
+                        $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : '00:00:00';
+                        $endDateString = $timestamp->getDate() . 'T' . $endTime;
+                    }
                 }
 
                 $timestamps[] = new Timestamp(

@@ -51,8 +51,8 @@
                 <cdb:zipcode>2800</cdb:zipcode>
             </cdb:physical>
         </cdb:address>
-        <cdb:mail reservation="true">kgielens@stichtingtegenkanker.be</cdb:mail>
-        <cdb:phone reservation="true" type="phone">0475 82 21 36</cdb:phone>
+        <cdb:mail>kgielens@stichtingtegenkanker.be</cdb:mail>
+        <cdb:phone type="phone">0475 82 21 36</cdb:phone>
         <cdb:url>http://www.rekanto.be</cdb:url>
     </cdb:contactinfo>
     <cdb:eventdetails>

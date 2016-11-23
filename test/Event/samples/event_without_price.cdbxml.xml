@@ -54,7 +54,6 @@
                     <cdb:zipcode>8000</cdb:zipcode>
                 </cdb:physical>
             </cdb:address>
-            <cdb:url>http://www.traeghe.be</cdb:url>
         </cdb:contactinfo>
         <cdb:eventdetails>
             <cdb:eventdetail lang="nl">

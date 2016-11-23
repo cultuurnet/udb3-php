@@ -178,8 +178,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $phones = ['045', '046'];
         $emails = ['test@test.be', 'test@test2.be'];
         $urls = ['http://www.google.be', 'http://www.google2.be'];
-        $type = 'type';
-        $contactPoint = new ContactPoint($phones, $emails, $urls, $type);
+        $contactPoint = new ContactPoint($phones, $emails, $urls);
         $eventClass = $this->getEventClass('ContactPointUpdated');
         $contactPointUpdated = new $eventClass($id, $contactPoint);
 
@@ -193,7 +192,6 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'phone' => $phones,
                 'email' => $emails,
                 'url' => $urls,
-                'type' => $type,
             ]
         ];
 

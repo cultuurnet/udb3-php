@@ -74,16 +74,19 @@ Scenario: remove repetition of short description in long description for events 
   hac habitasse platea dictumst. Praesent tempus faucibus enim nec
   hendrerit. Nullam non purus vel lacus dignissim cursus eu ac est.
   Nulla tellus mauris, maximus sed faucibus non, egestas quis eros.
-  Ut massa purus, luctus non ex tempor, suscipit efficitur mi.\n
-  <p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/een-piano-in-de-tu-n-joodse-rituelen-en-gebruiken/3aee552e-2071-46a1-beff-d73b31718ea6">UiTinVlaanderen.be</a></p>
+  Ut massa purus, luctus non ex tempor, suscipit efficitur mi.
   """
   # beschrijving niet genest binnen p-tags
   # <br> wordt omgezet naar \n
   # geen \n na elke 60-tal karakters (wordt nu automatisch toegevoegd)
   #
   # korte en lange beschrijving worden samengevoegd;
-  # indien eerste 400 karakters van korte beschrijving identiek zijn aan eerste 400 karakters van lange beschrijving,
+  # indien de volledige korte beschrijving identiek is aan de eerste x-aantal karakters van de lange beschrijving,
+  # waarbij het x-aantal karakters gelijk is aan het aantal karakters van de korte beschrijving,
   # worden identieke values van lange beschrijving weggelaten.
+  #
+  # Bron-vermelding wordt gestript uit description
+
 
 @issue-III-165
 Scenario: merge short description and long description when short description is not repeated in long description for events.
@@ -155,12 +158,18 @@ Then the description of this event in UDB3 equals:
   hac habitasse platea dictumst. Praesent tempus faucibus enim nec
   hendrerit. Nullam non purus vel lacus dignissim cursus eu ac est.
   Nulla tellus mauris, maximus sed faucibus non, egestas quis eros.
-  Ut massa purus, luctus non ex tempor, suscipit efficitur mi.\n
-  <p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/een-piano-in-de-tu-n-joodse-rituelen-en-gebruiken/3aee552e-2071-46a1-beff-d73b31718ea6">UiTinVlaanderen.be</a></p>
+  Ut massa purus, luctus non ex tempor, suscipit efficitur mi.
   """
   # beschrijving niet genest binnen p-tags
   # <br> worden omgezet in \n
   # geen \n na elke 60-tal karakters (wordt nu automatisch toegevoegd)
+  #
+  # korte en lange beschrijving worden samengevoegd;
+  # indien de volledige korte beschrijving identiek is aan de eerste x-aantal karakters van de lange beschrijving,
+  # waarbij het x-aantal karakters gelijk is aan het aantal karakters van de korte beschrijving,
+  # worden identieke values van lange beschrijving weggelaten.
+  #
+  # Bronvermelding wordt gestript uit beschrijving
 
 @issue-III-165
 Scenario: merge short description and long description when short description is partly equal to long description
@@ -240,12 +249,12 @@ Then the description of this event in UDB3 equals:
   hac habitasse platea dictumst. Praesent tempus faucibus enim nec
   hendrerit. Nullam non purus vel lacus dignissim cursus eu ac est.
   Nulla tellus mauris, maximus sed faucibus non, egestas quis eros.
-  Ut massa purus, luctus non ex tempor, suscipit efficitur mi.\n
-  <p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/een-piano-in-de-tu-n-joodse-rituelen-en-gebruiken/3aee552e-2071-46a1-beff-d73b31718ea6">UiTinVlaanderen.be</a></p>
+  Ut massa purus, luctus non ex tempor, suscipit efficitur mi.
   """
   # beschrijving niet genest binnen p-tags
   # <br> worden omgezet in \n
   # geen \n na elke 60-tal karakters (wordt nu automatisch toegevoegd)
+  # Bronvermelding wordt gestript uit beschrijving
 
 @issue-III-165
 Scenario: use long description when there is no short description in UDB2
@@ -285,9 +294,49 @@ Scenario: use long description when there is no short description in UDB2
   eleifend ultrices dui. Nunc pretium lectus eros. Donec ut varius dolor,
   a facilisis purus. Donec sit amet bibendum diam, in varius libero.
   Aenean ultricies nisi non velit rutrum pellentesque sit amet at tellus.
-  Aenean placerat elementum purus eu mollis. Curabitur eget condimentum lacus.\n
-  <p class="uiv-source">Bron: <a href="http://www.uitinvlaanderen.be/agenda/e/een-piano-in-de-tu-n-joodse-rituelen-en-gebruiken/3aee552e-2071-46a1-beff-d73b31718ea6">UiTinVlaanderen.be</a></p>
+  Aenean placerat elementum purus eu mollis. Curabitur eget condimentum lacus.
   """
   # beschrijving niet genest binnen p-tags
   # <br> wordt omgezet naar \n
   # geen \n na elke 60-tal karakters (wordt nu automatisch toegevoegd)
+  # Bronvermelding wordt gestript uit beschrijving
+
+@issue-III-165
+Scenario: merge short description and long description when short description is partly equal to long description and keep HTML of long description
+  Given an event in UDB2
+  And this event has the following short description:
+  """
+  Vleermuizen zijn top!
+  """
+  And this event has the following long description:
+  """
+  &lt;p style="text-align: center;"&gt;&lt;a class="btn" href="#Inschrijven" target="_self"&gt;Schrijf je hier in!&lt;/a&gt;&lt;br&gt;&lt;br&gt;Al sinds jaar en dag worden vleermuizen geassocieerd met duistere en duivelse machten.&amp;nbsp; De geheimzinnige, nachtelijke levenswijze van de vleermuizen zal hier zeker voor iets tussen zitten.&amp;nbsp; Bij het invallen van de duisternis verschijnen ze, en fladderen ze vervaarlijk dicht om je heen.&amp;nbsp;&lt;/p&gt;&lt;p&gt;Tijdens deze basiscursus bestuderen we de vleermuizen van naderbij en leren zo hun boeiende wereld kennen.&amp;nbsp; We bespreken de algemene kenmerken, de soorten en de waarnemingen van de inlandse vleermuizen. Ook het leren werken met de batdetector komt aan bod.&lt;/p&gt;&lt;p&gt;Kortom, de ideale cursus voor wie zijn eerste passen wil zetten in de fascinerende wereld van de vleermuizen.&lt;/p&gt;&lt;p style="margin-bottom: 0cm; line-height: 150%;"&gt;&lt;strong&gt;Voor deze activiteit kan je online inschrijven (zie deze pagina onderaan). Na de digitale confirmatie kan het gepaste bedrag overgeschreven worden op rekening BE37 0015 0901 2428 t.n.v. Natuurpunt Averbode Bos &amp;amp; Heide met vermelding van 'cursus vleermuizen' en desgevallend je lidnummer.&lt;br&gt;&lt;a name="Inschrijven"&gt;&lt;/a&gt;&amp;nbsp;&lt;/strong&gt;&lt;/p&gt;
+  """
+  When this event is imported in UDB3
+  Then the description of this event in UDB3 equals:
+  """
+  Vleermuizen zijn top!\n\n<p style=\"text-align: center;\"><a class=\"btn\" href=\"#Inschrijven\" target=\"_self\">Schrijf je hier in!<\/a><br><br>\nAl sinds jaar en dag worden vleermuizen geassocieerd met duistere en duivelse machten.  De geheimzinnige, nachtelijke levenswijze van de vleermuizen zal hier zeker voor iets tussen zitten.  Bij het invallen van de duisternis verschijnen ze, en fladderen ze vervaarlijk dicht om je heen. <\/p>\n<p>Tijdens deze basiscursus bestuderen we de vleermuizen van naderbij en leren zo hun boeiende wereld kennen.  We bespreken de algemene kenmerken, de soorten en de waarnemingen van de inlandse vleermuizen. Ook het leren werken met de batdetector komt aan bod.<\/p>\n<p>Kortom, de ideale cursus voor wie zijn eerste passen wil zetten in de fascinerende wereld van de vleermuizen.<\/p>\n<p style=\"margin-bottom: 0cm; line-height: 150%;\"><strong>Voor deze activiteit kan je online inschrijven (zie deze pagina onderaan). Na de digitale confirmatie kan het gepaste bedrag overgeschreven worden op rekening BE37 0015 0901 2428 t.n.v. Natuurpunt Averbode\nBos &amp; Heide met vermelding van 'cursus vleermuizen' en desgevallend je lidnummer.<br><a name=\"Inschrijven\" id=\"Inschrijven\"><\/a> <\/strong><\/p>
+  """
+  # geen \n na elke 60-tal karakters (wordt nu automatisch toegevoegd: III-1638)
+  # korte en lange beschrijving worden samengevoegd; > het aantal karakters van korte beschrijving wordt vergeleken met zelfde aantal karakters van lange beschrijving (stripped van html-opmaak): indien beide identiek zijn wordt de korte beschrijving niet samengevoegd aan lange beschrijving
+  # html longdescription wordt behouden
+
+@issue-III-165
+Scenario: remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description
+  Given an event in UDB2
+  And this event has the following short description:
+  """
+  Vertelavond met Jan Gabriëls, voorzitter van de Likona vogelwerkgroep: Belevenissen van vroeger en nu ...Wil je meeluisteren, geef een seintje aan natuurpunt.genk@hotmail.com en we reserveren alvast een plaatsje en drankje voor u.Bijdrage aan deze avond: leden Natuurpunt 3 € – niet leden 5 €
+  """
+  And this event has the following long description:
+  """
+  &lt;p&gt;Vertelavond met Jan Gabriëls, voorzitter van de Likona vogelwerkgroep: Belevenissen van vroeger en nu ...&lt;/p&gt;&lt;p&gt;Wil je meeluisteren, geef een seintje aan &lt;a href="mailto:natuurpunt.genk@hotmail.com" target="_self"&gt;natuurpunt.genk@hotmail.com&lt;/a&gt; en we reserveren alvast een plaatsje en drankje voor u.&lt;/p&gt;&lt;p&gt;Bijdrage aan deze avond: leden Natuurpunt 3 € – niet leden 5 €&lt;/p&gt;
+  """
+  When this event is imported in UDB3
+  Then the description of this event in UDB3 equals
+  """
+  <p>Vertelavond met Jan Gabriëls, voorzitter van de Likona vogelwerkgroep: Belevenissen van vroeger en nu ...<\/p> <p>Wil je meeluisteren, geef een seintje aan <a href=\"mailto:natuurpunt.genk@hotmail.com\" target=\"_self\">natuurpunt.genk@hotmail.com<\/a> en we reserveren alvast een plaatsje en drankje voor u.<\/p>\n<p>Bijdrage aan deze avond: leden Natuurpunt 3 € – niet leden 5 €<\/p>
+  """
+  # geen \n na elke 60-tal karakters (wordt nu automatisch toegevoegd: III-1638)
+  # korte en lange beschrijving worden samengevoegd; > het aantal karakters van korte beschrijving wordt vergeleken met zelfde aantal karakters van lange beschrijving (stripped van html-opmaak): indien beide identiek zijn wordt de korte beschrijving niet samengevoegd aan lange beschrijving
+  # html longdescription wordt behouden

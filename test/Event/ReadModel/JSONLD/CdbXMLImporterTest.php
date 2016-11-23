@@ -550,7 +550,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_import_a_calendar_with_multiple_timestamps_and_start_times()
     {
-        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_and_end_time.xml');
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_times.xml');
 
         $this->assertEquals('multiple', $jsonEvent->calendarType);
         $this->assertEquals('2017-02-06T13:00:00+01:00', $jsonEvent->startDate);

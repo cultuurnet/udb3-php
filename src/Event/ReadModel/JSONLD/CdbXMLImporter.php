@@ -4,6 +4,8 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
 use CultureFeed_Cdb_Data_Keyword;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
@@ -11,6 +13,7 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\Timestamp;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -119,7 +122,8 @@ class CdbXMLImporter
 
         $this->cdbXMLItemBaseImporter->importPublicationInfo($event, $jsonLD);
 
-        $this->importCalendar($event, $jsonLD);
+        $calendar = $this->createCalendar($event);
+        $jsonLD = (object)array_merge((array)$jsonLD, $calendar->toJsonLd());
 
         $this->importTypicalAgeRange($event, $jsonLD);
 
@@ -536,81 +540,112 @@ class CdbXMLImporter
 
     /**
      * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
+     * @return Calendar
      */
-    private function importCalendar(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
+    private function createCalendar(\CultureFeed_Cdb_Item_Event $event)
     {
-        // To render the front-end we make a distinction between 4 calendar types
-        // Permanent and Periodic map directly to the Cdb calendar classes
-        // Simple timestamps are divided into single and multiple
-        $calendarType = 'unknown';
-        $calendar = $event->getCalendar();
+        $cdbCalendar = $event->getCalendar();
 
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+        // Get the calendar type.
+        $calendarType = '';
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
             $calendarType = 'permanent';
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
             $calendarType = 'periodic';
-            $calendar->rewind();
-            $firstCalendarItem = $calendar->current();
-            $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
-            $startDate = DateTimeFactory::dateTimeFromDateString($startDateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
-            $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
-
-            $jsonLD->startDate = $startDate->format('c');
-            $jsonLD->endDate = $endDate->format('c');
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
             $calendarType = 'single';
-            $calendar->rewind();
-            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $firstCalendarItem */
-            $firstCalendarItem = $calendar->current();
-            if ($firstCalendarItem->getStartTime()) {
-                $dateString =
-                    $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
-            } else {
-                $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
+            if (iterator_count($cdbCalendar) > 1) {
+                $calendarType = 'multiple';
             }
-
-            $startDate = DateTimeFactory::dateTimeFromDateString($dateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = null;
-            if ($lastCalendarItem->getEndTime()) {
-                $endDateString =
-                    $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
-            } else {
-                if (iterator_count($calendar) > 1) {
-                    $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
-                }
-            }
-
-            if ($endDateString) {
-                $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
-                $jsonLD->endDate = $endDate->format('c');
-
-                if ($startDate->format('Ymd') != $endDate->format('Ymd')) {
-                    $calendarType = 'multiple';
-                }
-            }
-
-            $jsonLD->startDate = $startDate->format('c');
         }
 
-        $jsonLD->calendarType = $calendarType;
+        // Get the start day.
+        $cdbCalendar->rewind();
+        $startDateString = '';
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            /** @var \CultureFeed_Cdb_Data_Calendar_Period $period */
+            $period = $cdbCalendar->current();
+            $startDateString = $period->getDateFrom() . 'T00:00:00';
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
+            $timestamp = $cdbCalendar->current();
+            if ($timestamp->getStartTime()) {
+                $startDateString = $timestamp->getDate() . 'T' . $timestamp->getStartTime();
+            } else {
+                $startDateString = $timestamp->getDate() . 'T00:00:00';
+            }
+        }
+        $startDate = !empty($startDateString) ? DateTimeFactory::dateTimeFromDateString($startDateString) : null;
+
+        // Get the end day.
+        $cdbCalendar->rewind();
+        $endDateString = '';
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            /** @var \CultureFeed_Cdb_Data_Calendar_Period $period */
+            $period = $cdbCalendar->current();
+            $endDateString = $period->getDateTo() . 'T00:00:00';
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            $firstTimestamp = $cdbCalendar->current();
+            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
+            $cdbCalendarAsArray = iterator_to_array($cdbCalendar);
+            $timestamp = iterator_count($cdbCalendar) > 1 ? end($cdbCalendarAsArray) : $firstTimestamp;
+            if ($timestamp->getEndTime()) {
+                $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
+            } else {
+                $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : 'T00:00:00';
+                $endDateString = $timestamp->getDate() . 'T' . $endTime;
+            }
+        }
+        $endDate = !empty($endDateString) ? DateTimeFactory::dateTimeFromDateString($endDateString) : null;
+
+        // Get the time stamps.
+        $cdbCalendar->rewind();
+        $timestamps = [];
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            while ($cdbCalendar->valid()) {
+                /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
+                $timestamp = $cdbCalendar->current();
+                $cdbCalendar->next();
+
+                if ($timestamp->getStartTime()) {
+                    $startDateString = $timestamp->getDate() . 'T' . $timestamp->getStartTime();
+                } else {
+                    $startDateString = $timestamp->getDate() . 'T00:00:00';
+                }
+
+                if ($timestamp->getEndTime()) {
+                    $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
+                } else {
+                    $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : 'T00:00:00';
+                    $endDateString = $timestamp->getDate() . 'T' . $endTime;
+                }
+
+                $timestamps[] = new Timestamp(
+                    DateTimeFactory::dateTimeFromDateString($startDateString),
+                    DateTimeFactory::dateTimeFromDateString($endDateString)
+                );
+            }
+
+        }
+
+        // TODO Get the opening hours from weekscheme
+        $openingHours = [];
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            /** @var $weekscheme \CultureFeed_Cdb_Data_Calendar_Weekscheme */
+            $weekscheme = $cdbCalendar->getWeekScheme();
+
+            /** \CultureFeed_Cdb_Data_Calendar_SchemeDay */
+        }
+
+        $calendar = new Calendar(
+            CalendarType::fromNative($calendarType),
+            $startDate,
+            $endDate,
+            $timestamps,
+            $openingHours
+        );
+
+        return $calendar;
     }
 
     /**

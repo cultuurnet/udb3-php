@@ -177,7 +177,7 @@ class CdbXMLImporter
         if ($shortDescription) {
             $shortDescription = trim($shortDescription);
 
-            if (0 !== strncmp($longDescription, $shortDescription, mb_strlen($shortDescription))) {
+            if (!$this->longDescriptionStartsWithShortDescription($longDescription, $shortDescription)) {
                 $descriptions[] = $shortDescription;
             }
         }
@@ -186,7 +186,7 @@ class CdbXMLImporter
             $longDescription = $descriptionFilter->filter($longDescription);
         };
 
-        $descriptions[] = $longDescription;
+        $descriptions[] = trim($longDescription);
 
         $descriptions = array_filter($descriptions);
         $description = implode("\n\n", $descriptions);
@@ -763,5 +763,19 @@ class CdbXMLImporter
         if (!in_array($reference, $jsonLD->sameAs)) {
             array_push($jsonLD->sameAs, $reference);
         }
+    }
+
+    /**
+     * @param string $longDescription
+     * @param string $shortDescription
+     * @return bool
+     */
+    private function longDescriptionStartsWithShortDescription(
+        $longDescription,
+        $shortDescription
+    ) {
+        $longDescription = strip_tags(html_entity_decode($longDescription));
+
+        return 0 === strncmp($longDescription, $shortDescription, mb_strlen($shortDescription));
     }
 }

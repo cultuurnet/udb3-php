@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -506,6 +507,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $schemaVersion = '3.2'
     ) {
         // @todo Move this to CdbXmlImporter
+        $this->importer->addDescriptionFilter(new StripSourceStringFilter());
         $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
 
         $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, $schemaVersion);

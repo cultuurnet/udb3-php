@@ -56,14 +56,14 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      * @param string $fileName
      * @return \stdClass
      */
-    private function createJsonEventFromCdbXml($fileName)
+    private function createJsonEventFromCdbXml($fileName, $version = '3.2')
     {
         $cdbXml = file_get_contents(
             __DIR__ . '/' . $fileName
         );
 
         $event = EventItemFactory::createEventFromCdbXml(
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL',
+            "http://www.cultuurdatabank.com/XMLSchema/CdbXSD/{$version}/FINAL",
             $cdbXml
         );
 
@@ -470,52 +470,48 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     * @group issue-III-165
+     * Provides cdbxml with descriptions and the expected UDB3 description.
      */
-    public function it_combines_short_and_long_description_as_description()
+    public function descriptionsProvider()
     {
-        // @todo Move this to CdbXmlImporter
-        $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
-
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_short_and_long_description.cdbxml.xml');
-
-        $this->assertEquals(
-            file_get_contents(__DIR__ . '/description.txt'),
-            $jsonEvent->description['nl']
+        return array(
+            'merge short description and long description when short description is not repeated in long description for events' => array(
+                'event_with_short_and_long_description.cdbxml.xml',
+                'description.txt'
+            ),
+            'use long description when there is no short description in UDB2' => array(
+                'event_without_short_description.cdbxml.xml',
+                'description_from_only_long_description.txt',
+            ),
+            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description' => array(
+                'event_with_short_description_included_in_long_description.cdbxml.xml',
+                'description.txt',
+            ),
+            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description' => array(
+                'event_vertelavond_jan_gabriels.cdbxml.xml',
+                'description_vertelavond_jan_gabriels.txt',
+                '3.3',
+            ),
         );
     }
 
     /**
      * @test
      * @group issue-III-165
+     * @dataProvider descriptionsProvider
      */
-    public function it_only_uses_long_description_when_short_description_is_missing()
-    {
+    public function it_combines_long_and_short_description_to_one_description(
+        $cdbxmlFile,
+        $expectedDescriptionFile,
+        $schemaVersion = '3.2'
+    ) {
         // @todo Move this to CdbXmlImporter
         $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
 
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_without_short_description.cdbxml.xml');
+        $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, $schemaVersion);
 
         $this->assertEquals(
-            file_get_contents(__DIR__ . '/description_from_only_long_description.txt'),
-            $jsonEvent->description['nl']
-        );
-    }
-
-    /**
-     * @test
-     * @group issue-III-165
-     */
-    public function it_only_uses_long_description_when_it_includes_short_description()
-    {
-        // @todo Move this to CdbXmlImporter
-        $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
-
-        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_short_description_included_in_long_description.cdbxml.xml');
-
-        $this->assertEquals(
-            file_get_contents(__DIR__ . '/description.txt'),
+            file_get_contents(__DIR__ . '/' . $expectedDescriptionFile),
             $jsonEvent->description['nl']
         );
     }

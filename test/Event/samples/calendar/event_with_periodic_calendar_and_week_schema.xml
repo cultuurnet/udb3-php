@@ -14,25 +14,29 @@
     <calendar>
       <periods>
         <period>
-          <datefrom>2017-02-09</datefrom>
-          <dateto>2017-02-19</dateto>
+          <datefrom>2017-06-13</datefrom>
+          <dateto>2018-01-08</dateto>
           <weekscheme>
             <monday opentype="open">
-              <openingtime from="20:30:00"/>
+              <openingtime from="10:00:00" to="18:00:00"/>
             </monday>
-            <tuesday opentype="closed"/>
-            <wednesday opentype="closed"/>
+            <tuesday opentype="open">
+              <openingtime from="10:00:00" to="18:00:00"/>
+            </tuesday>
+            <wednesday opentype="open">
+              <openingtime from="10:00:00" to="18:00:00"/>
+            </wednesday>
             <thursday opentype="open">
-              <openingtime from="20:30:00"/>
+              <openingtime from="10:00:00" to="18:00:00"/>
             </thursday>
             <friday opentype="open">
-              <openingtime from="20:30:00"/>
+              <openingtime from="10:00:00" to="18:00:00"/>
             </friday>
             <saturday opentype="open">
-              <openingtime from="20:30:00"/>
+              <openingtime from="10:00:00" to="18:00:00"/>
             </saturday>
             <sunday opentype="open">
-              <openingtime from="16:00:00"/>
+              <openingtime from="08:00:00" to="12:00:00"/>
             </sunday>
           </weekscheme>
         </period>
@@ -59,7 +63,7 @@
     </contactinfo>
     <eventdetails>
       <eventdetail lang="nl">
-        <calendarsummary>van 09/02/17 tot 19/02/17 
+        <calendarsummary>van 09/02/17 tot 19/02/17
 open ma, do, vrij, za van 20:30 tot 00:00, zo van 16:00 tot 00:00</calendarsummary>
         <media>
           <file>
@@ -92,7 +96,7 @@ open ma, do, vrij, za van 20:30 tot 00:00, zo van 16:00 tot 00:00</calendarsumma
         <title>Oscar et la Dame Rose </title>
       </eventdetail>
       <eventdetail lang="fr">
-        <calendarsummary>de 09/02/17 à 19/02/17 
+        <calendarsummary>de 09/02/17 à 19/02/17
 ouvert lun, jeu, ven, sam de 20:30 à 00:00, dim de 16:00 à 00:00</calendarsummary>
         <longdescription>D'Eric-Emmanuel Schmitt. &lt;br /&gt;
 Mise en scène de Jean-Luc Duray.&lt;br /&gt;
@@ -104,12 +108,12 @@ Une pièce Drôle et Emouvante. &lt;br /&gt;
 </longdescription>
         <shortdescription>Une amitié singulière naît entre Oscar et Rose.
 Tous les deux sont loin d'imaginer à quel point cette complicité va bouleverser leur destin.
-Une pièce Drôle et Emouvante. 
+Une pièce Drôle et Emouvante.
 </shortdescription>
         <title>Oscar et la Dame Rose </title>
       </eventdetail>
       <eventdetail lang="en">
-        <calendarsummary>from 09/02/17 to 19/02/17 
+        <calendarsummary>from 09/02/17 to 19/02/17
 open Mon, Thu, Fri, Sat from 20:30 to 00:00, Sun from 16:00 to 00:00</calendarsummary>
         <title>Oscar et la Dame Rose </title>
       </eventdetail>

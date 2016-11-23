@@ -13,47 +13,22 @@
         <timestamp>
           <date>2017-02-06</date>
           <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
+          <timeend>16:45:00</timeend>
         </timestamp>
         <timestamp>
           <date>2017-02-20</date>
           <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
+          <timeend>16:45:00</timeend>
         </timestamp>
         <timestamp>
           <date>2017-03-06</date>
           <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
+          <timeend>16:45:00</timeend>
         </timestamp>
         <timestamp>
           <date>2017-03-20</date>
           <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
-        </timestamp>
-        <timestamp>
-          <date>2017-05-15</date>
-          <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
-        </timestamp>
-        <timestamp>
-          <date>2017-05-29</date>
-          <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
-        </timestamp>
-        <timestamp>
-          <date>2017-06-12</date>
-          <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
-        </timestamp>
-        <timestamp>
-          <date>2017-06-19</date>
-          <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
-        </timestamp>
-        <timestamp>
-          <date>2017-06-26</date>
-          <timestart>13:00:00</timestart>
-          <timeend>16:55:00</timeend>
+          <timeend>16:45:00</timeend>
         </timestamp>
       </timestamps>
     </calendar>

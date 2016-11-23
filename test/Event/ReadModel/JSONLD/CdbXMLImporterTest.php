@@ -475,57 +475,108 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_should_import_a_calendar_with_multiple_timestamps_and_timing()
+    public function it_should_import_a_calendar_with_timestamp_without_timing()
     {
-        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_timing.xml');
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_without_timing.xml');
 
+        $this->assertEquals('single', $jsonEvent->calendarType);
+        $this->assertEquals('2016-12-31T00:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2016-12-31T00:00:00+01:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_timestamp_and_start_date()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_and_start_time.xml');
+
+        $this->assertEquals('single', $jsonEvent->calendarType);
+        $this->assertEquals('2017-04-27T20:15:00+02:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-04-27T20:15:00+02:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_timestamp_and_start_and_end_date()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_and_start_and_end_time.xml');
+
+        $this->assertEquals('single', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-26T11:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-02-26T12:30:00+01:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_multiple_timestamps_and_start_and_end_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_and_end_times.xml');
+
+        $this->assertEquals('multiple', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-06T13:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-03-20T16:45:00+01:00', $jsonEvent->endDate);
         $this->assertEquals(
             [
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-02-06T00:00:00+01:00",
-                    "endDate" => "2017-02-06T23:59:00+01:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-06T13:00:00+01:00',
+                    'endDate' => '2017-02-06T16:45:00+01:00'
                 ],
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-02-20T00:00:00+01:00",
-                    "endDate" => "2017-02-20T23:59:00+01:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-20T13:00:00+01:00',
+                    'endDate' => '2017-02-20T16:45:00+01:00'
                 ],
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-03-06T00:00:00+01:00",
-                    "endDate" => "2017-03-06T23:59:00+01:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-06T13:00:00+01:00',
+                    'endDate' => '2017-03-06T16:45:00+01:00'
                 ],
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-03-20T00:00:00+01:00",
-                    "endDate" => "2017-03-20T23:59:00+01:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-20T13:00:00+01:00',
+                    'endDate' => '2017-03-20T16:45:00+01:00'
+                ],
+            ],
+            $jsonEvent->subEvent
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_multiple_timestamps_and_start_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_and_end_time.xml');
+
+        $this->assertEquals('multiple', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-06T13:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-03-20T13:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-06T13:00:00+01:00',
+                    'endDate' => '2017-02-06T13:00:00+01:00'
                 ],
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-05-15T00:00:00+02:00",
-                    "endDate" => "2017-05-15T23:59:00+02:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-20T13:00:00+01:00',
+                    'endDate' => '2017-02-20T13:00:00+01:00'
                 ],
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-05-29T00:00:00+02:00",
-                    "endDate" => "2017-05-29T23:59:00+02:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-06T13:00:00+01:00',
+                    'endDate' => '2017-03-06T13:00:00+01:00'
                 ],
                 [
-                    "@type" => "Event",
-                    "startDate" => "2017-06-12T00:00:00+02:00",
-                    "endDate" => "2017-06-12T23:59:00+02:00"
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-20T13:00:00+01:00',
+                    'endDate' => '2017-03-20T13:00:00+01:00'
                 ],
-                [
-                    "@type" => "Event",
-                    "startDate" => "2017-06-19T00:00:00+02:00",
-                    "endDate" => "2017-06-19T23:59:00+02:00"
-                ],
-                [
-                    "@type" => "Event",
-                    "startDate" => "2017-06-26T00:00:00+02:00",
-                    "endDate" => "2017-06-26T23:59:00+02:00"
-                ]
             ],
             $jsonEvent->subEvent
         );
@@ -538,8 +589,9 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_periodic_calendar.xml');
 
-        $this->assertEquals("2016-12-09T00:00:00+01:00", $jsonEvent->startDate);
-        $this->assertEquals("2016-12-11T00:00:00+01:00", $jsonEvent->endDate);
+        $this->assertEquals('periodic', $jsonEvent->calendarType);
+        $this->assertEquals('2016-12-09T00:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2016-12-11T00:00:00+01:00', $jsonEvent->endDate);
     }
 
     /**
@@ -549,27 +601,31 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_periodic_calendar_and_week_schema.xml');
 
-        $this->assertEquals("2017-02-09T00:00:00+01:00", $jsonEvent->startDate);
-        $this->assertEquals("2017-02-19T00:00:00+01:00", $jsonEvent->endDate);
-        $this->assertEquals([
+        $this->assertEquals('periodic', $jsonEvent->calendarType);
+        $this->assertEquals('2017-06-13T00:00:00+02:00', $jsonEvent->startDate);
+        $this->assertEquals('2018-01-08T00:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
             [
-                "dayOfWeek" => [
-                    "monday",
-                    "thursday",
-                    "friday",
-                    "saturday"
+                [
+                    'dayOfWeek' => [
+                        'monday',
+                        'tuesday',
+                        'wednesday',
+                        'thursday',
+                        'friday',
+                        'saturday'
+                    ],
+                    'opens' => '10:00',
+                    'closes' => '18:00'
                 ],
-                "opens" => "20:30",
-                "closes" => "20:30"
+                [
+                    'dayOfWeek' => [
+                        'sunday'
+                    ],
+                    'opens' => '08:00',
+                    'closes' => '12:00'
+                ]
             ],
-            [
-                "dayOfWeek" => [
-                    "sunday"
-                ],
-                "opens" => "16:00",
-                "closes" => "16:00"
-            ]
-        ],
             $jsonEvent->openingHours
         );
     }
@@ -581,7 +637,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_permanent_calendar.xml');
 
-        $this->assertEquals("permanent", $jsonEvent->calendarType);
+        $this->assertEquals('permanent', $jsonEvent->calendarType);
     }
 
     /**
@@ -591,53 +647,26 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_permanent_calendar_and_opening_hours.xml');
 
-        $this->assertEquals("permanent", $jsonEvent->calendarType);
-        $this->assertEquals([
+        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $this->assertEquals(
             [
-                "dayOfWeek" => [
-                    "wednesday",
-                    "thursday",
-                    "saturday",
+                [
+                    'dayOfWeek' => [
+                        'wednesday',
+                        'saturday',
+                    ],
+                    'opens' => '09:30',
+                    'closes' => '11:30'
                 ],
-                "opens" => "09:30",
-                "closes" => "11:30"
+                [
+                    'dayOfWeek' => [
+                        'thursday'
+                    ],
+                    'opens' => '09:00',
+                    'closes' => '17:00'
+                ]
             ],
-        ],
             $jsonEvent->openingHours
         );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_import_a_calendar_with_timestamp_and_start_and_end_date()
-    {
-        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_and_start_and_end_time.xml');
-
-        $this->assertEquals("single", $jsonEvent->calendarType);
-        $this->assertEquals("2017-02-26T11:00:00+01:00", $jsonEvent->startDate);
-        $this->assertEquals("2017-02-26T12:30:00+01:00", $jsonEvent->endDate);
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_import_a_calendar_with_timestamp_and_start_date()
-    {
-        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_and_start_time.xml');
-
-        $this->assertEquals("single", $jsonEvent->calendarType);
-        $this->assertEquals("2017-04-27T20:15:00+02:00", $jsonEvent->startDate);
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_import_a_calendar_with_timestamp_without_timing()
-    {
-        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_without_timing.xml');
-
-        $this->assertEquals("single", $jsonEvent->calendarType);
-        $this->assertEquals("2016-12-31T00:00:00+01:00", $jsonEvent->startDate);
     }
 }

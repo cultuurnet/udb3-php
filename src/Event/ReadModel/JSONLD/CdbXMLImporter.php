@@ -11,9 +11,12 @@ use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
+use CultuurNet\UDB3\OpeningHour;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Timestamp;
+use ValueObjects\DateTime\Time;
+use ValueObjects\DateTime\WeekDay;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -546,7 +549,9 @@ class CdbXMLImporter
     {
         $cdbCalendar = $event->getCalendar();
 
+        //
         // Get the calendar type.
+        //
         $calendarType = '';
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
             $calendarType = 'permanent';
@@ -559,7 +564,9 @@ class CdbXMLImporter
             }
         }
 
+        //
         // Get the start day.
+        //
         $cdbCalendar->rewind();
         $startDateString = '';
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
@@ -577,7 +584,9 @@ class CdbXMLImporter
         }
         $startDate = !empty($startDateString) ? DateTimeFactory::dateTimeFromDateString($startDateString) : null;
 
+        //
         // Get the end day.
+        //
         $cdbCalendar->rewind();
         $endDateString = '';
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
@@ -598,7 +607,9 @@ class CdbXMLImporter
         }
         $endDate = !empty($endDateString) ? DateTimeFactory::dateTimeFromDateString($endDateString) : null;
 
+        //
         // Get the time stamps.
+        //
         $cdbCalendar->rewind();
         $timestamps = [];
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
@@ -606,7 +617,6 @@ class CdbXMLImporter
                 /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
                 $timestamp = $cdbCalendar->current();
                 $cdbCalendar->next();
-
 
                 if ($timestamp->getStartTime()) {
                     $startDateString = $timestamp->getDate() . 'T' . $timestamp->getStartTime();
@@ -627,15 +637,71 @@ class CdbXMLImporter
 
         }
 
-        // TODO Get the opening hours from weekscheme
+        //
+        // Get the opening hours.
+        //
         $cdbCalendar->rewind();
-        $openingHours = [];
-        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            /** @var \CultureFeed_Cdb_Data_Calendar_Period $period */
-            $period = $cdbCalendar->current();
-            $weekscheme = $period->getWeekScheme();
+        $openingHoursAsArray = [];
 
-            /** \CultureFeed_Cdb_Data_Calendar_SchemeDay */
+        $weekSchema = null;
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            $period = $cdbCalendar->current();
+            $weekSchema = $period->getWeekScheme();
+        } else if ($cdbCalendar instanceof  \CultureFeed_Cdb_Data_Calendar_Permanent) {
+            $weekSchema = $cdbCalendar->getWeekScheme();
+        }
+
+        if ($weekSchema) {
+            $days = $weekSchema->getDays();
+
+            /** @var OpeningHour[] $openingHours */
+            $openingHours = [];
+            foreach ($days as $day) {
+                if ($day->isOpen()) {
+                    /** @var \CultureFeed_Cdb_Data_Calendar_OpeningTime[] $openingTimes */
+                    $openingTimes = $day->getOpeningTimes();
+                    $opens = \DateTime::createFromFormat(
+                        'H:i:s', $openingTimes[0]->getOpenFrom()
+                    );
+                    $closes = \DateTime::createFromFormat(
+                        'H:i:s', $openingTimes[0]->getOpenTill()
+                    );
+
+                    $newOpeningHour = new OpeningHour(
+                        WeekDay::fromNative(ucfirst($day->getDayName())),
+                        Time::fromNativeDateTime($opens),
+                        Time::fromNativeDateTime($closes)
+                    );
+
+                    $merged = false;
+                    foreach ($openingHours as $openingHour) {
+                        if ($openingHour->equalHours($newOpeningHour)) {
+                            $openingHour->mergeWeekday($newOpeningHour);
+                            $merged = true;
+                            break;
+                        }
+                    }
+
+                    if (!$merged) {
+                        $openingHours[] = $newOpeningHour;
+                    }
+                }
+            }
+
+            if (count($openingHours) > 0) {
+                foreach ($openingHours as $openingHour) {
+                    $openingHoursAsArray[] = [
+                        'dayOfWeek' => array_map(
+                            function (WeekDay $weekDay) {
+                                return strtolower($weekDay->toNative());
+                            },
+                            $openingHour->getWeekDays()
+                        ),
+                        'opens' => $openingHour->getOpens()->toNativeDateTime()->format('H:i'),
+                        'closes' => (string)$openingHour->getCloses()->toNativeDateTime()->format('H:i'),
+                    ];
+                }
+            }
         }
 
         $calendar = new Calendar(
@@ -643,7 +709,7 @@ class CdbXMLImporter
             $startDate,
             $endDate,
             $timestamps,
-            $openingHours
+            $openingHoursAsArray
         );
 
         return $calendar;

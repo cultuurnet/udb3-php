@@ -6,7 +6,7 @@ namespace CultuurNet\UDB3\Event;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsInappropriate;
@@ -69,9 +69,9 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     /**
      * @return string
      */
-    protected function getDeleteLabelClassName()
+    protected function getRemoveLabelClassName()
     {
-        return DeleteLabel::class;
+        return RemoveLabel::class;
     }
 
     /**

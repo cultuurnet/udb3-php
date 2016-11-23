@@ -113,7 +113,7 @@ abstract class Offer extends EventSourcedAggregateRoot
     /**
      * @param Label $label
      */
-    public function deleteLabel(Label $label)
+    public function removeLabel(Label $label)
     {
         if ($this->labels->contains($label)) {
             $this->apply(

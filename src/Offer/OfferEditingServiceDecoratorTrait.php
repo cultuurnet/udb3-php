@@ -23,10 +23,10 @@ trait OfferEditingServiceDecoratorTrait
             ->addLabel($id, $label);
     }
 
-    public function deleteLabel($id, Label $label)
+    public function removeLabel($id, Label $label)
     {
         return $this->getDecoratedEditingService()
-            ->deleteLabel($id, $label);
+            ->removeLabel($id, $label);
     }
 
     public function translateTitle($id, Language $language, StringLiteral $title)

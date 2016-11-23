@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Place\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Place\Commands\RemoveImage;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
-use CultuurNet\UDB3\Place\Commands\DeleteLabel;
+use CultuurNet\UDB3\Place\Commands\RemoveLabel;
 use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteTypicalAgeRange;
@@ -48,9 +48,9 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     /**
      * @return string
      */
-    protected function getDeleteLabelClassName()
+    protected function getRemoveLabelClassName()
     {
-        return DeleteLabel::class;
+        return RemoveLabel::class;
     }
 
     /**

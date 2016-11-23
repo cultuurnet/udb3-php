@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Item;
 use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
-use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
@@ -33,9 +33,9 @@ class ItemCommandHandler extends OfferCommandHandler
         return AddLabel::class;
     }
 
-    protected function getDeleteLabelClassName()
+    protected function getRemoveLabelClassName()
     {
-        return DeleteLabel::class;
+        return RemoveLabel::class;
     }
 
     protected function getAddImageClassName()

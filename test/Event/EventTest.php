@@ -360,7 +360,7 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given($givens)
             ->when(
                 function (Event $event) use ($label) {
-                    $event->deleteLabel($label);
+                    $event->removeLabel($label);
                 }
             )
             ->then(
@@ -441,7 +441,7 @@ class EventTest extends AggregateRootScenarioTestCase
             ->given($givens)
             ->when(
                 function (Event $event) use ($label) {
-                    $event->deleteLabel($label);
+                    $event->removeLabel($label);
                 }
             )
             ->then([]);

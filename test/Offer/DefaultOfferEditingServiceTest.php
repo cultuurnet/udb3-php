@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
@@ -59,9 +59,9 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $addLabelCommand;
 
     /**
-     * @var AbstractDeleteLabel
+     * @var AbstractRemoveLabel
      */
-    private $deleteLabelCommand;
+    private $removeLabelCommand;
 
     /**
      * @var string
@@ -91,8 +91,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             array('foo', new Label('label1'))
         );
 
-        $this->deleteLabelCommand = $this->getMockForAbstractClass(
-            AbstractDeleteLabel::class,
+        $this->removeLabelCommand = $this->getMockForAbstractClass(
+            AbstractRemoveLabel::class,
             array('foo', new Label('label1'))
         );
 
@@ -154,7 +154,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with('foo');
 
         $this->commandFactory->expects($this->once())
-            ->method('createDeleteLabelCommand')
+            ->method('createRemoveLabelCommand')
             ->with('foo', new Label('label1'))
             ->willReturn($this->addLabelCommand);
 
@@ -162,7 +162,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->willReturn($this->expectedCommandId);
 
-        $commandId = $this->offerEditingService->deleteLabel('foo', new Label('label1'));
+        $commandId = $this->offerEditingService->removeLabel('foo', new Label('label1'));
 
         $this->assertEquals($this->expectedCommandId, $commandId);
     }

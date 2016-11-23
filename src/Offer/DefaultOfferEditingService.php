@@ -109,12 +109,12 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
      * @param Label $label
      * @return string
      */
-    public function deleteLabel($id, Label $label)
+    public function removeLabel($id, Label $label)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createDeleteLabelCommand(
+            $this->commandFactory->createRemoveLabelCommand(
                 $id,
                 $label
             )

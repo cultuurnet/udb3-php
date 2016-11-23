@@ -103,7 +103,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_should_remember_which_labels_are_deleted()
+    public function it_should_remember_which_labels_were_removed()
     {
         $itemId = UUID::generateAsString();
 
@@ -117,7 +117,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                     $item->addLabel(new Label('orange'));
                     $item->addLabel(new Label('green'));
 
-                    $item->deleteLabel(new Label('purple'));
+                    $item->removeLabel(new Label('purple'));
                     $item->addLabel(new Label('purple'));
                 }
             )

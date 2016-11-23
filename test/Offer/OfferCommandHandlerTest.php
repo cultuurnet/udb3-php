@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
-use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
@@ -35,7 +35,7 @@ use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ItemCommandHandler;
 use CultuurNet\UDB3\Offer\Item\ItemRepository;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel as AddLabelToSomethingElse;
-use CultuurNet\UDB3\Offer\Mock\Commands\DeleteLabel as DeleteLabelFromSomethingElse;
+use CultuurNet\UDB3\Offer\Mock\Commands\RemoveLabel as RemoveLabelFromSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSomethingElse;
@@ -180,7 +180,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_delete_label_commands_from_the_correct_namespace()
+    public function it_handles_remove_label_commands_from_the_correct_namespace()
     {
         $this->scenario
             ->withAggregateId($this->id)
@@ -191,7 +191,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(
-                new DeleteLabel($this->id, $this->label)
+                new RemoveLabel($this->id, $this->label)
             )
             ->then(
                 [
@@ -203,7 +203,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_ignores_delete_label_commands_from_incorrect_namespaces()
+    public function it_ignores_remove_label_commands_from_incorrect_namespaces()
     {
         $this->scenario
             ->withAggregateId($this->id)
@@ -214,7 +214,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(
-                new DeleteLabelFromSomethingElse($this->id, $this->label)
+                new RemoveLabelFromSomethingElse($this->id, $this->label)
             )
             ->then([]);
     }

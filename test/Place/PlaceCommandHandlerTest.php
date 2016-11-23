@@ -21,7 +21,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
-use CultuurNet\UDB3\Place\Commands\DeleteLabel;
+use CultuurNet\UDB3\Place\Commands\RemoveLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
 use CultuurNet\UDB3\Place\Commands\TranslateDescription;
@@ -195,7 +195,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelAdded($id, new Label('foo'))
                 ]
             )
-            ->when(new DeleteLabel($id, new Label('foo')))
+            ->when(new RemoveLabel($id, new Label('foo')))
             ->then([new LabelRemoved($id, new Label('foo'))]);
     }
 
@@ -210,7 +210,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new DeleteLabel($id, new Label('foo')))
+            ->when(new RemoveLabel($id, new Label('foo')))
             ->then([]);
     }
 
@@ -229,7 +229,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelRemoved($id, new Label('foo'))
                 ]
             )
-            ->when(new DeleteLabel($id, new Label('foo')))
+            ->when(new RemoveLabel($id, new Label('foo')))
             ->then([]);
     }
 

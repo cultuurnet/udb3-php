@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
@@ -112,7 +112,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
-    abstract protected function getDeleteLabelClassName();
+    abstract protected function getRemoveLabelClassName();
 
     /**
      * @return string
@@ -233,12 +233,12 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
-     * @param AbstractDeleteLabel $deleteLabel
+     * @param AbstractRemoveLabel $removeLabel
      */
-    private function handleDeleteLabel(AbstractDeleteLabel $deleteLabel)
+    private function handleRemoveLabel(AbstractRemoveLabel $removeLabel)
     {
-        $offer = $this->load($deleteLabel->getItemId());
-        $offer->deleteLabel($deleteLabel->getLabel());
+        $offer = $this->load($removeLabel->getItemId());
+        $offer->removeLabel($removeLabel->getLabel());
         $this->offerRepository->save($offer);
     }
 

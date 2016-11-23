@@ -184,7 +184,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->deleteLabel($id, new Label('foo'));
+        $this->eventEditingService->RemoveLabel($id, new Label('foo'));
     }
 
     /**

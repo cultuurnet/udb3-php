@@ -211,7 +211,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerImported->getCdbXml()
         );
 
-        $this->labels = LabelCollection::fromStrings($actor->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
 
     /**
@@ -225,7 +225,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerUpdatedFromUDB2->getCdbXml()
         );
 
-        $this->labels = LabelCollection::fromStrings($actor->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
 
     /**

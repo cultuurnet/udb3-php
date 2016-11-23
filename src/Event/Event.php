@@ -347,7 +347,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
-        $this->labels = LabelCollection::fromStrings($udb2Event->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
 
     /**
@@ -379,7 +379,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->labels = LabelCollection::fromStrings($udb2Event->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
 
     protected function applyEventUpdatedFromCdbXml(
@@ -392,7 +392,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
         );
 
-        $this->labels = LabelCollection::fromStrings($udb2Event->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
 
     protected function applyLabelsMerged(

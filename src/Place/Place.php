@@ -220,7 +220,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Actor);
-        $this->labels = LabelCollection::fromStrings($udb2Actor->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
 
     /**
@@ -237,7 +237,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
-        $this->labels = LabelCollection::fromStrings($udb2Event->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
 
     /**
@@ -252,7 +252,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Actor);
-        $this->labels = LabelCollection::fromStrings($udb2Actor->getKeywords());
+        $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
 
     /**

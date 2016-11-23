@@ -36,31 +36,10 @@ class LabelImporter
             }
         );
 
-        $this->addKeywordsAsLabelsProperty($jsonLD, 'labels', $visibleKeywords);
-        $this->addKeywordsAsLabelsProperty($jsonLD, 'hiddenLabels', $hiddenKeywords);
-    }
+        $visibleLabels = LabelCollection::fromKeywords($visibleKeywords)->toStrings();
+        $hiddenLabels = LabelCollection::fromKeywords($hiddenKeywords)->toStrings();
 
-    /**
-     * @param object $jsonLD
-     * @param string $labelsPropertyName
-     *  The property where the labels should be listed. Used the differentiate between visible and hidden labels.
-     * @param CultureFeed_Cdb_Data_Keyword[] $keywords
-     */
-    private function addKeywordsAsLabelsProperty($jsonLD, $labelsPropertyName, array $keywords)
-    {
-        $labels = array_map(
-            function ($keyword) {
-                /** @var CultureFeed_Cdb_Data_Keyword $keyword */
-                return $keyword->getValue();
-            },
-            $keywords
-        );
-
-        // Create a label collection to get rid of duplicates.
-        $labelCollection = LabelCollection::fromStrings($labels);
-
-        if (count($labelCollection) > 0) {
-            $jsonLD->{$labelsPropertyName} = $labelCollection->toStrings();
-        }
+        empty($visibleLabels) ?: $jsonLD->labels = $visibleLabels;
+        empty($hiddenLabels) ?: $jsonLD->hiddenLabels = $hiddenLabels;
     }
 }

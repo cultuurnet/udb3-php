@@ -24,7 +24,7 @@ class StripSourceStringFilterTest extends StringFilterTest
             $source_element .
             $another_element;
 
-        $expected = $some_element . PHP_EOL .
+        $expected = $some_element .
             $another_element;
 
         $this->assertFilterValue($expected, $original);
@@ -45,7 +45,7 @@ class StripSourceStringFilterTest extends StringFilterTest
             $source_element .
             $some_element;
 
-        $expected = "<p>" . $without_element . "</p>" . PHP_EOL .
+        $expected = $without_element .
             $some_element;
 
         $this->assertFilterValue($expected, $original);
@@ -86,7 +86,7 @@ class StripSourceStringFilterTest extends StringFilterTest
             $source_element .
             $without_element;
 
-        $expected = "<p>" . $without_element . "</p>" .
+        $expected = $without_element .
             $without_element;
 
         $this->assertFilterValue($expected, $original);

@@ -8,18 +8,14 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
-use CultuurNet\UDB3\Label\ValueObjects\Privacy;
-use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
@@ -30,11 +26,8 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
-use stdClass;
-use ValueObjects\Web\Url;
 use ValueObjects\Geography\Country;
-use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\Web\Url;
 
 class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -138,7 +131,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             ['http://www.google.be']
         );
 
-        $jsonLD = new stdClass();
+        $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
         $jsonLD->name = 'some representative title';
@@ -188,7 +181,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             new Title('some representative title')
         );
 
-        $jsonLD = new stdClass();
+        $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
         $jsonLD->url = 'http://www.stuk.be';
@@ -392,7 +385,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_handles_label_added()
     {
         $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
-        $label = new Label('labelName');
+        $label = new Label('labelName', true);
 
         $this->mockGet($organizerId, 'organizer.json');
 
@@ -400,6 +393,24 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $domainMessage = $this->createDomainMessage($labelAdded);
 
         $this->expectSave($organizerId, 'organizer_with_one_label.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_invisible_label_added()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $label = new Label('labelName', false);
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $labelAdded = new LabelAdded($organizerId, $label);
+        $domainMessage = $this->createDomainMessage($labelAdded);
+
+        $this->expectSave($organizerId, 'organizer_with_one_label_invisible.json');
 
         $this->projector->handle($domainMessage);
     }
@@ -450,6 +461,24 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 'organizer_with_two_labels.json'
             ]
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_invisible_label_removed()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $label = new Label('labelName', false);
+
+        $this->mockGet($organizerId, 'organizer_with_one_label_invisible.json');
+
+        $labelRemoved = new LabelRemoved($organizerId, $label);
+        $domainMessage = $this->createDomainMessage($labelRemoved);
+
+        $this->expectSave($organizerId, 'organizer.json');
+
+        $this->projector->handle($domainMessage);
     }
 
     /**

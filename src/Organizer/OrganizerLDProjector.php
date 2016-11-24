@@ -263,7 +263,6 @@ class OrganizerLDProjector extends ActorLDProjector
                 } else {
                     unset($jsonLD->{$labelsProperty});
                 }
-
             }
         }
 

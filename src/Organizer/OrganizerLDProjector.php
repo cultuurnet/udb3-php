@@ -241,29 +241,33 @@ class OrganizerLDProjector extends ActorLDProjector
         $document = $this->repository->get($labelRemoved->getOrganizerId());
         $jsonLD = $document->getBody();
 
-        // Check the visibility of the label to update the right property.
-        $labelsProperty = $labelRemoved->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
+        // Don't presume that the label visibility is correct when removing.
+        // So iterate over both the visible and invisible labels.
+        $labelsProperties = ['labels', 'hiddenLabels'];
 
-        if (isset($jsonLD->{$labelsProperty}) && is_array($jsonLD->{$labelsProperty})) {
-            $jsonLD->{$labelsProperty} = array_filter(
-                $jsonLD->{$labelsProperty},
-                function ($label) use ($labelRemoved) {
-                    return !$labelRemoved->getLabel()->equals(
-                        new Label($label)
-                    );
+        foreach ($labelsProperties as $labelsProperty) {
+            if (isset($jsonLD->{$labelsProperty}) && is_array($jsonLD->{$labelsProperty})) {
+                $jsonLD->{$labelsProperty} = array_filter(
+                    $jsonLD->{$labelsProperty},
+                    function ($label) use ($labelRemoved) {
+                        return !$labelRemoved->getLabel()->equals(
+                            new Label($label)
+                        );
+                    }
+                );
+
+                // Ensure array keys start with 0 so json_encode() does encode it
+                // as an array and not as an object.
+                if (count($jsonLD->{$labelsProperty}) > 0) {
+                    $jsonLD->{$labelsProperty} = array_values($jsonLD->{$labelsProperty});
+                } else {
+                    unset($jsonLD->{$labelsProperty});
                 }
-            );
 
-            // Ensure array keys start with 0 so json_encode() does encode it
-            // as an array and not as an object.
-            if (count($jsonLD->{$labelsProperty}) > 0) {
-                $jsonLD->{$labelsProperty} = array_values($jsonLD->{$labelsProperty});
-            } else {
-                unset($jsonLD->{$labelsProperty});
             }
-
-            $this->repository->save($document->withBody($jsonLD));
         }
+
+        $this->repository->save($document->withBody($jsonLD));
     }
 
     /**

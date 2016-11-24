@@ -634,7 +634,6 @@ class CdbXMLImporter
                     DateTimeFactory::dateTimeFromDateString($endDateString)
                 );
             }
-
         }
 
         //
@@ -661,10 +660,12 @@ class CdbXMLImporter
                     /** @var \CultureFeed_Cdb_Data_Calendar_OpeningTime[] $openingTimes */
                     $openingTimes = $day->getOpeningTimes();
                     $opens = \DateTime::createFromFormat(
-                        'H:i:s', $openingTimes[0]->getOpenFrom()
+                        'H:i:s',
+                        $openingTimes[0]->getOpenFrom()
                     );
                     $closes = \DateTime::createFromFormat(
-                        'H:i:s', $openingTimes[0]->getOpenTill()
+                        'H:i:s',
+                        $openingTimes[0]->getOpenTill()
                     );
 
                     $newOpeningHour = new OpeningHour(

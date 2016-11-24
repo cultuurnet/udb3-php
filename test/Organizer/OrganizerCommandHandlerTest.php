@@ -8,12 +8,15 @@ use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -23,9 +26,9 @@ use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Title;
-use ValueObjects\Identity\UUID;
-use ValueObjects\Web\Url;
 use ValueObjects\Geography\Country;
+use ValueObjects\Identity\UUID;
+use ValueObjects\String\String as StringLiteral;
 
 class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -48,6 +51,11 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
      * @var OrganizerRepository
      */
     private $repository;
+
+    /**
+     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $labelRepository;
 
     /**
      * @var OrganizerRelationServiceInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -79,10 +87,28 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->eventBus = $this->getMock(EventBusInterface::class);
         $this->repository = new OrganizerRepository($this->eventStore, $this->eventBus);
 
+        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository->method('getByName')
+            ->will(
+                $this->returnCallback(function (StringLiteral $labelName) {
+                    return new Entity(
+                        new UUID(),
+                        $labelName,
+                        Visibility::INVISIBLE(),
+                        Privacy::PRIVACY_PRIVATE()
+                    );
+                })
+            );
+        
         $this->eventOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
         $this->placeOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
 
-        $this->commandHandler = (new OrganizerCommandHandler($this->repository))
+        $this->commandHandler = (
+            new OrganizerCommandHandler(
+                $this->repository,
+                $this->labelRepository
+            )
+        )
             ->withOrganizerRelationService($this->eventOrganizerRelationService)
             ->withOrganizerRelationService($this->placeOrganizerRelationService);
 
@@ -115,10 +141,13 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
     ) {
-        return new OrganizerCommandHandler(new OrganizerRepository(
-            $eventStore,
-            $eventBus
-        ));
+        return new OrganizerCommandHandler(
+            new OrganizerRepository(
+                $eventStore,
+                $eventBus
+            ),
+            $this->labelRepository
+        );
     }
 
     /**
@@ -127,7 +156,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_handles_add_label()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $label = new Label('foo');
+        $label = new Label('foo', false);
 
         $this->scenario
             ->withAggregateId($organizerId)
@@ -142,7 +171,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_does_not_add_the_same_label_twice()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $label = new Label('foo');
+        $label = new Label('foo', false);
 
         $this->scenario
             ->withAggregateId($organizerId)
@@ -193,8 +222,8 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_handle_complex_label_scenario()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelFoo = new Label('foo');
-        $labelBar = new Label('bar');
+        $labelFoo = new Label('foo', false);
+        $labelBar = new Label('bar', false);
 
         $this->scenario
             ->withAggregateId($organizerId)

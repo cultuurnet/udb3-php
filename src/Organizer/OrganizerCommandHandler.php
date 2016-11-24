@@ -4,9 +4,13 @@ namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use ValueObjects\String\String as StringLiteral;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 
 class OrganizerCommandHandler implements CommandHandlerInterface
 {
@@ -16,17 +20,25 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     private $organizerRepository;
 
     /**
+     * @var ReadRepositoryInterface
+     */
+    private $labelRepository;
+
+    /**
      * @var OrganizerRelationServiceInterface[]
      */
     private $organizerRelationServices;
 
     /**
      * @param RepositoryInterface $organizerRepository
+     * @param ReadRepositoryInterface $labelRepository
      */
     public function __construct(
-        RepositoryInterface $organizerRepository
+        RepositoryInterface $organizerRepository,
+        ReadRepositoryInterface $labelRepository
     ) {
         $this->organizerRepository = $organizerRepository;
+        $this->labelRepository = $labelRepository;
         $this->organizerRelationServices = [];
     }
 
@@ -74,7 +86,13 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = $this->loadOrganizer($addLabel->getOrganizerId());
 
-        $organizer->addLabel($addLabel->getLabel());
+        $labelName = new StringLiteral((string) $addLabel->getLabel());
+        $label = $this->labelRepository->getByName($labelName);
+
+        $organizer->addLabel(new Label(
+            $label->getName()->toNative(),
+            $label->getVisibility() === Visibility::VISIBLE()
+        ));
 
         $this->organizerRepository->save($organizer);
     }

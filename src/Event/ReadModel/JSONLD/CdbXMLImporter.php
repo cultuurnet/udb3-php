@@ -432,12 +432,10 @@ class CdbXMLImporter
         \CultureFeed_Cdb_Data_EventDetail $detail,
         $jsonLD
     ) {
-        $price = $detail->getPrice();
+        $bookingInfo = array();
 
+        $price = $detail->getPrice();
         if ($price) {
-            $jsonLD->bookingInfo = array();
-            // Booking info.
-            $bookingInfo = array();
             if ($price->getDescription()) {
                 $bookingInfo['description'] = $price->getDescription();
             }
@@ -455,15 +453,39 @@ class CdbXMLImporter
                 $bookingInfo['availabilityStarts'] = $startDate->format('c');
                 $bookingInfo['availabilityEnds'] = $endDate->format('c');
             }
+        }
 
-            // Add reservation URL
-            if ($contactInfo = $event->getContactInfo()) {
-                if ($bookingUrl = $contactInfo->getReservationUrl()) {
-                    $bookingInfo['url'] = $bookingUrl;
+        // Add reservation contact data.
+        $contactInfo = $event->getContactInfo();
+        if ($contactInfo) {
+            foreach ($contactInfo->getUrls() as $url) {
+                if ($url->isForReservations()) {
+                    $bookingInfo['url'] = $url->getUrl();
+                    break;
                 }
             }
 
-            $jsonLD->bookingInfo[] = $bookingInfo;
+            if (array_key_exists('url', $bookingInfo)) {
+                $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
+            }
+
+            foreach ($contactInfo->getPhones() as $phone) {
+                if ($phone->isForReservations()) {
+                    $bookingInfo['phone'] = $phone->getNumber();
+                    break;
+                }
+            }
+
+            foreach ($contactInfo->getMails() as $mail) {
+                if ($mail->isForReservations()) {
+                    $bookingInfo['email'] = $mail->getMailAddress();
+                    break;
+                }
+            }
+        }
+
+        if (!empty($bookingInfo)) {
+            $jsonLD->bookingInfo = $bookingInfo;
         }
     }
 
@@ -477,41 +499,53 @@ class CdbXMLImporter
     ) {
         $contactInfo = $event->getContactInfo();
 
+        $notForReservations = function ($item) {
+            /** @var \CultureFeed_Cdb_Data_Url|\CultureFeed_Cdb_Data_Phone|\CultureFeed_Cdb_Data_Mail $item */
+            return !$item->isForReservations();
+        };
+
         if ($contactInfo) {
-            $reservationContactPoint = array();
-            $leftoverContactPoint = array();
+            $contactPoint = array();
 
-            foreach ($contactInfo->getMails() as $email) {
-                /** @var \CultureFeed_Cdb_Data_Mail $email */
-                $emailAddress = $email->getMailAddress();
+            $emails = array_filter($contactInfo->getMails(), $notForReservations);
 
-                if ($email->isForReservations()) {
-                    $reservationContactPoint['email'][] = $emailAddress;
-                } else {
-                    $leftoverContactPoint['email'][] = $emailAddress;
-                }
+            if (!empty($emails)) {
+                $contactPoint['email'] = array_map(
+                    function (\CultureFeed_Cdb_Data_Mail $email) {
+                        return $email->getMailAddress();
+                    },
+                    $emails
+                );
+                $contactPoint['email'] = array_values($contactPoint['email']);
             }
 
-            foreach ($contactInfo->getPhones() as $phone) {
-                /** @var \CultureFeed_Cdb_Data_Phone $phone */
-                $phoneNumber = $phone->getNumber();
+            $phones = array_filter($contactInfo->getPhones(), $notForReservations);
 
-                if ($phone->isForReservations()) {
-                    $reservationContactPoint['telephone'][] = $phoneNumber;
-                } else {
-                    $leftoverContactPoint['telephone'][] = $phoneNumber;
-                }
+            if (!empty($phones)) {
+                $contactPoint['phone'] = array_map(
+                    function (\CultureFeed_Cdb_Data_phone $phone) {
+                        return $phone->getNumber();
+                    },
+                    $phones
+                );
+                $contactPoint['phone'] = array_values($contactPoint['phone']);
             }
 
-            array_filter($reservationContactPoint);
-            if (count($reservationContactPoint) > 0) {
-                $reservationContactPoint['contactType'] = "Reservations";
-                $jsonLD->contactPoint[] = $reservationContactPoint;
+            $urls = array_filter($contactInfo->getUrls(), $notForReservations);
+
+            if (!empty($urls)) {
+                $contactPoint['url'] = array_map(
+                    function (\CultureFeed_Cdb_Data_Url $url) {
+                        return $url->getUrl();
+                    },
+                    $urls
+                );
+                $contactPoint['url'] = array_values($contactPoint['url']);
             }
 
-            array_filter($leftoverContactPoint);
-            if (count($leftoverContactPoint) > 0) {
-                $jsonLD->contactPoint[] = $leftoverContactPoint;
+            array_filter($contactPoint);
+            if (!empty($contactPoint)) {
+                $jsonLD->contactPoint = $contactPoint;
             }
         }
     }

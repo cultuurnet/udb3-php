@@ -20,11 +20,6 @@ class ContactPointTest extends \PHPUnit_Framework_TestCase
     private $urls;
 
     /**
-     * @var string
-     */
-    private $type;
-
-    /**
      * @var ContactPoint
      */
     private $contactPoint;
@@ -37,13 +32,10 @@ class ContactPointTest extends \PHPUnit_Framework_TestCase
 
         $this->urls = ['http//www.company.be', 'http//www.company.com'];
 
-        $this->type = 'whatever';
-
         $this->contactPoint = new ContactPoint(
             $this->phones,
             $this->emails,
-            $this->urls,
-            $this->type
+            $this->urls
         );
     }
 
@@ -69,13 +61,5 @@ class ContactPointTest extends \PHPUnit_Framework_TestCase
     public function it_stores_urls()
     {
         $this->assertEquals($this->urls, $this->contactPoint->getUrls());
-    }
-
-    /**
-     * @test
-     */
-    public function it_stores_a_type()
-    {
-        $this->assertEquals($this->type, $this->contactPoint->getType());
     }
 }

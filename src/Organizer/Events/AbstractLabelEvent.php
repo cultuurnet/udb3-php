@@ -2,35 +2,42 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelEventInterface;
 
-abstract class AbstractLabelEvent extends OrganizerEvent
+abstract class AbstractLabelEvent extends OrganizerEvent implements LabelEventInterface
 {
-    const LABEL_ID = 'labelId';
-
     /**
-     * @var UUID
+     * @var Label
      */
-    private $labelId;
+    private $label;
 
     /**
      * @param string $organizerId
-     * @param UUID $labelId
+     * @param Label $label
      */
     public function __construct(
         $organizerId,
-        UUID $labelId
+        Label $label
     ) {
         parent::__construct($organizerId);
-        $this->labelId = $labelId;
+        $this->label = $label;
     }
 
     /**
-     * @return UUID
+     * @inheritdoc
      */
-    public function getLabelId()
+    public function getItemId()
     {
-        return $this->labelId;
+        return $this->getOrganizerId();
+    }
+
+    /**
+     * @return Label
+     */
+    public function getLabel()
+    {
+        return $this->label;
     }
 
     /**
@@ -40,7 +47,10 @@ abstract class AbstractLabelEvent extends OrganizerEvent
     {
         return new static(
             $data['organizer_id'],
-            new UUID($data[self::LABEL_ID])
+            new Label(
+                $data['label'],
+                isset($data['visibility']) ? $data['visibility'] : true
+            )
         );
     }
 
@@ -50,7 +60,8 @@ abstract class AbstractLabelEvent extends OrganizerEvent
     public function serialize()
     {
         return parent::serialize() + [
-            self::LABEL_ID => $this->getLabelId()->toNative()
+            'label' => (string) $this->label,
+            'visibility' => $this->label->isVisible(),
         ];
     }
 }

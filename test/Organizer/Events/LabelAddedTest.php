@@ -2,20 +2,10 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label;
 
 class LabelAddedTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var string
-     */
-    private $organizerId;
-
-    /**
-     * @var UUID
-     */
-    private $labelId;
-
     /**
      * @var LabelAdded
      */
@@ -23,14 +13,7 @@ class LabelAddedTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->organizerId = 'organizerId';
-
-        $this->labelId = new UUID();
-
-        $this->labelAdded = new LabelAdded(
-            $this->organizerId,
-            $this->labelId
-        );
+        $this->labelAdded = new LabelAdded('organizerId', new Label('foo', false));
     }
 
     /**
@@ -46,13 +29,15 @@ class LabelAddedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_deserialize()
     {
-        $labelAddedAsArray = [
-            'organizer_id' => $this->labelAdded->getOrganizerId(),
-            'labelId' => $this->labelAdded->getLabelId()
+        $labelAddesAsArray = [
+            'organizer_id' => 'organizerId',
+            'label' => 'foo',
+            'visibility' => false
         ];
 
-        $labelAdded = LabelAdded::deserialize($labelAddedAsArray);
-
-        $this->assertEquals($this->labelAdded, $labelAdded);
+        $this->assertEquals(
+            $this->labelAdded,
+            LabelAdded::deserialize($labelAddesAsArray)
+        );
     }
 }

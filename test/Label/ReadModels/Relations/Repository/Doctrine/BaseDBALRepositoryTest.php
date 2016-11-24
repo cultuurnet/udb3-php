@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\OfferLabelRelation;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use ValueObjects\String\String as StringLiteral;
 
 abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -35,11 +35,11 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OfferLabelRelation $offerLabelRelation
+     * @param LabelRelation $labelRelation
      */
-    protected function saveOfferLabelRelation(OfferLabelRelation $offerLabelRelation)
+    protected function saveLabelRelation(LabelRelation $labelRelation)
     {
-        $values = $this->offerLabelRelationToValues($offerLabelRelation);
+        $values = $this->labelRelationToValues($labelRelation);
 
         $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (?, ?, ?)';
 
@@ -47,28 +47,33 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OfferLabelRelation $offerLabelRelation
+     * @param LabelRelation $offerLabelRelation
      * @return array
      */
-    protected function offerLabelRelationToValues(OfferLabelRelation $offerLabelRelation)
+    protected function labelRelationToValues(LabelRelation $offerLabelRelation)
     {
         return [
-            $offerLabelRelation->getUuid()->toNative(),
-            $offerLabelRelation->getOfferType()->toNative(),
-            $offerLabelRelation->getOfferId()
+            $offerLabelRelation->getLabelName()->toNative(),
+            $offerLabelRelation->getRelationType()->toNative(),
+            $offerLabelRelation->getRelationId()
         ];
     }
 
     /**
-     * @return OfferLabelRelation
+     * @return LabelRelation[]
      */
-    protected function getLastOfferLabelRelation()
+    protected function getLabelRelations()
     {
         $sql = 'SELECT * FROM ' . $this->tableName;
 
         $statement = $this->connection->executeQuery($sql);
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $rows ? OfferLabelRelation::fromRelationalData($rows[count($rows) - 1]) : null;
+        $labelRelations = [];
+        foreach ($rows as $row) {
+            $labelRelations[] = LabelRelation::fromRelationalData($row);
+        }
+
+        return $labelRelations;
     }
 }

@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -126,13 +127,13 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_handles_add_label()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelId = new UUID();
+        $label = new Label('foo');
 
         $this->scenario
             ->withAggregateId($organizerId)
             ->given([$this->organizerCreated])
-            ->when(new AddLabel($organizerId, $labelId))
-            ->then([new LabelAdded($organizerId, $labelId)]);
+            ->when(new AddLabel($organizerId, $label))
+            ->then([new LabelAdded($organizerId, $label)]);
     }
 
     /**
@@ -141,15 +142,15 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_does_not_add_the_same_label_twice()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelId = new UUID();
+        $label = new Label('foo');
 
         $this->scenario
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $labelId)
+                new LabelAdded($organizerId, $label)
             ])
-            ->when(new AddLabel($organizerId, $labelId))
+            ->when(new AddLabel($organizerId, $label))
             ->then([]);
     }
 
@@ -159,16 +160,16 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_removes_an_attached_label()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelId = new UUID();
+        $label = new Label('foo');
 
         $this->scenario
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $labelId)
+                new LabelAdded($organizerId, $label)
             ])
-            ->when(new RemoveLabel($organizerId, $labelId))
-            ->then([new LabelRemoved($organizerId, $labelId)]);
+            ->when(new RemoveLabel($organizerId, $label))
+            ->then([new LabelRemoved($organizerId, $label)]);
     }
 
     /**
@@ -177,12 +178,12 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_does_not_remove_a_missing_label()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelId = new UUID();
+        $label = new Label('foo');
 
         $this->scenario
             ->withAggregateId($organizerId)
             ->given([$this->organizerCreated])
-            ->when(new RemoveLabel($organizerId, $labelId))
+            ->when(new RemoveLabel($organizerId, $label))
             ->then([]);
     }
 
@@ -192,23 +193,23 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_handle_complex_label_scenario()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelId1 = new UUID();
-        $labelId2 = new UUID();
+        $labelFoo = new Label('foo');
+        $labelBar = new Label('bar');
 
         $this->scenario
             ->withAggregateId($organizerId)
             ->given([$this->organizerCreated])
-            ->when(new AddLabel($organizerId, $labelId1))
-            ->when(new AddLabel($organizerId, $labelId2))
-            ->when(new AddLabel($organizerId, $labelId2))
-            ->when(new RemoveLabel($organizerId, $labelId1))
-            ->when(new RemoveLabel($organizerId, $labelId2))
-            ->when(new RemoveLabel($organizerId, $labelId2))
+            ->when(new AddLabel($organizerId, $labelFoo))
+            ->when(new AddLabel($organizerId, $labelBar))
+            ->when(new AddLabel($organizerId, $labelBar))
+            ->when(new RemoveLabel($organizerId, $labelFoo))
+            ->when(new RemoveLabel($organizerId, $labelBar))
+            ->when(new RemoveLabel($organizerId, $labelBar))
             ->then([
-                new LabelAdded($organizerId, $labelId1),
-                new LabelAdded($organizerId, $labelId2),
-                new LabelRemoved($organizerId, $labelId1),
-                new LabelRemoved($organizerId, $labelId2)
+                new LabelAdded($organizerId, $labelFoo),
+                new LabelAdded($organizerId, $labelBar),
+                new LabelRemoved($organizerId, $labelFoo),
+                new LabelRemoved($organizerId, $labelBar)
             ]);
     }
 

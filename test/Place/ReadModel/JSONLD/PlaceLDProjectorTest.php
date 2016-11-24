@@ -23,7 +23,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted;
+use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -630,12 +630,12 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $labelDeleted = new LabelDeleted(
+        $labelRemoved = new LabelRemoved(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($labelDeleted, 'foo');
+        $body = $this->project($labelRemoved, 'foo');
 
         $this->assertEquals(
             ['label A', 'label C'],

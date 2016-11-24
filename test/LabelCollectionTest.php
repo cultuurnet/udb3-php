@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3;
 
+use CultureFeed_Cdb_Data_Keyword;
+
 class LabelCollectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -73,7 +75,7 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
         $labelsAsStrings = [
             'Correct label',
             'F',
-            'This label is much too long and will also be ignored, just like the label F which is too short. But a few more extra characters are needed to make it fail! Like many aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'This label is much too long and will also be ignored, just like the label F which is too short. But a few more extra characters are needed to make it fail! Like many aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaas',
             'Another correct label'
         ];
 
@@ -85,5 +87,26 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertEquals($expectedLabelCollection, $labelCollection);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_label_visibility_when_created_from_keywords()
+    {
+        $keywords = [
+            new CultureFeed_Cdb_Data_Keyword('purple', true),
+            new CultureFeed_Cdb_Data_Keyword('orange', false),
+            new CultureFeed_Cdb_Data_Keyword('green', true),
+        ];
+
+        $labels = LabelCollection::fromKeywords($keywords);
+
+        $expectedLabels = (new LabelCollection())
+            ->with(new Label('purple', true))
+            ->with(new Label('orange', false))
+            ->with(new Label('green', true));
+
+        $this->assertEquals($expectedLabels, $labels);
     }
 }

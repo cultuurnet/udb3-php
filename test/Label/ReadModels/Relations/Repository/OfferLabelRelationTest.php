@@ -2,21 +2,22 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
-use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var UUID
+     * @var LabelName
      */
-    private $uuid;
+    private $labelName;
 
     /**
-     * @var OfferType
+     * @var RelationType
      */
-    private $offerType;
+    private $relationType;
 
     /**
      * @var StringLiteral
@@ -24,19 +25,19 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     private $offerId;
 
     /**
-     * @var OfferLabelRelation
+     * @var LabelRelation
      */
     private $offerLabelRelation;
 
     protected function setUp()
     {
-        $this->uuid = new UUID();
-        $this->offerType = OfferType::PLACE();
+        $this->labelName = new LabelName('2dotstwice');
+        $this->relationType = RelationType::PLACE();
         $this->offerId = new StringLiteral('relationId');
 
-        $this->offerLabelRelation = new OfferLabelRelation(
-            $this->uuid,
-            $this->offerType,
+        $this->offerLabelRelation = new LabelRelation(
+            $this->labelName,
+            $this->relationType,
             $this->offerId
         );
     }
@@ -46,7 +47,7 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_uuid()
     {
-        $this->assertEquals($this->uuid, $this->offerLabelRelation->getUuid());
+        $this->assertEquals($this->labelName, $this->offerLabelRelation->getLabelName());
     }
 
     /**
@@ -55,8 +56,8 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_relation_type()
     {
         $this->assertEquals(
-            $this->offerType,
-            $this->offerLabelRelation->getOfferType()
+            $this->relationType,
+            $this->offerLabelRelation->getRelationType()
         );
     }
 
@@ -65,7 +66,7 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_relation_id()
     {
-        $this->assertEquals($this->offerId, $this->offerLabelRelation->getOfferId());
+        $this->assertEquals($this->offerId, $this->offerLabelRelation->getRelationId());
     }
 
     /**
@@ -75,9 +76,9 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     {
         $json = json_encode($this->offerLabelRelation);
 
-        $expectedJson = '{"uuid":"' . $this->uuid->toNative()
-            . '","offerType":"' . $this->offerType->toNative()
-            . '","offerId":"' . $this->offerId->toNative() . '"}';
+        $expectedJson = '{"labelName":"' . $this->labelName->toNative()
+            . '","relationType":"' . $this->relationType->toNative()
+            . '","relationId":"' . $this->offerId->toNative() . '"}';
 
         $this->assertEquals($expectedJson, $json);
     }

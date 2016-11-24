@@ -8,10 +8,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand as OfferAbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
-use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand as OrganizerAbstractLabelCommand;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
-use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
@@ -114,31 +112,6 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
         $this->securityWithLabelPrivacy->isAuthorized($labelSecurity);
     }
 
-    /**
-     * @test
-     */
-    public function it_throws_when_label_was_not_found_by_uuid()
-    {
-        $labelId = new UUID();
-
-        $labelSecurity = $this->getMockForAbstractClass(
-            OrganizerAbstractLabelCommand::class,
-            [
-                '6a475eb2-04dd-41e3-95d1-225a1cd511f1',
-                $labelId
-            ]
-        );
-
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Did not find a label with uuid: ' . $labelId->toNative()
-        );
-
-        $this->labelReadRepository->method('getByUuid')
-            ->willReturn(null);
-
-        $this->securityWithLabelPrivacy->isAuthorized($labelSecurity);
-    }
 
     /**
      * @test

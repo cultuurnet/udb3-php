@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\ReadModel\History;
 
@@ -17,7 +14,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
@@ -253,9 +250,9 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
     /**
      * @return string
      */
-    protected function getLabelDeletedClassName()
+    protected function getLabelRemovedClassName()
     {
-        return LabelDeleted::class;
+        return LabelRemoved::class;
     }
 
     /**

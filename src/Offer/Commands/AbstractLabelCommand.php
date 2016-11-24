@@ -46,24 +46,8 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     /**
      * @inheritdoc
      */
-    public function isIdentifiedByUuid()
-    {
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getName()
     {
         return new StringLiteral((string)$this->label);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUuid()
-    {
-        return null;
     }
 }

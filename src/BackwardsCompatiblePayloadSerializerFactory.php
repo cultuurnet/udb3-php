@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated as EventDescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
@@ -137,7 +137,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\TagErased',
             function (array $serializedObject) {
-                $serializedObject['class'] = LabelDeleted::class;
+                $serializedObject['class'] = LabelRemoved::class;
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);
 
@@ -150,7 +150,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\Events\Unlabelled',
             function (array $serializedObject) {
-                $serializedObject['class'] = LabelDeleted::class;
+                $serializedObject['class'] = LabelRemoved::class;
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);
 

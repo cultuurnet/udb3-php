@@ -30,9 +30,9 @@ interface OfferCommandFactoryInterface
     /**
      * @param $id
      * @param Label $label
-     * @return AbstractDeleteLabel
+     * @return AbstractRemoveLabel
      */
-    public function createDeleteLabelCommand($id, Label $label);
+    public function createRemoveLabelCommand($id, Label $label);
 
     /**
      * @param $id

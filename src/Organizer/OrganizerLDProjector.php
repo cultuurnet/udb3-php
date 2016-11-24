@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -31,22 +31,14 @@ class OrganizerLDProjector extends ActorLDProjector
     private $cdbXMLImporter;
 
     /**
-     * @var ReadRepositoryInterface
-     */
-    private $labelRepository;
-
-    /**
-     * OrganizerLDProjector constructor.
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventBusInterface $eventBus
-     * @param ReadRepositoryInterface|null $labelRepository
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EventBusInterface $eventBus,
-        ReadRepositoryInterface $labelRepository = null
+        EventBusInterface $eventBus
     ) {
         parent::__construct(
             $repository,
@@ -55,8 +47,6 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $this->cdbXMLImporter = new CdbXMLImporter();
-
-        $this->labelRepository = $labelRepository;
     }
 
     /**
@@ -227,20 +217,18 @@ class OrganizerLDProjector extends ActorLDProjector
      */
     public function applyLabelAdded(LabelAdded $labelAdded)
     {
-        $this->guardLabelRepository();
-
         $document = $this->repository->get($labelAdded->getOrganizerId());
 
         $jsonLD = $document->getBody();
-        $labels = isset($jsonLD->labels) ? $jsonLD->labels : [];
 
-        $label = $this->labelRepository->getByUuid($labelAdded->getLabelId());
-        $labels[] = [
-            'uuid' => $label->getUuid()->toNative(),
-            'name' => $label->getName()->toNative()
-        ];
+        // Check the visibility of the label to update the right property.
+        $labelsProperty = $labelAdded->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
 
-        $jsonLD->labels = $labels;
+        $labels = isset($jsonLD->{$labelsProperty}) ? $jsonLD->{$labelsProperty} : [];
+        $label = (string) $labelAdded->getLabel();
+
+        $labels[] = $label;
+        $jsonLD->{$labelsProperty} = array_unique($labels);
 
         $this->repository->save($document->withBody($jsonLD));
     }
@@ -250,23 +238,28 @@ class OrganizerLDProjector extends ActorLDProjector
      */
     public function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
-        $this->guardLabelRepository();
-
         $document = $this->repository->get($labelRemoved->getOrganizerId());
         $jsonLD = $document->getBody();
 
-        if (isset($jsonLD->labels)) {
-            $modifiedLabels = array_filter(
-                $jsonLD->labels,
+        // Check the visibility of the label to update the right property.
+        $labelsProperty = $labelRemoved->getLabel()->isVisible() ? 'labels' : 'hiddenLabels';
+
+        if (isset($jsonLD->{$labelsProperty}) && is_array($jsonLD->{$labelsProperty})) {
+            $jsonLD->{$labelsProperty} = array_filter(
+                $jsonLD->{$labelsProperty},
                 function ($label) use ($labelRemoved) {
-                    return $label->uuid !== $labelRemoved->getLabelId()->toNative();
+                    return !$labelRemoved->getLabel()->equals(
+                        new Label($label)
+                    );
                 }
             );
 
-            if (count($modifiedLabels) === 0) {
-                unset($jsonLD->labels);
+            // Ensure array keys start with 0 so json_encode() does encode it
+            // as an array and not as an object.
+            if (count($jsonLD->{$labelsProperty}) > 0) {
+                $jsonLD->{$labelsProperty} = array_values($jsonLD->{$labelsProperty});
             } else {
-                $jsonLD->labels = array_values($modifiedLabels);
+                unset($jsonLD->{$labelsProperty});
             }
 
             $this->repository->save($document->withBody($jsonLD));
@@ -295,15 +288,5 @@ class OrganizerLDProjector extends ActorLDProjector
         $organizerLd->{'@context'} = '/contexts/organizer';
 
         return $document->withBody($organizerLd);
-    }
-
-    /**
-     * @throws \InvalidArgumentException
-     */
-    private function guardLabelRepository()
-    {
-        if ($this->labelRepository === null) {
-            throw new \InvalidArgumentException('A label repository is needed for the labelling events.');
-        }
     }
 }

@@ -18,7 +18,7 @@ use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
@@ -66,11 +66,11 @@ class Item extends Offer
 
     /**
      * @param Label $label
-     * @return LabelDeleted
+     * @return LabelRemoved
      */
-    protected function createLabelDeletedEvent(Label $label)
+    protected function createLabelRemovedEvent(Label $label)
     {
-        return new LabelDeleted($this->id, $label);
+        return new LabelRemoved($this->id, $label);
     }
 
     protected function createImageAddedEvent(Image $image)

@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
@@ -44,11 +44,11 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     /**
      * @param $id
      * @param Label $label
-     * @return AbstractDeleteLabel
+     * @return AbstractRemoveLabel
      */
-    public function createDeleteLabelCommand($id, Label $label)
+    public function createRemoveLabelCommand($id, Label $label)
     {
-        return new DeleteLabel($id, $label);
+        return new RemoveLabel($id, $label);
     }
 
     /**

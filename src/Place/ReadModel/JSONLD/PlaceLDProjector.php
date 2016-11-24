@@ -31,7 +31,7 @@ use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted;
+use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
@@ -346,9 +346,9 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     /**
      * @return string
      */
-    protected function getLabelDeletedClassName()
+    protected function getLabelRemovedClassName()
     {
-        return LabelDeleted::class;
+        return LabelRemoved::class;
     }
 
     /**

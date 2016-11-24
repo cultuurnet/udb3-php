@@ -8,11 +8,10 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractSyncLabels;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
@@ -113,12 +112,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
-    abstract protected function getDeleteLabelClassName();
-
-    /**
-     * @return string
-     */
-    abstract protected function getSyncLabelsClassName();
+    abstract protected function getRemoveLabelClassName();
 
     /**
      * @return string
@@ -239,22 +233,12 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
-     * @param AbstractDeleteLabel $deleteLabel
+     * @param AbstractRemoveLabel $removeLabel
      */
-    private function handleDeleteLabel(AbstractDeleteLabel $deleteLabel)
+    private function handleRemoveLabel(AbstractRemoveLabel $removeLabel)
     {
-        $offer = $this->load($deleteLabel->getItemId());
-        $offer->deleteLabel($deleteLabel->getLabel());
-        $this->offerRepository->save($offer);
-    }
-
-    /**
-     * @param AbstractSyncLabels $syncLabels
-     */
-    protected function handleSyncLabels(AbstractSyncLabels $syncLabels)
-    {
-        $offer = $this->load($syncLabels->getItemId());
-        $offer->syncLabels($syncLabels->getLabelCollection());
+        $offer = $this->load($removeLabel->getItemId());
+        $offer->removeLabel($removeLabel->getLabel());
         $this->offerRepository->save($offer);
     }
 

@@ -10,9 +10,9 @@ use ValueObjects\String\String as StringLiteral;
 
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {
-    const UUID_COLUMN = 'uuid_col';
-    const OFFER_TYPE_COLUMN = 'offerType';
-    const OFFER_ID_COLUMN = 'offerId';
+    const LABEL_NAME = 'labelName';
+    const RELATION_TYPE = 'relationType';
+    const RELATION_ID = 'relationId';
 
     /**
      * @var StringLiteral
@@ -51,23 +51,23 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     {
         $table = $schema->createTable($tableName->toNative());
 
-        $table->addColumn(self::UUID_COLUMN, Type::GUID)
-            ->setLength(36)
-            ->setNotnull(true);
-
-        $table->addColumn(self::OFFER_TYPE_COLUMN, Type::STRING)
+        $table->addColumn(self::LABEL_NAME, Type::STRING)
             ->setLength(255)
             ->setNotnull(true);
 
-        $table->addColumn(self::OFFER_ID_COLUMN, Type::GUID)
+        $table->addColumn(self::RELATION_TYPE, Type::STRING)
+            ->setLength(255)
+            ->setNotnull(true);
+
+        $table->addColumn(self::RELATION_ID, Type::GUID)
             ->setLength(36)
             ->setNotnull(true);
 
-        $table->addIndex([self::UUID_COLUMN]);
+        $table->addIndex([self::LABEL_NAME]);
         $table->addUniqueIndex([
-            self::UUID_COLUMN,
-            self::OFFER_TYPE_COLUMN,
-            self::OFFER_ID_COLUMN,
+            self::LABEL_NAME,
+            self::RELATION_TYPE,
+            self::RELATION_ID,
         ]);
 
         return $table;

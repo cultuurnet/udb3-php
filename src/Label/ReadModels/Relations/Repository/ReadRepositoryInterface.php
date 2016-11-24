@@ -2,13 +2,13 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 
 interface ReadRepositoryInterface
 {
     /**
-     * @param UUID $labelId
-     * @return \Generator|OfferLabelRelation[]
+     * @param LabelName $labelName
+     * @return \Generator|LabelRelation[]
      */
-    public function getOfferLabelRelations(UUID $labelId);
+    public function getLabelRelations(LabelName $labelName);
 }

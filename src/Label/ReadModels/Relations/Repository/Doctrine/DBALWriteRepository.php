@@ -4,8 +4,8 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
-use CultuurNet\UDB3\Offer\OfferType;
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use ValueObjects\String\String as StringLiteral;
 
 class DBALWriteRepository extends AbstractDBALRepository implements WriteRepositoryInterface
@@ -14,21 +14,21 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
      * @inheritdoc
      */
     public function save(
-        UUID $uuid,
-        OfferType $offerType,
-        StringLiteral $offerId
+        LabelName $labelName,
+        RelationType $relationType,
+        StringLiteral $relationId
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())
             ->values([
-                SchemaConfigurator::UUID_COLUMN => '?',
-                SchemaConfigurator::OFFER_TYPE_COLUMN => '?',
-                SchemaConfigurator::OFFER_ID_COLUMN => '?'
+                SchemaConfigurator::LABEL_NAME => '?',
+                SchemaConfigurator::RELATION_TYPE => '?',
+                SchemaConfigurator::RELATION_ID => '?'
             ])
             ->setParameters([
-                $uuid->toNative(),
-                $offerType->toNative(),
-                $offerId->toNative()
+                $labelName->toNative(),
+                $relationType->toNative(),
+                $relationId->toNative()
             ]);
 
         $queryBuilder->execute();
@@ -37,15 +37,28 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     /**
      * @inheritdoc
      */
-    public function deleteByUuidAndOfferId(
-        UUID $uuid,
-        StringLiteral $offerUuid
+    public function deleteByLabelNameAndRelationId(
+        LabelName $labelName,
+        StringLiteral $relationId
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->delete($this->getTableName())
-            ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
-            ->andWhere(SchemaConfigurator::OFFER_ID_COLUMN . ' = ?')
-            ->setParameters([$uuid->toNative(), $offerUuid->toNative()]);
+            ->where(SchemaConfigurator::LABEL_NAME . ' = ?')
+            ->andWhere(SchemaConfigurator::RELATION_ID . ' = ?')
+            ->setParameters([$labelName->toNative(), $relationId->toNative()]);
+
+        $queryBuilder->execute();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function deleteByRelationId(StringLiteral $relationId)
+    {
+        $queryBuilder = $this->createQueryBuilder()
+            ->delete($this->getTableName())
+            ->where(SchemaConfigurator::RELATION_ID . ' = ?')
+            ->setParameters([$relationId->toNative()]);
 
         $queryBuilder->execute();
     }

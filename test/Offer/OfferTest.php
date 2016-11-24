@@ -10,6 +10,8 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
+use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
@@ -72,33 +74,60 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_set_and_return_labels()
+    public function it_should_remember_added_labels()
     {
-        $this->offer->addLabel(new Label('test'));
-        $this->offer->addLabel(new Label('label'));
-        $this->offer->addLabel(new Label('cultuurnet'));
-        $labels = $this->offer->getLabels();
-        $expectedLabels = $this->labels;
+        $itemId = UUID::generateAsString();
 
-        $this->assertEquals($expectedLabels, $labels);
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId)
+            ])
+            ->when(
+                function (Item $item) {
+                    $item->addLabel(new Label('purple'));
+                    $item->addLabel(new Label('orange'));
+                    $item->addLabel(new Label('green'));
+
+                    $item->addLabel(new Label('purple'));
+                    $item->addLabel(new Label('orange'));
+                    $item->addLabel(new Label('green'));
+                }
+            )
+            ->then([
+                new LabelAdded($itemId, new Label('purple')),
+                new LabelAdded($itemId, new Label('orange')),
+                new LabelAdded($itemId, new Label('green')),
+            ]);
     }
 
     /**
      * @test
      */
-    public function it_can_delete_labels()
+    public function it_should_remember_which_labels_were_removed()
     {
-        $this->offer->addLabel(new Label('test'));
-        $this->offer->addLabel(new Label('label'));
-        $this->offer->addLabel(new Label('cultuurnet'));
+        $itemId = UUID::generateAsString();
 
-        $this->offer->deleteLabel(new Label('cultuurnet'));
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId)
+            ])
+            ->when(
+                function (Item $item) {
+                    $item->addLabel(new Label('purple'));
+                    $item->addLabel(new Label('orange'));
+                    $item->addLabel(new Label('green'));
 
-        $expectedLabels = (new LabelCollection())
-            ->with(new Label('test'))
-            ->with(new Label('label'));
-
-        $this->assertEquals($expectedLabels, $this->offer->getLabels());
+                    $item->removeLabel(new Label('purple'));
+                    $item->addLabel(new Label('purple'));
+                }
+            )
+            ->then([
+                new LabelAdded($itemId, new Label('purple')),
+                new LabelAdded($itemId, new Label('orange')),
+                new LabelAdded($itemId, new Label('green')),
+                new LabelRemoved($itemId, new Label('purple')),
+                new LabelAdded($itemId, new Label('purple')),
+            ]);
     }
 
     /**

@@ -6,7 +6,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
@@ -122,7 +122,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     public function it_knows_the_new_namespace_of_event_tag_erased()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_tag_erased_class.json';
-        $this->assertClass($sampleFile, LabelDeleted::class);
+        $this->assertClass($sampleFile, LabelRemoved::class);
     }
 
     /**
@@ -149,7 +149,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     public function it_knows_the_new_namespace_of_event_unlabelled()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_unlabelled_class.json';
-        $this->assertClass($sampleFile, LabelDeleted::class);
+        $this->assertClass($sampleFile, LabelRemoved::class);
     }
 
     /**

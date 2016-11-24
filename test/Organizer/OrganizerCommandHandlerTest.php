@@ -89,17 +89,17 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
-            ->will(
-                $this->returnCallback(function (StringLiteral $labelName) {
+            ->will($this->returnCallback(
+                function (StringLiteral $labelName) {
                     return new Entity(
                         new UUID(),
                         $labelName,
-                        Visibility::INVISIBLE(),
-                        Privacy::PRIVACY_PRIVATE()
+                        $labelName->toNative() === 'foo' ? Visibility::VISIBLE() : Visibility::INVISIBLE(),
+                        Privacy::PRIVACY_PUBLIC()
                     );
-                })
-            );
-        
+                }
+            ));
+
         $this->eventOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
         $this->placeOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
 
@@ -156,7 +156,22 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_handles_add_label()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $label = new Label('foo', false);
+        $label = new Label('foo', true);
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given([$this->organizerCreated])
+            ->when(new AddLabel($organizerId, $label))
+            ->then([new LabelAdded($organizerId, $label)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_add_invisible_label()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+        $label = new Label('bar', false);
 
         $this->scenario
             ->withAggregateId($organizerId)
@@ -171,7 +186,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_does_not_add_the_same_label_twice()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $label = new Label('foo', false);
+        $label = new Label('foo', true);
 
         $this->scenario
             ->withAggregateId($organizerId)
@@ -189,7 +204,25 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_removes_an_attached_label()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $label = new Label('foo');
+        $label = new Label('foo', true);
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given([
+                $this->organizerCreated,
+                new LabelAdded($organizerId, $label)
+            ])
+            ->when(new RemoveLabel($organizerId, $label))
+            ->then([new LabelRemoved($organizerId, $label)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_an_attached_invisible_label()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+        $label = new Label('bar', false);
 
         $this->scenario
             ->withAggregateId($organizerId)
@@ -222,7 +255,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_handle_complex_label_scenario()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();
-        $labelFoo = new Label('foo', false);
+        $labelFoo = new Label('foo', true);
         $labelBar = new Label('bar', false);
 
         $this->scenario

@@ -9,11 +9,18 @@ use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Label\Events\MadeInvisible;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Label\ValueObjects\Privacy;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\UsedLabelsMemory\Created;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
 
 class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
@@ -24,6 +31,11 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     protected $serializer;
 
     /**
+     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $labelRepository;
+
+    /**
      * @var string
      */
     private $sampleDir;
@@ -32,7 +44,21 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     {
         parent::setUp();
 
-        $this->serializer = BackwardsCompatiblePayloadSerializerFactory::createSerializer();
+        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository->method('getByUuid')
+            ->with('86c5b0f4-a5da-4a81-815f-3839634c212c')
+            ->willReturn(
+                new Entity(
+                    new UUID('86c5b0f4-a5da-4a81-815f-3839634c212c'),
+                    new LabelName('2dotstwice'),
+                    Visibility::INVISIBLE(),
+                    Privacy::PRIVACY_PRIVATE()
+                )
+            );
+
+        $this->serializer = BackwardsCompatiblePayloadSerializerFactory::createSerializer(
+            $this->labelRepository
+        );
 
         $this->sampleDir = __DIR__ . '/samples/';
     }
@@ -76,11 +102,46 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
+    public function it_adds_label_name_on_made_invisible_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_made_invisible.json';
+        $this->assertLabelNameAdded($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_made_visible_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_made_visible.json';
+        $this->assertLabelNameAdded($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_made_private_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_made_private.json';
+        $this->assertLabelNameAdded($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_made_public_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_made_public.json';
+        $this->assertLabelNameAdded($sampleFile);
+    }
+
+    /**
+     * @test
+     */
     public function it_knows_the_new_namespace_of_event_was_labelled()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_was_labelled_class.json';
         $this->assertClass($sampleFile, LabelAdded::class);
-
     }
 
     public function it_replaces_event_id_with_item_id_on_event_was_labelled()
@@ -390,5 +451,19 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $newEvent = $this->serializer->deserialize($decoded);
 
         $this->assertInstanceOf($expectedClass, $newEvent);
+    }
+
+    /**
+     * @param string $sampleFile
+     */
+    private function assertLabelNameAdded($sampleFile)
+    {
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /** @var AbstractLabelEvent $newEvent */
+        $labelEvent = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals('2dotstwice', $labelEvent->getName()->toNative());
     }
 }

@@ -627,6 +627,40 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_should_import_a_periodic_calendar_with_week_schema_and_missing_closing_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_periodic_calendar_and_week_schema_and_missing_closing_times.xml');
+
+        $this->assertEquals('periodic', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-09T00:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-02-19T00:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    'dayOfWeek' => [
+                        'monday',
+                        'thursday',
+                        'friday',
+                        'saturday'
+                    ],
+                    'opens' => '20:30',
+                    'closes' => '20:30'
+                ],
+                [
+                    'dayOfWeek' => [
+                        'sunday'
+                    ],
+                    'opens' => '16:00',
+                    'closes' => '16:00'
+                ]
+            ],
+            $jsonEvent->openingHours
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_should_import_a_permanent_calendar()
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_permanent_calendar.xml');

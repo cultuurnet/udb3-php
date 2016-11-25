@@ -705,7 +705,7 @@ class CdbXMLImporter
                     $newOpeningHour = new OpeningHour(
                         WeekDay::fromNative(ucfirst($day->getDayName())),
                         Time::fromNativeDateTime($opens),
-                        Time::fromNativeDateTime($closes)
+                        $closes ? Time::fromNativeDateTime($closes) : Time::fromNativeDateTime($opens)
                     );
 
                     $merged = false;

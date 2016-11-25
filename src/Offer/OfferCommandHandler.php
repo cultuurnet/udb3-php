@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
@@ -221,13 +222,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($addLabel->getItemId());
 
-        $labelName = new StringLiteral((string)$addLabel->getLabel());
-        $label = $this->labelRepository->getByName($labelName);
-
-        $offer->addLabel(new Label(
-            $label->getName()->toNative(),
-            $label->getVisibility() === Visibility::VISIBLE()
-        ));
+        $offer->addLabel($this->createLabel($addLabel));
 
         $this->offerRepository->save($offer);
     }
@@ -238,8 +233,25 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     private function handleRemoveLabel(AbstractRemoveLabel $removeLabel)
     {
         $offer = $this->load($removeLabel->getItemId());
-        $offer->removeLabel($removeLabel->getLabel());
+
+        $offer->removeLabel($this->createLabel($removeLabel));
+
         $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractLabelCommand $labelCommand
+     * @return Label
+     */
+    private function createLabel(AbstractLabelCommand $labelCommand)
+    {
+        $labelName = new StringLiteral((string) $labelCommand->getLabel());
+        $label = $this->labelRepository->getByName($labelName);
+
+        return new Label(
+            $labelName->toNative(),
+            $label->getVisibility() === Visibility::VISIBLE()
+        );
     }
 
     /**

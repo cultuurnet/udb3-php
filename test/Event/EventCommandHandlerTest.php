@@ -65,12 +65,15 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
-            ->with(new StringLiteral('foo'))
-            ->willReturn(new Entity(
-                new UUID(),
-                new StringLiteral('foo'),
-                Visibility::VISIBLE(),
-                Privacy::PRIVACY_PUBLIC()
+            ->will($this->returnCallback(
+                function (StringLiteral $labelName) {
+                    return new Entity(
+                        new UUID(),
+                        $labelName,
+                        $labelName->toNative() === 'foo' ? Visibility::VISIBLE() : Visibility::INVISIBLE(),
+                        Privacy::PRIVACY_PUBLIC()
+                    );
+                }
             ));
 
         $this->commandFactory = new EventCommandFactory();
@@ -160,6 +163,21 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_can_label_an_event_with_invisible_label()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new AddLabel($id, new Label('bar')))
+            ->then([new LabelAdded($id, new Label('bar', false))]);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_unlabel_an_event()
     {
         $id = '1';
@@ -173,6 +191,24 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->when(new RemoveLabel($id, new Label('foo')))
             ->then([new LabelRemoved($id, new Label('foo'))]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_unlabel_an_event_with_invisible_label()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                    new LabelAdded($id, new Label('bar', false))
+                ]
+            )
+            ->when(new RemoveLabel($id, new Label('bar')))
+            ->then([new LabelRemoved($id, new Label('bar', false))]);
     }
 
     /**

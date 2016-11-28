@@ -112,68 +112,116 @@ class CalendarFactory
         }
 
         if ($weekSchema) {
-            $days = $weekSchema->getDays();
+            $openingHours = $this->createOpeningHoursFromWeekScheme(
+                $weekSchema
+            );
 
-            /** @var OpeningHour[] $openingHours */
-            $openingHours = [];
-            foreach ($days as $day) {
-                if ($day->isOpen()) {
-                    /** @var \CultureFeed_Cdb_Data_Calendar_OpeningTime[] $openingTimes */
-                    $openingTimes = $day->getOpeningTimes();
-                    $opens = \DateTime::createFromFormat(
-                        'H:i:s',
-                        $openingTimes[0]->getOpenFrom()
-                    );
-                    $closes = \DateTime::createFromFormat(
-                        'H:i:s',
-                        $openingTimes[0]->getOpenTill()
-                    );
-
-                    $newOpeningHour = new OpeningHour(
-                        WeekDay::fromNative(ucfirst($day->getDayName())),
-                        Time::fromNativeDateTime($opens),
-                        $closes ? Time::fromNativeDateTime($closes) : Time::fromNativeDateTime($opens)
-                    );
-
-                    $merged = false;
-                    foreach ($openingHours as $openingHour) {
-                        if ($openingHour->equalHours($newOpeningHour)) {
-                            $openingHour->mergeWeekday($newOpeningHour);
-                            $merged = true;
-                            break;
-                        }
-                    }
-
-                    if (!$merged) {
-                        $openingHours[] = $newOpeningHour;
-                    }
-                }
-            }
-
-            if (count($openingHours) > 0) {
-                foreach ($openingHours as $openingHour) {
-                    $openingHoursAsArray[] = [
-                        'dayOfWeek' => array_map(
-                            function (WeekDay $weekDay) {
-                                return strtolower($weekDay->toNative());
-                            },
-                            $openingHour->getWeekDays()
-                        ),
-                        'opens' => $openingHour->getOpens()->toNativeDateTime()->format('H:i'),
-                        'closes' => (string)$openingHour->getCloses()->toNativeDateTime()->format('H:i'),
-                    ];
-                }
-            }
+            $openingHoursAsArray = $this->openingHoursToArray($openingHours);
         }
 
-        $calendar = new Calendar(
+        //
+        // Create the calendar value object.
+        //
+        return new Calendar(
             CalendarType::fromNative($calendarType),
             $startDate,
             $endDate,
             $timestamps,
             $openingHoursAsArray
         );
+    }
 
-        return $calendar;
+    /**
+     * @param \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekscheme
+     * @return Calendar
+     */
+    public function createFromWeekScheme(
+        \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekscheme
+    ) {
+        $openingHours = $this->createOpeningHoursFromWeekScheme($weekscheme);
+
+        $openingHoursAsArray = $this->openingHoursToArray($openingHours);
+
+        return new Calendar(
+            CalendarType::PERMANENT(),
+            null,
+            null,
+            null,
+            $openingHoursAsArray
+        );
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekScheme
+     * @return OpeningHour[]
+     */
+    private function createOpeningHoursFromWeekScheme(
+        \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekScheme
+    ) {
+        $days = $weekScheme->getDays();
+
+        /** @var OpeningHour[] $openingHours */
+        $openingHours = [];
+        foreach ($days as $day) {
+            if ($day->isOpen()) {
+                /** @var \CultureFeed_Cdb_Data_Calendar_OpeningTime[] $openingTimes */
+                $openingTimes = $day->getOpeningTimes();
+                $opens = \DateTime::createFromFormat(
+                    'H:i:s',
+                    $openingTimes[0]->getOpenFrom()
+                );
+                $closes = \DateTime::createFromFormat(
+                    'H:i:s',
+                    $openingTimes[0]->getOpenTill()
+                );
+
+                $newOpeningHour = new OpeningHour(
+                    WeekDay::fromNative(ucfirst($day->getDayName())),
+                    Time::fromNativeDateTime($opens),
+                    $closes ? Time::fromNativeDateTime($closes) : Time::fromNativeDateTime($opens)
+                );
+
+                $merged = false;
+                foreach ($openingHours as $openingHour) {
+                    if ($openingHour->equalHours($newOpeningHour)) {
+                        $openingHour->mergeWeekday($newOpeningHour);
+                        $merged = true;
+                        break;
+                    }
+                }
+
+                if (!$merged) {
+                    $openingHours[] = $newOpeningHour;
+                }
+            }
+        }
+
+        return $openingHours;
+    }
+
+    /**
+     * @param array $openingHours
+     * @return array
+     */
+    private function openingHoursToArray(array $openingHours)
+    {
+        $openingHoursAsArray = [];
+
+        if (count($openingHours) > 0) {
+            foreach ($openingHours as $openingHour) {
+                $openingHoursAsArray[] = [
+                    'dayOfWeek' => array_map(
+                        function (WeekDay $weekDay) {
+                            return strtolower($weekDay->toNative());
+                        },
+                        $openingHour->getWeekDays()
+                    ),
+                    'opens' => $openingHour->getOpens()->toNativeDateTime()->format('H:i'),
+                    'closes' => (string)$openingHour->getCloses()->toNativeDateTime()->format('H:i'),
+                ];
+            }
+        }
+
+        return $openingHoursAsArray;
     }
 }

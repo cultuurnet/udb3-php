@@ -169,34 +169,33 @@ class CalendarFactory
             if ($day->isOpen()) {
                 /** @var \CultureFeed_Cdb_Data_Calendar_OpeningTime[] $openingTimes */
                 $openingTimes = $day->getOpeningTimes();
-                if ($openingTimes) {
-                    $opens = \DateTime::createFromFormat(
-                        'H:i:s',
-                        $openingTimes[0]->getOpenFrom()
-                    );
-                    $closes = \DateTime::createFromFormat(
-                        'H:i:s',
-                        $openingTimes[0]->getOpenTill()
-                    );
 
-                    $newOpeningHour = new OpeningHour(
-                        WeekDay::fromNative(ucfirst($day->getDayName())),
-                        Time::fromNativeDateTime($opens),
-                        $closes ? Time::fromNativeDateTime($closes) : Time::fromNativeDateTime($opens)
-                    );
+                $opens = \DateTime::createFromFormat(
+                    'H:i:s',
+                    $openingTimes ? $openingTimes[0]->getOpenFrom() : '00:00:00'
+                );
+                $closes = \DateTime::createFromFormat(
+                    'H:i:s',
+                    $openingTimes ? $openingTimes[0]->getOpenTill() : '00:00:00'
+                );
 
-                    $merged = false;
-                    foreach ($openingHours as $openingHour) {
-                        if ($openingHour->equalHours($newOpeningHour)) {
-                            $openingHour->mergeWeekday($newOpeningHour);
-                            $merged = true;
-                            break;
-                        }
+                $newOpeningHour = new OpeningHour(
+                    WeekDay::fromNative(ucfirst($day->getDayName())),
+                    Time::fromNativeDateTime($opens),
+                    $closes ? Time::fromNativeDateTime($closes) : Time::fromNativeDateTime($opens)
+                );
+
+                $merged = false;
+                foreach ($openingHours as $openingHour) {
+                    if ($openingHour->equalHours($newOpeningHour)) {
+                        $openingHour->mergeWeekday($newOpeningHour);
+                        $merged = true;
+                        break;
                     }
+                }
 
-                    if (!$merged) {
-                        $openingHours[] = $newOpeningHour;
-                    }
+                if (!$merged) {
+                    $openingHours[] = $newOpeningHour;
                 }
             }
         }

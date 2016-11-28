@@ -151,7 +151,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $jsonEvent = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_no_hours.xml');
         $this->assertEquals('permanent', $jsonEvent->calendarType);
-        $this->assertEquals('todo', $jsonEvent->openingHours);
+        $this->assertEquals(
+            [
+                [
+                    'dayOfWeek' => [
+                        'saturday',
+                    ],
+                    'opens' => '00:00',
+                    'closes' => '00:00',
+                ],
+            ],
+            $jsonEvent->openingHours
+        );
     }
 
     /**

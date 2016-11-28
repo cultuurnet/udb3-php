@@ -23,7 +23,7 @@ class MockLDProjector
 
     }
 
-    public function applyMockLabelDeleted()
+    public function applyMockLabelRemoved()
     {
 
     }

@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3;
 
+use CultureFeed_Cdb_Data_Keyword;
+
 class LabelCollection implements \Countable
 {
     /**
@@ -141,6 +143,25 @@ class LabelCollection implements \Countable
         foreach ($strings as $string) {
             try {
                 $label = new Label($string);
+                $labelCollection = $labelCollection->with($label);
+            } catch (\InvalidArgumentException $exception) {
+            }
+        }
+
+        return $labelCollection;
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Data_Keyword[] $keywords
+     * @return LabelCollection
+     */
+    public static function fromKeywords($keywords)
+    {
+        $labelCollection = new LabelCollection();
+
+        foreach ($keywords as $keyword) {
+            try {
+                $label = new Label($keyword->getValue(), $keyword->isVisible());
                 $labelCollection = $labelCollection->with($label);
             } catch (\InvalidArgumentException $exception) {
             }

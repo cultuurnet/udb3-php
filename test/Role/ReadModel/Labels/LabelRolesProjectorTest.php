@@ -8,6 +8,7 @@ use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\Events\Created as LabelCreated;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -16,7 +17,6 @@ use CultuurNet\UDB3\Role\Events\LabelRemoved;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
 
 class LabelRolesProjectorTest extends PHPUnit_Framework_TestCase
 {
@@ -47,7 +47,7 @@ class LabelRolesProjectorTest extends PHPUnit_Framework_TestCase
     {
         $labelCreated = new LabelCreated(
             new UUID(),
-            new String('labelName'),
+            new LabelName('labelName'),
             Visibility::getByName('INVISIBLE'),
             Privacy::getByName('PRIVACY_PRIVATE')
         );

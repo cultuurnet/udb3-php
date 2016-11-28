@@ -8,11 +8,11 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractDeleteLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
+use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractSyncLabels;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
@@ -113,12 +113,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
-    abstract protected function getDeleteLabelClassName();
-
-    /**
-     * @return string
-     */
-    abstract protected function getSyncLabelsClassName();
+    abstract protected function getRemoveLabelClassName();
 
     /**
      * @return string
@@ -227,35 +222,36 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($addLabel->getItemId());
 
-        $labelName = new StringLiteral((string)$addLabel->getLabel());
+        $offer->addLabel($this->createLabel($addLabel));
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractRemoveLabel $removeLabel
+     */
+    private function handleRemoveLabel(AbstractRemoveLabel $removeLabel)
+    {
+        $offer = $this->load($removeLabel->getItemId());
+
+        $offer->removeLabel($this->createLabel($removeLabel));
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractLabelCommand $labelCommand
+     * @return Label
+     */
+    private function createLabel(AbstractLabelCommand $labelCommand)
+    {
+        $labelName = new StringLiteral((string) $labelCommand->getLabel());
         $label = $this->labelRepository->getByName($labelName);
 
-        $offer->addLabel(new Label(
-            $label->getName()->toNative(),
+        return new Label(
+            $labelName->toNative(),
             $label->getVisibility() === Visibility::VISIBLE()
-        ));
-
-        $this->offerRepository->save($offer);
-    }
-
-    /**
-     * @param AbstractDeleteLabel $deleteLabel
-     */
-    private function handleDeleteLabel(AbstractDeleteLabel $deleteLabel)
-    {
-        $offer = $this->load($deleteLabel->getItemId());
-        $offer->deleteLabel($deleteLabel->getLabel());
-        $this->offerRepository->save($offer);
-    }
-
-    /**
-     * @param AbstractSyncLabels $syncLabels
-     */
-    protected function handleSyncLabels(AbstractSyncLabels $syncLabels)
-    {
-        $offer = $this->load($syncLabels->getItemId());
-        $offer->syncLabels($syncLabels->getLabelCollection());
-        $this->offerRepository->save($offer);
+        );
     }
 
     /**

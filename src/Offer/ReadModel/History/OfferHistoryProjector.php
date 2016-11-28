@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Event\ReadModel\History\Log;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\String\String;
@@ -82,7 +82,7 @@ abstract class OfferHistoryProjector
     /**
      * @return string
      */
-    abstract protected function getLabelDeletedClassName();
+    abstract protected function getLabelRemovedClassName();
 
     /**
      * @return string
@@ -113,18 +113,18 @@ abstract class OfferHistoryProjector
     }
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param AbstractLabelRemoved $labelRemoved
      * @param DomainMessage $domainMessage
      */
-    protected function applyLabelDeleted(
-        AbstractLabelDeleted $labelDeleted,
+    protected function applyLabelRemoved(
+        AbstractLabelRemoved $labelRemoved,
         DomainMessage $domainMessage
     ) {
         $this->writeHistory(
-            $labelDeleted->getItemId(),
+            $labelRemoved->getItemId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$labelDeleted->getLabel()}' verwijderd"),
+                new String("Label '{$labelRemoved->getLabel()}' verwijderd"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

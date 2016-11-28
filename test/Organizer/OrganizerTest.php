@@ -8,11 +8,14 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -57,9 +60,9 @@ class OrganizerTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_imports_from_udb2_actors()
+    public function it_imports_from_udb2_actors_and_takes_labels_into_account()
     {
-        $cdbXml = $this->getCdbXML('organizer_with_email.cdbxml.xml');
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
 
         $this->scenario
             ->when(
@@ -79,7 +82,66 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                     ),
                 ]
-            );
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->addLabel(new Label('foo'));
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_from_udb2_actors_and_takes_labels_into_account()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->withAggregateId('404EE8DE-E828-9C07-FE7D12DC4EB24480')
+            ->given(
+                [
+                    new OrganizerCreated(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        new Title('DE Studio'),
+                        [
+                            new Address(
+                                new Street('Wetstraat 1'),
+                                new PostalCode('1000'),
+                                new Locality('Brussel'),
+                                Country::fromNative('BE')
+                            ),
+                        ],
+                        [],
+                        [],
+                        []
+                    )
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) use ($cdbXml) {
+                    $organizer->updateWithCdbXml(
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    );
+                }
+            )
+            ->then(
+                [
+                    new OrganizerUpdatedFromUDB2(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->addLabel(new Label('foo'));
+                }
+            )
+            ->then([]);
     }
 
     /**

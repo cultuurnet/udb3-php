@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location\Location;
@@ -40,6 +41,11 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * @param EventServiceInterface $eventService
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
+     * @param DocumentRepositoryInterface $readRepository
+     * @param PlaceService $placeService
+     * @param OfferCommandFactoryInterface $commandFactory
+     * @param RepositoryInterface $writeRepository
+     * @param LabelServiceInterface $labelService
      */
     public function __construct(
         EventServiceInterface $eventService,
@@ -48,9 +54,16 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         DocumentRepositoryInterface $readRepository,
         PlaceService $placeService,
         OfferCommandFactoryInterface $commandFactory,
-        RepositoryInterface $writeRepository
+        RepositoryInterface $writeRepository,
+        LabelServiceInterface $labelService
     ) {
-        parent::__construct($commandBus, $uuidGenerator, $readRepository, $commandFactory);
+        parent::__construct(
+            $commandBus,
+            $uuidGenerator,
+            $readRepository,
+            $commandFactory,
+            $labelService
+        );
         $this->eventService = $eventService;
         $this->places = $placeService;
         $this->writeRepository = $writeRepository;

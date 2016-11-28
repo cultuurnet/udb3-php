@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
 
 class MadePublicTestAbstract extends AbstractExtendsTest
@@ -9,9 +10,9 @@ class MadePublicTestAbstract extends AbstractExtendsTest
     /**
      * @inheritdoc
      */
-    public function createEvent(UUID $uuid)
+    public function createEvent(UUID $uuid, LabelName $name)
     {
-        return new MadePublic($uuid);
+        return new MadePublic($uuid, $name);
     }
 
     /**
@@ -20,7 +21,10 @@ class MadePublicTestAbstract extends AbstractExtendsTest
     public function deserialize(array $array)
     {
         return MadePublic::deserialize(
-            [AbstractEvent::UUID => $this->uuid->toNative()]
+            [
+                'uuid' => $this->uuid->toNative(),
+                'name' => $this->name->toNative(),
+            ]
         );
     }
 }

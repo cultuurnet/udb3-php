@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
-use CultuurNet\UDB3\Event\Commands\DeleteLabel;
+use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
@@ -23,7 +23,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
@@ -65,12 +65,15 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
-            ->with(new StringLiteral('foo'))
-            ->willReturn(new Entity(
-                new UUID(),
-                new StringLiteral('foo'),
-                Visibility::VISIBLE(),
-                Privacy::PRIVACY_PUBLIC()
+            ->will($this->returnCallback(
+                function (StringLiteral $labelName) {
+                    return new Entity(
+                        new UUID(),
+                        $labelName,
+                        $labelName->toNative() === 'foo' ? Visibility::VISIBLE() : Visibility::INVISIBLE(),
+                        Privacy::PRIVACY_PUBLIC()
+                    );
+                }
             ));
 
         $this->commandFactory = new EventCommandFactory();
@@ -160,6 +163,21 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_can_label_an_event_with_invisible_label()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(new AddLabel($id, new Label('bar')))
+            ->then([new LabelAdded($id, new Label('bar', false))]);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_unlabel_an_event()
     {
         $id = '1';
@@ -171,8 +189,26 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelAdded($id, new Label('foo'))
                 ]
             )
-            ->when(new DeleteLabel($id, new Label('foo')))
-            ->then([new LabelDeleted($id, new Label('foo'))]);
+            ->when(new RemoveLabel($id, new Label('foo')))
+            ->then([new LabelRemoved($id, new Label('foo'))]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_unlabel_an_event_with_invisible_label()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                    new LabelAdded($id, new Label('bar', false))
+                ]
+            )
+            ->when(new RemoveLabel($id, new Label('bar')))
+            ->then([new LabelRemoved($id, new Label('bar', false))]);
     }
 
     /**
@@ -186,7 +222,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new DeleteLabel($id, new Label('foo')))
+            ->when(new RemoveLabel($id, new Label('foo')))
             ->then([]);
     }
 
@@ -202,10 +238,10 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     $this->factorOfferCreated($id),
                     new LabelAdded($id, new Label('foo')),
-                    new LabelDeleted($id, new Label('foo'))
+                    new LabelRemoved($id, new Label('foo'))
                 ]
             )
-            ->when(new DeleteLabel($id, new Label('foo')))
+            ->when(new RemoveLabel($id, new Label('foo')))
             ->then([]);
     }
 

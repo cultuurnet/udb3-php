@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Event\Events\DescriptionUpdated as EventDescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted as EventTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
+use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated as PlaceBookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated as PlaceContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
@@ -30,6 +31,7 @@ use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeD
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
+use ValueObjects\Identity\UUID;
 
 /**
  * Factory chaining together the logic to manipulate the payload of old events
@@ -48,9 +50,10 @@ class BackwardsCompatiblePayloadSerializerFactory
     }
 
     /**
+     * @param ReadRepositoryInterface $labelRepository
      * @return SerializerInterface
      */
-    public static function createSerializer()
+    public static function createSerializer(ReadRepositoryInterface $labelRepository)
     {
         $payloadManipulatingSerializer = new PayloadManipulatingSerializer(
             new SimpleInterfaceSerializer()
@@ -111,6 +114,34 @@ class BackwardsCompatiblePayloadSerializerFactory
          */
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Label\Events\MadeInvisible',
+            function (array $serializedObject) use ($labelRepository) {
+                return self::addLabelName($serializedObject, $labelRepository);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Label\Events\MadeVisible',
+            function (array $serializedObject) use ($labelRepository) {
+                return self::addLabelName($serializedObject, $labelRepository);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Label\Events\MadePrivate',
+            function (array $serializedObject) use ($labelRepository) {
+                return self::addLabelName($serializedObject, $labelRepository);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Label\Events\MadePublic',
+            function (array $serializedObject) use ($labelRepository) {
+                return self::addLabelName($serializedObject, $labelRepository);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\Events\EventWasLabelled',
             function (array $serializedObject) {
                 $serializedObject['class'] = LabelAdded::class;
@@ -137,7 +168,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\TagErased',
             function (array $serializedObject) {
-                $serializedObject['class'] = LabelDeleted::class;
+                $serializedObject['class'] = LabelRemoved::class;
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);
 
@@ -150,7 +181,7 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\Events\Unlabelled',
             function (array $serializedObject) {
-                $serializedObject['class'] = LabelDeleted::class;
+                $serializedObject['class'] = LabelRemoved::class;
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);
 
@@ -307,6 +338,25 @@ class BackwardsCompatiblePayloadSerializerFactory
         $keyword = $serializedObject['payload']['keyword'];
         $serializedObject['payload']['label'] = $keyword;
         unset($serializedObject['payload']['keyword']);
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @param ReadRepositoryInterface $labelRepository
+     * @return array
+     */
+    private static function addLabelName(
+        array $serializedObject,
+        ReadRepositoryInterface $labelRepository
+    ) {
+        if (!isset($serializedObject['payload']['name'])) {
+            $uuid = $serializedObject['payload']['uuid'];
+            $label = $labelRepository->getByUuid(new UUID($uuid));
+
+            $serializedObject['payload']['name'] = $label->getName()->toNative();
+        }
 
         return $serializedObject;
     }

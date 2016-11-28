@@ -2,10 +2,10 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
 
 class CopyCreated extends Created
 {
@@ -19,14 +19,14 @@ class CopyCreated extends Created
     /**
      * CopyCreated constructor.
      * @param UUID $uuid
-     * @param StringLiteral $name
+     * @param LabelName $name
      * @param Visibility $visibility
      * @param Privacy $privacy
      * @param UUID $parentUuid
      */
     public function __construct(
         UUID $uuid,
-        StringLiteral $name,
+        LabelName $name,
         Visibility $visibility,
         Privacy $privacy,
         UUID $parentUuid
@@ -51,7 +51,7 @@ class CopyCreated extends Created
     {
         return new static(
             new UUID($data[self::UUID]),
-            new StringLiteral($data[self::NAME]),
+            new LabelName($data[self::NAME]),
             Visibility::fromNative($data[self::VISIBILITY]),
             Privacy::fromNative($data[self::PRIVACY]),
             new UUID($data[self::PARENT_UUID])

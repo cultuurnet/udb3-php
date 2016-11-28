@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Item;
 use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
-use CultuurNet\UDB3\Offer\Item\Commands\DeleteLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveImage;
-use CultuurNet\UDB3\Offer\Item\Commands\SyncLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
@@ -34,14 +33,9 @@ class ItemCommandHandler extends OfferCommandHandler
         return AddLabel::class;
     }
 
-    protected function getDeleteLabelClassName()
+    protected function getRemoveLabelClassName()
     {
-        return DeleteLabel::class;
-    }
-
-    protected function getSyncLabelsClassName()
-    {
-        return SyncLabels::class;
+        return RemoveLabel::class;
     }
 
     protected function getAddImageClassName()

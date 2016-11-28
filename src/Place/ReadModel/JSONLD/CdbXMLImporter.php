@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\CalendarFactory;
+use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 
 /**
@@ -126,6 +127,9 @@ class CdbXMLImporter
         $jsonLD->bookingInfo = $bookingInfo;
 
         $this->importPicture($detail, $jsonLD);
+
+        $labelImporter = new LabelImporter();
+        $labelImporter->importLabels($item, $jsonLD);
 
         $this->importTerms($item, $jsonLD);
 

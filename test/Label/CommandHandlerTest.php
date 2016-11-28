@@ -5,8 +5,6 @@ namespace CultuurNet\UDB3\Label;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Event\Commands\AddLabel as EventAddLabel;
 use CultuurNet\UDB3\Label as OfferLabel;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\CreateCopy;
@@ -23,9 +21,6 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
-use CultuurNet\UDB3\LabelCollection;
-use CultuurNet\UDB3\Offer\Item\Commands\SyncLabels;
-use CultuurNet\UDB3\Place\Commands\AddLabel as PlaceAddLabel;
 use ValueObjects\Identity\UUID;
 
 class CommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -105,20 +100,8 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         EventStoreInterface $eventStore,
         EventBusInterface $eventBus
     ) {
-        /** @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject $uuidGenerator */
-        $uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $uuidGenerator
-            ->method('generate')
-            ->will(
-                $this->onConsecutiveCalls(
-                    $this->uuid->toNative(),
-                    $this->extraUuid->toNative()
-                )
-            );
-
         return new CommandHandler(
-            new LabelRepository($eventStore, $eventBus),
-            $uuidGenerator
+            new LabelRepository($eventStore, $eventBus)
         );
     }
 
@@ -160,50 +143,13 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_sync_labels()
-    {
-        $createdCarrotLabel = new Created(
-            $this->uuid,
-            new LabelName('carrot'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-        $createdPotatoLabel = new Created(
-            $this->extraUuid,
-            new LabelName('potato'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-
-        $this->scenario
-            ->given([])
-            ->when(new SyncLabels(
-                new UUID(),
-                LabelCollection::fromStrings(
-                    [
-                        'carrot',
-                        'potato',
-                    ]
-                )
-            ))
-            ->then(
-                [
-                    $createdCarrotLabel,
-                    $createdPotatoLabel,
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
     public function it_handles_make_visible_when_invisible()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
             ->given([$this->created])
             ->when(new MakeVisible($this->uuid))
-            ->then([new MadeVisible($this->uuid)]);
+            ->then([new MadeVisible($this->uuid, $this->name)]);
     }
 
     /**
@@ -213,7 +159,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(new MakeVisible($this->uuid))
             ->then([]);
     }
@@ -225,9 +171,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadeVisible($this->uuid)])
+            ->given([$this->created, new MadeVisible($this->uuid, $this->name)])
             ->when(new MakeInvisible($this->uuid))
-            ->then([new MadeInvisible($this->uuid)]);
+            ->then([new MadeInvisible($this->uuid, $this->name)]);
     }
 
     /**
@@ -251,7 +197,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->uuid)
             ->given([$this->created])
             ->when(new MakePublic($this->uuid))
-            ->then([new MadePublic($this->uuid)]);
+            ->then([new MadePublic($this->uuid, $this->name)]);
     }
 
     /**
@@ -261,7 +207,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(new MakePublic($this->uuid))
             ->then([]);
     }
@@ -273,9 +219,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->created, new MadePublic($this->uuid)])
+            ->given([$this->created, new MadePublic($this->uuid, $this->name)])
             ->when(new MakePrivate($this->uuid))
-            ->then([new MadePrivate($this->uuid)]);
+            ->then([new MadePrivate($this->uuid, $this->name)]);
     }
 
     /**
@@ -288,43 +234,5 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given([$this->created])
             ->when(new MakePrivate($this->uuid))
             ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_label_added_on_event()
-    {
-        $created = new Created(
-            $this->uuid,
-            new LabelName('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([])
-            ->when(new EventAddLabel('eventId', new OfferLabel('labelName')))
-            ->then([$created]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_label_added_on_place()
-    {
-        $created = new Created(
-            $this->uuid,
-            new LabelName('labelName'),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([])
-            ->when(new PlaceAddLabel('placeId', new OfferLabel('labelName')))
-            ->then([$created]);
     }
 }

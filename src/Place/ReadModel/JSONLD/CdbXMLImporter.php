@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 
 /**
@@ -32,7 +33,7 @@ class CdbXMLImporter
      *
      * @param \stdClass                   $base
      *   The JSON-LD document object to start from.
-     * @param \CultureFeed_Cdb_Item_Base $item
+     * @param \CultureFeed_Cdb_Item_Base|\CultureFeed_Cdb_Item_Actor $item
      *   The event/actor data from UDB2 to import.
      *
      * @return \stdClass
@@ -127,6 +128,12 @@ class CdbXMLImporter
         $this->importPicture($detail, $jsonLD);
 
         $this->importTerms($item, $jsonLD);
+
+        if ($item instanceof \CultureFeed_Cdb_Item_Actor) {
+            $calendarFactory = new CalendarFactory();
+            $calendar = $calendarFactory->createFromWeekScheme($item->getWeekScheme());
+            $jsonLD = (object)array_merge((array)$jsonLD, $calendar->toJsonLd());
+        }
 
         return $jsonLD;
     }

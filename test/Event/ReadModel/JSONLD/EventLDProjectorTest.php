@@ -790,7 +790,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($event, $event->getEventId());
 
-        $this->assertEquals('10-', $body->typicalAgeRange);
+        $this->assertEquals('10-12', $body->typicalAgeRange);
     }
 
     /**

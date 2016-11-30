@@ -6,8 +6,11 @@ use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use ValueObjects\DateTime\Time;
 use ValueObjects\DateTime\WeekDay;
 
-class CalendarFactory
+class CalendarFactory implements CalendarFactoryInterface
 {
+    /**
+     * @inheritdoc
+     */
     public function createFromCdbCalendar(\CultureFeed_Cdb_Data_Calendar $cdbCalendar)
     {
         //
@@ -132,16 +135,16 @@ class CalendarFactory
     }
 
     /**
-     * @param \CultureFeed_Cdb_Data_Calendar_Weekscheme|null $weekscheme
+     * @param \CultureFeed_Cdb_Data_Calendar_Weekscheme|null $weekScheme
      * @return Calendar
      */
     public function createFromWeekScheme(
-        \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekscheme = null
+        \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekScheme = null
     ) {
         $openingHoursAsArray = [];
 
-        if ($weekscheme) {
-            $openingHours = $this->createOpeningHoursFromWeekScheme($weekscheme);
+        if ($weekScheme) {
+            $openingHours = $this->createOpeningHoursFromWeekScheme($weekScheme);
             $openingHoursAsArray = $this->openingHoursToArray($openingHours);
         }
 

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
+use CultuurNet\UDB3\Label;
 use ValueObjects\Identity\UUID;
 
 class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
@@ -12,9 +13,9 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     private $organizerId;
 
     /**
-     * @var UUID
+     * @var Label
      */
-    private $labelId;
+    private $label;
 
     /**
      * @var AbstractLabelEvent
@@ -25,11 +26,11 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->organizerId = 'organizerId';
 
-        $this->labelId = new UUID();
+        $this->label = new Label('foo', false);
 
         $this->abstractLabelEvent = $this->getMockForAbstractClass(
             AbstractLabelEvent::class,
-            [$this->organizerId, $this->labelId]
+            [$this->organizerId, $this->label]
         );
     }
 
@@ -47,11 +48,11 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_a_label_id()
+    public function it_stores_a_label()
     {
         $this->assertEquals(
-            $this->labelId,
-            $this->abstractLabelEvent->getLabelId()
+            $this->label,
+            $this->abstractLabelEvent->getLabel()
         );
     }
 
@@ -62,7 +63,8 @@ class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
     {
         $expectedArray = [
             'organizer_id' => $this->organizerId,
-            'labelId' => $this->labelId->toNative()
+            'label' => (string) $this->label,
+            'visibility' => false,
         ];
 
         $this->assertEquals(

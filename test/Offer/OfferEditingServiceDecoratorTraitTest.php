@@ -76,7 +76,7 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             [
-                'deleteLabel',
+                'removeLabel',
                 [
                     'offer-id-2',
                     new Label('bar'),

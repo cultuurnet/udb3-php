@@ -6,8 +6,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\LabelEventInterface;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded as OfferAbstractLabelAdded;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved as OfferAbstractLabelRemoved;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved as OrganizerLabelRemoved;
 
 abstract class AbstractProjector implements EventListenerInterface
 {
@@ -20,26 +23,52 @@ abstract class AbstractProjector implements EventListenerInterface
      */
     public function handle(DomainMessage $domainMessage)
     {
-        $event = $domainMessage->getPayload();
+        $payload = $domainMessage->getPayload();
 
-        if (is_a($event, AbstractLabelAdded::class)) {
-            $this->applyLabelAdded($domainMessage->getPayload(), $domainMessage->getMetadata());
-        } else if (is_a($event, AbstractLabelDeleted::class)) {
-            $this->applyLabelDeleted($domainMessage->getPayload(), $domainMessage->getMetadata());
+        if ($this->isLabelAdded($payload)) {
+            $this->applyLabelAdded(
+                $domainMessage->getPayload(),
+                $domainMessage->getMetadata()
+            );
+        } else if ($this->isLabelRemoved($payload)) {
+            $this->applyLabelRemoved(
+                $domainMessage->getPayload(),
+                $domainMessage->getMetadata()
+            );
         } else {
             $this->handleSpecific($domainMessage);
         }
     }
 
     /**
-     * @param AbstractLabelAdded $labelAdded
+     * @param LabelEventInterface $labelAdded
      * @param Metadata $metadata
      */
-    abstract public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata);
+    abstract public function applyLabelAdded(LabelEventInterface $labelAdded, Metadata $metadata);
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param LabelEventInterface $labelRemoved
      * @param Metadata $metadata
      */
-    abstract public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata);
+    abstract public function applyLabelRemoved(LabelEventInterface $labelRemoved, Metadata $metadata);
+
+    /**
+     * @param $payload
+     * @return bool
+     */
+    private function isLabelAdded($payload)
+    {
+        return ($payload instanceof OfferAbstractLabelAdded ||
+            $payload instanceof OrganizerLabelAdded);
+    }
+
+    /**
+     * @param $payload
+     * @return bool
+     */
+    private function isLabelRemoved($payload)
+    {
+        return ($payload instanceof OfferAbstractLabelRemoved ||
+            $payload instanceof OrganizerLabelRemoved);
+    }
 }

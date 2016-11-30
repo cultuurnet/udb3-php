@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
-use CultuurNet\UDB3\Event\Events\LabelDeleted;
+use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
@@ -871,12 +871,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->documentRepository->save($initialDocument);
 
-        $labelDeleted = new LabelDeleted(
+        $labelRemoved = new LabelRemoved(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($labelDeleted, 'foo');
+        $body = $this->project($labelRemoved, 'foo');
 
         $this->assertEquals(
             ['label A', 'label C'],

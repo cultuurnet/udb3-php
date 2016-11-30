@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-use ValueObjects\Identity\UUID;
+use CultuurNet\UDB3\Label;
 
 class LabelRemovedTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class LabelRemovedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_derives_from_abstract_label_event()
     {
-        $labelRemoved = new LabelRemoved('organizerId', new UUID());
+        $labelRemoved = new LabelRemoved('organizerId', new Label('foo'));
 
         $this->assertInstanceOf(AbstractLabelEvent::class, $labelRemoved);
     }

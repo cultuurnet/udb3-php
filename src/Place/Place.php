@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
@@ -27,7 +28,7 @@ use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
 use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
-use CultuurNet\UDB3\Place\Events\LabelDeleted;
+use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
@@ -157,8 +158,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @param string $cdbXmlNamespaceUri
      *   The cdb xml namespace uri.
      *
-     * @return Actor
-     *   The actor.
+     * @return Place
      */
     public static function importFromUDB2Actor(
         $actorId,
@@ -188,7 +188,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      *   The cdb xml namespace uri.
      *
      * @return Place
-     *   The actor.
      */
     public static function importFromUDB2Event(
         $placeId,
@@ -221,6 +220,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Actor);
+        $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
 
     /**
@@ -237,6 +237,22 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->importWorkflowStatus($udb2Event);
+        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
+    }
+
+    /**
+     * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+     */
+    public function applyPlaceUpdatedFromUDB2Event(
+        PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+    ) {
+        $udb2Actor = ActorItemFactory::createActorFromCdbXml(
+            $placeUpdatedFromUDB2->getCdbXmlNamespaceUri(),
+            $placeUpdatedFromUDB2->getCdbXml()
+        );
+
+        $this->importWorkflowStatus($udb2Actor);
+        $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
 
     /**
@@ -276,11 +292,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     /**
      * @param Label $label
-     * @return LabelDeleted
+     * @return LabelRemoved
      */
-    protected function createLabelDeletedEvent(Label $label)
+    protected function createLabelRemovedEvent(Label $label)
     {
-        return new LabelDeleted($this->actorId, $label);
+        return new LabelRemoved($this->actorId, $label);
     }
 
     protected function createImageAddedEvent(Image $image)

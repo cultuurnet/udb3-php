@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
@@ -85,15 +85,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function __construct()
     {
-        $this->resetLabels();
-    }
-
-    /**
-     * @return LabelCollection
-     */
-    public function getLabels()
-    {
-        return $this->labels;
+        $this->labels = new LabelCollection();
     }
 
     /**
@@ -121,32 +113,12 @@ abstract class Offer extends EventSourcedAggregateRoot
     /**
      * @param Label $label
      */
-    public function deleteLabel(Label $label)
+    public function removeLabel(Label $label)
     {
         if ($this->labels->contains($label)) {
             $this->apply(
-                $this->createLabelDeletedEvent($label)
+                $this->createLabelRemovedEvent($label)
             );
-        }
-    }
-
-    /**
-     * @param LabelCollection $newLabelCollection
-     */
-    public function syncLabels(LabelCollection $newLabelCollection)
-    {
-        // Apply the label added, part of the new label collections but not the existing.
-        foreach ($newLabelCollection->asArray() as $newLabel) {
-            if (!$this->labels->contains($newLabel)) {
-                $this->apply($this->createLabelAddedEvent($newLabel));
-            }
-        }
-
-        // Apply the label removed, part of the existing label collection but not of the old.
-        foreach ($this->labels->asArray() as $oldLabel) {
-            if (!$newLabelCollection->contains($oldLabel)) {
-                $this->apply($this->createLabelDeletedEvent($oldLabel));
-            }
         }
     }
 
@@ -274,26 +246,15 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
     {
-        $newLabel = $labelAdded->getLabel();
-
-        if (!$this->labels->contains($newLabel)) {
-            $this->labels = $this->labels->with($newLabel);
-        }
+        $this->labels = $this->labels->with($labelAdded->getLabel());
     }
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param AbstractLabelRemoved $labelRemoved
      */
-    protected function applyLabelDeleted(AbstractLabelDeleted $labelDeleted)
+    protected function applyLabelRemoved(AbstractLabelRemoved $labelRemoved)
     {
-        $this->labels = $this->labels->without(
-            $labelDeleted->getLabel()
-        );
-    }
-
-    protected function resetLabels()
-    {
-        $this->labels = new LabelCollection();
+        $this->labels = $this->labels->without($labelRemoved->getLabel());
     }
 
     /**
@@ -579,9 +540,9 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     /**
      * @param Label $label
-     * @return AbstractLabelDeleted
+     * @return AbstractLabelRemoved
      */
-    abstract protected function createLabelDeletedEvent(Label $label);
+    abstract protected function createLabelRemovedEvent(Label $label);
 
     /**
      * @param Language $language

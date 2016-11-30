@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
@@ -39,9 +39,9 @@ class ItemLDProjector extends OfferLDProjector
     /**
      * @return string
      */
-    protected function getLabelDeletedClassName()
+    protected function getLabelRemovedClassName()
     {
-        return LabelDeleted::class;
+        return LabelRemoved::class;
     }
 
     protected function getImageAddedClassName()

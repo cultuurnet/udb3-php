@@ -9,9 +9,9 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Theme;
@@ -29,13 +29,15 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
         UuidGeneratorInterface $uuidGenerator,
         DocumentRepositoryInterface $readRepository,
         OfferCommandFactoryInterface $commandFactory,
-        RepositoryInterface $writeRepository
+        RepositoryInterface $writeRepository,
+        LabelServiceInterface $labelService
     ) {
         parent::__construct(
             $commandBus,
             $uuidGenerator,
             $readRepository,
-            $commandFactory
+            $commandFactory,
+            $labelService
         );
 
         $this->writeRepository = $writeRepository;

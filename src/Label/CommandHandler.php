@@ -3,10 +3,7 @@
 namespace CultuurNet\UDB3\Label;
 
 use Broadway\Repository\RepositoryInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
-use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintException;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\CreateCopy;
 use CultuurNet\UDB3\Label\Commands\MakeInvisible;
@@ -14,11 +11,6 @@ use CultuurNet\UDB3\Label\Commands\MakePrivate;
 use CultuurNet\UDB3\Label\Commands\MakePublic;
 use CultuurNet\UDB3\Label\Commands\MakeVisible;
 use CultuurNet\UDB3\Label\Label as LabelAggregate;
-use CultuurNet\UDB3\Label\ValueObjects\LabelName;
-use CultuurNet\UDB3\Label\ValueObjects\Privacy;
-use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractSyncLabels;
 use ValueObjects\Identity\UUID;
 
 class CommandHandler extends AbstractCommandHandler
@@ -29,35 +21,12 @@ class CommandHandler extends AbstractCommandHandler
     private $repository;
 
     /**
-     * @var UuidGeneratorInterface
-     */
-    private $uuidGenerator;
-
-    /**
-     * CommandHandler constructor.
      * @param RepositoryInterface $repository
-     * @param UuidGeneratorInterface $uuidGenerator
      */
     public function __construct(
-        RepositoryInterface $repository,
-        UuidGeneratorInterface $uuidGenerator
+        RepositoryInterface $repository
     ) {
         $this->repository = $repository;
-        $this->uuidGenerator = $uuidGenerator;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function handle($command)
-    {
-        if ($command instanceof AbstractAddLabel) {
-            $this->handleAddLabel($command);
-        } else if ($command instanceof AbstractSyncLabels) {
-            $this->handleSyncLabels($command);
-        } else {
-            parent::handle($command);
-        }
     }
 
     /**
@@ -89,29 +58,6 @@ class CommandHandler extends AbstractCommandHandler
         );
 
         $this->save($label);
-    }
-
-    /**
-     * @param AbstractSyncLabels $mergeLabels
-     */
-    public function handleSyncLabels(AbstractSyncLabels $mergeLabels)
-    {
-        $labelsArray = $mergeLabels->getLabelCollection()->asArray();
-
-        array_walk(
-            $labelsArray,
-            function (Label $label) {
-                $this->createLabel($label);
-            }
-        );
-    }
-
-    /**
-     * @param AbstractAddLabel $addLabel
-     */
-    public function handleAddLabel(AbstractAddLabel $addLabel)
-    {
-        $this->createLabel($addLabel->getLabel());
     }
 
     /**
@@ -177,22 +123,5 @@ class CommandHandler extends AbstractCommandHandler
     private function save(LabelAggregate $label)
     {
         $this->repository->save($label);
-    }
-
-    /**
-     * @param Label $label
-     */
-    private function createLabel(Label $label)
-    {
-        $label = LabelAggregate::create(
-            new UUID($this->uuidGenerator->generate()),
-            new LabelName((string)$label),
-            Visibility::VISIBLE(),
-            Privacy::PRIVACY_PUBLIC()
-        );
-        try {
-            $this->save($label);
-        } catch (UniqueConstraintException $exception) {
-        }
     }
 }

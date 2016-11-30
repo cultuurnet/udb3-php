@@ -1,20 +1,13 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
-use CultuurNet\UDB3\Event\EventNotFoundException;
-use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 interface EventEditingServiceInterface
 {
@@ -87,8 +80,8 @@ interface EventEditingServiceInterface
     public function updateImage(
         $id,
         Image $image,
-        String $description,
-        String $copyrightHolder
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     );
 
     /**
@@ -102,8 +95,8 @@ interface EventEditingServiceInterface
     /**
      * @param Title $title
      * @param EventType $eventType
-     * @param \CultuurNet\UDB3\Location\Location $location
-     * @param CalendarBase $calendar
+     * @param Location $location
+     * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
      * @return string $eventId
@@ -114,18 +107,18 @@ interface EventEditingServiceInterface
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param \CultuurNet\UDB3\Location\Location $location
-     * @param CalendarBase $calendar
+     * @param Location $location
+     * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
-     * @return string $eventId
+     * @return string $commandId
      */
     public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
 
     /**
      * @param string $eventId
      *
-     * @return string $eventId
+     * @return string $commandId
      */
     public function deleteEvent($eventId);
 }

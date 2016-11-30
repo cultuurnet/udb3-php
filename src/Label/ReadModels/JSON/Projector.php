@@ -12,9 +12,7 @@ use CultuurNet\UDB3\Label\Events\MadeVisible;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\LabelEventInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -113,7 +111,7 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelAdded(AbstractLabelAdded $labelAdded, Metadata $metadata)
+    public function applyLabelAdded(LabelEventInterface $labelAdded, Metadata $metadata)
     {
         $uuid = $this->getUuid($labelAdded);
 
@@ -125,9 +123,9 @@ class Projector extends AbstractProjector
     /**
      * @inheritdoc
      */
-    public function applyLabelDeleted(AbstractLabelDeleted $labelDeleted, Metadata $metadata)
+    public function applyLabelRemoved(LabelEventInterface $labelRemoved, Metadata $metadata)
     {
-        $uuid = $this->getUuid($labelDeleted);
+        $uuid = $this->getUuid($labelRemoved);
 
         if ($uuid) {
             $this->writeRepository->updateCountDecrement($uuid);
@@ -135,10 +133,10 @@ class Projector extends AbstractProjector
     }
 
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param LabelEventInterface $labelEvent
      * @return UUID|null
      */
-    private function getUuid(AbstractLabelEvent $labelEvent)
+    private function getUuid(LabelEventInterface $labelEvent)
     {
         $uuid = null;
 

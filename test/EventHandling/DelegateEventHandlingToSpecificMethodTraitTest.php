@@ -6,7 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\EventHandling\Mock\MockLabelAdded;
-use CultuurNet\UDB3\EventHandling\Mock\MockLabelDeleted;
+use CultuurNet\UDB3\EventHandling\Mock\MockLabelRemoved;
 use CultuurNet\UDB3\EventHandling\Mock\MockLabelUpdated;
 use CultuurNet\UDB3\EventHandling\Mock\MockLDProjector;
 use CultuurNet\UDB3\EventHandling\Mock\MockTitleTranslated;
@@ -31,7 +31,7 @@ class DelegateEventHandlingToSpecificMethodTraitTest extends \PHPUnit_Framework_
             array(
                 'applyMockLabelAdded',
                 'applyMockLabelUpdated',
-                'applyMockLabelDeleted',
+                'applyMockLabelRemoved',
                 'applyMockTitleTranslated'
             )
         );
@@ -77,12 +77,12 @@ class DelegateEventHandlingToSpecificMethodTraitTest extends \PHPUnit_Framework_
     public function it_does_not_handle_event_when_apply_method_has_parameter_missing()
     {
         $domainMessage = $this->createDomainMessage(
-            new MockLabelDeleted()
+            new MockLabelRemoved()
         );
 
         $this->mockedMockLDProjector
             ->expects($this->never())
-            ->method('applyMockLabelDeleted');
+            ->method('applyMockLabelRemoved');
 
         $this->mockLDProjector->handle($domainMessage);
     }

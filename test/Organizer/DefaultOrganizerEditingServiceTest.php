@@ -11,6 +11,9 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
@@ -19,7 +22,6 @@ use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use ValueObjects\Geography\Country;
-use ValueObjects\Identity\UUID;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
@@ -47,6 +49,11 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $organizerRepository;
 
     /**
+     * @var LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $labelService;
+
+    /**
      * @var DefaultOrganizerEditingService
      */
     private $service;
@@ -54,7 +61,10 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->commandBus = $this->getMock(CommandBusInterface::class);
+
         $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+        $this->uuidGenerator->method('generate')
+            ->willReturn('9196cb78-4381-11e6-beb8-9e71128cae77');
 
         $this->eventStore = new TraceableEventStore(new InMemoryEventStore());
 
@@ -63,13 +73,13 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus
         );
 
-        $this->uuidGenerator->method('generate')
-            ->willReturn('9196cb78-4381-11e6-beb8-9e71128cae77');
+        $this->labelService = $this->getMock(LabelServiceInterface::class);
 
         $this->service = new DefaultOrganizerEditingService(
             $this->commandBus,
             $this->uuidGenerator,
-            $this->organizerRepository
+            $this->organizerRepository,
+            $this->labelService
         );
     }
 
@@ -155,15 +165,19 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_sends_a_add_label_command()
     {
         $organizerId = 'organizerId';
-        $labelId = new UUID();
+        $label = new Label('foo');
 
-        $expectedAddLabel = new AddLabel($organizerId, $labelId);
+        $expectedAddLabel = new AddLabel($organizerId, $label);
+
+        $this->labelService->expects($this->once())
+            ->method('createLabelAggregateIfNew')
+            ->with(new LabelName('foo'));
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->with($expectedAddLabel);
 
-        $this->service->addLabel($organizerId, $labelId);
+        $this->service->addLabel($organizerId, $label);
     }
 
     /**
@@ -172,15 +186,15 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_sends_a_remove_label_command()
     {
         $organizerId = 'organizerId';
-        $labelId = new UUID();
+        $label = new Label('foo');
 
-        $expectedRemoveLabel = new RemoveLabel($organizerId, $labelId);
+        $expectedRemoveLabel = new RemoveLabel($organizerId, $label);
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->with($expectedRemoveLabel);
 
-        $this->service->removeLabel($organizerId, $labelId);
+        $this->service->removeLabel($organizerId, $label);
     }
 
     /**

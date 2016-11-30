@@ -24,7 +24,7 @@ interface OfferEditingServiceInterface
      * @param Label $label
      * @return string
      */
-    public function deleteLabel($id, Label $label);
+    public function removeLabel($id, Label $label);
 
     /**
      * @param $id

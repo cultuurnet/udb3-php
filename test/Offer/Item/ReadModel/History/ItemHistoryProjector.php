@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Item\ReadModel\History;
 
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
 
@@ -22,9 +22,9 @@ class ItemHistoryProjector extends OfferHistoryProjector
     /**
      * @return string
      */
-    protected function getLabelDeletedClassName()
+    protected function getLabelRemovedClassName()
     {
-        return LabelDeleted::class;
+        return LabelRemoved::class;
     }
 
     /**

@@ -6,7 +6,7 @@ use Broadway\Domain\DateTime as BroadwayDateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Events\LabelAdded as LabelAddedToEvent;
-use CultuurNet\UDB3\Event\Events\LabelDeleted as LabelDeletedFromEvent;
+use CultuurNet\UDB3\Event\Events\LabelRemoved as LabelRemovedFromEvent;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\Events\CopyCreated;
@@ -15,17 +15,17 @@ use CultuurNet\UDB3\Label\Events\MadeInvisible;
 use CultuurNet\UDB3\Label\Events\MadePrivate;
 use CultuurNet\UDB3\Label\Events\MadePublic;
 use CultuurNet\UDB3\Label\Events\MadeVisible;
-use CultuurNet\UDB3\Label\LabelEventOfferTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
+use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
-use CultuurNet\UDB3\Offer\Events\AbstractLabelDeleted;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
-use CultuurNet\UDB3\Place\Events\LabelDeleted as LabelDeletedFromPlace;
+use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -42,12 +42,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $unknownId;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $labelName;
 
     /**
-     * @var StringLiteral
+     * @var LabelName
      */
     private $unknownLabelName;
 
@@ -76,8 +76,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->uuid = new UUID('EC1697B7-7E2B-4462-A901-EC20E2A0AAFC');
         $this->unknownId = new UUID('ACFCFE56-3D16-48FB-A053-FAA9950720DC');
 
-        $this->labelName = new StringLiteral('labelName');
-        $this->unknownLabelName = new StringLiteral('unknownLabelName');
+        $this->labelName = new LabelName('labelName');
+        $this->unknownLabelName = new LabelName('unknownLabelName');
 
         $this->writeRepository = $this->getMock(
             WriteRepositoryInterface::class
@@ -116,7 +116,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $created = new Created(
             $this->unknownId,
-            $this->entity->getName(),
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy()
         );
@@ -141,8 +141,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_handle_created_when_uuid_not_unique()
     {
         $created = new Created(
-            $this->entity->getUuid(),
-            $this->entity->getName(),
+            $this->uuid,
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy()
         );
@@ -162,7 +162,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $copyCreated = new CopyCreated(
             $this->unknownId,
-            $this->entity->getName(),
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy(),
             $this->entity->getParentUuid()
@@ -192,8 +192,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_handle_copy_created_when_uuid_not_unique()
     {
         $copyCreated = new CopyCreated(
-            $this->entity->getUuid(),
-            $this->entity->getName(),
+            $this->uuid,
+            $this->labelName,
             $this->entity->getVisibility(),
             $this->entity->getPrivacy(),
             $this->entity->getParentUuid()
@@ -217,7 +217,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadeVisible($this->uuid)
+            new MadeVisible($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -234,7 +234,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadeInvisible($this->uuid)
+            new MadeInvisible($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -251,7 +251,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadePublic($this->uuid)
+            new MadePublic($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -268,7 +268,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            new MadePrivate($this->uuid)
+            new MadePrivate($this->uuid, $this->labelName)
         );
 
         $this->writeRepository->expects($this->once())
@@ -294,14 +294,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_label_deleted_from_event()
+    public function it_handles_label_removed_from_event()
     {
-        $labelDeleted = new LabelDeletedFromEvent(
+        $labelRemoved = new LabelRemovedFromEvent(
             'itemId',
             new Label('labelName')
         );
 
-        $this->handleDeleting($labelDeleted);
+        $this->handleDeleting($labelRemoved);
     }
 
     /**
@@ -320,14 +320,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_label_deleted_from_place()
+    public function it_handles_label_removed_from_place()
     {
-        $labelDeleted = new LabelDeletedFromPlace(
+        $labelRemoved = new LabelRemovedFromPlace(
             'itemId',
             new Label('labelName')
         );
 
-        $this->handleDeleting($labelDeleted);
+        $this->handleDeleting($labelRemoved);
     }
 
     /**
@@ -355,11 +355,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param AbstractLabelDeleted $labelDeleted
+     * @param AbstractLabelRemoved $labelRemoved
      */
-    private function handleDeleting(AbstractLabelDeleted $labelDeleted)
+    private function handleDeleting(AbstractLabelRemoved $labelRemoved)
     {
-        $this->handleLabelMovement($labelDeleted, 'updateCountDecrement');
+        $this->handleLabelMovement($labelRemoved, 'updateCountDecrement');
     }
 
     /**
@@ -377,7 +377,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->readRepository->expects($this->once())
             ->method('getByName')
-            ->with($this->labelName)
+            ->with(new StringLiteral($this->labelName->toNative()))
             ->willReturn($this->entity);
 
         $this->writeRepository->expects($this->once())

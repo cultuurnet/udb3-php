@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\LabelImporter;
 use ValueObjects\Geography\Country;
 
 /**
@@ -91,6 +92,9 @@ class CdbXMLImporter
             foreach ($cdbUrls as $url) {
                 $urls[] = $url->getUrl();
             }
+
+            $labelImporter = new LabelImporter();
+            $labelImporter->importLabels($actor, $jsonLD);
 
             $contactPoint = new ContactPoint($phones, $emails, $urls);
 

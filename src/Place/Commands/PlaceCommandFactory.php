@@ -42,11 +42,11 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     /**
      * @param $id
      * @param Label $label
-     * @return DeleteLabel
+     * @return RemoveLabel
      */
-    public function createDeleteLabelCommand($id, Label $label)
+    public function createRemoveLabelCommand($id, Label $label)
     {
-        return new DeleteLabel($id, $label);
+        return new RemoveLabel($id, $label);
     }
 
 

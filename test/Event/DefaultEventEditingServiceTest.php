@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
@@ -67,6 +68,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     protected $writeRepository;
 
     /**
+     * @var Label\LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $labelService;
+
+    /**
      * @var TraceableEventStore
      */
     protected $eventStore;
@@ -103,6 +109,8 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus()
         );
 
+        $this->labelService = $this->getMock(LabelServiceInterface::class);
+
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
             $this->commandBus,
@@ -110,7 +118,8 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->readRepository,
             $placeService,
             $this->commandFactory,
-            $this->writeRepository
+            $this->writeRepository,
+            $this->labelService
         );
     }
 
@@ -175,7 +184,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->deleteLabel($id, new Label('foo'));
+        $this->eventEditingService->RemoveLabel($id, new Label('foo'));
     }
 
     /**

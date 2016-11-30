@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
-use CultuurNet\UDB3\Offer\Item\Events\LabelDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
@@ -215,12 +215,12 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $labelDeleted = new LabelDeleted(
+        $labelRemoved = new LabelRemoved(
             'foo',
             new Label('label B')
         );
 
-        $body = $this->project($labelDeleted, 'foo');
+        $body = $this->project($labelRemoved, 'foo');
 
         $this->assertEquals(
             ['label A', 'label C'],
@@ -243,12 +243,12 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $labelDeleted = new LabelDeleted(
+        $labelRemoved = new LabelRemoved(
             'foo',
             new Label('label C', false)
         );
 
-        $body = $this->project($labelDeleted, 'foo');
+        $body = $this->project($labelRemoved, 'foo');
 
         $this->assertEquals(
             (object) ['labels' => ['label A', 'label B']],

@@ -833,25 +833,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_filters_the_description_property_when_filters_are_added()
-    {
-        /** @var StringFilterInterface|PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(StringFilterInterface::class);
-        $filter->expects($this->atLeastOnce())
-            ->method('filter');
-
-        $this->projector->addDescriptionFilter($filter);
-
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_languages.cdbxml.xml'
-        );
-
-        $this->project($event, $event->getEventId());
-    }
-
-    /**
-     * @test
-     */
     public function it_projects_the_addition_of_a_label()
     {
         $labelAdded = new LabelAdded(

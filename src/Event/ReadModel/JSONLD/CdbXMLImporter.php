@@ -10,7 +10,10 @@ use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
+use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -34,9 +37,9 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
-     * @var StringFilterInterface[]
+     * @var StringFilterInterface
      */
-    private $descriptionFilters = [];
+    private $longDescriptionFilter;
 
     /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
@@ -50,6 +53,14 @@ class CdbXMLImporter
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
+
+        $this->longDescriptionFilter = new CombinedStringFilter();
+        $this->longDescriptionFilter->addFilter(
+            new StripSourceStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new BreakTagToNewlineStringFilter()
+        );
     }
 
     /**
@@ -141,14 +152,6 @@ class CdbXMLImporter
     }
 
     /**
-     * @param StringFilterInterface $filter
-     */
-    public function addDescriptionFilter(StringFilterInterface $filter)
-    {
-        $this->descriptionFilters[] = $filter;
-    }
-
-    /**
      * @param int $unixTime
      * @return \DateTime
      */
@@ -182,9 +185,7 @@ class CdbXMLImporter
             }
         }
 
-        foreach ($this->descriptionFilters as $descriptionFilter) {
-            $longDescription = $descriptionFilter->filter($longDescription);
-        };
+        $longDescription = $this->longDescriptionFilter->filter($longDescription);
 
         $descriptions[] = trim($longDescription);
 

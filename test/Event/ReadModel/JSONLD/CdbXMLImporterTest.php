@@ -10,9 +10,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -90,21 +88,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2014-08-12T14:37:58+02:00', $jsonEvent->created);
         $this->assertEquals('2014-10-21T16:47:23+02:00', $jsonEvent->modified);
         $this->assertEquals('Invoerders Algemeen ', $jsonEvent->publisher);
-    }
-
-    /**
-     * @test
-     */
-    public function it_filters_the_description_property_when_filters_are_added()
-    {
-        /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(StringFilterInterface::class);
-        $filter->expects($this->atLeastOnce())
-            ->method('filter');
-
-        $this->importer->addDescriptionFilter($filter);
-
-        $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
     }
 
     /**
@@ -506,10 +489,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $expectedDescriptionFile,
         $schemaVersion = '3.2'
     ) {
-        // @todo Move this to CdbXmlImporter
-        $this->importer->addDescriptionFilter(new StripSourceStringFilter());
-        $this->importer->addDescriptionFilter(new BreakTagToNewlineStringFilter());
-
         $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, $schemaVersion);
 
         $this->assertEquals(

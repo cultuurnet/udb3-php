@@ -3,8 +3,7 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
-use CultureFeed_Cdb_Data_Keyword;
-use CultuurNet\UDB3\CalendarFactory;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelImporter;
@@ -34,18 +33,26 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
+     * @var CalendarFactoryInterface
+     */
+    private $calendarFactory;
+
+    /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      * @param PriceDescriptionParser $priceDescriptionParser
+     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
-        PriceDescriptionParser $priceDescriptionParser
+        PriceDescriptionParser $priceDescriptionParser,
+        CalendarFactoryInterface $calendarFactory
     ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
+        $this->calendarFactory = $calendarFactory;
     }
 
     /**
@@ -121,8 +128,7 @@ class CdbXMLImporter
 
         $this->cdbXMLItemBaseImporter->importPublicationInfo($event, $jsonLD);
 
-        $calendarFactory = new CalendarFactory();
-        $calendar = $calendarFactory->createFromCdbCalendar($event->getCalendar());
+        $calendar = $this->calendarFactory->createFromCdbCalendar($event->getCalendar());
         $jsonLD = (object)array_merge((array)$jsonLD, $calendar->toJsonLd());
 
         $this->importTypicalAgeRange($event, $jsonLD);
@@ -295,6 +301,7 @@ class CdbXMLImporter
                 }
             }
 
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones_cdb */
             $phones_cdb = $contact_info_cdb->getPhones();
             if (count($phones_cdb) > 0) {
                 $organizer['phone'] = array();
@@ -363,6 +370,7 @@ class CdbXMLImporter
     }
 
     /**
+     * @param \CultureFeed_Cdb_Item_Event $event
      * @param \CultureFeed_Cdb_Data_EventDetail $detail
      * @param \stdClass $jsonLD
      */
@@ -397,7 +405,9 @@ class CdbXMLImporter
         // Add reservation contact data.
         $contactInfo = $event->getContactInfo();
         if ($contactInfo) {
-            foreach ($contactInfo->getUrls() as $url) {
+            /** @var \CultureFeed_Cdb_Data_Url[] $urls */
+            $urls = $contactInfo->getUrls();
+            foreach ($urls as $url) {
                 if ($url->isForReservations()) {
                     $bookingInfo['url'] = $url->getUrl();
                     break;
@@ -408,7 +418,9 @@ class CdbXMLImporter
                 $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
             }
 
-            foreach ($contactInfo->getPhones() as $phone) {
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+            $phones = $contactInfo->getPhones();
+            foreach ($phones as $phone) {
                 if ($phone->isForReservations()) {
                     $bookingInfo['phone'] = $phone->getNumber();
                     break;

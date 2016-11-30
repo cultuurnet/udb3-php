@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
-use CultuurNet\UDB3\Offer\WorkflowStatus;
 use InvalidArgumentException;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
@@ -17,7 +17,10 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter());
+        $this->importer = new CdbXMLImporter(
+            new CdbXMLItemBaseImporter(),
+            new CalendarFactory()
+        );
         date_default_timezone_set('Europe/Brussels');
     }
 

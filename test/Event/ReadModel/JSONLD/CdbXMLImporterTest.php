@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
@@ -43,7 +44,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             new PriceDescriptionParser(
                 new NumberFormatRepository(),
                 new CurrencyRepository()
-            )
+            ),
+            new CalendarFactory()
         );
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);

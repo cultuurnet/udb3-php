@@ -1,6 +1,5 @@
 <?php
 
-
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CommerceGuys\Intl\Currency\CurrencyRepository;
@@ -10,7 +9,6 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -474,6 +472,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description' => array(
                 'event_vertelavond_jan_gabriels.cdbxml.xml',
                 'description_vertelavond_jan_gabriels.txt',
+                '3.3',
+            ),
+            'newlines, leading & trailing whitespace are removed from longdescription' => array(
+                'event_brussels_buzzing.cdbxml.xml',
+                'description_brussels_buzzing.txt',
                 '3.3',
             ),
         );

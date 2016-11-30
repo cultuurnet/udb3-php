@@ -12,7 +12,10 @@ use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\StripLeadingSpaceStringFilter;
+use CultuurNet\UDB3\StringFilter\StripNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
+use CultuurNet\UDB3\StringFilter\StripTrailingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -59,7 +62,16 @@ class CdbXMLImporter
             new StripSourceStringFilter()
         );
         $this->longDescriptionFilter->addFilter(
+            new StripNewlineStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
             new BreakTagToNewlineStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new StripLeadingSpaceStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new StripTrailingSpaceStringFilter()
         );
     }
 

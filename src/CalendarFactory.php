@@ -115,10 +115,7 @@ class CalendarFactory implements CalendarFactoryInterface
         }
 
         if ($weekSchema) {
-            $openingHours = $this->createOpeningHoursFromWeekScheme(
-                $weekSchema
-            );
-
+            $openingHours = $this->createOpeningHoursFromWeekScheme($weekSchema);
             $openingHoursAsArray = $this->openingHoursToArray($openingHours);
         }
 
@@ -159,16 +156,14 @@ class CalendarFactory implements CalendarFactoryInterface
 
     /**
      * @param \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekScheme
-     * @return OpeningHour[]
+     * @return OpeningHours
      */
     private function createOpeningHoursFromWeekScheme(
         \CultureFeed_Cdb_Data_Calendar_Weekscheme $weekScheme
     ) {
-        $days = $weekScheme->getDays();
+        $openingHours = new OpeningHours();
 
-        /** @var OpeningHour[] $openingHours */
-        $openingHours = [];
-        foreach ($days as $day) {
+        foreach ($weekScheme->getDays() as $day) {
             if ($day->isOpen()) {
                 /** @var \CultureFeed_Cdb_Data_Calendar_OpeningTime[] $openingTimes */
                 $openingTimes = $day->getOpeningTimes();
@@ -182,24 +177,13 @@ class CalendarFactory implements CalendarFactoryInterface
                     $openingTimes ? $openingTimes[0]->getOpenTill() : '00:00:00'
                 );
 
-                $newOpeningHour = new OpeningHour(
+                $openingHour = new OpeningHour(
                     WeekDay::fromNative(ucfirst($day->getDayName())),
                     Time::fromNativeDateTime($opens),
                     $closes ? Time::fromNativeDateTime($closes) : Time::fromNativeDateTime($opens)
                 );
 
-                $merged = false;
-                foreach ($openingHours as $openingHour) {
-                    if ($openingHour->equalHours($newOpeningHour)) {
-                        $openingHour->mergeWeekday($newOpeningHour);
-                        $merged = true;
-                        break;
-                    }
-                }
-
-                if (!$merged) {
-                    $openingHours[] = $newOpeningHour;
-                }
+                $openingHours->addOpeningHour($openingHour);
             }
         }
 
@@ -207,28 +191,56 @@ class CalendarFactory implements CalendarFactoryInterface
     }
 
     /**
-     * @param array $openingHours
+     * @param OpeningHours $openingHours
      * @return array
      */
-    private function openingHoursToArray(array $openingHours)
+    private function openingHoursToArray(OpeningHours $openingHours)
     {
         $openingHoursAsArray = [];
 
-        if (count($openingHours) > 0) {
-            foreach ($openingHours as $openingHour) {
-                $openingHoursAsArray[] = [
-                    'dayOfWeek' => array_map(
-                        function (WeekDay $weekDay) {
-                            return strtolower($weekDay->toNative());
-                        },
-                        $openingHour->getWeekDays()
-                    ),
-                    'opens' => $openingHour->getOpens()->toNativeDateTime()->format('H:i'),
-                    'closes' => (string)$openingHour->getCloses()->toNativeDateTime()->format('H:i'),
-                ];
-            }
+        $mergedOpeningHours = $this->createMergedOpeningHours($openingHours);
+
+        foreach ($mergedOpeningHours as $mergedOpeningHour) {
+            $openingHour = $mergedOpeningHour->getOpeningHours()[0];
+            $openingHoursAsArray[] = [
+                'dayOfWeek' => array_map(
+                    function (WeekDay $weekDay) {
+                        return strtolower($weekDay->toNative());
+                    },
+                    $mergedOpeningHour->getWeekDays()
+                ),
+                'opens' => $openingHour->getOpens()->toNativeDateTime()->format('H:i'),
+                'closes' => $openingHour->getCloses()->toNativeDateTime()->format('H:i'),
+            ];
         }
 
         return $openingHoursAsArray;
+    }
+
+    /**
+     * @param OpeningHours $openingHours
+     * @return OpeningHours[]
+     */
+    private function createMergedOpeningHours(OpeningHours $openingHours)
+    {
+        /** @var OpeningHours[] $mergedOpeningHours */
+        $mergedOpeningHours = [];
+
+        foreach ($openingHours->getOpeningHours() as $openingHour) {
+            $merged = false;
+            foreach ($mergedOpeningHours as $mergedOpeningHour) {
+                if ($mergedOpeningHour->equalOpeningHour($openingHour)) {
+                    $mergedOpeningHour->addOpeningHour($openingHour);
+                    $merged = true;
+                    break;
+                }
+            }
+
+            if (!$merged) {
+                $mergedOpeningHours[] = new OpeningHours([$openingHour]);
+            }
+        }
+
+        return $mergedOpeningHours;
     }
 }

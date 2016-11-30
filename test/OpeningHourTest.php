@@ -68,11 +68,11 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_week_days()
+    public function it_stores_a_week_day()
     {
         $this->assertEquals(
-            [$this->weekDay],
-            $this->openingHourMonday->getWeekDays()
+            $this->weekDay,
+            $this->openingHourMonday->getWeekDay()
         );
     }
 
@@ -113,19 +113,6 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
             $this->openingHourMonday->equalHours(
                 $this->openingHourSunday
             )
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_merge_the_week_days()
-    {
-        $this->openingHourMonday->mergeWeekday($this->openingHourTuesday);
-
-        $this->assertEquals(
-            [WeekDay::MONDAY(), WeekDay::TUESDAY()],
-            $this->openingHourMonday->getWeekDays()
         );
     }
 }

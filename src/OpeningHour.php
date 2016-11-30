@@ -8,9 +8,9 @@ use ValueObjects\DateTime\WeekDay;
 class OpeningHour
 {
     /**
-     * @var WeekDay[]
+     * @var WeekDay
      */
-    private $weekDays;
+    private $weekDay;
 
     /**
      * @var Time
@@ -33,7 +33,7 @@ class OpeningHour
         Time $opens,
         Time $closes
     ) {
-        $this->weekDays[] = $weekDay;
+        $this->weekDay = $weekDay;
         $this->opens = $opens;
         $this->closes = $closes;
     }
@@ -49,19 +49,11 @@ class OpeningHour
     }
 
     /**
-     * @param OpeningHour $otherOpeningHour
+     * @return WeekDay
      */
-    public function mergeWeekday(OpeningHour $otherOpeningHour)
+    public function getWeekDay()
     {
-        $this->weekDays[] = $otherOpeningHour->getWeekDays()[0];
-    }
-
-    /**
-     * @return WeekDay[]
-     */
-    public function getWeekDays()
-    {
-        return $this->weekDays;
+        return $this->weekDay;
     }
 
     /**

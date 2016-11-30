@@ -12,9 +12,8 @@ use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, MediaManagerInterface
@@ -69,8 +68,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
     public function create(
         UUID $id,
         MIMEType $fileType,
-        String $description,
-        String $copyrightHolder,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
         Url $sourceLocation
     ) {
         $mediaObject = MediaObject::create(
@@ -94,7 +93,7 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         $pathParts = explode('/', $uploadImage->getFilePath());
         $fileName = array_pop($pathParts);
         $fileNameParts = explode('.', $fileName);
-        $extension = String::fromNative(array_pop($fileNameParts));
+        $extension = StringLiteral::fromNative(array_pop($fileNameParts));
         $destinationPath = $this->pathGenerator->path(
             $uploadImage->getFileId(),
             $extension

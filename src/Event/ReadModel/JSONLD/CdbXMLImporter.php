@@ -10,6 +10,7 @@ use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\UDB2\Media\Media;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -102,6 +103,8 @@ class CdbXMLImporter
         $this->cdbXMLItemBaseImporter->importAvailable($event, $jsonLD);
 
         $this->importPicture($detail, $jsonLD);
+
+        $this->importMedia($detail, $jsonLD);
 
         $labelImporter = new LabelImporter();
         $labelImporter->importLabels($event, $jsonLD);
@@ -229,6 +232,41 @@ class CdbXMLImporter
         if ($mainPicture) {
             $jsonLD->image = $mainPicture->getHLink();
         }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_EventDetail $detail
+     * @param \stdClass $jsonLD
+     */
+    private function importMedia($detail, $jsonLD)
+    {
+        /**
+         * @var CultureFeed_Cdb_Data_File[] $udb2MediaFiles
+         */
+        $udb2MediaFiles = $detail->getMedia()->byMediaTypes(
+            [
+                CultureFeed_Cdb_Data_File::MEDIA_TYPE_PHOTO,
+                CultureFeed_Cdb_Data_File::MEDIA_TYPE_IMAGEWEB
+            ]
+        );
+
+        $jsonMediaObjects = [];
+
+        foreach($udb2MediaFiles as $mediaFile) {
+            $udb2Media = new Media($mediaFile);
+            $description = $mediaFile->getDescription();
+
+            $jsonMediaObjects[] = [
+                '@id' => $udb2Media->iri(),
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => (string) $udb2Media->normalizeUri(),
+                'thumbnailUrl' => (string) $udb2Media->normalizeUri(),
+                'description' => $description ? $description : '',
+                'copyrightHolder' => $mediaFile->getCopyright(),
+            ];
+        }
+
+        empty($jsonMediaObjects) ?: $jsonLD->mediaObject = $jsonMediaObjects;
     }
 
     /**

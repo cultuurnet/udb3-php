@@ -72,6 +72,12 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         StringLiteral $copyrightHolder,
         Url $sourceLocation
     ) {
+        $existingMediaObject = $this->repository->load($id);
+
+        if ($existingMediaObject) {
+            return $existingMediaObject;
+        }
+
         $mediaObject = MediaObject::create(
             $id,
             $fileType,

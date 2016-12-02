@@ -17,8 +17,18 @@ class StripLeadingSpaceStringFilterTest extends StringFilterTest
      */
     public function it_strips_leading_spaces()
     {
-        $original = "   Hello!   \n       Goodbye!\n\n\n Hello again!";
-        $expected = "Hello!   \nGoodbye!\n\n\nHello again!";
+        $original = "   Hello!   \n       Goodbye!\n\n\n Hello again!  ";
+        $expected = "Hello!   \nGoodbye!\n\n\nHello again!  ";
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
+    public function it_strips_leading_tabs()
+    {
+        $original = "\tHello!\t   \n \t      Goodbye!\n\n\n Hello again!\t";
+        $expected = "Hello!\t   \nGoodbye!\n\n\nHello again!\t";
         $this->assertFilterValue($expected, $original);
     }
 

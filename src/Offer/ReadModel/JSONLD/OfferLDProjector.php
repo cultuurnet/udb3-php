@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use Broadway\Domain\DomainMessage;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -86,13 +87,15 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
+     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
-        EventCdbIdExtractorInterface $eventCdbIdExtractor
+        EventCdbIdExtractorInterface $eventCdbIdExtractor,
+        CalendarFactoryInterface $calendarFactory
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
@@ -105,7 +108,8 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             new PriceDescriptionParser(
                 new NumberFormatRepository(),
                 new CurrencyRepository()
-            )
+            ),
+            $calendarFactory
         );
 
         $this->mediaObjectSerializer = $mediaObjectSerializer;

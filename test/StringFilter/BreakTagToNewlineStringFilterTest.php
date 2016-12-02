@@ -15,7 +15,7 @@ class BreakTagToNewlineStringFilterTest extends StringFilterTest
     /**
      * @test
      */
-    public function it_converts_newlines_to_break_tags()
+    public function it_converts_break_tags_to_newlines()
     {
         $original = "Hello<br>world!<br/>Goodbye!<br />Nice to have known you!";
         $expected = "Hello\nworld!\nGoodbye!\nNice to have known you!";
@@ -25,7 +25,7 @@ class BreakTagToNewlineStringFilterTest extends StringFilterTest
     /**
      * @test
      */
-    public function it_converts_consecutive_newlines_to_consecutive_break_tags()
+    public function it_converts_consecutive_break_tags_to_consecutive_newlines()
     {
         $original = "Hello<br /><br />world!";
         $expected = "Hello\n\nworld!";

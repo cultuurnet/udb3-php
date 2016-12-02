@@ -9,7 +9,13 @@ use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
+use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\StripLeadingSpaceStringFilter;
+use CultuurNet\UDB3\StringFilter\StripNewlineStringFilter;
+use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
+use CultuurNet\UDB3\StringFilter\StripTrailingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -33,6 +39,11 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
+     * @var StringFilterInterface
+     */
+    private $longDescriptionFilter;
+
+    /**
      * @var CalendarFactoryInterface
      */
     private $calendarFactory;
@@ -53,12 +64,24 @@ class CdbXMLImporter
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
-    }
 
-    /**
-     * @var StringFilterInterface[]
-     */
-    private $descriptionFilters = [];
+        $this->longDescriptionFilter = new CombinedStringFilter();
+        $this->longDescriptionFilter->addFilter(
+            new StripSourceStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new StripNewlineStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new BreakTagToNewlineStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new StripLeadingSpaceStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new StripTrailingSpaceStringFilter()
+        );
+    }
 
     /**
      * Imports a UDB2 event into a UDB3 JSON-LD document.
@@ -151,14 +174,6 @@ class CdbXMLImporter
     }
 
     /**
-     * @param StringFilterInterface $filter
-     */
-    public function addDescriptionFilter(StringFilterInterface $filter)
-    {
-        $this->descriptionFilters[] = $filter;
-    }
-
-    /**
      * @param int $unixTime
      * @return \DateTime
      */
@@ -179,16 +194,24 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $descriptions = [
-            $languageDetail->getShortDescription(),
-            $languageDetail->getLongDescription()
-        ];
-        $descriptions = array_filter($descriptions);
-        $description = implode('<br/>', $descriptions);
+        $longDescription = trim($languageDetail->getLongDescription());
+        $shortDescription = $languageDetail->getShortDescription();
 
-        foreach ($this->descriptionFilters as $descriptionFilter) {
-            $description = $descriptionFilter->filter($description);
-        };
+        $descriptions = [];
+
+        if ($shortDescription) {
+            $shortDescription = trim($shortDescription);
+
+            if (!$this->longDescriptionStartsWithShortDescription($longDescription, $shortDescription)) {
+                $descriptions[] = $shortDescription;
+            }
+        }
+
+        $longDescription = $this->longDescriptionFilter->filter($longDescription);
+
+        $descriptions[] = trim($longDescription);
+
+        $description = implode("\n\n", $descriptions);
 
         $jsonLD->description[$language] = $description;
     }
@@ -631,5 +654,19 @@ class CdbXMLImporter
         if (!in_array($reference, $jsonLD->sameAs)) {
             array_push($jsonLD->sameAs, $reference);
         }
+    }
+
+    /**
+     * @param string $longDescription
+     * @param string $shortDescription
+     * @return bool
+     */
+    private function longDescriptionStartsWithShortDescription(
+        $longDescription,
+        $shortDescription
+    ) {
+        $longDescription = strip_tags(html_entity_decode($longDescription));
+
+        return 0 === strncmp($longDescription, $shortDescription, mb_strlen($shortDescription));
     }
 }

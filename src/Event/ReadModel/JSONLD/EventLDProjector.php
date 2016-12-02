@@ -653,11 +653,6 @@ class EventLDProjector extends OfferLDProjector implements
         );
     }
 
-    public function addDescriptionFilter(StringFilterInterface $filter)
-    {
-        $this->cdbXMLImporter->addDescriptionFilter($filter);
-    }
-
     private function getAuthorFromMetadata(Metadata $metadata)
     {
         $properties = $metadata->serialize();

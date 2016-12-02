@@ -1,6 +1,5 @@
 <?php
 
-
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CommerceGuys\Intl\Currency\CurrencyRepository;
@@ -11,7 +10,6 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,14 +55,14 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      * @param string $fileName
      * @return \stdClass
      */
-    private function createJsonEventFromCdbXml($fileName)
+    private function createJsonEventFromCdbXml($fileName, $version = '3.2')
     {
         $cdbXml = file_get_contents(
             __DIR__ . '/' . $fileName
         );
 
         $event = EventItemFactory::createEventFromCdbXml(
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL',
+            "http://www.cultuurdatabank.com/XMLSchema/CdbXSD/{$version}/FINAL",
             $cdbXml
         );
 
@@ -116,21 +114,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2014-08-12T14:37:58+02:00', $jsonEvent->created);
         $this->assertEquals('2014-10-21T16:47:23+02:00', $jsonEvent->modified);
         $this->assertEquals('Invoerders Algemeen ', $jsonEvent->publisher);
-    }
-
-    /**
-     * @test
-     */
-    public function it_filters_the_description_property_when_filters_are_added()
-    {
-        /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(StringFilterInterface::class);
-        $filter->expects($this->atLeastOnce())
-            ->method('filter');
-
-        $this->importer->addDescriptionFilter($filter);
-
-        $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
     }
 
     /**
@@ -721,6 +704,59 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'urlLabel' => 'Reserveer plaatsen',
             ],
             $jsonEvent->bookingInfo
+        );
+    }
+
+    /**
+     * Provides cdbxml with descriptions and the expected UDB3 description.
+     */
+    public function descriptionsProvider()
+    {
+        return array(
+            'merge short description and long description when short description is not repeated in long description for events' => array(
+                'event_with_short_and_long_description.cdbxml.xml',
+                'description.txt'
+            ),
+            'use long description when there is no short description in UDB2' => array(
+                'event_without_short_description.cdbxml.xml',
+                'description_from_only_long_description.txt',
+            ),
+            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description' => array(
+                'event_with_short_description_included_in_long_description.cdbxml.xml',
+                'description.txt',
+            ),
+            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description' => array(
+                'event_vertelavond_jan_gabriels.cdbxml.xml',
+                'description_vertelavond_jan_gabriels.txt',
+                '3.3',
+            ),
+            'newlines, leading & trailing whitespace are removed from longdescription' => array(
+                'event_brussels_buzzing.cdbxml.xml',
+                'description_brussels_buzzing.txt',
+                '3.3',
+            ),
+        );
+    }
+
+    /**
+     * @test
+     * @group issue-III-165
+     * @dataProvider descriptionsProvider
+     *
+     * @param string $cdbxmlFile
+     * @param string $expectedDescriptionFile
+     * @param string $schemaVersion
+     */
+    public function it_combines_long_and_short_description_to_one_description(
+        $cdbxmlFile,
+        $expectedDescriptionFile,
+        $schemaVersion = '3.2'
+    ) {
+        $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, $schemaVersion);
+
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/' . $expectedDescriptionFile),
+            $jsonEvent->description['nl']
         );
     }
 }

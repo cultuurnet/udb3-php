@@ -6,6 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
+use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -20,6 +21,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
@@ -65,6 +67,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $address;
 
     /**
+     * @var CdbXMLImporter
+     */
+    private $cdbXMLImporter;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -91,11 +98,20 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
+        $this->mediaIriGenerator = new CallableIriGenerator(function (CultureFeed_Cdb_Data_File $file) {
+            return 'http://example.com/media/' . $file->getFileName();
+        });
+
+        $this->cdbXMLImporter = new CdbXMLImporter(
+            new CdbXMLItemBaseImporter()
+        );
+
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
-            $this->serializer
+            $this->serializer,
+            $this->cdbXMLImporter
         );
 
         $street = new Street('Kerkstraat 69');

@@ -61,29 +61,33 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
     /**
+     * @var CdbXMLImporter
+     */
+    protected $cdbXMLImporter;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
+     * @param CdbXMLImporter $cdbXMLImporter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer
+        SerializerInterface $mediaObjectSerializer,
+        CdbXMLImporter $cdbXMLImporter
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
-            $mediaObjectSerializer,
-            new EventCdbIdExtractor()
+            $mediaObjectSerializer
         );
 
         $this->slugger = new CulturefeedSlugger();
-        $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter()
-        );
+        $this->cdbXMLImporter = $cdbXMLImporter;
     }
 
     /**

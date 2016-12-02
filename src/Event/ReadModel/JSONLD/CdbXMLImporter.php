@@ -6,6 +6,7 @@ use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
@@ -34,18 +35,26 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    private $mediaIriGenerator;
+
+    /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      * @param PriceDescriptionParser $priceDescriptionParser
+     * @param IriGeneratorInterface $mediaIriGenerator
      */
     public function __construct(
         CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
-        PriceDescriptionParser $priceDescriptionParser
+        PriceDescriptionParser $priceDescriptionParser,
+        IriGeneratorInterface $mediaIriGenerator
     ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
+        $this->mediaIriGenerator = $mediaIriGenerator;
     }
 
     /**
@@ -252,18 +261,20 @@ class CdbXMLImporter
 
         $jsonMediaObjects = [];
 
-        foreach($udb2MediaFiles as $mediaFile) {
-            $udb2Media = new Media($mediaFile);
+        foreach ($udb2MediaFiles as $mediaFile) {
             $description = $mediaFile->getDescription();
 
-            $jsonMediaObjects[] = [
-                '@id' => $udb2Media->iri(),
+            $jsonMediaObject = [
+                '@id' => $this->mediaIriGenerator->iri($mediaFile),
                 '@type' => 'schema:ImageObject',
-                'contentUrl' => (string) $udb2Media->normalizeUri(),
-                'thumbnailUrl' => (string) $udb2Media->normalizeUri(),
-                'description' => $description ? $description : '',
+                'contentUrl' => $mediaFile->getHLink(),
+                'thumbnailUrl' => $mediaFile->getHLink(),
                 'copyrightHolder' => $mediaFile->getCopyright(),
             ];
+
+            empty($description) ?: $jsonMediaObject['description'] = $description;
+
+            $jsonMediaObjects[] = $jsonMediaObject;
         }
 
         empty($jsonMediaObjects) ?: $jsonLD->mediaObject = $jsonMediaObjects;

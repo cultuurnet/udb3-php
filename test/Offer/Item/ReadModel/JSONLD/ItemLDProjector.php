@@ -24,7 +24,6 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
-use CultuurNet\UDB3\PriceInfo\PriceInfo;
 
 class ItemLDProjector extends OfferLDProjector
 {

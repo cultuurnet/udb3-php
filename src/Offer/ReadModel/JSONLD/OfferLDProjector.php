@@ -11,7 +11,6 @@ use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -71,11 +70,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $slugger;
 
     /**
-     * @var CdbXMLImporter
-     */
-    protected $cdbXMLImporter;
-
-    /**
      * @var SerializerInterface
      */
     protected $mediaObjectSerializer;
@@ -85,28 +79,17 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
-     * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer,
-        EventCdbIdExtractorInterface $eventCdbIdExtractor
+        SerializerInterface $mediaObjectSerializer
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->slugger = new CulturefeedSlugger();
-
-        $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
-            $eventCdbIdExtractor,
-            new PriceDescriptionParser(
-                new NumberFormatRepository(),
-                new CurrencyRepository()
-            )
-        );
 
         $this->mediaObjectSerializer = $mediaObjectSerializer;
     }

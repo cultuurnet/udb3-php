@@ -90,6 +90,11 @@ class EventLDProjector extends OfferLDProjector implements
     protected $iriOfferIdentifierFactory;
 
     /**
+     * @var CdbXMLImporter
+     */
+    protected $cdbXmlImporter;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
@@ -97,7 +102,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param OrganizerService $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
-     * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
+     * @param CdbXMLImporter $cdbXMLImporter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -107,18 +112,18 @@ class EventLDProjector extends OfferLDProjector implements
         OrganizerService $organizerService,
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
-        EventCdbIdExtractorInterface $eventCdbIdExtractor
+        CdbXMLImporter $cdbXMLImporter
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
-            $mediaObjectSerializer,
-            $eventCdbIdExtractor
+            $mediaObjectSerializer
         );
 
         $this->placeService = $placeService;
         $this->eventService = $eventService;
+        $this->cdbXMLImporter = $cdbXMLImporter;
 
         $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
     }

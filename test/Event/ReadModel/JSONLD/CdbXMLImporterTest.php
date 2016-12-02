@@ -743,8 +743,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      * @group issue-III-165
      * @dataProvider descriptionsProvider
      *
-     * @param $cdbxmlFile
-     * @param $expectedDescriptionFile
+     * @param string $cdbxmlFile
+     * @param string $expectedDescriptionFile
      * @param string $schemaVersion
      */
     public function it_combines_long_and_short_description_to_one_description(

@@ -6,6 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
@@ -98,6 +99,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param SerializerInterface $mediaObjectSerializer
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
+     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -107,14 +109,16 @@ class EventLDProjector extends OfferLDProjector implements
         OrganizerService $organizerService,
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
-        EventCdbIdExtractorInterface $eventCdbIdExtractor
+        EventCdbIdExtractorInterface $eventCdbIdExtractor,
+        CalendarFactoryInterface $calendarFactory
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            $eventCdbIdExtractor
+            $eventCdbIdExtractor,
+            $calendarFactory
         );
 
         $this->placeService = $placeService;

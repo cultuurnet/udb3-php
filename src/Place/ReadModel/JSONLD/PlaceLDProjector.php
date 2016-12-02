@@ -6,6 +6,8 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\CalendarFactory;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -65,24 +67,28 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
+     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer
+        SerializerInterface $mediaObjectSerializer,
+        CalendarFactoryInterface $calendarFactory
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            new EventCdbIdExtractor()
+            new EventCdbIdExtractor(),
+            $calendarFactory
         );
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter()
+            new CdbXMLItemBaseImporter(),
+            $calendarFactory
         );
     }
 

@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
-use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
@@ -44,18 +44,26 @@ class CdbXMLImporter
     private $longDescriptionFilter;
 
     /**
+     * @var CalendarFactoryInterface
+     */
+    private $calendarFactory;
+
+    /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      * @param PriceDescriptionParser $priceDescriptionParser
+     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
-        PriceDescriptionParser $priceDescriptionParser
+        PriceDescriptionParser $priceDescriptionParser,
+        CalendarFactoryInterface $calendarFactory
     ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
+        $this->calendarFactory = $calendarFactory;
 
         $this->longDescriptionFilter = new CombinedStringFilter();
         $this->longDescriptionFilter->addFilter(
@@ -143,7 +151,8 @@ class CdbXMLImporter
 
         $this->cdbXMLItemBaseImporter->importPublicationInfo($event, $jsonLD);
 
-        $this->importCalendar($event, $jsonLD);
+        $calendar = $this->calendarFactory->createFromCdbCalendar($event->getCalendar());
+        $jsonLD = (object)array_merge((array)$jsonLD, $calendar->toJsonLd());
 
         $this->importTypicalAgeRange($event, $jsonLD);
 
@@ -315,6 +324,7 @@ class CdbXMLImporter
                 }
             }
 
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones_cdb */
             $phones_cdb = $contact_info_cdb->getPhones();
             if (count($phones_cdb) > 0) {
                 $organizer['phone'] = array();
@@ -383,6 +393,7 @@ class CdbXMLImporter
     }
 
     /**
+     * @param \CultureFeed_Cdb_Item_Event $event
      * @param \CultureFeed_Cdb_Data_EventDetail $detail
      * @param \stdClass $jsonLD
      */
@@ -417,7 +428,9 @@ class CdbXMLImporter
         // Add reservation contact data.
         $contactInfo = $event->getContactInfo();
         if ($contactInfo) {
-            foreach ($contactInfo->getUrls() as $url) {
+            /** @var \CultureFeed_Cdb_Data_Url[] $urls */
+            $urls = $contactInfo->getUrls();
+            foreach ($urls as $url) {
                 if ($url->isForReservations()) {
                     $bookingInfo['url'] = $url->getUrl();
                     break;
@@ -428,7 +441,9 @@ class CdbXMLImporter
                 $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
             }
 
-            foreach ($contactInfo->getPhones() as $phone) {
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+            $phones = $contactInfo->getPhones();
+            foreach ($phones as $phone) {
                 if ($phone->isForReservations()) {
                     $bookingInfo['phone'] = $phone->getNumber();
                     break;
@@ -532,85 +547,6 @@ class CdbXMLImporter
             }
         }
         $jsonLD->terms = $categories;
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
-    private function importCalendar(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
-    {
-        // To render the front-end we make a distinction between 4 calendar types
-        // Permanent and Periodic map directly to the Cdb calendar classes
-        // Simple timestamps are divided into single and multiple
-        $calendarType = 'unknown';
-        $calendar = $event->getCalendar();
-
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $calendarType = 'permanent';
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $calendarType = 'periodic';
-            $calendar->rewind();
-            $firstCalendarItem = $calendar->current();
-            $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
-            $startDate = DateTimeFactory::dateTimeFromDateString($startDateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
-            $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
-
-            $jsonLD->startDate = $startDate->format('c');
-            $jsonLD->endDate = $endDate->format('c');
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $calendarType = 'single';
-            $calendar->rewind();
-            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $firstCalendarItem */
-            $firstCalendarItem = $calendar->current();
-            if ($firstCalendarItem->getStartTime()) {
-                $dateString =
-                    $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
-            } else {
-                $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
-            }
-
-            $startDate = DateTimeFactory::dateTimeFromDateString($dateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = null;
-            if ($lastCalendarItem->getEndTime()) {
-                $endDateString =
-                    $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
-            } else {
-                if (iterator_count($calendar) > 1) {
-                    $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
-                }
-            }
-
-            if ($endDateString) {
-                $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
-                $jsonLD->endDate = $endDate->format('c');
-
-                if ($startDate->format('Ymd') != $endDate->format('Ymd')) {
-                    $calendarType = 'multiple';
-                }
-            }
-
-            $jsonLD->startDate = $startDate->format('c');
-        }
-
-        $jsonLD->calendarType = $calendarType;
     }
 
     /**

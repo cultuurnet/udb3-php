@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 
@@ -21,11 +22,20 @@ class CdbXMLImporter
     private $cdbXMLItemBaseImporter;
 
     /**
-     * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
+     * @var CalendarFactoryInterface
      */
-    public function __construct(CdbXMLItemBaseImporter $dbXMLItemBaseImporter)
-    {
+    private $calendarFactory;
+
+    /**
+     * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
+     * @param CalendarFactoryInterface $calendarFactory
+     */
+    public function __construct(
+        CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
+        CalendarFactoryInterface $calendarFactory
+    ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
+        $this->calendarFactory = $calendarFactory;
     }
 
     /**
@@ -33,7 +43,7 @@ class CdbXMLImporter
      *
      * @param \stdClass                   $base
      *   The JSON-LD document object to start from.
-     * @param \CultureFeed_Cdb_Item_Base $item
+     * @param \CultureFeed_Cdb_Item_Base|\CultureFeed_Cdb_Item_Actor $item
      *   The event/actor data from UDB2 to import.
      *
      * @return \stdClass
@@ -89,6 +99,7 @@ class CdbXMLImporter
         // Address
         $contact_cdb = $item->getContactInfo();
         if ($contact_cdb) {
+            /** @var \CultureFeed_Cdb_Data_Address[] $addresses */
             $addresses = $contact_cdb->getAddresses();
 
             foreach ($addresses as $address) {
@@ -132,6 +143,13 @@ class CdbXMLImporter
 
         $this->importTerms($item, $jsonLD);
 
+        if ($item instanceof \CultureFeed_Cdb_Item_Actor) {
+            $calendar = $this->calendarFactory->createFromWeekScheme(
+                $item->getWeekScheme()
+            );
+            $jsonLD = (object)array_merge((array)$jsonLD, $calendar->toJsonLd());
+        }
+
         return $jsonLD;
     }
 
@@ -145,7 +163,7 @@ class CdbXMLImporter
     }
 
     /**
-     * @param \CultureFeed_Cdb_Item_Actor $actor
+     * @param \CultureFeed_Cdb_Item_Base $actor
      * @param \stdClass $jsonLD
      */
     private function importTerms(\CultureFeed_Cdb_Item_Base $actor, $jsonLD)

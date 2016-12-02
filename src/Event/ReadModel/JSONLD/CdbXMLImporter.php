@@ -202,7 +202,6 @@ class CdbXMLImporter
 
         $descriptions[] = trim($longDescription);
 
-        $descriptions = array_filter($descriptions);
         $description = implode("\n\n", $descriptions);
 
         $jsonLD->description[$language] = $description;

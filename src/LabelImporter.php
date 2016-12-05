@@ -14,18 +14,17 @@ class LabelImporter
             $item->getKeywords(true)
         );
 
-        $visibleLabelCollection = new LabelCollection();
-        $hiddenLabelCollection = new LabelCollection();
-        foreach ($labelCollection->asArray() as $label) {
-            if ($label->isVisible()) {
-                $visibleLabelCollection = $visibleLabelCollection->with($label);
-            } else {
-                $hiddenLabelCollection = $hiddenLabelCollection->with($label);
+        $visibleLabels = $labelCollection->filter(
+            function (Label $label) {
+                return $label->isVisible();
             }
-        }
+        )->toStrings();
 
-        $visibleLabels = $visibleLabelCollection->toStrings();
-        $hiddenLabels = $hiddenLabelCollection->toStrings();
+        $hiddenLabels = $labelCollection->filter(
+            function (Label $label) {
+                return !$label->isVisible();
+            }
+        )->toStrings();
 
         empty($visibleLabels) ?: $jsonLD->labels = $visibleLabels;
         empty($hiddenLabels) ?: $jsonLD->hiddenLabels = $hiddenLabels;

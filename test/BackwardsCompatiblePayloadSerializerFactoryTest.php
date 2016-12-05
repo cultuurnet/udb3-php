@@ -9,13 +9,12 @@ use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Label\Events\MadeInvisible;
+use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\UsedLabelsMemory\Created;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
@@ -133,6 +132,24 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     {
         $sampleFile = $this->sampleDir . 'serialized_label_was_made_public.json';
         $this->assertLabelNameAdded($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_label_added_to_organizer_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_label_removed_from_organizer_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_removed_from_organizer.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
     }
 
     /**
@@ -302,6 +319,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      * @dataProvider typedIdPlaceEventClassProvider
+     * @param string $eventClassFile
      */
     public function it_should_replace_place_id_on_older_events_with_item_id(
         $eventClassFile
@@ -461,9 +479,24 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
 
-        /** @var AbstractLabelEvent $newEvent */
+        /** @var AbstractEvent $labelEvent */
         $labelEvent = $this->serializer->deserialize($decoded);
 
         $this->assertEquals('2dotstwice', $labelEvent->getName()->toNative());
+    }
+
+    /**
+     * @param string $sampleFile
+     */
+    private function assertOrganizerLabelEventFixed($sampleFile)
+    {
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /** @var LabelEventInterface $labelEvent */
+        $labelEvent = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals('2dotstwice', (string) $labelEvent->getLabel());
+        $this->assertFalse($labelEvent->getLabel()->isVisible());
     }
 }

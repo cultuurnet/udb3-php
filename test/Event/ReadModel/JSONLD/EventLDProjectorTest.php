@@ -156,13 +156,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
+            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
             new EventCdbIdExtractor(),
             new PriceDescriptionParser(
                 new NumberFormatRepository(),
                 new CurrencyRepository()
-            ),
-            $this->mediaIriGenerator
+            )
         );
 
         $this->projector = new EventLDProjector(

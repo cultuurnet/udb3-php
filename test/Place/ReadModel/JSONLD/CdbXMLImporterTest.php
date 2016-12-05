@@ -2,7 +2,10 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
+use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Iri\CallableIriGenerator;
+use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use InvalidArgumentException;
@@ -15,9 +18,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     protected $importer;
 
+    /**
+     * @var IriGeneratorInterface
+     */
+    private $mediaIriGenerator;
+
     public function setUp()
     {
-        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter());
+        $this->mediaIriGenerator = new CallableIriGenerator(function (CultureFeed_Cdb_Data_File $file) {
+            return 'http://example.com/media/' . $file->getFileName();
+        });
+
+        $this->importer = new CdbXMLImporter(new CdbXMLItemBaseImporter($this->mediaIriGenerator));
         date_default_timezone_set('Europe/Brussels');
     }
 

@@ -72,6 +72,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $cdbXMLImporter;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    private $mediaIriGenerator;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -103,7 +108,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         });
 
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter()
+            new CdbXMLItemBaseImporter($this->mediaIriGenerator)
         );
 
         $this->projector = new PlaceLDProjector(

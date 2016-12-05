@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
-use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
@@ -11,7 +10,6 @@ use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\UDB2\Media\Media;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)

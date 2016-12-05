@@ -385,7 +385,8 @@ class BackwardsCompatiblePayloadSerializerFactory
         array $serializedObject,
         ReadRepositoryInterface $labelRepository
     ) {
-        if (!isset($serializedObject['payload']['name'])) {
+        if (!isset($serializedObject['payload']['label']) ||
+            !isset($serializedObject['payload']['visibility'])) {
             $uuid = $serializedObject['payload']['labelId'];
             $label = $labelRepository->getByUuid(new UUID($uuid));
 

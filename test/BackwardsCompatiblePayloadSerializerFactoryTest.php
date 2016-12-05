@@ -137,7 +137,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
-    public function it_adds_label_name_on_label_added_to_organizer_event()
+    public function it_adds_label_name_and_visibility_on_label_added_to_organizer_event()
     {
         $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer.json';
         $this->assertOrganizerLabelEventFixed($sampleFile);
@@ -146,7 +146,40 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
-    public function it_adds_label_name_on_label_removed_from_organizer_event()
+    public function it_adds_label_visibility_on_label_added_to_organizer_event_with_label()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer_with_label.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_label_added_to_organizer_event_with_visibility()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer_with_visibility.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_modify_label_added_to_organizer_event_with_label_and_visibility()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer_with_label_and_visibility.json';
+
+        $this->labelRepository->expects($this->never())
+            ->method('getByUuid');
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+        $this->serializer->deserialize($decoded);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_and_visibility_on_label_removed_from_organizer_event()
     {
         $sampleFile = $this->sampleDir . 'serialized_label_was_removed_from_organizer.json';
         $this->assertOrganizerLabelEventFixed($sampleFile);

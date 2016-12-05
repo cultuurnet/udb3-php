@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\EntityNotFoundException;
@@ -145,7 +146,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->organizerService,
             $this->serializer,
             $this->iriOfferIdentifierFactory,
-            new EventCdbIdExtractor()
+            new EventCdbIdExtractor(),
+            new CalendarFactory()
         );
     }
 
@@ -828,25 +830,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($event, $event->getEventId());
 
         $this->assertObjectNotHasAttribute('language', $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_filters_the_description_property_when_filters_are_added()
-    {
-        /** @var StringFilterInterface|PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(StringFilterInterface::class);
-        $filter->expects($this->atLeastOnce())
-            ->method('filter');
-
-        $this->projector->addDescriptionFilter($filter);
-
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_languages.cdbxml.xml'
-        );
-
-        $this->project($event, $event->getEventId());
     }
 
     /**

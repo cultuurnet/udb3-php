@@ -573,6 +573,26 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_imports_age_from_99_as_typical_age_range_from_99_till_99()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(99);
+
+        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_100_as_typical_age_range_from_99_till_99()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(100);
+
+        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
     public function it_imports_age_from_101_as_typical_age_range_from_99_till_99()
     {
         $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(101);

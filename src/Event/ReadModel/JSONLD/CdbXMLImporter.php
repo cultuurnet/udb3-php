@@ -556,8 +556,17 @@ class CdbXMLImporter
     private function importTypicalAgeRange(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
         $ageFrom = $event->getAgeFrom();
-        if ($ageFrom) {
-            $jsonLD->typicalAgeRange = "{$ageFrom}-";
+
+        if (isset($ageFrom) && is_int($ageFrom)) {
+            if ($ageFrom <= 12) {
+                $jsonLD->typicalAgeRange = "{$ageFrom}-12";
+            } else if ($ageFrom <= 18) {
+                $jsonLD->typicalAgeRange = "{$ageFrom}-18";
+            } else if ($ageFrom <= 99) {
+                $jsonLD->typicalAgeRange = "{$ageFrom}-99";
+            } else {
+                $jsonLD->typicalAgeRange = '99-99';
+            }
         }
     }
 

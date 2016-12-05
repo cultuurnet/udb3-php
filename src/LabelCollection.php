@@ -133,6 +133,22 @@ class LabelCollection implements \Countable
     }
 
     /**
+     * @param callable $filterFunction
+     * @return LabelCollection
+     */
+    public function filter(callable $filterFunction)
+    {
+        $filteredLabels = [];
+        foreach ($this->labels as $label) {
+            if ($filterFunction($label)) {
+                $filteredLabels[] = $label;
+            }
+        }
+
+        return new LabelCollection($filteredLabels);
+    }
+
+    /**
      * @param string[] $strings
      * @return LabelCollection
      */

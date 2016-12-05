@@ -564,7 +564,7 @@ class CdbXMLImporter
                 $jsonLD->typicalAgeRange = "{$ageFrom}-18";
             } else if ($ageFrom <= 99) {
                 $jsonLD->typicalAgeRange = "{$ageFrom}-99";
-            } else if ($ageFrom > 99) {
+            } else {
                 $jsonLD->typicalAgeRange = '99-99';
             }
         }

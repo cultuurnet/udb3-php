@@ -123,7 +123,7 @@ class CdbXMLItemBaseImporter
      * @param CultureFeed_Cdb_Data_Detail $detail
      * @param stdClass $jsonLD
      */
-    public function importMedia($detail, $jsonLD)
+    public function importMedia(CultureFeed_Cdb_Data_Detail $detail, $jsonLD)
     {
         /**
          * @var CultureFeed_Cdb_Data_File[] $udb2MediaFiles
@@ -163,7 +163,7 @@ class CdbXMLItemBaseImporter
      * This is based on code found in the culturefeed theme.
      * @see https://github.com/cultuurnet/culturefeed/blob/master/culturefeed_agenda/theme/theme.inc#L266-L284
      */
-    public function importPicture($detail, $jsonLD)
+    public function importPicture(CultureFeed_Cdb_Data_Detail $detail, $jsonLD)
     {
         $mainPicture = null;
 

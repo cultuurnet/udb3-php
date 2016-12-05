@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted as EventTypicalAgeRangeD
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated as PlaceBookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated as PlaceContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
@@ -138,6 +139,20 @@ class BackwardsCompatiblePayloadSerializerFactory
             'CultuurNet\UDB3\Label\Events\MadePublic',
             function (array $serializedObject) use ($labelRepository) {
                 return self::addLabelName($serializedObject, $labelRepository);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Organizer\Events\LabelAdded',
+            function (array $serializedObject) use ($labelRepository) {
+                return self::fixOrganizerLabelEvent($serializedObject, $labelRepository);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Organizer\Events\LabelRemoved',
+            function (array $serializedObject) use ($labelRepository) {
+                return self::fixOrganizerLabelEvent($serializedObject, $labelRepository);
             }
         );
 
@@ -356,6 +371,27 @@ class BackwardsCompatiblePayloadSerializerFactory
             $label = $labelRepository->getByUuid(new UUID($uuid));
 
             $serializedObject['payload']['name'] = $label->getName()->toNative();
+        }
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @param ReadRepositoryInterface $labelRepository
+     * @return array
+     */
+    private static function fixOrganizerLabelEvent(
+        array $serializedObject,
+        ReadRepositoryInterface $labelRepository
+    ) {
+        if (!isset($serializedObject['payload']['label']) ||
+            !isset($serializedObject['payload']['visibility'])) {
+            $uuid = $serializedObject['payload']['labelId'];
+            $label = $labelRepository->getByUuid(new UUID($uuid));
+
+            $serializedObject['payload']['label'] = $label->getName()->toNative();
+            $serializedObject['payload']['visibility'] = $label->getVisibility() === Visibility::VISIBLE();
         }
 
         return $serializedObject;

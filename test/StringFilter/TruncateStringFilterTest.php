@@ -90,6 +90,19 @@ class TruncateStringFilterTest extends StringFilterTest
     /**
      * @test
      */
+    public function it_can_add_an_ellipsis_with_space()
+    {
+        $this->filter->addEllipsis(true);
+        $this->filter->spaceBeforeEllipsis(true);
+
+        $original = 'Sem Dolor Tristique Mollis Fusce Mollis Nibh Aenean Tortor Consectetur.';
+        $expected = 'Sem Dolor T ...';
+        $this->assertFilterValue($expected, $original);
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_truncate_new_lines_when_word_safe_is_on()
     {
         $this->filter->turnOnWordSafe(0);

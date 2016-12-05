@@ -27,6 +27,11 @@ class TruncateStringFilter implements StringFilterInterface
     /**
      * @var bool
      */
+    protected $spaceBeforeEllipsis = false;
+
+    /**
+     * @var bool
+     */
     protected $sentenceFriendly = false;
 
     /**
@@ -56,6 +61,14 @@ class TruncateStringFilter implements StringFilterInterface
     public function addEllipsis($toggle = true)
     {
         $this->addEllipsis = $toggle;
+    }
+
+    /**
+     * @param bool $toggle
+     */
+    public function spaceBeforeEllipsis($toggle = true)
+    {
+        $this->spaceBeforeEllipsis = $toggle;
     }
 
     /**
@@ -91,7 +104,11 @@ class TruncateStringFilter implements StringFilterInterface
         // Define the suffix of the truncated string.
         $suffix = '';
         if ($this->addEllipsis) {
-            $suffix = Stringy::create('...', 'UTF-8');
+            $ellipsis = '...';
+            if ($this->spaceBeforeEllipsis) {
+                $ellipsis = ' ...';
+            }
+            $suffix = Stringy::create($ellipsis, 'UTF-8');
 
             // If the ellipsis is longer or equal to the maximum length, simply truncate the ellipsis so it fits in
             // the maximum length and return it.

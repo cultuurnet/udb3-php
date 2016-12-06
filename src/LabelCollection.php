@@ -138,14 +138,9 @@ class LabelCollection implements \Countable
      */
     public function filter(callable $filterFunction)
     {
-        $filteredLabels = [];
-        foreach ($this->labels as $label) {
-            if ($filterFunction($label)) {
-                $filteredLabels[] = $label;
-            }
-        }
-
-        return new LabelCollection($filteredLabels);
+        return new LabelCollection(
+            array_filter($this->labels, $filterFunction)
+        );
     }
 
     /**

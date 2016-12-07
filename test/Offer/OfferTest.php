@@ -6,7 +6,10 @@ use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
@@ -705,5 +708,69 @@ class OfferTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([new OrganizerUpdated($itemId, $organizerId)]);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_import_images_from_udb2_as_media_object_and_main_image(
+        $image,
+        $imageCollection
+    ) {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(function (Item $item) use ($image, $imageCollection) {
+                $item->importImagesFromUDB2($imageCollection);
+                $item->addImage($image);
+                $item->selectMainImage($image);
+            })
+            ->then([new ImagesImportedFromUDB2($itemId, $imageCollection)]);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_update_images_from_udb2_as_media_object_and_main_image(
+        $image,
+        $imageCollection
+    ) {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(function (Item $item) use ($image, $imageCollection) {
+                $item->UpdateImagesFromUDB2($imageCollection);
+                $item->addImage($image);
+                $item->selectMainImage($image);
+            })
+            ->then([new ImagesUpdatedFromUDB2($itemId, $imageCollection)]);
+    }
+
+    public function imageCollectionDataProvider()
+    {
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new StringLiteral('my pic'),
+            new StringLiteral('Dirk Dirkingn'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+        );
+
+        return [
+            'single image' => [
+                'mainImage' => $image,
+                'imageCollection' => ImageCollection::fromArray([$image])
+            ]
+        ];
     }
 }

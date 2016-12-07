@@ -23,6 +23,8 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
+use CultuurNet\UDB3\Event\Events\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -47,7 +49,10 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
@@ -145,6 +150,22 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         return $event;
+    }
+
+    /**
+     * @param ImageCollection $images
+     */
+    public function updateImagesFromUDB2(ImageCollection $images)
+    {
+        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
+    }
+
+    /**
+     * @param ImageCollection $images
+     */
+    public function importImagesFromUDB2(ImageCollection $images)
+    {
+        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
     }
 
     /**
@@ -367,6 +388,24 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesImportedFromUDB2
+     */
+    protected function createImagesImportedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesImportedFromUDB2($this->eventId, $images);
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesUpdatedFromUDB2
+     */
+    protected function createImagesUpdatedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesUpdatedFromUDB2($this->eventId, $images);
     }
 
     protected function applyEventCreatedFromCdbXml(

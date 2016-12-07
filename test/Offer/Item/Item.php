@@ -6,15 +6,17 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
-use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
@@ -220,6 +222,24 @@ class Item extends Offer
     protected function createApprovedEvent()
     {
         return new Approved($this->id);
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesImportedFromUDB2
+     */
+    protected function createImagesImportedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesImportedFromUDB2($this->id, $images);
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesUpdatedFromUDB2
+     */
+    protected function createImagesUpdatedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesUpdatedFromUDB2($this->id, $images);
     }
 
     /**

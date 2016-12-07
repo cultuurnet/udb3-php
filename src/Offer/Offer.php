@@ -9,6 +9,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
@@ -25,6 +26,9 @@ use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesEvent;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
@@ -452,6 +456,28 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * Overwrites or resets the main image and all media objects
+     * by importing a new collection of images from UDB2.
+     *
+     * @param ImageCollection $images
+     */
+    public function importImagesFromUDB2(ImageCollection $images)
+    {
+        $this->apply($this->createImagesImportedFromUDB2($images));
+    }
+
+    /**
+     * Overwrites or resets the main image and all media objects
+     * by updating with a new collection of images from UDB2.
+     *
+     * @param ImageCollection $images
+     */
+    public function updateImagesFromUDB2(ImageCollection $images)
+    {
+        $this->apply($this->createImagesUpdatedFromUDB2($images));
+    }
+
+    /**
      * @param AbstractPublished $published
      */
     protected function applyPublished(AbstractPublished $published)
@@ -530,6 +556,41 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected function applyOrganizerDeleted(AbstractOrganizerDeleted $organizerDeleted)
     {
         $this->organizerId = null;
+    }
+
+    /**
+     * @param AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2
+     */
+    protected function applyImagesImportedFromUDB2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
+    {
+        $this->applyImagesEvent($imagesImportedFromUDB2);
+    }
+
+    /**
+     * @param AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2
+     */
+    protected function applyImagesUpdatedFromUDB2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
+    {
+        $this->applyImagesEvent($imagesUpdatedFromUDB2);
+    }
+
+    /**
+     * Overwrites or resets the main image and all media objects.
+     *
+     * @param AbstractImagesEvent $imagesEvent
+     */
+    protected function applyImagesEvent(AbstractImagesEvent $imagesEvent)
+    {
+        $mainImage = $imagesEvent->getImages()->getMain();
+
+        $this->mainImageId = $mainImage ? $mainImage->getMediaObjectId() : null;
+
+        $this->mediaObjects = array_map(
+            function (Image $image) {
+                return $image->getMediaObjectId();
+            },
+            $imagesEvent->getImages()->toArray()
+        );
     }
 
     /**
@@ -662,4 +723,16 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractFlaggedAsInappropriate
      */
     abstract protected function createFlaggedAsInappropriate();
+
+    /**
+     * @param ImageCollection $images
+     * @return AbstractImagesImportedFromUDB2
+     */
+    abstract protected function createImagesImportedFromUDB2(ImageCollection $images);
+
+    /**
+     * @param ImageCollection $images
+     * @return AbstractImagesUpdatedFromUDB2
+     */
+    abstract protected function createImagesUpdatedFromUDB2(ImageCollection $images);
 }

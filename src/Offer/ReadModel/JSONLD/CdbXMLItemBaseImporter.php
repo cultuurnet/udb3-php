@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Data_Detail;
 use CultureFeed_Cdb_Data_File;
+use CultureFeed_Cdb_Data_Media;
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -126,7 +127,7 @@ class CdbXMLItemBaseImporter
     public function importMedia(CultureFeed_Cdb_Data_Detail $detail, $jsonLD)
     {
         /**
-         * @var CultureFeed_Cdb_Data_File[] $udb2MediaFiles
+         * @var CultureFeed_Cdb_Data_Media|CultureFeed_Cdb_Data_File[] $udb2MediaFiles
          */
         $udb2MediaFiles = $detail->getMedia()->byMediaTypes(
             [

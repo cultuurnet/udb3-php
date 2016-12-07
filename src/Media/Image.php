@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Media;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 class Image implements SerializableInterface
@@ -21,12 +21,12 @@ class Image implements SerializableInterface
     protected $mimeType;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $description;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $copyrightHolder;
 
@@ -38,8 +38,8 @@ class Image implements SerializableInterface
     public function __construct(
         UUID $id,
         MIMEType $mimeType,
-        String $description,
-        String $copyrightHolder,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
         Url $sourceLocation
     ) {
         $this->mediaObjectId = $id;
@@ -66,7 +66,7 @@ class Image implements SerializableInterface
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getDescription()
     {
@@ -74,7 +74,7 @@ class Image implements SerializableInterface
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getCopyrightHolder()
     {
@@ -97,8 +97,8 @@ class Image implements SerializableInterface
         return new static(
             new UUID($data['media_object_id']),
             new MIMEType($data['mime_type']),
-            new String($data['description']),
-            new String($data['copyright_holder']),
+            new StringLiteral($data['description']),
+            new StringLiteral($data['copyright_holder']),
             Url::fromNative($data['source_location'])
         );
     }

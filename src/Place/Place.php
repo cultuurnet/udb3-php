@@ -13,10 +13,15 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\Place\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Place\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
@@ -462,5 +467,23 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsInappropriate()
     {
         return new FlaggedAsInappropriate($this->actorId);
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesImportedFromUDB2
+     */
+    protected function createImagesImportedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesImportedFromUDB2($this->actorId, $images);
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesUpdatedFromUDB2
+     */
+    protected function createImagesUpdatedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesUpdatedFromUDB2($this->actorId, $images);
     }
 }

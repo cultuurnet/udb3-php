@@ -257,7 +257,6 @@ class HTMLEventFormatter
         $basePrice = null;
 
         if (property_exists($event, 'priceInfo') && is_array($event->priceInfo)) {
-
             foreach ($event->priceInfo as $price) {
                 if ($price->category == 'base') {
                     $basePrice = $price;

@@ -303,7 +303,8 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
      *
      * @group issue-III-1533
      */
-    public function it_adds_base_price() {
+    public function it_adds_base_price()
+    {
         $includedProperties = [
             'id',
             'bookingInfo.price'

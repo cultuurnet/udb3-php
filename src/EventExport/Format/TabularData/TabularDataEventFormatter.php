@@ -134,11 +134,11 @@ class TabularDataEventFormatter
             ],
             'contactPoint' => [
                 'contactPoint.email',
-                'contactPoint.telephone',
+                'contactPoint.phone',
                 'contactPoint.url',
-                'contactPoint.reservations.email',
-                'contactPoint.reservations.telephone',
-                'contactPoint.reservations.url',
+                //'contactPoint.reservations.email',
+                //'contactPoint.reservations.telephone',
+                //'contactPoint.reservations.url',
             ],
             'bookingInfo' => [
                 'bookingInfo.price',
@@ -503,12 +503,12 @@ class TabularDataEventFormatter
                 },
                 'property' => 'contactPoint'
             ],
-            'contactPoint.telephone' => [
+            'contactPoint.phone' => [
                 'name' => 'telefoon',
                 'include' => function ($event) use ($contactPoint) {
                     return $this->listJsonldProperty(
                         $contactPoint($event),
-                        'telephone'
+                        'phone'
                     );
                 },
                 'property' => 'contactPoint'
@@ -516,41 +516,31 @@ class TabularDataEventFormatter
             'contactPoint.url' => [
                 'name' => 'url',
                 'include' => function ($event) use ($contactPoint) {
-                    $contactUrls = $this->listJsonldProperty(
+                    return $this->listJsonldProperty(
                         $contactPoint($event),
                         'url'
                     );
-                    return implode("\r\n", $contactUrls);
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.email' => [
                 'name' => 'e-mail reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    return $this->listJsonldProperty(
-                        $contactPoint($event, 'Reservations'),
-                        'email'
-                    );
+                    return '';
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.telephone' => [
                 'name' => 'telefoon reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    return $this->listJsonldProperty(
-                        $contactPoint($event, 'Reservations'),
-                        'telephone'
-                    );
+                        return '';
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.url' => [
                 'name' => 'online reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    return $this->listJsonldProperty(
-                        $contactPoint($event, 'Reservations'),
-                        'url'
-                    );
+                    return '';
                 },
                 'property' => 'contactPoint'
             ],

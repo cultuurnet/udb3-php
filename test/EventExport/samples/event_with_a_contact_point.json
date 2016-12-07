@@ -33,8 +33,15 @@
   "seeAlso":[],
   "contactPoint": {
     "email": [
-      "nicolas.leroy+test@gmail.com"
+      "nicolas.leroy+test@gmail.com", "jane.doe@example.com"
+    ],
+    "phone": [
+      "016 66 69 99", "016 99 96 66"
+    ],
+    "url": [
+      "http://contact.example.com", "https://contact.example.com"
     ]
+
   },
   "created":"2015-10-13T14:27:59+00:00",
   "modified":"2015-10-13T14:27:59+00:00"

@@ -196,20 +196,26 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @group issue-III-1506
      */
     public function it_can_format_event_with_a_contact_point()
     {
         $includedProperties = [
             'id',
-            'contactPoint.email'
+            'contactPoint.email',
+            'contactPoint.phone',
+            'contactPoint.url',
         ];
         $eventWithContactPoints = $this->getJSONEventFromFile('event_with_a_contact_point.json');
         $formatter = new TabularDataEventFormatter($includedProperties);
 
         $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
+
         $expectedFormatting = array(
             "id" =>"16744083-859a-4d3d-bd1d-16ea5bd3e2a3",
-            "contactPoint.email" => "nicolas.leroy+test@gmail.com"
+            "contactPoint.email" => "nicolas.leroy+test@gmail.com\r\njane.doe@example.com",
+            "contactPoint.phone" => "016 66 69 99\r\n016 99 96 66",
+            "contactPoint.url" => "http://contact.example.com\r\nhttps://contact.example.com",
         );
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
@@ -288,26 +294,6 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         $eventWithTerms = $this->getJSONEventFromFile('event_with_price.json');
         $formatter = new TabularDataEventFormatter($includedProperties, $eventInfoService);
         $formattedEvent = $formatter->formatEvent($eventWithTerms);
-
-        $this->assertEquals($expectedFormatting, $formattedEvent);
-    }
-
-    public function it_should_format_contact_and_reservation_urls_when_included_for_export()
-    {
-        $includedProperties = [
-            'id',
-            'contactPoint.url',
-            'contactPoint.reservations.url'
-        ];
-        $eventWithContactPoints = $this->getJSONEventFromFile('event_with_contact_and_reservation_urls.json');
-        $formatter = new TabularDataEventFormatter($includedProperties);
-
-        $formattedEvent = $formatter->formatEvent($eventWithContactPoints);
-        $expectedFormatting = array(
-            "id" =>"4e24ac6e-8b95-4be6-b2e7-1892869adde3",
-            "contactPoint.url" => "http://du.de\r\nhttp://foo.bar\r\nhttp://www.debijloke.be/concerts/karbido-ensemble",
-            "contactPoint.reservations.url" => "http://du.de\r\nhttp://foo.bar",
-        );
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
     }

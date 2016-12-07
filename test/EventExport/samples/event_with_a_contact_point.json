@@ -31,9 +31,11 @@
   "calendarType":"single",
   "sameAs": ["http:\/\/www.uitinvlaanderen.be\/agenda\/e\/test-nicolas\/",null],
   "seeAlso":[],
-  "contactPoint": [
-    {"email":["nicolas.leroy+test@gmail.com"]}
-  ],
+  "contactPoint": {
+    "email": [
+      "nicolas.leroy+test@gmail.com"
+    ]
+  },
   "created":"2015-10-13T14:27:59+00:00",
   "modified":"2015-10-13T14:27:59+00:00"
 }

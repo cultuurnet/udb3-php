@@ -291,17 +291,40 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
             'kansentarief'
         ];
 
-        $eventWithTerms = $this->getJSONEventFromFile('event_with_price.json');
+        $event = $this->getJSONEventFromFile('event_with_price.json');
         $formatter = new TabularDataEventFormatter($includedProperties, $eventInfoService);
-        $formattedEvent = $formatter->formatEvent($eventWithTerms);
+        $formattedEvent = $formatter->formatEvent($event);
 
         $this->assertEquals($expectedFormatting, $formattedEvent);
+    }
+
+    /**
+     * @test
+     *
+     * @group issue-III-1533
+     */
+    public function it_adds_base_price() {
+        $includedProperties = [
+            'id',
+            'priceInfo'
+        ];
+
+        $event = $this->getJSONEventFromFile('event_with_price.json');
+        $formatter = new TabularDataEventFormatter($includedProperties);
+        $formattedEvent = $formatter->formatEvent($event);
+
+        $expectedFormattedEvent = [
+            'id' => 'd1f0e71d-a9a8-4069-81fb-530134502c58',
+            'priceInfo' => '10.5',
+        ];
+
+        $this->assertEquals($expectedFormattedEvent, $formattedEvent);
     }
 
     public function kansentariefEventInfoProvider()
     {
         return [
-            'one card system , single tariff' => [
+            'one card system , sit_distills_event_info_to_what_is_needed_for_html_exportingle tariff' => [
                 'eventInfo' => new EventInfo(
                     [
                         [

@@ -11,10 +11,10 @@
     "description": "Voor een boeiend avondje cultuur, is er in Tienen cultuurcentrum De Kruisboog. Het centrum heeft een eigen programmatie, maar staat ook open voor activiteiten van plaatselijke verenigingen.",
     "name": {"nl":"Cultuurcentrum De Kruisboog"}
   },
-  "bookingInfo": [
+  "priceInfo": [
     {
-      "description": "",
-      "name": "standard price",
+      "category": "base",
+      "name": "Basistarief",
       "price": 0,
       "priceCurrency": "EUR"
     }

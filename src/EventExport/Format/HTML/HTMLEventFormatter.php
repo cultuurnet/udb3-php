@@ -151,12 +151,7 @@ class HTMLEventFormatter
             $formattedEvent['address'] = $address;
         }
 
-        if (isset($event->bookingInfo) && is_array($event->bookingInfo)) {
-            $firstPrice = reset($event->bookingInfo);
-            $formattedEvent['price'] = $this->priceFormatter->format($firstPrice->price);
-        } else {
-            $formattedEvent['price'] = 'Niet ingevoerd';
-        }
+        $this->addPriceInfo($event, $formattedEvent);
 
         $this->addCalendarInfo($eventId, $event, $formattedEvent);
 
@@ -251,5 +246,27 @@ class HTMLEventFormatter
                 return $brandSpec->isSatisfiedBy($event);
             }
         ));
+    }
+
+    /**
+     * @param stdClass $event
+     * @param array $formattedEvent
+     */
+    private function addPriceInfo($event, &$formattedEvent)
+    {
+        $basePrice = null;
+
+        if (property_exists($event, 'priceInfo') && is_array($event->priceInfo)) {
+
+            foreach ($event->priceInfo as $price) {
+                if ($price->category == 'base') {
+                    $basePrice = $price;
+                    break;
+                }
+            }
+        }
+
+        $formattedEvent['price'] =
+            $basePrice ? $this->priceFormatter->format($basePrice->price) : 'Niet ingevoerd';
     }
 }

@@ -316,7 +316,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
 
         $expectedFormattedEvent = [
             'id' => 'd1f0e71d-a9a8-4069-81fb-530134502c58',
-            'priceInfo' => '10.5',
+            'bookingInfo.price' => '10.5',
         ];
 
         $this->assertEquals($expectedFormattedEvent, $formattedEvent);

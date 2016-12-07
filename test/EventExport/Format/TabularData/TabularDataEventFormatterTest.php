@@ -306,7 +306,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
     public function it_adds_base_price() {
         $includedProperties = [
             'id',
-            'priceInfo'
+            'bookingInfo.price'
         ];
 
         $event = $this->getJSONEventFromFile('event_with_price.json');

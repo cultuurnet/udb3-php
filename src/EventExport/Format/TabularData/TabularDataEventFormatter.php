@@ -141,7 +141,7 @@ class TabularDataEventFormatter
                 //'contactPoint.reservations.url',
             ],
             'bookingInfo' => [
-                'priceInfo',
+                'bookingInfo.price',
                 'bookingInfo.url',
             ],
         ];
@@ -205,7 +205,7 @@ class TabularDataEventFormatter
                 },
                 'property' => 'creator'
             ],
-            'priceInfo' => [
+            'bookingInfo.price' => [
                 'name' => 'prijs',
                 'include' => function ($event) {
                     $basePrice = null;

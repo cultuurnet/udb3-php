@@ -216,9 +216,13 @@ class CdbXMLImporter
             );
 
             if ($longDescription) {
-                if (!$this->longDescriptionStartsWithShortDescription($longDescription,
-                    $shortDescription)
-                ) {
+                $includeShortDescription =
+                    !$this->longDescriptionStartsWithShortDescription(
+                        $longDescription,
+                        $shortDescription
+                    );
+
+                if ($includeShortDescription) {
                     $descriptions[] = $shortDescription;
                 }
             }

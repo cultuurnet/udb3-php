@@ -21,6 +21,8 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
+use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -810,5 +812,15 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getFlaggedAsInappropriateClassName()
     {
         return FlaggedAsInappropriate::class;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
     }
 }

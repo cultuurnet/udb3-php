@@ -6,6 +6,8 @@ use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
@@ -151,5 +153,15 @@ class ItemLDProjector extends OfferLDProjector
     protected function getFlaggedAsInappropriateClassName()
     {
         return FlaggedAsInappropriate::class;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
     }
 }

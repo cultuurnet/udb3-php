@@ -12,11 +12,14 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
@@ -1008,6 +1011,77 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'offer flagged as inappropriate' => [
                 'itemId' => $itemId,
                 'event' => new FlaggedAsInappropriate($itemId)
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_project_imported_udb2_media_files_as_media_objects(
+        ImageCollection $images,
+        $expectedMediaObjects
+    ) {
+        $itemId = UUID::generateAsString();
+        $imagesImportedEvent = new ImagesImportedFromUDB2($itemId, $images);
+
+        $importedItem = $this->project($imagesImportedEvent, $itemId);
+        $this->assertEquals($expectedMediaObjects, $importedItem->mediaObject);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_project_updated_udb2_media_files_as_media_objects(
+        ImageCollection $images,
+        $expectedMediaObjects
+    ) {
+        $itemId = UUID::generateAsString();
+        $imagesImportedEvent = new ImagesUpdatedFromUDB2($itemId, $images);
+
+        $importedItem = $this->project($imagesImportedEvent, $itemId);
+        $this->assertEquals($expectedMediaObjects, $importedItem->mediaObject);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_project_the_main_udb2_picture_as_image(ImageCollection $images)
+    {
+        $itemId = UUID::generateAsString();
+        $imagesImportedEvent = new ImagesImportedFromUDB2($itemId, $images);
+        $expectedImage = 'http://foo.bar/media/my_pic.jpg';
+
+        $importedItem = $this->project($imagesImportedEvent, $itemId);
+        $this->assertEquals($expectedImage, $importedItem->image);
+    }
+
+    public function imageCollectionDataProvider()
+    {
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new StringLiteral('my pic'),
+            new StringLiteral('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+        );
+
+        return [
+            'single image' => [
+                'imageCollection' => ImageCollection::fromArray([$image]),
+                'expectedMediaObjects' => [
+                    (object)[
+                        '@type' => 'schema:ImageObject',
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
+                        'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
+                        'description' => 'my pic',
+                        'copyrightHolder' => 'Dirk Dirkington',
+                    ]
+                ]
             ]
         ];
     }

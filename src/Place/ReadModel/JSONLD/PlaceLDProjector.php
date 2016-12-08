@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
+use CultuurNet\UDB3\Offer\Place\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Place\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
@@ -88,6 +90,16 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = $cdbXMLImporter;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
     }
 
     /**

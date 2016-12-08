@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
@@ -30,6 +31,9 @@ use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesEvent;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
@@ -241,6 +245,16 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getFlaggedAsInappropriateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImagesImportedFromUdb2ClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImagesUpdatedFromUdb2ClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -691,6 +705,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param callable $transformation
      *  a transformation that you want applied to the offer-ld document
      *  the first parameter passed to the callback will be the document body
+     *  the second is the domain event
      */
     private function applyEventTransformation(AbstractEvent $event, callable $transformation)
     {
@@ -698,9 +713,30 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
 
-        $transformation($offerLd);
+        $transformation($offerLd, $event);
 
         $this->repository->save($document->withBody($offerLd));
+    }
+
+    protected function applyImagesImportedFromUdb2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
+    {
+        $this->applyEventTransformation($imagesImportedFromUDB2, [$this, 'applyImagesEvent']);
+    }
+
+    protected function applyImagesUpdatedFromUdb2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
+    {
+        $this->applyEventTransformation($imagesUpdatedFromUDB2, [$this, 'applyImagesEvent']);
+    }
+
+    private function applyImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
+    {
+        $images = $imagesEvent->getImages();
+        $jsonMediaObjects = array_map([$this->mediaObjectSerializer, 'serialize'], $images->toArray(), ['json-ld']);
+        $mainImage = $images->getMain();
+
+        unset($offerLd->mediaObject, $offerLd->image);
+        empty($jsonMediaObjects) ?: $offerLd->mediaObject = $jsonMediaObjects;
+        !isset($mainImage) ?: $offerLd->image = (string) $mainImage->getSourceLocation();
     }
 
     /**

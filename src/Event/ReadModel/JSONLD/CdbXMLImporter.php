@@ -102,9 +102,6 @@ class CdbXMLImporter
 
         $this->cdbXMLItemBaseImporter->importAvailable($event, $jsonLD);
 
-        $this->cdbXMLItemBaseImporter->importPicture($detail, $jsonLD);
-        $this->cdbXMLItemBaseImporter->importMedia($detail, $jsonLD);
-
         $labelImporter = new LabelImporter();
         $labelImporter->importLabels($event, $jsonLD);
 

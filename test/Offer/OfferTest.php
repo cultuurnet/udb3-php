@@ -715,8 +715,8 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @dataProvider imageCollectionDataProvider
      */
     public function it_should_import_images_from_udb2_as_media_object_and_main_image(
-        $image,
-        $imageCollection
+        Image $image,
+        ImageCollection $imageCollection
     ) {
         $itemId = UUID::generateAsString();
 
@@ -738,8 +738,8 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @dataProvider imageCollectionDataProvider
      */
     public function it_should_update_images_from_udb2_as_media_object_and_main_image(
-        $image,
-        $imageCollection
+        Image $image,
+        ImageCollection $imageCollection
     ) {
         $itemId = UUID::generateAsString();
 

@@ -125,9 +125,6 @@ class CdbXMLImporter
         }
         $jsonLD->bookingInfo = $bookingInfo;
 
-        $this->cdbXMLItemBaseImporter->importPicture($detail, $jsonLD);
-        $this->cdbXMLItemBaseImporter->importMedia($detail, $jsonLD);
-
         $labelImporter = new LabelImporter();
         $labelImporter->importLabels($item, $jsonLD);
 

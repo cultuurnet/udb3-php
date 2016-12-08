@@ -12,16 +12,10 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
-use CultuurNet\UDB3\Event\EventEvent;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
-use CultuurNet\UDB3\Event\EventServiceInterface;
-use CultuurNet\UDB3\EventXmlString;
-use ValueObjects\String\String;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -159,72 +153,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     'foo',
                     $withBoth,
                     self::CDBXML_NAMESPACE_33
-                ),
-                'expectedEventId' => 'foo',
-                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
-                'expectedOrganizerId' => 'test-de-bijloke',
-            ],
-            [
-                'aggregateId' => 'foo',
-                'event' => new EventCreatedFromCdbXml(
-                    new String('foo'),
-                    new EventXmlString($withNone),
-                    new String(self::CDBXML_NAMESPACE_33)
-                ),
-                'expectedEventId' => 'foo',
-                'expectedPlaceId' => null,
-                'expectedOrganizerId' => null,
-            ],
-            [
-                'aggregateId' => 'foo',
-                'event' => new EventCreatedFromCdbXml(
-                    new String('foo'),
-                    new EventXmlString($withPlace),
-                    new String(self::CDBXML_NAMESPACE_33)
-                ),
-                'expectedEventId' => 'foo',
-                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
-                'expectedOrganizerId' => null,
-            ],
-            [
-                'aggregateId' => 'foo',
-                'event' => new EventCreatedFromCdbXml(
-                    new String('foo'),
-                    new EventXmlString($withBoth),
-                    new String(self::CDBXML_NAMESPACE_33)
-                ),
-                'expectedEventId' => 'foo',
-                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
-                'expectedOrganizerId' => 'test-de-bijloke',
-            ],
-            [
-                'aggregateId' => 'foo',
-                'event' => new EventUpdatedFromCdbXml(
-                    new String('foo'),
-                    new EventXmlString($withNone),
-                    new String(self::CDBXML_NAMESPACE_33)
-                ),
-                'expectedEventId' => 'foo',
-                'expectedPlaceId' => null,
-                'expectedOrganizerId' => null,
-            ],
-            [
-                'aggregateId' => 'foo',
-                'event' => new EventUpdatedFromCdbXml(
-                    new String('foo'),
-                    new EventXmlString($withPlace),
-                    new String(self::CDBXML_NAMESPACE_33)
-                ),
-                'expectedEventId' => 'foo',
-                'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',
-                'expectedOrganizerId' => null,
-            ],
-            [
-                'aggregateId' => 'foo',
-                'event' => new EventUpdatedFromCdbXml(
-                    new String('foo'),
-                    new EventXmlString($withBoth),
-                    new String(self::CDBXML_NAMESPACE_33)
                 ),
                 'expectedEventId' => 'foo',
                 'expectedPlaceId' => 'bcb983d2-ffba-457d-a023-a821aa841fba',

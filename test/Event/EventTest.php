@@ -10,26 +10,17 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\LabelCollection;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Translation;
-use Guzzle\Tests\Http\DuplicateAggregatorTest;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -216,61 +207,6 @@ class EventTest extends AggregateRootScenarioTestCase
     }
 
     /**
-     * @test
-     */
-    public function it_can_be_created_from_cdbxml()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        $eventId = new StringLiteral('someId');
-        $xmlData = new EventXmlString($cdbXml);
-        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
-
-        $this->scenario
-            ->given([
-                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
-            ])
-            ->when(
-                function (Event $event) {
-                    $event->addLabel(new Label('polen'));
-                    $event->addLabel(new Label('slagwerk'));
-                }
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_be_updated_from_cdbxml()
-    {
-        $cdbXmlEdited = $this->getSample('event_entryapi_valid_with_keywords_edited.xml');
-
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        $eventId = new StringLiteral('someId');
-        $xmlData = new EventXmlString($cdbXml);
-        $editedxmlData = new EventXmlString($cdbXmlEdited);
-        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
-
-        $this->scenario
-            ->given([
-                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
-            ])
-            ->when(
-                function (Event $event) use ($eventId, $editedxmlData, $xmlNamespace) {
-                    $event->updateFromCdbXml($eventId, $editedxmlData, $xmlNamespace);
-
-                    $event->addLabel(new Label('polen'));
-                    $event->addLabel(new Label('slagwerk'));
-                    $event->addLabel(new Label('test'));
-                    $event->addLabel(new Label('aangepast'));
-                }
-            )
-            ->then([
-                new EventUpdatedFromCdbXml($eventId, $editedxmlData, $xmlNamespace)
-            ]);
-    }
-
-    /**
      * @return array
      */
     public function unlabelDataProvider()
@@ -447,16 +383,16 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('foo')
+            ->withAggregateId('004aea08-e13d-48c9-b9eb-a18f20e6d44e')
             ->given(
                 [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('foo'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    new EventImportedFromUDB2(
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
+                        $cdbXml,
+                        \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3')
                     ),
                     new ImageAdded(
-                        'foo',
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
                         $image
                     ),
                 ]
@@ -489,16 +425,16 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('foo')
+            ->withAggregateId('004aea08-e13d-48c9-b9eb-a18f20e6d44e')
             ->given(
                 [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('foo'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    new EventImportedFromUDB2(
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
+                        $cdbXml,
+                        \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3')
                     ),
                     new ImageAdded(
-                        'foo',
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
                         $image
                     ),
                 ]
@@ -513,7 +449,7 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new ImageRemoved(
-                        'foo',
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
                         $image
                     ),
                 ]
@@ -538,13 +474,13 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('foo')
+            ->withAggregateId('004aea08-e13d-48c9-b9eb-a18f20e6d44e')
             ->given(
                 [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('foo'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    new EventImportedFromUDB2(
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
+                        $cdbXml,
+                        \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3')
                     ),
                 ]
             )

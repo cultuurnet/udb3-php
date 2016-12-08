@@ -15,10 +15,8 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
@@ -224,46 +222,6 @@ class EventLDProjector extends OfferLDProjector implements
             $eventUpdatedFromUDB2->getEventId(),
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $eventUpdatedFromUDB2->getCdbXml()
-        );
-    }
-
-    /**
-     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
-     * @param DomainMessage $domainMessage
-     */
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $cdbXmlNamespaceUri = $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
-        $cdbXml = $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString();
-        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
-
-        $this->applyEventFromCdbXml(
-            $eventId,
-            $cdbXmlNamespaceUri,
-            $cdbXml,
-            $domainMessage
-        );
-    }
-
-    /**
-     * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
-     * @param DomainMessage $domainMessage
-     */
-    protected function applyEventUpdatedFromCdbXml(
-        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $cdbXmlNamespaceUri = $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
-        $cdbXml = $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString();
-        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
-
-        $this->applyEventFromCdbXml(
-            $eventId,
-            $cdbXmlNamespaceUri,
-            $cdbXml,
-            $domainMessage
         );
     }
 

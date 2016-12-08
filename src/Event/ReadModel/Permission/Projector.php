@@ -7,7 +7,6 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
@@ -59,40 +58,6 @@ class Projector implements EventListenerInterface
                 $ownerId
             );
         }
-    }
-
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $cdbEvent = EventItemFactory::createEventFromCdbXml(
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $createdByIdentifier = $cdbEvent->getCreatedBy();
-
-        // By default the owner is the user who was authenticated when creating
-        // the event.
-        $metadata = $domainMessage->getMetadata()->serialize();
-        $ownerId = new String($metadata['user_id']);
-
-        // If createdby is supplied, consider the user identified by createdby
-        // as the owner.
-        if ($createdByIdentifier) {
-            $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
-                new String($createdByIdentifier)
-            );
-        }
-
-        if (!$ownerId) {
-            return;
-        }
-
-        $this->permissionRepository->markOfferEditableByUser(
-            $eventCreatedFromCdbXml->getEventId(),
-            $ownerId
-        );
     }
 
     protected function applyEventCreated(

@@ -2,23 +2,16 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\History;
 
-use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\String\String;
 
 class HistoryProjector extends OfferHistoryProjector implements EventListenerInterface
@@ -51,46 +44,6 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                     $domainMessage->getRecordedOn()
                 ),
                 new String('Geïmporteerd vanuit UDB2')
-            )
-        );
-    }
-
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
-
-        $this->writeHistory(
-            $eventCreatedFromCdbXml->getEventId()->toNative(),
-            new Log(
-                $this->domainMessageDateToNativeDate(
-                    $domainMessage->getRecordedOn()
-                ),
-                new String(
-                    'Aangemaakt via EntryAPI door consumer "' . $consumerName . '"'
-                ),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
-
-    protected function applyEventUpdatedFromCdbXml(
-        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
-
-        $this->writeHistory(
-            $eventUpdatedFromCdbXml->getEventId()->toNative(),
-            new Log(
-                $this->domainMessageDateToNativeDate(
-                    $domainMessage->getRecordedOn()
-                ),
-                new String(
-                    'Geüpdatet via EntryAPI door consumer "' . $consumerName . '"'
-                ),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }

@@ -13,10 +13,8 @@ use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
@@ -36,19 +34,17 @@ use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
-use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
@@ -131,49 +127,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param EventXmlString $xmlString
-     * @param StringLiteral $eventId
-     * @param StringLiteral $cdbXmlNamespaceUri
-     * @return Event
-     */
-    public static function createFromCdbXml(
-        StringLiteral $eventId,
-        EventXmlString $xmlString,
-        StringLiteral $cdbXmlNamespaceUri
-    ) {
-        $event = new self();
-        $event->apply(
-            new EventCreatedFromCdbXml(
-                $eventId,
-                $xmlString,
-                $cdbXmlNamespaceUri
-            )
-        );
-
-        return $event;
-    }
-
-    /**
-     * @param StringLiteral $eventId
-     * @param EventXmlString $xmlString
-     * @param StringLiteral $cdbXmlNamespaceUri
-     * @return Event
-     */
-    public function updateFromCdbXml(
-        StringLiteral $eventId,
-        EventXmlString $xmlString,
-        StringLiteral $cdbXmlNamespaceUri
-    ) {
-        $this->apply(
-            new EventUpdatedFromCdbXml(
-                $eventId,
-                $xmlString,
-                $cdbXmlNamespaceUri
-            )
-        );
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -243,32 +196,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
-    }
-
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml
-    ) {
-        $this->eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
-    }
-
-    protected function applyEventUpdatedFromCdbXml(
-        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
-    ) {
-        $this->eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri(),
-            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
 
     /**

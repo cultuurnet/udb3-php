@@ -16,9 +16,7 @@ use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -26,12 +24,9 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\LabelCollection;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -42,7 +37,6 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
@@ -1256,86 +1250,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
     /**
      * @test
-     */
-    public function it_creates_events_from_cdbxml()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
-
-        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
-            new StringLiteral('foo'),
-            new EventXmlString($xml),
-            new StringLiteral(self::CDBXML_NAMESPACE)
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
-        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
-
-        $domainMessage = new DomainMessage(
-            $eventId,
-            1,
-            new Metadata($metadata),
-            $eventCreatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
-
-        $this->projector->handle($domainMessage);
-
-        $body = $this->documentRepository->get($eventId)->getRawBody();
-
-        $this->assertEquals(
-            $expectedJsonLD,
-            $body
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_updates_events_from_cdbxml()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new StringLiteral('foo'),
-            new EventXmlString($xml),
-            new StringLiteral(self::CDBXML_NAMESPACE)
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
-        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
-
-        $domainMessage = new DomainMessage(
-            $eventId,
-            1,
-            new Metadata($metadata),
-            $eventUpdatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
-
-        $this->projector->handle($domainMessage);
-
-        $this->assertEquals(
-            $expectedJsonLD,
-            $this->documentRepository->get($eventId)->getRawBody()
-        );
-    }
-
-    /**
-     * @test
      * @dataProvider eventUpdateDataProvider
      * @param $documentWithUDB3Media
      * @param $domainMessage
@@ -1385,21 +1299,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
-        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new StringLiteral('foo'),
-            new EventXmlString($xml),
-            new StringLiteral(self::CDBXML_NAMESPACE)
-        );
-
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
         $metadata = array();
         $metadata['user_nick'] = 'Jantest';
         $metadata['consumer']['name'] = 'UiTDatabank';
-
-        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
 
         $eventUpdatedFromUDB2 = new EventUpdatedFromUDB2(
             'foo',
@@ -1408,21 +1312,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         return [
-            'entryapi' => [
-                $documentWithUDB3Media,
-                new DomainMessage(
-                    $eventId,
-                    1,
-                    new Metadata($metadata),
-                    $eventUpdatedFromCdbXml,
-                    DateTime::fromString($importedDate)
-                ),
-                $expectedMediaObjects
-            ],
             'udb2' => [
                 $documentWithUDB3Media,
                 new DomainMessage(
-                    $eventId,
+                    'dcd1ef37-0608-4824-afe3-99124feda64b',
                     1,
                     new Metadata($metadata),
                     $eventUpdatedFromUDB2,

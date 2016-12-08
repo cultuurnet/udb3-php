@@ -182,25 +182,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param LabelCollection $labels
-     */
-    public function mergeLabels(LabelCollection $labels)
-    {
-        if (count($labels) === 0) {
-            throw new \InvalidArgumentException(
-                'Argument $labels should contain at least one label'
-            );
-        }
-
-        $this->apply(
-            new LabelsMerged(
-                new StringLiteral($this->eventId),
-                $labels
-            )
-        );
-    }
-
-    /**
      * @param Language $language
      * @param StringLiteral|null $title
      * @param StringLiteral|null $shortDescription

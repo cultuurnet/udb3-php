@@ -448,64 +448,6 @@ class EventTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_have_labels_merged()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        $eventId = new StringLiteral('004aea08-e13d-48c9-b9eb-a18f20e6d44e');
-        $xmlData = new EventXmlString($cdbXml);
-        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
-        $labels = new LabelCollection(
-            [
-                new Label('muziek', true),
-                new Label('orkest', false),
-            ]
-        );
-
-        $this->scenario
-            ->given([
-                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
-            ])
-            ->when(
-                function (Event $event) use ($labels) {
-                    $event->mergeLabels($labels);
-
-                    $event->addLabel(new Label('polen'));
-                    $event->addLabel(new Label('slagwerk'));
-                    $event->addLabel(new Label('muziek'));
-                    $event->addLabel(new Label('orkest', false));
-                }
-            )
-            ->then([
-                new LabelsMerged($eventId, $labels)
-            ]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_at_least_one_label_when_merging_labels()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Argument $labels should contain at least one label'
-        );
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(
-                self::NS_CDBXML_3_3
-            )
-        );
-
-        $event->mergeLabels(new LabelCollection());
-    }
-
-    /**
-     * @test
-     */
     public function it_can_have_a_new_translation_applied()
     {
         $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');

@@ -25,7 +25,6 @@ use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -585,26 +584,6 @@ class EventLDProjector extends OfferLDProjector implements
                 '@id' => $this->placeService->iri($placeId)
             );
         }
-    }
-
-    /**
-     * @param LabelsMerged $labelsMerged
-     */
-    protected function applyLabelsMerged(LabelsMerged $labelsMerged)
-    {
-        $document = $this->loadDocumentFromRepositoryByItemId($labelsMerged->getEventId()->toNative());
-
-        $eventLd = $document->getBody();
-
-        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
-
-        $currentCollection = LabelCollection::fromStrings($labels);
-
-        $newLabels = $labelsMerged->getLabels();
-
-        $eventLd->labels = $currentCollection->merge($newLabels)->toStrings();
-
-        $this->repository->save($document->withBody($eventLd));
     }
 
     protected function applyTranslationApplied(

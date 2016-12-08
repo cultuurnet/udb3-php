@@ -17,7 +17,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
@@ -310,21 +309,6 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $cdbXmlWithFooKeyword,
                         $ns
-                    ),
-                ]
-            ],
-            'label merged through Entry API' => [
-                $id,
-                $label,
-                [
-                    $eventImportedFromUdb2,
-                    new LabelsMerged(
-                        new StringLiteral($id),
-                        new LabelCollection(
-                            [
-                                $label
-                            ]
-                        )
                     ),
                 ]
             ],

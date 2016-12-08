@@ -12,7 +12,6 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated as EventOrganizerUpdated;
@@ -199,46 +198,6 @@ class BackwardsCompatiblePayloadSerializerFactory
                 $serializedObject['class'] = LabelRemoved::class;
 
                 $serializedObject = self::replaceEventIdWithItemId($serializedObject);
-
-                return $serializedObject;
-            }
-        );
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\Event\Events\LabelsApplied',
-            function (array $serializedObject) {
-                $serializedObject['class'] = LabelsMerged::class;
-
-                $keywordsString = $serializedObject['payload']['keywords_string'];
-
-                $query = array();
-                parse_str($keywordsString, $query);
-
-                $keywords = explode(';', $query['keywords']);
-                $visibles = explode(';', $query['visibles']);
-
-                $labelsArray = array();
-
-                foreach ($keywords as $key => $keyword) {
-                    $visible = 'true' === $visibles[$key];
-                    $labelsArray[] = new Label(
-                        $keyword,
-                        $visible
-                    );
-                }
-
-                $labels = array_map(
-                    function (Label $label) {
-                        return [
-                            'text' => (string) $label,
-                            'visible' => $label->isVisible(),
-                        ];
-                    },
-                    $labelsArray
-                );
-
-                $serializedObject['payload']['labels'] = $labels;
-                unset($serializedObject['payload']['keywords_string']);
 
                 return $serializedObject;
             }

@@ -22,7 +22,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
@@ -1334,38 +1333,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $this->assertEquals(
             $expectedJsonLD,
             $this->documentRepository->get($eventId)->getRawBody()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_a_merge_of_labels()
-    {
-        $initialDocument = new JsonDocument(
-            'foo',
-            json_encode([
-                'labels' => ['label A']
-            ])
-        );
-
-        $this->documentRepository->save($initialDocument);
-
-        $labelsMerged = new LabelsMerged(
-            new StringLiteral('foo'),
-            new LabelCollection(
-                [
-                    new Label('label B', true),
-                    new Label('label C', false),
-                ]
-            )
-        );
-
-        $body = $this->project($labelsMerged, 'foo');
-
-        $this->assertEquals(
-            ['label A', 'label B', 'label C'],
-            $body->labels
         );
     }
 

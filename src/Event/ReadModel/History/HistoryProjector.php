@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TranslationApplied;
 use CultuurNet\UDB3\Event\Events\TranslationDeleted;
@@ -107,42 +106,6 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new String('Geüpdatet vanuit UDB2')
-            )
-        );
-    }
-
-    /**
-     * @param LabelsMerged $labelsMerged
-     * @param DomainMessage $domainMessage
-     */
-    protected function applyLabelsMerged(
-        LabelsMerged $labelsMerged,
-        DomainMessage $domainMessage
-    ) {
-        $labels = $labelsMerged->getLabels()->toStrings();
-        // Quote labels.
-        $quotedLabels = array_map(
-            function ($label) {
-                return "'{$label}'";
-            },
-            $labels
-        );
-        $quotedLabelsString = implode(', ', $quotedLabels);
-
-        $message = "Labels {$quotedLabelsString} toegepast";
-
-        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
-
-        if ($consumerName) {
-            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
-        }
-
-        $this->writeHistory(
-            $labelsMerged->getEventId()->toNative(),
-            new Log(
-                $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String($message),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }

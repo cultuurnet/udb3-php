@@ -23,7 +23,6 @@ use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -326,12 +325,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
-    }
-
-    protected function applyLabelsMerged(
-        LabelsMerged $labelsMerged
-    ) {
-        $this->labels = $this->labels->merge($labelsMerged->getLabels());
     }
 
     protected function applyTranslationApplied(

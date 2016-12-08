@@ -6,7 +6,6 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\CollaborationData;
-use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -534,48 +533,6 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $this->historyProjector->handle($domainMessage);
 
         $logMessage = 'Vertaling verwijderd (en) via EntryAPI door consumer "UiTDatabank"';
-
-        $this->assertHistoryOfEvent(
-            self::EVENT_ID_2,
-            [
-                (object)[
-                    'date' => '2015-03-01T10:17:19+02:00',
-                    'description' => $logMessage,
-                    'author' => 'Jantest',
-                ]
-            ]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_logs_CollaborationDataAdded()
-    {
-        $collaborationDataAdded = new CollaborationDataAdded(
-            new String(self::EVENT_ID_2),
-            new Language('en'),
-            new CollaborationData(
-                new String('sub-brand-foo'),
-                new String('plain text')
-            )
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
-
-        $domainMessage = new DomainMessage(
-            $collaborationDataAdded->getEventId()->toNative(),
-            1,
-            $metadata,
-            $collaborationDataAdded,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->historyProjector->handle($domainMessage);
-
-        $logMessage = 'Collaboration data toegevoegd (en) voor sub brand "sub-brand-foo" via EntryAPI door consumer "UiTDatabank"';
 
         $this->assertHistoryOfEvent(
             self::EVENT_ID_2,

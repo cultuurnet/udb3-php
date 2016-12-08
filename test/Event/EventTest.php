@@ -9,30 +9,18 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
-use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
+use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\LabelCollection;
-use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\CollaborationData;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Translation;
-use Guzzle\Tests\Http\DuplicateAggregatorTest;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -219,61 +207,6 @@ class EventTest extends AggregateRootScenarioTestCase
     }
 
     /**
-     * @test
-     */
-    public function it_can_be_created_from_cdbxml()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        $eventId = new StringLiteral('someId');
-        $xmlData = new EventXmlString($cdbXml);
-        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
-
-        $this->scenario
-            ->given([
-                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
-            ])
-            ->when(
-                function (Event $event) {
-                    $event->addLabel(new Label('polen'));
-                    $event->addLabel(new Label('slagwerk'));
-                }
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_be_updated_from_cdbxml()
-    {
-        $cdbXmlEdited = $this->getSample('event_entryapi_valid_with_keywords_edited.xml');
-
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        $eventId = new StringLiteral('someId');
-        $xmlData = new EventXmlString($cdbXml);
-        $editedxmlData = new EventXmlString($cdbXmlEdited);
-        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
-
-        $this->scenario
-            ->given([
-                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
-            ])
-            ->when(
-                function (Event $event) use ($eventId, $editedxmlData, $xmlNamespace) {
-                    $event->updateFromCdbXml($eventId, $editedxmlData, $xmlNamespace);
-
-                    $event->addLabel(new Label('polen'));
-                    $event->addLabel(new Label('slagwerk'));
-                    $event->addLabel(new Label('test'));
-                    $event->addLabel(new Label('aangepast'));
-                }
-            )
-            ->then([
-                new EventUpdatedFromCdbXml($eventId, $editedxmlData, $xmlNamespace)
-            ]);
-    }
-
-    /**
      * @return array
      */
     public function unlabelDataProvider()
@@ -312,21 +245,6 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $cdbXmlWithFooKeyword,
                         $ns
-                    ),
-                ]
-            ],
-            'label merged through Entry API' => [
-                $id,
-                $label,
-                [
-                    $eventImportedFromUdb2,
-                    new LabelsMerged(
-                        new StringLiteral($id),
-                        new LabelCollection(
-                            [
-                                $label
-                            ]
-                        )
                     ),
                 ]
             ],
@@ -450,502 +368,6 @@ class EventTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_have_labels_merged()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-        $eventId = new StringLiteral('004aea08-e13d-48c9-b9eb-a18f20e6d44e');
-        $xmlData = new EventXmlString($cdbXml);
-        $xmlNamespace = new StringLiteral(self::NS_CDBXML_3_3);
-        $labels = new LabelCollection(
-            [
-                new Label('muziek', true),
-                new Label('orkest', false),
-            ]
-        );
-
-        $this->scenario
-            ->given([
-                new EventCreatedFromCdbXml($eventId, $xmlData, $xmlNamespace)
-            ])
-            ->when(
-                function (Event $event) use ($labels) {
-                    $event->mergeLabels($labels);
-
-                    $event->addLabel(new Label('polen'));
-                    $event->addLabel(new Label('slagwerk'));
-                    $event->addLabel(new Label('muziek'));
-                    $event->addLabel(new Label('orkest', false));
-                }
-            )
-            ->then([
-                new LabelsMerged($eventId, $labels)
-            ]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_at_least_one_label_when_merging_labels()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Argument $labels should contain at least one label'
-        );
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(
-                self::NS_CDBXML_3_3
-            )
-        );
-
-        $event->mergeLabels(new LabelCollection());
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_have_a_new_translation_applied()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
-
-        $event->applyTranslation(
-            new Language('fr'),
-            new StringLiteral('Dizorkestra en concert'),
-            new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
-            new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
-        );
-
-        $this->assertEquals(
-            array(
-                'fr' => new Translation(
-                    new Language('fr'),
-                    new StringLiteral('Dizorkestra en concert'),
-                    new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
-                    new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
-                ),
-            ),
-            $event->getTranslations()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_have_an_existing_translation_updated()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(
-                self::NS_CDBXML_3_3
-            )
-        );
-
-        $event->applyTranslation(
-            new Language('fr'),
-            new StringLiteral('Dizorkestra en concert'),
-            new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
-            new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
-        );
-
-        $this->assertEquals(
-            array(
-                'fr' => new Translation(
-                    new Language('fr'),
-                    new StringLiteral('Dizorkestra en concert'),
-                    new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
-                    new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
-                ),
-            ),
-            $event->getTranslations()
-        );
-
-        $event->applyTranslation(
-            new Language('fr'),
-            new StringLiteral('Nicorkestra en concert'),
-            new StringLiteral('Concert Nicôrkestra, un groupe qui.'),
-            new StringLiteral('Concert Nicôrkestra, un groupe qui se montre inventif.')
-        );
-
-        $this->assertEquals(
-            array(
-                'fr' => new Translation(
-                    new Language('fr'),
-                    new StringLiteral('Nicorkestra en concert'),
-                    new StringLiteral('Concert Nicôrkestra, un groupe qui.'),
-                    new StringLiteral('Concert Nicôrkestra, un groupe qui se montre inventif.')
-                ),
-            ),
-            $event->getTranslations()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_have_a_translation_deleted()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
-
-        $event->applyTranslation(
-            new Language('fr'),
-            new StringLiteral('Dizorkestra en concert'),
-            new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
-            new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
-        );
-
-        $this->assertEquals(
-            array(
-                'fr' => new Translation(
-                    new Language('fr'),
-                    new StringLiteral('Dizorkestra en concert'),
-                    new StringLiteral('Concert Dizôrkestra, un groupe qui.'),
-                    new StringLiteral('Concert Dizôrkestra, un groupe qui se montre inventif.')
-                ),
-            ),
-            $event->getTranslations()
-        );
-
-        $event->deleteTranslation(
-            new Language('fr')
-        );
-
-        $this->assertEquals(
-            array(),
-            $event->getTranslations()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_have_a_translation_deleted_when_no_translation_exists()
-    {
-        $cdbXml = $this->getSample('event_entryapi_valid_with_keywords.xml');
-
-        $event = Event::createFromCdbXml(
-            new StringLiteral('someId'),
-            new EventXmlString($cdbXml),
-            new StringLiteral(self::NS_CDBXML_3_3)
-        );
-
-        $this->assertEquals(
-            array(),
-            $event->getTranslations()
-        );
-
-        $event->deleteTranslation(
-            new Language('fr')
-        );
-
-        $this->assertEquals(
-            array(),
-            $event->getTranslations()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_have_collaboration_data_added()
-    {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
-        $french = new Language('fr');
-
-        $collaborationData = CollaborationData::deserialize(
-            [
-                'subBrand' => 'sub brand',
-                'title' => 'title',
-                'text' => 'description EN',
-                'copyright' => 'copyright',
-                'keyword' => 'Lorem',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum',
-                'link' => 'http://google.com',
-            ]
-        );
-
-        $secondCollaborationData = CollaborationData::deserialize(
-            [
-                'subBrand' => 'sub brand',
-                'title' => 'title 2',
-                'text' => 'description EN',
-                'copyright' => 'copyright',
-                'keyword' => 'Lorem',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum',
-                'link' => 'http://google.com',
-            ]
-        );
-
-        $this->scenario
-            ->withAggregateId('someId')
-            ->given(
-                [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('someId'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
-                    )
-                ]
-            )
-            ->when(
-                function (Event $event) use ($french, $collaborationData, $secondCollaborationData) {
-                    $event->addCollaborationData(
-                        $french,
-                        $collaborationData
-                    );
-
-                    $event->addCollaborationData(
-                        $french,
-                        $secondCollaborationData
-                    );
-                }
-            )
-            ->then(
-                [
-                    new CollaborationDataAdded(
-                        new StringLiteral('someId'),
-                        $french,
-                        $collaborationData
-                    ),
-                    new CollaborationDataAdded(
-                        new StringLiteral('someId'),
-                        $french,
-                        $secondCollaborationData
-                    ),
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_add_collaboration_data_twice_for_the_same_language()
-    {
-        $cdbXml = file_get_contents(__DIR__ . '/samples/event_entryapi_valid_with_keywords.xml');
-
-        $eventId = new StringLiteral('someId');
-
-        $french = new Language('fr');
-
-        $collaborationData = CollaborationData::deserialize(
-            [
-                'subBrand' => 'sub brand',
-                'title' => 'title',
-                'text' => 'description EN',
-                'copyright' => 'copyright',
-                'keyword' => 'Lorem',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum',
-                'link' => 'http://google.com',
-            ]
-        );
-
-        $this->scenario
-            ->withAggregateId('someId')
-            ->given(
-                [
-                    new EventCreatedFromCdbXml(
-                        $eventId,
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
-                    ),
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $french,
-                        $collaborationData
-                    ),
-                ]
-            )
-            ->when(
-                function (Event $event) use ($french, $collaborationData) {
-                    $event->addCollaborationData(
-                        $french,
-                        $collaborationData
-                    );
-                }
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_add_collaboration_data_twice_for_different_languages()
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
-        );
-
-        $french = new Language('fr');
-        $english = new Language('en');
-
-        $eventId = new StringLiteral('someId');
-
-        $collaborationData = CollaborationData::deserialize(
-            [
-                'subBrand' => 'sub brand',
-                'title' => 'title',
-                'text' => 'description EN',
-                'copyright' => 'copyright',
-                'keyword' => 'Lorem',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum',
-                'link' => 'http://google.com',
-            ]
-        );
-
-        $this->scenario
-            ->withAggregateId('someId')
-            ->given(
-                [
-                    new EventCreatedFromCdbXml(
-                        $eventId,
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
-                    ),
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $french,
-                        $collaborationData
-                    ),
-                ]
-            )
-            ->when(
-                function (Event $event) use ($english, $collaborationData) {
-                    $event->addCollaborationData(
-                        $english,
-                        $collaborationData
-                    );
-                }
-            )
-            ->then(
-                [
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $english,
-                        $collaborationData
-                    ),
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_updates_collaboration_data_based_on_combination_of_language_and_subbrand()
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/samples/event_entryapi_valid_with_keywords.xml'
-        );
-
-        $french = new Language('fr');
-
-        $eventId = new StringLiteral('someId');
-
-        $collaborationData = CollaborationData::deserialize(
-            [
-                'subBrand' => 'sub brand',
-                'title' => 'title',
-                'text' => 'description EN',
-                'copyright' => 'copyright',
-                'keyword' => 'Lorem',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum',
-                'link' => 'http://google.com',
-            ]
-        );
-
-        // Update with all data different, except for sub brand.
-        $updatedCollaborationData = $collaborationData
-            ->withTitle(new StringLiteral('title bis'))
-            ->withText(new StringLiteral('description EN bis'))
-            ->withCopyright(new StringLiteral('copyright bis'))
-            ->withKeyword(new StringLiteral('Lorem bis'))
-            ->withImage(new StringLiteral('/image.en.bis.png'))
-            ->withArticle(new StringLiteral('Ipsum bis'))
-            ->withLink(Url::fromNative('http://google.bis.com'));
-
-        $otherSubBrandCollaborationData = CollaborationData::deserialize(
-            [
-                'subBrand' => 'sub brand bis',
-                'title' => 'title',
-                'text' => 'description EN',
-                'copyright' => 'copyright',
-                'keyword' => 'Lorem',
-                'image' => '/image.en.png',
-                'article' => 'Ipsum',
-                'link' => 'http://google.com',
-            ]
-        );
-
-        $this->scenario
-            ->withAggregateId('someId')
-            ->given(
-                [
-                    new EventCreatedFromCdbXml(
-                        $eventId,
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
-                    ),
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $french,
-                        $collaborationData
-                    ),
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $french,
-                        $otherSubBrandCollaborationData
-                    ),
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $french,
-                        $updatedCollaborationData
-                    ),
-                ]
-            )
-            ->when(
-                function (Event $event) use ($french, $collaborationData) {
-                    $event->addCollaborationData(
-                        $french,
-                        $collaborationData
-                    );
-                }
-            )
-            ->then(
-                [
-                    new CollaborationDataAdded(
-                        $eventId,
-                        $french,
-                        $collaborationData
-                    ),
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
     public function it_should_not_add_duplicate_images()
     {
         $image = new Image(
@@ -961,16 +383,16 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('foo')
+            ->withAggregateId('004aea08-e13d-48c9-b9eb-a18f20e6d44e')
             ->given(
                 [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('foo'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    new EventImportedFromUDB2(
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
+                        $cdbXml,
+                        \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3')
                     ),
                     new ImageAdded(
-                        'foo',
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
                         $image
                     ),
                 ]
@@ -1003,16 +425,16 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('foo')
+            ->withAggregateId('004aea08-e13d-48c9-b9eb-a18f20e6d44e')
             ->given(
                 [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('foo'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    new EventImportedFromUDB2(
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
+                        $cdbXml,
+                        \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3')
                     ),
                     new ImageAdded(
-                        'foo',
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
                         $image
                     ),
                 ]
@@ -1027,7 +449,7 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new ImageRemoved(
-                        'foo',
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
                         $image
                     ),
                 ]
@@ -1052,13 +474,13 @@ class EventTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('foo')
+            ->withAggregateId('004aea08-e13d-48c9-b9eb-a18f20e6d44e')
             ->given(
                 [
-                    new EventCreatedFromCdbXml(
-                        new StringLiteral('foo'),
-                        new EventXmlString($cdbXml),
-                        new StringLiteral('http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL')
+                    new EventImportedFromUDB2(
+                        '004aea08-e13d-48c9-b9eb-a18f20e6d44e',
+                        $cdbXml,
+                        \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3')
                     ),
                 ]
             )

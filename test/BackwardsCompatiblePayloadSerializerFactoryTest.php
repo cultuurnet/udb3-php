@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -270,34 +269,6 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     {
         $sampleFile = $this->sampleDir . 'serialized_event_unlabelled_class.json';
         $this->assertEventIdReplacedWithItemId($sampleFile);
-    }
-
-    /**
-     * @test
-     */
-    public function it_converts_obsolete_labels_applied_to_labels_merged()
-    {
-        $serialized = file_get_contents(
-            $this->sampleDir . 'serialized_labels_applied_class.json'
-        );
-        $decoded = json_decode($serialized, true);
-
-        $labelsMerged = $this->serializer->deserialize($decoded);
-
-        $this->assertInstanceOf(LabelsMerged::class, $labelsMerged);
-
-        $this->assertEquals(
-            new LabelsMerged(
-                new String('24b1e348-f27d-4f70-ae1a-871074267c2e'),
-                new LabelCollection(
-                    [
-                        new Label('keyword 1', true),
-                        new Label('keyword 2', false),
-                    ]
-                )
-            ),
-            $labelsMerged
-        );
     }
 
     /**

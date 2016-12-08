@@ -34,8 +34,6 @@ use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\EventXmlString;
@@ -57,11 +55,6 @@ use ValueObjects\String\String as StringLiteral;
 class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
     protected $eventId;
-
-    /**
-     * @var Translation[]
-     */
-    protected $translations = [];
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -181,60 +174,11 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral|null $title
-     * @param StringLiteral|null $shortDescription
-     * @param StringLiteral|null $longDescription
-     */
-    public function applyTranslation(
-        Language $language,
-        StringLiteral $title = null,
-        StringLiteral $shortDescription = null,
-        StringLiteral $longDescription = null
-    ) {
-        $this->apply(
-            new TranslationApplied(
-                new StringLiteral($this->eventId),
-                $language,
-                $title,
-                $shortDescription,
-                $longDescription
-            )
-        );
-    }
-
-    /**
-     * @param Language $language
-     */
-    public function deleteTranslation(
-        Language $language
-    ) {
-        if (!array_key_exists($language->getCode(), $this->translations)) {
-            return;
-        }
-
-        $this->apply(
-            new TranslationDeleted(
-                new StringLiteral($this->eventId),
-                $language
-            )
-        );
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
     {
         return $this->eventId;
-    }
-
-    /**
-     * @return Translation[]
-     */
-    public function getTranslations()
-    {
-        return $this->translations;
     }
 
     /**
@@ -325,37 +269,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
-    }
-
-    protected function applyTranslationApplied(
-        TranslationApplied $translationApplied
-    ) {
-        $this->eventId = $translationApplied->getEventId()->toNative();
-
-        $language = $translationApplied->getLanguage()->getCode();
-        $translation = new Translation(
-            $translationApplied->getLanguage(),
-            $translationApplied->getTitle(),
-            $translationApplied->getShortdescription(),
-            $translationApplied->getLongdescription()
-        );
-
-        if (!array_key_exists($language, $this->translations)) {
-            $this->translations[$language] = $translation;
-        } else {
-            $newTranslation = $this->translations[$language]->mergeTranslation($translation);
-            $this->translations[$language] = $newTranslation;
-        }
-    }
-
-    protected function applyTranslationDeleted(
-        TranslationDeleted $translationDeleted
-    ) {
-        $language = $translationDeleted->getLanguage()->getCode();
-
-        if (array_key_exists($language, $this->translations)) {
-            unset($this->translations[$language]);
-        }
     }
 
     /**

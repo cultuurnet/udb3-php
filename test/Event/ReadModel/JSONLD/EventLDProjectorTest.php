@@ -23,8 +23,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
@@ -1333,126 +1331,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $this->assertEquals(
             $expectedJsonLD,
             $this->documentRepository->get($eventId)->getRawBody()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_application_of_a_translation()
-    {
-        $initialDocument = new JsonDocument(
-            'foo',
-            json_encode([
-                'name' => ['nl'=> 'Titel'],
-                'description' => ['nl' => 'Omschrijving']
-            ])
-        );
-
-        $this->documentRepository->save(
-            $initialDocument
-        );
-
-        $translationApplied = new TranslationApplied(
-            new StringLiteral('foo'),
-            new Language('en'),
-            new StringLiteral('Title'),
-            new StringLiteral('Short description'),
-            new StringLiteral('Long long long extra long description')
-        );
-
-        $expectedBody = (object)[
-            'name' => (object)[
-                'nl'=> 'Titel',
-                'en' => 'Title'
-            ],
-            'description' => (object)[
-                'nl' => 'Omschrijving',
-                'en' => 'Long long long extra long description'
-            ]
-        ];
-
-        $body = $this->project($translationApplied, 'foo');
-
-        $this->assertEquals(
-            $expectedBody,
-            $body
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_application_of_a_title_translation()
-    {
-        $initialDocument = new JsonDocument(
-            1,
-            json_encode([
-                'name' => [
-                    'nl'=> 'Titel'
-                ],
-                'description' => [
-                    'nl' => 'Omschrijving'
-                ],
-            ])
-        );
-        $this->documentRepository->save($initialDocument);
-
-        $translationApplied = new TranslationApplied(
-            new StringLiteral('1'),
-            new Language('en'),
-            new StringLiteral('Title'),
-            null,
-            null
-        );
-
-        $body = $this->project($translationApplied, 1);
-
-        $this->assertEquals(
-            (object)[
-                'name' => (object)[
-                    'nl'=> 'Titel',
-                    'en' => 'Title'
-                ],
-                'description' => (object)[
-                    'nl' => 'Omschrijving'
-                ],
-            ],
-            $body
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_deletion_of_a_translation()
-    {
-        $initialDocument = new JsonDocument(
-            'foo',
-            json_encode([
-                'name' => ['nl'=> 'Titel', 'en' => 'Title'],
-                'description' => ['nl' => 'Omschrijving', 'en' => 'Long long long extra long description']
-            ])
-        );
-        $this->documentRepository->save($initialDocument);
-
-        $translationDeleted = new TranslationDeleted(
-            new StringLiteral('foo'),
-            new Language('en')
-        );
-
-        $body = $this->project($translationDeleted, 'foo');
-
-        $this->assertEquals(
-            (object)[
-                'name' => (object)[
-                    'nl'=> 'Titel'
-                ],
-                'description' => (object)[
-                    'nl' => 'Omschrijving'
-                ],
-            ],
-            $body
         );
     }
 

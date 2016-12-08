@@ -15,8 +15,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
@@ -106,70 +104,6 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new String('Geüpdatet vanuit UDB2')
-            )
-        );
-    }
-
-    protected function applyTranslationApplied(
-        TranslationApplied $translationApplied,
-        DomainMessage $domainMessage
-    ) {
-        $fields = [];
-
-        if ($translationApplied->getTitle() !== null) {
-            $fields[] = 'titel';
-        }
-        if ($translationApplied->getShortDescription() !== null) {
-            $fields[] = 'korte beschrijving';
-        }
-        if ($translationApplied->getLongDescription() !== null) {
-            $fields[] = 'lange beschrijving';
-        }
-        $fieldString = ucfirst(implode(', ', $fields));
-
-        $logMessage = "{$fieldString} vertaald ({$translationApplied->getLanguage()->getCode()})";
-
-        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
-        if ($consumerName) {
-            $logMessage .= " via EntryAPI door consumer \"{$consumerName}\"";
-        }
-
-        $this->writeHistory(
-            $translationApplied->getEventId()->toNative(),
-            new Log(
-                $this->domainMessageDateToNativeDate(
-                    $domainMessage->getRecordedOn()
-                ),
-                new String($logMessage),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
-            )
-        );
-    }
-
-    /**
-     * @param TranslationDeleted $translationDeleted
-     * @param DomainMessage $domainMessage
-     */
-    protected function applyTranslationDeleted(
-        TranslationDeleted $translationDeleted,
-        DomainMessage $domainMessage
-    ) {
-        $message = "Vertaling verwijderd ({$translationDeleted->getLanguage()})";
-
-        $consumerName = $this->getConsumerFromMetadata($domainMessage->getMetadata());
-
-        if ($consumerName) {
-            $message .= ' via EntryAPI door consumer "' . $consumerName . '"';
-        }
-
-        $this->writeHistory(
-            $translationDeleted->getEventId()->toNative(),
-            new Log(
-                $this->domainMessageDateToNativeDate(
-                    $domainMessage->getRecordedOn()
-                ),
-                new String($message),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }

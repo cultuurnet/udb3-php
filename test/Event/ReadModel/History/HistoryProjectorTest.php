@@ -14,8 +14,6 @@ use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\EventXmlString;
@@ -417,86 +415,6 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                 (object)[
                     'date' => '2015-03-01T10:17:19+02:00',
                     'description' => 'Geüpdatet via EntryAPI door consumer "UiTDatabank"',
-                    'author' => 'Jantest',
-                ]
-            ]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_logs_TranslationApplied()
-    {
-        $translationApplied = new TranslationApplied(
-            new String(self::EVENT_ID_2),
-            new Language('en'),
-            new String('Title'),
-            new String('Short description'),
-            new String('Long long long extra long description')
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
-
-        $domainMessage = new DomainMessage(
-            $translationApplied->getEventId()->toNative(),
-            1,
-            $metadata,
-            $translationApplied,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->historyProjector->handle($domainMessage);
-
-        $logMessage =
-            'Titel, korte beschrijving, lange beschrijving vertaald (en) via EntryAPI door consumer "UiTDatabank"';
-
-        $this->assertHistoryOfEvent(
-            self::EVENT_ID_2,
-            [
-                (object)[
-                    'date' => '2015-03-01T10:17:19+02:00',
-                    'description' => $logMessage,
-                    'author' => 'Jantest',
-                ]
-            ]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_logs_TranslationDeleted()
-    {
-        $translationDeleted = new TranslationDeleted(
-            new String(self::EVENT_ID_2),
-            new Language('en')
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = $this->entryApiMetadata('Jantest', 'UiTDatabank');
-
-        $domainMessage = new DomainMessage(
-            $translationDeleted->getEventId()->toNative(),
-            1,
-            $metadata,
-            $translationDeleted,
-            DateTime::fromString($importedDate)
-        );
-
-        $this->historyProjector->handle($domainMessage);
-
-        $logMessage = 'Vertaling verwijderd (en) via EntryAPI door consumer "UiTDatabank"';
-
-        $this->assertHistoryOfEvent(
-            self::EVENT_ID_2,
-            [
-                (object)[
-                    'date' => '2015-03-01T10:17:19+02:00',
-                    'description' => $logMessage,
                     'author' => 'Jantest',
                 ]
             ]

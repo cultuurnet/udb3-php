@@ -11,11 +11,10 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
+use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\StringFilter\StripLeadingSpaceStringFilter;
-use CultuurNet\UDB3\StringFilter\StripNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
-use CultuurNet\UDB3\StringFilter\StripTrailingSpaceStringFilter;
+use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -44,6 +43,11 @@ class CdbXMLImporter
     private $longDescriptionFilter;
 
     /**
+     * @var StringFilterInterface
+     */
+    private $shortDescriptionFilter;
+
+    /**
      * @var CalendarFactoryInterface
      */
     private $calendarFactory;
@@ -65,22 +69,23 @@ class CdbXMLImporter
         $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
 
+        $consecutiveBlockOfTextFilter = new ConsecutiveBlockOfTextStringFilter();
+
         $this->longDescriptionFilter = new CombinedStringFilter();
         $this->longDescriptionFilter->addFilter(
             new StripSourceStringFilter()
         );
         $this->longDescriptionFilter->addFilter(
-            new StripNewlineStringFilter()
+            $consecutiveBlockOfTextFilter
         );
         $this->longDescriptionFilter->addFilter(
             new BreakTagToNewlineStringFilter()
         );
         $this->longDescriptionFilter->addFilter(
-            new StripLeadingSpaceStringFilter()
+            new StripSurroundingSpaceStringFilter()
         );
-        $this->longDescriptionFilter->addFilter(
-            new StripTrailingSpaceStringFilter()
-        );
+
+        $this->shortDescriptionFilter = $consecutiveBlockOfTextFilter;
     }
 
     /**
@@ -194,22 +199,34 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $longDescription = trim($languageDetail->getLongDescription());
-        $shortDescription = $languageDetail->getShortDescription();
+        $longDescription = $languageDetail->getLongDescription();
+
+        if ($longDescription) {
+            $longDescription = $this->longDescriptionFilter->filter(
+                $longDescription
+            );
+        }
 
         $descriptions = [];
 
+        $shortDescription = $languageDetail->getShortDescription();
         if ($shortDescription) {
-            $shortDescription = trim($shortDescription);
+            $shortDescription = $this->shortDescriptionFilter->filter(
+                $shortDescription
+            );
 
-            if (!$this->longDescriptionStartsWithShortDescription($longDescription, $shortDescription)) {
-                $descriptions[] = $shortDescription;
+            if ($longDescription) {
+                if (!$this->longDescriptionStartsWithShortDescription($longDescription,
+                    $shortDescription)
+                ) {
+                    $descriptions[] = $shortDescription;
+                }
             }
         }
 
-        $longDescription = $this->longDescriptionFilter->filter($longDescription);
-
-        $descriptions[] = trim($longDescription);
+        if ($longDescription) {
+            $descriptions[] = $longDescription;
+        }
 
         $description = implode("\n\n", $descriptions);
 

@@ -13,31 +13,24 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\LabelCollection;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -49,7 +42,6 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
@@ -161,7 +153,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new PriceDescriptionParser(
                 new NumberFormatRepository(),
                 new CurrencyRepository()
-            )
+            ),
+            new CalendarFactory()
         );
 
         $this->projector = new EventLDProjector(
@@ -766,7 +759,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($event, $event->getEventId());
 
-        $this->assertEquals('10-', $body->typicalAgeRange);
+        $this->assertEquals('10-12', $body->typicalAgeRange);
     }
 
     /**
@@ -804,25 +797,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($event, $event->getEventId());
 
         $this->assertObjectNotHasAttribute('language', $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_filters_the_description_property_when_filters_are_added()
-    {
-        /** @var StringFilterInterface|PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(StringFilterInterface::class);
-        $filter->expects($this->atLeastOnce())
-            ->method('filter');
-
-        $this->projector->addDescriptionFilter($filter);
-
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_languages.cdbxml.xml'
-        );
-
-        $this->project($event, $event->getEventId());
     }
 
     /**
@@ -1252,238 +1226,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
     /**
      * @test
-     */
-    public function it_creates_events_from_cdbxml()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
-
-        $eventCreatedFromCdbXml = new EventCreatedFromCdbXml(
-            new StringLiteral('foo'),
-            new EventXmlString($xml),
-            new StringLiteral(self::CDBXML_NAMESPACE)
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
-        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
-
-        $domainMessage = new DomainMessage(
-            $eventId,
-            1,
-            new Metadata($metadata),
-            $eventCreatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
-
-        $this->projector->handle($domainMessage);
-
-        $body = $this->documentRepository->get($eventId)->getRawBody();
-
-        $this->assertEquals(
-            $expectedJsonLD,
-            $body
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_updates_events_from_cdbxml()
-    {
-        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new StringLiteral('foo'),
-            new EventXmlString($xml),
-            new StringLiteral(self::CDBXML_NAMESPACE)
-        );
-
-        $importedDate = '2015-03-01T10:17:19.176169+02:00';
-
-        $metadata = array();
-        $metadata['user_nick'] = 'Jantest';
-        $metadata['consumer']['name'] = 'UiTDatabank';
-
-        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
-
-        $domainMessage = new DomainMessage(
-            $eventId,
-            1,
-            new Metadata($metadata),
-            $eventUpdatedFromCdbXml,
-            DateTime::fromString($importedDate)
-        );
-
-        $expectedJsonLD = file_get_contents(__DIR__ . '/event_entryapi_valid_expected.json');
-
-        $this->projector->handle($domainMessage);
-
-        $this->assertEquals(
-            $expectedJsonLD,
-            $this->documentRepository->get($eventId)->getRawBody()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_a_merge_of_labels()
-    {
-        $initialDocument = new JsonDocument(
-            'foo',
-            json_encode([
-                'labels' => ['label A']
-            ])
-        );
-
-        $this->documentRepository->save($initialDocument);
-
-        $labelsMerged = new LabelsMerged(
-            new StringLiteral('foo'),
-            new LabelCollection(
-                [
-                    new Label('label B', true),
-                    new Label('label C', false),
-                ]
-            )
-        );
-
-        $body = $this->project($labelsMerged, 'foo');
-
-        $this->assertEquals(
-            ['label A', 'label B', 'label C'],
-            $body->labels
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_application_of_a_translation()
-    {
-        $initialDocument = new JsonDocument(
-            'foo',
-            json_encode([
-                'name' => ['nl'=> 'Titel'],
-                'description' => ['nl' => 'Omschrijving']
-            ])
-        );
-
-        $this->documentRepository->save(
-            $initialDocument
-        );
-
-        $translationApplied = new TranslationApplied(
-            new StringLiteral('foo'),
-            new Language('en'),
-            new StringLiteral('Title'),
-            new StringLiteral('Short description'),
-            new StringLiteral('Long long long extra long description')
-        );
-
-        $expectedBody = (object)[
-            'name' => (object)[
-                'nl'=> 'Titel',
-                'en' => 'Title'
-            ],
-            'description' => (object)[
-                'nl' => 'Omschrijving',
-                'en' => 'Long long long extra long description'
-            ]
-        ];
-
-        $body = $this->project($translationApplied, 'foo');
-
-        $this->assertEquals(
-            $expectedBody,
-            $body
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_application_of_a_title_translation()
-    {
-        $initialDocument = new JsonDocument(
-            1,
-            json_encode([
-                'name' => [
-                    'nl'=> 'Titel'
-                ],
-                'description' => [
-                    'nl' => 'Omschrijving'
-                ],
-            ])
-        );
-        $this->documentRepository->save($initialDocument);
-
-        $translationApplied = new TranslationApplied(
-            new StringLiteral('1'),
-            new Language('en'),
-            new StringLiteral('Title'),
-            null,
-            null
-        );
-
-        $body = $this->project($translationApplied, 1);
-
-        $this->assertEquals(
-            (object)[
-                'name' => (object)[
-                    'nl'=> 'Titel',
-                    'en' => 'Title'
-                ],
-                'description' => (object)[
-                    'nl' => 'Omschrijving'
-                ],
-            ],
-            $body
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_deletion_of_a_translation()
-    {
-        $initialDocument = new JsonDocument(
-            'foo',
-            json_encode([
-                'name' => ['nl'=> 'Titel', 'en' => 'Title'],
-                'description' => ['nl' => 'Omschrijving', 'en' => 'Long long long extra long description']
-            ])
-        );
-        $this->documentRepository->save($initialDocument);
-
-        $translationDeleted = new TranslationDeleted(
-            new StringLiteral('foo'),
-            new Language('en')
-        );
-
-        $body = $this->project($translationDeleted, 'foo');
-
-        $this->assertEquals(
-            (object)[
-                'name' => (object)[
-                    'nl'=> 'Titel'
-                ],
-                'description' => (object)[
-                    'nl' => 'Omschrijving'
-                ],
-            ],
-            $body
-        );
-    }
-
-    /**
-     * @test
      * @dataProvider eventUpdateDataProvider
      * @param $documentWithUDB3Media
      * @param $domainMessage
@@ -1533,21 +1275,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ]
         ];
 
-        $xml = file_get_contents(__DIR__ . '/event_entryapi_valid.xml');
-
-        $eventUpdatedFromCdbXml = new EventUpdatedFromCdbXml(
-            new StringLiteral('foo'),
-            new EventXmlString($xml),
-            new StringLiteral(self::CDBXML_NAMESPACE)
-        );
-
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
 
         $metadata = array();
         $metadata['user_nick'] = 'Jantest';
         $metadata['consumer']['name'] = 'UiTDatabank';
-
-        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
 
         $eventUpdatedFromUDB2 = new EventUpdatedFromUDB2(
             'foo',
@@ -1556,21 +1288,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         return [
-            'entryapi' => [
-                $documentWithUDB3Media,
-                new DomainMessage(
-                    $eventId,
-                    1,
-                    new Metadata($metadata),
-                    $eventUpdatedFromCdbXml,
-                    DateTime::fromString($importedDate)
-                ),
-                $expectedMediaObjects
-            ],
             'udb2' => [
                 $documentWithUDB3Media,
                 new DomainMessage(
-                    $eventId,
+                    'dcd1ef37-0608-4824-afe3-99124feda64b',
                     1,
                     new Metadata($metadata),
                     $eventUpdatedFromUDB2,

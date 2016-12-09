@@ -2,14 +2,18 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
-use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
+use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
+use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
+use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
+use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -33,25 +37,55 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
+     * @var StringFilterInterface
+     */
+    private $longDescriptionFilter;
+
+    /**
+     * @var StringFilterInterface
+     */
+    private $shortDescriptionFilter;
+
+    /**
+     * @var CalendarFactoryInterface
+     */
+    private $calendarFactory;
+
+    /**
      * @param CdbXMLItemBaseImporter $cdbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      * @param PriceDescriptionParser $priceDescriptionParser
-     * @param IriGeneratorInterface $mediaIriGenerator
+     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         CdbXMLItemBaseImporter $cdbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
-        PriceDescriptionParser $priceDescriptionParser
+        PriceDescriptionParser $priceDescriptionParser,
+        CalendarFactoryInterface $calendarFactory
     ) {
         $this->cdbXMLItemBaseImporter = $cdbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
-    }
+        $this->calendarFactory = $calendarFactory;
 
-    /**
-     * @var StringFilterInterface[]
-     */
-    private $descriptionFilters = [];
+        $consecutiveBlockOfTextFilter = new ConsecutiveBlockOfTextStringFilter();
+
+        $this->longDescriptionFilter = new CombinedStringFilter();
+        $this->longDescriptionFilter->addFilter(
+            new StripSourceStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            $consecutiveBlockOfTextFilter
+        );
+        $this->longDescriptionFilter->addFilter(
+            new BreakTagToNewlineStringFilter()
+        );
+        $this->longDescriptionFilter->addFilter(
+            new StripSurroundingSpaceStringFilter()
+        );
+
+        $this->shortDescriptionFilter = $consecutiveBlockOfTextFilter;
+    }
 
     /**
      * Imports a UDB2 event into a UDB3 JSON-LD document.
@@ -119,7 +153,8 @@ class CdbXMLImporter
 
         $this->cdbXMLItemBaseImporter->importPublicationInfo($event, $jsonLD);
 
-        $this->importCalendar($event, $jsonLD);
+        $calendar = $this->calendarFactory->createFromCdbCalendar($event->getCalendar());
+        $jsonLD = (object)array_merge((array)$jsonLD, $calendar->toJsonLd());
 
         $this->importTypicalAgeRange($event, $jsonLD);
 
@@ -138,14 +173,6 @@ class CdbXMLImporter
         $this->cdbXMLItemBaseImporter->importWorkflowStatus($event, $jsonLD);
 
         return $jsonLD;
-    }
-
-    /**
-     * @param StringFilterInterface $filter
-     */
-    public function addDescriptionFilter(StringFilterInterface $filter)
-    {
-        $this->descriptionFilters[] = $filter;
     }
 
     /**
@@ -169,16 +196,40 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $descriptions = [
-            $languageDetail->getShortDescription(),
-            $languageDetail->getLongDescription()
-        ];
-        $descriptions = array_filter($descriptions);
-        $description = implode('<br/>', $descriptions);
+        $longDescription = $languageDetail->getLongDescription();
 
-        foreach ($this->descriptionFilters as $descriptionFilter) {
-            $description = $descriptionFilter->filter($description);
-        };
+        if ($longDescription) {
+            $longDescription = $this->longDescriptionFilter->filter(
+                $longDescription
+            );
+        }
+
+        $descriptions = [];
+
+        $shortDescription = $languageDetail->getShortDescription();
+        if ($shortDescription) {
+            $shortDescription = $this->shortDescriptionFilter->filter(
+                $shortDescription
+            );
+
+            if ($longDescription) {
+                $includeShortDescription =
+                    !$this->longDescriptionStartsWithShortDescription(
+                        $longDescription,
+                        $shortDescription
+                    );
+
+                if ($includeShortDescription) {
+                    $descriptions[] = $shortDescription;
+                }
+            }
+        }
+
+        if ($longDescription) {
+            $descriptions[] = $longDescription;
+        }
+
+        $description = implode("\n\n", $descriptions);
 
         $jsonLD->description[$language] = $description;
     }
@@ -244,6 +295,7 @@ class CdbXMLImporter
                 }
             }
 
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones_cdb */
             $phones_cdb = $contact_info_cdb->getPhones();
             if (count($phones_cdb) > 0) {
                 $organizer['phone'] = array();
@@ -312,6 +364,7 @@ class CdbXMLImporter
     }
 
     /**
+     * @param \CultureFeed_Cdb_Item_Event $event
      * @param \CultureFeed_Cdb_Data_EventDetail $detail
      * @param \stdClass $jsonLD
      */
@@ -346,7 +399,9 @@ class CdbXMLImporter
         // Add reservation contact data.
         $contactInfo = $event->getContactInfo();
         if ($contactInfo) {
-            foreach ($contactInfo->getUrls() as $url) {
+            /** @var \CultureFeed_Cdb_Data_Url[] $urls */
+            $urls = $contactInfo->getUrls();
+            foreach ($urls as $url) {
                 if ($url->isForReservations()) {
                     $bookingInfo['url'] = $url->getUrl();
                     break;
@@ -357,7 +412,9 @@ class CdbXMLImporter
                 $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
             }
 
-            foreach ($contactInfo->getPhones() as $phone) {
+            /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
+            $phones = $contactInfo->getPhones();
+            foreach ($phones as $phone) {
                 if ($phone->isForReservations()) {
                     $bookingInfo['phone'] = $phone->getNumber();
                     break;
@@ -467,90 +524,20 @@ class CdbXMLImporter
      * @param \CultureFeed_Cdb_Item_Event $event
      * @param \stdClass $jsonLD
      */
-    private function importCalendar(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
-    {
-        // To render the front-end we make a distinction between 4 calendar types
-        // Permanent and Periodic map directly to the Cdb calendar classes
-        // Simple timestamps are divided into single and multiple
-        $calendarType = 'unknown';
-        $calendar = $event->getCalendar();
-
-        if ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $calendarType = 'permanent';
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $calendarType = 'periodic';
-            $calendar->rewind();
-            $firstCalendarItem = $calendar->current();
-            $startDateString = $firstCalendarItem->getDateFrom() . 'T00:00:00';
-            $startDate = DateTimeFactory::dateTimeFromDateString($startDateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = $lastCalendarItem->getDateTo() . 'T00:00:00';
-            $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
-
-            $jsonLD->startDate = $startDate->format('c');
-            $jsonLD->endDate = $endDate->format('c');
-        } elseif ($calendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $calendarType = 'single';
-            $calendar->rewind();
-            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $firstCalendarItem */
-            $firstCalendarItem = $calendar->current();
-            if ($firstCalendarItem->getStartTime()) {
-                $dateString =
-                    $firstCalendarItem->getDate() . 'T' . $firstCalendarItem->getStartTime();
-            } else {
-                $dateString = $firstCalendarItem->getDate() . 'T00:00:00';
-            }
-
-            $startDate = DateTimeFactory::dateTimeFromDateString($dateString);
-
-            if (iterator_count($calendar) > 1) {
-                $periodArray = iterator_to_array($calendar);
-                $lastCalendarItem = end($periodArray);
-            } else {
-                $lastCalendarItem = $firstCalendarItem;
-            }
-
-            $endDateString = null;
-            if ($lastCalendarItem->getEndTime()) {
-                $endDateString =
-                    $lastCalendarItem->getDate() . 'T' . $lastCalendarItem->getEndTime();
-            } else {
-                if (iterator_count($calendar) > 1) {
-                    $endDateString = $lastCalendarItem->getDate() . 'T00:00:00';
-                }
-            }
-
-            if ($endDateString) {
-                $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
-                $jsonLD->endDate = $endDate->format('c');
-
-                if ($startDate->format('Ymd') != $endDate->format('Ymd')) {
-                    $calendarType = 'multiple';
-                }
-            }
-
-            $jsonLD->startDate = $startDate->format('c');
-        }
-
-        $jsonLD->calendarType = $calendarType;
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
     private function importTypicalAgeRange(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
         $ageFrom = $event->getAgeFrom();
-        if ($ageFrom) {
-            $jsonLD->typicalAgeRange = "{$ageFrom}-";
+
+        if (isset($ageFrom) && is_int($ageFrom)) {
+            if ($ageFrom <= 12) {
+                $jsonLD->typicalAgeRange = "{$ageFrom}-12";
+            } else if ($ageFrom <= 18) {
+                $jsonLD->typicalAgeRange = "{$ageFrom}-18";
+            } else if ($ageFrom <= 99) {
+                $jsonLD->typicalAgeRange = "{$ageFrom}-99";
+            } else {
+                $jsonLD->typicalAgeRange = '99-99';
+            }
         }
     }
 
@@ -647,5 +634,19 @@ class CdbXMLImporter
         if (!in_array($reference, $jsonLD->sameAs)) {
             array_push($jsonLD->sameAs, $reference);
         }
+    }
+
+    /**
+     * @param string $longDescription
+     * @param string $shortDescription
+     * @return bool
+     */
+    private function longDescriptionStartsWithShortDescription(
+        $longDescription,
+        $shortDescription
+    ) {
+        $longDescription = strip_tags(html_entity_decode($longDescription));
+
+        return 0 === strncmp($longDescription, $shortDescription, mb_strlen($shortDescription));
     }
 }

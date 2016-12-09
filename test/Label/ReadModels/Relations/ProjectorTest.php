@@ -48,11 +48,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $relationId;
 
     /**
-     * @var string
-     */
-    private $organizerId;
-
-    /**
      * @var WriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $writeRepository;
@@ -304,6 +299,24 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 new OrganizerUpdatedFromUDB2(
                     $itemId->toNative(),
                     file_get_contents(__DIR__ . '/Samples/organizer.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::ORGANIZER(),
+            ],
+            [
+                $itemId,
+                new OrganizerUpdatedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/organizer_with_same_label_but_different_casing.xml'),
+                    $cdbXmlNamespaceUri
+                ),
+                RelationType::ORGANIZER(),
+            ],
+            [
+                $itemId,
+                new OrganizerUpdatedFromUDB2(
+                    $itemId->toNative(),
+                    file_get_contents(__DIR__ . '/Samples/organizer_with_same_label_but_different_casing_and_visibility.xml'),
                     $cdbXmlNamespaceUri
                 ),
                 RelationType::ORGANIZER(),

@@ -1,17 +1,16 @@
 <?php
 
-
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 
 class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +47,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             new PriceDescriptionParser(
                 new NumberFormatRepository(),
                 new CurrencyRepository()
-            )
+            ),
+            new CalendarFactory()
         );
         $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
         $this->placeManager = $this->getMock(PlaceServiceInterface::class);
@@ -57,17 +57,87 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $fileName
-     * @return \stdClass
+     * @param $fileName
+     * @param string $version
+     * @return \CultureFeed_Cdb_Item_Event
      */
-    private function createJsonEventFromCdbXml($fileName)
+    private function createEventFromCdbXml($fileName, $version = '3.2')
     {
         $cdbXml = file_get_contents(
             __DIR__ . '/' . $fileName
         );
 
+        return EventItemFactory::createEventFromCdbXml(
+            "http://www.cultuurdatabank.com/XMLSchema/CdbXSD/{$version}/FINAL",
+            $cdbXml
+        );
+    }
+
+    /**
+     * @param string $fileName
+     * @param string $version
+     * @return \stdClass
+     */
+    private function createJsonEventFromCdbXml($fileName, $version = '3.2')
+    {
+        $event = $this->createEventFromCdbXml($fileName, $version);
+
+        $jsonEvent = $this->importer->documentWithCdbXML(
+            new \stdClass(),
+            $event,
+            $this->placeManager,
+            $this->organizerManager,
+            $this->slugger
+        );
+
+        return $jsonEvent;
+    }
+
+    /**
+     * @param $ageFrom
+     * @return \stdClass
+     */
+    private function createJsonEventFromCdbXmlWithAgeFrom($ageFrom)
+    {
+        $event = $this->createEventFromCdbXml(
+            '../../samples/event_with_age_from.cdbxml.xml'
+        );
+
+        $event->setAgeFrom($ageFrom);
+
+        $jsonEvent = $this->importer->documentWithCdbXML(
+            new \stdClass(),
+            $event,
+            $this->placeManager,
+            $this->organizerManager,
+            $this->slugger
+        );
+
+        return $jsonEvent;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    private function createJsonEventFromCdbXmlWithoutAgeFrom()
+    {
+        return $this->createJsonEventFromCdbXml(
+            '../../samples/event_without_age_from.cdbxml.xml'
+        );
+    }
+
+    /**
+     * @param string $fileName
+     * @return \stdClass
+     */
+    private function createJsonEventFromCalendarSample($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/../../samples/calendar/' . $fileName
+        );
+
         $event = EventItemFactory::createEventFromCdbXml(
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL',
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL',
             $cdbXml
         );
 
@@ -93,21 +163,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2014-08-12T14:37:58+02:00', $jsonEvent->created);
         $this->assertEquals('2014-10-21T16:47:23+02:00', $jsonEvent->modified);
         $this->assertEquals('Invoerders Algemeen ', $jsonEvent->publisher);
-    }
-
-    /**
-     * @test
-     */
-    public function it_filters_the_description_property_when_filters_are_added()
-    {
-        /** @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject $filter */
-        $filter = $this->getMock(StringFilterInterface::class);
-        $filter->expects($this->atLeastOnce())
-            ->method('filter');
-
-        $this->importer->addDescriptionFilter($filter);
-
-        $this->createJsonEventFromCdbXml('event_with_email_and_phone_number.cdbxml.xml');
     }
 
     /**
@@ -447,8 +502,283 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @group issue-III-1636
      */
+    public function it_should_import_a_calendar_with_timestamp_without_timing()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_without_timing.xml');
+
+        $this->assertEquals('single', $jsonEvent->calendarType);
+        $this->assertEquals('2016-12-31T00:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2016-12-31T00:00:00+01:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_timestamp_and_start_date()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_and_start_time.xml');
+
+        $this->assertEquals('single', $jsonEvent->calendarType);
+        $this->assertEquals('2017-04-27T20:15:00+02:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-04-27T20:15:00+02:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_timestamp_and_start_and_end_date()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_and_start_and_end_time.xml');
+
+        $this->assertEquals('single', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-26T11:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-02-26T12:30:00+01:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_multiple_timestamps_and_start_and_end_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_and_end_times.xml');
+
+        $this->assertEquals('multiple', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-06T13:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-03-20T16:45:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-06T13:00:00+01:00',
+                    'endDate' => '2017-02-06T16:45:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-20T13:00:00+01:00',
+                    'endDate' => '2017-02-20T16:45:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-06T13:00:00+01:00',
+                    'endDate' => '2017-03-06T16:45:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-20T13:00:00+01:00',
+                    'endDate' => '2017-03-20T16:45:00+01:00'
+                ],
+            ],
+            $jsonEvent->subEvent
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_multiple_timestamps_and_different_start_and_end_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_different_start_and_end_times.xml');
+
+        $this->assertEquals('multiple', $jsonEvent->calendarType);
+        $this->assertEquals('2016-01-30T13:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-11-30T17:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-01-30T13:00:00+01:00',
+                    'endDate' => '2016-01-30T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-11-30T13:00:00+01:00',
+                    'endDate' => '2016-11-30T17:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-12-03T00:00:00+01:00',
+                    'endDate' => '2016-12-03T00:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-12-09T00:00:00+01:00',
+                    'endDate' => '2016-12-09T00:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-12-30T13:00:00+01:00',
+                    'endDate' => '2016-12-30T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-11-30T13:00:00+01:00',
+                    'endDate' => '2017-11-30T17:00:00+01:00'
+                ],
+            ],
+            $jsonEvent->subEvent
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_calendar_with_multiple_timestamps_and_start_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_times.xml');
+
+        $this->assertEquals('multiple', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-06T13:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-03-20T13:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-06T13:00:00+01:00',
+                    'endDate' => '2017-02-06T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-02-20T13:00:00+01:00',
+                    'endDate' => '2017-02-20T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-06T13:00:00+01:00',
+                    'endDate' => '2017-03-06T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-03-20T13:00:00+01:00',
+                    'endDate' => '2017-03-20T13:00:00+01:00'
+                ],
+            ],
+            $jsonEvent->subEvent
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_periodic_calendar()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_periodic_calendar.xml');
+
+        $this->assertEquals('periodic', $jsonEvent->calendarType);
+        $this->assertEquals('2016-12-09T00:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2016-12-11T00:00:00+01:00', $jsonEvent->endDate);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_periodic_calendar_with_week_schema()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_periodic_calendar_and_week_schema.xml');
+
+        $this->assertEquals('periodic', $jsonEvent->calendarType);
+        $this->assertEquals('2017-06-13T00:00:00+02:00', $jsonEvent->startDate);
+        $this->assertEquals('2018-01-08T00:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    'dayOfWeek' => [
+                        'monday',
+                        'tuesday',
+                        'wednesday',
+                        'thursday',
+                        'friday',
+                        'saturday'
+                    ],
+                    'opens' => '10:00',
+                    'closes' => '18:00'
+                ],
+                [
+                    'dayOfWeek' => [
+                        'sunday'
+                    ],
+                    'opens' => '08:00',
+                    'closes' => '12:00'
+                ]
+            ],
+            $jsonEvent->openingHours
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_periodic_calendar_with_week_schema_and_missing_closing_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_periodic_calendar_and_week_schema_and_missing_closing_times.xml');
+
+        $this->assertEquals('periodic', $jsonEvent->calendarType);
+        $this->assertEquals('2017-02-09T00:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-02-19T00:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    'dayOfWeek' => [
+                        'monday',
+                        'thursday',
+                        'friday',
+                        'saturday'
+                    ],
+                    'opens' => '20:30',
+                    'closes' => '20:30'
+                ],
+                [
+                    'dayOfWeek' => [
+                        'sunday'
+                    ],
+                    'opens' => '16:00',
+                    'closes' => '16:00'
+                ]
+            ],
+            $jsonEvent->openingHours
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_permanent_calendar()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_permanent_calendar.xml');
+
+        $this->assertEquals('permanent', $jsonEvent->calendarType);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_import_a_permanent_calendar_with_opening_hours()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_permanent_calendar_and_opening_hours.xml');
+
+        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $this->assertEquals(
+            [
+                [
+                    'dayOfWeek' => [
+                        'wednesday',
+                        'saturday',
+                    ],
+                    'opens' => '09:30',
+                    'closes' => '11:30'
+                ],
+                [
+                    'dayOfWeek' => [
+                        'thursday'
+                    ],
+                    'opens' => '09:00',
+                    'closes' => '17:00'
+                ]
+            ],
+            $jsonEvent->openingHours
+        );
+    }
+
     public function it_splits_contactinfo_into_contactpoint_and_bookinginfo()
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_all_kinds_of_contact_info_2.cdbxml.xml');
@@ -470,6 +800,174 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'urlLabel' => 'Reserveer plaatsen',
             ],
             $jsonEvent->bookingInfo
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_0_as_typical_age_range_from_0_till_12()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(0);
+
+        $this->assertEquals('0-12', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_3_as_typical_age_range_from_3_till_12()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(3);
+
+        $this->assertEquals('3-12', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_12_as_typical_age_range_from_12_till_12()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(12);
+
+        $this->assertEquals('12-12', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_13_as_typical_age_range_from_13_till_18()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(13);
+
+        $this->assertEquals('13-18', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_18_as_typical_age_range_from_18_till_18()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(18);
+
+        $this->assertEquals('18-18', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_19_as_typical_age_range_from_19_till_99()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(19);
+
+        $this->assertEquals('19-99', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_99_as_typical_age_range_from_99_till_99()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(99);
+
+        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_100_as_typical_age_range_from_99_till_99()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(100);
+
+        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_age_from_101_as_typical_age_range_from_99_till_99()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(101);
+
+        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_import_age_from_as_string()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom('4');
+
+        $this->assertFalse(isset($jsonEvent->typicalAgeRange));
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_import_missing_age_from()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithoutAgeFrom();
+
+        $this->assertFalse(isset($jsonEvent->typicalAgeRange));
+    }
+
+    /**
+     * Provides cdbxml with descriptions and the expected UDB3 description.
+     */
+    public function descriptionsProvider()
+    {
+        return array(
+            'merge short description and long description when short description is not repeated in long description for events' => array(
+                'event_with_short_and_long_description.cdbxml.xml',
+                'description.txt'
+            ),
+            'use long description when there is no short description in UDB2' => array(
+                'event_without_short_description.cdbxml.xml',
+                'description_from_only_long_description.txt',
+            ),
+            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description' => array(
+                'event_with_short_description_included_in_long_description.cdbxml.xml',
+                'description.txt',
+            ),
+            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description' => array(
+                'event_vertelavond_jan_gabriels.cdbxml.xml',
+                'description_vertelavond_jan_gabriels.txt',
+                '3.3',
+            ),
+            'newlines, leading & trailing whitespace are removed from longdescription' => array(
+                'event_brussels_buzzing.cdbxml.xml',
+                'description_brussels_buzzing.txt',
+                '3.3',
+            ),
+            'newlines, leading & trailing whitespace are removed from shortdescription' => array(
+                'event_54695180-3ff5-4db0-a020-d54b5bdc08e9.cdbxml.xml',
+                'description_54695180-3ff5-4db0-a020-d54b5bdc08e9.txt',
+                '3.3'
+            ),
+        );
+    }
+
+    /**
+     * @test
+     * @group issue-III-165
+     * @dataProvider descriptionsProvider
+     *
+     * @param string $cdbxmlFile
+     * @param string $expectedDescriptionFile
+     * @param string $schemaVersion
+     */
+    public function it_combines_long_and_short_description_to_one_description(
+        $cdbxmlFile,
+        $expectedDescriptionFile,
+        $schemaVersion = '3.2'
+    ) {
+        $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, $schemaVersion);
+
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/' . $expectedDescriptionFile),
+            $jsonEvent->description['nl']
         );
     }
 }

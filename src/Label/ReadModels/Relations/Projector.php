@@ -7,12 +7,14 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\LabelEventInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
@@ -179,9 +181,11 @@ class Projector extends AbstractProjector
         $this->writeRepository->deleteByRelationId($relationId);
 
         $keywords = $cdbItem->getKeywords();
-        foreach ($keywords as $keyword) {
+        $labelCollection = LabelCollection::fromStrings($keywords);
+
+        foreach ($labelCollection->asArray() as $label) {
             $this->writeRepository->save(
-                new LabelName($keyword),
+                new LabelName((string) $label),
                 $relationType,
                 $relationId
             );

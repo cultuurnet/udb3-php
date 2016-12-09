@@ -8,12 +8,9 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
@@ -130,39 +127,5 @@ class Projector implements EventListenerInterface
     protected function storeRelations($eventId, $placeId, $organizerId)
     {
         $this->repository->storeRelations($eventId, $placeId, $organizerId);
-    }
-
-    /**
-     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
-     */
-    protected function applyEventCreatedFromCdbXml(EventCreatedFromCdbXml $eventCreatedFromCdbXml)
-    {
-        $this->applyEventDataFromCdbXml($eventCreatedFromCdbXml);
-    }
-
-    /**
-    * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
-    */
-    protected function applyEventUpdatedFromCdbXml(EventUpdatedFromCdbXml $eventUpdatedFromCdbXml)
-    {
-        $this->applyEventDataFromCdbXml($eventUpdatedFromCdbXml);
-    }
-
-    /**
-     * @param EventCreatedFromCdbXml|EventUpdatedFromCdbXml $eventFromCdbXml
-     */
-    protected function applyEventDataFromCdbXml($eventFromCdbXml)
-    {
-        $eventId = $eventFromCdbXml->getEventId();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventFromCdbXml->getCdbXmlNamespaceUri()->toNative(),
-            $eventFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $placeId = $this->cdbIdExtractor->getRelatedPlaceCdbId($udb2Event);
-        $organizerId = $this->cdbIdExtractor->getRelatedOrganizerCdbId($udb2Event);
-
-        $this->storeRelations($eventId, $placeId, $organizerId);
     }
 }

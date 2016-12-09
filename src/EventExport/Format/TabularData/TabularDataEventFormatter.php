@@ -134,11 +134,11 @@ class TabularDataEventFormatter
             ],
             'contactPoint' => [
                 'contactPoint.email',
-                'contactPoint.telephone',
+                'contactPoint.phone',
                 'contactPoint.url',
-                'contactPoint.reservations.email',
-                'contactPoint.reservations.telephone',
-                'contactPoint.reservations.url',
+                //'contactPoint.reservations.email',
+                //'contactPoint.reservations.telephone',
+                //'contactPoint.reservations.url',
             ],
             'bookingInfo' => [
                 'bookingInfo.price',
@@ -173,8 +173,8 @@ class TabularDataEventFormatter
     protected function columns()
     {
         $formatter = $this;
-        $contactPoint = function (\stdClass $event, $type = null) use ($formatter) {
-            return $formatter->contactPoint($event, $type);
+        $contactPoint = function (\stdClass $event) use ($formatter) {
+            return $formatter->contactPoint($event);
         };
 
         return [
@@ -503,12 +503,12 @@ class TabularDataEventFormatter
                 },
                 'property' => 'contactPoint'
             ],
-            'contactPoint.telephone' => [
+            'contactPoint.phone' => [
                 'name' => 'telefoon',
                 'include' => function ($event) use ($contactPoint) {
                     return $this->listJsonldProperty(
                         $contactPoint($event),
-                        'telephone'
+                        'phone'
                     );
                 },
                 'property' => 'contactPoint'
@@ -516,43 +516,31 @@ class TabularDataEventFormatter
             'contactPoint.url' => [
                 'name' => 'url',
                 'include' => function ($event) use ($contactPoint) {
-                    $contactUrls = $this->listJsonldProperty(
+                    return $this->listJsonldProperty(
                         $contactPoint($event),
                         'url'
                     );
-                    $seeAlsoUrls = $this->listJsonldProperty($event, 'seeAlso');
-                    $urls = array_filter([$contactUrls, $seeAlsoUrls]);
-                    return implode("\r\n", $urls);
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.email' => [
                 'name' => 'e-mail reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    return $this->listJsonldProperty(
-                        $contactPoint($event, 'Reservations'),
-                        'email'
-                    );
+                    return '';
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.telephone' => [
                 'name' => 'telefoon reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    return $this->listJsonldProperty(
-                        $contactPoint($event, 'Reservations'),
-                        'telephone'
-                    );
+                        return '';
                 },
                 'property' => 'contactPoint'
             ],
             'contactPoint.reservations.url' => [
                 'name' => 'online reservaties',
                 'include' => function ($event) use ($contactPoint) {
-                    return $this->listJsonldProperty(
-                        $contactPoint($event, 'Reservations'),
-                        'url'
-                    );
+                    return '';
                 },
                 'property' => 'contactPoint'
             ],
@@ -579,23 +567,12 @@ class TabularDataEventFormatter
 
     /**
      * @param object $event
-     * @param string|null $type
      * @return object
      */
-    private function contactPoint($event, $type = null)
+    private function contactPoint($event)
     {
         if (property_exists($event, 'contactPoint')) {
-            $contactPoints = $event->contactPoint;
-
-            foreach ($contactPoints as $contactPoint) {
-                $contactType = property_exists(
-                    $contactPoint,
-                    'contactType'
-                ) ? $contactPoint->contactType : null;
-                if ($type == $contactType) {
-                    return $contactPoint;
-                }
-            }
+            return $event->contactPoint;
         }
 
         return new \stdClass();

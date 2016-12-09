@@ -6,7 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
+use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
@@ -14,10 +14,8 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
@@ -26,7 +24,6 @@ use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -38,8 +35,6 @@ use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventType;
@@ -47,7 +42,6 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -58,7 +52,6 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\String\String;
@@ -230,46 +223,6 @@ class EventLDProjector extends OfferLDProjector implements
             $eventUpdatedFromUDB2->getEventId(),
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $eventUpdatedFromUDB2->getCdbXml()
-        );
-    }
-
-    /**
-     * @param EventCreatedFromCdbXml $eventCreatedFromCdbXml
-     * @param DomainMessage $domainMessage
-     */
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $cdbXmlNamespaceUri = $eventCreatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
-        $cdbXml = $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString();
-        $eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
-
-        $this->applyEventFromCdbXml(
-            $eventId,
-            $cdbXmlNamespaceUri,
-            $cdbXml,
-            $domainMessage
-        );
-    }
-
-    /**
-     * @param EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
-     * @param DomainMessage $domainMessage
-     */
-    protected function applyEventUpdatedFromCdbXml(
-        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml,
-        DomainMessage $domainMessage
-    ) {
-        $cdbXmlNamespaceUri = $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri()->toNative();
-        $cdbXml = $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString();
-        $eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
-
-        $this->applyEventFromCdbXml(
-            $eventId,
-            $cdbXmlNamespaceUri,
-            $cdbXml,
-            $domainMessage
         );
     }
 
@@ -590,75 +543,12 @@ class EventLDProjector extends OfferLDProjector implements
         }
     }
 
-    /**
-     * @param LabelsMerged $labelsMerged
-     */
-    protected function applyLabelsMerged(LabelsMerged $labelsMerged)
-    {
-        $document = $this->loadDocumentFromRepositoryByItemId($labelsMerged->getEventId()->toNative());
-
-        $eventLd = $document->getBody();
-
-        $labels = isset($eventLd->labels) ? $eventLd->labels : [];
-
-        $currentCollection = LabelCollection::fromStrings($labels);
-
-        $newLabels = $labelsMerged->getLabels();
-
-        $eventLd->labels = $currentCollection->merge($newLabels)->toStrings();
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    protected function applyTranslationApplied(
-        TranslationApplied $translationApplied
-    ) {
-        $document = $this->loadDocumentFromRepositoryByItemId($translationApplied->getEventId()->toNative());
-
-        $eventLd = $document->getBody();
-
-        if ($translationApplied->getTitle() !== null) {
-            $eventLd->name->{$translationApplied->getLanguage()->getCode(
-            )} = $translationApplied->getTitle()->toNative();
-        }
-
-        if ($translationApplied->getLongDescription() !== null) {
-            $eventLd->description->{$translationApplied->getLanguage()->getCode(
-            )} = $translationApplied->getLongDescription()->toNative();
-        }
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
-    /**
-     * Apply the translation deleted event to the event repository.
-     * @param TranslationDeleted $translationDeleted
-     */
-    protected function applyTranslationDeleted(
-        TranslationDeleted $translationDeleted
-    ) {
-        $document = $this->loadDocumentFromRepositoryByItemId($translationDeleted->getEventId()->toNative());
-
-        $eventLd = $document->getBody();
-
-        unset($eventLd->name->{$translationDeleted->getLanguage()->getCode()});
-
-        unset($eventLd->description->{$translationDeleted->getLanguage()->getCode()});
-
-        $this->repository->save($document->withBody($eventLd));
-    }
-
     private function generateSameAs($eventId, $name)
     {
         $eventSlug = $this->slugger->slug($name);
         return array(
             'http://www.uitinvlaanderen.be/agenda/e/' . $eventSlug . '/' . $eventId,
         );
-    }
-
-    public function addDescriptionFilter(StringFilterInterface $filter)
-    {
-        $this->cdbXMLImporter->addDescriptionFilter($filter);
     }
 
     private function getAuthorFromMetadata(Metadata $metadata)

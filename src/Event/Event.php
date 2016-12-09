@@ -6,20 +6,15 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
-use CultuurNet\UDB3\CollaborationData;
-use CultuurNet\UDB3\CollaborationDataCollection;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
-use CultuurNet\UDB3\Event\Events\CollaborationDataAdded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
-use CultuurNet\UDB3\Event\Events\EventUpdatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
@@ -28,7 +23,6 @@ use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -40,43 +34,26 @@ use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Event\Events\TranslationApplied;
-use CultuurNet\UDB3\Event\Events\TranslationDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\ImageCollection;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
-use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
-use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
-use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use CultuurNet\UDB3\Translation;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
 
 class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
     protected $eventId;
-
-    /**
-     * @var Translation[]
-     */
-    protected $translations = [];
-
-    /**
-     * @var CollaborationDataCollection[]
-     *   Array of different collections, keyed by language.
-     */
-    protected $collaborationData;
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -165,149 +142,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function importImagesFromUDB2(ImageCollection $images)
     {
-        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
-    }
-
-    /**
-     * @param EventXmlString $xmlString
-     * @param StringLiteral $eventId
-     * @param StringLiteral $cdbXmlNamespaceUri
-     * @return Event
-     */
-    public static function createFromCdbXml(
-        StringLiteral $eventId,
-        EventXmlString $xmlString,
-        StringLiteral $cdbXmlNamespaceUri
-    ) {
-        $event = new self();
-        $event->apply(
-            new EventCreatedFromCdbXml(
-                $eventId,
-                $xmlString,
-                $cdbXmlNamespaceUri
-            )
-        );
-
-        return $event;
-    }
-
-    /**
-     * @param StringLiteral $eventId
-     * @param EventXmlString $xmlString
-     * @param StringLiteral $cdbXmlNamespaceUri
-     * @return Event
-     */
-    public function updateFromCdbXml(
-        StringLiteral $eventId,
-        EventXmlString $xmlString,
-        StringLiteral $cdbXmlNamespaceUri
-    ) {
-        $this->apply(
-            new EventUpdatedFromCdbXml(
-                $eventId,
-                $xmlString,
-                $cdbXmlNamespaceUri
-            )
-        );
-    }
-
-    /**
-     * @param LabelCollection $labels
-     */
-    public function mergeLabels(LabelCollection $labels)
-    {
-        if (count($labels) === 0) {
-            throw new \InvalidArgumentException(
-                'Argument $labels should contain at least one label'
-            );
-        }
-
-        $this->apply(
-            new LabelsMerged(
-                new StringLiteral($this->eventId),
-                $labels
-            )
-        );
-    }
-
-    /**
-     * @param Language $language
-     * @param StringLiteral|null $title
-     * @param StringLiteral|null $shortDescription
-     * @param StringLiteral|null $longDescription
-     */
-    public function applyTranslation(
-        Language $language,
-        StringLiteral $title = null,
-        StringLiteral $shortDescription = null,
-        StringLiteral $longDescription = null
-    ) {
-        $this->apply(
-            new TranslationApplied(
-                new StringLiteral($this->eventId),
-                $language,
-                $title,
-                $shortDescription,
-                $longDescription
-            )
-        );
-    }
-
-    /**
-     * @param Language $language
-     */
-    public function deleteTranslation(
-        Language $language
-    ) {
-        if (!array_key_exists($language->getCode(), $this->translations)) {
-            return;
-        }
-
-        $this->apply(
-            new TranslationDeleted(
-                new StringLiteral($this->eventId),
-                $language
-            )
-        );
-    }
-
-    /**
-     * @param Language $language
-     * @param CollaborationData $collaborationData
-     * @return bool
-     */
-    protected function isSameCollaborationDataAlreadyPresent(
-        Language $language,
-        CollaborationData $collaborationData
-    ) {
-        if (!isset($this->collaborationData[$language->getCode()])) {
-            return false;
-        }
-
-        $languageCollaborationData = $this->collaborationData[$language->getCode()];
-
-        return $languageCollaborationData->contains($collaborationData);
-    }
-
-    /**
-     * @param Language $language
-     * @param \CultuurNet\UDB3\CollaborationData $collaborationData
-     */
-    public function addCollaborationData(
-        Language $language,
-        CollaborationData $collaborationData
-    ) {
-        if ($this->isSameCollaborationDataAlreadyPresent($language, $collaborationData)) {
-            return;
-        }
-
-        $collaborationDataAdded = new CollaborationDataAdded(
-            new StringLiteral($this->eventId),
-            $language,
-            $collaborationData
-        );
-
-        $this->apply($collaborationDataAdded);
+        $this->apply(new ImagesImportedFromUDB2($this->eventId, $images));
     }
 
     /**
@@ -316,14 +151,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     public function getAggregateRootId()
     {
         return $this->eventId;
-    }
-
-    /**
-     * @return Translation[]
-     */
-    public function getTranslations()
-    {
-        return $this->translations;
     }
 
     /**
@@ -378,14 +205,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
-     * @param type $theme
+     * @param Theme|null $theme
      */
     public function updateMajorInfo(
         Title $title,
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
     }
@@ -406,90 +233,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createImagesUpdatedFromUDB2(ImageCollection $images)
     {
         return new ImagesUpdatedFromUDB2($this->eventId, $images);
-    }
-
-    protected function applyEventCreatedFromCdbXml(
-        EventCreatedFromCdbXml $eventCreatedFromCdbXml
-    ) {
-        $this->eventId = $eventCreatedFromCdbXml->getEventId()->toNative();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventCreatedFromCdbXml->getCdbXmlNamespaceUri(),
-            $eventCreatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
-    }
-
-    protected function applyEventUpdatedFromCdbXml(
-        EventUpdatedFromCdbXml $eventUpdatedFromCdbXml
-    ) {
-        $this->eventId = $eventUpdatedFromCdbXml->getEventId()->toNative();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventUpdatedFromCdbXml->getCdbXmlNamespaceUri(),
-            $eventUpdatedFromCdbXml->getEventXmlString()->toEventXmlString()
-        );
-
-        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
-    }
-
-    protected function applyLabelsMerged(
-        LabelsMerged $labelsMerged
-    ) {
-        $this->labels = $this->labels->merge($labelsMerged->getLabels());
-    }
-
-    protected function applyTranslationApplied(
-        TranslationApplied $translationApplied
-    ) {
-        $this->eventId = $translationApplied->getEventId()->toNative();
-
-        $language = $translationApplied->getLanguage()->getCode();
-        $translation = new Translation(
-            $translationApplied->getLanguage(),
-            $translationApplied->getTitle(),
-            $translationApplied->getShortdescription(),
-            $translationApplied->getLongdescription()
-        );
-
-        if (!array_key_exists($language, $this->translations)) {
-            $this->translations[$language] = $translation;
-        } else {
-            $newTranslation = $this->translations[$language]->mergeTranslation($translation);
-            $this->translations[$language] = $newTranslation;
-        }
-    }
-
-    protected function applyTranslationDeleted(
-        TranslationDeleted $translationDeleted
-    ) {
-        $language = $translationDeleted->getLanguage()->getCode();
-
-        if (array_key_exists($language, $this->translations)) {
-            unset($this->translations[$language]);
-        }
-    }
-
-    protected function applyCollaborationDataAdded(
-        CollaborationDataAdded $collaborationDataAdded
-    ) {
-        $language = $collaborationDataAdded->getLanguage()->getCode();
-        $collaborationData = $collaborationDataAdded->getCollaborationData();
-
-        if (!isset($this->collaborationData[$language])) {
-            $this->collaborationData[$language] = new CollaborationDataCollection();
-        }
-
-        if ($this->collaborationData[$language]->contains($collaborationData)) {
-            return;
-        }
-
-        $this->collaborationData[$language] = $this->collaborationData[$language]
-            ->withKey(
-                $collaborationData->getSubBrand()->toNative(),
-                $collaborationData
-            );
     }
 
     /**

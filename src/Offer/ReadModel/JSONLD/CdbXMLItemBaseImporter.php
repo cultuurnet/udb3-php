@@ -15,20 +15,6 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 class CdbXMLItemBaseImporter
 {
     /**
-     * @var IriGeneratorInterface
-     */
-    private $mediaIriGenerator;
-
-    /**
-     * CdbXMLItemBaseImporter constructor.
-     * @param IriGeneratorInterface $mediaIriGenerator
-     */
-    public function __construct(IriGeneratorInterface $mediaIriGenerator)
-    {
-        $this->mediaIriGenerator = $mediaIriGenerator;
-    }
-
-    /**
      * @param CultureFeed_Cdb_Item_Base $item
      * @param stdClass $jsonLD
      */
@@ -81,7 +67,7 @@ class CdbXMLItemBaseImporter
     }
 
     /**
-     * @param CultureFeed_Cdb_Item_Base $item
+     * @param CultureFeed_Cdb_Item_Base] $item
      * @param stdClass $jsonLD
      */
     public function importExternalId(

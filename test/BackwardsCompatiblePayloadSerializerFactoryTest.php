@@ -7,15 +7,13 @@ use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
-use CultuurNet\UDB3\Event\Events\LabelsMerged;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
-use CultuurNet\UDB3\Label\Events\MadeInvisible;
+use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\UsedLabelsMemory\Created;
 use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
@@ -138,6 +136,57 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
+    public function it_adds_label_name_and_visibility_on_label_added_to_organizer_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_visibility_on_label_added_to_organizer_event_with_label()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer_with_label.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_on_label_added_to_organizer_event_with_visibility()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer_with_visibility.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_modify_label_added_to_organizer_event_with_label_and_visibility()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_added_to_organizer_with_label_and_visibility.json';
+
+        $this->labelRepository->expects($this->never())
+            ->method('getByUuid');
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+        $this->serializer->deserialize($decoded);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_label_name_and_visibility_on_label_removed_from_organizer_event()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_label_was_removed_from_organizer.json';
+        $this->assertOrganizerLabelEventFixed($sampleFile);
+    }
+
+    /**
+     * @test
+     */
     public function it_knows_the_new_namespace_of_event_was_labelled()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_was_labelled_class.json';
@@ -225,34 +274,6 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
-    public function it_converts_obsolete_labels_applied_to_labels_merged()
-    {
-        $serialized = file_get_contents(
-            $this->sampleDir . 'serialized_labels_applied_class.json'
-        );
-        $decoded = json_decode($serialized, true);
-
-        $labelsMerged = $this->serializer->deserialize($decoded);
-
-        $this->assertInstanceOf(LabelsMerged::class, $labelsMerged);
-
-        $this->assertEquals(
-            new LabelsMerged(
-                new String('24b1e348-f27d-4f70-ae1a-871074267c2e'),
-                new LabelCollection(
-                    [
-                        new Label('keyword 1', true),
-                        new Label('keyword 2', false),
-                    ]
-                )
-            ),
-            $labelsMerged
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_knows_the_new_namespace_of_used_keywords_memory_created()
     {
         $sampleFile = $this->sampleDir . 'serialized_used_keywords_memory_created.json';
@@ -302,6 +323,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      * @dataProvider typedIdPlaceEventClassProvider
+     * @param string $eventClassFile
      */
     public function it_should_replace_place_id_on_older_events_with_item_id(
         $eventClassFile
@@ -461,9 +483,24 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
 
-        /** @var AbstractLabelEvent $newEvent */
+        /** @var AbstractEvent $labelEvent */
         $labelEvent = $this->serializer->deserialize($decoded);
 
         $this->assertEquals('2dotstwice', $labelEvent->getName()->toNative());
+    }
+
+    /**
+     * @param string $sampleFile
+     */
+    private function assertOrganizerLabelEventFixed($sampleFile)
+    {
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /** @var LabelEventInterface $labelEvent */
+        $labelEvent = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals('2dotstwice', (string) $labelEvent->getLabel());
+        $this->assertFalse($labelEvent->getLabel()->isVisible());
     }
 }

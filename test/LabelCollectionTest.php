@@ -109,4 +109,27 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedLabels, $labels);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_filter_a_label_collection()
+    {
+        $labelCollection = (new LabelCollection())
+            ->with(new Label('purple', true))
+            ->with(new Label('orange', false))
+            ->with(new Label('green', true));
+
+        $filteredLabelCollection = $labelCollection->filter(
+            function (Label $label) {
+                return $label->isVisible();
+            }
+        );
+
+        $expectedLabelCollection = (new LabelCollection())
+            ->with(new Label('purple', true))
+            ->with(new Label('green', true));
+
+        $this->assertEquals($expectedLabelCollection, $filteredLabelCollection);
+    }
 }

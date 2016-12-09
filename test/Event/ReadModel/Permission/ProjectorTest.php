@@ -11,12 +11,9 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
-use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\Events\EventCreatedFromCdbXml;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\EventXmlString;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
@@ -115,146 +112,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->repository->expects($this->never())
             ->method('markOfferEditableByUser');
-
-        $this->projector->handle($msg);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_permission_to_the_user_identified_by_the_createdby_element_for_events_created_from_cdbxml()
-    {
-        $cdbXmlVersion = '3.2';
-        $eventId = new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b');
-        $createdBy = new StringLiteral('gentonfiles@gmail.com');
-
-        $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
-
-        $event = EventItemFactory::createEventFromCdbXml(
-            \CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion),
-            $cdbXml
-        );
-
-        $cdbXml = new \CultureFeed_Cdb_Default($cdbXmlVersion);
-        $cdbXml->addItem($event);
-
-        $payload = new EventCreatedFromCdbXml(
-            $eventId,
-            new EventXmlString((string)$cdbXml),
-            new StringLiteral(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
-        );
-
-        $msg = DomainMessage::recordNow(
-            $eventId->toNative(),
-            1,
-            new Metadata(['user_id' => 'foo']),
-            $payload
-        );
-
-        $userId = new StringLiteral('123');
-
-        $this->userIdResolver->expects($this->once())
-            ->method('resolveCreatedByToUserId')
-            ->with($createdBy)
-            ->willReturn($userId);
-
-        $this->repository->expects($this->once())
-            ->method('markOfferEditableByUser')
-            ->with(
-                $eventId,
-                $userId
-            );
-
-        $this->projector->handle($msg);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_add_any_permissions_for_events_created_from_cdbxml_with_unresolvable_createdby_value()
-    {
-        $cdbXmlVersion = '3.2';
-        $eventId = new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b');
-        $createdBy = new StringLiteral('gentonfiles@gmail.com');
-
-        $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
-
-        $event = EventItemFactory::createEventFromCdbXml(
-            \CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion),
-            $cdbXml
-        );
-
-        $cdbXml = new \CultureFeed_Cdb_Default($cdbXmlVersion);
-        $cdbXml->addItem($event);
-
-        $payload = new EventCreatedFromCdbXml(
-            $eventId,
-            new EventXmlString((string)$cdbXml),
-            new StringLiteral(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
-        );
-
-        $msg = DomainMessage::recordNow(
-            $eventId->toNative(),
-            1,
-            new Metadata(['user_id' => 'foo']),
-            $payload
-        );
-
-        $this->userIdResolver->expects($this->once())
-            ->method('resolveCreatedByToUserId')
-            ->with($createdBy)
-            ->willReturn(null);
-
-        $this->repository->expects($this->never())
-            ->method('markOfferEditableByUser');
-
-        $this->projector->handle($msg);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_permission_to_the_user_that_submitted_the_cdbxml_for_events_created_from_cdbxml_without_createdby()
-    {
-        $cdbXmlVersion = '3.2';
-        $eventId = new StringLiteral('dcd1ef37-0608-4824-afe3-99124feda64b');
-        $userIdWhileSubmittingCdbXml = new StringLiteral('foo');
-
-        $cdbXml = file_get_contents(__DIR__ . '/../../samples/event_with_photo.cdbxml.xml');
-
-        $event = EventItemFactory::createEventFromCdbXml(
-            \CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion),
-            $cdbXml
-        );
-        $event->setCreatedBy(null);
-
-        $cdbXml = new \CultureFeed_Cdb_Default($cdbXmlVersion);
-        $cdbXml->addItem($event);
-
-        $payload = new EventCreatedFromCdbXml(
-            $eventId,
-            new EventXmlString((string)$cdbXml),
-            new StringLiteral(\CultureFeed_Cdb_Xml::namespaceUriForVersion($cdbXmlVersion))
-        );
-
-        $msg = DomainMessage::recordNow(
-            $eventId->toNative(),
-            1,
-            new Metadata(
-                ['user_id' => $userIdWhileSubmittingCdbXml->toNative()]
-            ),
-            $payload
-        );
-
-        $this->userIdResolver->expects($this->never())
-            ->method('resolveCreatedByToUserId');
-
-        $this->repository->expects($this->once())
-            ->method('markOfferEditableByUser')
-            ->with(
-                $eventId,
-                $userIdWhileSubmittingCdbXml
-            );
 
         $this->projector->handle($msg);
     }

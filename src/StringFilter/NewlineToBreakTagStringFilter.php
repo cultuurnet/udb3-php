@@ -4,6 +4,8 @@ namespace CultuurNet\UDB3\StringFilter;
 
 class NewlineToBreakTagStringFilter implements StringFilterInterface
 {
+    private $closeTag = true;
+
     /**
      * @param string $string
      * @return string
@@ -15,6 +17,15 @@ class NewlineToBreakTagStringFilter implements StringFilterInterface
         }
 
         // nl2br() only appends <br /> after each \n but does not remove the \n
-        return str_replace("\n", "<br />", $string);
+        $breakTag = $this->closeTag ? "<br />" : "<br>";
+        return str_replace("\n", $breakTag, $string);
+    }
+
+    /**
+     * @param bool $closeTag
+     */
+    public function closeTag($closeTag = true)
+    {
+        $this->closeTag = $closeTag;
     }
 }

@@ -18,12 +18,14 @@
       "postalCode": "3020",
       "streetAddress": "Schoolstraat 15"
     },
-    "bookingInfo": {
-      "description": "",
-      "name": "standard price",
-      "price": 0,
-      "priceCurrency": "EUR"
-    },
+    "priceInfo": [
+      {
+        "category": "base",
+        "name": "Basistarief",
+        "price": 0,
+        "priceCurrency": "EUR"
+      }
+    ],
     "terms": [
       {
         "label": "Locatie",

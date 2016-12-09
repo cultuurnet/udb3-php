@@ -208,12 +208,18 @@ class TabularDataEventFormatter
             'bookingInfo.price' => [
                 'name' => 'prijs',
                 'include' => function ($event) {
-                    if (property_exists($event, 'bookingInfo') && is_array($event->bookingInfo)) {
-                        $first = reset($event->bookingInfo);
-                        if (is_object($first) && property_exists($first, 'price')) {
-                            return $first->price;
+                    $basePrice = null;
+
+                    if (property_exists($event, 'priceInfo') && is_array($event->priceInfo)) {
+                        foreach ($event->priceInfo as $price) {
+                            if ($price->category == 'base') {
+                                $basePrice = $price;
+                                break;
+                            }
                         }
                     }
+
+                    return $basePrice ? $basePrice->price : '';
                 },
                 'property' => 'bookingInfo'
             ],

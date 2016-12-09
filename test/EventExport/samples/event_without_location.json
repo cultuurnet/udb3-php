@@ -4,10 +4,10 @@
   "name": {"nl": "Koran, kaliefen en kruistochten - De fundamenten van de islam"},
   "description": {"nl": "De islam is niet meer weg te denken uit onze maatschappij. Aan de hand van boeiende anekdotes doet Urbain Vermeulen de ontstaansgeschiedenis van de godsdienst uit de doeken. Hij verklaart hoe de islam zich verhoudt tot de andere wereldgodsdiensten en legt de oorsprong van de fundamentalistische strekkingen bloot. Dit historische perspectief helpt u om actuele ontwikkelingen beter te begrijpen."},
   "calendarSummary": "ma 02\/03\/15 van 13:30 tot 16:30  ma 09\/03\/15 van 13:30 tot 16:30  ma 16\/03\/15 van 13:30 tot 16:30  ma 23\/03\/15 van 13:30 tot 16:30  ma 30\/03\/15 van 13:30 tot 16:30 ",
-  "bookingInfo": [
+  "priceInfo": [
     {
-      "description": "",
-      "name": "standard price",
+      "category": "base",
+      "name": "Basistarief",
       "price": 0,
       "priceCurrency": "EUR"
     }

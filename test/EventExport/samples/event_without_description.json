@@ -18,10 +18,10 @@
       "streetAddress": "Sint-Jorisplein 20 "
     }
   },
-  "bookingInfo": [
+  "priceInfo": [
     {
-      "description": "",
-      "name": "standard price",
+      "category": "base",
+      "name": "Basistarief",
       "price": 0,
       "priceCurrency": "EUR"
     }

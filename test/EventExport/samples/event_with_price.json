@@ -18,11 +18,17 @@
       "streetAddress": "Sint-Jorisplein 20 "
     }
   },
-  "bookingInfo": [
+  "priceInfo": [
     {
-      "description": "",
-      "name": "standard price",
-      "price": 10.50,
+      "category": "base",
+      "name": "Basistarief",
+      "price": 10.5,
+      "priceCurrency": "EUR"
+    },
+    {
+      "category": "tariff",
+      "name": "Werkloze dodo kwekers",
+      "price": 0,
       "priceCurrency": "EUR"
     }
   ],

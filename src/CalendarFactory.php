@@ -82,15 +82,13 @@ class CalendarFactory implements CalendarFactoryInterface
                 $timestamp = $cdbCalendar->current();
                 $cdbCalendar->next();
 
-                if ($timestamp->getStartTime()) {
-                    $startDateString = $timestamp->getDate() . 'T' . $timestamp->getStartTime();
+                $startTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : '00:00:00';
+                $startDateString = $timestamp->getDate() . 'T' . $startTime;
 
-                    if ($timestamp->getEndTime()) {
-                        $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
-                    } else {
-                        $endTime = $timestamp->getStartTime() ? $timestamp->getStartTime() : '00:00:00';
-                        $endDateString = $timestamp->getDate() . 'T' . $endTime;
-                    }
+                if ($timestamp->getEndTime()) {
+                    $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
+                } else {
+                    $endDateString = $timestamp->getDate() . 'T' . $startTime;
                 }
 
                 $timestamps[] = new Timestamp(

@@ -571,6 +571,53 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_should_import_a_calendar_with_multiple_timestamps_and_different_start_and_end_times()
+    {
+        $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_different_start_and_end_times.xml');
+
+        $this->assertEquals('multiple', $jsonEvent->calendarType);
+        $this->assertEquals('2016-01-30T13:00:00+01:00', $jsonEvent->startDate);
+        $this->assertEquals('2017-11-30T17:00:00+01:00', $jsonEvent->endDate);
+        $this->assertEquals(
+            [
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-01-30T13:00:00+01:00',
+                    'endDate' => '2016-01-30T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-11-30T13:00:00+01:00',
+                    'endDate' => '2016-11-30T17:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-12-03T00:00:00+01:00',
+                    'endDate' => '2016-12-03T00:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-12-09T00:00:00+01:00',
+                    'endDate' => '2016-12-09T00:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2016-12-30T13:00:00+01:00',
+                    'endDate' => '2016-12-30T13:00:00+01:00'
+                ],
+                [
+                    '@type' => 'Event',
+                    'startDate' => '2017-11-30T13:00:00+01:00',
+                    'endDate' => '2017-11-30T17:00:00+01:00'
+                ],
+            ],
+            $jsonEvent->subEvent
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_should_import_a_calendar_with_multiple_timestamps_and_start_times()
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_multiple_timestamps_and_start_times.xml');

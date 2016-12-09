@@ -73,7 +73,10 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         Url $sourceLocation
     ) {
         try {
-            return $this->repository->load($id);
+            $existingMediaObject = $this->repository->load($id);
+            $this->logger->info('Trying to create media with id: ' .$id . ' but it already exists. Using existing Media Object!');
+
+            return $existingMediaObject;
         } catch (AggregateNotFoundException $exception) {
             $this->logger->info('No existing media with id: ' .$id . ' found. Creating a new Media Object!');
         }

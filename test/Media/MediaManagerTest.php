@@ -83,12 +83,17 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             ->method('iri')
             ->willReturn('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
-        $logger
+        $this->repository
             ->expects($this->once())
+            ->method('load')
+            ->willThrowException(new AggregateNotFoundException());
+
+        $logger
+            ->expects($this->exactly(2))
             ->method('info')
-            ->with(
-                'job_info',
-                ['file_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014']
+            ->withConsecutive(
+                [$this->equalTo('No existing media with id: de305d54-75b4-431b-adb2-eb6b9e546014 found. Creating a new Media Object!')],
+                [$this->equalTo('job_info')]
             );
 
         $this->mediaManager->handleUploadImage($command);

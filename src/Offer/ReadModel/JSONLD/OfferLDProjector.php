@@ -3,10 +3,6 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
-use CommerceGuys\Intl\Currency\CurrencyRepository;
-use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
-use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
-use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -731,7 +727,12 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     private function applyImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
     {
         $images = $imagesEvent->getImages();
-        $jsonMediaObjects = array_map([$this->mediaObjectSerializer, 'serialize'], $images->toArray(), ['json-ld']);
+        $jsonMediaObjects = array_map(
+            function (Image $image) {
+                return $this->mediaObjectSerializer->serialize($image, 'json-ld');
+            },
+            $images->toArray()
+        );
         $mainImage = $images->getMain();
 
         unset($offerLd->mediaObject, $offerLd->image);

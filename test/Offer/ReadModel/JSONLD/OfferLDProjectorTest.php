@@ -1061,7 +1061,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
     public function imageCollectionDataProvider()
     {
-        $image = new Image(
+        $coverPicture = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/jpg'),
             new StringLiteral('my pic'),
@@ -1069,9 +1069,17 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             Url::fromNative('http://foo.bar/media/my_pic.jpg')
         );
 
+        $selfie = new Image(
+            new UUID('e56e8eb6-dcd7-47e7-8106-8a149f1d241b'),
+            new MIMEType('image/jpg'),
+            new StringLiteral('my favorite selfie'),
+            new StringLiteral('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/img_182.jpg')
+        );
+
         return [
             'single image' => [
-                'imageCollection' => ImageCollection::fromArray([$image]),
+                'imageCollection' => ImageCollection::fromArray([$coverPicture, $selfie]),
                 'expectedMediaObjects' => [
                     (object)[
                         '@type' => 'schema:ImageObject',
@@ -1079,6 +1087,14 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
                         'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
                         'description' => 'my pic',
+                        'copyrightHolder' => 'Dirk Dirkington',
+                    ],
+                    (object)[
+                        '@type' => 'schema:ImageObject',
+                        '@id' => 'http://example.com/entity/e56e8eb6-dcd7-47e7-8106-8a149f1d241b',
+                        'contentUrl' => 'http://foo.bar/media/img_182.jpg',
+                        'thumbnailUrl' => 'http://foo.bar/media/img_182.jpg',
+                        'description' => 'my favorite selfie',
                         'copyrightHolder' => 'Dirk Dirkington',
                     ]
                 ]

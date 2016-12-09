@@ -936,6 +936,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'description_brussels_buzzing.txt',
                 '3.3',
             ),
+            'newlines, leading & trailing whitespace are removed from shortdescription' => array(
+                'event_54695180-3ff5-4db0-a020-d54b5bdc08e9.cdbxml.xml',
+                'description_54695180-3ff5-4db0-a020-d54b5bdc08e9.txt',
+                '3.3'
+            ),
         );
     }
 

@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
@@ -16,18 +15,16 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
-use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Offer\Place\Image\ImagesImportedFromUDB2;
-use CultuurNet\UDB3\Offer\Place\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Place\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;

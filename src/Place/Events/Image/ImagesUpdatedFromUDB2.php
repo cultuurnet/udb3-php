@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Offer\Place\Image;
+namespace CultuurNet\UDB3\Place\Events\Image;
 
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 

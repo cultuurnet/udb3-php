@@ -19,6 +19,8 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
@@ -373,8 +375,8 @@ class EventTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
@@ -419,8 +421,8 @@ class EventTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
@@ -468,8 +470,8 @@ class EventTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 

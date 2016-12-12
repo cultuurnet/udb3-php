@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
@@ -17,8 +19,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/jpg'),
-            new String('my pic'),
-            new String('Dirk Dirkington'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/my_pic.jpg')
         );
 
@@ -50,8 +52,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         $expectedImage = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/jpg'),
-            new String('my pic'),
-            new String('Dirk Dirkington'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/my_pic.jpg')
         );
 

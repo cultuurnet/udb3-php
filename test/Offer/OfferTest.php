@@ -7,6 +7,8 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
@@ -68,8 +70,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $this->image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/gif'),
-            new StringLiteral('my favorite giphy gif'),
-            new StringLiteral('Bert Ramakers'),
+            new Description('my favorite giphy gif'),
+            new CopyrightHolder('Bert Ramakers'),
             Url::fromNative('http://foo.bar/media/my_favorite_giphy_gif.gif')
         );
     }
@@ -150,8 +152,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $anotherImage = new Image(
             new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
             new MIMEType('image/jpeg'),
-            new StringLiteral('my best selfie'),
-            new StringLiteral('Dirk Dirkington'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/my_best_selfie.gif')
         );
         $image = $this->image;
@@ -187,15 +189,15 @@ class OfferTest extends AggregateRootScenarioTestCase
         $oldestImage = new Image(
             new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
             new MIMEType('image/gif'),
-            new StringLiteral('my best selfie'),
-            new StringLiteral('Dirk Dirkington'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/my_best_selfie.gif')
         );
         $newerImage = new Image(
             new UUID('fdfac613-61f9-43ac-b1a9-c75f9fd58386'),
             new MIMEType('image/jpeg'),
-            new StringLiteral('pic'),
-            new StringLiteral('Henk'),
+            new Description('pic'),
+            new CopyrightHolder('Henk'),
             Url::fromNative('http://foo.bar/media/pic.jpeg')
         );
         $originalMainImage = $this->image;
@@ -264,8 +266,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $newMainImage = new Image(
             new UUID('fdfac613-61f9-43ac-b1a9-c75f9fd58386'),
             new MIMEType('image/jpeg'),
-            new StringLiteral('pic'),
-            new StringLiteral('Henk'),
+            new Description('pic'),
+            new CopyrightHolder('Henk'),
             Url::fromNative('http://foo.bar/media/pic.jpeg')
         );
 
@@ -761,8 +763,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/jpg'),
-            new StringLiteral('my pic'),
-            new StringLiteral('Dirk Dirkingn'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkingn'),
             Url::fromNative('http://foo.bar/media/my_pic.jpg')
         );
 

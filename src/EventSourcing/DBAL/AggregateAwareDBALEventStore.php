@@ -18,7 +18,7 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Version;
 use Rhumsaa\Uuid\Uuid;
 
-class AggregateAwareEventStore implements EventStoreInterface
+class AggregateAwareDBALEventStore implements EventStoreInterface
 {
     /**
      * @var Connection

@@ -736,8 +736,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $mainImage = $images->getMain();
 
         unset($offerLd->mediaObject, $offerLd->image);
-        empty($jsonMediaObjects) ?: $offerLd->mediaObject = $jsonMediaObjects;
-        !isset($mainImage) ?: $offerLd->image = (string) $mainImage->getSourceLocation();
+
+        if (!empty($jsonMediaObjects)) {
+            $offerLd->mediaObject = $jsonMediaObjects;
+        }
+
+        if (isset($mainImage)) {
+            $offerLd->image = (string) $mainImage->getSourceLocation();
+        }
     }
 
     /**

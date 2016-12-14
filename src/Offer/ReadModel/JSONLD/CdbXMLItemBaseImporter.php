@@ -67,7 +67,7 @@ class CdbXMLItemBaseImporter
     }
 
     /**
-     * @param CultureFeed_Cdb_Item_Base] $item
+     * @param CultureFeed_Cdb_Item_Base $item
      * @param stdClass $jsonLD
      */
     public function importExternalId(

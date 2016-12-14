@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media\Properties;
 
+use InvalidArgumentException;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\String\String as StringLiteral;
 
@@ -13,8 +14,10 @@ class CopyrightHolder extends StringLiteral
             throw new InvalidNativeArgumentException($value, array('string'));
         }
 
-        $paddedValue = str_pad($value, 2, '.');
+        if (strlen($value) < 2) {
+            throw new InvalidArgumentException('The name of a copyright holder should be at least 2 characters');
+        }
 
-        return parent::__construct(substr($paddedValue, 0, 250));
+        return parent::__construct(substr($value, 0, 250));
     }
 }

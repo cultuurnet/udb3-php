@@ -8,7 +8,9 @@ use ValueObjects\String\String;
 class MIMEType extends String
 {
     protected static $supportedSubtypes = [
-        'jpeg' => 'image'
+        'jpeg' => 'image',
+        'png' => 'image',
+        'gif' => 'image'
     ];
 
     /**

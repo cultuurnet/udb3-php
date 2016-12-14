@@ -7,6 +7,8 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -157,8 +159,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         $image = new Image(
             $mediaObject->getMediaObjectId(),
             $mediaObject->getMimeType(),
-            $mediaObject->getDescription(),
-            $mediaObject->getCopyrightHolder(),
+            new Description((string) $mediaObject->getDescription()),
+            new CopyrightHolder((string) $mediaObject->getCopyrightHolder()),
             $mediaObject->getSourceLocation()
         );
 

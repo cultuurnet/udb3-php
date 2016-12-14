@@ -2,10 +2,9 @@
 
 namespace CultuurNet\UDB3\Media\Properties;
 
-use InvalidArgumentException;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
-class MIMEType extends String
+class MIMEType extends StringLiteral
 {
     protected static $supportedSubtypes = [
         'jpeg' => 'image',
@@ -16,6 +15,8 @@ class MIMEType extends String
     /**
      * @param string $subtypeString
      *
+     * @throws UnsupportedMIMETypeException
+     *
      * @return MIMEType
      */
     public static function fromSubtype($subtypeString)
@@ -23,7 +24,7 @@ class MIMEType extends String
         $type = self::$supportedSubtypes[$subtypeString];
 
         if (!$type) {
-            throw new InvalidArgumentException($subtypeString . ' is not supported!');
+            throw new UnsupportedMIMETypeException($subtypeString . ' is not supported!');
         }
 
         return new static($type . '/' . $subtypeString);

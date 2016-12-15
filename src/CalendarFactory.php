@@ -91,9 +91,9 @@ class CalendarFactory implements CalendarFactoryInterface
                     $endDateString = $timestamp->getDate() . 'T' . $startTime;
                 }
 
-                $timestamps[] = new Timestamp(
-                    DateTimeFactory::dateTimeFromDateString($startDateString),
-                    DateTimeFactory::dateTimeFromDateString($endDateString)
+                $timestamps[] = $this->createTimestamp(
+                    $startDateString,
+                    $endDateString
                 );
             }
         }
@@ -115,6 +115,22 @@ class CalendarFactory implements CalendarFactoryInterface
         if ($weekSchema) {
             $openingHours = $this->createOpeningHoursFromWeekScheme($weekSchema);
             $openingHoursAsArray = $this->openingHoursToArray($openingHours);
+        }
+
+        // End date might be before start date in cdbxml when event takes place
+        // between e.g. 9 PM and 3 AM (the next day). UDB3 does not support this
+        // and gracefully ignores the end time.
+        //
+        // Example cdbxml:
+        //
+        // <timestamp>
+        //   <date>2016-12-16</date>
+        //   <timestart>21:00:00</timestart>
+        //   <timeend>05:00:00</timeend>
+        // </timestamp>
+        //
+        if ($endDate < $startDate) {
+            $endDate = $startDate;
         }
 
         //
@@ -240,5 +256,36 @@ class CalendarFactory implements CalendarFactoryInterface
         }
 
         return $mergedOpeningHours;
+    }
+
+    /**
+     * @param string $startDateString
+     * @param string $endDateString
+     * @return Timestamp
+     */
+    private function createTimestamp(
+        $startDateString,
+        $endDateString
+    ) {
+        $startDate = DateTimeFactory::dateTimeFromDateString($startDateString);
+        $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
+
+        // End date might be before start date in cdbxml when event takes place
+        // between e.g. 9 PM and 3 AM (the next day). UDB3 does not support this
+        // and gracefully ignores the end time.
+        //
+        // Example cdbxml:
+        //
+        // <timestamp>
+        //   <date>2016-12-16</date>
+        //   <timestart>21:00:00</timestart>
+        //   <timeend>05:00:00</timeend>
+        // </timestamp>
+        //
+        if ($endDate < $startDate) {
+            $endDate = $startDate;
+        }
+
+        return new Timestamp($startDate, $endDate);
     }
 }

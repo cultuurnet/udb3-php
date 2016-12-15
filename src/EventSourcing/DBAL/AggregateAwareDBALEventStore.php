@@ -213,11 +213,18 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
     private function prepareLoadStatement()
     {
         if (null === $this->loadStatement) {
-            $query = 'SELECT uuid, playhead, metadata, payload, recorded_on
-                FROM ' . $this->tableName . '
-                WHERE uuid = :uuid
-                ORDER BY playhead ASC';
-            $this->loadStatement = $this->connection->prepare($query);
+            $queryBuilder = $this->connection->createQueryBuilder();
+
+            $queryBuilder->select(
+                ['uuid', 'playhead', 'metadata', 'payload', 'recorded_on']
+            )
+                ->from($this->tableName)
+                ->where('uuid = :uuid')
+                ->orderBy('playhead', 'ASC');
+
+            $this->loadStatement = $this->connection->prepare(
+                $queryBuilder->getSQL()
+            );
         }
 
         return $this->loadStatement;

@@ -193,7 +193,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
      */
     private function domainMessageToRow(DomainMessage $domainMessage)
     {
-       return [
+        return [
            'uuid' => $domainMessage->getId(),
            'playhead' => $domainMessage->getPlayhead(),
            'metadata' => json_encode($this->metadataSerializer->serialize($domainMessage->getMetadata())),
@@ -201,7 +201,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
            'recorded_on' => $domainMessage->getRecordedOn()->toString(),
            'type' => $domainMessage->getType(),
            'aggregate_type' => $this->aggregateType
-       ];
+        ];
     }
 
     /**

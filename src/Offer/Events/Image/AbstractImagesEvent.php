@@ -36,8 +36,7 @@ abstract class AbstractImagesEvent extends AbstractEvent
      */
     public function serialize()
     {
-        return parent::serialize() + array(
-            'main_image' => $this->images->getMain()->serialize(),
+        $serializedData =  parent::serialize() + array(
             'images' => array_map(
                 function (Image $image) {
                     return $image->serialize();
@@ -45,6 +44,13 @@ abstract class AbstractImagesEvent extends AbstractEvent
                 $this->images->toArray()
             )
         );
+
+        $mainImage = $this->images->getMain();
+        if ($mainImage) {
+            $serializedData[] = $mainImage->serialize();
+        }
+
+        return $serializedData;
     }
 
     /**

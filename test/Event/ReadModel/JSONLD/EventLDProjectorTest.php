@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -13,6 +16,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -32,6 +36,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
@@ -67,6 +72,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     private $iriGenerator;
 
     /**
+     * @var IriGeneratorInterface
+     */
+    private $mediaIriGenerator;
+
+    /**
      * @var CdbXMLEventFactory
      */
     private $cdbXMLEventFactory;
@@ -85,6 +95,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      * @var IriOfferIdentifierFactoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $iriOfferIdentifierFactory;
+
+    /**
+     * @var CdbXMLImporter|PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $cdbXMLImporter;
 
     /**
      * Constructs a test case with the given name.
@@ -125,9 +140,22 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             }
         );
 
+        $this->mediaIriGenerator = new CallableIriGenerator(function (CultureFeed_Cdb_Data_File $file) {
+            return 'http://example.com/media/' . $file->getFileName();
+        });
+
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
         $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->cdbXMLImporter = new CdbXMLImporter(
+            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
+            new EventCdbIdExtractor(),
+            new PriceDescriptionParser(
+                new NumberFormatRepository(),
+                new CurrencyRepository()
+            ),
+            new CalendarFactory()
+        );
 
         $this->projector = new EventLDProjector(
             $this->documentRepository,
@@ -137,8 +165,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->organizerService,
             $this->serializer,
             $this->iriOfferIdentifierFactory,
-            new EventCdbIdExtractor(),
-            new CalendarFactory()
+            $this->cdbXMLImporter
         );
     }
 
@@ -628,57 +655,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($event, $event->getEventId());
 
         $this->assertObjectNotHasAttribute('image', $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_an_image_property_when_cdbxml_has_a_photo()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_with_photo.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
-            $body->image
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_add_the_main_udb2_imageweb_as_an_image_property_when_there_is_no_main_photo()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_with_main_imageweb.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141109/a684be82-525a-462a-955f-b64745c16c56.jpg',
-            $body->image
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_add_the_oldest_picture_as_an_image_property_when_there_is_no_main_picture()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_main_picture.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
-            $body->image
-        );
     }
 
     /**

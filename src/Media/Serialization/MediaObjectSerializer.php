@@ -3,12 +3,11 @@
 namespace CultuurNet\UDB3\Media\Serialization;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
 use Symfony\Component\Serializer\SerializerInterface;
-use ValueObjects\Web\Url;
 
 class MediaObjectSerializer implements SerializerInterface
 {
@@ -27,6 +26,12 @@ class MediaObjectSerializer implements SerializerInterface
         $this->iriGenerator = $iriGenerator;
     }
 
+    /**
+     * @param MediaObject|Image $mediaObject
+     * @param string $format
+     * @param array $context
+     * @return array
+     */
     public function serialize($mediaObject, $format, array $context = array())
     {
         if (!isset($format) || $format !== 'json-ld') {

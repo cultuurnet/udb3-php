@@ -15,6 +15,8 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;
@@ -232,8 +234,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $description = String::fromNative('Some description.');
-        $copyrightHolder = String::fromNative('Dirk Dirkington');
+        $description = new Description('Some description.');
+        $copyrightHolder = new CopyrightHolder('Dirk Dirkington');
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 

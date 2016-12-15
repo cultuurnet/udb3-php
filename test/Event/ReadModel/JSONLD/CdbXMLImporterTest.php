@@ -8,6 +8,7 @@ use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
+use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -36,8 +37,12 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $mediaIriGenerator = new CallableIriGenerator(function ($file) {
+            return 'http://du.de/media/87e8b421-5e87-4fae-bb3b-2c9119852a11';
+        });
+
         $this->importer = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
+            new CdbXMLItemBaseImporter($mediaIriGenerator),
             new EventCdbIdExtractor(),
             new PriceDescriptionParser(
                 new NumberFormatRepository(),

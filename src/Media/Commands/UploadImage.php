@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Media\Commands;
 
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 
 class UploadImage
 {
@@ -14,12 +14,12 @@ class UploadImage
     protected $fileId;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $description;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $copyrightHolder;
 
@@ -29,22 +29,22 @@ class UploadImage
     protected $mimeType;
 
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $filePath;
     /**
      * @param UUID $fileId
      * @param MIMEType $mimeType
-     * @param String $description
-     * @param String $copyrightHolder
-     * @param String $filePath
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
+     * @param StringLiteral $filePath
      */
     public function __construct(
         UUID $fileId,
         MIMEType $mimeType,
-        String $description,
-        String $copyrightHolder,
-        String $filePath
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
+        StringLiteral $filePath
     ) {
         $this->fileId = $fileId;
         $this->description = $description;
@@ -62,7 +62,7 @@ class UploadImage
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getDescription()
     {
@@ -70,7 +70,7 @@ class UploadImage
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getCopyrightHolder()
     {
@@ -86,7 +86,7 @@ class UploadImage
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getFilePath()
     {

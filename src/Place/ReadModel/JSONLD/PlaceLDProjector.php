@@ -6,10 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\UDB3\CalendarFactory;
-use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -20,7 +17,8 @@ use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
-use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
+use CultuurNet\UDB3\Offer\Place\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Place\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -63,33 +61,43 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
     /**
+     * @var CdbXMLImporter
+     */
+    protected $cdbXMLImporter;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
-     * @param CalendarFactoryInterface $calendarFactory
+     * @param CdbXMLImporter $cdbXMLImporter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
-        CalendarFactoryInterface $calendarFactory
+        CdbXMLImporter $cdbXMLImporter
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
-            $mediaObjectSerializer,
-            new EventCdbIdExtractor(),
-            $calendarFactory
+            $mediaObjectSerializer
         );
 
         $this->slugger = new CulturefeedSlugger();
-        $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
-            $calendarFactory
-        );
+        $this->cdbXMLImporter = $cdbXMLImporter;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
     }
 
     /**

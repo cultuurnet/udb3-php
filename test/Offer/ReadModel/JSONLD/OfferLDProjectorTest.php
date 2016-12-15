@@ -13,11 +13,16 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
@@ -437,8 +442,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $expectedMediaObjects = [
@@ -500,8 +505,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image1 = new Image(
             new UUID('de305d54-ddde-eddd-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('my best pokerface'),
-            new StringLiteral('Hans Langucci'),
+            new Description('my best pokerface'),
+            new CopyrightHolder('Hans Langucci'),
             Url::fromNative(
                 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png'
             )
@@ -510,8 +515,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image2 = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative(
                 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'
             )
@@ -599,8 +604,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $initialDocument = new JsonDocument(
@@ -635,8 +640,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $initialDocument = new JsonDocument(
@@ -672,8 +677,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $initialDocument = new JsonDocument(
@@ -702,8 +707,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $initialDocument = new JsonDocument(
@@ -750,8 +755,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $selectedMainImage = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new StringLiteral('sexy ladies without clothes'),
-            new StringLiteral('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $initialDocument = new JsonDocument(
@@ -1010,6 +1015,93 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'offer flagged as inappropriate' => [
                 'itemId' => $itemId,
                 'event' => new FlaggedAsInappropriate($itemId)
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_project_imported_udb2_media_files_as_media_objects(
+        ImageCollection $images,
+        $expectedMediaObjects
+    ) {
+        $itemId = UUID::generateAsString();
+        $imagesImportedEvent = new ImagesImportedFromUDB2($itemId, $images);
+
+        $importedItem = $this->project($imagesImportedEvent, $itemId);
+        $this->assertEquals($expectedMediaObjects, $importedItem->mediaObject);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_project_updated_udb2_media_files_as_media_objects(
+        ImageCollection $images,
+        $expectedMediaObjects
+    ) {
+        $itemId = UUID::generateAsString();
+        $imagesImportedEvent = new ImagesUpdatedFromUDB2($itemId, $images);
+
+        $importedItem = $this->project($imagesImportedEvent, $itemId);
+        $this->assertEquals($expectedMediaObjects, $importedItem->mediaObject);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_project_the_main_udb2_picture_as_image(ImageCollection $images)
+    {
+        $itemId = UUID::generateAsString();
+        $imagesImportedEvent = new ImagesImportedFromUDB2($itemId, $images);
+        $expectedImage = 'http://foo.bar/media/my_pic.jpg';
+
+        $importedItem = $this->project($imagesImportedEvent, $itemId);
+        $this->assertEquals($expectedImage, $importedItem->image);
+    }
+
+    public function imageCollectionDataProvider()
+    {
+        $coverPicture = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+        );
+
+        $selfie = new Image(
+            new UUID('e56e8eb6-dcd7-47e7-8106-8a149f1d241b'),
+            new MIMEType('image/jpg'),
+            new Description('my favorite selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/img_182.jpg')
+        );
+
+        return [
+            'single image' => [
+                'imageCollection' => ImageCollection::fromArray([$coverPicture, $selfie]),
+                'expectedMediaObjects' => [
+                    (object)[
+                        '@type' => 'schema:ImageObject',
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
+                        'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
+                        'description' => 'my pic',
+                        'copyrightHolder' => 'Dirk Dirkington',
+                    ],
+                    (object)[
+                        '@type' => 'schema:ImageObject',
+                        '@id' => 'http://example.com/entity/e56e8eb6-dcd7-47e7-8106-8a149f1d241b',
+                        'contentUrl' => 'http://foo.bar/media/img_182.jpg',
+                        'thumbnailUrl' => 'http://foo.bar/media/img_182.jpg',
+                        'description' => 'my favorite selfie',
+                        'copyrightHolder' => 'Dirk Dirkington',
+                    ]
+                ]
             ]
         ];
     }

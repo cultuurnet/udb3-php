@@ -3,11 +3,10 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 /**
@@ -32,14 +31,14 @@ class MediaObject extends EventSourcedAggregateRoot
     /**
      * Description of the media object.
      *
-     * @var string
+     * @var StringLiteral
      */
     protected $description;
 
     /**
      * Copyright info.
      *
-     * @var string
+     * @var StringLiteral
      */
     protected $copyrightHolder;
 
@@ -52,8 +51,8 @@ class MediaObject extends EventSourcedAggregateRoot
     /**
      * @param UUID $id
      * @param MIMEType $mimeType
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @param Url $sourceLocation
      *
      * @return MediaObject
@@ -61,8 +60,8 @@ class MediaObject extends EventSourcedAggregateRoot
     public static function create(
         UUID $id,
         MIMEType $mimeType,
-        String $description,
-        String $copyrightHolder,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
         Url $sourceLocation
     ) {
         $mediaObject = new self();
@@ -97,7 +96,7 @@ class MediaObject extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return string
+     * @return StringLiteral
      */
     public function getDescription()
     {
@@ -105,7 +104,7 @@ class MediaObject extends EventSourcedAggregateRoot
     }
 
     /**
-     * @return string
+     * @return StringLiteral
      */
     public function getCopyrightHolder()
     {

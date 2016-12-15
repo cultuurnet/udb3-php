@@ -3,21 +3,15 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
-use CommerceGuys\Intl\Currency\CurrencyRepository;
-use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
-use CultuurNet\UDB3\CalendarFactoryInterface;
-use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
-use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLImporter;
-use CultuurNet\UDB3\Event\ReadModel\JSONLD\CdbXMLLongDescriptionFilter;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
@@ -33,6 +27,9 @@ use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageRemoved;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesEvent;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
@@ -73,11 +70,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $slugger;
 
     /**
-     * @var CdbXMLImporter
-     */
-    protected $cdbXMLImporter;
-
-    /**
      * @var SerializerInterface
      */
     protected $mediaObjectSerializer;
@@ -87,31 +79,17 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
-     * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
-     * @param CalendarFactoryInterface $calendarFactory
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer,
-        EventCdbIdExtractorInterface $eventCdbIdExtractor,
-        CalendarFactoryInterface $calendarFactory
+        SerializerInterface $mediaObjectSerializer
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->slugger = new CulturefeedSlugger();
-
-        $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
-            $eventCdbIdExtractor,
-            new PriceDescriptionParser(
-                new NumberFormatRepository(),
-                new CurrencyRepository()
-            ),
-            $calendarFactory
-        );
 
         $this->mediaObjectSerializer = $mediaObjectSerializer;
     }
@@ -263,6 +241,16 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getFlaggedAsInappropriateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImagesImportedFromUdb2ClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImagesUpdatedFromUdb2ClassName();
 
     /**
      * @param AbstractLabelAdded $labelAdded
@@ -713,6 +701,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param callable $transformation
      *  a transformation that you want applied to the offer-ld document
      *  the first parameter passed to the callback will be the document body
+     *  the second is the domain event
      */
     private function applyEventTransformation(AbstractEvent $event, callable $transformation)
     {
@@ -720,9 +709,41 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
 
-        $transformation($offerLd);
+        $transformation($offerLd, $event);
 
         $this->repository->save($document->withBody($offerLd));
+    }
+
+    protected function applyImagesImportedFromUdb2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
+    {
+        $this->applyEventTransformation($imagesImportedFromUDB2, [$this, 'applyImagesEvent']);
+    }
+
+    protected function applyImagesUpdatedFromUdb2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
+    {
+        $this->applyEventTransformation($imagesUpdatedFromUDB2, [$this, 'applyImagesEvent']);
+    }
+
+    private function applyImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
+    {
+        $images = $imagesEvent->getImages();
+        $jsonMediaObjects = array_map(
+            function (Image $image) {
+                return $this->mediaObjectSerializer->serialize($image, 'json-ld');
+            },
+            $images->toArray()
+        );
+        $mainImage = $images->getMain();
+
+        unset($offerLd->mediaObject, $offerLd->image);
+
+        if (!empty($jsonMediaObjects)) {
+            $offerLd->mediaObject = $jsonMediaObjects;
+        }
+
+        if (isset($mainImage)) {
+            $offerLd->image = (string) $mainImage->getSourceLocation();
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
+use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -21,6 +22,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
@@ -66,6 +68,16 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $address;
 
     /**
+     * @var CdbXMLImporter
+     */
+    private $cdbXMLImporter;
+
+    /**
+     * @var IriGeneratorInterface
+     */
+    private $mediaIriGenerator;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -92,12 +104,21 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
+        $this->mediaIriGenerator = new CallableIriGenerator(function (CultureFeed_Cdb_Data_File $file) {
+            return 'http://example.com/media/' . $file->getFileName();
+        });
+
+        $this->cdbXMLImporter = new CdbXMLImporter(
+            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
+            new CalendarFactory()
+        );
+
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
-            new CalendarFactory()
+            $this->cdbXMLImporter
         );
 
         $street = new Street('Kerkstraat 69');
@@ -304,51 +325,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_adds_an_image_property_when_cdbxml_has_a_photo()
-    {
-        $event = $this->placeImportedFromUDB2('place_with_image.cdbxml.xml');
-
-        $body = $this->project($event, $event->getActorId());
-
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
-            $body->image
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_add_the_main_udb2_imageweb_as_an_image_property_when_there_is_no_main_photo()
-    {
-        $place = $this->placeImportedFromUDB2('place_with_main_imageweb.cdbxml.xml');
-
-        $body = $this->project($place, $place->getActorId());
-
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141109/a684be82-525a-462a-955f-b64745c16c56.jpg',
-            $body->image
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_add_the_oldest_picture_as_an_image_property_when_there_is_no_main_picture()
-    {
-        $place = $this->placeImportedFromUDB2('place_without_main_picture.cdbxml.xml');
-
-        $body = $this->project($place, $place->getActorId());
-
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
-            $body->image
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_imports_place_events_from_udb2()
     {
         $cdbXml = file_get_contents(
@@ -387,12 +363,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_updates_a_place_from_udb2()
     {
-        $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
+        $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_with_short_description.cdbxml.xml');
         $actorId = $placeImportedFromUdb2->getActorId();
 
-        $cdbXml = file_get_contents(
-            __DIR__ . '/place_with_image.cdbxml.xml'
-        );
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_short_and_long_description.cdbxml.xml');
         $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
             $actorId,
             $cdbXml,
@@ -401,10 +375,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
-            $body->image
-        );
+        $this->assertEquals('Korte beschrijving.<br/>Lange beschrijving.', $body->description->nl);
     }
 
     /**
@@ -412,15 +383,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_updates_a_place_from_udb2_when_it_has_been_deleted_in_udb3()
     {
-        $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_without_image.cdbxml.xml');
+        $placeImportedFromUdb2 = $this->placeImportedFromUDB2('place_with_short_description.cdbxml.xml');
         $actorId = $placeImportedFromUdb2->getActorId();
 
         $placeDeleted = new PlaceDeleted($actorId);
         $this->project($placeDeleted, $actorId, null, null, false);
 
-        $cdbXml = file_get_contents(
-            __DIR__ . '/place_with_image.cdbxml.xml'
-        );
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_short_and_long_description.cdbxml.xml');
         $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
             $actorId,
             $cdbXml,
@@ -429,10 +398,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
-        $this->assertEquals(
-            '//media.uitdatabank.be/20141105/ed466c72-451f-4079-94d3-4ab2e0be7b15.jpg',
-            $body->image
-        );
+        $this->assertEquals('Korte beschrijving.<br/>Lange beschrijving.', $body->description->nl);
+
     }
 
     /**

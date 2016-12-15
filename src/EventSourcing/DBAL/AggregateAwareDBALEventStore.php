@@ -9,14 +9,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventStore\DBALEventStoreException;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventStore\EventStreamNotFoundException;
-use Broadway\EventStore\Exception\InvalidIdentifierException;
 use Broadway\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Version;
-use Rhumsaa\Uuid\Uuid;
 
 class AggregateAwareDBALEventStore implements EventStoreInterface
 {
@@ -51,38 +48,24 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
     private $aggregateType;
 
     /**
-     * @var bool
-     */
-    private $useBinary;
-
-    /**
      * @param Connection $connection
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
      * @param string $aggregateType
-     * @param bool $useBinary
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
         $tableName,
-        $aggregateType,
-        $useBinary = false
+        $aggregateType
     ) {
         $this->connection         = $connection;
         $this->payloadSerializer  = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName          = $tableName;
         $this->aggregateType      = $aggregateType;
-        $this->useBinary          = (bool) $useBinary;
-
-        if ($this->useBinary && Version::compare('2.5.0') >= 0) {
-            throw new \InvalidArgumentException(
-                'The Binary storage is only available with Doctrine DBAL >= 2.5.0'
-            );
-        }
     }
 
     /**
@@ -91,14 +74,11 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
     public function load($id)
     {
         $statement = $this->prepareLoadStatement();
-        $statement->bindValue('uuid', $this->convertIdentifierToStorageValue($id));
+        $statement->bindValue('uuid', $id);
         $statement->execute();
 
         $events = array();
         while ($row = $statement->fetch()) {
-            if ($this->useBinary) {
-                $row['uuid'] = $this->convertStorageValueToIdentifier($row['uuid']);
-            }
             $events[] = $this->deserializeEvent($row);
         }
 
@@ -114,26 +94,20 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
      */
     public function append($id, DomainEventStreamInterface $eventStream)
     {
-        // noop to ensure that an error will be thrown early if the ID
-        // is not something that can be converted to a string. If we
-        // let this move on without doing this DBAL will eventually
-        // give us a hard time but the true reason for the problem
-        // will be obfuscated.
-        $id = (string) $id;
+        // The original Broadway implementation did only check the type of $id.
+        // It is better to test all uuids inside the event stream.
+        $this->guardStream($eventStream);
 
-        $this->connection->beginTransaction();
-
-        try {
-            foreach ($eventStream as $domainMessage) {
-                $this->insertMessage($this->connection, $domainMessage);
+        // Make the transaction more robust by using the transactional statement.
+        $this->connection->transactional(function (Connection $connection) use ($eventStream) {
+            try {
+                foreach ($eventStream as $domainMessage) {
+                    $this->insertMessage($connection, $domainMessage);
+                }
+            } catch (DBALException $exception) {
+                throw DBALEventStoreException::create($exception);
             }
-
-            $this->connection->commit();
-        } catch (DBALException $exception) {
-            $this->connection->rollback();
-
-            throw DBALEventStoreException::create($exception);
-        }
+        });
     }
 
     /**
@@ -143,7 +117,7 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
     private function insertMessage(Connection $connection, DomainMessage $domainMessage)
     {
         $data = array(
-            'uuid'           => $this->convertIdentifierToStorageValue((string) $domainMessage->getId()),
+            'uuid'           => (string) $domainMessage->getId(),
             'playhead'       => $domainMessage->getPlayhead(),
             'metadata'       => json_encode($this->metadataSerializer->serialize($domainMessage->getMetadata())),
             'payload'        => json_encode($this->payloadSerializer->serialize($domainMessage->getPayload())),
@@ -175,25 +149,10 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
     {
         $schema = new Schema();
 
-        $uuidColumnDefinition = array(
-            'type'   => 'guid',
-            'params' => array(
-                'length' => 36,
-            ),
-        );
-
-        if ($this->useBinary) {
-            $uuidColumnDefinition['type']   = 'binary';
-            $uuidColumnDefinition['params'] = array(
-                'length' => 16,
-                'fixed'  => true,
-            );
-        }
-
         $table = $schema->createTable($this->tableName);
 
         $table->addColumn('id', 'integer', array('autoincrement' => true));
-        $table->addColumn('uuid', $uuidColumnDefinition['type'], $uuidColumnDefinition['params']);
+        $table->addColumn('uuid', 'guid', array('length' => 36,));
         $table->addColumn('playhead', 'integer', array('unsigned' => true));
         $table->addColumn('payload', 'text');
         $table->addColumn('metadata', 'text');
@@ -246,40 +205,13 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @param DomainEventStreamInterface $eventStream
      */
-    private function convertIdentifierToStorageValue($id)
+    private function guardStream(DomainEventStreamInterface $eventStream)
     {
-        if ($this->useBinary) {
-            try {
-                return Uuid::fromString($id)->getBytes();
-            } catch (\Exception $e) {
-                throw new InvalidIdentifierException(
-                    'Only valid UUIDs are allowed to by used with the binary storage mode.'
-                );
-            }
+        foreach ($eventStream as $domainMessage) {
+            /** @var DomainMessage $domainMessage */
+            $id = (string) $domainMessage->getId();
         }
-
-        return $id;
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    private function convertStorageValueToIdentifier($id)
-    {
-        if ($this->useBinary) {
-            try {
-                return Uuid::fromBytes($id)->toString();
-            } catch (\Exception $e) {
-                throw new InvalidIdentifierException(
-                    'Could not convert binary storage value to UUID.'
-                );
-            }
-        }
-
-        return $id;
     }
 }

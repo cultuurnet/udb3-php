@@ -7,14 +7,10 @@ namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
-use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\EventHandling\SimpleEventBus;
-use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\DBALEventStore;
-use Broadway\Serializer\SerializableInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 
@@ -283,71 +279,5 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             $expectedPreviousId,
             $eventStream->getPreviousId()
         );
-    }
-}
-
-class DummyEvent implements SerializableInterface
-{
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $content;
-
-    /**
-     * @param string $id
-     * @param string $content
-     */
-    public function __construct($id, $content)
-    {
-        $this->id = $id;
-        $this->content = $content;
-    }
-
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static(
-            $data['id'],
-            $data['content']
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function serialize()
-    {
-        return [
-            'id' => $this->id,
-            'content' => $this->content,
-        ];
-    }
-}
-
-class DummyEventStreamDecorator implements EventStreamDecoratorInterface
-{
-    public function decorateForWrite($aggregateType, $aggregateIdentifier, DomainEventStreamInterface $eventStream)
-    {
-        $messages = [];
-
-        /** @var DomainMessage $message */
-        foreach ($eventStream as $message) {
-            $metadata = new Metadata(
-                [
-                    'mock' => $aggregateType . '::' . $aggregateIdentifier
-                ]
-            );
-
-            $messages[] = $message->andMetadata($metadata);
-        }
-
-        return new DomainEventStream($messages);
     }
 }

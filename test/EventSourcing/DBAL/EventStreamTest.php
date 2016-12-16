@@ -269,9 +269,10 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             $this->getConnection(),
             $payloadSerializer,
             $metadataSerializer,
-            $table,
-            $startId
+            $table
         );
+
+        $eventStream = $eventStream->withStartId($startId);
 
         $expectedPreviousId = 100;
 
@@ -279,5 +280,21 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             $expectedPreviousId,
             $eventStream->getPreviousId()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_handle_a_start_id()
+    {
+        $this->assertTrue(false);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_handle_an_aggregate_type()
+    {
+        $this->assertTrue(false);
     }
 }

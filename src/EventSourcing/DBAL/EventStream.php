@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
@@ -11,10 +8,8 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 class EventStream
 {
@@ -39,9 +34,9 @@ class EventStream
     protected $tableName;
 
     /**
-     * @var Statement
+     * @var QueryBuilder
      */
-    protected $loadStatement;
+    protected $queryBuilder;
 
     /**
      * @var int
@@ -51,7 +46,7 @@ class EventStream
     /**
      * @var string
      */
-    protected $primaryKey;
+    protected $aggregateType;
 
     /**
      * @var EventStreamDecoratorInterface
@@ -63,26 +58,43 @@ class EventStream
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
-     * @param int $startId
-     * @param string $primaryKey
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
-        $tableName,
-        $startId = 0,
-        $primaryKey = 'id'
+        $tableName
     ) {
         $this->connection = $connection;
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
-        $this->previousId = $startId > 0 ? $startId - 1 : 0;
-
-        $this->primaryKey = $primaryKey;
-
+        $this->previousId = 0;
+        $this->primaryKey = 'id';
+        $this->aggregateType = '';
         $this->domainEventStreamDecorator = null;
+    }
+
+    /**
+     * @param int $startId
+     * @return EventStream
+     */
+    public function withStartId($startId)
+    {
+        $c = clone $this;
+        $c->previousId = $startId - 1;
+        return $c;
+    }
+
+    /**
+     * @param string $aggregateType
+     * @return EventStream
+     */
+    public function withAggregateType($aggregateType)
+    {
+        $c = clone $this;
+        $c->aggregateType = $aggregateType;
+        return $c;
     }
 
     /**
@@ -98,11 +110,11 @@ class EventStream
 
     public function __invoke()
     {
-        $statement = $this->prepareLoadStatement();
+        $queryBuilder = $this->prepareLoadQuery();
 
         do {
-            $statement->bindValue('previousid', $this->previousId, 'integer');
-            $statement->execute();
+            $queryBuilder->setParameter(':previousId', $this->previousId);
+            $statement = $queryBuilder->execute();
 
             $events = [];
             while ($row = $statement->fetch()) {
@@ -142,23 +154,37 @@ class EventStream
     }
 
     /**
-     * @return Statement
+     * @return QueryBuilder
      * @throws DBALException
      */
-    protected function prepareLoadStatement()
+    protected function prepareLoadQuery()
     {
-        if (null === $this->loadStatement) {
-            $id = $this->primaryKey;
-            $query = "SELECT $id, uuid, playhead, metadata, payload, recorded_on
-                FROM $this->tableName
-                WHERE $id > :previousid
-                ORDER BY $id ASC
-                LIMIT 1";
+        if (null === $this->queryBuilder) {
 
-            $this->loadStatement = $this->connection->prepare($query);
+            $this->queryBuilder = $this->connection->createQueryBuilder();
+
+            $this->queryBuilder->select(
+                [
+                    $this->primaryKey,
+                    'uuid',
+                    'playhead',
+                    'payload',
+                    'metadata',
+                    'recorded_on'
+                ]
+            )
+                ->from($this->tableName)
+                ->where($this->primaryKey . ' > :previousId')
+                ->orderBy($this->primaryKey, 'ASC')
+                ->setMaxResults(1);
+
+            if (!empty($this->aggregateType)) {
+                $this->queryBuilder->andWhere('aggregate_type = :aggregate_type');
+                $this->queryBuilder->setParameter('aggregate_type', $this->aggregateType);
+            }
         }
 
-        return $this->loadStatement;
+        return $this->queryBuilder;
     }
 
     /**

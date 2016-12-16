@@ -92,8 +92,6 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
         if (!$schema->hasTable($this->uniqueTableName->toNative())) {
             $this->createUniqueTable($this->connection, $this->uniqueTableName);
         }
-
-        return $this->dbalEventStore->configureSchema($schema);
     }
 
     /**

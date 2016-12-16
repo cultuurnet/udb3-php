@@ -26,12 +26,12 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     private $uniqueDBALEventStoreDecorator;
 
     /**
-     * @var DBALEventStore|\PHPUnit_Framework_MockObject_MockObject $dbalEventStore
+     * @var DBALEventStore|\PHPUnit_Framework_MockObject_MockObject
      */
     private $dbalEventStore;
 
     /**
-     * @var UniqueConstraintServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uniqueConstraintService
+     * @var UniqueConstraintServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $uniqueConstraintService;
 
@@ -42,12 +42,14 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        /** @var SerializerInterface|\PHPUnit_Framework_MockObject_MockObject $serializer */
         $serializer = $this->getMock(SerializerInterface::class);
 
-        $this->dbalEventStore = $this->getMock(
-            DBALEventStore::class,
-            null,
-            [$this->getConnection(), $serializer, $serializer, 'labelsEventStore']
+        $this->dbalEventStore = new DBALEventStore(
+            $this->getConnection(),
+            $serializer,
+            $serializer,
+            'labelsEventStore'
         );
 
         $this->uniqueTableName = new StringLiteral('uniqueTableName');
@@ -72,11 +74,10 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
         $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
-        $table = $this->uniqueDBALEventStoreDecorator->configureSchema(
-            $schema
-        );
-
+        $table = $this->dbalEventStore->configureSchema($schema);
         $schemaManager->createTable($table);
+
+        $this->uniqueDBALEventStoreDecorator->configureSchema($schema);
     }
 
     /**

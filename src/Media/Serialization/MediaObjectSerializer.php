@@ -55,11 +55,15 @@ class MediaObjectSerializer implements SerializerInterface
         $typeParts = explode('/', (string) $mimeType);
         $type = array_shift($typeParts);
 
-        if ($type !== 'image') {
-            throw new UnsupportedException('Unsupported MIME-type, only images are allowed.');
+        if ($type === 'image') {
+            return 'schema:ImageObject';
         }
 
-        return 'schema:ImageObject';
+        if ((string) $mimeType === 'application/octet-stream') {
+            return 'schema:mediaObject';
+        }
+
+        throw new UnsupportedException('Unsupported MIME-type "'. $mimeType .'"');
     }
 
     public function deserialize($data, $type, $format, array $context = array())

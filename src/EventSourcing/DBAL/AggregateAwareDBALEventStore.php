@@ -161,7 +161,11 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
         $table->addColumn('aggregate_type', 'string', array('length' => 128));
 
         $table->setPrimaryKey(array('id'));
+
         $table->addUniqueIndex(array('uuid', 'playhead'));
+
+        $table->addIndex(['type']);
+        $table->addIndex(['aggregate_type']);
 
         return $table;
     }

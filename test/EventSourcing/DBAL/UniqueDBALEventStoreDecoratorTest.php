@@ -77,7 +77,8 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
         $table = $this->dbalEventStore->configureSchema($schema);
         $schemaManager->createTable($table);
 
-        $this->uniqueDBALEventStoreDecorator->configureSchema($schema);
+        $uniqueTable = $this->uniqueDBALEventStoreDecorator->configureSchema($schema);
+        $schemaManager->createTable($uniqueTable);
     }
 
     /**

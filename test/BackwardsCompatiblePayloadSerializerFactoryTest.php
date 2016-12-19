@@ -15,8 +15,6 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
-use CultuurNet\UDB3\UsedLabelsMemory\Created;
-use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String;
@@ -269,33 +267,6 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     {
         $sampleFile = $this->sampleDir . 'serialized_event_unlabelled_class.json';
         $this->assertEventIdReplacedWithItemId($sampleFile);
-    }
-
-    /**
-     * @test
-     */
-    public function it_knows_the_new_namespace_of_used_keywords_memory_created()
-    {
-        $sampleFile = $this->sampleDir . 'serialized_used_keywords_memory_created.json';
-        $this->assertClass($sampleFile, Created::class);
-    }
-
-    /**
-     * @test
-     */
-    public function it_knows_the_new_namespace_of_used_keywords_memory_keyword_used()
-    {
-        $sampleFile = $this->sampleDir . 'serialized_used_keyword_memory_used.json';
-        $this->assertClass($sampleFile, LabelUsed::class);
-    }
-
-    /**
-     * @test
-     */
-    public function it_manipulated_the_label_of_used_keywords_memory_keyword_used()
-    {
-        $sampleFile = $this->sampleDir . 'serialized_used_keyword_memory_used.json';
-        $this->assertKeywordReplacedWithLabel($sampleFile);
     }
 
     /**

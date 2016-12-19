@@ -208,6 +208,8 @@ class CdbXMLImporter
 
         $shortDescription = $languageDetail->getShortDescription();
         if ($shortDescription) {
+            $includeShortDescription = true;
+
             $shortDescription = $this->shortDescriptionFilter->filter(
                 $shortDescription
             );
@@ -218,10 +220,10 @@ class CdbXMLImporter
                         $longDescription,
                         $shortDescription
                     );
+            }
 
-                if ($includeShortDescription) {
-                    $descriptions[] = $shortDescription;
-                }
+            if ($includeShortDescription) {
+                $descriptions[] = $shortDescription;
             }
         }
 

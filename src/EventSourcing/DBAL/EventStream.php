@@ -160,7 +160,6 @@ class EventStream
     protected function prepareLoadQuery()
     {
         if (null === $this->queryBuilder) {
-
             $this->queryBuilder = $this->connection->createQueryBuilder();
 
             $this->queryBuilder->select(

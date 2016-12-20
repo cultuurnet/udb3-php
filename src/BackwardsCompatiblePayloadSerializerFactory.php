@@ -29,8 +29,6 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated as PlaceOrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
-use CultuurNet\UDB3\UsedLabelsMemory\Created as UsedLabelsMemoryCreated;
-use CultuurNet\UDB3\UsedLabelsMemory\LabelUsed;
 use ValueObjects\Identity\UUID;
 
 /**
@@ -57,30 +55,6 @@ class BackwardsCompatiblePayloadSerializerFactory
     {
         $payloadManipulatingSerializer = new PayloadManipulatingSerializer(
             new SimpleInterfaceSerializer()
-        );
-
-        /*
-         * KEYWORDS EVENTS
-         */
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\UsedKeywordsMemory\Created',
-            function (array $serializedObject) {
-                $serializedObject['class'] = UsedLabelsMemoryCreated::class;
-
-                return $serializedObject;
-            }
-        );
-
-        $payloadManipulatingSerializer->manipulateEventsOfClass(
-            'CultuurNet\UDB3\UsedKeywordsMemory\KeywordUsed',
-            function (array $serializedObject) {
-                $serializedObject['class'] = LabelUsed::class;
-
-                $serializedObject = self::replaceKeywordWithLabel($serializedObject);
-
-                return $serializedObject;
-            }
         );
 
         /*

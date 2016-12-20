@@ -7,7 +7,6 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\CalendarFactoryInterface;
-use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
@@ -20,6 +19,8 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
+use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -41,7 +42,6 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
-use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -52,7 +52,6 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\String\String;
@@ -86,6 +85,11 @@ class EventLDProjector extends OfferLDProjector implements
     protected $iriOfferIdentifierFactory;
 
     /**
+     * @var CdbXMLImporter
+     */
+    protected $cdbXmlImporter;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventServiceInterface $eventService
@@ -93,8 +97,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param OrganizerService $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
-     * @param EventCdbIdExtractorInterface $eventCdbIdExtractor
-     * @param CalendarFactoryInterface $calendarFactory
+     * @param CdbXMLImporter $cdbXMLImporter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -104,20 +107,18 @@ class EventLDProjector extends OfferLDProjector implements
         OrganizerService $organizerService,
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
-        EventCdbIdExtractorInterface $eventCdbIdExtractor,
-        CalendarFactoryInterface $calendarFactory
+        CdbXMLImporter $cdbXMLImporter
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
-            $mediaObjectSerializer,
-            $eventCdbIdExtractor,
-            $calendarFactory
+            $mediaObjectSerializer
         );
 
         $this->placeService = $placeService;
         $this->eventService = $eventService;
+        $this->cdbXMLImporter = $cdbXMLImporter;
 
         $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
     }
@@ -701,5 +702,15 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getFlaggedAsInappropriateClassName()
     {
         return FlaggedAsInappropriate::class;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
     }
 }

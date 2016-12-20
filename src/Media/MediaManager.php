@@ -7,14 +7,15 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, MediaManagerInterface
@@ -69,10 +70,19 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
     public function create(
         UUID $id,
         MIMEType $fileType,
-        String $description,
-        String $copyrightHolder,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
         Url $sourceLocation
     ) {
+        try {
+            $existingMediaObject = $this->repository->load($id);
+            $this->logger->info('Trying to create media with id: ' .$id . ' but it already exists. Using existing Media Object!');
+
+            return $existingMediaObject;
+        } catch (AggregateNotFoundException $exception) {
+            $this->logger->info('No existing media with id: ' .$id . ' found. Creating a new Media Object!');
+        }
+
         $mediaObject = MediaObject::create(
             $id,
             $fileType,
@@ -94,7 +104,7 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         $pathParts = explode('/', $uploadImage->getFilePath());
         $fileName = array_pop($pathParts);
         $fileNameParts = explode('.', $fileName);
-        $extension = String::fromNative(array_pop($fileNameParts));
+        $extension = StringLiteral::fromNative(array_pop($fileNameParts));
         $destinationPath = $this->pathGenerator->path(
             $uploadImage->getFileId(),
             $extension
@@ -149,8 +159,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         $image = new Image(
             $mediaObject->getMediaObjectId(),
             $mediaObject->getMimeType(),
-            $mediaObject->getDescription(),
-            $mediaObject->getCopyrightHolder(),
+            new Description((string) $mediaObject->getDescription()),
+            new CopyrightHolder((string) $mediaObject->getCopyrightHolder()),
             $mediaObject->getSourceLocation()
         );
 

@@ -6,6 +6,8 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
@@ -83,12 +85,17 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             ->method('iri')
             ->willReturn('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
-        $logger
+        $this->repository
             ->expects($this->once())
+            ->method('load')
+            ->willThrowException(new AggregateNotFoundException());
+
+        $logger
+            ->expects($this->exactly(2))
             ->method('info')
-            ->with(
-                'job_info',
-                ['file_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014']
+            ->withConsecutive(
+                [$this->equalTo('No existing media with id: de305d54-75b4-431b-adb2-eb6b9e546014 found. Creating a new Media Object!')],
+                [$this->equalTo('job_info')]
             );
 
         $this->mediaManager->handleUploadImage($command);
@@ -135,8 +142,8 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'de305d54-75b4-431b-adb2-eb6b9e546014';
         $fileType = new MIMEType('image/png');
-        $description = new String('sexy ladies without clothes');
-        $copyrightHolder = new String('Bart Ramakers');
+        $description = new Description('sexy ladies without clothes');
+        $copyrightHolder = new CopyrightHolder('Bart Ramakers');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 
         $mediaObject = MediaObject::create(

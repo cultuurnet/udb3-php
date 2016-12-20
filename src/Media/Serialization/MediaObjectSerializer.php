@@ -3,12 +3,11 @@
 namespace CultuurNet\UDB3\Media\Serialization;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
 use Symfony\Component\Serializer\SerializerInterface;
-use ValueObjects\Web\Url;
 
 class MediaObjectSerializer implements SerializerInterface
 {
@@ -27,6 +26,12 @@ class MediaObjectSerializer implements SerializerInterface
         $this->iriGenerator = $iriGenerator;
     }
 
+    /**
+     * @param MediaObject|Image $mediaObject
+     * @param string $format
+     * @param array $context
+     * @return array
+     */
     public function serialize($mediaObject, $format, array $context = array())
     {
         if (!isset($format) || $format !== 'json-ld') {
@@ -50,11 +55,15 @@ class MediaObjectSerializer implements SerializerInterface
         $typeParts = explode('/', (string) $mimeType);
         $type = array_shift($typeParts);
 
-        if ($type !== 'image') {
-            throw new UnsupportedException('Unsupported MIME-type, only images are allowed.');
+        if ($type === 'image') {
+            return 'schema:ImageObject';
         }
 
-        return 'schema:ImageObject';
+        if ((string) $mimeType === 'application/octet-stream') {
+            return 'schema:mediaObject';
+        }
+
+        throw new UnsupportedException('Unsupported MIME-type "'. $mimeType .'"');
     }
 
     public function deserialize($data, $type, $format, array $context = array())

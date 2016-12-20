@@ -11,6 +11,8 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Organizer\Organizer;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -130,8 +132,8 @@ trait OfferCommandHandlerTestTrait
         $image = new Image(
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            String::fromNative('Some description.'),
-            String::fromNative('Dirk Dirkington'),
+            new Description('Some description.'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $commandClass = $this->getCommandClass('AddImage');
@@ -157,8 +159,8 @@ trait OfferCommandHandlerTestTrait
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new String('sexy ladies without clothes'),
-            new String('Bart Ramakers'),
+            new Description('sexy ladies without clothes'),
+            new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
         $imageAddedEventClass = $this->getEventClass('ImageAdded');

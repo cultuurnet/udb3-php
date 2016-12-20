@@ -6,7 +6,7 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\String\String as StringLiteral;
 use ValueObjects\Web\Url;
 
 interface MediaManagerInterface extends CommandHandlerInterface
@@ -27,8 +27,8 @@ interface MediaManagerInterface extends CommandHandlerInterface
     /**
      * @param UUID $id
      * @param MIMEType $mimeType
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @param Url $sourceLocation
      *
      * @return MediaObject
@@ -36,8 +36,8 @@ interface MediaManagerInterface extends CommandHandlerInterface
     public function create(
         UUID $id,
         MIMEType $mimeType,
-        String $description,
-        String $copyrightHolder,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
         Url $sourceLocation
     );
 }

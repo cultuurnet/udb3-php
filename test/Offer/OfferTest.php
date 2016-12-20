@@ -6,7 +6,12 @@ use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
 use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
@@ -65,8 +70,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $this->image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/gif'),
-            new StringLiteral('my favorite giphy gif'),
-            new StringLiteral('Bert Ramakers'),
+            new Description('my favorite giphy gif'),
+            new CopyrightHolder('Bert Ramakers'),
             Url::fromNative('http://foo.bar/media/my_favorite_giphy_gif.gif')
         );
     }
@@ -147,8 +152,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $anotherImage = new Image(
             new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
             new MIMEType('image/jpeg'),
-            new StringLiteral('my best selfie'),
-            new StringLiteral('Dirk Dirkington'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/my_best_selfie.gif')
         );
         $image = $this->image;
@@ -184,15 +189,15 @@ class OfferTest extends AggregateRootScenarioTestCase
         $oldestImage = new Image(
             new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
             new MIMEType('image/gif'),
-            new StringLiteral('my best selfie'),
-            new StringLiteral('Dirk Dirkington'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/my_best_selfie.gif')
         );
         $newerImage = new Image(
             new UUID('fdfac613-61f9-43ac-b1a9-c75f9fd58386'),
             new MIMEType('image/jpeg'),
-            new StringLiteral('pic'),
-            new StringLiteral('Henk'),
+            new Description('pic'),
+            new CopyrightHolder('Henk'),
             Url::fromNative('http://foo.bar/media/pic.jpeg')
         );
         $originalMainImage = $this->image;
@@ -261,8 +266,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         $newMainImage = new Image(
             new UUID('fdfac613-61f9-43ac-b1a9-c75f9fd58386'),
             new MIMEType('image/jpeg'),
-            new StringLiteral('pic'),
-            new StringLiteral('Henk'),
+            new Description('pic'),
+            new CopyrightHolder('Henk'),
             Url::fromNative('http://foo.bar/media/pic.jpeg')
         );
 
@@ -705,5 +710,69 @@ class OfferTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([new OrganizerUpdated($itemId, $organizerId)]);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_import_images_from_udb2_as_media_object_and_main_image(
+        Image $image,
+        ImageCollection $imageCollection
+    ) {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(function (Item $item) use ($image, $imageCollection) {
+                $item->importImagesFromUDB2($imageCollection);
+                $item->addImage($image);
+                $item->selectMainImage($image);
+            })
+            ->then([new ImagesImportedFromUDB2($itemId, $imageCollection)]);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
+    public function it_should_update_images_from_udb2_as_media_object_and_main_image(
+        Image $image,
+        ImageCollection $imageCollection
+    ) {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(function (Item $item) use ($image, $imageCollection) {
+                $item->UpdateImagesFromUDB2($imageCollection);
+                $item->addImage($image);
+                $item->selectMainImage($image);
+            })
+            ->then([new ImagesUpdatedFromUDB2($itemId, $imageCollection)]);
+    }
+
+    public function imageCollectionDataProvider()
+    {
+        $image = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkingn'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+        );
+
+        return [
+            'single image' => [
+                'mainImage' => $image,
+                'imageCollection' => ImageCollection::fromArray([$image])
+            ]
+        ];
     }
 }

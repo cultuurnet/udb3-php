@@ -4,6 +4,8 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
@@ -89,8 +91,8 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                     new Image(
                         new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
                         new MIMEType('image/jpg'),
-                        new StringLiteral('my pic'),
-                        new StringLiteral('Dirk Dirkington'),
+                        new Description('my pic'),
+                        new CopyrightHolder('Dirk Dirkington'),
                         Url::fromNative('http://foo.bar/media/my_pic.jpg')
                     )
                 ]

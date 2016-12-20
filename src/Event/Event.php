@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
+use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -38,6 +40,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
@@ -127,6 +130,22 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
+     * @param ImageCollection $images
+     */
+    public function updateImagesFromUDB2(ImageCollection $images)
+    {
+        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
+    }
+
+    /**
+     * @param ImageCollection $images
+     */
+    public function importImagesFromUDB2(ImageCollection $images)
+    {
+        $this->apply(new ImagesImportedFromUDB2($this->eventId, $images));
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -186,16 +205,34 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
-     * @param type $theme
+     * @param Theme|null $theme
      */
     public function updateMajorInfo(
         Title $title,
         EventType $eventType,
         Location $location,
         CalendarInterface $calendar,
-        $theme = null
+        Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesImportedFromUDB2
+     */
+    protected function createImagesImportedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesImportedFromUDB2($this->eventId, $images);
+    }
+
+    /**
+     * @inheritDoc
+     * @return ImagesUpdatedFromUDB2
+     */
+    protected function createImagesUpdatedFromUDB2(ImageCollection $images)
+    {
+        return new ImagesUpdatedFromUDB2($this->eventId, $images);
     }
 
     /**

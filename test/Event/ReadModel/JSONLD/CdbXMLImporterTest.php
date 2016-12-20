@@ -944,7 +944,12 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             'newlines, leading & trailing whitespace are removed from shortdescription' => array(
                 'event_54695180-3ff5-4db0-a020-d54b5bdc08e9.cdbxml.xml',
                 'description_54695180-3ff5-4db0-a020-d54b5bdc08e9.txt',
-                '3.3'
+                '3.3',
+            ),
+            'short description is used when long description is absent' => array(
+                'event_0001da4c-abef-4450-b37a-5a4bfb9d35f4.cdbxml.xml',
+                'description_0001da4c-abef-4450-b37a-5a4bfb9d35f4.txt',
+                '3.3',
             ),
         );
     }
@@ -952,6 +957,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @group issue-III-165
+     * @group issue-III-1715
      * @dataProvider descriptionsProvider
      *
      * @param string $cdbxmlFile

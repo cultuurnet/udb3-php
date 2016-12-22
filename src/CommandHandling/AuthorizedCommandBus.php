@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\CommandHandling;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use CultuurNet\UDB3\Security\SecurityInterface;
@@ -10,8 +11,13 @@ use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
-class AuthorizedCommandBus extends CommandBusDecoratorBase implements AuthorizedCommandBusInterface, LoggerAwareInterface
+class AuthorizedCommandBus extends CommandBusDecoratorBase implements AuthorizedCommandBusInterface, LoggerAwareInterface, ContextAwareInterface
 {
+    /**
+     * @var Metadata
+     */
+    protected $metadata;
+
     /**
      * @var UserIdentificationInterface
      */
@@ -86,5 +92,18 @@ class AuthorizedCommandBus extends CommandBusDecoratorBase implements Authorized
     public function setLogger(LoggerInterface $logger)
     {
         $this->decoratee->setLogger($logger);
+    }
+
+    /**
+     * @param Metadata|null $context
+     */
+    public function setContext(Metadata $context = null)
+    {
+        $this->metadata = $context;
+
+        if($this->decoratee instanceof ContextAwareInterface) {
+            $this->decoratee->setContext($context);
+
+        }
     }
 }

@@ -53,9 +53,9 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->documentRepository = $this->createMock(DocumentRepositoryInterface::class);
 
-        $this->eventBus = $this->getMock(EventBusInterface::class);
+        $this->eventBus = $this->createMock(EventBusInterface::class);
 
         $this->iriGenerator = new CallableIriGenerator(
             function ($id) {

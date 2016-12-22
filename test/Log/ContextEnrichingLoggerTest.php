@@ -16,7 +16,7 @@ class ContextEnrichingLoggerTest extends \PHPUnit_Framework_TestCase
     public function it_passes_additional_context_to_the_decorated_logger()
     {
         /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $decoratedLogger */
-        $decoratedLogger = $this->getMock(LoggerInterface::class);
+        $decoratedLogger = $this->createMock(LoggerInterface::class);
         $additionalContext = array(
             'job_id' => 1,
         );

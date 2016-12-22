@@ -23,7 +23,7 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
 
         $this->uuidGenerator->expects($this->once())
             ->method('generate')
@@ -39,10 +39,10 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
         $visibility = false;
         $expectedUuid = new UUID('b67d6f8b-fe08-44c9-a0a7-8e6b47dab0ff');
 
-        $traceableEventStore = new TraceableEventStore($this->getMock(EventStoreInterface::class));
+        $traceableEventStore = new TraceableEventStore($this->createMock(EventStoreInterface::class));
         $traceableEventStore->trace();
 
-        $eventBus = $this->getMock(EventBusInterface::class);
+        $eventBus = $this->createMock(EventBusInterface::class);
 
         $repository = new LabelRepository(
             $traceableEventStore,
@@ -75,7 +75,7 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
     {
         $labelName = new LabelName('foo');
 
-        $repository = $this->getMock(RepositoryInterface::class);
+        $repository = $this->createMock(RepositoryInterface::class);
 
         $repository->expects($this->once())
             ->method('save')

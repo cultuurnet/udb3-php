@@ -35,14 +35,14 @@ class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $firstRepository = $this->getMock(SavedSearchRepositoryInterface::class);
+        $firstRepository = $this->createMock(SavedSearchRepositoryInterface::class);
         $firstRepository->expects($this->once())
             ->method('ownedByCurrentUser')
             ->willReturn([
                 $savedSearches[0],
             ]);
 
-        $secondRepository = $this->getMock(SavedSearchRepositoryInterface::class);
+        $secondRepository = $this->createMock(SavedSearchRepositoryInterface::class);
         $secondRepository->expects($this->once())
             ->method('ownedByCurrentUser')
             ->willReturn([
@@ -50,7 +50,7 @@ class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
                 $savedSearches[2],
             ]);
 
-        $thirdRepository = $this->getMock(SavedSearchRepositoryInterface::class);
+        $thirdRepository = $this->createMock(SavedSearchRepositoryInterface::class);
         $thirdRepository->expects($this->once())
             ->method('ownedByCurrentUser')
             ->willReturn([

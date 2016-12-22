@@ -59,8 +59,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->insert($this->data);
 
-        $this->iriGeneratorFactory = $this->getMock(EntityIriGeneratorFactoryInterface::class);
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->iriGeneratorFactory = $this->createMock(EntityIriGeneratorFactoryInterface::class);
+        $this->iriGenerator = $this->createMock(IriGeneratorInterface::class);
 
         $this->iriGeneratorFactory
             ->method('forEntityType')

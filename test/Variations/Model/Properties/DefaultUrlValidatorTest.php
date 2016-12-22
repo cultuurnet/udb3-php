@@ -36,9 +36,9 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
-        $this->eventService = $this->getMock(EntityServiceInterface::class);
-        $this->placeService = $this->getMock(EntityServiceInterface::class);
+        $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
+        $this->eventService = $this->createMock(EntityServiceInterface::class);
+        $this->placeService = $this->createMock(EntityServiceInterface::class);
 
         $this->defaultUrlValidator = new DefaultUrlValidator(
             $this->iriOfferIdentifierFactory

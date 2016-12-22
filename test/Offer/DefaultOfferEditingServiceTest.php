@@ -80,11 +80,11 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $this->offerRepository = $this->getMock(DocumentRepositoryInterface::class);
-        $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
-        $this->labelService = $this->getMock(LabelServiceInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
+        $this->offerRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $this->commandFactory = $this->createMock(OfferCommandFactoryInterface::class);
+        $this->labelService = $this->createMock(LabelServiceInterface::class);
 
         $this->addLabelCommand = $this->getMockForAbstractClass(
             AbstractAddLabel::class,

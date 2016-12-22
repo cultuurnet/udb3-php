@@ -29,7 +29,7 @@ class UserPermissionsProjectorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->userPermissionsWriteRepository = $this->getMock(
+        $this->userPermissionsWriteRepository = $this->createMock(
             UserPermissionsWriteRepositoryInterface::class
         );
 

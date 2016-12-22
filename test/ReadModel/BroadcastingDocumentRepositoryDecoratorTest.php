@@ -29,9 +29,9 @@ class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_Tes
 
     public function setUp()
     {
-        $this->decoratedRepository = $this->getMock(DocumentRepositoryInterface::class);
-        $this->eventBus = $this->getMock(EventBusInterface::class);
-        $this->eventFactory = $this->getMock(DocumentEventFactory::class);
+        $this->decoratedRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $this->eventBus = $this->createMock(EventBusInterface::class);
+        $this->eventFactory = $this->createMock(DocumentEventFactory::class);
 
         $this->repository = new BroadcastingDocumentRepositoryDecorator(
             $this->decoratedRepository,

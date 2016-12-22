@@ -84,10 +84,10 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
         );
-        $this->eventBus = $this->getMock(EventBusInterface::class);
+        $this->eventBus = $this->createMock(EventBusInterface::class);
         $this->repository = new OrganizerRepository($this->eventStore, $this->eventBus);
 
-        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository = $this->createMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
             ->will($this->returnCallback(
                 function (StringLiteral $labelName) {
@@ -100,8 +100,8 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                 }
             ));
 
-        $this->eventOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
-        $this->placeOrganizerRelationService = $this->getMock(OrganizerRelationServiceInterface::class);
+        $this->eventOrganizerRelationService = $this->createMock(OrganizerRelationServiceInterface::class);
+        $this->placeOrganizerRelationService = $this->createMock(OrganizerRelationServiceInterface::class);
 
         $this->commandHandler = (
             new OrganizerCommandHandler(

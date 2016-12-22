@@ -22,7 +22,7 @@ class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->users = $this->getMock(UsersInterface::class);
+        $this->users = $this->createMock(UsersInterface::class);
         $this->resolver = new CdbXmlCreatedByToUserIdResolver($this->users);
     }
 

@@ -40,8 +40,8 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->itemRepository = $this->getMock(DocumentRepositoryInterface::class);
-        $this->relationRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->itemRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $this->relationRepository = $this->createMock(ReadRepositoryInterface::class);
 
         $this->projector = new ItemVisibilityProjector(
             $this->itemRepository,
@@ -402,7 +402,7 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
         $madeVisibleEvent = new MadeInvisible($labelId, $labelName);
 
         /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->getMock(AbstractLogger::class);
+        $logger = $this->createMock(AbstractLogger::class);
         $logger
             ->expects($this->once())
             ->method('alert')

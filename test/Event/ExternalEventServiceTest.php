@@ -21,7 +21,7 @@ class ExternalEventServiceTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->httpClient = $this->getMock(HttpClient::class);
+        $this->httpClient = $this->createMock(HttpClient::class);
         $this->eventService = new ExternalEventService($this->httpClient);
     }
 

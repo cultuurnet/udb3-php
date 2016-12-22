@@ -61,9 +61,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->constraintUuid = new UUID();
         $this->constraintName = new StringLiteral('city:Leuven');
-        $this->repository = $this->getMock(
-            DocumentRepositoryInterface::class
-        );
+        $this->repository = $this->createMock(DocumentRepositoryInterface::class);
 
         $this->projector = new Projector($this->repository);
     }

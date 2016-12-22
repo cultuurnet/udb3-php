@@ -101,9 +101,8 @@ class AuthorizedCommandBus extends CommandBusDecoratorBase implements Authorized
     {
         $this->metadata = $context;
 
-        if($this->decoratee instanceof ContextAwareInterface) {
+        if ($this->decoratee instanceof ContextAwareInterface) {
             $this->decoratee->setContext($context);
-
         }
     }
 }

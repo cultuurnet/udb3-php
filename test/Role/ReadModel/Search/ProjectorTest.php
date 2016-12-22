@@ -41,7 +41,7 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->repository = $this->getMock(RepositoryInterface::class);
+        $this->repository = $this->createMock(RepositoryInterface::class);
         $this->projector = new Projector($this->repository);
         $this->domainMessage = new DomainMessage('id', 0, new Metadata(), '', DateTime::now());
         $this->uuid = new UUID();

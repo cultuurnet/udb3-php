@@ -25,7 +25,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->offerIdentifierDeserializer = $this->getMock(DeserializerInterface::class);
+        $this->offerIdentifierDeserializer = $this->createMock(DeserializerInterface::class);
 
         $this->offerIdentifierDeserializer->expects($this->any())
             ->method('deserialize')

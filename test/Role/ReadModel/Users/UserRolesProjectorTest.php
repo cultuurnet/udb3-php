@@ -41,15 +41,15 @@ class UserRolesProjectorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->userRolesDocumentRepository = $this->getMock(
+        $this->userRolesDocumentRepository = $this->createMock(
             DocumentRepositoryInterface::class
         );
 
-        $this->roleDetailsDocumentRepository = $this->getMock(
+        $this->roleDetailsDocumentRepository = $this->createMock(
             DocumentRepositoryInterface::class
         );
 
-        $this->roleUsersDocumentRepository = $this->getMock(
+        $this->roleUsersDocumentRepository = $this->createMock(
             DocumentRepositoryInterface::class
         );
 

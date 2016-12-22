@@ -49,18 +49,18 @@ class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->userConstraintsReadRepository = $this->getMock(
+        $this->userConstraintsReadRepository = $this->createMock(
             UserConstraintsReadRepositoryInterface::class
         );
 
-        $this->searchQueryFactory = $this->getMock(
+        $this->searchQueryFactory = $this->createMock(
             SearchQueryFactoryInterface::class
         );
 
-        $this->searchService = $this->getMock(SearchServiceInterface::class);
+        $this->searchService = $this->createMock(SearchServiceInterface::class);
 
-        $this->eventIriGenerator = $this->getMock(IriGeneratorInterface::class);
-        $this->placeIriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->eventIriGenerator = $this->createMock(IriGeneratorInterface::class);
+        $this->placeIriGenerator = $this->createMock(IriGeneratorInterface::class);
         $this->mockIriGenerators();
         $this->resultSetPullParser = new ResultSetPullParser(
             new \XMLReader(),

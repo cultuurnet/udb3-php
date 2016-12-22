@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Storage;
 
+use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 
 class PurgeServiceManagerTest extends PHPUnit_Framework_TestCase
@@ -67,10 +68,10 @@ class PurgeServiceManagerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return PurgeServiceInterface
+     * @return PurgeServiceInterface|PHPUnit_Framework_MockObject_MockObject
      */
     private function createMockedPurgeService()
     {
-        return $this->getMock(PurgeServiceInterface::class);
+        return $this->createMock(PurgeServiceInterface::class);
     }
 }

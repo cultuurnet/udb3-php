@@ -33,8 +33,8 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
     {
         $queueName = 'test';
 
-        $this->decoratedCommandBus = $this->getMock(TestContextAwareCommandBus::class);
-        $this->dispatcher = $this->getMock(EventDispatcherInterface::class);
+        $this->decoratedCommandBus = $this->createMock(TestContextAwareCommandBus::class);
+        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $this->commandBus = new ResqueCommandBus(
             $this->decoratedCommandBus,
@@ -67,11 +67,11 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_command_authorization_exception_when_decoratee_is_an_instance_of_authorized_command_bus_and_command_is_an_instance_of_authorizable_command()
     {
-        $userIdentification = $this->getMock(UserIdentificationInterface::class);
+        $userIdentification = $this->createMock(UserIdentificationInterface::class);
         $userIdentification->method('getId')
             ->willReturn(new StringLiteral('userId'));
 
-        $decoratee = $this->getMock(AuthorizedCommandBusInterface::class);
+        $decoratee = $this->createMock(AuthorizedCommandBusInterface::class);
         $decoratee->method('isAuthorized')
             ->willReturn(false);
         $decoratee->method('getUserIdentification')
@@ -85,7 +85,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
             $this->dispatcher
         );
 
-        $command = $this->getMock(AuthorizableCommandInterface::class);
+        $command = $this->createMock(AuthorizableCommandInterface::class);
         $command->method('getPermission')
             ->willReturn(Permission::AANBOD_BEWERKEN());
         $command->method('getItemId')

@@ -29,8 +29,8 @@ class BroadcastingWriteRepositoryDecoratorTest extends PHPUnit_Framework_TestCas
 
     public function setUp()
     {
-        $this->writeRepository = $this->getMock(WriteRepositoryInterface::class);
-        $this->eventBus = $this->getMock(EventBusInterface::class);
+        $this->writeRepository = $this->createMock(WriteRepositoryInterface::class);
+        $this->eventBus = $this->createMock(EventBusInterface::class);
 
         $this->broadcastingWriteRepositoryDecorator = new BroadcastingWriteRepositoryDecorator(
             $this->writeRepository,

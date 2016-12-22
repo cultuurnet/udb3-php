@@ -74,8 +74,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->relationId = $this->getRelationId();
 
-        $this->writeRepository = $this->getMock(WriteRepositoryInterface::class);
-        $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->writeRepository = $this->createMock(WriteRepositoryInterface::class);
+        $this->readRepository = $this->createMock(ReadRepositoryInterface::class);
         $this->offerTypeResolver = new LabelEventRelationTypeResolver();
 
         $this->projector = new Projector(

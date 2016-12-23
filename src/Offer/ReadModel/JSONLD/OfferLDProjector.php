@@ -714,16 +714,26 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $this->repository->save($document->withBody($offerLd));
     }
 
+    /**
+     * @param AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2
+     */
     protected function applyImagesImportedFromUdb2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
     {
         $this->applyEventTransformation($imagesImportedFromUDB2, [$this, 'applyImagesEvent']);
     }
 
+    /**
+     * @param AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2
+     */
     protected function applyImagesUpdatedFromUdb2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
     {
         $this->applyEventTransformation($imagesUpdatedFromUDB2, [$this, 'applyImagesEvent']);
     }
 
+    /**
+     * @param \stdClass $offerLd
+     * @param AbstractImagesEvent $imagesEvent
+     */
     private function applyImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
     {
         $images = $imagesEvent->getImages();

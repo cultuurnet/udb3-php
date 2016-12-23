@@ -18,9 +18,7 @@ trait DomainMessageTestDataTrait
         \PHPUnit_Framework_TestCase $testCase,
         $payloadClassName
     ) {
-        $callOriginalConstructor = false;
-
-        $payload = $testCase->getMock($payloadClassName, [], [], '', $callOriginalConstructor);
+        $payload = $testCase->createMock($payloadClassName);
 
         return new DomainMessage(
             Uuid::uuid4(),

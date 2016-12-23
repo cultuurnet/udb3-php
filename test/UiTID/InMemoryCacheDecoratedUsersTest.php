@@ -22,7 +22,7 @@ class InMemoryCacheDecoratedUsersTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->wrapped = $this->getMock(UsersInterface::class);
+        $this->wrapped = $this->createMock(UsersInterface::class);
         $this->users = new InMemoryCacheDecoratedUsers($this->wrapped);
     }
 

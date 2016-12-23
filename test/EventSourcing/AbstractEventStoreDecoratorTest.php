@@ -20,7 +20,7 @@ class AbstractEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->eventStore = $this->getMock(EventStoreInterface::class);
+        $this->eventStore = $this->createMock(EventStoreInterface::class);
 
         $this->abstractEventStoreDecorator = $this->getMockForAbstractClass(
             AbstractEventStoreDecorator::class,
@@ -66,7 +66,7 @@ class AbstractEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'id';
         /** @var DomainEventStreamInterface $eventStream */
-        $eventStream = $this->getMock(DomainEventStreamInterface::class);
+        $eventStream = $this->createMock(DomainEventStreamInterface::class);
 
         $this->eventStore->expects($this->once())
             ->method('append')

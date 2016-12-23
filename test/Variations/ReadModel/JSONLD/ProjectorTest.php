@@ -57,23 +57,23 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->repository = $this->getMock(
+        $this->repository = $this->createMock(
             DocumentRepositoryInterface::class
         );
 
-        $this->offerReadingService = $this->getMock(
+        $this->offerReadingService = $this->createMock(
             OfferReadingServiceInterface::class
         );
 
-        $this->searchRepository = $this->getMock(
+        $this->searchRepository = $this->createMock(
             SearchRepositoryInterface::class
         );
 
-        $this->eventIriGenerator = $this->getMock(
+        $this->eventIriGenerator = $this->createMock(
             IriGeneratorInterface::class
         );
 
-        $this->variationIriGenerator = $this->getMock(
+        $this->variationIriGenerator = $this->createMock(
             IriGeneratorInterface::class
         );
 

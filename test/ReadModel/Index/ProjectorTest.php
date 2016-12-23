@@ -59,9 +59,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->repository = $this->getMock(RepositoryInterface::class);
-        $this->userIdResolver = $this->getMock(CreatedByToUserIdResolverInterface::class);
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->repository = $this->createMock(RepositoryInterface::class);
+        $this->userIdResolver = $this->createMock(CreatedByToUserIdResolverInterface::class);
+        $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
 
         $this->projector = new Projector(
             $this->repository,

@@ -91,13 +91,13 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->publicDirectory = vfsStream::setup('exampleDir');
-        $this->eventService = $this->getMock(EventServiceInterface::class);
+        $this->eventService = $this->createMock(EventServiceInterface::class);
 
-        $this->searchService = $this->getMock(SearchServiceInterface::class);
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
-        $this->mailer = $this->getMock(NotificationMailerInterface::class);
-        $this->resultsGenerator = $this->getMock(ResultsGeneratorInterface::class);
+        $this->searchService = $this->createMock(SearchServiceInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
+        $this->iriGenerator = $this->createMock(IriGeneratorInterface::class);
+        $this->mailer = $this->createMock(NotificationMailerInterface::class);
+        $this->resultsGenerator = $this->createMock(ResultsGeneratorInterface::class);
 
         $this->eventExportService = new EventExportService(
             $this->eventService,
@@ -206,13 +206,13 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
     private function getFileFormat($fileNameExtension)
     {
         /** @var FileFormatInterface|\PHPUnit_Framework_MockObject_MockObject $fileFormat */
-        $fileFormat = $this->getMock(FileFormatInterface::class);
+        $fileFormat = $this->createMock(FileFormatInterface::class);
 
         $fileFormat->expects($this->any())
             ->method('getFileNameExtension')
             ->willReturn($fileNameExtension);
 
-        $fileWriter = $this->getMock(FileWriterInterface::class);
+        $fileWriter = $this->createMock(FileWriterInterface::class);
         $fileFormat->expects($this->any())
             ->method('getWriter')
             ->willReturn(
@@ -255,7 +255,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $expectedExportFileName = 'abc.txt';
 
         $query = new EventExportQuery('city:Leuven');
-        $logger = $this->getMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
 
         $this->mailer->expects($this->never())
             ->method('sendNotificationMail');
@@ -297,7 +297,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $expectedExportFileName = 'abc.txt';
 
         $query = new EventExportQuery('city:Leuven');
-        $logger = $this->getMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
 
         $exportIriBase = 'http://example.com/export/';
 
@@ -462,7 +462,7 @@ class EventExportServiceTest extends PHPUnit_Framework_TestCase
         $exportUuid = 'abc';
         $this->forceUuidGeneratorToReturn($exportUuid);
 
-        $logger = $this->getMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
         $expectedLogContextCallback = function ($context) {
             return $context['exception'] instanceof EventNotFoundException;
         };

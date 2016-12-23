@@ -31,7 +31,7 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->sapi2 = $this->getMock(SAPI2::class);
+        $this->sapi2 = $this->createMock(SAPI2::class);
 
         $this->search = new PullParsingSearchService(
             $this->sapi2,

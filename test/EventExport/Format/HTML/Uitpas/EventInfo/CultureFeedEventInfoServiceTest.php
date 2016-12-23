@@ -38,9 +38,9 @@ class CultureFeedEventInfoServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->promotionQueryFactory = $this->getMock(PromotionQueryFactoryInterface::class);
+        $this->promotionQueryFactory = $this->createMock(PromotionQueryFactoryInterface::class);
 
-        $this->uitpas = $this->getMock(Uitpas::class);
+        $this->uitpas = $this->createMock(Uitpas::class);
         $this->infoService = new CultureFeedEventInfoService(
             $this->uitpas,
             $this->promotionQueryFactory

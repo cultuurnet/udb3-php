@@ -79,13 +79,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->labelName = new LabelName('labelName');
         $this->unknownLabelName = new LabelName('unknownLabelName');
 
-        $this->writeRepository = $this->getMock(
-            WriteRepositoryInterface::class
-        );
+        $this->writeRepository = $this->createMock(WriteRepositoryInterface::class);
 
-        $this->readRepository = $this->getMock(
-            ReadRepositoryInterface::class
-        );
+        $this->readRepository = $this->createMock(ReadRepositoryInterface::class);
 
         $this->entity = new Entity(
             $this->uuid,

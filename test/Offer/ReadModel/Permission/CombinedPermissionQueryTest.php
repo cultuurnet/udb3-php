@@ -88,7 +88,7 @@ class CombinedPermissionQueryTest extends \PHPUnit_Framework_TestCase
      */
     private function createPermissionQuery(array $editableOffers)
     {
-        $permissionQuery = $this->getMock(PermissionQueryInterface::class);
+        $permissionQuery = $this->createMock(PermissionQueryInterface::class);
 
         $permissionQuery->method('getEditableOffers')
             ->willReturn($editableOffers);

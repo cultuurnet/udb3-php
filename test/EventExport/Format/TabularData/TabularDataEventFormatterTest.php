@@ -281,7 +281,7 @@ class TabularDataEventFormatterTest extends \PHPUnit_Framework_TestCase
         EventInfo $eventInfo,
         array $expectedFormatting
     ) {
-        $eventInfoService = $this->getMock(EventInfoServiceInterface::class);
+        $eventInfoService = $this->createMock(EventInfoServiceInterface::class);
         $eventInfoService
             ->method('getEventInfo')
             ->willReturn($eventInfo);

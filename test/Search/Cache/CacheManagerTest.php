@@ -37,16 +37,16 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->cacheHandler = $this->getMock(CacheHandlerInterface::class);
+        $this->cacheHandler = $this->createMock(CacheHandlerInterface::class);
 
         // We need to explicitly tell PHPUnit to mock get() & set() because
         // they are magic methods implemented using __call(). But because
         // PHPUnit would then only implement those two methods, we also need
         // to define the other methods of the interface because otherwise the
         // mock is not an actual implementation of the interface.
-        $this->redis = $this->getMock(
-            ClientInterface::class,
-            [
+        $this->redis = $this
+            ->getMockBuilder(ClientInterface::class)
+            ->setMethods([
                 'get',
                 'set',
                 'getProfile',
@@ -57,8 +57,8 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
                 'createCommand',
                 'executeCommand',
                 '__call',
-            ]
-        );
+            ])
+            ->getMock();
 
         $this->redisKey = 'cache-outdated';
 

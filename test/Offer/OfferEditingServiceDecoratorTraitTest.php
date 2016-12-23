@@ -29,7 +29,7 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->decoratee = $this->getMock(OfferEditingServiceInterface::class);
+        $this->decoratee = $this->createMock(OfferEditingServiceInterface::class);
 
         // Only the abstract methods of the trait are mocked. All other methods
         // are available as actual implementations.

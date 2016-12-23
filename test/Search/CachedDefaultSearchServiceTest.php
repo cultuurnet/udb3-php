@@ -226,13 +226,9 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             'sort' => 'lastupdated desc'
         );
 
-        $this->searchService = $this->getMock(
-            SearchServiceInterface::class
-        );
+        $this->searchService = $this->createMock(SearchServiceInterface::class);
 
-        $this->cache = $this->getMock(
-            Cache::class
-        );
+        $this->cache = $this->createMock(Cache::class);
 
         $this->arrayCache = new ArrayCache();
 

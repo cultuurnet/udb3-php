@@ -29,7 +29,7 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->savedSearches = $this->getMock(
+        $this->savedSearches = $this->createMock(
             \CultureFeed_SavedSearches::class
         );
 
@@ -37,7 +37,7 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->savedSearches
         );
 
-        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->repository->setLogger($this->logger);
     }
 

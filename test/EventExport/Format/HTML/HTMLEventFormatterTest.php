@@ -330,7 +330,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
     private function getCalendarRepositoryWhichReturns($id, \CultureFeed_Cdb_Data_Calendar $calendar)
     {
         /* @var CalendarRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject $repository */
-        $repository = $this->getMock(CalendarRepositoryInterface::class);
+        $repository = $this->createMock(CalendarRepositoryInterface::class);
         $repository->expects($this->once())
             ->method('get')
             ->with($id)
@@ -369,7 +369,7 @@ class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
         $eventWithoutImage = $this->getJSONEventFromFile('event_without_image.json');
 
         /** @var EventInfoServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uitpas */
-        $uitpas = $this->getMock(EventInfoServiceInterface::class);
+        $uitpas = $this->createMock(EventInfoServiceInterface::class);
 
         $prices = $priceData['original'];
         $expectedPrices = $priceData['formatted'];

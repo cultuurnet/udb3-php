@@ -43,7 +43,7 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             $this->baseUrl,
             $this->consumerCredentials
         );
-        $this->clientFactory = $this->getMock(HttpClientFactory::class);
+        $this->clientFactory = $this->createMock(HttpClientFactory::class);
     }
 
     /**
@@ -77,7 +77,7 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->searchService->setHttpClientFactory($this->clientFactory);
 
-        $queryString = $this->getMock(QueryString::class);
+        $queryString = $this->createMock(QueryString::class);
         $queryString
             ->expects($this->exactly(7))
             ->method('add')
@@ -91,13 +91,13 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
                 ['udb3filtering', 'false']
             );
 
-        $request = $this->getMock(RequestInterface::class);
+        $request = $this->createMock(RequestInterface::class);
         $request
             ->expects($this->once())
             ->method('getQuery')
             ->willReturn($queryString);
 
-        $client = $this->getMock(ClientInterface::class);
+        $client = $this->createMock(ClientInterface::class);
         $client
             ->expects($this->once())
             ->method('get')
@@ -128,13 +128,13 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         $this->searchService->setHttpClientFactory($this->clientFactory);
         $expectedResponse = new Response(200);
 
-        $request = $this->getMock(RequestInterface::class);
+        $request = $this->createMock(RequestInterface::class);
         $request
             ->expects($this->once())
             ->method('getQuery')
             ->willReturn(new QueryString());
 
-        $client = $this->getMock(ClientInterface::class);
+        $client = $this->createMock(ClientInterface::class);
         $client
             ->expects($this->once())
             ->method('get')

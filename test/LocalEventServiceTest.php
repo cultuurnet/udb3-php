@@ -41,11 +41,11 @@ class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->documentRepository = $this->getMock(DocumentRepositoryInterface::class);
-        $this->eventRepository = $this->getMock(RepositoryInterface::class);
-        $this->eventRelationsRepository = $this->getMock(Event\ReadModel\Relations\RepositoryInterface::class);
+        $this->documentRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $this->eventRepository = $this->createMock(RepositoryInterface::class);
+        $this->eventRelationsRepository = $this->createMock(Event\ReadModel\Relations\RepositoryInterface::class);
 
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->iriGenerator = $this->createMock(IriGeneratorInterface::class);
         $this->iriGenerator->expects($this->any())
             ->method('iri')
             ->willReturnCallback(

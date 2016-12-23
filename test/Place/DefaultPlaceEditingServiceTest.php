@@ -68,16 +68,16 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
 
-        $this->uuidGenerator = $this->getMock(
+        $this->uuidGenerator = $this->createMock(
             UuidGeneratorInterface::class
         );
 
-        $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
+        $this->commandFactory = $this->createMock(OfferCommandFactoryInterface::class);
 
         /** @var DocumentRepositoryInterface $repository */
-        $this->readRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->readRepository = $this->createMock(DocumentRepositoryInterface::class);
 
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
@@ -87,7 +87,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus()
         );
 
-        $this->labelService = $this->getMock(LabelServiceInterface::class);
+        $this->labelService = $this->createMock(LabelServiceInterface::class);
 
         $this->placeEditingService = new DefaultPlaceEditingService(
             $this->commandBus,

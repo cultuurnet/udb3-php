@@ -122,17 +122,9 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->cdbXMLEventFactory = new CdbXMLEventFactory();
 
-        $this->eventService = $this->getMock(
-            EventServiceInterface::class
-        );
+        $this->eventService = $this->createMock(EventServiceInterface::class);
 
-        $this->placeService = $this->getMock(
-            PlaceService::class,
-            array(),
-            array(),
-            '',
-            false
-        );
+        $this->placeService = $this->createMock(PlaceService::class);
 
         $this->iriGenerator = new CallableIriGenerator(
             function ($id) {
@@ -146,7 +138,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter($this->mediaIriGenerator),
             new EventCdbIdExtractor(),

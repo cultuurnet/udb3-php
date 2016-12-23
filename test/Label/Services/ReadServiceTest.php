@@ -44,7 +44,7 @@ class ReadServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->query = new Query(new StringLiteral('something'));
 
-        $this->readRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->readRepository = $this->createMock(ReadRepositoryInterface::class);
         $this->mockGetByUuid();
         $this->mockGetByName();
         $this->mockSearch();

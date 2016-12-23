@@ -30,8 +30,8 @@ class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->enricher = $this->getMock(DomainMessageEnricherInterface::class);
-        $this->decoratee = $this->getMock(EventListenerInterface::class);
+        $this->enricher = $this->createMock(DomainMessageEnricherInterface::class);
+        $this->decoratee = $this->createMock(EventListenerInterface::class);
         $this->enrichingDecorator = new EnrichingEventListenerDecorator($this->decoratee, $this->enricher);
     }
 

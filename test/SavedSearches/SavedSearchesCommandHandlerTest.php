@@ -26,7 +26,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->savedSearchesService = $this->getMock(
+        $this->savedSearchesService = $this->createMock(
             SavedSearches::class
         );
 
@@ -89,7 +89,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
         // We expect the logger's error method to be called when the exception is thrown.
         /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->getMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('error')
             ->with(
@@ -147,7 +147,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
         // We expect the logger's error method to be called when the exception is thrown.
         /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->getMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('error')
             ->with(
@@ -186,7 +186,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
         // Saved searches service factory used to instantiate the saved searches service.
         /** @var SavedSearchesServiceFactoryInterface|\PHPUnit_Framework_MockObject_MockObject $savedSearchesServiceFactory */
-        $savedSearchesServiceFactory = $this->getMock(
+        $savedSearchesServiceFactory = $this->createMock(
             SavedSearchesServiceFactoryInterface::class
         );
         $savedSearchesServiceFactory->expects($this->once())

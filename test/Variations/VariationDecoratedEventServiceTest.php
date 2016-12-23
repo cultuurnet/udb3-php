@@ -51,8 +51,8 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->decoratedEventService = $this->getMock(EventServiceInterface::class);
-        $this->search = $this->getMock(RepositoryInterface::class);
+        $this->decoratedEventService = $this->createMock(EventServiceInterface::class);
+        $this->search = $this->createMock(RepositoryInterface::class);
         $this->criteria = (new Criteria())->withPurpose(
             new Purpose('personal')
         );

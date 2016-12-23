@@ -30,9 +30,9 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
-        $this->eventDocumentRepository = $this->getMock(DocumentRepositoryInterface::class);
-        $this->placeDocumentRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
+        $this->eventDocumentRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $this->placeDocumentRepository = $this->createMock(DocumentRepositoryInterface::class);
 
         $this->service = (new LocalOfferReadingService($this->iriOfferIdentifierFactory))
             ->withDocumentRepository(OfferType::EVENT(), $this->eventDocumentRepository)

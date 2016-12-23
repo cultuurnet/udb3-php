@@ -21,7 +21,7 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->deserializer = new IriOfferIdentifierJSONDeserializer(
             $this->iriOfferIdentifierFactory
         );

@@ -28,11 +28,8 @@ class AbstractUserCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->userId = new StringLiteral('userId');
 
-        $this->abstractUserCommand = $this->getMock(
-            AbstractUserCommand::class,
-            null,
-            [$this->uuid, $this->userId]
-        );
+        $this->abstractUserCommand = $this
+            ->getMockForAbstractClass(AbstractUserCommand::class, [$this->uuid, $this->userId]);
     }
 
     /**

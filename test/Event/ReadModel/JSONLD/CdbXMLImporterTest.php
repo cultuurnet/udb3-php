@@ -50,9 +50,9 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             ),
             new CalendarFactory()
         );
-        $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
-        $this->placeManager = $this->getMock(PlaceServiceInterface::class);
-        $this->slugger = $this->getMock(SluggerInterface::class);
+        $this->organizerManager = $this->createMock(OrganizerServiceInterface::class);
+        $this->placeManager = $this->createMock(PlaceServiceInterface::class);
+        $this->slugger = $this->createMock(SluggerInterface::class);
         date_default_timezone_set('Europe/Brussels');
     }
 

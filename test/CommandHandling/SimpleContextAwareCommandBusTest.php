@@ -24,7 +24,7 @@ class SimpleContextAwareCommandBusTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus = new SimpleContextAwareCommandBus();
 
-        $this->commandHandler = $this->getMock(TestCommandHandler::class);
+        $this->commandHandler = $this->createMock(TestCommandHandler::class);
         $this->commandBus->subscribe(
             $this->commandHandler
         );

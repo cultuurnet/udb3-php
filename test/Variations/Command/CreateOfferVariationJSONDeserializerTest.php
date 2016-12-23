@@ -25,7 +25,7 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
     public function setUp()
     {
         $this->deserializer = new CreateOfferVariationJSONDeserializer();
-        $this->defaultUrlValidator = $this->getMock(UrlValidator::class);
+        $this->defaultUrlValidator = $this->createMock(UrlValidator::class);
     }
 
     /**

@@ -40,7 +40,7 @@ class DefaultExternalOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->httpClient = $this->getMock(HttpClient::class);
+        $this->httpClient = $this->createMock(HttpClient::class);
 
         $this->psr7Factory = new GuzzlePsr7Factory();
 

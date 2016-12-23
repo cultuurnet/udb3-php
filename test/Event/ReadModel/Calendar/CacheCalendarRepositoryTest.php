@@ -36,7 +36,7 @@ class CacheCalendarRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $serialized = serialize($this->calendar);
 
-        $cache = $this->getMock(Cache::class);
+        $cache = $this->createMock(Cache::class);
         $cache->expects($this->once())
             ->method('fetch')
             ->with($this->eventId)

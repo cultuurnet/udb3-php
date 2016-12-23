@@ -79,26 +79,18 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->eventService = $this->getMock(EventServiceInterface::class);
+        $this->eventService = $this->createMock(EventServiceInterface::class);
 
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
 
-        $this->uuidGenerator = $this->getMock(
-            UuidGeneratorInterface::class
-        );
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
 
-        $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
+        $this->commandFactory = $this->createMock(OfferCommandFactoryInterface::class);
 
         /** @var DocumentRepositoryInterface $repository */
-        $this->readRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->readRepository = $this->createMock(DocumentRepositoryInterface::class);
         /** @var PlaceService $placeService */
-        $placeService = $this->getMock(
-            PlaceService::class,
-            array(),
-            array(),
-            '',
-            false
-        );
+        $placeService = $this->createMock(PlaceService::class);
 
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
@@ -109,7 +101,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus()
         );
 
-        $this->labelService = $this->getMock(LabelServiceInterface::class);
+        $this->labelService = $this->createMock(LabelServiceInterface::class);
 
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,

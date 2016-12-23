@@ -109,8 +109,8 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID('9196cb78-4381-11e6-beb8-9e71128cae77');
 
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
 
         $this->labelId = new UUID();
 

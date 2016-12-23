@@ -25,7 +25,7 @@ class LabelRolesProjectorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->labelRolesWriteRepository = $this->getMock(
+        $this->labelRolesWriteRepository = $this->createMock(
             LabelRolesWriteRepositoryInterface::class
         );
 

@@ -61,9 +61,9 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventBus
         );
 
-        $this->organizerRepository = $this->getMock(RepositoryInterface::class);
+        $this->organizerRepository = $this->createMock(RepositoryInterface::class);
 
-        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository = $this->createMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
             ->will($this->returnCallback(
                 function (StringLiteral $labelName) {

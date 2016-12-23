@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\CommandHandling;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
@@ -13,7 +14,7 @@ use ValueObjects\String\String as StringLiteral;
 class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|ContextAwareInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $decoratee;
 
@@ -39,13 +40,13 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->decoratee = $this->getMock(CommandBusInterface::class);
+        $this->decoratee = $this->createMock([CommandBusInterface::class, ContextAwareInterface::class]);
 
-        $this->userIdentification = $this->getMock(UserIdentificationInterface::class);
+        $this->userIdentification = $this->createMock(UserIdentificationInterface::class);
 
-        $this->security = $this->getMock(SecurityInterface::class);
+        $this->security = $this->createMock(SecurityInterface::class);
 
-        $this->command = $this->getMock(AuthorizableCommandInterface::class);
+        $this->command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->authorizedCommandBus = new AuthorizedCommandBus(
             $this->decoratee,
@@ -59,7 +60,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_is_authorized_call_to_security()
     {
-        $command = $this->getMock(AuthorizableCommandInterface::class);
+        $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->mockIsAuthorized(true);
 
@@ -129,11 +130,27 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_should_pass_on_context_to_the_decoratee()
+    {
+        $context = new Metadata(['user' => 'dirk']);
+
+        $this->decoratee
+            ->expects($this->once())
+            ->method('setContext')
+            ->with($context);
+
+        $this->authorizedCommandBus->setContext($context);
+    }
+
+    /**
      * @param bool $isAuthorized
      */
     private function mockIsAuthorized($isAuthorized)
     {
-        $this->security->method('isAuthorized')
+        $this->security
+            ->method('isAuthorized')
             ->willReturn($isAuthorized);
     }
 

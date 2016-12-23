@@ -16,7 +16,7 @@ class OfferLocatorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->iriGenerator = $this->createMock(IriGeneratorInterface::class);
     }
 
     /**

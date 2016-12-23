@@ -29,7 +29,7 @@ class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->eventCreatedEnricher = $this->getMock(DomainMessageEnricherInterface::class);
+        $this->eventCreatedEnricher = $this->createMock(DomainMessageEnricherInterface::class);
         $this->eventCreatedEnricher->expects($this->any())
             ->method('supports')
             ->willReturnCallback(
@@ -39,7 +39,7 @@ class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
                 }
             );
 
-        $this->placeCreatedEnricher = $this->getMock(DomainMessageEnricherInterface::class);
+        $this->placeCreatedEnricher = $this->createMock(DomainMessageEnricherInterface::class);
         $this->placeCreatedEnricher->expects($this->any())
             ->method('supports')
             ->willReturnCallback(

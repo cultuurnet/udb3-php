@@ -47,7 +47,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus()
         );
 
-        $this->uuidGenerator = $this->getMock(
+        $this->uuidGenerator = $this->createMock(
             UuidGeneratorInterface::class
         );
 

@@ -74,13 +74,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $this->documentRepository = new InMemoryDocumentRepository();
 
-        $this->organizerService = $this->getMock(
-            OrganizerService::class,
-            array(),
-            array(),
-            '',
-            false
-        );
+        $this->organizerService = $this->createMock(OrganizerService::class);
     }
 
     /**

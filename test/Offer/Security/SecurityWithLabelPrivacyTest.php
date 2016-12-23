@@ -41,13 +41,13 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->securityDecoratee = $this->getMock(SecurityInterface::class);
+        $this->securityDecoratee = $this->createMock(SecurityInterface::class);
 
-        $this->userIdentification = $this->getMock(
+        $this->userIdentification = $this->createMock(
             UserIdentificationInterface::class
         );
 
-        $this->labelReadRepository = $this->getMock(
+        $this->labelReadRepository = $this->createMock(
             ReadRepositoryInterface::class
         );
 

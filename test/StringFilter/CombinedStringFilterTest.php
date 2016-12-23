@@ -14,8 +14,8 @@ class CombinedStringFilterTest extends \PHPUnit_Framework_TestCase
     {
         $combinedFilter = new CombinedStringFilter();
 
-        $appendBarFilter = $this->getMock(StringFilterInterface::class);
-        $prependFooFilter = $this->getMock(StringFilterInterface::class);
+        $appendBarFilter = $this->createMock(StringFilterInterface::class);
+        $prependFooFilter = $this->createMock(StringFilterInterface::class);
 
         $combinedFilter->addFilter($appendBarFilter);
         $combinedFilter->addFilter($prependFooFilter);

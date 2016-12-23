@@ -43,7 +43,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->searchService = $this->getMock(SearchServiceInterface::class);
+        $this->searchService = $this->createMock(SearchServiceInterface::class);
 
         $this->sorting = ResultsGenerator::SORT_CREATION_DATE_ASC;
         $this->pageSize = 2;
@@ -54,7 +54,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
             $this->pageSize
         );
 
-        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->generator->setLogger($this->logger);
 

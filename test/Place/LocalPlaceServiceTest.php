@@ -36,17 +36,17 @@ class LocalPlaceServiceTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->documentRepository = $this->getMock(
+        $this->documentRepository = $this->createMock(
             DocumentRepositoryInterface::class
         );
 
-        $this->placeRepository = $this->getMock(RepositoryInterface::class);
+        $this->placeRepository = $this->createMock(RepositoryInterface::class);
 
-        $this->placeRelationsRepository = $this->getMock(
+        $this->placeRelationsRepository = $this->createMock(
             PlaceRelationsRepositoryInterface::class
         );
 
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
+        $this->iriGenerator = $this->createMock(IriGeneratorInterface::class);
 
         $this->localPlaceService = new LocalPlaceService(
             $this->documentRepository,

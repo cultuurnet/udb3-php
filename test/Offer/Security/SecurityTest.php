@@ -31,15 +31,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->userIdentification = $this->getMock(
+        $this->userIdentification = $this->createMock(
             UserIdentificationInterface::class
         );
 
-        $this->permissionRepository = $this->getMock(
+        $this->permissionRepository = $this->createMock(
             PermissionQueryInterface::class
         );
 
-        $this->userPermissionMatcher = $this->getMock(
+        $this->userPermissionMatcher = $this->createMock(
             UserPermissionMatcherInterface::class
         );
 
@@ -142,7 +142,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $this->mockIsGodUser(true);
 
-        $authorizableCommand = $this->getMock(AuthorizableCommandInterface::class);
+        $authorizableCommand = $this->createMock(AuthorizableCommandInterface::class);
         $authorizableCommand->method('getItemId')
             ->willReturn('offerId');
 

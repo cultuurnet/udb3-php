@@ -7,7 +7,8 @@ use Broadway\Serializer\SerializableInterface;
 class Audience implements SerializableInterface
 {
     /**
-     * @var AudienceType
+     * Store the Audience enum internally as a string to make sure that PHP encode works.
+     * @var string
      */
     private $audienceType;
 
@@ -17,7 +18,7 @@ class Audience implements SerializableInterface
      */
     public function __construct(AudienceType $audienceType)
     {
-        $this->audienceType = $audienceType;
+        $this->audienceType = $audienceType->toNative();
     }
 
     /**
@@ -25,7 +26,7 @@ class Audience implements SerializableInterface
      */
     public function getAudienceType()
     {
-        return $this->audienceType;
+        return AudienceType::fromNative($this->audienceType);
     }
 
     /**
@@ -44,7 +45,7 @@ class Audience implements SerializableInterface
     public function serialize()
     {
         return [
-            'audienceType' => $this->audienceType->toNative()
+            'audienceType' => $this->getAudienceType()->toNative()
         ];
     }
 
@@ -54,6 +55,6 @@ class Audience implements SerializableInterface
      */
     public function equals(Audience $otherAudience)
     {
-        return $this->audienceType === $otherAudience->getAudienceType();
+        return $this->getAudienceType() === $otherAudience->getAudienceType();
     }
 }

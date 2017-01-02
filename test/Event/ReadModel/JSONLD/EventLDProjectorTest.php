@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -28,6 +29,8 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -1187,6 +1190,29 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($majorInfoUpdated, $id);
 
         $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_updating_audience()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $audienceUpdated = new AudienceUpdated(
+            $eventId,
+            new Audience(AudienceType::EDUCATION())
+        );
+
+        $body = $this->project($audienceUpdated, $eventId);
+
+        $expectedJson = (object) [
+                '@id' => 'http://example.com/entity/' . $eventId,
+                '@context' => '/contexts/event',
+                'audience' => (object) ['audienceType' => 'education']
+            ];
+
+        $this->assertEquals($expectedJson, $body);
     }
 
     /**

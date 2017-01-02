@@ -8,6 +8,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
@@ -515,6 +516,19 @@ class EventLDProjector extends OfferLDProjector implements
         if (!empty($theme)) {
             $jsonLD->terms[] = $theme->toJsonLd();
         }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param AudienceUpdated $audienceUpdated
+     */
+    protected function applyAudienceUpdated(AudienceUpdated $audienceUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($audienceUpdated);
+        $jsonLD = $document->getBody();
+
+        $jsonLD->audience = $audienceUpdated->getAudience()->serialize();
 
         $this->repository->save($document->withBody($jsonLD));
     }

@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
@@ -494,6 +496,85 @@ class EventTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([]);
+    }
+
+    /**
+     * @test
+     * @dataProvider audienceTypeDataProvider
+     * @param AudienceType[] $audienceTypes
+     * @param AudienceUpdated[] $audienceUpdatedEvents
+     */
+    public function it_applies_the_audience_type(
+        $audienceTypes,
+        $audienceUpdatedEvents
+    ) {
+        $this->scenario
+            ->given([
+                $this->getCreationEvent()
+            ])
+            ->when(
+                function (Event $event) use ($audienceTypes) {
+                    foreach ($audienceTypes as $audienceType) {
+                        $event->updateAudience($audienceType);
+                    }
+                }
+            )
+            ->then(
+                $audienceUpdatedEvents
+            );
+    }
+
+    /**
+     * @return array
+     */
+    public function audienceTypeDataProvider()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        return [
+            "single audience type" =>
+                [
+                    [
+                        AudienceType::MEMBERS(),
+                    ],
+                    [
+                        new AudienceUpdated(
+                            $eventId,
+                            AudienceType::MEMBERS()
+                        ),
+                    ],
+                ],
+            "multiple audience types" =>
+                [
+                    [
+                        AudienceType::MEMBERS(),
+                        AudienceType::EVERYONE(),
+                    ],
+                    [
+                        new AudienceUpdated(
+                            $eventId,
+                            AudienceType::MEMBERS()
+                        ),
+                        new AudienceUpdated(
+                            $eventId,
+                            AudienceType::EVERYONE()
+                        ),
+                    ],
+                ],
+            "equal audience types" =>
+                [
+                    [
+                        AudienceType::MEMBERS(),
+                        AudienceType::MEMBERS(),
+                    ],
+                    [
+                        new AudienceUpdated(
+                            $eventId,
+                            AudienceType::MEMBERS()
+                        ),
+                    ],
+                ],
+        ];
     }
 
     /**

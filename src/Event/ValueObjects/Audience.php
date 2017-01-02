@@ -34,7 +34,7 @@ class Audience implements SerializableInterface
     public static function deserialize(array $data)
     {
         return new static(
-            AudienceType::fromNative($data['audience_type'])
+            AudienceType::fromNative($data['audienceType'])
         );
     }
 
@@ -44,7 +44,7 @@ class Audience implements SerializableInterface
     public function serialize()
     {
         return [
-            'audience_type' => $this->audienceType->toNative()
+            'audienceType' => $this->audienceType->toNative()
         ];
     }
 

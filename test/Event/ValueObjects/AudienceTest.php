@@ -50,7 +50,7 @@ class AudienceTest extends \PHPUnit_Framework_TestCase
             $this->audience,
             Audience::deserialize(
                 [
-                    'audience_type' => $this->audienceType->toNative()
+                    'audienceType' => $this->audienceType->toNative()
                 ]
             )
         );
@@ -63,7 +63,7 @@ class AudienceTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             [
-                'audience_type' => $this->audienceType->toNative()
+                'audienceType' => $this->audienceType->toNative()
             ],
             $this->audience->serialize()
         );

@@ -6,7 +6,6 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
@@ -41,6 +40,8 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
@@ -464,6 +465,9 @@ class EventLDProjector extends OfferLDProjector implements
                 }
 
                 $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
+
+                $defaultAudience = new Audience(AudienceType::EVERYONE());
+                $jsonLD->audience = $defaultAudience->serialize();
 
                 return $jsonLD;
             }

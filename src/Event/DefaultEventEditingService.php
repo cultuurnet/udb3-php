@@ -7,9 +7,11 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
@@ -113,6 +115,16 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
 
         return $this->commandBus->dispatch(
             new UpdateMajorInfo($eventId, $title, $eventType, $location, $calendar, $theme)
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateAudience($eventId, Audience $audience)
+    {
+        return $this->commandBus->dispatch(
+            new UpdateAudience($eventId, $audience)
         );
     }
 

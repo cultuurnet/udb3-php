@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Title;
@@ -114,6 +115,13 @@ interface EventEditingServiceInterface
      * @return string $commandId
      */
     public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+
+    /**
+     * @param string $eventId
+     * @param Audience $audience
+     * @return string $commandId
+     */
+    public function updateAudience($eventId, Audience $audience);
 
     /**
      * @param string $eventId

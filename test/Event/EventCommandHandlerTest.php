@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -294,11 +295,17 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(
-                new UpdateAudience($eventId, AudienceType::EDUCATION())
+                new UpdateAudience(
+                    $eventId,
+                    new Audience(AudienceType::EDUCATION())
+                )
             )
             ->then(
                 [
-                    new AudienceUpdated($eventId, AudienceType::EDUCATION()),
+                    new AudienceUpdated(
+                        $eventId,
+                        new Audience(AudienceType::EDUCATION())
+                    ),
                 ]
             );
     }
@@ -315,11 +322,17 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($eventId),
-                    new AudienceUpdated($eventId, AudienceType::EDUCATION()),
+                    new AudienceUpdated(
+                        $eventId,
+                        new Audience(AudienceType::EDUCATION())
+                    ),
                 ]
             )
             ->when(
-                new UpdateAudience($eventId, AudienceType::EDUCATION())
+                new UpdateAudience(
+                    $eventId,
+                    new Audience(AudienceType::EDUCATION())
+                )
             )
             ->then([]);
     }

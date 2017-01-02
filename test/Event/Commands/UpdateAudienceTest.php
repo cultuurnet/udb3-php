@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 
@@ -13,6 +14,11 @@ class UpdateAudienceTest extends \PHPUnit_Framework_TestCase
     private $audienceType;
 
     /**
+     * @var Audience
+     */
+    private $audience;
+
+    /**
      * @var UpdateAudience
      */
     private $updateAudience;
@@ -21,9 +27,11 @@ class UpdateAudienceTest extends \PHPUnit_Framework_TestCase
     {
         $this->audienceType = AudienceType::EDUCATION();
 
+        $this->audience = new Audience($this->audienceType);
+
         $this->updateAudience = new UpdateAudience(
             '6eaaa9b6-d0d2-11e6-bf26-cec0c932ce01',
-            $this->audienceType
+            $this->audience
         );
     }
 
@@ -44,8 +52,8 @@ class UpdateAudienceTest extends \PHPUnit_Framework_TestCase
     public function it_stores_an_audience_type()
     {
         $this->assertEquals(
-            $this->audienceType,
-            $this->updateAudience->getAudienceType()
+            $this->audience,
+            $this->updateAudience->getAudience()
         );
     }
 }

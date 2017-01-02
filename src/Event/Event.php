@@ -37,7 +37,7 @@ use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -58,9 +58,9 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected $eventId;
 
     /**
-     * @var AudienceType
+     * @var Audience
      */
-    private $audienceType;
+    private $audience;
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -225,15 +225,15 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param AudienceType $audienceType
+     * @param Audience $audience
      */
     public function updateAudience(
-        AudienceType $audienceType
+        Audience $audience
     ) {
-        if ($this->audienceType !== $audienceType) {
+        if (is_null($this->audience) || !$this->audience->equals($audience)) {
             $this->apply(new AudienceUpdated(
                 $this->eventId,
-                $audienceType
+                $audience
             ));
         }
     }
@@ -243,7 +243,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function applyAudienceUpdated(AudienceUpdated $audienceUpdated)
     {
-        $this->audienceType = $audienceUpdated->getAudienceType();
+        $this->audience= $audienceUpdated->getAudience();
     }
 
     /**

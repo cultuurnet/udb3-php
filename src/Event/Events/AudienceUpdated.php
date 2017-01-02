@@ -2,36 +2,36 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 class AudienceUpdated extends AbstractEvent
 {
     /**
-     * @var AudienceType
+     * @var Audience
      */
-    private $audienceType;
+    private $audience;
 
     /**
      * AudienceUpdated constructor.
      * @param string $itemId
-     * @param AudienceType $audienceType
+     * @param Audience $audience
      */
     public function __construct(
         $itemId,
-        AudienceType $audienceType
+        Audience $audience
     ) {
         parent::__construct($itemId);
 
-        $this->audienceType = $audienceType;
+        $this->audience = $audience;
     }
 
     /**
-     * @return AudienceType
+     * @return Audience
      */
-    public function getAudienceType()
+    public function getAudience()
     {
-        return $this->audienceType;
+        return $this->audience;
     }
 
     /**
@@ -40,7 +40,7 @@ class AudienceUpdated extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'audience_type' => $this->audienceType->toNative()
+                'audience' => $this->audience->serialize()
             ];
     }
 
@@ -51,7 +51,7 @@ class AudienceUpdated extends AbstractEvent
     {
         return new static(
             $data['item_id'],
-            AudienceType::fromNative($data['audience_type'])
+            Audience::deserialize($data['audience'])
         );
     }
 }

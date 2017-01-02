@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
@@ -18,6 +19,11 @@ class AudienceUpdatedTest extends \PHPUnit_Framework_TestCase
     private $audienceType;
 
     /**
+     * @var Audience
+     */
+    private $audience;
+
+    /**
      * @var AudienceUpdated
      */
     private $audienceUpdated;
@@ -28,9 +34,13 @@ class AudienceUpdatedTest extends \PHPUnit_Framework_TestCase
 
         $this->audienceType = AudienceType::MEMBERS();
 
+        $this->audience = new Audience(
+            $this->audienceType
+        );
+
         $this->audienceUpdated = new AudienceUpdated(
             $this->itemId,
-            $this->audienceType
+            $this->audience
         );
     }
 
@@ -45,11 +55,11 @@ class AudienceUpdatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_an_audience_type()
+    public function it_stores_an_audience()
     {
         $this->assertEquals(
-            $this->audienceType,
-            $this->audienceUpdated->getAudienceType()
+            $this->audience,
+            $this->audienceUpdated->getAudience()
         );
     }
 
@@ -61,7 +71,7 @@ class AudienceUpdatedTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 'item_id' => $this->itemId,
-                'audience_type' => $this->audienceType->toNative(),
+                'audience' => $this->audience->serialize(),
             ],
             $this->audienceUpdated->serialize()
         );
@@ -75,7 +85,7 @@ class AudienceUpdatedTest extends \PHPUnit_Framework_TestCase
         $audienceUpdated = AudienceUpdated::deserialize(
             [
                 'item_id' => $this->itemId,
-                'audience_type' => $this->audienceType->toNative(),
+                'audience' => $this->audience->serialize(),
             ]
         );
 

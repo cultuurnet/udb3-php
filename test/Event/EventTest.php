@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location\Location;
@@ -500,12 +501,12 @@ class EventTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
-     * @dataProvider audienceTypeDataProvider
-     * @param AudienceType[] $audienceTypes
+     * @dataProvider audienceDataProvider
+     * @param Audience[] $audiences
      * @param AudienceUpdated[] $audienceUpdatedEvents
      */
     public function it_applies_the_audience_type(
-        $audienceTypes,
+        $audiences,
         $audienceUpdatedEvents
     ) {
         $this->scenario
@@ -513,9 +514,9 @@ class EventTest extends AggregateRootScenarioTestCase
                 $this->getCreationEvent()
             ])
             ->when(
-                function (Event $event) use ($audienceTypes) {
-                    foreach ($audienceTypes as $audienceType) {
-                        $event->updateAudience($audienceType);
+                function (Event $event) use ($audiences) {
+                    foreach ($audiences as $audiences) {
+                        $event->updateAudience($audiences);
                     }
                 }
             )
@@ -527,50 +528,50 @@ class EventTest extends AggregateRootScenarioTestCase
     /**
      * @return array
      */
-    public function audienceTypeDataProvider()
+    public function audienceDataProvider()
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
 
         return [
-            "single audience type" =>
+            'single audience type' =>
                 [
                     [
-                        AudienceType::MEMBERS(),
+                        new Audience(AudienceType::MEMBERS()),
                     ],
                     [
                         new AudienceUpdated(
                             $eventId,
-                            AudienceType::MEMBERS()
+                            new Audience(AudienceType::MEMBERS())
                         ),
                     ],
                 ],
-            "multiple audience types" =>
+            'multiple audience types' =>
                 [
                     [
-                        AudienceType::MEMBERS(),
-                        AudienceType::EVERYONE(),
+                        new Audience(AudienceType::MEMBERS()),
+                        new Audience(AudienceType::EVERYONE()),
                     ],
                     [
                         new AudienceUpdated(
                             $eventId,
-                            AudienceType::MEMBERS()
+                            new Audience(AudienceType::MEMBERS())
                         ),
                         new AudienceUpdated(
                             $eventId,
-                            AudienceType::EVERYONE()
+                            new Audience(AudienceType::EVERYONE())
                         ),
                     ],
                 ],
-            "equal audience types" =>
+            'equal audience types' =>
                 [
                     [
-                        AudienceType::MEMBERS(),
-                        AudienceType::MEMBERS(),
+                        new Audience(AudienceType::MEMBERS()),
+                        new Audience(AudienceType::MEMBERS()),
                     ],
                     [
                         new AudienceUpdated(
                             $eventId,
-                            AudienceType::MEMBERS()
+                            new Audience(AudienceType::MEMBERS())
                         ),
                     ],
                 ],

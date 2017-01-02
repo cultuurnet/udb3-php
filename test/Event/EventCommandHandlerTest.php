@@ -18,7 +18,9 @@ use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
+use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -27,6 +29,7 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -274,6 +277,51 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
             )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_audience()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                ]
+            )
+            ->when(
+                new UpdateAudience($eventId, AudienceType::EDUCATION())
+            )
+            ->then(
+                [
+                    new AudienceUpdated($eventId, AudienceType::EDUCATION()),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_same_audience()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                    new AudienceUpdated($eventId, AudienceType::EDUCATION()),
+                ]
+            )
+            ->when(
+                new UpdateAudience($eventId, AudienceType::EDUCATION())
+            )
+            ->then([]);
     }
 
     /**

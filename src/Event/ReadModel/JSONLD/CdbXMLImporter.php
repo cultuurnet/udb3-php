@@ -161,6 +161,11 @@ class CdbXMLImporter
                 $detail->getPrice(),
                 $event->getBookingPeriod()
             );
+
+            $this->cdbXmlContactInfoImporter->importContactPoint(
+                $jsonLD,
+                $event->getContactInfo()
+            );
         }
 
         $this->importPriceInfo($detail, $jsonLD);
@@ -183,13 +188,6 @@ class CdbXMLImporter
         $this->cdbXMLItemBaseImporter->importExternalId($event, $jsonLD);
 
         $this->importSeeAlso($event, $jsonLD);
-
-        if ($event->getContactInfo()) {
-            $this->cdbXmlContactInfoImporter->importContactPoint(
-                $jsonLD,
-                $event->getContactInfo()
-            );
-        }
 
         $this->cdbXMLItemBaseImporter->importWorkflowStatus($event, $jsonLD);
 

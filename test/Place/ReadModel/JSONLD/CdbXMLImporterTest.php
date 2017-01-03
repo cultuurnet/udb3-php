@@ -28,16 +28,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $fileName
+     * @param string $version
      * @return \stdClass
      */
-    private function createJsonPlaceFromCdbXml($fileName)
+    private function createJsonPlaceFromCdbXml($fileName, $version = '3.2')
     {
         $cdbXml = file_get_contents(
             __DIR__ . '/' . $fileName
         );
 
         $actor = ActorItemFactory::createActorFromCdbXml(
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL',
+            "http://www.cultuurdatabank.com/XMLSchema/CdbXSD/{$version}/FINAL",
             $cdbXml
         );
 
@@ -231,5 +232,17 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             ],
             $jsonPlace->openingHours
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_places_with_contact_info()
+    {
+        $jsonPlace = $this->createJsonPlaceFromCdbXml('place_with_contact_info.xml', '3.3');
+
+        $this->assertEquals('info@ouddommelhof.be', $jsonPlace->bookingInfo['email']);
+        $this->assertEquals(['+32 11 63 23 40'], $jsonPlace->contactPoint['phone']);
+        $this->assertEquals(['http://www.ouddommelhof.be'], $jsonPlace->contactPoint['url']);
     }
 }

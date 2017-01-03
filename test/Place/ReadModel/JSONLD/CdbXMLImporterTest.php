@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use InvalidArgumentException;
 
@@ -19,7 +20,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     {
         $this->importer = new CdbXMLImporter(
             new CdbXMLItemBaseImporter(),
-            new CalendarFactory()
+            new CalendarFactory(),
+            new CdbXmlContactInfoImporter()
         );
         date_default_timezone_set('Europe/Brussels');
     }
@@ -89,9 +91,9 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_copy_over_a_known_workflow_status()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXml('place_with_long_description.cdbxml.xml');
+        $jsonPlace = $this->createJsonPlaceFromCdbXml('place_with_long_description.cdbxml.xml');
 
-        $this->assertEquals('APPROVED', $jsonEvent->workflowStatus);
+        $this->assertEquals('APPROVED', $jsonPlace->workflowStatus);
     }
 
     /**
@@ -99,9 +101,9 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_mark_a_place_as_ready_for_validation_when_importing_without_a_workflow_status()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXml('place_with_image.cdbxml.xml');
+        $jsonPlace = $this->createJsonPlaceFromCdbXml('place_with_image.cdbxml.xml');
 
-        $this->assertEquals('READY_FOR_VALIDATION', $jsonEvent->workflowStatus);
+        $this->assertEquals('READY_FOR_VALIDATION', $jsonPlace->workflowStatus);
     }
 
     /**
@@ -109,7 +111,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_the_workflow_status_is_unknown()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->createJsonPlaceFromCdbXml('place_with_unknown_workflow_status.cdbxml.xml');
     }
 
@@ -118,8 +120,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_place_without_week_scheme()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_no_week_scheme.xml');
-        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $jsonPlace = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_no_week_scheme.xml');
+        $this->assertEquals('permanent', $jsonPlace->calendarType);
     }
 
     /**
@@ -127,8 +129,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_place_with_week_scheme()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme.xml');
-        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $jsonPlace = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme.xml');
+        $this->assertEquals('permanent', $jsonPlace->calendarType);
         $this->assertEquals(
             [
                 [
@@ -143,7 +145,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                     'closes' => '17:00',
                 ],
             ],
-            $jsonEvent->openingHours
+            $jsonPlace->openingHours
         );
     }
 
@@ -152,8 +154,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_place_with_week_scheme_no_hours()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_no_hours.xml');
-        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $jsonPlace = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_no_hours.xml');
+        $this->assertEquals('permanent', $jsonPlace->calendarType);
         $this->assertEquals(
             [
                 [
@@ -164,7 +166,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                     'closes' => '00:00',
                 ],
             ],
-            $jsonEvent->openingHours
+            $jsonPlace->openingHours
         );
     }
 
@@ -173,8 +175,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_place_with_week_scheme_no_closing_hours()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_no_closing_hours.xml');
-        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $jsonPlace = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_no_closing_hours.xml');
+        $this->assertEquals('permanent', $jsonPlace->calendarType);
         $this->assertEquals(
             [
                 [
@@ -191,7 +193,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                     'closes' => '11:00',
                 ],
             ],
-            $jsonEvent->openingHours
+            $jsonPlace->openingHours
         );
     }
 
@@ -200,8 +202,8 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_place_with_week_scheme_missing_closing_hours()
     {
-        $jsonEvent = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_missing_closing_hours.xml');
-        $this->assertEquals('permanent', $jsonEvent->calendarType);
+        $jsonPlace = $this->createJsonPlaceFromCdbXmlWithWeekScheme('place_with_week_scheme_missing_closing_hours.xml');
+        $this->assertEquals('permanent', $jsonPlace->calendarType);
         $this->assertEquals(
             [
                 [
@@ -227,7 +229,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                     'closes' => '19:00',
                 ],
             ],
-            $jsonEvent->openingHours
+            $jsonPlace->openingHours
         );
     }
 }

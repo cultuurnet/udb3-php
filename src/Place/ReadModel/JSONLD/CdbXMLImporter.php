@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
-use CultureFeed_Cdb_Data_File;
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\LabelImporter;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 
 /**
@@ -27,15 +27,23 @@ class CdbXMLImporter
     private $calendarFactory;
 
     /**
+     * @var CdbXmlContactInfoImporterInterface
+     */
+    private $cdbXmlContactInfoImporter;
+
+    /**
      * @param CdbXMLItemBaseImporter $dbXMLItemBaseImporter
      * @param CalendarFactoryInterface $calendarFactory
+     * @param CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
      */
     public function __construct(
         CdbXMLItemBaseImporter $dbXMLItemBaseImporter,
-        CalendarFactoryInterface $calendarFactory
+        CalendarFactoryInterface $calendarFactory,
+        CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
     ) {
         $this->cdbXMLItemBaseImporter = $dbXMLItemBaseImporter;
         $this->calendarFactory = $calendarFactory;
+        $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
     }
 
     /**
@@ -120,21 +128,19 @@ class CdbXMLImporter
             }
         }
 
-        // Booking info.
-        $bookingInfo = array(
-            'description' => '',
-            'name' => 'standard price',
-            'price' => 0.0,
-            'priceCurrency' => 'EUR',
-        );
-        $price = $detail->getPrice();
+        if ($item->getContactInfo()) {
+            $this->cdbXmlContactInfoImporter->importBookingInfo(
+                $jsonLD,
+                $item->getContactInfo(),
+                $detail->getPrice(),
+                null
+            );
 
-        if ($price) {
-            $bookingInfo['description'] = floatval($price->getDescription());
-            $bookingInfo['name'] = floatval($price->getTitle());
-            $bookingInfo['price'] = floatval($price->getValue());
+            $this->cdbXmlContactInfoImporter->importContactPoint(
+                $jsonLD,
+                $item->getContactInfo()
+            );
         }
-        $jsonLD->bookingInfo = $bookingInfo;
 
         $labelImporter = new LabelImporter();
         $labelImporter->importLabels($item, $jsonLD);

@@ -7,7 +7,7 @@ class AudienceTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_has_specified_options()
+    public function it_should_instantiate_audience_type_enums_by_a_name()
     {
         $options = AudienceType::getConstants();
 

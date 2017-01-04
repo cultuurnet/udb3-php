@@ -313,7 +313,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_does_not_update_same_audience()
+    public function it_should_ignore_updating_the_audience_when_the_same_audience_type_is_already_set()
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
 

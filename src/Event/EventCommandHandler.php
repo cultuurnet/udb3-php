@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\SelectMainImage;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
+use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
@@ -39,6 +40,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
 
     /**
      * Handle an update the major info command.
+     * @param UpdateMajorInfo $updateMajorInfo
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {
@@ -56,6 +58,19 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
 
         $this->offerRepository->save($event);
 
+    }
+
+    /**
+     * @param UpdateAudience $updateAudience
+     */
+    public function handleUpdateAudience(UpdateAudience $updateAudience)
+    {
+        /** @var Event $event */
+        $event = $this->offerRepository->load($updateAudience->getItemId());
+
+        $event->updateAudience($updateAudience->getAudience());
+
+        $this->offerRepository->save($event);
     }
 
     /**

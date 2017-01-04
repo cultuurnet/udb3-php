@@ -7,6 +7,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
@@ -36,6 +37,7 @@ use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -54,6 +56,11 @@ use ValueObjects\String\String as StringLiteral;
 class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
     protected $eventId;
+
+    /**
+     * @var Audience
+     */
+    private $audience;
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -215,6 +222,28 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
+    }
+
+    /**
+     * @param Audience $audience
+     */
+    public function updateAudience(
+        Audience $audience
+    ) {
+        if (is_null($this->audience) || !$this->audience->equals($audience)) {
+            $this->apply(new AudienceUpdated(
+                $this->eventId,
+                $audience
+            ));
+        }
+    }
+
+    /**
+     * @param AudienceUpdated $audienceUpdated
+     */
+    public function applyAudienceUpdated(AudienceUpdated $audienceUpdated)
+    {
+        $this->audience= $audienceUpdated->getAudience();
     }
 
     /**

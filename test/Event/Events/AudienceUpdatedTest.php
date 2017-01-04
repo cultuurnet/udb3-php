@@ -47,9 +47,9 @@ class AudienceUpdatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_derives_from_abstract_event()
+    public function it_should_identify_the_updated_event_by_item_id()
     {
-        $this->assertInstanceOf(AbstractEvent::class, $this->audienceUpdated);
+        $this->assertEquals('6eaaa9b6-d0d2-11e6-bf26-cec0c932ce01', $this->audienceUpdated->getItemId());
     }
 
     /**

@@ -6,6 +6,7 @@ use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\LabelImporter;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
@@ -52,21 +53,29 @@ class CdbXMLImporter
     private $calendarFactory;
 
     /**
+     * @var CdbXmlContactInfoImporterInterface
+     */
+    private $cdbXmlContactInfoImporter;
+
+    /**
      * @param CdbXMLItemBaseImporter $cdbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
      * @param PriceDescriptionParser $priceDescriptionParser
      * @param CalendarFactoryInterface $calendarFactory
+     * @param CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
      */
     public function __construct(
         CdbXMLItemBaseImporter $cdbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
         PriceDescriptionParser $priceDescriptionParser,
-        CalendarFactoryInterface $calendarFactory
+        CalendarFactoryInterface $calendarFactory,
+        CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
     ) {
         $this->cdbXMLItemBaseImporter = $cdbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
         $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
+        $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
 
         $consecutiveBlockOfTextFilter = new ConsecutiveBlockOfTextStringFilter();
 
@@ -145,7 +154,19 @@ class CdbXMLImporter
 
         $this->importOrganizer($event, $organizerManager, $jsonLD);
 
-        $this->importBookingInfo($event, $detail, $jsonLD);
+        if ($event->getContactInfo()) {
+            $this->cdbXmlContactInfoImporter->importBookingInfo(
+                $jsonLD,
+                $event->getContactInfo(),
+                $detail->getPrice(),
+                $event->getBookingPeriod()
+            );
+
+            $this->cdbXmlContactInfoImporter->importContactPoint(
+                $jsonLD,
+                $event->getContactInfo()
+            );
+        }
 
         $this->importPriceInfo($detail, $jsonLD);
 
@@ -168,25 +189,9 @@ class CdbXMLImporter
 
         $this->importSeeAlso($event, $jsonLD);
 
-        $this->importContactPoint($event, $jsonLD);
-
         $this->cdbXMLItemBaseImporter->importWorkflowStatus($event, $jsonLD);
 
         return $jsonLD;
-    }
-
-    /**
-     * @param int $unixTime
-     * @return \DateTime
-     */
-    private function dateFromUdb2UnixTime($unixTime)
-    {
-        $dateTime = new \DateTime(
-            '@' . $unixTime,
-            new \DateTimeZone('Europe/Brussels')
-        );
-
-        return $dateTime;
     }
 
     /**
@@ -361,138 +366,6 @@ class CdbXMLImporter
 
             if (!empty($priceInfo)) {
                 $jsonLD->priceInfo = $priceInfo;
-            }
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \CultureFeed_Cdb_Data_EventDetail $detail
-     * @param \stdClass $jsonLD
-     */
-    private function importBookingInfo(
-        \CultureFeed_Cdb_Item_Event $event,
-        \CultureFeed_Cdb_Data_EventDetail $detail,
-        $jsonLD
-    ) {
-        $bookingInfo = array();
-
-        $price = $detail->getPrice();
-        if ($price) {
-            if ($price->getDescription()) {
-                $bookingInfo['description'] = $price->getDescription();
-            }
-            if ($price->getTitle()) {
-                $bookingInfo['name'] = $price->getTitle();
-            }
-            if ($price->getValue() !== null) {
-                $bookingInfo['priceCurrency'] = 'EUR';
-                $bookingInfo['price'] = floatval($price->getValue());
-            }
-            if ($bookingPeriod = $event->getBookingPeriod()) {
-                $startDate = $this->dateFromUdb2UnixTime($bookingPeriod->getDateFrom());
-                $endDate = $this->dateFromUdb2UnixTime($bookingPeriod->getDateTill());
-
-                $bookingInfo['availabilityStarts'] = $startDate->format('c');
-                $bookingInfo['availabilityEnds'] = $endDate->format('c');
-            }
-        }
-
-        // Add reservation contact data.
-        $contactInfo = $event->getContactInfo();
-        if ($contactInfo) {
-            /** @var \CultureFeed_Cdb_Data_Url[] $urls */
-            $urls = $contactInfo->getUrls();
-            foreach ($urls as $url) {
-                if ($url->isForReservations()) {
-                    $bookingInfo['url'] = $url->getUrl();
-                    break;
-                }
-            }
-
-            if (array_key_exists('url', $bookingInfo)) {
-                $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
-            }
-
-            /** @var \CultureFeed_Cdb_Data_Phone[] $phones */
-            $phones = $contactInfo->getPhones();
-            foreach ($phones as $phone) {
-                if ($phone->isForReservations()) {
-                    $bookingInfo['phone'] = $phone->getNumber();
-                    break;
-                }
-            }
-
-            foreach ($contactInfo->getMails() as $mail) {
-                if ($mail->isForReservations()) {
-                    $bookingInfo['email'] = $mail->getMailAddress();
-                    break;
-                }
-            }
-        }
-
-        if (!empty($bookingInfo)) {
-            $jsonLD->bookingInfo = $bookingInfo;
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
-    private function importContactPoint(
-        \CultureFeed_Cdb_Item_Event $event,
-        \stdClass $jsonLD
-    ) {
-        $contactInfo = $event->getContactInfo();
-
-        $notForReservations = function ($item) {
-            /** @var \CultureFeed_Cdb_Data_Url|\CultureFeed_Cdb_Data_Phone|\CultureFeed_Cdb_Data_Mail $item */
-            return !$item->isForReservations();
-        };
-
-        if ($contactInfo) {
-            $contactPoint = array();
-
-            $emails = array_filter($contactInfo->getMails(), $notForReservations);
-
-            if (!empty($emails)) {
-                $contactPoint['email'] = array_map(
-                    function (\CultureFeed_Cdb_Data_Mail $email) {
-                        return $email->getMailAddress();
-                    },
-                    $emails
-                );
-                $contactPoint['email'] = array_values($contactPoint['email']);
-            }
-
-            $phones = array_filter($contactInfo->getPhones(), $notForReservations);
-
-            if (!empty($phones)) {
-                $contactPoint['phone'] = array_map(
-                    function (\CultureFeed_Cdb_Data_phone $phone) {
-                        return $phone->getNumber();
-                    },
-                    $phones
-                );
-                $contactPoint['phone'] = array_values($contactPoint['phone']);
-            }
-
-            $urls = array_filter($contactInfo->getUrls(), $notForReservations);
-
-            if (!empty($urls)) {
-                $contactPoint['url'] = array_map(
-                    function (\CultureFeed_Cdb_Data_Url $url) {
-                        return $url->getUrl();
-                    },
-                    $urls
-                );
-                $contactPoint['url'] = array_values($contactPoint['url']);
-            }
-
-            array_filter($contactPoint);
-            if (!empty($contactPoint)) {
-                $jsonLD->contactPoint = $contactPoint;
             }
         }
     }

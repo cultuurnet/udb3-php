@@ -35,10 +35,14 @@ class CdbXmlContactInfoImporterTest extends \PHPUnit_Framework_TestCase
             null
         );
 
-        $this->assertEquals('info@2dotstwice.be', $jsonLd->bookingInfo['email']);
-        $this->assertEquals('987654321', $jsonLd->bookingInfo['phone']);
-        $this->assertEquals('www.2dotstwice.be', $jsonLd->bookingInfo['url']);
-        $this->assertEquals('Reserveer plaatsen', $jsonLd->bookingInfo['urlLabel']);
+        $expectedBookingInfo = [
+            'email' => 'info@2dotstwice.be',
+            'phone' => '987654321',
+            'url' => 'www.2dotstwice.be',
+            'urlLabel' => 'Reserveer plaatsen',
+        ];
+
+        $this->assertEquals($expectedBookingInfo, $jsonLd->bookingInfo);
     }
 
     /**
@@ -65,12 +69,16 @@ class CdbXmlContactInfoImporterTest extends \PHPUnit_Framework_TestCase
             $cdbBookingPeriod
         );
 
-        $this->assertEquals('Prijs voor volwassen.', $jsonLd->bookingInfo['description']);
-        $this->assertEquals('Volwassen.', $jsonLd->bookingInfo['name']);
-        $this->assertEquals(9.99, $jsonLd->bookingInfo['price']);
-        $this->assertEquals('EUR', $jsonLd->bookingInfo['priceCurrency']);
-        $this->assertEquals('2017-01-01T08:10:10+00:00', $jsonLd->bookingInfo['availabilityStarts']);
-        $this->assertEquals('2017-01-03T17:25:25+00:00', $jsonLd->bookingInfo['availabilityEnds']);
+        $expectedBookingInfo = [
+            'description' => 'Prijs voor volwassen.',
+            'name' => 'Volwassen.',
+            'price' => 9.99,
+            'priceCurrency' => 'EUR',
+            'availabilityStarts' => '2017-01-01T08:10:10+00:00',
+            'availabilityEnds' => '2017-01-03T17:25:25+00:00',
+        ];
+
+        $this->assertEquals($expectedBookingInfo, $jsonLd->bookingInfo);
     }
 
     /**
@@ -85,29 +93,22 @@ class CdbXmlContactInfoImporterTest extends \PHPUnit_Framework_TestCase
             $this->cdbContactInfo
         );
 
-        $this->assertEquals(
-            [
+        $expectedContactPoint = [
+            'email' => [
                 'info@cultuurnet.be',
                 'info@gmail.com',
             ],
-            $jsonLd->contactPoint['email']
-        );
-
-        $this->assertEquals(
-            [
+            'phone' => [
                 '89898989',
                 '12121212'
             ],
-            $jsonLd->contactPoint['phone']
-        );
-
-        $this->assertEquals(
-            [
+            'url' => [
                 'www.cultuurnet.be',
                 'www.booking.com',
-            ],
-            $jsonLd->contactPoint['url']
-        );
+            ]
+        ];
+
+        $this->assertEquals($expectedContactPoint, $jsonLd->contactPoint);
     }
 
     /**

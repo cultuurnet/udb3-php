@@ -5,6 +5,8 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
@@ -190,6 +192,8 @@ class CdbXMLImporter
         $this->importSeeAlso($event, $jsonLD);
 
         $this->cdbXMLItemBaseImporter->importWorkflowStatus($event, $jsonLD);
+
+        $this->importAudience($event, $jsonLD);
 
         return $jsonLD;
     }
@@ -509,6 +513,21 @@ class CdbXMLImporter
         if (!in_array($reference, $jsonLD->sameAs)) {
             array_push($jsonLD->sameAs, $reference);
         }
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Event $event
+     * @param \stdClass $jsonLD
+     */
+    private function importAudience(\CultureFeed_Cdb_Item_Event $event, \stdClass $jsonLD)
+    {
+        $eventIsPrivate = !!$event->isPrivate();
+        $evenTargetsEducation = $eventIsPrivate && $event->getCategories()->hasCategory('2.1.3.0.0');
+
+        $audienceType = $evenTargetsEducation ? 'education' : ($eventIsPrivate ? 'members' : 'everyone');
+        $audience = new Audience(AudienceType::fromNative($audienceType));
+
+        $jsonLD->audience = $audience->serialize();
     }
 
     /**

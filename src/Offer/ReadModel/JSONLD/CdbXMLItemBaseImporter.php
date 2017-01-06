@@ -2,15 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
-use CultureFeed_Cdb_Data_Detail;
-use CultureFeed_Cdb_Data_File;
-use CultureFeed_Cdb_Data_Media;
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
-use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use stdClass;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 
 class CdbXMLItemBaseImporter
 {

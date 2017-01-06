@@ -14,14 +14,27 @@ class OrganizerProjectedToJSONLD
 
     /**
      * @param string $id
+     * @param string $iri
      */
-    public function __construct($id)
+    public function __construct($id, $iri)
     {
-        $this->id = $id;
+        $this->id = (string) $id;
+        $this->iri = (string) $iri;
     }
 
+    /**
+     * @return string
+     */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIri()
+    {
+        return $this->iri;
     }
 }

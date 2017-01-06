@@ -1081,7 +1081,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ],
         ];
 
-        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD($organizerId);
+        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
+            $organizerId,
+            'organizers/' . $organizerId
+        );
 
         $this->projector->handle(
             DomainMessage::recordNow(

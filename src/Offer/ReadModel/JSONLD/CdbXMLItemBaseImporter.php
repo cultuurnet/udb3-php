@@ -5,17 +5,16 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
-use stdClass;
 
 class CdbXMLItemBaseImporter
 {
     /**
      * @param CultureFeed_Cdb_Item_Base $item
-     * @param stdClass $jsonLD
+     * @param \stdClass $jsonLD
      */
     public function importPublicationInfo(
         CultureFeed_Cdb_Item_Base $item,
-        stdClass $jsonLD
+        \stdClass $jsonLD
     ) {
         $jsonLD->creator = $item->getCreatedBy();
 
@@ -45,7 +44,7 @@ class CdbXMLItemBaseImporter
 
     /**
      * @param CultureFeed_Cdb_Item_Base $item
-     * @param stdClass $jsonLD
+     * @param \stdClass $jsonLD
      */
     public function importAvailable(
         \CultureFeed_Cdb_Item_Base $item,
@@ -63,7 +62,7 @@ class CdbXMLItemBaseImporter
 
     /**
      * @param CultureFeed_Cdb_Item_Base $item
-     * @param stdClass $jsonLD
+     * @param \stdClass $jsonLD
      */
     public function importExternalId(
         \CultureFeed_Cdb_Item_Base $item,
@@ -89,7 +88,7 @@ class CdbXMLItemBaseImporter
 
     /**
      * @param CultureFeed_Cdb_Item_Base $item
-     * @param stdClass $jsonLD
+     * @param \stdClass $jsonLD
      */
     public function importWorkflowStatus(
         CultureFeed_Cdb_Item_Base $item,

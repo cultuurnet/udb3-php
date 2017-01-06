@@ -64,7 +64,7 @@ class CopyEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->originalEventId,
-            $this->copyEvent->getOriginalEventUuid()
+            $this->copyEvent->getOriginalEventId()
         );
     }
 

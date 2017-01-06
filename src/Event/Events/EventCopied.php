@@ -11,7 +11,7 @@ class EventCopied extends AbstractEvent
     /**
      * @var string
      */
-    private $originalEventUuid;
+    private $originalEventId;
 
     /**
      * @var CalendarInterface|Calendar
@@ -21,26 +21,26 @@ class EventCopied extends AbstractEvent
     /**
      * EventCopied constructor.
      * @param string $eventId
-     * @param string $originalEventUuid
+     * @param string $originalEventId
      * @param CalendarInterface $calendar
      */
     public function __construct(
         $eventId,
-        $originalEventUuid,
+        $originalEventId,
         CalendarInterface $calendar
     ) {
         parent::__construct($eventId);
 
-        $this->originalEventUuid = $originalEventUuid;
+        $this->originalEventId = $originalEventId;
         $this->calendar = $calendar;
     }
 
     /**
      * @return string
      */
-    public function getOriginalEventUuid()
+    public function getOriginalEventId()
     {
-        return $this->originalEventUuid;
+        return $this->originalEventId;
     }
 
     /**
@@ -57,7 +57,7 @@ class EventCopied extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'original_event_id' => $this->getOriginalEventUuid(),
+                'original_event_id' => $this->getOriginalEventId(),
                 'calendar' => $this->calendar->serialize()
             ];
     }

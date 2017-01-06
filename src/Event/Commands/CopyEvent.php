@@ -10,7 +10,7 @@ class CopyEvent extends AbstractCommand
     /**
      * @var string
      */
-    private $originalEventUuid;
+    private $originalEventId;
 
     /**
      * @var CalendarInterface
@@ -20,26 +20,26 @@ class CopyEvent extends AbstractCommand
     /**
      * CopyEvent constructor.
      * @param string $eventId
-     * @param string $originalEventUuid
+     * @param string $originalEventId
      * @param CalendarInterface $calendar
      */
     public function __construct(
         $eventId,
-        $originalEventUuid,
+        $originalEventId,
         CalendarInterface $calendar
     ) {
         parent::__construct($eventId);
 
-        $this->originalEventUuid = $originalEventUuid;
+        $this->originalEventId = $originalEventId;
         $this->calendar = $calendar;
     }
 
     /**
      * @return string
      */
-    public function getOriginalEventUuid()
+    public function getOriginalEventId()
     {
-        return $this->originalEventUuid;
+        return $this->originalEventId;
     }
 
     /**

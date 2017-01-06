@@ -521,7 +521,7 @@ class CdbXMLImporter
      */
     private function importAudience(\CultureFeed_Cdb_Item_Event $event, \stdClass $jsonLD)
     {
-        $eventIsPrivate = !!$event->isPrivate();
+        $eventIsPrivate = (bool) $event->isPrivate();
         $eventTargetsEducation = $eventIsPrivate && $event->getCategories()->hasCategory('2.1.3.0.0');
 
         $audienceType = $eventTargetsEducation ? 'education' : ($eventIsPrivate ? 'members' : 'everyone');

@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
+use CultuurNet\UDB3\Event\Commands\CopyEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
@@ -39,12 +40,25 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     use LoggerAwareTrait;
 
     /**
+     * @param CopyEvent $copyEvent
+     */
+    public function handleCopyEvent(CopyEvent $copyEvent)
+    {
+        $event = Event::copyEvent(
+            $copyEvent->getItemId(),
+            $copyEvent->getOriginalEventId(),
+            $copyEvent->getCalendar()
+        );
+
+        $this->offerRepository->save($event);
+    }
+
+    /**
      * Handle an update the major info command.
      * @param UpdateMajorInfo $updateMajorInfo
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {
-
         /** @var Event $event */
         $event = $this->offerRepository->load($updateMajorInfo->getItemId());
 

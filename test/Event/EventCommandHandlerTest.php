@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
+use CultuurNet\UDB3\Event\Commands\CopyEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
@@ -22,6 +23,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
@@ -107,6 +109,21 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ),
             new Calendar(CalendarType::PERMANENT())
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_copy_event()
+    {
+        $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
+        $calendar = new Calendar(CalendarType::SINGLE(), new \DateTime());
+
+        $this->scenario
+            ->given([])
+            ->when(new CopyEvent($eventId, $originalEventId, $calendar))
+            ->then([new EventCopied($eventId, $originalEventId, $calendar)]);
     }
 
     /**

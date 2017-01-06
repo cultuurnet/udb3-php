@@ -9,6 +9,11 @@ use CultuurNet\UDB3\ReadModel\DocumentEventFactory;
 class EventFactory implements DocumentEventFactory
 {
     /**
+     * @var IriGeneratorInterface
+     */
+    private $iriGenerator;
+
+    /**
      * @param IriGeneratorInterface $iriGenerator
      */
     public function __construct(IriGeneratorInterface $iriGenerator)
@@ -22,6 +27,7 @@ class EventFactory implements DocumentEventFactory
     public function createEvent($id)
     {
         return new PlaceProjectedToJSONLD(
+            $id,
             $this->iriGenerator->iri($id)
         );
     }

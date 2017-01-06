@@ -29,11 +29,11 @@ class EventFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_converts_the_id_to_an_iri_when_creating_the_event()
+    public function it_adds_an_iri_based_on_the_id_when_creating_the_event()
     {
         $id = '1';
         $iri = 'place/1';
-        $expectedEvent = new PlaceProjectedToJSONLD($iri);
+        $expectedEvent = new PlaceProjectedToJSONLD($id, $iri);
 
         $this->iriGenerator->expects($this->once())
             ->method('iri')

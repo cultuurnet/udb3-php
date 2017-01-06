@@ -261,12 +261,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             [
                 'some-event-id',
                 'http://acme.org/event/some-event-id',
-                new EventProjectedToJSONLD('http://acme.org/event/some-event-id'),
+                new EventProjectedToJSONLD('some-event-id', 'http://acme.org/event/some-event-id'),
             ],
             [
                 'some-place-id',
                 'http://acme.org/event/some-place-id',
-                new PlaceProjectedToJSONLD('http://acme.org/event/some-place-id'),
+                new PlaceProjectedToJSONLD('some-place-id', 'http://acme.org/event/some-place-id'),
             ],
         ];
     }

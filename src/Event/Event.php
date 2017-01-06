@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -72,13 +73,13 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * Factory method to create a new event.
      *
+     * @param $eventId
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param \DateTimeImmutable|null $publicationDate
-     *
      * @return Event
      */
     public static function create(
@@ -90,12 +91,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null,
         \DateTimeImmutable $publicationDate = null
     ) {
-        if (!is_string($eventId)) {
-            throw new \InvalidArgumentException(
-                'Expected eventId to be a string, received ' . gettype($eventId)
-            );
-        }
-
         $event = new self();
 
         $event->apply(
@@ -107,6 +102,30 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
                 $calendar,
                 $theme,
                 $publicationDate
+            )
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param string $eventId
+     * @param string $originalEventId
+     * @param CalendarInterface $calendar
+     * @return Event
+     */
+    public static function copyEvent(
+        $eventId,
+        $originalEventId,
+        CalendarInterface $calendar
+    ) {
+        $event = new self();
+
+        $event->apply(
+            new EventCopied(
+                $eventId,
+                $originalEventId,
+                $calendar
             )
         );
 
@@ -171,6 +190,15 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->workflowStatus = WorkflowStatus::DRAFT();
+    }
+
+    /**
+     * @param EventCopied $eventCopied
+     */
+    protected function applyEventCopied(EventCopied $eventCopied)
+    {
+        $this->eventId = $eventCopied->getItemId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 

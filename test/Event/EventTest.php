@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -96,10 +97,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_throws_an_error_when_creating_an_event_with_a_non_string_eventid()
     {
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Expected eventId to be a string, received integer'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected eventId to be a string, received integer');
 
         $event = Event::create(
             101,
@@ -117,6 +116,37 @@ class EventTest extends AggregateRootScenarioTestCase
             ),
             new Calendar(CalendarType::PERMANENT())
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_copy_event()
+    {
+        $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+
+        $this->scenario
+            ->when(function () use ($eventId, $originalEventId, $calendar) {
+                return Event::copyEvent(
+                    $eventId,
+                    $originalEventId,
+                    $calendar
+                );
+            })
+            ->then(
+                [
+                    new EventCopied(
+                        $eventId,
+                        $originalEventId,
+                        $calendar
+                    )
+                ]
+            );
     }
 
     /**
@@ -515,8 +545,8 @@ class EventTest extends AggregateRootScenarioTestCase
             ])
             ->when(
                 function (Event $event) use ($audiences) {
-                    foreach ($audiences as $audiences) {
-                        $event->updateAudience($audiences);
+                    foreach ($audiences as $audience) {
+                        $event->updateAudience($audience);
                     }
                 }
             )

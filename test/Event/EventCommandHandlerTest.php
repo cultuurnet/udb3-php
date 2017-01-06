@@ -114,21 +114,6 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_copy_event()
-    {
-        $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
-        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
-        $calendar = new Calendar(CalendarType::SINGLE(), new \DateTime());
-
-        $this->scenario
-            ->given([])
-            ->when(new CopyEvent($eventId, $originalEventId, $calendar))
-            ->then([new EventCopied($eventId, $originalEventId, $calendar)]);
-    }
-
-    /**
-     * @test
-     */
     public function it_can_translate_the_title_of_an_event()
     {
         $id = '1';

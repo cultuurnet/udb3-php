@@ -978,4 +978,40 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             $jsonEvent->description['nl']
         );
     }
+
+    /**
+     * @test
+     * @group issue-III-1706
+     * @dataProvider audienceProvider
+     *
+     * @param string $cdbxmlFile
+     * @param array $expectedAudience
+     */
+    public function it_should_import_audience($cdbxmlFile, $expectedAudience)
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, '3.3');
+        $this->assertEquals($expectedAudience, $jsonEvent->audience);
+    }
+
+    public function audienceProvider()
+    {
+        return [
+            "import event without property 'private' as audienceType 'everyone'" => [
+                'event_without_private_attribute.xml',
+                ['audienceType' => 'everyone'],
+            ],
+            "import event with value 'private=false' as audienceType 'everyone'" => [
+                'event_with_private_attribute_false.xml',
+                ['audienceType' => 'everyone'],
+            ],
+            "import event with value 'private=true' as audienceType 'members'" => [
+                'event_with_private_attribute_true.xml',
+                ['audienceType' => 'members'],
+            ],
+            "import event with value 'private=true' AND category_id '2.1.3.0.0' as audienceType 'education'" => [
+                'event_with_private_attribute_true_and_education_category.xml',
+                ['audienceType' => 'education'],
+            ],
+        ];
+    }
 }

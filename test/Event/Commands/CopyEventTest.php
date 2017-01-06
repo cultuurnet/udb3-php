@@ -89,4 +89,44 @@ class CopyEventTest extends \PHPUnit_Framework_TestCase
             $this->copyEvent->getPermission()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_requires_a_string_as_event_id()
+    {
+        $eventId = false;
+        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected itemId to be a string, received boolean'
+        );
+
+        new CopyEvent($eventId, $originalEventId, $calendar);
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_a_string_as_original_event_id()
+    {
+        $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $originalEventId = false;
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected originalEventId to be a string, received boolean'
+        );
+
+        new CopyEvent($eventId, $originalEventId, $calendar);
+    }
 }

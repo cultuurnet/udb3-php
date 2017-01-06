@@ -30,6 +30,12 @@ class CopyEvent extends AbstractCommand
     ) {
         parent::__construct($eventId);
 
+        if (!is_string($originalEventId)) {
+            throw new \InvalidArgumentException(
+                'Expected originalEventId to be a string, received ' . gettype($originalEventId)
+            );
+        }
+
         $this->originalEventId = $originalEventId;
         $this->calendar = $calendar;
     }

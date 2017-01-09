@@ -65,7 +65,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_load_an_aggregate_of_a_certain_type()
+    public function it_can_load_an_aggregate_by_its_id()
     {
         $uuid = new UUID();
         $domainMessage = $this->createDomainMessage($uuid);
@@ -103,7 +103,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_append_to_an_aggregate_of_a_certain_type()
+    public function it_can_append_to_an_aggregate()
     {
         $uuid = new UUID();
         $domainMessage = $this->createDomainMessage($uuid);

@@ -506,11 +506,10 @@ class EventLDProjector extends OfferLDProjector implements
         $jsonLD->terms = array_filter($jsonLD->terms, function ($term) {
             return $term->domain !== EventType::DOMAIN &&  $term->domain !== Theme::DOMAIN;
         });
+        $jsonLD->terms = array_values($jsonLD->terms);
 
         $eventType = $majorInfoUpdated->getEventType();
-        $jsonLD->terms = [
-            $eventType->toJsonLd()
-        ];
+        $jsonLD->terms[] = $eventType->toJsonLd();
 
         $theme = $majorInfoUpdated->getTheme();
         if (!empty($theme)) {

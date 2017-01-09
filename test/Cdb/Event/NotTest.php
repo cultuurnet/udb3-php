@@ -15,7 +15,7 @@ class NotTest extends PHPUnit_Framework_TestCase
      */
     public function it_negates_another_specification()
     {
-        $otherSpec = $this->getMock(SpecificationInterface::class);
+        $otherSpec = $this->createMock(SpecificationInterface::class);
 
         $event = new CultureFeed_Cdb_Item_Event();
 

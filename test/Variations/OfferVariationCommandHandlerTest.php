@@ -34,8 +34,8 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
 
     public function setUp()
     {
-        $this->generator = $this->getMock(UuidGeneratorInterface::class);
-        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->generator = $this->createMock(UuidGeneratorInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         parent::setUp();
     }
 

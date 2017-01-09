@@ -23,8 +23,8 @@ class PlaceOrganizerRelationServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->editService = $this->getMock(PlaceEditingServiceInterface::class);
-        $this->relationRepository = $this->getMock(RepositoryInterface::class);
+        $this->editService = $this->createMock(PlaceEditingServiceInterface::class);
+        $this->relationRepository = $this->createMock(RepositoryInterface::class);
 
         $this->organizerRelationService = new PlaceOrganizerRelationService(
             $this->editService,

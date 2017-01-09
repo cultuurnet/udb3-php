@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
 
@@ -48,11 +49,12 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 new NumberFormatRepository(),
                 new CurrencyRepository()
             ),
-            new CalendarFactory()
+            new CalendarFactory(),
+            new CdbXmlContactInfoImporter()
         );
-        $this->organizerManager = $this->getMock(OrganizerServiceInterface::class);
-        $this->placeManager = $this->getMock(PlaceServiceInterface::class);
-        $this->slugger = $this->getMock(SluggerInterface::class);
+        $this->organizerManager = $this->createMock(OrganizerServiceInterface::class);
+        $this->placeManager = $this->createMock(PlaceServiceInterface::class);
+        $this->slugger = $this->createMock(SluggerInterface::class);
         date_default_timezone_set('Europe/Brussels');
     }
 
@@ -975,5 +977,41 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             file_get_contents(__DIR__ . '/' . $expectedDescriptionFile),
             $jsonEvent->description['nl']
         );
+    }
+
+    /**
+     * @test
+     * @group issue-III-1706
+     * @dataProvider audienceProvider
+     *
+     * @param string $cdbxmlFile
+     * @param array $expectedAudience
+     */
+    public function it_should_import_audience($cdbxmlFile, $expectedAudience)
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml($cdbxmlFile, '3.3');
+        $this->assertEquals($expectedAudience, $jsonEvent->audience);
+    }
+
+    public function audienceProvider()
+    {
+        return [
+            "import event without property 'private' as audienceType 'everyone'" => [
+                'event_without_private_attribute.xml',
+                ['audienceType' => 'everyone'],
+            ],
+            "import event with value 'private=false' as audienceType 'everyone'" => [
+                'event_with_private_attribute_false.xml',
+                ['audienceType' => 'everyone'],
+            ],
+            "import event with value 'private=true' as audienceType 'members'" => [
+                'event_with_private_attribute_true.xml',
+                ['audienceType' => 'members'],
+            ],
+            "import event with value 'private=true' AND category_id '2.1.3.0.0' as audienceType 'education'" => [
+                'event_with_private_attribute_true_and_education_category.xml',
+                ['audienceType' => 'education'],
+            ],
+        ];
     }
 }

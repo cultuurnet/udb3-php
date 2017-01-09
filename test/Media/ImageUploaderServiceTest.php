@@ -44,9 +44,9 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
-        $this->filesystem = $this->getMock(FilesystemInterface::class);
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
+        $this->filesystem = $this->createMock(FilesystemInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
 
         $this->uploader = new ImageUploaderService(
             $this->uuidGenerator,

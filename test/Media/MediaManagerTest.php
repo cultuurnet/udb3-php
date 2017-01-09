@@ -50,10 +50,10 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->repository = $this->getMock(RepositoryInterface::class);
-        $this->iriGenerator = $this->getMock(IriGeneratorInterface::class);
-        $this->pathGenerator = $this->getMock(PathGeneratorInterface::class);
-        $this->filesystem = $this->getMock(FilesystemInterface::class);
+        $this->repository = $this->createMock(RepositoryInterface::class);
+        $this->iriGenerator = $this->createMock(IriGeneratorInterface::class);
+        $this->pathGenerator = $this->createMock(PathGeneratorInterface::class);
+        $this->filesystem = $this->createMock(FilesystemInterface::class);
 
         $this->mediaManager = new MediaManager(
             $this->iriGenerator,
@@ -77,7 +77,7 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             String::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
-        $logger = $this->getMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
         $this->mediaManager->setLogger($logger);
 
         $this->iriGenerator

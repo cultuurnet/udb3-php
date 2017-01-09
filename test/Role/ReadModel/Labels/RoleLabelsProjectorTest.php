@@ -46,9 +46,9 @@ class RoleLabelsProjectorTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->roleLabelsRepository = $this->getMock(DocumentRepositoryInterface::class);
-        $this->labelJsonRepository = $this->getMock(ReadRepositoryInterface::class);
-        $this->labelRolesRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->roleLabelsRepository = $this->createMock(DocumentRepositoryInterface::class);
+        $this->labelJsonRepository = $this->createMock(ReadRepositoryInterface::class);
+        $this->labelRolesRepository = $this->createMock(DocumentRepositoryInterface::class);
 
         $this->roleLabelsProjector = new RoleLabelsProjector(
             $this->roleLabelsRepository,

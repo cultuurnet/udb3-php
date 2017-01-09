@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -28,6 +29,8 @@ use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -36,6 +39,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
@@ -122,17 +126,9 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->cdbXMLEventFactory = new CdbXMLEventFactory();
 
-        $this->eventService = $this->getMock(
-            EventServiceInterface::class
-        );
+        $this->eventService = $this->createMock(EventServiceInterface::class);
 
-        $this->placeService = $this->getMock(
-            PlaceService::class,
-            array(),
-            array(),
-            '',
-            false
-        );
+        $this->placeService = $this->createMock(PlaceService::class);
 
         $this->iriGenerator = new CallableIriGenerator(
             function ($id) {
@@ -146,7 +142,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
-        $this->iriOfferIdentifierFactory = $this->getMock(IriOfferIdentifierFactoryInterface::class);
+        $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter($this->mediaIriGenerator),
             new EventCdbIdExtractor(),
@@ -154,7 +150,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 new NumberFormatRepository(),
                 new CurrencyRepository()
             ),
-            new CalendarFactory()
+            new CalendarFactory(),
+            new CdbXmlContactInfoImporter()
         );
 
         $this->projector = new EventLDProjector(
@@ -222,6 +219,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->audience = (object)['audienceType' => 'everyone'];
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -307,6 +305,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->audience = (object)['audienceType' => 'everyone'];
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -400,6 +399,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->creator = $expectedCreator;
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->audience = (object)['audienceType' => 'everyone'];
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -535,6 +535,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = '2015-01-20T13:25:21+01:00';
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->audience = (object)['audienceType' => 'everyone'];
 
         // Set up the placeService so that it does not know about the JSON-LD
         // representation of the Place yet and only returns the URI of the
@@ -1191,6 +1192,29 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($majorInfoUpdated, $id);
 
         $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_updating_audience()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $audienceUpdated = new AudienceUpdated(
+            $eventId,
+            new Audience(AudienceType::EDUCATION())
+        );
+
+        $body = $this->project($audienceUpdated, $eventId);
+
+        $expectedJson = (object) [
+                '@id' => 'http://example.com/entity/' . $eventId,
+                '@context' => '/contexts/event',
+                'audience' => (object) ['audienceType' => 'education']
+            ];
+
+        $this->assertEquals($expectedJson, $body);
     }
 
     /**

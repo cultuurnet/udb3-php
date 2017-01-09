@@ -26,15 +26,15 @@ class DelegateEventHandlingToSpecificMethodTraitTest extends \PHPUnit_Framework_
 
     protected function setUp()
     {
-        $this->mockedMockLDProjector = $this->getMock(
-            MockLDProjector::class,
-            array(
+        $this->mockedMockLDProjector = $this
+            ->getMockBuilder(MockLDProjector::class)
+            ->setMethods([
                 'applyMockLabelAdded',
                 'applyMockLabelUpdated',
                 'applyMockLabelRemoved',
                 'applyMockTitleTranslated'
-            )
-        );
+            ])
+            ->getMock();
 
         $this->mockLDProjector = $this->mockedMockLDProjector;
     }

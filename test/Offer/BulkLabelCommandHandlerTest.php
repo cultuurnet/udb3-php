@@ -64,15 +64,15 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->resultGenerator = $this->getMock(ResultsGeneratorInterface::class);
-        $this->externalOfferEditingService = $this->getMock(ExternalOfferEditingServiceInterface::class);
+        $this->resultGenerator = $this->createMock(ResultsGeneratorInterface::class);
+        $this->externalOfferEditingService = $this->createMock(ExternalOfferEditingServiceInterface::class);
 
         $this->commandHandler = new BulkLabelCommandHandler(
             $this->resultGenerator,
             $this->externalOfferEditingService
         );
 
-        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->commandHandler->setLogger($this->logger);
 
         $this->query = 'city:leuven';
@@ -91,8 +91,8 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $this->eventMock = $this->getMock(Event::class);
-        $this->placeMock = $this->getMock(Place::class);
+        $this->eventMock = $this->createMock(Event::class);
+        $this->placeMock = $this->createMock(Place::class);
     }
 
     /**

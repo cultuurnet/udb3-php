@@ -23,8 +23,8 @@ class EventOrganizerRelationServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->editService = $this->getMock(EventEditingServiceInterface::class);
-        $this->relationRepository = $this->getMock(RepositoryInterface::class);
+        $this->editService = $this->createMock(EventEditingServiceInterface::class);
+        $this->relationRepository = $this->createMock(RepositoryInterface::class);
 
         $this->organizerRelationService = new EventOrganizerRelationService(
             $this->editService,

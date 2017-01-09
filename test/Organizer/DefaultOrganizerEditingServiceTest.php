@@ -60,9 +60,9 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
 
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
         $this->uuidGenerator->method('generate')
             ->willReturn('9196cb78-4381-11e6-beb8-9e71128cae77');
 
@@ -73,7 +73,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus
         );
 
-        $this->labelService = $this->getMock(LabelServiceInterface::class);
+        $this->labelService = $this->createMock(LabelServiceInterface::class);
 
         $this->service = new DefaultOrganizerEditingService(
             $this->commandBus,

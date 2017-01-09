@@ -74,6 +74,6 @@ class LabelEventIsOfPlaceTypeTest extends \PHPUnit_Framework_TestCase
      */
     private function createEvent($className)
     {
-        return $this->getMock($className, [], [], '', false);
+        return $this->createMock($className);
     }
 }

@@ -19,7 +19,7 @@ class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->decoratee = $this->getMock(SecurityInterface::class);
+        $this->decoratee = $this->createMock(SecurityInterface::class);
 
         $this->decoratee->method('allowsUpdateWithCdbXml')
             ->willReturn(true);
@@ -62,7 +62,7 @@ class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
      */
     public function it_calls_is_authorized_from_decoratee()
     {
-        $command = $this->getMock(AuthorizableCommandInterface::class);
+        $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->decoratee->expects($this->once())
             ->method('isAuthorized')
@@ -76,7 +76,7 @@ class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_is_authorized_result_from_decoratee()
     {
-        $command = $this->getMock(AuthorizableCommandInterface::class);
+        $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->assertTrue($this->decoratorBase->isAuthorized($command));
     }

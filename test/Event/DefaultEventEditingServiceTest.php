@@ -12,11 +12,12 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\EventNotFoundException;
-use CultuurNet\UDB3\Event\EventServiceInterface;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
@@ -79,26 +80,18 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->eventService = $this->getMock(EventServiceInterface::class);
+        $this->eventService = $this->createMock(EventServiceInterface::class);
 
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
 
-        $this->uuidGenerator = $this->getMock(
-            UuidGeneratorInterface::class
-        );
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
 
-        $this->commandFactory = $this->getMock(OfferCommandFactoryInterface::class);
+        $this->commandFactory = $this->createMock(OfferCommandFactoryInterface::class);
 
         /** @var DocumentRepositoryInterface $repository */
-        $this->readRepository = $this->getMock(DocumentRepositoryInterface::class);
+        $this->readRepository = $this->createMock(DocumentRepositoryInterface::class);
         /** @var PlaceService $placeService */
-        $placeService = $this->getMock(
-            PlaceService::class,
-            array(),
-            array(),
-            '',
-            false
-        );
+        $placeService = $this->createMock(PlaceService::class);
 
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
@@ -109,7 +102,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             new SimpleEventBus()
         );
 
-        $this->labelService = $this->getMock(LabelServiceInterface::class);
+        $this->labelService = $this->createMock(LabelServiceInterface::class);
 
         $this->eventEditingService = new DefaultEventEditingService(
             $this->eventService,
@@ -273,6 +266,27 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ],
             $this->eventStore->getEvents()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_audience_command()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $audience = new Audience(AudienceType::EDUCATION());
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with(new UpdateAudience($eventId, $audience))
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->eventEditingService->updateAudience($eventId, $audience);
+
+        $this->assertEquals($expectedCommandId, $commandId);
     }
 
     /**

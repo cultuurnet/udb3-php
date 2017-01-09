@@ -251,7 +251,7 @@ trait OfferCommandHandlerTestTrait
 
         $this->organizerRepository
             ->method('load')
-            ->willReturn($this->getMock(Organizer::class));
+            ->willReturn($this->createMock(Organizer::class));
 
         $this->scenario
             ->withAggregateId($id)

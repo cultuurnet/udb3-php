@@ -36,7 +36,7 @@ class EventCalendarProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->cdbXMLEventFactory = new CdbXMLEventFactory();
 
-        $this->repository = $this->getMock(CalendarRepositoryInterface::class);
+        $this->repository = $this->createMock(CalendarRepositoryInterface::class);
         $this->projector = new EventCalendarProjector($this->repository);
     }
 

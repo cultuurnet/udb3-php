@@ -18,7 +18,9 @@ use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
+use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -27,6 +29,8 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -61,9 +65,9 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             $eventBus
         );
 
-        $this->organizerRepository = $this->getMock(RepositoryInterface::class);
+        $this->organizerRepository = $this->createMock(RepositoryInterface::class);
 
-        $this->labelRepository = $this->getMock(ReadRepositoryInterface::class);
+        $this->labelRepository = $this->createMock(ReadRepositoryInterface::class);
         $this->labelRepository->method('getByName')
             ->will($this->returnCallback(
                 function (StringLiteral $labelName) {
@@ -274,6 +278,63 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
             )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_audience()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                ]
+            )
+            ->when(
+                new UpdateAudience(
+                    $eventId,
+                    new Audience(AudienceType::EDUCATION())
+                )
+            )
+            ->then(
+                [
+                    new AudienceUpdated(
+                        $eventId,
+                        new Audience(AudienceType::EDUCATION())
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_ignore_updating_the_audience_when_the_same_audience_type_is_already_set()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                    new AudienceUpdated(
+                        $eventId,
+                        new Audience(AudienceType::EDUCATION())
+                    ),
+                ]
+            )
+            ->when(
+                new UpdateAudience(
+                    $eventId,
+                    new Audience(AudienceType::EDUCATION())
+                )
+            )
+            ->then([]);
     }
 
     /**

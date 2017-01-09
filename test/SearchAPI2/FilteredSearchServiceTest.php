@@ -18,7 +18,7 @@ class FilteredSearchServiceTest extends \PHPUnit_Framework_TestCase
 
     public function SetUp()
     {
-        $this->searchService = $this->getMock(
+        $this->searchService = $this->createMock(
             SearchServiceInterface::class
         );
 
@@ -30,7 +30,7 @@ class FilteredSearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_add_filters_to_the_search_service()
     {
-        $searchFilter = $this->getMock(SearchFilterInterface::class);
+        $searchFilter = $this->createMock(SearchFilterInterface::class);
 
         $this->filteredSearchService->filter($searchFilter);
 
@@ -42,7 +42,7 @@ class FilteredSearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_apply_filters_to_the_parameters_when_searching()
     {
-        $searchFilter = $this->getMock(SearchFilterInterface::class);
+        $searchFilter = $this->createMock(SearchFilterInterface::class);
         /** @var ParameterInterface[] $searchParameters */
         $searchParameters = ['existing parameter'];
 

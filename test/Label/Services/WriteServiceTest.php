@@ -65,10 +65,10 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
             $this->uuid
         );
 
-        $this->commandBus = $this->getMock(CommandBusInterface::class);
+        $this->commandBus = $this->createMock(CommandBusInterface::class);
         $this->mockDispatch();
 
-        $this->uuidGenerator = $this->getMock(UuidGeneratorInterface::class);
+        $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
         $this->mockGenerate();
 
         $this->writeService = new WriteService(

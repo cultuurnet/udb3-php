@@ -42,19 +42,17 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        /** @var SerializerInterface|\PHPUnit_Framework_MockObject_MockObject $serializer */
-        $serializer = $this->getMock(SerializerInterface::class);
+        $serializer = $this->createMock(SerializerInterface::class);
 
-        $this->dbalEventStore = new DBALEventStore(
-            $this->getConnection(),
-            $serializer,
-            $serializer,
-            'labelsEventStore'
-        );
+        $this->dbalEventStore = $this
+            ->getMockBuilder(DBALEventStore::class)
+            ->setConstructorArgs([$this->getConnection(), $serializer, $serializer, 'labelsEventStore'])
+            ->enableProxyingToOriginalMethods()
+            ->getMock();
 
         $this->uniqueTableName = new StringLiteral('uniqueTableName');
 
-        $this->uniqueConstraintService = $this->getMock(UniqueConstraintServiceInterface::class);
+        $this->uniqueConstraintService = $this->createMock(UniqueConstraintServiceInterface::class);
 
         $this->uniqueConstraintService->expects($this->any())
             ->method('hasUniqueConstraint')

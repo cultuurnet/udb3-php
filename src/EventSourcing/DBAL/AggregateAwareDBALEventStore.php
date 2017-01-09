@@ -57,7 +57,7 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
-     * @param string $aggregateType
+     * @param mixed $aggregateType
      */
     public function __construct(
         Connection $connection,
@@ -70,7 +70,7 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
         $this->payloadSerializer  = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName          = $tableName;
-        $this->aggregateType      = $aggregateType;
+        $this->aggregateType      = (string) $aggregateType;
     }
 
     /**

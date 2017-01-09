@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
-use Broadway\Domain\DateTime as BroadwayDateTime;
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
@@ -15,6 +15,11 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 
+/**
+ * Event store making use of Doctrine DBAL and aware of the aggregate type.
+ *
+ * Based on Broadways DBALEventStore.
+ */
 class AggregateAwareDBALEventStore implements EventStoreInterface
 {
     /**
@@ -94,8 +99,9 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
      */
     public function append($id, DomainEventStreamInterface $eventStream)
     {
-        // The original Broadway implementation did only check the type of $id.
-        // It is better to test all uuids inside the event stream.
+        // The original Broadway DBALEventStore implementation did only check
+        // the type of $id. It is better to test all UUIDs inside the event
+        // stream.
         $this->guardStream($eventStream);
 
         // Make the transaction more robust by using the transactional statement.
@@ -204,11 +210,18 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
             $row['playhead'],
             $this->metadataSerializer->deserialize(json_decode($row['metadata'], true)),
             $this->payloadSerializer->deserialize(json_decode($row['payload'], true)),
-            BroadwayDateTime::fromString($row['recorded_on'])
+            DateTime::fromString($row['recorded_on'])
         );
     }
 
     /**
+     * Ensure that an error will be thrown if the ID in the domain messages is
+     * not something that can be converted to a string.
+     *
+     * If we let this move on without doing this DBAL will eventually
+     * give us a hard time but the true reason for the problem will be
+     * obfuscated.
+     *
      * @param DomainEventStreamInterface $eventStream
      */
     private function guardStream(DomainEventStreamInterface $eventStream)

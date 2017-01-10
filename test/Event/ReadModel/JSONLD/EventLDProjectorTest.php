@@ -1195,6 +1195,74 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     }
 
     /**
+     * @group issue-III-1730
+     * @test
+     */
+    public function it_keeps_alien_terms_imported_from_udb2_when_updating_major_info()
+    {
+        $importedFromUDB2 = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_with_empty_keyword.cdbxml.xml'
+        );
+
+        $title = new Title('new title');
+        $eventType = new EventType('0.50.4.0.1', 'concertnew');
+        $location = new Location(
+            '395fe7eb-9bac-4647-acae-316b6446a85e',
+            new StringLiteral('Repeteerkot'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9620'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )
+        );
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-02-26T13:25:21+01:00')
+        );
+        $theme = new Theme('123', 'theme label');
+        $majorInfoUpdated = new MajorInfoUpdated(
+            $importedFromUDB2->getEventId(),
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
+
+        $events = [$importedFromUDB2, $majorInfoUpdated];
+        foreach ($events as $event) {
+            $body = $this->project($event, $importedFromUDB2->getEventId());
+        }
+
+        $expectedTerms = [
+            (object)[
+               'id' => 'reg.359',
+               'label' => 'Kunststad Gent',
+               'domain' => 'flanderstouristregion',
+            ],
+            (object)[
+                'id' => 'reg.1258',
+                'label' => '9000 Gent',
+                'domain' => 'flandersregion',
+            ],
+            (object)[
+                'id' => '0.50.4.0.1',
+                'label' => 'concertnew',
+                'domain' => 'eventtype',
+            ],
+            (object)[
+                'id' => '123',
+                'label' => 'theme label',
+                'domain' => 'theme',
+            ]
+        ];
+
+        $this->assertEquals($expectedTerms, $body->terms);
+    }
+
+    /**
      * @test
      */
     public function it_projects_updating_audience()

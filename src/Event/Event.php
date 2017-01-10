@@ -109,27 +109,25 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param string $eventId
-     * @param string $originalEventId
+     * @param string $newEventId
      * @param CalendarInterface $calendar
+     *
      * @return Event
      */
-    public static function copyEvent(
-        $eventId,
-        $originalEventId,
-        CalendarInterface $calendar
-    ) {
-        $event = new self();
+    public function copy($newEventId, CalendarInterface $calendar)
+    {
+        /** @var Event $copy */
+        $copy = parent::copyWithoutHistory();
 
-        $event->apply(
+        $copy->apply(
             new EventCopied(
-                $eventId,
-                $originalEventId,
+                $newEventId,
+                $this->eventId,
                 $calendar
             )
         );
 
-        return $event;
+        return $copy;
     }
 
     /**
@@ -200,6 +198,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     {
         $this->eventId = $eventCopied->getItemId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
+        $this->labels = new LabelCollection();
     }
 
     protected function applyEventImportedFromUDB2(

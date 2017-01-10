@@ -116,7 +116,8 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         }
 
         try {
-            $this->writeRepository->load($originalEventId);
+            /** @var Event $event */
+            $event = $this->writeRepository->load($originalEventId);
         } catch (AggregateNotFoundException $exception) {
             throw new \InvalidArgumentException(
                 'No original event found to copy with id ' . $originalEventId
@@ -125,9 +126,9 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
 
         $eventId = $this->uuidGenerator->generate();
 
-        $event = Event::copyEvent($eventId, $originalEventId, $calendar);
+        $newEvent = $event->copy($eventId, $calendar);
 
-        $this->writeRepository->save($event);
+        $this->writeRepository->save($newEvent);
 
         return $eventId;
     }

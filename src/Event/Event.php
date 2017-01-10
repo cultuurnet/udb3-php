@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -13,6 +14,7 @@ use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Event\Events\EventCdbXMLInterface;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -72,13 +74,13 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     /**
      * Factory method to create a new event.
      *
+     * @param $eventId
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param \DateTimeImmutable|null $publicationDate
-     *
      * @return Event
      */
     public static function create(
@@ -90,12 +92,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null,
         \DateTimeImmutable $publicationDate = null
     ) {
-        if (!is_string($eventId)) {
-            throw new \InvalidArgumentException(
-                'Expected eventId to be a string, received ' . gettype($eventId)
-            );
-        }
-
         $event = new self();
 
         $event->apply(
@@ -111,6 +107,32 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         );
 
         return $event;
+    }
+
+    /**
+     * @param string $newEventId
+     * @param CalendarInterface $calendar
+     *
+     * @return Event
+     */
+    public function copy($newEventId, CalendarInterface $calendar)
+    {
+        if ($this->hasUncommittedEvents()) {
+            throw new \RuntimeException('I refuse to copy, there are uncommitted events present.');
+        }
+
+        // The copied event will have a playhead of the original event + 1
+        $copy = clone $this;
+
+        $copy->apply(
+            new EventCopied(
+                $newEventId,
+                $this->eventId,
+                $calendar
+            )
+        );
+
+        return $copy;
     }
 
     /**
@@ -172,6 +194,16 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     {
         $this->eventId = $eventCreated->getEventId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
+    }
+
+    /**
+     * @param EventCopied $eventCopied
+     */
+    protected function applyEventCopied(EventCopied $eventCopied)
+    {
+        $this->eventId = $eventCopied->getItemId();
+        $this->workflowStatus = WorkflowStatus::DRAFT();
+        $this->labels = new LabelCollection();
     }
 
     protected function applyEventImportedFromUDB2(
@@ -475,5 +507,20 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsInappropriate()
     {
         return new FlaggedAsInappropriate($this->eventId);
+    }
+
+    /**
+     * Use reflection to get check if the aggregate has uncommitted events.
+     * @return bool
+     */
+    private function hasUncommittedEvents()
+    {
+        $reflector = new \ReflectionClass(EventSourcedAggregateRoot::class);
+        $property = $reflector->getProperty('uncommittedEvents');
+
+        $property->setAccessible(true);
+        $uncommittedEvents = $property->getValue($this);
+
+        return !empty($uncommittedEvents);
     }
 }

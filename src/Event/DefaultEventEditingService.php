@@ -3,14 +3,13 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -106,11 +105,39 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
     }
 
     /**
+     * @inheritdoc
+     */
+    public function copyEvent($originalEventId, CalendarInterface $calendar)
+    {
+        if (!is_string($originalEventId)) {
+            throw new \InvalidArgumentException(
+                'Expected originalEventId to be a string, received ' . gettype($originalEventId)
+            );
+        }
+
+        try {
+            /** @var Event $event */
+            $event = $this->writeRepository->load($originalEventId);
+        } catch (AggregateNotFoundException $exception) {
+            throw new \InvalidArgumentException(
+                'No original event found to copy with id ' . $originalEventId
+            );
+        }
+
+        $eventId = $this->uuidGenerator->generate();
+
+        $newEvent = $event->copy($eventId, $calendar);
+
+        $this->writeRepository->save($newEvent);
+
+        return $eventId;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
-
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(

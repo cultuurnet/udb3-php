@@ -41,11 +41,24 @@ class PriceDescriptionParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_requires_description_to_start_with_Basistarief()
+    {
+        // All prices are valid but Basistarief is not the first.
+        $description = 'Met kinderen: 20,00 €; Senioren: 30,00 €; Basistarief: 12,50 €';
+
+        $prices = $this->parser->parse($description);
+
+        $this->assertSame(array(), $prices);
+    }
+
+    /**
+     * @test
+     */
     public function it_ignores_invalid_descriptions()
     {
         $description = 'Met kinderen € 20, Gratis voor grootouders';
 
-        $this->assertEmpty($this->parser->parse($description));
+        $this->assertSame(array(), $this->parser->parse($description));
     }
 
     /**
@@ -55,6 +68,17 @@ class PriceDescriptionParserTest extends \PHPUnit_Framework_TestCase
     {
         $description = 'Met kinderen: € 0,20,0';
 
-        $this->assertEmpty($this->parser->parse($description));
+        $this->assertSame(array(), $this->parser->parse($description));
+    }
+
+    /**
+     * @test
+     */
+    public function it_ignores_all_prices_when_at_least_one_is_invalid()
+    {
+        // Only the last price is invalid.
+        $description = 'Basistarief: 12,50 €; Met kinderen: 20,00 €; Senioren 30,00 €';
+
+        $this->assertSame(array(), $this->parser->parse($description));
     }
 }

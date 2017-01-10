@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
@@ -17,6 +18,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
@@ -26,6 +28,7 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Title;
+use RuntimeException;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -96,10 +99,8 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_throws_an_error_when_creating_an_event_with_a_non_string_eventid()
     {
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Expected eventId to be a string, received integer'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected eventId to be a string, received integer');
 
         $event = Event::create(
             101,
@@ -117,6 +118,40 @@ class EventTest extends AggregateRootScenarioTestCase
             ),
             new Calendar(CalendarType::PERMANENT())
         );
+    }
+
+    /**
+     * @test
+     * @group issue-III-1380
+     */
+    public function it_handles_copy_event()
+    {
+        $newEventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+
+        $event = $this->event;
+
+        $this->event->getUncommittedEvents();
+
+        $this->scenario
+            ->when(function () use ($event, $newEventId, $calendar) {
+                return $event->copy(
+                    $newEventId,
+                    $calendar
+                );
+            })
+            ->then(
+                [
+                    new EventCopied(
+                        $newEventId,
+                        'foo',
+                        $calendar
+                    )
+                ]
+            );
     }
 
     /**
@@ -515,8 +550,8 @@ class EventTest extends AggregateRootScenarioTestCase
             ])
             ->when(
                 function (Event $event) use ($audiences) {
-                    foreach ($audiences as $audiences) {
-                        $event->updateAudience($audiences);
+                    foreach ($audiences as $audience) {
+                        $event->updateAudience($audience);
                     }
                 }
             )
@@ -576,6 +611,156 @@ class EventTest extends AggregateRootScenarioTestCase
                     ],
                 ],
         ];
+    }
+
+    /**
+     * @test
+     * @group issue-III-1380
+     */
+    public function it_refuses_to_copy_when_there_are_uncommitted_events()
+    {
+        $event = $this->event;
+
+        $this->expectException(RuntimeException::class);
+
+        $event->copy(
+            'e49430ca-5729-4768-8364-02ddb385517a',
+            new Calendar(
+                CalendarType::SINGLE(),
+                new \DateTime()
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @group issue-III-1380
+     */
+    public function it_resets_labels_on_copy()
+    {
+        $newEventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+        $label = new Label('ABC');
+
+        $event = $this->event;
+        $event->addLabel($label);
+
+        $event->getUncommittedEvents();
+
+        $this->scenario
+            ->when(function () use ($event, $newEventId, $calendar, $label) {
+                $newEvent = $event->copy(
+                    $newEventId,
+                    $calendar
+                );
+
+                $newEvent->addLabel($label);
+
+                return $newEvent;
+            })
+            ->then(
+                [
+                    new EventCopied(
+                        $newEventId,
+                        'foo',
+                        $calendar
+                    ),
+                    new LabelAdded(
+                        $newEventId,
+                        $label
+                    )
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @group issue-III-1380
+     */
+    public function it_keeps_audience_on_copy()
+    {
+        $newEventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+        $audience = new Audience(AudienceType::EDUCATION());
+
+        $event = $this->event;
+        $event->updateAudience($audience);
+
+        $event->getUncommittedEvents();
+
+        $this->scenario
+            ->when(function () use ($event, $newEventId, $calendar, $audience) {
+                $newEvent = $event->copy(
+                    $newEventId,
+                    $calendar
+                );
+
+                $newEvent->updateAudience($audience);
+
+                return $newEvent;
+            })
+            ->then(
+                [
+                    new EventCopied(
+                        $newEventId,
+                        'foo',
+                        $calendar
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @group issue-III-1380
+     */
+    public function it_resets_workflow_status_on_copy()
+    {
+        $newEventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new \DateTime()
+        );
+
+        $publicationDate = new \DateTimeImmutable();
+
+        $event = $this->event;
+        $event->publish($publicationDate);
+
+        $event->getUncommittedEvents();
+
+        $newPublicationDate = new \DateTimeImmutable("+3 days");
+
+        $this->scenario
+            ->when(function () use ($event, $newEventId, $calendar, $newPublicationDate) {
+                $newEvent = $event->copy(
+                    $newEventId,
+                    $calendar
+                );
+
+                $newEvent->publish($newPublicationDate);
+
+                return $newEvent;
+            })
+            ->then(
+                [
+                    new EventCopied(
+                        $newEventId,
+                        'foo',
+                        $calendar
+                    ),
+                    new Published(
+                        $newEventId,
+                        $newPublicationDate
+                    ),
+                ]
+            );
     }
 
     /**

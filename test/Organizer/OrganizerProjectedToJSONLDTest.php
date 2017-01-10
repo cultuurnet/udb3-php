@@ -1,8 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Organizer\Events;
-
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
+namespace CultuurNet\UDB3\Organizer;
 
 class OrganizerProjectedToJSONLDTest extends \PHPUnit_Framework_TestCase
 {

@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -473,6 +474,41 @@ class EventLDProjector extends OfferLDProjector implements
                 return $jsonLD;
             }
         );
+    }
+
+    /**
+     * @param EventCopied $eventCopied
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventCopied(
+        EventCopied $eventCopied,
+        DomainMessage $domainMessage
+    ) {
+        $originalDocument = $this->repository->get($eventCopied->getOriginalEventId());
+
+        // Set new calendar.
+        $originalDocument->apply(OfferUpdate::calendar($eventCopied->getCalendar()));
+
+        $eventJsonLD = $originalDocument->getBody();
+
+        // Set the id.
+        $eventJsonLD->{'@id'} = $this->iriGenerator->iri($eventCopied->getItemId());
+
+        // Set workflow status.
+        $eventJsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
+
+        // Remove labels.
+        unset($eventJsonLD->labels);
+        unset($eventJsonLD->hiddenLabels);
+
+        // Set available to and from.
+        $availableTo = AvailableTo::createFromCalendar($eventCopied->getCalendar());
+        $eventJsonLD->availableTo = (string) $availableTo;
+        unset($eventJsonLD->availableFrom);
+
+        $newDocument = new JsonDocument($eventCopied->getItemId());
+        $newDocument = $newDocument->withBody($eventJsonLD);
+        $this->repository->save($newDocument);
     }
 
     /**

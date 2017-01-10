@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -116,8 +117,12 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function copy($newEventId, CalendarInterface $calendar)
     {
-        /** @var Event $copy */
-        $copy = parent::copyWithoutHistory();
+        if ($this->hasUncommittedEvents()) {
+            throw new \RuntimeException('I refuse to copy, there are uncommitted events present.');
+        }
+
+        // The copied event will have a playhead of the original event + 1
+        $copy = clone $this;
 
         $copy->apply(
             new EventCopied(
@@ -502,5 +507,20 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsInappropriate()
     {
         return new FlaggedAsInappropriate($this->eventId);
+    }
+
+    /**
+     * Use reflection to get check if the aggregate has uncommitted events.
+     * @return bool
+     */
+    private function hasUncommittedEvents()
+    {
+        $reflector = new \ReflectionClass(EventSourcedAggregateRoot::class);
+        $property = $reflector->getProperty('uncommittedEvents');
+
+        $property->setAccessible(true);
+        $uncommittedEvents = $property->getValue($this);
+
+        return !empty($uncommittedEvents);
     }
 }

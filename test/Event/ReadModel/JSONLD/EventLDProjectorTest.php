@@ -1219,5 +1219,4 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 }
             );
     }
-
 }

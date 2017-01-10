@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
@@ -110,7 +111,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter($this->mediaIriGenerator),
-            new CalendarFactory()
+            new CalendarFactory(),
+            new CdbXmlContactInfoImporter()
         );
 
         $this->projector = new PlaceLDProjector(

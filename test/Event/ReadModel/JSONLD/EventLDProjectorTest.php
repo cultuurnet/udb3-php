@@ -39,6 +39,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
+use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
@@ -149,7 +150,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 new NumberFormatRepository(),
                 new CurrencyRepository()
             ),
-            new CalendarFactory()
+            new CalendarFactory(),
+            new CdbXmlContactInfoImporter()
         );
 
         $this->projector = new EventLDProjector(

@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
-class OrganizerProjectedToJSONLD
+use Broadway\Serializer\SerializableInterface;
+
+class OrganizerProjectedToJSONLD implements SerializableInterface
 {
     /**
      * @var string
@@ -36,5 +38,25 @@ class OrganizerProjectedToJSONLD
     public function getIri()
     {
         return $this->iri;
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'iri' => $this->getIri(),
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return OrganizerProjectedToJSONLD
+     */
+    public static function deserialize(array $data)
+    {
+        return new self($data['id'], $data['iri']);
     }
 }

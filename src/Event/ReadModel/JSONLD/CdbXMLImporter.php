@@ -341,9 +341,21 @@ class CdbXMLImporter
                 $prices = $this->priceDescriptionParser->parse($description);
             }
 
+            $priceValue = $price->getValue();
+
+            if ($priceValue !== null) {
+                $priceValue = floatval($priceValue);
+            }
+
+            // Ignore prices parsed from description when its base price
+            // does not equal the cdbxml price value.
+            if (!empty($prices) && $prices['Basistarief'] !== $priceValue) {
+                $prices = [];
+            }
+
             // If price description was not interpretable, fall back to
             // price title and value.
-            if (empty($prices) && $price->getValue() !== null) {
+            if (empty($prices) && $priceValue !== null) {
                 $prices['Basistarief'] = floatval($price->getValue());
             }
         }

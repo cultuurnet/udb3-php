@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -123,7 +124,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -141,7 +142,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -159,7 +160,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -173,7 +174,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'some-unknown-id';
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->setUpEventNotFound($id);
 
@@ -218,6 +219,97 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ],
             $this->eventStore->getEvents()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_copy_an_existing_event()
+    {
+        $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
+        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
+        $calendar = new Calendar(CalendarType::PERMANENT());
+
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $location = new Location(
+            UUID::generateAsString(),
+            new StringLiteral('Het Depot'),
+            new Address(
+                new Street('Martelarenplein'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            )
+        );
+        $theme = null;
+
+        $this->eventStore->trace();
+
+        $this->uuidGenerator->expects($this->exactly(2))
+            ->method('generate')
+            ->willReturnOnConsecutiveCalls($originalEventId, $eventId);
+
+        $this->eventEditingService->createEvent(
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
+
+        $this->eventEditingService->copyEvent($originalEventId, $calendar);
+
+        $this->assertEquals(
+            [
+                new EventCreated(
+                    $originalEventId,
+                    $title,
+                    $eventType,
+                    $location,
+                    $calendar,
+                    $theme
+                ),
+                new EventCopied(
+                    $eventId,
+                    $originalEventId,
+                    $calendar
+                )
+            ],
+            $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_an_invalid_argument_exception_during_copy_when_type_mismatch_for_original_event_id()
+    {
+        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
+        $calendar = new Calendar(CalendarType::PERMANENT());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'No original event found to copy with id ' . $originalEventId
+        );
+
+        $this->eventEditingService->copyEvent($originalEventId, $calendar);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_an_invalid_argument_exception_during_copy_when_original_event_is_missing()
+    {
+        $originalEventId = false;
+        $calendar = new Calendar(CalendarType::PERMANENT());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected originalEventId to be a string, received bool'
+        );
+
+        $this->eventEditingService->copyEvent($originalEventId, $calendar);
     }
 
     /**

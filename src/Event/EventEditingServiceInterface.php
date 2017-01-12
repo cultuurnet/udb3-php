@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Alchemy\Zippy\Exception\InvalidArgumentException;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -110,7 +109,7 @@ interface EventEditingServiceInterface
      * @param CalendarInterface $calendar
      * @return string $eventId
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function copyEvent($originalEventId, CalendarInterface $calendar);
 

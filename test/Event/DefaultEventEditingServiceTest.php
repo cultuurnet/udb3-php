@@ -26,7 +26,6 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
-use CultuurNet\UDB3\PlaceService;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;
@@ -91,8 +90,6 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         /** @var DocumentRepositoryInterface $repository */
         $this->readRepository = $this->createMock(DocumentRepositoryInterface::class);
-        /** @var PlaceService $placeService */
-        $placeService = $this->createMock(PlaceService::class);
 
         $this->eventStore = new TraceableEventStore(
             new InMemoryEventStore()
@@ -110,7 +107,6 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->commandBus,
             $this->uuidGenerator,
             $this->readRepository,
-            $placeService,
             $this->commandFactory,
             $this->writeRepository,
             $this->labelService

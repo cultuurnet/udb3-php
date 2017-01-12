@@ -384,6 +384,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      * @dataProvider descriptionSamplesProvider
+     * @param string $fileName
+     * @param string $expectedDescription
      */
     public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description($fileName, $expectedDescription)
     {
@@ -532,7 +534,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             )
         );
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->documentRepository->get($id);
     }

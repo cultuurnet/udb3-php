@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\Model\Properties\UrlValidator;
 use JsonSchema\Validator;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use stdClass;
 
 /**
@@ -38,7 +38,7 @@ class CreateOfferVariationJSONDeserializer extends JSONDeserializer
      *
      * @return CreateOfferVariation
      */
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $json = parent::deserialize(
             $data

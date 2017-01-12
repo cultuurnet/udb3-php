@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Media\Events;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaObjectCreated implements SerializableInterface
@@ -39,15 +39,15 @@ class MediaObjectCreated implements SerializableInterface
      * MediaObjectCreated constructor.
      * @param UUID $id
      * @param MIMEType $fileType
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param \ValueObjects\StringLiteral\StringLiteral $description
+     * @param \ValueObjects\StringLiteral\StringLiteral $copyrightHolder
      * @param Url $sourceLocation
      */
     public function __construct(
         UUID $id,
         MIMEType $fileType,
-        String $description,
-        String $copyrightHolder,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
         Url $sourceLocation
     ) {
         $this->mediaObjectId = $id;
@@ -121,8 +121,8 @@ class MediaObjectCreated implements SerializableInterface
         return new static(
             new UUID($data['media_object_id']),
             new MIMEType($data['mime_type']),
-            new String($data['description']),
-            new String($data['copyright_holder']),
+            new StringLiteral($data['description']),
+            new StringLiteral($data['copyright_holder']),
             Url::fromNative($data['source_location'])
         );
     }

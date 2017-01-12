@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class ProjectorTest extends PHPUnit_Framework_TestCase
 {

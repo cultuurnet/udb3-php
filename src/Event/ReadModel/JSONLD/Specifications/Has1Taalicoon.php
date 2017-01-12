@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Has1Taalicoon implements EventSpecificationInterface
 {
@@ -10,6 +10,6 @@ class Has1Taalicoon implements EventSpecificationInterface
 
     public function isSatisfiedBy($eventLd)
     {
-        return $this->hasLabel($eventLd, new String('één taalicoon'));
+        return $this->hasLabel($eventLd, new StringLiteral('één taalicoon'));
     }
 }

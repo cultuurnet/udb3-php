@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ValueObjects;
 
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * Class LabelName

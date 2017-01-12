@@ -24,7 +24,7 @@ use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 

@@ -13,7 +13,7 @@ use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Number\Natural;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,8 +61,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_throw_an_exception_if_the_uploaded_file_is_not_an_image()
     {
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
         $file = $this->getMockFile();
 
         $file
@@ -97,8 +97,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             true
         );
 
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
         $generatedUuid = 'de305d54-75b4-431b-adb2-eb6b9e546014';
 
         $this->uuidGenerator
@@ -126,8 +126,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             'my-image.png',
             'image/png'
         );
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
 
         $this->setExpectedException(
             \InvalidArgumentException::class,
@@ -154,8 +154,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             ->method('getMimeType')
             ->willReturn(null);
 
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
 
         $this->setExpectedException(
             \InvalidArgumentException::class,
@@ -180,8 +180,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $file = $this->getMockImage(1111111);
 
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
 
         $this->setExpectedException(
             FileSizeExceededException::class,
@@ -206,8 +206,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $file = $this->getMockImage(false);
 
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
 
         $this->setExpectedException(
             \InvalidArgumentException::class,
@@ -232,8 +232,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             new Natural(1000000)
         );
 
-        $description = new String('file description');
-        $copyrightHolder = new String('Dude Man');
+        $description = new StringLiteral('file description');
+        $copyrightHolder = new StringLiteral('Dude Man');
         $generatedUuid = 'de305d54-75b4-431b-adb2-eb6b9e546014';
 
         $this->uuidGenerator

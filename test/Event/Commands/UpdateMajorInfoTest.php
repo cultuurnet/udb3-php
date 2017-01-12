@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
 {

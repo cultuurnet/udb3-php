@@ -11,7 +11,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use ValueObjects\Exception\InvalidNativeArgumentException;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedByToUserIdResolverInterface
@@ -35,7 +35,7 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
     /**
      * @inheritdoc
      */
-    public function resolveCreatedByToUserId(String $createdByIdentifier)
+    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier)
     {
         $userId = null;
 
@@ -63,10 +63,10 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
     }
 
     /**
-     * @param String $createdByIdentifier
+     * @param StringLiteral $createdByIdentifier
      * @return String
      */
-    private function resolveByEmailOrByNick(String $createdByIdentifier)
+    private function resolveByEmailOrByNick(StringLiteral $createdByIdentifier)
     {
         try {
             $email = new EmailAddress($createdByIdentifier->toNative());

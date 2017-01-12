@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Media\Properties;
 
 use ValueObjects\Exception\InvalidNativeArgumentException;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class MIMEType extends StringLiteral
 {

@@ -47,7 +47,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase

@@ -9,7 +9,7 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Footer;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Publisher;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Subtitle;
 use CultuurNet\UDB3\EventExport\Format\HTML\Properties\Title;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class ExportEventsAsPDFJSONDeserializerTest extends \PHPUnit_Framework_TestCase
@@ -115,6 +115,6 @@ class ExportEventsAsPDFJSONDeserializerTest extends \PHPUnit_Framework_TestCase
             __DIR__ . '/' . $fileName
         );
 
-        return new String($json);
+        return new StringLiteral($json);
     }
 }

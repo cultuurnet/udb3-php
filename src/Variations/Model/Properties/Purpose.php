@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-class Purpose extends String
+class Purpose extends StringLiteral
 {
 
 }

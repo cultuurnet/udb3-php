@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\SavedSearches;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use Psr\Log\LoggerInterface;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -73,14 +73,14 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 new SavedSearch(
-                    new String('In Leuven'),
+                    new StringLiteral('In Leuven'),
                     new QueryString('city:"Leuven"'),
-                    new String('100')
+                    new StringLiteral('100')
                 ),
                 new SavedSearch(
-                    new String('In Herent'),
+                    new StringLiteral('In Herent'),
                     new QueryString('city:"Herent"'),
-                    new String('101')
+                    new StringLiteral('101')
                 ),
             ],
             $searches
@@ -126,14 +126,14 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchWriteProvider
-     * @param String $userId
-     * @param String $name
+     * @param StringLiteral $userId
+     * @param StringLiteral $name
      * @param QueryString $query
      * @param \CultureFeed_SavedSearches_SavedSearch $savedSearch
      */
     public function it_can_write_saved_searches(
-        String $userId,
-        String $name,
+        StringLiteral $userId,
+        StringLiteral $name,
         QueryString $query,
         \CultureFeed_SavedSearches_SavedSearch $savedSearch
     ) {
@@ -147,14 +147,14 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchWriteProvider
-     * @param String $userId
-     * @param String $name
+     * @param StringLiteral $userId
+     * @param StringLiteral $name
      * @param QueryString $query
      * @param \CultureFeed_SavedSearches_SavedSearch $savedSearch
      */
     public function it_can_handle_errors_while_writing(
-        String $userId,
-        String $name,
+        StringLiteral $userId,
+        StringLiteral $name,
         QueryString $query,
         \CultureFeed_SavedSearches_SavedSearch $savedSearch
     ) {
@@ -183,8 +183,8 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function savedSearchWriteProvider()
     {
-        $userId = new String('some-user-id');
-        $name = new String('Random name for a search.');
+        $userId = new StringLiteral('some-user-id');
+        $name = new StringLiteral('Random name for a search.');
         $query = new QueryString('city:leuven');
 
         $savedSearch = new \CultureFeed_SavedSearches_SavedSearch(
@@ -202,10 +202,10 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchDeleteProvider
-     * @param String $userId
-     * @param String $searchId
+     * @param StringLiteral $userId
+     * @param StringLiteral $searchId
      */
-    public function it_can_delete_saved_searches(String $userId, String $searchId)
+    public function it_can_delete_saved_searches(StringLiteral $userId, StringLiteral $searchId)
     {
         $this->savedSearches->expects($this->once())
             ->method('unsubscribe')
@@ -220,10 +220,10 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider savedSearchDeleteProvider
-     * @param String $userId
-     * @param String $searchId
+     * @param StringLiteral $userId
+     * @param StringLiteral $searchId
      */
-    public function it_can_handle_errors_while_deleting(String $userId, String $searchId)
+    public function it_can_handle_errors_while_deleting(StringLiteral $userId, StringLiteral $searchId)
     {
         $this->savedSearches->expects($this->once())
             ->method('unsubscribe')
@@ -254,8 +254,8 @@ class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                new String('some-user-id'),
-                new String('some-search-id'),
+                new StringLiteral('some-user-id'),
+                new StringLiteral('some-search-id'),
             ],
         ];
     }

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Variations\Command;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,7 +33,7 @@ class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     public function it_deserializes_a_json_command()
     {
         $jsonData = '{"description": "An edited description."}';
-        $jsonCommand = new String($jsonData);
+        $jsonCommand = new StringLiteral($jsonData);
         $deserializedCommand = $this->deserializer->deserialize($jsonCommand);
 
         $expectedCommand = new EditDescription(
@@ -50,7 +50,7 @@ class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     public function it_validates_the_json_command()
     {
         $jsonData = '{"unwanted": "What am I doing here."}';
-        $jsonCommand = new String($jsonData);
+        $jsonCommand = new StringLiteral($jsonData);
 
         try {
             $this->deserializer->deserialize($jsonCommand);

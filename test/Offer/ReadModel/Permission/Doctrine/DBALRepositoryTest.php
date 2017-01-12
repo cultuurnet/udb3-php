@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,8 +19,8 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $table = new String('event_permission');
-        $idField = new String('event_id');
+        $table = new StringLiteral('event_permission');
+        $idField = new StringLiteral('event_id');
 
         (new SchemaConfigurator($table, $idField))->configure(
             $this->getConnection()->getSchemaManager()
@@ -38,17 +38,17 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_add_and_query_offer_permissions()
     {
-        $johnDoe = new String('abc');
+        $johnDoe = new StringLiteral('abc');
         $editableByJohnDoe = [
-            new String('123'),
-            new String('456'),
-            new String('789'),
+            new StringLiteral('123'),
+            new StringLiteral('456'),
+            new StringLiteral('789'),
         ];
-        $janeDoe = new String('def');
+        $janeDoe = new StringLiteral('def');
         $editableByJaneDoe = [
-            new String('101112'),
-            new String('131415'),
-            new String('456'),
+            new StringLiteral('101112'),
+            new StringLiteral('131415'),
+            new StringLiteral('456'),
         ];
 
         $this->assertEquals(
@@ -76,11 +76,11 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param String $eventId
+     * @param StringLiteral $eventId
      * @param string $key
-     * @param String $userId
+     * @param StringLiteral $userId
      */
-    private function markEditable(String $eventId, $key, String $userId)
+    private function markEditable(StringLiteral $eventId, $key, StringLiteral $userId)
     {
         $this->repository->markOfferEditableByUser($eventId, $userId);
     }
@@ -90,16 +90,16 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_silently_ignores_adding_duplicate_permissions()
     {
-        $johnDoe = new String('abc');
+        $johnDoe = new StringLiteral('abc');
         $editableByJohnDoe = [
-            new String('123'),
-            new String('456'),
-            new String('789'),
+            new StringLiteral('123'),
+            new StringLiteral('456'),
+            new StringLiteral('789'),
         ];
 
         array_walk($editableByJohnDoe, [$this, 'markEditable'], $johnDoe);
 
-        $this->repository->markOfferEditableByUser(new String('456'), $johnDoe);
+        $this->repository->markOfferEditableByUser(new StringLiteral('456'), $johnDoe);
 
         $this->assertEquals(
             $editableByJohnDoe,

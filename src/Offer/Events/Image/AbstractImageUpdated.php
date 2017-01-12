@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Events\Image;
 
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractImageUpdated extends AbstractEvent
 {

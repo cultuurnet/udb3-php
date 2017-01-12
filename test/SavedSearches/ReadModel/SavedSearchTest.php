@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\SavedSearches\ReadModel;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SavedSearchTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,9 +16,9 @@ class SavedSearchTest extends \PHPUnit_Framework_TestCase
     public function it_can_be_serialized_to_json()
     {
         $savedSearch = new SavedSearch(
-            new String('In Leuven'),
+            new StringLiteral('In Leuven'),
             new QueryString('city:"Leuven"'),
-            new String('101')
+            new StringLiteral('101')
         );
 
         $jsonEncoded = json_encode($savedSearch);
@@ -35,7 +35,7 @@ class SavedSearchTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_serialize_an_empty_id_property()
     {
         $savedSearch = new SavedSearch(
-            new String('In Leuven'),
+            new StringLiteral('In Leuven'),
             new QueryString('city:"Leuven"')
         );
 

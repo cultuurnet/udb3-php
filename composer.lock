@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "209c7bb8c52f8440ddba3ded10329495",
-    "content-hash": "311b73b6855423467ffd99bb04ff6479",
+    "hash": "2339e0f2e10160abb26749d8ecd31132",
+    "content-hash": "c9dc77548c78c9046d43784bc386a5cb",
     "packages": [
         {
             "name": "2dotstwice/collection",
@@ -114,30 +114,31 @@
         },
         {
             "name": "broadway/broadway",
-            "version": "0.5.2",
+            "version": "0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/broadway/broadway.git",
-                "reference": "0fce8c532086ad249a46fec179759c1fa089e35d"
+                "reference": "f9b3916fe0de097db588689b5f458a9cfa3dd9a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/broadway/broadway/zipball/0fce8c532086ad249a46fec179759c1fa089e35d",
-                "reference": "0fce8c532086ad249a46fec179759c1fa089e35d",
+                "url": "https://api.github.com/repos/broadway/broadway/zipball/f9b3916fe0de097db588689b5f458a9cfa3dd9a7",
+                "reference": "f9b3916fe0de097db588689b5f458a9cfa3dd9a7",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "~2.0",
                 "broadway/uuid-generator": "~0.1.0",
-                "php": ">=5.3.3",
-                "rhumsaa/uuid": "~2.4"
+                "php": ">=5.5.9",
+                "ramsey/uuid": "~2.4"
             },
             "require-dev": {
                 "doctrine/dbal": "~2.4",
                 "doctrine/mongodb": "~1.0",
-                "elasticsearch/elasticsearch": "~1.0",
+                "elasticsearch/elasticsearch": "~1.0|^2.0",
                 "instaclick/base-test-bundle": "~0.5",
                 "monolog/monolog": "~1.8",
+                "phpunit/phpunit": "^4.8",
                 "symfony/console": "~2.4",
                 "symfony/proxy-manager-bridge": "~2.4"
             },
@@ -152,7 +153,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6.x-dev"
+                    "dev-master": "1.0.x-dev"
                 }
             },
             "autoload": {
@@ -197,7 +198,7 @@
                 "domain-driven design",
                 "event sourcing"
             ],
-            "time": "2015-03-31 18:15:05"
+            "time": "2016-12-07 08:03:00"
         },
         {
             "name": "broadway/uuid-generator",
@@ -585,20 +586,20 @@
         },
         {
             "name": "cultuurnet/deserializer",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/deserializer.git",
-                "reference": "8428e1bc9e0447dee18ed9bee0f66d112c8285ed"
+                "reference": "3c8ce40b567f37cdc0bc6b64835a7b3114e125cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/8428e1bc9e0447dee18ed9bee0f66d112c8285ed",
-                "reference": "8428e1bc9e0447dee18ed9bee0f66d112c8285ed",
+                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/3c8ce40b567f37cdc0bc6b64835a7b3114e125cd",
+                "reference": "3c8ce40b567f37cdc0bc6b64835a7b3114e125cd",
                 "shasum": ""
             },
             "require": {
-                "nicolopignatelli/valueobjects": "~2.0"
+                "nicolopignatelli/valueobjects": "~3.0"
             },
             "require-dev": {
                 "phing/phing": "~2.10",
@@ -628,7 +629,7 @@
                 }
             ],
             "description": "Internet media type deserialization library",
-            "time": "2016-10-19 08:49:50"
+            "time": "2017-01-12 11:18:03"
         },
         {
             "name": "cultuurnet/search",
@@ -678,20 +679,20 @@
         },
         {
             "name": "cultuurnet/symfony-security-jwt",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/symfony-security-jwt.git",
-                "reference": "a6aed851723228d05897ce99bf7f33272523faaf"
+                "reference": "e2e80b77088e25157fe53e2fe2fd4bccaccb7acd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/symfony-security-jwt/zipball/a6aed851723228d05897ce99bf7f33272523faaf",
-                "reference": "a6aed851723228d05897ce99bf7f33272523faaf",
+                "url": "https://api.github.com/repos/cultuurnet/symfony-security-jwt/zipball/e2e80b77088e25157fe53e2fe2fd4bccaccb7acd",
+                "reference": "e2e80b77088e25157fe53e2fe2fd4bccaccb7acd",
                 "shasum": ""
             },
             "require": {
-                "cultuurnet/udb3-jwt": "~0.1",
+                "cultuurnet/udb3-jwt": "~1.0",
                 "symfony/security": "~2.7.3"
             },
             "require-dev": {
@@ -716,26 +717,26 @@
                 "Apache-2.0"
             ],
             "description": "JWT implementation for the Symfony Security component",
-            "time": "2016-11-08 13:53:56"
+            "time": "2017-01-12 11:51:42"
         },
         {
             "name": "cultuurnet/udb3-jwt",
-            "version": "dev-master",
+            "version": "1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/udb3-jwt.git",
-                "reference": "7e435b1b2df671a3abffa87fcc29cae62046ad4a"
+                "reference": "cfb6a6d4def0aa750d1875993f0c84f0844dcb8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/udb3-jwt/zipball/7e435b1b2df671a3abffa87fcc29cae62046ad4a",
-                "reference": "7e435b1b2df671a3abffa87fcc29cae62046ad4a",
+                "url": "https://api.github.com/repos/cultuurnet/udb3-jwt/zipball/cfb6a6d4def0aa750d1875993f0c84f0844dcb8a",
+                "reference": "cfb6a6d4def0aa750d1875993f0c84f0844dcb8a",
                 "shasum": ""
             },
             "require": {
                 "cultuurnet/clock": "~0.1",
                 "lcobucci/jwt": "~3.1",
-                "nicolopignatelli/valueobjects": "~2.0"
+                "nicolopignatelli/valueobjects": "~3.0"
             },
             "require-dev": {
                 "phing/phing": "~2.11",
@@ -765,7 +766,7 @@
                 }
             ],
             "description": "Provides JWT service classes",
-            "time": "2016-08-05 14:13:29"
+            "time": "2017-01-12 11:38:43"
         },
         {
             "name": "danielstjules/stringy",
@@ -1975,16 +1976,16 @@
         },
         {
             "name": "nicolopignatelli/valueobjects",
-            "version": "v2.3",
+            "version": "v3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nicolopignatelli/valueobjects.git",
-                "reference": "353f7751bb92950a6847070d716a89513a5ed7b1"
+                "reference": "de7ab566be73e9e2c73bbbf05177646b11fc2b05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicolopignatelli/valueobjects/zipball/353f7751bb92950a6847070d716a89513a5ed7b1",
-                "reference": "353f7751bb92950a6847070d716a89513a5ed7b1",
+                "url": "https://api.github.com/repos/nicolopignatelli/valueobjects/zipball/de7ab566be73e9e2c73bbbf05177646b11fc2b05",
+                "reference": "de7ab566be73e9e2c73bbbf05177646b11fc2b05",
                 "shasum": ""
             },
             "require": {
@@ -1992,7 +1993,7 @@
                 "marc-mabe/php-enum": "~1.0",
                 "mathiasverraes/money": "~1.2",
                 "php": ">=5.3.3",
-                "rhumsaa/uuid": "~2.5",
+                "ramsey/uuid": "~2.5",
                 "zendframework/zend-validator": "~2.2"
             },
             "require-dev": {
@@ -2001,7 +2002,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4.x-dev"
+                    "dev-master": "3.0.x-dev"
                 }
             },
             "autoload": {
@@ -2024,20 +2025,20 @@
                 }
             ],
             "description": "A PHP library/collection of classes aimed to help developers using and undestanding immutable objects.",
-            "time": "2015-03-14 13:53:13"
+            "time": "2015-05-15 13:19:42"
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v2.0.4",
+            "version": "v1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "a9b97968bcde1c4de2a5ec6cbd06a0f6c919b46e"
+                "reference": "c7e26a21ba357863de030f0b9e701c7d04593774"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/a9b97968bcde1c4de2a5ec6cbd06a0f6c919b46e",
-                "reference": "a9b97968bcde1c4de2a5ec6cbd06a0f6c919b46e",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/c7e26a21ba357863de030f0b9e701c7d04593774",
+                "reference": "c7e26a21ba357863de030f0b9e701c7d04593774",
                 "shasum": ""
             },
             "require": {
@@ -2072,7 +2073,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-11-07 23:38:38"
+            "time": "2016-03-18 20:34:03"
         },
         {
             "name": "php-http/httplug",
@@ -2925,19 +2926,20 @@
         },
         {
             "name": "symfony/security",
-            "version": "v2.7.8",
+            "version": "v2.7.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security.git",
-                "reference": "88b9dd021f396ecea0ed312b26e2e8fe5b98feeb"
+                "reference": "457ab5ad8b4e2f4bb1db7ed3b967ce55f4e9a0ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security/zipball/88b9dd021f396ecea0ed312b26e2e8fe5b98feeb",
-                "reference": "88b9dd021f396ecea0ed312b26e2e8fe5b98feeb",
+                "url": "https://api.github.com/repos/symfony/security/zipball/457ab5ad8b4e2f4bb1db7ed3b967ce55f4e9a0ae",
+                "reference": "457ab5ad8b4e2f4bb1db7ed3b967ce55f4e9a0ae",
                 "shasum": ""
             },
             "require": {
+                "paragonie/random_compat": "~1.0",
                 "php": ">=5.3.9",
                 "symfony/event-dispatcher": "~2.2",
                 "symfony/http-foundation": "~2.1",
@@ -2963,7 +2965,6 @@
             "suggest": {
                 "doctrine/dbal": "For using the built-in ACL implementation",
                 "ircmaxell/password-compat": "For using the BCrypt password encoder in PHP <5.5",
-                "paragonie/random_compat": "",
                 "symfony/class-loader": "For using the ACL generateSql script",
                 "symfony/expression-language": "For using the expression voter",
                 "symfony/finder": "For using the ACL generateSql script",
@@ -3001,7 +3002,7 @@
             ],
             "description": "Symfony Security Component",
             "homepage": "https://symfony.com",
-            "time": "2015-12-23 18:13:52"
+            "time": "2016-12-06 20:51:50"
         },
         {
             "name": "symfony/serializer",

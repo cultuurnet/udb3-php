@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Role\Services;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface RoleEditingServiceInterface
 {

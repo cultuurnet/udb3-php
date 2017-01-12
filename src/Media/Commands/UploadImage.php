@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Media\Commands;
 
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UploadImage
 {

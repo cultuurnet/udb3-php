@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase

@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Role\ReadModel\Permissions\UserPermissionsReadRepositoryInte
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use GuzzleHttp\Tests\Psr7\Str;
 use PHPUnit_Framework_TestCase;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
 {

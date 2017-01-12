@@ -10,7 +10,7 @@ use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use Psr\Log\LoggerInterface;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,8 +63,8 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function aSubscribeToSavedSearchCommand()
     {
-        $userId = new String('some-user-id');
-        $name = new String('My very first saved search!');
+        $userId = new StringLiteral('some-user-id');
+        $name = new StringLiteral('My very first saved search!');
         $query = new QueryString('city:"Leuven"');
 
         $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
@@ -170,8 +170,8 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function getUnsubscribeFromSavedSearchCommandStub()
     {
-        $userId = new String('some-user-id');
-        $searchId = new String('some-search-id');
+        $userId = new StringLiteral('some-user-id');
+        $searchId = new StringLiteral('some-search-id');
 
         return new UnsubscribeFromSavedSearch($userId, $searchId);
     }

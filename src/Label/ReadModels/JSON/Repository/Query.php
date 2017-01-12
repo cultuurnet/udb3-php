@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository;
 
 use ValueObjects\Number\Natural;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Query
 {

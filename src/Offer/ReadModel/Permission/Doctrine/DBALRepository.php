@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DBALRepository implements PermissionRepositoryInterface, PermissionQueryInterface
 {

@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Projector implements EventListenerInterface
 {
@@ -48,7 +48,7 @@ class Projector implements EventListenerInterface
 
         if ($createdByIdentifier) {
             $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
-                new String($createdByIdentifier)
+                new StringLiteral($createdByIdentifier)
             );
 
             if (!$ownerId) {
@@ -56,7 +56,7 @@ class Projector implements EventListenerInterface
             }
 
             $this->permissionRepository->markOfferEditableByUser(
-                new String($placeImportedFromUDB2->getActorId()),
+                new StringLiteral($placeImportedFromUDB2->getActorId()),
                 $ownerId
             );
         }
@@ -74,7 +74,7 @@ class Projector implements EventListenerInterface
 
         if ($createdByIdentifier) {
             $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
-                new String($createdByIdentifier)
+                new StringLiteral($createdByIdentifier)
             );
 
             if (!$ownerId) {
@@ -82,7 +82,7 @@ class Projector implements EventListenerInterface
             }
 
             $this->permissionRepository->markOfferEditableByUser(
-                new String($placeImportedFromUDB2->getActorId()),
+                new StringLiteral($placeImportedFromUDB2->getActorId()),
                 $ownerId
             );
         }
@@ -93,10 +93,10 @@ class Projector implements EventListenerInterface
         DomainMessage $domainMessage
     ) {
         $metadata = $domainMessage->getMetadata()->serialize();
-        $ownerId = new String($metadata['user_id']);
+        $ownerId = new StringLiteral($metadata['user_id']);
 
         $this->permissionRepository->markOfferEditableByUser(
-            new String($placeCreated->getPlaceId()),
+            new StringLiteral($placeCreated->getPlaceId()),
             $ownerId
         );
     }

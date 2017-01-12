@@ -7,7 +7,6 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
@@ -43,7 +42,6 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
@@ -145,28 +143,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         );
 
         $this->repository->save($document->withBody($actorLd));
-    }
-
-    /**
-     * @param PlaceImportedFromUDB2Event $eventImportedFromUDB2
-     */
-    protected function applyPlaceImportedFromUDB2Event(
-        PlaceImportedFromUDB2Event $eventImportedFromUDB2
-    ) {
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $eventImportedFromUDB2->getCdbXml()
-        );
-
-        $document = $this->newDocument($eventImportedFromUDB2->getActorId());
-        $placeLd = $document->getBody();
-
-        $placeLd = $this->cdbXMLImporter->eventDocumentWithCdbXML(
-            $placeLd,
-            $udb2Event
-        );
-
-        $this->repository->save($document->withBody($placeLd));
     }
 
     /**

@@ -6,12 +6,10 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
-use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Projector implements EventListenerInterface
@@ -45,32 +43,6 @@ class Projector implements EventListenerInterface
         );
 
         $createdByIdentifier = $cdbActor->getCreatedBy();
-
-        if ($createdByIdentifier) {
-            $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
-                new StringLiteral($createdByIdentifier)
-            );
-
-            if (!$ownerId) {
-                return;
-            }
-
-            $this->permissionRepository->markOfferEditableByUser(
-                new StringLiteral($placeImportedFromUDB2->getActorId()),
-                $ownerId
-            );
-        }
-    }
-
-    protected function applyPlaceImportedFromUDB2Event(
-        PlaceImportedFromUDB2Event $placeImportedFromUDB2
-    ) {
-        $cdbEvent = EventItemFactory::createEventFromCdbXml(
-            $placeImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $placeImportedFromUDB2->getCdbXml()
-        );
-
-        $createdByIdentifier = $cdbEvent->getCreatedBy();
 
         if ($createdByIdentifier) {
             $ownerId = $this->userIdResolver->resolveCreatedByToUserId(

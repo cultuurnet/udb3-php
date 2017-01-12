@@ -18,7 +18,6 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -111,74 +110,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
             ->with(new StringLiteral('cultuurnet001'))
-            ->willReturn(null);
-
-        $this->repository->expects($this->never())
-            ->method('markOfferEditableByUser');
-
-        $this->projector->handle($msg);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_permission_to_the_user_identified_by_the_createdby_element_for_places_imported_from_udb2()
-    {
-        $cdbXml = file_get_contents(__DIR__ . '/../../event_with_cdb_externalid.cdbxml.xml');
-        $cdbXmlNamespaceUri = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2');
-
-        $payload = new PlaceImportedFromUDB2Event(
-            '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-            $cdbXml,
-            $cdbXmlNamespaceUri
-        );
-        $msg = DomainMessage::recordNow(
-            '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-            1,
-            new Metadata(),
-            $payload
-        );
-
-        $userId = new StringLiteral('123');
-
-        $this->userIdResolver->expects($this->once())
-            ->method('resolveCreatedByToUserId')
-            ->with(new StringLiteral('manu.roegiers@luca-arts.be'))
-            ->willReturn($userId);
-
-        $this->repository->expects($this->once())
-            ->method('markOfferEditableByUser')
-            ->with(
-                new StringLiteral('7914ed2d-9f28-4946-b9bd-ae8f7a4aea11'),
-                $userId
-            );
-
-        $this->projector->handle($msg);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_add_any_permissions_for_places_imported_from_udb2_with_unresolvable_createdby_value()
-    {
-        $cdbXml = file_get_contents(__DIR__ . '/../../event_with_cdb_externalid.cdbxml.xml');
-        $cdbXmlNamespaceUri = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2');
-
-        $payload = new PlaceImportedFromUDB2Event(
-            '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-            $cdbXml,
-            $cdbXmlNamespaceUri
-        );
-        $msg = DomainMessage::recordNow(
-            '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-            1,
-            new Metadata(),
-            $payload
-        );
-
-        $this->userIdResolver->expects($this->once())
-            ->method('resolveCreatedByToUserId')
-            ->with(new StringLiteral('manu.roegiers@luca-arts.be'))
             ->willReturn(null);
 
         $this->repository->expects($this->never())

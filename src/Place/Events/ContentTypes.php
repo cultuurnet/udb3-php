@@ -44,7 +44,6 @@ class ContentTypes
             PlaceCreated::class => 'application/vnd.cultuurnet.udb3-events.place-created+json',
             PlaceDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-deleted+json',
             PlaceImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.place-imported-from-udb2-actor+json',
-            PlaceImportedFromUDB2Event::class => 'application/vnd.cultuurnet.udb3-events.place-imported-from-udb2-event+json',
             PlaceProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.place-projected-to-jsonld+json',
             PlaceUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.place-updated-from-udb2+json',
             TitleTranslated::class => 'application/vnd.cultuurnet.udb3-events.place-title-translated+json',

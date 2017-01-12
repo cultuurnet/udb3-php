@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3;
 class Language
 {
     protected $code;
+
     /**
-     * @param $code
+     * @param string $code
      */
     public function __construct($code)
     {
@@ -18,11 +19,17 @@ class Language
         $this->code = $code;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->code;
     }
 
+    /**
+     * @return string
+     */
     public function getCode()
     {
         return $this->code;

@@ -281,12 +281,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             )
             ->then(
-                [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
-                ]
+                []
             )
 
             // Remove the user.
@@ -298,10 +293,6 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->then(
                 [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
                     new UserRemoved(
                         $this->uuid,
                         $userId
@@ -317,16 +308,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             )
             ->then(
-                [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
-                    new UserRemoved(
-                        $this->uuid,
-                        $userId
-                    ),
-                ]
+                []
             )
 
             // Removing a user that was never added to the role should not
@@ -338,16 +320,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             )
             ->then(
-                [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
-                    new UserRemoved(
-                        $this->uuid,
-                        $userId
-                    ),
-                ]
+                []
             );
     }
 

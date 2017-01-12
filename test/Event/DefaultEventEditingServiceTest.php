@@ -26,7 +26,6 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
-use CultuurNet\UDB3\PlaceService;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\String\String as StringLiteral;

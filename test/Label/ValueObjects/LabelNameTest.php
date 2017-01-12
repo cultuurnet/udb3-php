@@ -75,6 +75,16 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_trims_whitespace_from_the_value_passed_to_it()
+    {
+        $label = new LabelName('  turnip  ');
+
+        $this->assertEquals($label->toNative(), 'turnip');
+    }
+
+    /**
      * @return array
      */
     public function labelNameValues()

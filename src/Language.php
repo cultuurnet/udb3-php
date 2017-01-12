@@ -1,10 +1,30 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
 
-class Language extends \CultuurNet\Entry\Language
+class Language
 {
+    protected $code;
+    /**
+     * @param $code
+     */
+    public function __construct($code)
+    {
+        if (!preg_match('/^[a-z]{2}$/', $code)) {
+            throw new \InvalidArgumentException(
+                'Invalid language code: ' . $code
+            );
+        }
+        $this->code = $code;
+    }
+
+    public function __toString()
+    {
+        return $this->code;
+    }
+
+    public function getCode()
+    {
+        return $this->code;
+    }
 }

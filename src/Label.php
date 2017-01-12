@@ -1,19 +1,30 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
 
-use CultuurNet\Entry\Keyword;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 
-class Label extends Keyword
+class Label
 {
+    /**
+     * @var LabelName
+     */
+    protected $labelName;
+
+    /**
+     * @var bool
+     */
+    protected $visible;
+
+    /**
+     * Label constructor.
+     * @param string $value
+     * @param bool $visible
+     */
     public function __construct($value, $visible = true)
     {
         // Try constructing a LabelName object, so the same validation rules hold.
-        $labelName = new LabelName($value);
+        $this->labelName = new LabelName($value);
 
         if (!is_bool($visible)) {
             throw new \InvalidArgumentException(sprintf(
@@ -22,7 +33,7 @@ class Label extends Keyword
             ));
         }
 
-        parent::__construct($labelName->toNative(), $visible);
+        $this->visible = $visible;
     }
 
     /**
@@ -35,5 +46,21 @@ class Label extends Keyword
             mb_strtolower((string) $this, 'UTF-8'),
             mb_strtolower((string) $label, 'UTF-8')
         ) == 0;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isVisible()
+    {
+        return $this->visible;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->labelName->toNative();
     }
 }

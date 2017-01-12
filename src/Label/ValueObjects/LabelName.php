@@ -15,7 +15,10 @@ class LabelName extends StringLiteral
      */
     public function __construct($value)
     {
-        // checks if the value is a string, etc.
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
         parent::__construct($value);
 
         if (false !== strpos($value, ';')) {

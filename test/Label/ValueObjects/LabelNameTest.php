@@ -9,6 +9,7 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider labelNameValues
      * @test
+     * @param mixed $value
      */
     public function it_refuses_value_that_are_not_strings($value)
     {

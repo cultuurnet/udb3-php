@@ -16,6 +16,11 @@ class Label
      */
     protected $visible;
 
+    /**
+     * Label constructor.
+     * @param string $value
+     * @param bool $visible
+     */
     public function __construct($value, $visible = true)
     {
         // Try constructing a LabelName object, so the same validation rules hold.
@@ -51,6 +56,9 @@ class Label
         return $this->visible;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->labelName->toNative();

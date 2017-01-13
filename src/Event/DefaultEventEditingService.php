@@ -11,10 +11,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
-use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
-use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
@@ -59,13 +56,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         );
         $this->eventService = $eventService;
         $this->writeRepository = $writeRepository;
-    }
-
-    protected function guardTranslationLanguage(Language $language)
-    {
-        if (!LanguageCanBeTranslatedToSpecification::isSatisfiedBy($language)) {
-            throw new InvalidTranslationLanguageException($language);
-        }
     }
 
     /**

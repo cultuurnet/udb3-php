@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
     public function setUp()
     {
-        $this->userId = new String('xyx');
+        $this->userId = new StringLiteral('xyx');
         $this->deserializer = new SubscribeToSavedSearchJSONDeserializer($this->userId);
     }
 
@@ -40,7 +40,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
         $this->assertEquals(
             new SubscribeToSavedSearch(
                 $this->userId,
-                new String('My very first saved search.'),
+                new StringLiteral('My very first saved search.'),
                 new QueryString('city:"Leuven"')
             ),
             $command
@@ -75,6 +75,6 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
             __DIR__ . '/' . $fileName
         );
 
-        return new String($json);
+        return new StringLiteral($json);
     }
 }

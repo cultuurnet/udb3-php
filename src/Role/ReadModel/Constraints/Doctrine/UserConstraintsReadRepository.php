@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine\SchemaConfigurator as Co
 use CultuurNet\UDB3\Role\ReadModel\Search\Doctrine\SchemaConfigurator as SearchSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use Doctrine\DBAL\Connection;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UserConstraintsReadRepository implements UserConstraintsReadRepositoryInterface
 {

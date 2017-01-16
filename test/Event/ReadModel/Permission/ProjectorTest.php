@@ -18,7 +18,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {

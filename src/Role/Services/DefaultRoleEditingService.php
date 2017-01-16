@@ -17,7 +17,7 @@ use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use CultuurNet\UDB3\Role\Role;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DefaultRoleEditingService implements RoleEditingServiceInterface
 {

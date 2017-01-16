@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as stringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class RoleTest extends AggregateRootScenarioTestCase
 {

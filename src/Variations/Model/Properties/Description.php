@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-class Description extends String
+class Description extends StringLiteral
 {
 
 }

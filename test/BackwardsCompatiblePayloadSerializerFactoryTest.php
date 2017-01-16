@@ -17,7 +17,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
 {

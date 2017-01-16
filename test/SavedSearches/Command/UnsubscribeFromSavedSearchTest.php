@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UnsubscribeFromSavedSearchTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,8 +11,8 @@ class UnsubscribeFromSavedSearchTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_the_stored_data()
     {
-        $userId = new String('some-user-id');
-        $searchId = new String('some-search-id');
+        $userId = new StringLiteral('some-user-id');
+        $searchId = new StringLiteral('some-search-id');
 
         $command = new UnsubscribeFromSavedSearch($userId, $searchId);
 

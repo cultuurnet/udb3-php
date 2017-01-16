@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Role\MissingContentTypeException;
 use CultuurNet\UDB3\Role\UnknownContentTypeException;
 use Symfony\Component\HttpFoundation\Request;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UpdateRoleRequestDeserializer
 {

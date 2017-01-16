@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
 {

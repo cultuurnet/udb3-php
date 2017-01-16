@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\Model\Properties\UrlValidator;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,7 +36,7 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
         $this->setExpectedException(ValidationException::class, 'Invalid data');
 
         try {
-            $this->deserializer->deserialize(new String('{"owner": "foo"}'));
+            $this->deserializer->deserialize(new StringLiteral('{"owner": "foo"}'));
         } catch (ValidationException $e) {
             $this->assertEquals(
                 [
@@ -57,7 +57,7 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
     public function it_returns_a_command()
     {
         $command = $this->deserializer->deserialize(
-            new String(
+            new StringLiteral(
                 file_get_contents(__DIR__ . '/create-event-variations.json')
             )
         );
@@ -88,7 +88,7 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
             ->method('validateUrl')
             ->with(new Url('//io.uitdatabank.be/event/a0a78cd3-df53-4359-97a3-04b3680e69a4'));
 
-        $this->deserializer->deserialize(new String(
+        $this->deserializer->deserialize(new StringLiteral(
             file_get_contents(__DIR__ . '/create-event-variations.json')
         ));
     }

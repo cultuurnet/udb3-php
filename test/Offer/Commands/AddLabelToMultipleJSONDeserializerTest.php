@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
@@ -30,7 +30,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
         $this->offerIdentifierDeserializer->expects($this->any())
             ->method('deserialize')
             ->willReturnCallback(
-                function (String $id) {
+                function (StringLiteral $id) {
                     return new IriOfferIdentifier(
                         Url::fromNative("http://du.de/event/{$id}"),
                         $id,
@@ -49,7 +49,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_deserialize_a_valid_add_label_to_multiple_command()
     {
-        $json = new String('{"label":"foo", "offers": [1, 2, 3]}');
+        $json = new StringLiteral('{"label":"foo", "offers": [1, 2, 3]}');
 
         $expected = new AddLabelToMultiple(
             (new OfferIdentifierCollection())
@@ -87,7 +87,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_label_is_missing()
     {
-        $json = new String('{"offers":[]}');
+        $json = new StringLiteral('{"offers":[]}');
 
         $this->setExpectedException(
             MissingValueException::class,
@@ -102,7 +102,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_offers_are_missing()
     {
-        $json = new String('{"label":"foo"}');
+        $json = new StringLiteral('{"label":"foo"}');
 
         $this->setExpectedException(
             MissingValueException::class,

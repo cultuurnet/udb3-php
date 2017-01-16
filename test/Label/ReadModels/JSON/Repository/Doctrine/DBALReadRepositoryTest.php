@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as PermissionsSchemaConfigurator;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 {

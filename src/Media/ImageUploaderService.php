@@ -11,7 +11,7 @@ use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * @todo Move to udb3-symfony
@@ -72,7 +72,7 @@ class ImageUploaderService implements ImageUploaderInterface
     /**
      * @inheritdoc
      */
-    public function upload(UploadedFile $file, String $description, String $copyrightHolder)
+    public function upload(UploadedFile $file, StringLiteral $description, StringLiteral $copyrightHolder)
     {
         if (!$file->isValid()) {
             throw new \InvalidArgumentException('The file did not upload correctly.');
@@ -107,7 +107,7 @@ class ImageUploaderService implements ImageUploaderInterface
                 $mimeType,
                 $description,
                 $copyrightHolder,
-                new String($destination)
+                new StringLiteral($destination)
             )
         );
     }

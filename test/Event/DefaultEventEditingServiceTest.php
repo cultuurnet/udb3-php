@@ -28,7 +28,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase

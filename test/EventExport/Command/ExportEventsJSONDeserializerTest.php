@@ -6,7 +6,7 @@ use CultuurNet\Deserializer\DeserializerInterface;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\EventExport\EventExportQuery;
 use ReflectionClass;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class ExportEventsJSONDeserializerTest extends \PHPUnit_Framework_TestCase
@@ -26,7 +26,7 @@ class ExportEventsJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_deserializes_a_minimal_export_command()
     {
-        $data = new String(
+        $data = new StringLiteral(
             $this->getJsonData('export_data_query.json')
         );
 
@@ -48,7 +48,7 @@ class ExportEventsJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_deserializes_a_complete_export_command()
     {
-        $data = new String(
+        $data = new StringLiteral(
             $this->getJsonData('export_data.json')
         );
 
@@ -78,7 +78,7 @@ class ExportEventsJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_query_is_missing()
     {
-        $data = new String('{"email":"foo@bar.com"}');
+        $data = new StringLiteral('{"email":"foo@bar.com"}');
         $this->setExpectedException(MissingValueException::class);
         $this->deserializer->deserialize($data);
     }
@@ -94,7 +94,7 @@ class ExportEventsJSONDeserializerTest extends \PHPUnit_Framework_TestCase
         DeserializerInterface $deserializer,
         $expectedCommandType
     ) {
-        $data = new String(
+        $data = new StringLiteral(
             $this->getJsonData('export_data.json')
         );
 

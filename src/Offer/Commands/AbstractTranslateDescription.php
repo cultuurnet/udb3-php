@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Language;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class AbstractTranslateDescription extends AbstractTranslatePropertyCommand
 {

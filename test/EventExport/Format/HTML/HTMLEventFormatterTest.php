@@ -10,7 +10,7 @@ use CultuurNet\UDB3\EventExport\Format\HTML\Properties\TaalicoonDescription;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\Event\EventAdvantage;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfo;
 use CultuurNet\UDB3\EventExport\Format\HTML\Uitpas\EventInfo\EventInfoServiceInterface;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class HTMLEventFormatterTest extends \PHPUnit_Framework_TestCase
 {

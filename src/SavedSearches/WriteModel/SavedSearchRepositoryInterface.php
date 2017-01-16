@@ -3,28 +3,28 @@
 namespace CultuurNet\UDB3\SavedSearches\WriteModel;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface SavedSearchRepositoryInterface
 {
     /**
-     * @param String $userId
-     * @param String $name
+     * @param StringLiteral $userId
+     * @param StringLiteral $name
      * @param QueryString $queryString
      * @return void
      */
     public function write(
-        String $userId,
-        String $name,
+        StringLiteral $userId,
+        StringLiteral $name,
         QueryString $queryString
     );
 
     /**
-     * @param String $userId
-     * @param String $searchId
+     * @param StringLiteral $userId
+     * @param StringLiteral $searchId
      */
     public function delete(
-        String $userId,
-        String $searchId
+        StringLiteral $userId,
+        StringLiteral $searchId
     );
 }

@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class RoleLabelsProjectorTest extends PHPUnit_Framework_TestCase
 {

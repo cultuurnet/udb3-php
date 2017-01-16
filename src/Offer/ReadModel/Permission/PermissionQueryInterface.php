@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission;
 
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface PermissionQueryInterface
 {

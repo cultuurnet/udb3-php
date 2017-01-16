@@ -8,7 +8,7 @@ use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\Deserializer\NotWellFormedException;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * @todo Move to udb3-symfony-php.

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\UserPermissionsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use Doctrine\DBAL\Connection;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UserPermissionsReadRepository implements UserPermissionsReadRepositoryInterface
 {

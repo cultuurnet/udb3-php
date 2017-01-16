@@ -56,7 +56,7 @@ use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 /**
@@ -573,7 +573,7 @@ class EventLDProjector extends OfferLDProjector implements
         $properties = $metadata->serialize();
 
         if (isset($properties['user_nick'])) {
-            return new String($properties['user_nick']);
+            return new StringLiteral($properties['user_nick']);
         }
     }
 
@@ -582,7 +582,7 @@ class EventLDProjector extends OfferLDProjector implements
         $properties = $metadata->serialize();
 
         if (isset($properties['consumer']['name'])) {
-            return new String($properties['consumer']['name']);
+            return new StringLiteral($properties['consumer']['name']);
         }
     }
 

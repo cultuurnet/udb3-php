@@ -28,7 +28,7 @@ use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
 use Exception;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class OfferTest extends AggregateRootScenarioTestCase

@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Doctrine\DBAL\SchemaConfiguratorInterface;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Type;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SchemaConfigurator implements SchemaConfiguratorInterface
 {

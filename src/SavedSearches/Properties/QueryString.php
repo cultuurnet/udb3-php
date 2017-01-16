@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-class QueryString extends String
+class QueryString extends StringLiteral
 {
     /**
      * @return string

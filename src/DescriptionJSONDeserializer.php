@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * @todo Move to udb3-symfony-php.

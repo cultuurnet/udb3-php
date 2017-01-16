@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Security\LabelSecurityInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecurityInterface
 {

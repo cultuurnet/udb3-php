@@ -4,13 +4,13 @@
  */
 namespace CultuurNet\UDB3\Cdb;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface CreatedByToUserIdResolverInterface
 {
     /**
-     * @param String $createdByIdentifier
+     * @param StringLiteral $createdByIdentifier
      * @return String
      */
-    public function resolveCreatedByToUserId(String $createdByIdentifier);
+    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier);
 }

@@ -3,23 +3,18 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\CommandHandling\CommandBusInterface;
+use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
-use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
-use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface
@@ -28,11 +23,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * @var EventServiceInterface
      */
     protected $eventService;
-
-    /**
-     * @var PlaceService
-     */
-    protected $places;
 
     /**
      * @var RepositoryInterface
@@ -44,7 +34,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
      * @param DocumentRepositoryInterface $readRepository
-     * @param PlaceService $placeService
      * @param OfferCommandFactoryInterface $commandFactory
      * @param RepositoryInterface $writeRepository
      * @param LabelServiceInterface $labelService
@@ -54,7 +43,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
         DocumentRepositoryInterface $readRepository,
-        PlaceService $placeService,
         OfferCommandFactoryInterface $commandFactory,
         RepositoryInterface $writeRepository,
         LabelServiceInterface $labelService
@@ -67,15 +55,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $labelService
         );
         $this->eventService = $eventService;
-        $this->places = $placeService;
         $this->writeRepository = $writeRepository;
-    }
-
-    protected function guardTranslationLanguage(Language $language)
-    {
-        if (!LanguageCanBeTranslatedToSpecification::isSatisfiedBy($language)) {
-            throw new InvalidTranslationLanguageException($language);
-        }
     }
 
     /**
@@ -106,11 +86,39 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
     }
 
     /**
+     * @inheritdoc
+     */
+    public function copyEvent($originalEventId, CalendarInterface $calendar)
+    {
+        if (!is_string($originalEventId)) {
+            throw new \InvalidArgumentException(
+                'Expected originalEventId to be a string, received ' . gettype($originalEventId)
+            );
+        }
+
+        try {
+            /** @var Event $event */
+            $event = $this->writeRepository->load($originalEventId);
+        } catch (AggregateNotFoundException $exception) {
+            throw new \InvalidArgumentException(
+                'No original event found to copy with id ' . $originalEventId
+            );
+        }
+
+        $eventId = $this->uuidGenerator->generate();
+
+        $newEvent = $event->copy($eventId, $calendar);
+
+        $this->writeRepository->save($newEvent);
+
+        return $eventId;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
     {
-
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(

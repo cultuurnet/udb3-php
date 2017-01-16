@@ -8,18 +8,16 @@ use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
-use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
-use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use DateTime;
 use DateTimeInterface;
@@ -161,22 +159,6 @@ class Projector implements EventListenerInterface
         $userId = $this->resolveUserId($udb2Event);
 
         $this->updateIndexWithUDB2Event($eventId, EntityType::EVENT(), $userId, $udb2Event);
-    }
-
-    /**
-     * @param PlaceImportedFromUDB2Event $placeImportedFromUDB2Event
-     */
-    protected function applyPlaceImportedFromUDB2Event(
-        PlaceImportedFromUDB2Event $placeImportedFromUDB2Event
-    ) {
-        $placeId = $placeImportedFromUDB2Event->getActorId();
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $placeImportedFromUDB2Event->getCdbXmlNamespaceUri(),
-            $placeImportedFromUDB2Event->getCdbXml()
-        );
-        $userId = $this->resolveUserId($udb2Event);
-
-        $this->updateIndexWithUDB2Event($placeId, EntityType::PLACE(), $userId, $udb2Event);
     }
 
     /**

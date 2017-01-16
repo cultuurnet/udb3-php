@@ -485,6 +485,26 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_ignores_a_properly_formatted_price_description_when_its_base_price_does_not_match_pricevalue()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_properly_formatted_price_description_but_different_pricevalue.cdbxml.xml');
+
+        $this->assertEquals(
+            [
+                [
+                    'category' => 'base',
+                    'name' => 'Basistarief',
+                    'price' => 12.00,
+                    'priceCurrency' => 'EUR',
+                ]
+            ],
+            $jsonEvent->priceInfo
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_falls_back_to_price_value_without_proper_description()
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_without_properly_formatted_price_description.cdbxml.xml');

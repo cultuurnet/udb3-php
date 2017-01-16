@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Cdb;
 use CommerceGuys\Intl\Currency\CurrencyRepositoryInterface;
 use CommerceGuys\Intl\Formatter\NumberFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepositoryInterface;
+use RuntimeException;
 
 /**
  * Parses a cdbxml <pricedescription> string into name value pairs.
@@ -21,6 +22,15 @@ class PriceDescriptionParser
      */
     private $currencyRepository;
 
+    /**
+     * @var NumberFormatter
+     */
+    private $currencyFormatter;
+
+    /**
+     * @param \CommerceGuys\Intl\NumberFormat\NumberFormatRepositoryInterface $numberFormatRepository
+     * @param \CommerceGuys\Intl\Currency\CurrencyRepositoryInterface $currencyRepository
+     */
     public function __construct(
         NumberFormatRepositoryInterface $numberFormatRepository,
         CurrencyRepositoryInterface $currencyRepository
@@ -41,48 +51,76 @@ class PriceDescriptionParser
 
         $possiblePriceDescriptions = preg_split('/\s*;\s*/', $description);
 
-        $namePattern = '[\w\s]+';
-        $valuePattern = '\€?\s*[\d,]+\s*\€?';
+        try {
+            foreach ($possiblePriceDescriptions as $possiblePriceDescription) {
+                $price = $this->parseSinglePriceDescription($possiblePriceDescription);
+                $prices += $price;
+            }
+        } catch (RuntimeException $e) {
+            $prices = array();
+        }
 
-        $pricePattern =
-          "/(?<name>{$namePattern}):\s*(?<value>{$valuePattern})/u";
+        if (!empty($prices)) {
+            reset($prices);
+            $firstPriceName = key($prices);
 
-        $numberFormat = $this->numberFormatRepository->get('nl-BE');
-        $currencyFormatter = new NumberFormatter(
-            $numberFormat,
-            NumberFormatter::CURRENCY
-        );
-        $currency = $this->currencyRepository->get('EUR');
-
-        foreach ($possiblePriceDescriptions as $possiblePriceDescription) {
-            $possiblePriceDescription = trim($possiblePriceDescription);
-            $matches = [];
-
-            $priceDescriptionIsValid = preg_match(
-                $pricePattern,
-                $possiblePriceDescription,
-                $matches
-            );
-
-            if ($priceDescriptionIsValid) {
-                $priceName = trim($matches['name']);
-                $priceValue = trim($matches['value']);
-
-                $priceValue = $currencyFormatter->parseCurrency(
-                    $priceValue,
-                    $currency
-                );
-
-                if (false === $priceValue) {
-                    continue;
-                }
-
-                if (!isset($prices[$priceName])) {
-                    $prices[$priceName] = floatval($priceValue);
-                }
+            if ($firstPriceName !== 'Basistarief') {
+                $prices = array();
             }
         }
 
         return $prices;
+    }
+
+    private function parseSinglePriceDescription($possiblePriceDescription)
+    {
+        $possiblePriceDescription = trim($possiblePriceDescription);
+        $matches = [];
+
+        $namePattern = '[\w\s]+';
+        $valuePattern = '\€?\s*[\d,]+\s*\€?';
+
+        $pricePattern =
+            "/^(?<name>{$namePattern}):\s*(?<value>{$valuePattern})$/u";
+
+        $priceDescriptionIsValid = preg_match(
+            $pricePattern,
+            $possiblePriceDescription,
+            $matches
+        );
+
+        if (!$priceDescriptionIsValid) {
+            throw new RuntimeException();
+        }
+
+        $priceName = trim($matches['name']);
+        $priceValue = trim($matches['value']);
+
+        $currencyFormatter = $this->getCurrencyFormatter();
+        $currency = $this->currencyRepository->get('EUR');
+
+        $priceValue = $currencyFormatter->parseCurrency(
+            $priceValue,
+            $currency
+        );
+
+        if (false === $priceValue) {
+            throw new RuntimeException();
+        }
+
+        return [ $priceName => floatval($priceValue) ];
+    }
+
+    private function getCurrencyFormatter()
+    {
+        if (!$this->currencyFormatter) {
+            $numberFormat = $this->numberFormatRepository->get('nl-BE');
+            $this->currencyFormatter = new NumberFormatter(
+                $numberFormat,
+                NumberFormatter::CURRENCY
+            );
+        }
+
+        return $this->currencyFormatter;
     }
 }

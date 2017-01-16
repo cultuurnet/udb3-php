@@ -105,6 +105,15 @@ interface EventEditingServiceInterface
     public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
 
     /**
+     * @param string $originalEventId
+     * @param CalendarInterface $calendar
+     * @return string $eventId
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function copyEvent($originalEventId, CalendarInterface $calendar);
+
+    /**
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType

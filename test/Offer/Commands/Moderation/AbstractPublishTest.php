@@ -7,6 +7,11 @@ use ValueObjects\Identity\UUID;
 class AbstractPublishTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var UUID
+     */
+    private $uuid;
+
+    /**
      * @var \DateTimeInterface
      */
     private $publicationDate;
@@ -18,11 +23,13 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $this->uuid = new UUID();
+
         $this->publicationDate = new \DateTime();
 
         $this->abstractPublish = $this->getMockForAbstractClass(
             AbstractPublish::class,
-            [new UUID(), $this->publicationDate]
+            [$this->uuid->toNative(), $this->publicationDate]
         );
     }
 
@@ -57,7 +64,7 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
 
         $abstractPublish = $this->getMockForAbstractClass(
             AbstractPublish::class,
-            [new UUID()]
+            [$this->uuid->toNative()]
         );
 
         $this->assertEquals($now, $abstractPublish->getPublicationDate());

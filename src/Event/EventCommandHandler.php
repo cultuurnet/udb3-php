@@ -44,7 +44,6 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {
-
         /** @var Event $event */
         $event = $this->offerRepository->load($updateMajorInfo->getItemId());
 

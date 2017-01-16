@@ -50,7 +50,7 @@ class Security implements SecurityInterface
     {
         return $this->currentUiTIDUserCanEditOffer(
             $offerId,
-            new PreflightCommand($offerId, Permission::AANBOD_BEWERKEN())
+            new PreflightCommand($offerId->toNative(), Permission::AANBOD_BEWERKEN())
         );
     }
 

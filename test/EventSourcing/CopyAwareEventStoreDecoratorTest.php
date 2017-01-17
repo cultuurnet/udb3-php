@@ -70,6 +70,9 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedEventStream, $eventStream);
     }
 
+    /**
+     * @test
+     */
     public function it_should_only_load_the_inherited_parent_history_when_there_jumps_in_playhead()
     {
         $parentFirstEventMessage = $this->getDomainMessage(0, '');
@@ -87,6 +90,33 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             ->will($this->onConsecutiveCalls(
                 new DomainEventStream([$aggregateOldestEventMessage]),
                 new DomainEventStream([$parentFirstEventMessage, $parentJumpedEventMessage, $parentOldestEventMessage])
+            ));
+
+        $eventStream = $this->copyAwareEventStore->load('422d7cb7-016c-42ca-a08e-277b3695ba41');
+
+        $this->assertEquals($expectedEventStream, $eventStream);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_load_the_complete_aggregate_history_when_there_are_multiple_ancestors()
+    {
+        $oldestAncestorEventMessage = $this->getDomainMessage(0, '');
+        $parentCopiedEventMessage = $this->getDomainMessage(1, '94ae3a8f-596a-480b-b4f0-be7f8fe7e9b3');
+        $aggregateCopiedEventMessage = $this->getDomainMessage(2, '41d4bfbc-eff5-4dc9-b24e-61179a6ada24');
+
+        $expectedEventStream = new DomainEventStream([
+            $oldestAncestorEventMessage,
+            $parentCopiedEventMessage,
+            $aggregateCopiedEventMessage,
+        ]);
+
+        $this->eventStore->method('load')
+            ->will($this->onConsecutiveCalls(
+                new DomainEventStream([$aggregateCopiedEventMessage]),
+                new DomainEventStream([$parentCopiedEventMessage]),
+                new DomainEventStream([$oldestAncestorEventMessage])
             ));
 
         $eventStream = $this->copyAwareEventStore->load('422d7cb7-016c-42ca-a08e-277b3695ba41');

@@ -9,7 +9,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 
-class BeheadingEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
+class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var EventStoreInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -17,14 +17,14 @@ class BeheadingEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     protected $eventStore;
 
     /**
-     * @var BeheadingEventStoreDecorator
+     * @var CopyAwareEventStoreDecorator
      */
-    protected $beheadingEventStore;
+    protected $copyAwareEventStore;
 
     protected function setUp()
     {
         $this->eventStore = $this->createMock(EventStoreInterface::class);
-        $this->beheadingEventStore = new BeheadingEventStoreDecorator($this->eventStore);
+        $this->copyAwareEventStore = new CopyAwareEventStoreDecorator($this->eventStore);
     }
 
     /**
@@ -40,7 +40,7 @@ class BeheadingEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             ->with('94ae3a8f-596a-480b-b4f0-be7f8fe7e9b3')
             ->willReturn(new DomainEventStream([$domainMessage]));
 
-        $eventStream = $this->beheadingEventStore->load('94ae3a8f-596a-480b-b4f0-be7f8fe7e9b3');
+        $eventStream = $this->copyAwareEventStore->load('94ae3a8f-596a-480b-b4f0-be7f8fe7e9b3');
 
         $this->assertEquals($expectedEventStream, $eventStream);
     }
@@ -66,7 +66,7 @@ class BeheadingEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
                 new DomainEventStream([$parentFirstEventMessage, $parentOtherEventMessage, $parentOldestEventMessage])
             ));
 
-        $eventStream = $this->beheadingEventStore->load('422d7cb7-016c-42ca-a08e-277b3695ba41');
+        $eventStream = $this->copyAwareEventStore->load('422d7cb7-016c-42ca-a08e-277b3695ba41');
 
         $this->assertEquals($expectedEventStream, $eventStream);
     }

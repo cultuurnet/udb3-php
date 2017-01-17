@@ -7,17 +7,17 @@ use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 
-class BeheadingEventStoreDecorator extends AbstractEventStoreDecorator
+class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
 {
     /**
      * @inheritdoc
      */
     public function load($id)
     {
-        return $this->behead($this->eventStore->load($id));
+        return $this->completeStream($this->eventStore->load($id));
     }
 
-    private function behead(DomainEventStreamInterface $eventStream)
+    private function completeStream(DomainEventStreamInterface $eventStream)
     {
         $events = iterator_to_array($eventStream);
         /** @var DomainMessage $oldestMessage */
@@ -32,7 +32,7 @@ class BeheadingEventStoreDecorator extends AbstractEventStoreDecorator
         $inheritedEvents = array_slice(iterator_to_array($parentEventStream), 0, $oldestMessage->getPlayhead());
         $combinedEvents = array_merge($inheritedEvents, $events);
 
-        return $this->behead(new DomainEventStream($combinedEvents));
+        return $this->completeStream(new DomainEventStream($combinedEvents));
     }
 
     /**

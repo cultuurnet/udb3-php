@@ -25,7 +25,7 @@ class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
         $events = iterator_to_array($eventStream);
         /** @var DomainMessage $oldestMessage */
         $oldestMessage = current($events);
-        if ($oldestMessage->getPlayhead() === 0) {
+        if (intval($oldestMessage->getPlayhead()) === 0) {
             return $eventStream;
         }
 
@@ -67,7 +67,7 @@ class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
         return array_filter(
             iterator_to_array($eventStream),
             function (DomainMessage $message) use ($playhead) {
-                return $message->getPlayhead() < $playhead;
+                return intval($message->getPlayhead()) < $playhead;
             }
         );
     }

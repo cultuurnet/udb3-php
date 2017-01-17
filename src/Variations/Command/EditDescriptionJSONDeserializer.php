@@ -9,7 +9,7 @@ use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use JsonSchema\Validator;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use stdClass;
 
 /**
@@ -36,7 +36,7 @@ class EditDescriptionJSONDeserializer extends JSONDeserializer
      *
      * @return EditDescription
      */
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $json = parent::deserialize(
             $data

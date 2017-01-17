@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class OfferHistoryProjector
 {
@@ -106,7 +106,7 @@ abstract class OfferHistoryProjector
             $labelAdded->getItemId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$labelAdded->getLabel()}' toegepast"),
+                new StringLiteral("Label '{$labelAdded->getLabel()}' toegepast"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
@@ -124,7 +124,7 @@ abstract class OfferHistoryProjector
             $labelRemoved->getItemId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Label '{$labelRemoved->getLabel()}' verwijderd"),
+                new StringLiteral("Label '{$labelRemoved->getLabel()}' verwijderd"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
@@ -138,7 +138,7 @@ abstract class OfferHistoryProjector
             $titleTranslated->getItemId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Titel vertaald ({$titleTranslated->getLanguage()})"),
+                new StringLiteral("Titel vertaald ({$titleTranslated->getLanguage()})"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
@@ -152,7 +152,7 @@ abstract class OfferHistoryProjector
             $descriptionTranslated->getItemId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
+                new StringLiteral("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
@@ -193,7 +193,7 @@ abstract class OfferHistoryProjector
         $properties = $metadata->serialize();
 
         if (isset($properties['user_nick'])) {
-            return new String($properties['user_nick']);
+            return new StringLiteral($properties['user_nick']);
         }
     }
 
@@ -206,7 +206,7 @@ abstract class OfferHistoryProjector
         $properties = $metadata->serialize();
 
         if (isset($properties['consumer']['name'])) {
-            return new String($properties['consumer']['name']);
+            return new StringLiteral($properties['consumer']['name']);
         }
     }
 

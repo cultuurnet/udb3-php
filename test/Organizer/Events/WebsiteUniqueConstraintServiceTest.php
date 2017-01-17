@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class WebsiteUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase

@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Media\Properties;
 
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Description extends StringLiteral
 {

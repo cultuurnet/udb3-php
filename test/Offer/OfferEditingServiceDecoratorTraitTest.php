@@ -13,7 +13,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\Web\Url;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
 {

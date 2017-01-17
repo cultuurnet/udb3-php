@@ -11,7 +11,7 @@ use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface as Sa
 use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface as SavedSearchWriteModelRepositoryInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * Implementation of a SavedSearchRepository on top of the UiTID saved searches
@@ -74,9 +74,9 @@ class UiTIDSavedSearchRepository implements
      */
     private function createSavedSearchForRead(\CultureFeed_SavedSearches_SavedSearch $savedSearch)
     {
-        $name = new String($savedSearch->name);
+        $name = new StringLiteral($savedSearch->name);
         $query = QueryString::fromURLQueryString($savedSearch->query);
-        $id = new String((string) $savedSearch->id);
+        $id = new StringLiteral((string) $savedSearch->id);
 
         return new SavedSearch($name, $query, $id);
     }
@@ -84,7 +84,7 @@ class UiTIDSavedSearchRepository implements
     /**
      * {@inheritdoc}
      */
-    public function write(String $userId, String $name, QueryString $queryString)
+    public function write(StringLiteral $userId, StringLiteral $name, QueryString $queryString)
     {
         $userId = (string) $userId;
         $name = (string) $name;
@@ -117,7 +117,7 @@ class UiTIDSavedSearchRepository implements
     /**
      * {@inheritdoc}
      */
-    public function delete(String $userId, String $searchId)
+    public function delete(StringLiteral $userId, StringLiteral $searchId)
     {
         $userId = (string) $userId;
         $searchId = (string) $searchId;

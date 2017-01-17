@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\User\UserIdentityDetails;
 use GuzzleHttp\Tests\Psr7\Str;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class UserRolesProjectorTest extends \PHPUnit_Framework_TestCase

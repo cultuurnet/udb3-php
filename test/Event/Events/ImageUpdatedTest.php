@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Media\MediaObject;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class ImageUpdatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -54,8 +54,8 @@ class ImageUpdatedTest extends \PHPUnit_Framework_TestCase
                 new ImageUpdated(
                     'de305d54-75b4-431b-adb2-eb6b9e546014',
                     new UUID('ea305d54-75b4-431b-adb2-eb6b9e546019'),
-                    new String('some description'),
-                    new String('Dirk')
+                    new StringLiteral('some description'),
+                    new StringLiteral('Dirk')
                 ),
             ],
         ];

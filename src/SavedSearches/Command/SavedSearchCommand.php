@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class SavedSearchCommand
 {
@@ -12,9 +12,9 @@ abstract class SavedSearchCommand
     protected $userId;
 
     /**
-     * @param String $userId
+     * @param StringLiteral $userId
      */
-    public function __construct(String $userId)
+    public function __construct(StringLiteral $userId)
     {
         $this->userId = $userId;
     }

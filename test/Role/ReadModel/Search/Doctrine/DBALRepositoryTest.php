@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Search\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use PHPUnit_Framework_TestCase;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 {

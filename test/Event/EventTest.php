@@ -31,7 +31,7 @@ use CultuurNet\UDB3\Title;
 use RuntimeException;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class EventTest extends AggregateRootScenarioTestCase

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
 {

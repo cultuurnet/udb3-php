@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Projector implements EventListenerInterface
 {
@@ -46,7 +46,7 @@ class Projector implements EventListenerInterface
 
         if ($createdByIdentifier) {
             $ownerId = $this->userIdResolver->resolveCreatedByToUserId(
-                new String($createdByIdentifier)
+                new StringLiteral($createdByIdentifier)
             );
 
             if (!$ownerId) {
@@ -54,7 +54,7 @@ class Projector implements EventListenerInterface
             }
 
             $this->permissionRepository->markOfferEditableByUser(
-                new String($eventImportedFromUDB2->getEventId()),
+                new StringLiteral($eventImportedFromUDB2->getEventId()),
                 $ownerId
             );
         }
@@ -65,10 +65,10 @@ class Projector implements EventListenerInterface
         DomainMessage $domainMessage
     ) {
         $metadata = $domainMessage->getMetadata()->serialize();
-        $ownerId = new String($metadata['user_id']);
+        $ownerId = new StringLiteral($metadata['user_id']);
 
         $this->permissionRepository->markOfferEditableByUser(
-            new String($eventCreated->getEventId()),
+            new StringLiteral($eventCreated->getEventId()),
             $ownerId
         );
     }

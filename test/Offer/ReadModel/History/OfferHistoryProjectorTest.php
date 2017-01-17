@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Offer\Item\ReadModel\History\ItemHistoryProjector;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -159,7 +159,7 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             self::EVENT_ID_1,
             new Language('en'),
-            new String('English title')
+            new StringLiteral('English title')
         );
 
         $initialDocument = new JsonDocument(
@@ -202,7 +202,7 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             self::EVENT_ID_1,
             new Language('en'),
-            new String('English description')
+            new StringLiteral('English description')
         );
 
         $initialDocument = new JsonDocument(

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use CultuurNet\Deserializer\DeserializerInterface;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\Deserializer\NotWellFormedException;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 /**
@@ -29,7 +29,7 @@ class IriOfferIdentifierJSONDeserializer implements DeserializerInterface
     }
 
     /**
-     * @param String $data
+     * @param StringLiteral $data
      * @return IriOfferIdentifier
      */
     public function deserialize(StringLiteral $data)

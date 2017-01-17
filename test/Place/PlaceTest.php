@@ -6,7 +6,6 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 
 class PlaceTest extends AggregateRootScenarioTestCase
@@ -59,84 +58,6 @@ class PlaceTest extends AggregateRootScenarioTestCase
             ->when(
                 function (Place $place) {
                     $place->addLabel(new Label('Toevlalocatie'));
-                }
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_from_udb2_events_and_takes_keywords_into_account()
-    {
-        $cdbXml = $this->getCdbXML(
-            '/event_with_cdb_externalid.cdbxml.xml'
-        );
-
-        $this->scenario
-            ->when(
-                function () use ($cdbXml) {
-                    return Place::importFromUDB2Event(
-                        '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                        $cdbXml,
-                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    );
-                }
-            )
-            ->then(
-                [
-                    new PlaceImportedFromUDB2Event(
-                        '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                        $cdbXml,
-                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    )
-                ]
-            )
-            ->when(
-                function (Place $place) {
-                    $place->addLabel(new Label('LUCA School of Arts'));
-                }
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_applies_placeImportedFromUdb2Event_when_updating_event_cdbxml()
-    {
-        $cdbXml = $this->getCdbXML(
-            '/event_with_cdb_externalid.cdbxml.xml'
-        );
-
-        $this->scenario
-            ->withAggregateId('7914ed2d-9f28-4946-b9bd-ae8f7a4aea11')
-            ->given(
-                [
-                    new PlaceImportedFromUDB2Event(
-                        '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                        $cdbXml,
-                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    )
-                ]
-            )
-            ->when(
-                function (Place $place) use ($cdbXml) {
-                    $place->updateWithCdbXml($cdbXml, 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL');
-                }
-            )
-            ->then(
-                [
-                    new PlaceImportedFromUDB2Event(
-                        '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                        $cdbXml,
-                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    )
-                ]
-            )
-            ->when(
-                function (Place $place) {
-                    $place->addLabel(new Label('LUCA School of Arts'));
                 }
             )
             ->then([]);
@@ -210,18 +131,8 @@ class PlaceTest extends AggregateRootScenarioTestCase
                         '/ReadModel/JSONLD/place_with_long_description.cdbxml.xml'
                     ),
                     'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                )
+                ),
             ],
-            'event' => [
-                '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                Place::importFromUDB2Event(
-                    '7914ed2d-9f28-4946-b9bd-ae8f7a4aea11',
-                    $this->getCdbXML(
-                        '/event_with_cdb_externalid.cdbxml.xml'
-                    ),
-                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                )
-            ]
         ];
     }
 }

@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\Security\Acl\Dbal\Schema;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
 {

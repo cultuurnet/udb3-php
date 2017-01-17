@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * @todo Move to udb3-symfony-php.
@@ -17,16 +17,16 @@ use ValueObjects\String\String;
 class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
 {
     /**
-     * @var String $userId
+     * @var StringLiteral $userId
      */
     protected $userId;
 
-    public function __construct(String $userId)
+    public function __construct(StringLiteral $userId)
     {
         $this->userId = $userId;
     }
 
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $json = parent::deserialize($data);
 
@@ -40,7 +40,7 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
 
         return new SubscribeToSavedSearch(
             $this->userId,
-            new String($json->name),
+            new StringLiteral($json->name),
             new QueryString($json->query)
         );
     }

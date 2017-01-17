@@ -29,7 +29,7 @@ use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class CommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -281,12 +281,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             )
             ->then(
-                [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
-                ]
+                []
             )
 
             // Remove the user.
@@ -298,10 +293,6 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->then(
                 [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
                     new UserRemoved(
                         $this->uuid,
                         $userId
@@ -317,16 +308,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             )
             ->then(
-                [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
-                    new UserRemoved(
-                        $this->uuid,
-                        $userId
-                    ),
-                ]
+                []
             )
 
             // Removing a user that was never added to the role should not
@@ -338,16 +320,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 )
             )
             ->then(
-                [
-                    new UserAdded(
-                        $this->uuid,
-                        $userId
-                    ),
-                    new UserRemoved(
-                        $this->uuid,
-                        $userId
-                    ),
-                ]
+                []
             );
     }
 

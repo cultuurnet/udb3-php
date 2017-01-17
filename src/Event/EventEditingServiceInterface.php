@@ -2,14 +2,13 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Alchemy\Zippy\Exception\InvalidArgumentException;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface EventEditingServiceInterface
 {
@@ -73,8 +72,8 @@ interface EventEditingServiceInterface
      *
      * @param $id
      * @param Image $image
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param \ValueObjects\StringLiteral\StringLiteral $description
+     * @param \ValueObjects\StringLiteral\StringLiteral $copyrightHolder
      *
      * @return string
      *  The command id for this task.
@@ -110,7 +109,7 @@ interface EventEditingServiceInterface
      * @param CalendarInterface $calendar
      * @return string $eventId
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function copyEvent($originalEventId, CalendarInterface $calendar);
 

@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\Deserializer\MissingValueException;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class LabelJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class LabelJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_deserialize_a_valid_label()
     {
-        $json = new String('{"label": "test-label"}');
+        $json = new StringLiteral('{"label": "test-label"}');
         $label = $this->deserializer->deserialize($json);
         $this->assertEquals($this->label, $label);
     }
@@ -38,7 +38,7 @@ class LabelJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_no_label_is_found()
     {
-        $json = new String('{"foo": "bar"}');
+        $json = new StringLiteral('{"foo": "bar"}');
 
         $this->setExpectedException(
             MissingValueException::class,

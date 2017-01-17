@@ -25,7 +25,7 @@ use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class PlaceCommandFactory implements OfferCommandFactoryInterface
 {

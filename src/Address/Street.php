@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Address;
 
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * Street name and number

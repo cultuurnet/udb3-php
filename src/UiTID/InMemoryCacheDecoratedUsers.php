@@ -8,7 +8,7 @@ namespace CultuurNet\UDB3\UiTID;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class InMemoryCacheDecoratedUsers implements UsersInterface, LoggerAwareInterface

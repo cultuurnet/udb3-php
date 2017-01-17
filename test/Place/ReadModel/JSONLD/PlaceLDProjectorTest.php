@@ -32,7 +32,6 @@ use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
@@ -325,28 +324,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     }
 
     /**
-     * @test
-     */
-    public function it_imports_place_events_from_udb2()
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/event.xml'
-        );
-        $event = new PlaceImportedFromUDB2Event(
-            '764066ab-826f-48c2-897d-a329ebce953f',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
-        );
-
-        $body = $this->project($event, $event->getActorId());
-
-        $this->assertEquals('Invoerders Algemeen ', $body->publisher);
-        $this->assertEquals('Vuur, vakmanschap en', $body->name->nl);
-        $this->assertContains('764066ab-826f-48c2-897d-a329ebce953f', $body->{'@id'});
-        $this->assertEquals('APPROVED', $body->workflowStatus);
-    }
-
-    /**
      * @return array
      */
     public function descriptionSamplesProvider()
@@ -407,6 +384,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      * @dataProvider descriptionSamplesProvider
+     * @param string $fileName
+     * @param string $expectedDescription
      */
     public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description($fileName, $expectedDescription)
     {
@@ -555,7 +534,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             )
         );
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->documentRepository->get($id);
     }

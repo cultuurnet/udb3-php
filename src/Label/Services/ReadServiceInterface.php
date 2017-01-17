@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Query;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface ReadServiceInterface
 {

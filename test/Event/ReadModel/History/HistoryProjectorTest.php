@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -176,7 +176,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            new String('Titre en français')
+            new StringLiteral('Titre en français')
         );
 
         $translatedDate = '2015-03-26T10:17:19.176169+02:00';
@@ -220,7 +220,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            new String('Signalement en français')
+            new StringLiteral('Signalement en français')
         );
 
         $translatedDate = '2015-03-27T10:17:19.176169+02:00';

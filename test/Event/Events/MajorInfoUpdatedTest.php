@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
 {

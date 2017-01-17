@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\Doctrine;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractDBALRepositoryTest extends \PHPUnit_Framework_TestCase
 {

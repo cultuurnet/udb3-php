@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-class OwnerId extends String
+class OwnerId extends StringLiteral
 {
 
 }

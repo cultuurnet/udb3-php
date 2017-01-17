@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface PathGeneratorInterface
 {
@@ -11,9 +11,9 @@ interface PathGeneratorInterface
      * Returns the path where a file is stored
      *
      * @param UUID $fileId
-     * @param String $extension
+     * @param StringLiteral $extension
      *
      * @return string
      */
-    public function path(UUID $fileId, String $extension);
+    public function path(UUID $fileId, StringLiteral $extension);
 }

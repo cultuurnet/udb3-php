@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Events\Moderation;
 
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class AbstractRejected extends AbstractEvent
 {

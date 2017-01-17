@@ -51,7 +51,7 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $parentFirstEventMessage = $this->getDomainMessage(0, '');
         $parentOtherEventMessage = $this->getDomainMessage(1, '');
-        $parentOldestEventMessage = $this->getDomainMessage(3, '');
+        $parentOldestEventMessage = $this->getDomainMessage(2, '');
         $aggregateOldestEventMessage = $this->getDomainMessage(2, '94ae3a8f-596a-480b-b4f0-be7f8fe7e9b3');
         $expectedEventStream = new DomainEventStream([
             $parentFirstEventMessage,
@@ -63,6 +63,30 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             ->will($this->onConsecutiveCalls(
                 new DomainEventStream([$aggregateOldestEventMessage]),
                 new DomainEventStream([$parentFirstEventMessage, $parentOtherEventMessage, $parentOldestEventMessage])
+            ));
+
+        $eventStream = $this->copyAwareEventStore->load('422d7cb7-016c-42ca-a08e-277b3695ba41');
+
+        $this->assertEquals($expectedEventStream, $eventStream);
+    }
+
+    public function it_should_only_load_the_inherited_parent_history_when_there_jumps_in_playhead()
+    {
+        $parentFirstEventMessage = $this->getDomainMessage(0, '');
+        $parentJumpedEventMessage = $this->getDomainMessage(2, '');
+        $parentOldestEventMessage = $this->getDomainMessage(3, '');
+        $aggregateOldestEventMessage = $this->getDomainMessage(4, '94ae3a8f-596a-480b-b4f0-be7f8fe7e9b3');
+        $expectedEventStream = new DomainEventStream([
+            $parentFirstEventMessage,
+            $parentJumpedEventMessage,
+            $parentOldestEventMessage,
+            $aggregateOldestEventMessage
+        ]);
+
+        $this->eventStore->method('load')
+            ->will($this->onConsecutiveCalls(
+                new DomainEventStream([$aggregateOldestEventMessage]),
+                new DomainEventStream([$parentFirstEventMessage, $parentJumpedEventMessage, $parentOldestEventMessage])
             ));
 
         $eventStream = $this->copyAwareEventStore->load('422d7cb7-016c-42ca-a08e-277b3695ba41');

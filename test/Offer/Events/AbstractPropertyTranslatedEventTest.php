@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Language;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
 {

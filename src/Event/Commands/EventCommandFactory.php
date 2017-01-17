@@ -27,7 +27,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class EventCommandFactory implements OfferCommandFactoryInterface
 {

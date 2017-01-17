@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SubscribeToSavedSearch extends SavedSearchCommand
 {
@@ -19,10 +19,10 @@ class SubscribeToSavedSearch extends SavedSearchCommand
 
     /**
      * {@inheritdoc}
-     * @param String $name
+     * @param StringLiteral $name
      * @param QueryString $query
      */
-    public function __construct(String $userId, String $name, QueryString $query)
+    public function __construct(StringLiteral $userId, StringLiteral $name, QueryString $query)
     {
         parent::__construct($userId);
         $this->name = $name;

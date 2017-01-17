@@ -53,7 +53,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase

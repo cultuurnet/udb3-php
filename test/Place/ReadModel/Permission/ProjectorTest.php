@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -70,17 +70,17 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $payload
         );
 
-        $userId = new String('123');
+        $userId = new StringLiteral('123');
 
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
-            ->with(new String('cultuurnet001'))
+            ->with(new StringLiteral('cultuurnet001'))
             ->willReturn($userId);
 
         $this->repository->expects($this->once())
             ->method('markOfferEditableByUser')
             ->with(
-                new String('318F2ACB-F612-6F75-0037C9C29F44087A'),
+                new StringLiteral('318F2ACB-F612-6F75-0037C9C29F44087A'),
                 $userId
             );
 
@@ -109,7 +109,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
-            ->with(new String('cultuurnet001'))
+            ->with(new StringLiteral('cultuurnet001'))
             ->willReturn(null);
 
         $this->repository->expects($this->never())
@@ -123,8 +123,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_add_permission_to_the_user_that_created_a_place()
     {
-        $userId = new String('user-id');
-        $placeId = new String('place-id');
+        $userId = new StringLiteral('user-id');
+        $placeId = new StringLiteral('place-id');
 
         $payload = new PlaceCreated(
             $placeId->toNative(),

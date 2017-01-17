@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
 {

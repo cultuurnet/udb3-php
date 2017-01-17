@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as Pe
 use CultuurNet\UDB3\Role\ReadModel\Search\Doctrine\SchemaConfigurator as SearchSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 {

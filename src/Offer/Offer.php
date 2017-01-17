@@ -40,7 +40,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use Exception;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class Offer extends EventSourcedAggregateRoot
 {

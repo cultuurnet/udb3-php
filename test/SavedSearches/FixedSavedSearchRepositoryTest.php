@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\SavedSearches;
 
 use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class FixedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -32,7 +32,7 @@ class FixedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_contains_a_search_of_all_events_created_by_current_user()
     {
-        $name = new String('Door mij ingevoerd');
+        $name = new StringLiteral('Door mij ingevoerd');
 
         $emailAddress = new EmailAddress($this->user->mbox);
         $query = new CreatedByQueryString($emailAddress);

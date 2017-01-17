@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-class Description extends String
+class Description extends StringLiteral
 {
 }

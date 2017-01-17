@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
 {

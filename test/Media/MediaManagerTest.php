@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaManagerTest extends \PHPUnit_Framework_TestCase
@@ -72,9 +72,9 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
         $command = new UploadImage(
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            String::fromNative('description'),
-            String::fromNative('copyright'),
-            String::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            StringLiteral::fromNative('description'),
+            StringLiteral::fromNative('copyright'),
+            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
         $logger = $this->createMock(LoggerInterface::class);
@@ -109,9 +109,9 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
         $command = new UploadImage(
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            String::fromNative('description'),
-            String::fromNative('copyright'),
-            String::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            StringLiteral::fromNative('description'),
+            StringLiteral::fromNative('copyright'),
+            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
         );
 
         $this->pathGenerator

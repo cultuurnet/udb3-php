@@ -6,7 +6,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class GuzzlePsr7FactoryTest extends \PHPUnit_Framework_TestCase
 {

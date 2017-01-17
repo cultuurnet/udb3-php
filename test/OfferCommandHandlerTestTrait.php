@@ -18,7 +18,7 @@ use CultuurNet\UDB3\Organizer\Organizer;
 use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionObject;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 /**
@@ -188,8 +188,8 @@ trait OfferCommandHandlerTestTrait
     {
         $itemId = '1';
         $mediaObjectId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $description = new String('A description.');
-        $copyrightHolder = new String('Dirk');
+        $description = new StringLiteral('A description.');
+        $copyrightHolder = new StringLiteral('Dirk');
         $commandClass = $this->getCommandClass('UpdateImage');
         $eventClass = $this->getEventClass('ImageUpdated');
 

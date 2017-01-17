@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3\EventExport\Format\HTML\Properties;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-class Publisher extends String
+class Publisher extends StringLiteral
 {
 
 }

@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * @todo Move to udb3-symfony-php.
@@ -15,7 +15,7 @@ class LabelJSONDeserializer extends JSONDeserializer
     /**
      * {@inheritdoc}
      */
-    public function deserialize(String $data)
+    public function deserialize(StringLiteral $data)
     {
         $data = parent::deserialize($data);
 

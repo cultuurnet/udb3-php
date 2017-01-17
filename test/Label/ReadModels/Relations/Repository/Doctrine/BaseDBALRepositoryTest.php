@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
 {

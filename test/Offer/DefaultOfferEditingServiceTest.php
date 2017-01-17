@@ -19,7 +19,7 @@ use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use ValueObjects\Money\Currency;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
 {

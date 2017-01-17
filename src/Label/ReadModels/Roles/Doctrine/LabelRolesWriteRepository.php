@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\Roles\Doctrine;
 use CultuurNet\UDB3\Label\ReadModels\Roles\LabelRolesWriteRepositoryInterface;
 use Doctrine\DBAL\Connection;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class LabelRolesWriteRepository implements LabelRolesWriteRepositoryInterface
 {

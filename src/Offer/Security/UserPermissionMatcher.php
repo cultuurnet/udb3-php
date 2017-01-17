@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInte
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UserPermissionMatcher implements UserPermissionMatcherInterface
 {

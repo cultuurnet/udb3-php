@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class InMemoryCacheDecoratedUsersTest extends \PHPUnit_Framework_TestCase
@@ -31,8 +31,8 @@ class InMemoryCacheDecoratedUsersTest extends \PHPUnit_Framework_TestCase
      */
     public function it_uses_cached_user_id_when_retrieving_by_nick()
     {
-        $userId = new String('abc');
-        $nick = new String('johndoe');
+        $userId = new StringLiteral('abc');
+        $nick = new StringLiteral('johndoe');
 
         $this->wrapped->expects($this->once())
             ->method('byNick')
@@ -50,7 +50,7 @@ class InMemoryCacheDecoratedUsersTest extends \PHPUnit_Framework_TestCase
      */
     public function it_uses_cached_user_id_when_retrieving_by_mail()
     {
-        $userId = new String('abc');
+        $userId = new StringLiteral('abc');
         $email = new EmailAddress('johndoe@example.com');
 
         $this->wrapped->expects($this->once())

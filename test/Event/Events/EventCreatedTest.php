@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 use ValueObjects\Geography\Country;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class EventCreatedTest extends \PHPUnit_Framework_TestCase
 {

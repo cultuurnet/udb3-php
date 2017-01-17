@@ -9,7 +9,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface PlaceEditingServiceInterface
 {
@@ -113,10 +113,10 @@ interface PlaceEditingServiceInterface
      *
      * @param $id
      * @param Image $image
-     * @param \ValueObjects\String\String $description
-     * @param \ValueObjects\String\String $copyrightHolder
+     * @param \ValueObjects\StringLiteral\StringLiteral $description
+     * @param \ValueObjects\StringLiteral\StringLiteral $copyrightHolder
      */
-    public function updateImage($id, Image $image, String $description, String $copyrightHolder);
+    public function updateImage($id, Image $image, StringLiteral $description, StringLiteral $copyrightHolder);
 
     /**
      * Remove an image from the place.

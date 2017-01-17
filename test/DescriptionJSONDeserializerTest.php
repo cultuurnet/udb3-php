@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\Deserializer\MissingValueException;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,7 +22,7 @@ class DescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_deserialize_a_valid_description()
     {
-        $json = new String('{"description": "Lorem ipsum."}');
+        $json = new StringLiteral('{"description": "Lorem ipsum."}');
         $expected = new Description("Lorem ipsum.");
         $actual = $this->deserializer->deserialize($json);
         $this->assertEquals($expected, $actual);
@@ -33,7 +33,7 @@ class DescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_a_description_is_missing()
     {
-        $json = new String('{"foo": "bar"}');
+        $json = new StringLiteral('{"foo": "bar"}');
 
         $this->setExpectedException(
             MissingValueException::class,

@@ -44,7 +44,7 @@ use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 {

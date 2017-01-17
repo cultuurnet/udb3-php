@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\UiTID;
 
 use CultuurNet\UDB3\User\CultureFeedUserIdentityDetailsFactory;
 use CultuurNet\UDB3\User\CultureFeedUserIdentityResolver;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
@@ -45,7 +45,7 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_retrieve_a_user_id_by_its_nick_name()
     {
-        $byNick = new String('johndoe');
+        $byNick = new StringLiteral('johndoe');
 
         $expectedQuery = new \CultureFeed_SearchUsersQuery();
         $expectedQuery->nick = $byNick->toNative();
@@ -59,7 +59,7 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
 
         $id = $this->users->byNick($byNick);
 
-        $this->assertEquals(new String('abc'), $id);
+        $this->assertEquals(new StringLiteral('abc'), $id);
     }
 
     /**
@@ -67,7 +67,7 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_null_if_the_nick_name_of_the_found_user_does_not_match_the_given_nick_name()
     {
-        $byNick = new String('*doe');
+        $byNick = new StringLiteral('*doe');
 
         $expectedQuery = new \CultureFeed_SearchUsersQuery();
         $expectedQuery->nick = $byNick->toNative();
@@ -104,7 +104,7 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
 
         $id = $this->users->byEmail($byEmail);
 
-        $this->assertEquals(new String('abc'), $id);
+        $this->assertEquals(new StringLiteral('abc'), $id);
     }
 
     /**
@@ -140,6 +140,6 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
             ->willReturn(new \CultureFeed_ResultSet());
 
         $this->assertNull($this->users->byEmail(new EmailAddress('johndoe@example.com')));
-        $this->assertNull($this->users->byNick(new String('johndoe')));
+        $this->assertNull($this->users->byNick(new StringLiteral('johndoe')));
     }
 }

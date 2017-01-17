@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UnsubscribeFromSavedSearch extends SavedSearchCommand
 {
@@ -13,9 +13,9 @@ class UnsubscribeFromSavedSearch extends SavedSearchCommand
 
     /**
      * {@inheritdoc}
-     * @param String $searchId
+     * @param StringLiteral $searchId
      */
-    public function __construct(String $userId, String $searchId)
+    public function __construct(StringLiteral $userId, StringLiteral $searchId)
     {
         parent::__construct($userId);
         $this->searchId = $searchId;

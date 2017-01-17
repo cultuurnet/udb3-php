@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Media;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
@@ -52,8 +52,8 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
                 new MediaObjectCreated(
                     new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
                     new MIMEType('image/png'),
-                    new String('sexy ladies without clothes'),
-                    new String('Bart Ramakers'),
+                    new StringLiteral('sexy ladies without clothes'),
+                    new StringLiteral('Bart Ramakers'),
                     Url::fromNative('http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png')
                 )
             ]

@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role\Commands;
 
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as stringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SetConstraintTest extends \PHPUnit_Framework_TestCase
 {

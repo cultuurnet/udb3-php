@@ -9,7 +9,7 @@ use Broadway\Domain\Metadata;
 use Broadway\EventStore\DBALEventStore;
 use Broadway\Serializer\SerializerInterface;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 {

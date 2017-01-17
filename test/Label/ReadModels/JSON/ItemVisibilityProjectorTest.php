@@ -19,7 +19,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
 {

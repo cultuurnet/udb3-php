@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\EventSourcing\DBAL\UniqueConstraintServiceInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class WebsiteUniqueConstraintService implements UniqueConstraintServiceInterface
 {

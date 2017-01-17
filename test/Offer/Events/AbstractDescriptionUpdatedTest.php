@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractDescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +25,7 @@ class AbstractDescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->itemId = 'Foo';
-        $this->description = new String('Description');
+        $this->description = new StringLiteral('Description');
         $this->descriptionUpdated = new DescriptionUpdated($this->itemId, $this->description);
     }
 
@@ -35,7 +35,7 @@ class AbstractDescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
     public function it_can_be_instantiated_With_properties()
     {
         $expectedItemId = 'Foo';
-        $expectedDescription = new String('Description');
+        $expectedDescription = new StringLiteral('Description');
         $expectedDescriptionUpdated = new DescriptionUpdated(
             $expectedItemId,
             $expectedDescription
@@ -50,7 +50,7 @@ class AbstractDescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
     public function it_can_return_its_properties()
     {
         $expectedItemId = 'Foo';
-        $expectedDescription = new String('Description');
+        $expectedDescription = new StringLiteral('Description');
 
         $itemId = $this->descriptionUpdated->getItemId();
         $description = $this->descriptionUpdated->getDescription();
@@ -104,7 +104,7 @@ class AbstractDescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
                 ],
                 new DescriptionUpdated(
                     'madId',
-                    new String('Description')
+                    new StringLiteral('Description')
                 ),
             ],
         ];

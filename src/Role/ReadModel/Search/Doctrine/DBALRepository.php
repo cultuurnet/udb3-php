@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Search\Doctrine;
 use CultuurNet\UDB3\Role\ReadModel\Search\RepositoryInterface;
 use CultuurNet\UDB3\Role\ReadModel\Search\Results;
 use Doctrine\DBAL\Connection;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class DBALRepository implements RepositoryInterface
 {

@@ -6,7 +6,7 @@
 namespace CultuurNet\UDB3\SavedSearches\ReadModel;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SavedSearch implements \JsonSerializable
 {
@@ -26,11 +26,11 @@ class SavedSearch implements \JsonSerializable
     protected $query;
 
     /**
-     * @param String $name
+     * @param StringLiteral $name
      * @param QueryString $query
-     * @param String $id
+     * @param StringLiteral $id
      */
-    public function __construct(String $name, QueryString $query, String $id = null)
+    public function __construct(StringLiteral $name, QueryString $query, StringLiteral $id = null)
     {
         $this->name = $name;
         $this->query = $query;

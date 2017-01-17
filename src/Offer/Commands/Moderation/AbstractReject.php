@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class AbstractReject extends AbstractModerationCommand
 {

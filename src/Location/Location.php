@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Location;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Address\Address;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * Instantiates an UDB3 Location.

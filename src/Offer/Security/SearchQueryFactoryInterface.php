@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\Search\Parameter\Query;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface SearchQueryFactoryInterface
 {

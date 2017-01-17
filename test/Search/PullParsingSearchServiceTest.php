@@ -7,7 +7,6 @@ use CultuurNet\Search\Parameter\Group;
 use CultuurNet\Search\Parameter\Parameter;
 use CultuurNet\Search\Parameter\Query;
 use CultuurNet\Search\Parameter\Rows;
-use CultuurNet\Search\Parameter\Sort;
 use CultuurNet\Search\Parameter\Start;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -285,5 +284,59 @@ class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
         $this->search->search('city:hasselt', 20, 40);
 
         $this->search->search('city:oostende', 10, 20, 'lastupdated desc');
+    }
+
+    /**
+     * @group issue-III-1622
+     * @test
+     */
+    public function it_includes_private_items_by_default()
+    {
+        $cdbXML = file_get_contents(__DIR__ . '/samples/search-results-leuven.xml');
+
+        $this->sapi2->expects($this->once())
+            ->method('search')
+            ->with(
+                $this->equalTo(
+                    [
+                        new Query('city:brussel'),
+                        new Group(),
+                        new Rows(30),
+                        new Start(0),
+                        new FilterQuery('type:event OR (type:actor AND category_id:8.15.0.0.0)'),
+                        new FilterQuery('private:*'),
+                    ]
+                )
+            )
+            ->willReturn(new Response(200, [], $cdbXML));
+
+        $this->search->search('city:brussel');
+    }
+
+    /**
+     * @group issue-III-1622
+     * @test
+     */
+    public function it_can_be_configurated_to_not_include_private_items()
+    {
+        $searchWithoutPrivateItems = $this->search->doNotIncludePrivateItems();
+        $cdbXML = file_get_contents(__DIR__ . '/samples/search-results-leuven.xml');
+
+        $this->sapi2->expects($this->once())
+            ->method('search')
+            ->with(
+                $this->equalTo(
+                    [
+                        new Query('city:brussel'),
+                        new Group(),
+                        new Rows(30),
+                        new Start(0),
+                        new FilterQuery('type:event OR (type:actor AND category_id:8.15.0.0.0)'),
+                    ]
+                )
+            )
+            ->willReturn(new Response(200, [], $cdbXML));
+
+        $searchWithoutPrivateItems->search('city:brussel');
     }
 }

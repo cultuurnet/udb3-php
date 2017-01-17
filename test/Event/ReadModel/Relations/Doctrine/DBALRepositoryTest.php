@@ -206,4 +206,96 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedData = ['e201cea1-4a79-4834-9501-b28a92900fa1', 'cd996276-7aac-40b7-8bf4-e505dbbf11bf'];
         $this->assertEquals($expectedData, $events);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_get_related_place_of_an_event()
+    {
+        $eventId = 'e201cea1-4a79-4834-9501-b28a92900fa1';
+        $organizerId = '3a4abf90-1859-49de-a667-b713c81aad28';
+        $placeId = 'e64362f5-43e1-468b-97d6-8981fb0fe426';
+
+        $existingData = [
+            (object)[
+                'event' => $eventId,
+                'organizer' => $organizerId,
+                'place' => $placeId
+            ],
+        ];
+        $this->insertTableData($this->tableName, $existingData);
+
+        $relatedPlaceId = $this->repository->getPlaceOfEvent($eventId);
+
+        $this->assertEquals($placeId, $relatedPlaceId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_event_has_no_related_place()
+    {
+        $eventId = 'e201cea1-4a79-4834-9501-b28a92900fa1';
+        $organizerId = '3a4abf90-1859-49de-a667-b713c81aad28';
+        $placeId = null;
+
+        $existingData = [
+            (object)[
+                'event' => $eventId,
+                'organizer' => $organizerId,
+                'place' => $placeId
+            ],
+        ];
+        $this->insertTableData($this->tableName, $existingData);
+
+        $relatedPlaceId = $this->repository->getPlaceOfEvent($eventId);
+
+        $this->assertNull($relatedPlaceId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_get_related_organizer_of_an_event()
+    {
+        $eventId = 'e201cea1-4a79-4834-9501-b28a92900fa1';
+        $organizerId = '3a4abf90-1859-49de-a667-b713c81aad28';
+        $placeId = 'e64362f5-43e1-468b-97d6-8981fb0fe426';
+
+        $existingData = [
+            (object)[
+                'event' => $eventId,
+                'organizer' => $organizerId,
+                'place' => $placeId
+            ],
+        ];
+        $this->insertTableData($this->tableName, $existingData);
+
+        $relatedOrganizerId = $this->repository->getOrganizerOfEvent($eventId);
+
+        $this->assertEquals($organizerId, $relatedOrganizerId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_event_has_no_related_organizer()
+    {
+        $eventId = 'e201cea1-4a79-4834-9501-b28a92900fa1';
+        $organizerId = null;
+        $placeId = 'e64362f5-43e1-468b-97d6-8981fb0fe426';
+
+        $existingData = [
+            (object)[
+                'event' => $eventId,
+                'organizer' => $organizerId,
+                'place' => $placeId
+            ],
+        ];
+        $this->insertTableData($this->tableName, $existingData);
+
+        $relatedOrganizerId = $this->repository->getOrganizerOfEvent($eventId);
+
+        $this->assertNull($relatedOrganizerId);
+    }
 }

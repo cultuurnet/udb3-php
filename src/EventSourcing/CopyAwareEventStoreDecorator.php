@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\EventSourcing;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
-use CultuurNet\UDB3\Event\Events\EventCopied;
 
 class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
 {
@@ -14,10 +13,14 @@ class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
      */
     public function load($id)
     {
-        return $this->completeStream($this->eventStore->load($id));
+        return $this->loadCompleteStream($this->eventStore->load($id));
     }
 
-    private function completeStream(DomainEventStreamInterface $eventStream)
+    /**
+     * @param DomainEventStreamInterface $eventStream
+     * @return DomainEventStreamInterface
+     */
+    private function loadCompleteStream(DomainEventStreamInterface $eventStream)
     {
         $events = iterator_to_array($eventStream);
         /** @var DomainMessage $oldestMessage */
@@ -32,17 +35,24 @@ class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
         $inheritedEvents = array_slice(iterator_to_array($parentEventStream), 0, $oldestMessage->getPlayhead());
         $combinedEvents = array_merge($inheritedEvents, $events);
 
-        return $this->completeStream(new DomainEventStream($combinedEvents));
+        return $this->loadCompleteStream(new DomainEventStream($combinedEvents));
     }
 
     /**
      * @param DomainMessage $message
      * @return string
+     *
+     * @throws UnknownParentAggregateException
      */
     private function identifyParent(DomainMessage $message)
     {
-        /** @var EventCopied $domainEvent */
+        /** @var AggregateCopiedEventInterface $domainEvent */
         $domainEvent = $message->getPayload();
-        return $domainEvent->getOriginalEventId();
+
+        if (!$domainEvent instanceof AggregateCopiedEventInterface) {
+            throw new UnknownParentAggregateException();
+        }
+
+        return $domainEvent->getParentAggregateId();
     }
 }

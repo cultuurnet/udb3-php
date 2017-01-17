@@ -7,7 +7,6 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventStore\EventStoreInterface;
-use CultuurNet\UDB3\Event\Events\EventCopied;
 
 class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -73,8 +72,8 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
 
     private function getDomainMessage($playhead, $parentId)
     {
-        $event = $this->createMock(EventCopied::class);
-        $event->method('getOriginalEventId')->willReturn($parentId);
+        $event = $this->createMock(AggregateCopiedEventInterface::class);
+        $event->method('getParentAggregateId')->willReturn($parentId);
         return new DomainMessage('1-2-3', $playhead, new Metadata([]), $event, DateTime::now());
     }
 }

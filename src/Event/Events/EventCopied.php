@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\EventSourcing\AggregateCopiedEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class EventCopied extends AbstractEvent
+class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
 {
     /**
      * @var string
@@ -39,6 +40,11 @@ class EventCopied extends AbstractEvent
 
         $this->originalEventId = $originalEventId;
         $this->calendar = $calendar;
+    }
+
+    public function getParentAggregateId()
+    {
+        return $this->originalEventId;
     }
 
     /**

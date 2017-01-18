@@ -8,6 +8,7 @@ use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -15,7 +16,6 @@ use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
-use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -308,11 +308,9 @@ class Projector implements EventListenerInterface
      */
     protected function applyEventCreated(EventCreated $eventCreated, DomainMessage $domainMessage)
     {
-
         $eventId = $eventCreated->getEventId();
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
+        $userId = $this->getUserId($domainMessage);
 
         $location = $eventCreated->getLocation();
 
@@ -330,17 +328,38 @@ class Projector implements EventListenerInterface
     }
 
     /**
+     * @param EventCopied $eventCopied
+     * @param DomainMessage $domainMessage
+     */
+    public function applyEventCopied(EventCopied $eventCopied, DomainMessage $domainMessage)
+    {
+        $eventId = $eventCopied->getItemId();
+
+        $userId = $this->getUserId($domainMessage);
+
+        $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
+
+        $this->updateIndex(
+            $eventId,
+            EntityType::EVENT(),
+            $userId,
+            null,
+            null,
+            $this->localDomain,
+            $creationDate
+        );
+    }
+
+    /**
      * Listener for place created commands.
      * @param PlaceCreated $placeCreated
      * @param DomainMessage $domainMessage
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
-
         $placeId = $placeCreated->getPlaceId();
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
+        $userId = $this->getUserId($domainMessage);
 
         $address = $placeCreated->getAddress();
 
@@ -419,5 +438,15 @@ class Projector implements EventListenerInterface
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
         $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
+    }
+
+    /**
+     * @param DomainMessage $domainMessage
+     * @return string
+     */
+    private function getUserId(DomainMessage $domainMessage)
+    {
+        $metaData = $domainMessage->getMetadata()->serialize();
+        return isset($metaData['user_id']) ? $metaData['user_id'] : '';
     }
 }

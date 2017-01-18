@@ -1,13 +1,11 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -77,6 +75,9 @@ class Projector implements EventListenerInterface
         $this->storeRelations($eventId, $placeId, $organizerId);
     }
 
+    /**
+     * @param EventCreated $event
+     */
     protected function applyEventCreated(EventCreated $event)
     {
         $eventId = $event->getEventId();
@@ -90,6 +91,25 @@ class Projector implements EventListenerInterface
 
     }
 
+    /**
+     * @param EventCopied $eventCopied
+     */
+    protected function applyEventCopied(EventCopied $eventCopied)
+    {
+        $originalEventId = $eventCopied->getOriginalEventId();
+        $placeId = $this->repository->getPlaceOfEvent($originalEventId);
+        $organizerId = $this->repository->getOrganizerOfEvent($originalEventId);
+
+        $this->repository->storeRelations(
+            $eventCopied->getItemId(),
+            $placeId,
+            $organizerId
+        );
+    }
+
+    /**
+     * @param MajorInfoUpdated $majorInfoUpdated
+     */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         $eventId = $majorInfoUpdated->getItemId();
@@ -110,6 +130,7 @@ class Projector implements EventListenerInterface
 
     /**
      * Store the relation when the organizer was changed
+     * @param OrganizerUpdated $organizerUpdated
      */
     protected function applyOrganizerUpdated(OrganizerUpdated $organizerUpdated)
     {
@@ -118,12 +139,18 @@ class Projector implements EventListenerInterface
 
     /**
      * Remove the relation.
+     * @param OrganizerDeleted $organizerDeleted
      */
     protected function applyOrganizerDeleted(OrganizerDeleted $organizerDeleted)
     {
         $this->repository->storeOrganizer($organizerDeleted->getItemId(), null);
     }
 
+    /**
+     * @param string $eventId
+     * @param string $placeId
+     * @param string $organizerId
+     */
     protected function storeRelations($eventId, $placeId, $organizerId)
     {
         $this->repository->storeRelations($eventId, $placeId, $organizerId);

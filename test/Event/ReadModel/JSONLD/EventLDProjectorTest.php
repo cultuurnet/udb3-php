@@ -368,30 +368,17 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
         $eventCopied = new EventCopied($eventId, $originalEventId, $calendar);
 
-        $recordedOn = DateTime::now();
+        $recordedOn = '2018-01-01T11:55:55+01:00';
         $body = $this->project(
             $eventCopied,
             $eventId,
             null,
-            $recordedOn
+            DateTime::fromString($recordedOn)
         );
 
-        $expectedJsonLD = $this->createJsonLD($eventId);
-        $expectedJsonLD->location = (object)[
-            '@type' => 'Place'
-        ];
-        $expectedJsonLD->terms = [
-            (object)[
-                'id' => '0.50.4.0.0',
-                'label' => 'concert',
-                'domain' => 'eventtype',
-            ]
-        ];
-        $availableTo = AvailableTo::createFromCalendar($eventCopied->getCalendar());
-        $expectedJsonLD->availableTo = (string) $availableTo;
-        $recordedOn = new \DateTime($recordedOn->toString());
-        $expectedJsonLD->created = $recordedOn->format(\DateTime::ATOM);
-        $expectedJsonLD->modified = $recordedOn->format(\DateTime::ATOM);
+        $expectedJsonLD = json_decode(file_get_contents(__DIR__ . '/copied_event.json'));
+        $expectedJsonLD->created = $recordedOn;
+        $expectedJsonLD->modified = $recordedOn;
 
         $this->assertEquals($expectedJsonLD, $body);
     }

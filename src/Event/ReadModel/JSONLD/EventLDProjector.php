@@ -254,15 +254,9 @@ class EventLDProjector extends OfferLDProjector implements
                 );
 
                 // Add creation date and update date from metadata.
-                $eventCreationDate = $domainMessage->getRecordedOn();
-
-                $eventCreationString = $eventCreationDate->toString();
-                $eventCreationDateTime = \DateTime::createFromFormat(
-                    DateTime::FORMAT_STRING,
-                    $eventCreationString
-                );
-                $eventLd->created = $eventCreationDateTime->format('c');
-                $eventLd->modified = $eventCreationDateTime->format('c');
+                $created = $this->getCreated($domainMessage);
+                $eventLd->created = $created;
+                $eventLd->modified = $created;
 
                 // Add creator.
                 $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
@@ -452,12 +446,9 @@ class EventLDProjector extends OfferLDProjector implements
                     $jsonLD->terms[] = $theme->toJsonLd();
                 }
 
-                $recordedOn = $domainMessage->getRecordedOn()->toString();
-                $jsonLD->created = \DateTime::createFromFormat(
-                    DateTime::FORMAT_STRING,
-                    $recordedOn
-                )->format('c');
-                $jsonLD->modified = $jsonLD->created;
+                $created = $this->getCreated($domainMessage);
+                $jsonLD->created = $created;
+                $jsonLD->modified = $created;
 
                 $metaData = $domainMessage->getMetadata()->serialize();
                 if (isset($metaData['user_email'])) {
@@ -485,14 +476,21 @@ class EventLDProjector extends OfferLDProjector implements
         DomainMessage $domainMessage
     ) {
         $originalDocument = $this->repository->get($eventCopied->getOriginalEventId());
-
-        // Set new calendar.
-        $originalDocument->apply(OfferUpdate::calendar($eventCopied->getCalendar()));
-
         $eventJsonLD = $originalDocument->getBody();
+
+        // Set the created and modified date.
+        $created = $this->getCreated($domainMessage);
+        $eventJsonLD->created = $created;
+        $eventJsonLD->modified = $created;
 
         // Set the id.
         $eventJsonLD->{'@id'} = $this->iriGenerator->iri($eventCopied->getItemId());
+
+        // Set the new calendar.
+        $eventJsonLD = (object) array_merge(
+            (array) $eventJsonLD,
+            $eventCopied->getCalendar()->toJsonLd()
+        );
 
         // Set workflow status.
         $eventJsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
@@ -620,6 +618,20 @@ class EventLDProjector extends OfferLDProjector implements
         if (isset($properties['consumer']['name'])) {
             return new StringLiteral($properties['consumer']['name']);
         }
+    }
+
+    /**
+     * @param DomainMessage $domainMessage
+     * @return string
+     */
+    private function getCreated(DomainMessage $domainMessage)
+    {
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+
+        return \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
     }
 
     /**

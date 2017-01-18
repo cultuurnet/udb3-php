@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\PriceInfo;
 
 use ValueObjects\Money\Currency;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class PriceInfoTest extends \PHPUnit_Framework_TestCase
 {

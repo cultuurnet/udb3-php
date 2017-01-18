@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\ReadModel\History\OfferHistoryProjector;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class HistoryProjector extends OfferHistoryProjector implements EventListenerInterface
 {
@@ -33,8 +33,8 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                 $this->dateFromUdb2DateString(
                     $udb2Event->getCreationDate()
                 ),
-                new String('Aangemaakt in UDB2'),
-                new String($udb2Event->getCreatedBy())
+                new StringLiteral('Aangemaakt in UDB2'),
+                new StringLiteral($udb2Event->getCreatedBy())
             )
         );
 
@@ -44,7 +44,7 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()
                 ),
-                new String('Geïmporteerd vanuit UDB2')
+                new StringLiteral('Geïmporteerd vanuit UDB2')
             )
         );
     }
@@ -57,7 +57,7 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
             $eventUpdatedFromUDB2->getEventId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new String('Geüpdatet vanuit UDB2')
+                new StringLiteral('Geüpdatet vanuit UDB2')
             )
         );
     }
@@ -76,7 +76,7 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()
                 ),
-                new String('Event gekopieerd van ' . $eventCopied->getOriginalEventId()),
+                new StringLiteral('Event gekopieerd van ' . $eventCopied->getOriginalEventId()),
                 $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );

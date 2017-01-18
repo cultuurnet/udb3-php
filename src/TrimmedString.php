@@ -5,9 +5,9 @@
 
 namespace CultuurNet\UDB3;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
-abstract class TrimmedString extends String
+abstract class TrimmedString extends StringLiteral
 {
     public function __construct($value)
     {

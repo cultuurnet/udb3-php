@@ -13,7 +13,7 @@ use PDO;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 

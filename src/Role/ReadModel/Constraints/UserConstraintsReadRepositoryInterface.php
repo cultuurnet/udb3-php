@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role\ReadModel\Constraints;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface UserConstraintsReadRepositoryInterface
 {

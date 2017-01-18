@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Security;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SecurityTest extends \PHPUnit_Framework_TestCase
 {

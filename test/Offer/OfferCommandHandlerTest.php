@@ -45,7 +45,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
 {

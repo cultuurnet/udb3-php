@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class HasUiTPASBrand implements EventSpecificationInterface
 {
@@ -16,7 +16,7 @@ class HasUiTPASBrand implements EventSpecificationInterface
     public function isSatisfiedBy($eventLd)
     {
         foreach ($this->UiTPASLabels as $label) {
-            if ($this->hasLabel($eventLd, new String($label))) {
+            if ($this->hasLabel($eventLd, new StringLiteral($label))) {
                 return true;
             }
         }

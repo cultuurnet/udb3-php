@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\UiTID;
 
 use CultuurNet\UDB3\User\CultureFeedUserIdentityResolver;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 /**

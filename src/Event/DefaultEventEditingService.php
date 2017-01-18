@@ -11,14 +11,10 @@ use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
-use CultuurNet\UDB3\InvalidTranslationLanguageException;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
-use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\LanguageCanBeTranslatedToSpecification;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface
@@ -27,11 +23,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * @var EventServiceInterface
      */
     protected $eventService;
-
-    /**
-     * @var PlaceService
-     */
-    protected $places;
 
     /**
      * @var RepositoryInterface
@@ -43,7 +34,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
      * @param DocumentRepositoryInterface $readRepository
-     * @param PlaceService $placeService
      * @param OfferCommandFactoryInterface $commandFactory
      * @param RepositoryInterface $writeRepository
      * @param LabelServiceInterface $labelService
@@ -53,7 +43,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
         DocumentRepositoryInterface $readRepository,
-        PlaceService $placeService,
         OfferCommandFactoryInterface $commandFactory,
         RepositoryInterface $writeRepository,
         LabelServiceInterface $labelService
@@ -66,15 +55,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $labelService
         );
         $this->eventService = $eventService;
-        $this->places = $placeService;
         $this->writeRepository = $writeRepository;
-    }
-
-    protected function guardTranslationLanguage(Language $language)
-    {
-        if (!LanguageCanBeTranslatedToSpecification::isSatisfiedBy($language)) {
-            throw new InvalidTranslationLanguageException($language);
-        }
     }
 
     /**

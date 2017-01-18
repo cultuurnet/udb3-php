@@ -9,6 +9,7 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider labelNameValues
      * @test
+     * @param mixed $value
      */
     public function it_refuses_value_that_are_not_strings($value)
     {
@@ -70,6 +71,16 @@ class LabelNameTest extends \PHPUnit_Framework_TestCase
     public function it_accepts_a_regular_string_length_for_value()
     {
         $label = new LabelName('turnip');
+
+        $this->assertEquals($label->toNative(), 'turnip');
+    }
+
+    /**
+     * @test
+     */
+    public function it_trims_whitespace_from_the_value_passed_to_it()
+    {
+        $label = new LabelName('  turnip  ');
 
         $this->assertEquals($label->toNative(), 'turnip');
     }

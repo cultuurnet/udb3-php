@@ -6,7 +6,7 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 interface MediaManagerInterface extends CommandHandlerInterface

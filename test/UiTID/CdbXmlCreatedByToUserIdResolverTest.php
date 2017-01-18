@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
@@ -31,8 +31,8 @@ class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function it_first_tries_to_resolve_createdby_as_an_email_address()
     {
-        $createdBy = new String('johndoe@example.com');
-        $userId = new String('abc');
+        $createdBy = new StringLiteral('johndoe@example.com');
+        $userId = new StringLiteral('abc');
 
         $this->users->expects($this->once())
             ->method('byEmail')
@@ -49,8 +49,8 @@ class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function it_falls_back_to_resolving_createdby_as_a_nick_name()
     {
-        $createdBy = new String('johndoe');
-        $userId = new String('abc');
+        $createdBy = new StringLiteral('johndoe');
+        $userId = new StringLiteral('abc');
 
         $this->users->expects($this->never())
             ->method('byEmail');
@@ -70,7 +70,7 @@ class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_null_when_user_id_not_resolved()
     {
-        $createdBy = new String('johndoe');
+        $createdBy = new StringLiteral('johndoe');
 
         $this->users->expects($this->once())
             ->method('byNick')

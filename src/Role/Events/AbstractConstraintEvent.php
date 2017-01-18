@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role\Events;
 
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String as stringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractConstraintEvent extends AbstractEvent
 {

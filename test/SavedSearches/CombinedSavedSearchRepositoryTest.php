@@ -6,7 +6,7 @@ use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -18,19 +18,19 @@ class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $savedSearches = [
             new SavedSearch(
-                new String('Saved search 0'),
+                new StringLiteral('Saved search 0'),
                 new QueryString('city:leuven')
             ),
             new SavedSearch(
-                new String('Saved search 1'),
+                new StringLiteral('Saved search 1'),
                 new QueryString('city:herent')
             ),
             new SavedSearch(
-                new String('Saved search 2'),
+                new StringLiteral('Saved search 2'),
                 new CreatedByQueryString(new EmailAddress('foo@bar.com'))
             ),
             new SavedSearch(
-                new String('Saved search 3'),
+                new StringLiteral('Saved search 3'),
                 new QueryString('keyword:paspartoe')
             ),
         ];

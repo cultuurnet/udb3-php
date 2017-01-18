@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class SimplePathGeneratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +14,7 @@ class SimplePathGeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $generator = new SimplePathGenerator();
         $fileId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $extension = new String('png');
+        $extension = new StringLiteral('png');
         $expectedPath = 'de305d54-75b4-431b-adb2-eb6b9e546014.png';
 
         $path = $generator->path($fileId, $extension);

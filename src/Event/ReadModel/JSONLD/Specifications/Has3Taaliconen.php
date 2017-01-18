@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Has3Taaliconen implements EventSpecificationInterface
 {
@@ -10,6 +10,6 @@ class Has3Taaliconen implements EventSpecificationInterface
 
     public function isSatisfiedBy($eventLd)
     {
-        return $this->hasLabel($eventLd, new String('drie taaliconen'));
+        return $this->hasLabel($eventLd, new StringLiteral('drie taaliconen'));
     }
 }

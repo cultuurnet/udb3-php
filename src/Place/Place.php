@@ -6,7 +6,6 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
@@ -42,7 +41,6 @@ use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
@@ -52,7 +50,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Place extends Offer implements UpdateableWithCdbXmlInterface
 {
@@ -180,35 +178,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Import from UDB2.
-     *
-     * @param string $placeId
-     *   The actor id.
-     * @param string $cdbXml
-     *   The cdb xml.
-     * @param string $cdbXmlNamespaceUri
-     *   The cdb xml namespace uri.
-     *
-     * @return Place
-     */
-    public static function importFromUDB2Event(
-        $placeId,
-        $cdbXml,
-        $cdbXmlNamespaceUri
-    ) {
-        $place = new static();
-        $place->apply(
-            new PlaceImportedFromUDB2Event(
-                $placeId,
-                $cdbXml,
-                $cdbXmlNamespaceUri
-            )
-        );
-
-        return $place;
-    }
-
-    /**
      * @param PlaceImportedFromUDB2 $placeImported
      */
     public function applyPlaceImportedFromUDB2(
@@ -226,26 +195,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param PlaceImportedFromUDB2Event $placeImported
-     */
-    public function applyPlaceImportedFromUDB2Event(
-        PlaceImportedFromUDB2Event $placeImported
-    ) {
-        $this->actorId = $placeImported->getActorId();
-
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $placeImported->getCdbXmlNamespaceUri(),
-            $placeImported->getCdbXml()
-        );
-
-        $this->importWorkflowStatus($udb2Event);
-        $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
-    }
-
-    /**
      * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
      */
-    public function applyPlaceUpdatedFromUDB2Event(
+    public function applyPlaceUpdatedFromUDB2(
         PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -262,25 +214,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function updateWithCdbXml($cdbXml, $cdbXmlNamespaceUri)
     {
-        try {
-            ActorItemFactory::createActorFromCdbXml($cdbXmlNamespaceUri, $cdbXml);
+        ActorItemFactory::createActorFromCdbXml($cdbXmlNamespaceUri, $cdbXml);
 
-            $this->apply(
-                new PlaceUpdatedFromUDB2(
-                    $this->actorId,
-                    $cdbXml,
-                    $cdbXmlNamespaceUri
-                )
-            );
-        } catch (\CultureFeed_Cdb_ParseException $e) {
-            $this->apply(
-                new PlaceImportedFromUDB2Event(
-                    $this->actorId,
-                    $cdbXml,
-                    $cdbXmlNamespaceUri
-                )
-            );
-        }
+        $this->apply(
+            new PlaceUpdatedFromUDB2(
+                $this->actorId,
+                $cdbXml,
+                $cdbXmlNamespaceUri
+            )
+        );
     }
 
     /**

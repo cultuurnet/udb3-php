@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role\Events;
 
 use ValueObjects\Identity\UUID;
-use ValueObjects\STring\String as stringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
 {

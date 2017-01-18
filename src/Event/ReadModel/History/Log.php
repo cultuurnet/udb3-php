@@ -5,7 +5,7 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\History;
 
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Log implements \JsonSerializable
 {
@@ -26,8 +26,8 @@ class Log implements \JsonSerializable
 
     public function __construct(
         \DateTime $date,
-        String $description,
-        String $author = null
+        StringLiteral $description,
+        StringLiteral $author = null
     ) {
         $this->date = clone $date;
         $this->description = $description;

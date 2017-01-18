@@ -19,12 +19,11 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
-use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2Event;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 
@@ -161,22 +160,6 @@ class Projector implements EventListenerInterface
         $userId = $this->resolveUserId($udb2Event);
 
         $this->updateIndexWithUDB2Event($eventId, EntityType::EVENT(), $userId, $udb2Event);
-    }
-
-    /**
-     * @param PlaceImportedFromUDB2Event $placeImportedFromUDB2Event
-     */
-    protected function applyPlaceImportedFromUDB2Event(
-        PlaceImportedFromUDB2Event $placeImportedFromUDB2Event
-    ) {
-        $placeId = $placeImportedFromUDB2Event->getActorId();
-        $udb2Event = EventItemFactory::createEventFromCdbXml(
-            $placeImportedFromUDB2Event->getCdbXmlNamespaceUri(),
-            $placeImportedFromUDB2Event->getCdbXml()
-        );
-        $userId = $this->resolveUserId($udb2Event);
-
-        $this->updateIndexWithUDB2Event($placeId, EntityType::PLACE(), $userId, $udb2Event);
     }
 
     /**

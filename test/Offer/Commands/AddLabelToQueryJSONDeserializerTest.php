@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\Label;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +26,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
         $expectedLabel = new Label('foo');
         $expectedQuery = 'city:leuven';
 
-        $json = new String('{"label":"foo", "query":"city:leuven"}');
+        $json = new StringLiteral('{"label":"foo", "query":"city:leuven"}');
 
         $command = $this->deserializer->deserialize($json);
 
@@ -39,7 +39,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_label_is_missing()
     {
-        $json = new String('{"query": "city:leuven"}');
+        $json = new StringLiteral('{"query": "city:leuven"}');
 
         $this->setExpectedException(
             MissingValueException::class,
@@ -54,7 +54,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_label_is_empty()
     {
-        $json = new String('{"label": "", "query": "city:leuven"}');
+        $json = new StringLiteral('{"label": "", "query": "city:leuven"}');
 
         $this->setExpectedException(
             MissingValueException::class,
@@ -69,7 +69,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_query_is_missing()
     {
-        $json = new String('{"label": "foo"}');
+        $json = new StringLiteral('{"label": "foo"}');
 
         $this->setExpectedException(
             MissingValueException::class,
@@ -84,7 +84,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_when_query_is_empty()
     {
-        $json = new String('{"label": "foo", "query": ""}');
+        $json = new StringLiteral('{"label": "foo", "query": ""}');
 
         $this->setExpectedException(
             MissingValueException::class,

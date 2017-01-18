@@ -20,7 +20,7 @@ use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;
-use ValueObjects\String\String;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 /**
@@ -265,8 +265,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $description = String::fromNative('Some description.');
-        $copyrightHolder = String::fromNative('Dirk Dirkington');
+        $description = StringLiteral::fromNative('Some description.');
+        $copyrightHolder = StringLiteral::fromNative('Dirk Dirkington');
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
 

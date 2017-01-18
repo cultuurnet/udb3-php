@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\PriceInfo;
 
 use Broadway\Serializer\SerializableInterface;
 use ValueObjects\Money\Currency;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class Tariff implements SerializableInterface
 {

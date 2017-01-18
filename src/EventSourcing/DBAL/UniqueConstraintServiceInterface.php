@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
 use Broadway\Domain\DomainMessage;
-use ValueObjects\String\String as StringLiteral;
+use ValueObjects\StringLiteral\StringLiteral;
 
 interface UniqueConstraintServiceInterface
 {

@@ -372,13 +372,14 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project(
             $eventCopied,
             $eventId,
-            null,
+            new Metadata(['user_nick' => 'info@2dotstwice.be']),
             DateTime::fromString($recordedOn)
         );
 
         $expectedJsonLD = json_decode(file_get_contents(__DIR__ . '/copied_event.json'));
         $expectedJsonLD->created = $recordedOn;
         $expectedJsonLD->modified = $recordedOn;
+        $expectedJsonLD->creator = 'info@2dotstwice.be';
 
         $this->assertEquals($expectedJsonLD, $body);
     }

@@ -483,6 +483,9 @@ class EventLDProjector extends OfferLDProjector implements
         $eventJsonLD->created = $created;
         $eventJsonLD->modified = $created;
 
+        // Set the creator.
+        $eventJsonLD->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+
         // Set the id.
         $eventJsonLD->{'@id'} = $this->iriGenerator->iri($eventCopied->getItemId());
 

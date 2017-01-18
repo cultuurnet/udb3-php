@@ -224,8 +224,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 $eventId,
                 EntityType::EVENT(),
                 $userId,
-                null,
-                null,
+                '',
+                '',
                 Domain::specifyType('omd.be'),
                 $this->isInstanceOf(\DateTime::class)
             );

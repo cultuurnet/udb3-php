@@ -326,8 +326,8 @@ class Projector implements EventListenerInterface
             $eventId,
             EntityType::EVENT(),
             $userId,
-            null,
-            null,
+            '',
+            '',
             $this->localDomain,
             $creationDate
         );

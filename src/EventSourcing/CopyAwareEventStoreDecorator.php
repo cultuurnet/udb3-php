@@ -13,7 +13,7 @@ class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
      */
     public function load($id)
     {
-        return $this->loadCompleteStream($this->eventStore->load($id));
+        return $this->loadCompleteStream(parent::load($id));
     }
 
     /**
@@ -30,7 +30,7 @@ class CopyAwareEventStoreDecorator extends AbstractEventStoreDecorator
         }
 
         $parentId = $this->identifyParent($oldestMessage);
-        $parentEventStream = $this->eventStore->load($parentId);
+        $parentEventStream = parent::load($parentId);
 
         $inheritedEvents = $this->limitEventStreamToPlayhead($parentEventStream, $oldestMessage->getPlayhead());
         $combinedEvents = array_merge($inheritedEvents, $events);

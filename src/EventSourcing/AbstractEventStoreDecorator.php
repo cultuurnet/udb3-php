@@ -10,7 +10,7 @@ class AbstractEventStoreDecorator implements EventStoreInterface
     /**
      * @var EventStoreInterface
      */
-    protected $eventStore;
+    private $eventStore;
 
     /**
      * AbstractEventStoreDecorator constructor.

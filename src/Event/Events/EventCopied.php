@@ -42,6 +42,9 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
         $this->calendar = $calendar;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getParentAggregateId()
     {
         return $this->originalEventId;

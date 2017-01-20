@@ -5,7 +5,10 @@ namespace CultuurNet\UDB3\Event\ReadModel\History;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
@@ -164,6 +167,44 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
                 ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_copying_an_event()
+    {
+        $eventId = 'f2b227c5-4756-49f6-a25d-8286b6a2351f';
+        $originalEventId = '1fd05542-ce0b-4ed1-ad17-cf5a0f316da4';
+
+        $eventCopied = new EventCopied(
+            $eventId,
+            $originalEventId,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $now = new \DateTime();
+
+        $domainMessage = new DomainMessage(
+            $eventId,
+            4,
+            new Metadata(['user_nick' => 'Jan Janssen']),
+            $eventCopied,
+            DateTime::fromString($now->format(\DateTime::ATOM))
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            $eventId,
+            [
+                (object)[
+                    'date' => $now->format('c'),
+                    'author' => 'Jan Janssen',
+                    'description' => 'Event gekopieerd van ' . $originalEventId,
+                ],
             ]
         );
     }

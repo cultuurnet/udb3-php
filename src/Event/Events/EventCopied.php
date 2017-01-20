@@ -59,7 +59,7 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
     }
 
     /**
-     * @return CalendarInterface
+     * @return CalendarInterface|Calendar
      */
     public function getCalendar()
     {

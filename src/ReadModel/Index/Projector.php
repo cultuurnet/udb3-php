@@ -113,7 +113,7 @@ class Projector implements EventListenerInterface
             $identifier = $this->identifierFactory->fromIri(
                 Url::fromNative($event->getIri())
             );
-            $dateUpdated = new DateTime($domainMessage->getRecordedOn()->toString());
+            $dateUpdated = $this->getRecordedDate($domainMessage);
 
             $this->setItemUpdateDate($identifier->getId(), $dateUpdated);
         }
@@ -297,8 +297,6 @@ class Projector implements EventListenerInterface
 
         $location = $eventCreated->getLocation();
 
-        $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-
         $this->updateIndex(
             $eventId,
             EntityType::EVENT(),
@@ -306,7 +304,7 @@ class Projector implements EventListenerInterface
             $eventCreated->getTitle(),
             $location->getAddress()->getPostalCode(),
             $this->localDomain,
-            $creationDate
+            $this->getRecordedDate($domainMessage)
         );
     }
 
@@ -320,8 +318,6 @@ class Projector implements EventListenerInterface
 
         $userId = $this->getUserId($domainMessage);
 
-        $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
-
         $this->updateIndex(
             $eventId,
             EntityType::EVENT(),
@@ -329,7 +325,7 @@ class Projector implements EventListenerInterface
             '',
             '',
             $this->localDomain,
-            $creationDate
+            $this->getRecordedDate($domainMessage)
         );
     }
 
@@ -346,7 +342,6 @@ class Projector implements EventListenerInterface
 
         $address = $placeCreated->getAddress();
 
-        $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
         $this->updateIndex(
             $placeId,
             EntityType::PLACE(),
@@ -354,7 +349,7 @@ class Projector implements EventListenerInterface
             $placeCreated->getTitle(),
             $address->getPostalCode(),
             $this->localDomain,
-            $creationDate
+            $this->getRecordedDate($domainMessage)
         );
     }
 
@@ -431,5 +426,14 @@ class Projector implements EventListenerInterface
     {
         $metaData = $domainMessage->getMetadata()->serialize();
         return isset($metaData['user_id']) ? $metaData['user_id'] : '';
+    }
+
+    /**
+     * @param DomainMessage $domainMessage
+     * @return DateTime
+     */
+    private function getRecordedDate(DomainMessage $domainMessage)
+    {
+        return new DateTime($domainMessage->getRecordedOn()->toString());
     }
 }

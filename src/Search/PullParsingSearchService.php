@@ -41,6 +41,11 @@ class PullParsingSearchService implements SearchServiceInterface
     protected $resultParserLogger;
 
     /**
+     * @var bool
+     */
+    protected $includePrivateItems;
+
+    /**
      * @param SearchAPI2\SearchServiceInterface $search
      * @param IriGeneratorInterface $eventIriGenerator
      * @param IriGeneratorInterface $placeIriGenerator
@@ -56,6 +61,8 @@ class PullParsingSearchService implements SearchServiceInterface
         $this->eventIriGenerator = $eventIriGenerator;
         $this->placeIriGenerator = $placeIriGenerator;
         $this->resultParserLogger = $resultParserLogger ? $resultParserLogger : new NullLogger();
+
+        $this->includePrivateItems = true;
     }
 
     /**
@@ -68,6 +75,16 @@ class PullParsingSearchService implements SearchServiceInterface
         $parser = $this->getPullParser();
 
         return $parser->getResultSet($response->getBody(true));
+    }
+
+    /**
+     * @return PullParsingSearchService
+     */
+    public function doNotIncludePrivateItems()
+    {
+        $copy = clone $this;
+        $copy->includePrivateItems = false;
+        return $copy;
     }
 
     /**
@@ -91,8 +108,6 @@ class PullParsingSearchService implements SearchServiceInterface
         $startParam = new Parameter\Start($start);
         $limitParam = new Parameter\Rows($limit);
         $typeParam = new Parameter\FilterQuery('type:event OR (type:actor AND category_id:8.15.0.0.0)');
-        // fetch all private and non-private events
-        $privateParam = new Parameter\FilterQuery('private:*');
 
         $params = array(
             $qParam,
@@ -100,8 +115,13 @@ class PullParsingSearchService implements SearchServiceInterface
             $limitParam,
             $startParam,
             $typeParam,
-            $privateParam
         );
+
+        if ($this->includePrivateItems) {
+            $privateParam = new Parameter\FilterQuery('private:*');
+
+            $params[] = $privateParam;
+        }
 
         if ($sort) {
             $params[] = new Parameter\Parameter('sort', $sort);

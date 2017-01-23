@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\Concluded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -57,12 +58,20 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
+    /**
+     * @var string
+     */
     protected $eventId;
 
     /**
      * @var Audience
      */
     private $audience;
+
+    /**
+     * @var boolean
+     */
+    private $concluded = false;
 
     const MAIN_LANGUAGE_CODE = 'nl';
 
@@ -522,5 +531,20 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $uncommittedEvents = $property->getValue($this);
 
         return !empty($uncommittedEvents);
+    }
+
+    public function conclude()
+    {
+        if (!$this->concluded) {
+            $this->apply(new Concluded($this->eventId));
+        }
+    }
+
+    /**
+     * @param Concluded $concluded
+     */
+    protected function applyConcluded(Concluded $concluded)
+    {
+        $this->concluded = true;
     }
 }

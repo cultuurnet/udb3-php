@@ -58,6 +58,9 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 class Event extends Offer implements UpdateableWithCdbXmlInterface
 {
+    /**
+     * @var string
+     */
     protected $eventId;
 
     /**

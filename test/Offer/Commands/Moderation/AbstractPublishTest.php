@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 
+use DateTime;
+use DateTimeInterface;
 use ValueObjects\Identity\UUID;
 
 class AbstractPublishTest extends \PHPUnit_Framework_TestCase
@@ -25,7 +27,7 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID();
 
-        $this->publicationDate = new \DateTime();
+        $this->publicationDate = new DateTime();
 
         $this->abstractPublish = $this->getMockForAbstractClass(
             AbstractPublish::class,
@@ -60,13 +62,20 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
      */
     public function it_has_a_default_publication_date_of_now()
     {
-        $now = new \DateTime();
+        $before = new DateTime();
 
+        /** @var AbstractPublish $abstractPublish */
         $abstractPublish = $this->getMockForAbstractClass(
             AbstractPublish::class,
             [$this->uuid->toNative()]
         );
 
-        $this->assertEquals($now, $abstractPublish->getPublicationDate());
+        $after = new DateTime();
+
+        $publicationDate = $abstractPublish->getPublicationDate();
+
+        $this->assertInstanceOf(DateTimeInterface::class, $publicationDate);
+        $this->assertGreaterThanOrEqual($before, $publicationDate);
+        $this->assertLessThanOrEqual($after, $publicationDate);
     }
 }

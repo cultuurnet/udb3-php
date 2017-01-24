@@ -301,6 +301,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             array(
                 $this->domainMessage(
                     new PlaceProjectedToJSONLD(
+                        '6ecf5da4-220d-4486-9327-17c7ec8fa070',
                         'http://du.de/place/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),
@@ -309,6 +310,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             array(
                 $this->domainMessage(
                     new EventProjectedToJSONLD(
+                        '6ecf5da4-220d-4486-9327-17c7ec8fa070',
                         'http://du.de/event/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),

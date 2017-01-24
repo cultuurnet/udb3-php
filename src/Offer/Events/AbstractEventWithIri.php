@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Events;
 
 use Broadway\Serializer\SerializableInterface;
 
-abstract class AbstractEventWithIri implements SerializableInterface
+abstract class AbstractEventWithIri extends AbstractEvent implements SerializableInterface
 {
     /**
      * @var string
@@ -12,10 +12,12 @@ abstract class AbstractEventWithIri implements SerializableInterface
     private $iri;
 
     /**
+     * @param string $itemId
      * @param string $iri
      */
-    public function __construct($iri)
+    public function __construct($itemId, $iri)
     {
+        parent::__construct($itemId);
         $this->iri = (string) $iri;
     }
 
@@ -32,8 +34,8 @@ abstract class AbstractEventWithIri implements SerializableInterface
      */
     public function serialize()
     {
-        return array(
-            'iri' => $this->iri
+        return parent::serialize() + array(
+            'iri' => $this->iri,
         );
     }
 
@@ -43,6 +45,6 @@ abstract class AbstractEventWithIri implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static($data['iri']);
+        return new static($data['item_id'], $data['iri']);
     }
 }

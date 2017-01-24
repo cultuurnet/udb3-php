@@ -1,13 +1,12 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Search;
 
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
+use PHPUnit_Framework_Error;
+use TypeError;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
@@ -52,21 +51,21 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     *
-     * @expectedException \PHPUnit_Framework_Error
      */
     public function it_only_accepts_an_items_array()
     {
+        $this->expectTypeError();
+
         new Results('foo', new Integer(5));
     }
 
     /**
      * @test
-     *
-     * @expectedException \PHPUnit_Framework_Error
      */
     public function it_only_accepts_a_total_items_integer()
     {
+        $this->expectTypeError();
+
         new Results(
             OfferIdentifierCollection::fromArray(
                 [
@@ -75,5 +74,14 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
             ),
             'foo'
         );
+    }
+
+    private function expectTypeError()
+    {
+        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+            $this->expectException(TypeError::class);
+        } else {
+            $this->expectException(PHPUnit_Framework_Error::class);
+        }
     }
 }

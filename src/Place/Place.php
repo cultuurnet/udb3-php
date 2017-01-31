@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
@@ -22,6 +23,7 @@ use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
@@ -60,6 +62,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @var string
      */
     protected $actorId;
+
+    /**
+     * @var Coordinates
+     */
+    private $coordinates;
 
     /**
      * {@inheritdoc}
@@ -146,6 +153,26 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
+    }
+
+    /**
+     * @param Coordinates $coordinates
+     */
+    public function updateGeoCoordinates(
+        Coordinates $coordinates
+    ) {
+        if (is_null($this->coordinates) || !$this->coordinates->sameAs($coordinates)) {
+            $this->apply(new GeoCoordinatesUpdated($this->actorId, $coordinates));
+        }
+    }
+
+    /**
+     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
+     */
+    protected function applyGeoCoordinatesUpdated(
+        GeoCoordinatesUpdated $geoCoordinatesUpdated
+    ) {
+        $this->coordinates = $geoCoordinatesUpdated->getCoordinates();
     }
 
     /**

@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Label\ReadModels\Doctrine\AbstractDBALRepository;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use Doctrine\DBAL\Query\QueryBuilder;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class DBALWriteRepository extends AbstractDBALRepository implements WriteRepositoryInterface
@@ -31,7 +32,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 $relationId->toNative()
             ]);
 
-        $queryBuilder->execute();
+        $this->executeTransactional($queryBuilder);
     }
 
     /**
@@ -47,7 +48,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->andWhere(SchemaConfigurator::RELATION_ID . ' = ?')
             ->setParameters([$labelName->toNative(), $relationId->toNative()]);
 
-        $queryBuilder->execute();
+        $this->executeTransactional($queryBuilder);
     }
 
     /**
@@ -60,6 +61,16 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->where(SchemaConfigurator::RELATION_ID . ' = ?')
             ->setParameters([$relationId->toNative()]);
 
-        $queryBuilder->execute();
+        $this->executeTransactional($queryBuilder);
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     */
+    private function executeTransactional(QueryBuilder $queryBuilder)
+    {
+        $this->getConnection()->transactional(function () use ($queryBuilder) {
+            $queryBuilder->execute();
+        });
     }
 }

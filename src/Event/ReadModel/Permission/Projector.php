@@ -6,9 +6,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -64,11 +66,29 @@ class Projector implements EventListenerInterface
         EventCreated $eventCreated,
         DomainMessage $domainMessage
     ) {
+        $this->makeOferEditableByUser($eventCreated->getEventId(), $domainMessage);
+    }
+
+    protected function applyEventCopied(
+        EventCopied $eventCopied,
+        DomainMessage $domainMessage
+    ) {
+        $this->makeOferEditableByUser($eventCopied->getItemId(), $domainMessage);
+    }
+
+    /**
+     * @param string $eventId
+     * @param DomainMessage $domainMessage
+     */
+    private function makeOferEditableByUser(
+        $eventId,
+        DomainMessage $domainMessage
+    ) {
         $metadata = $domainMessage->getMetadata()->serialize();
         $ownerId = new StringLiteral($metadata['user_id']);
 
         $this->permissionRepository->markOfferEditableByUser(
-            new StringLiteral($eventCreated->getEventId()),
+            new StringLiteral($eventId),
             $ownerId
         );
     }

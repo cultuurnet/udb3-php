@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\Concluded;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -761,6 +762,33 @@ class EventTest extends AggregateRootScenarioTestCase
                     ),
                 ]
             );
+    }
+
+    /**
+     * @test
+     * @group issue-III-1807
+     */
+    public function it_can_be_concluded()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent()
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->conclude();
+                }
+            )
+            ->then(
+                [new Concluded('d2b41f1d-598c-46af-a3a5-10e373faa6fe')]
+            )
+            ->when(
+                function (Event $event) {
+                    $event->conclude();
+                }
+            )
+            ->then([]);
     }
 
     /**

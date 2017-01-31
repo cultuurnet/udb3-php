@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
+
 class ContentTypes
 {
     /**
@@ -25,6 +27,7 @@ class ContentTypes
             OrganizerDeleted::class => 'application/vnd.cultuurnet.udb3-events.organizer-deleted+json',
             OrganizerImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.organizer-imported-from-udb2+json',
             OrganizerUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.organizer-updated-from-udb2+json',
+            OrganizerProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.organizer-projected-to-jsonld+json',
             LabelAdded::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-added+json',
             LabelRemoved::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-removed+json',
             AddressUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-address-updated+json',

@@ -11,7 +11,10 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
@@ -209,6 +212,47 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             1,
             new Metadata(),
             $organizerDeletedEvent,
+            DateTime::now()
+        );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_related_place_and_organizer_from_original_event_on_copy()
+    {
+        $originalEventId = 'e7b5d985-9f35-4d2f-bd0f-4f5ddf7ce2f6';
+        $eventId = 'dcfe65ea-c5a3-4ee3-ab75-1973aecc2cba';
+        $placeId = '13096071-d1c7-476e-856f-ea8f90d13c59';
+        $organizerId = '1104bad0-21a1-47a1-9642-a55898fb4735';
+
+        $this->repository->expects($this->once())
+            ->method('getPlaceOfEvent')
+            ->with($originalEventId)
+            ->willReturn($placeId);
+
+        $this->repository->expects($this->once())
+            ->method('getOrganizerOfEvent')
+            ->with($originalEventId)
+            ->willReturn($organizerId);
+
+        $this->repository->expects($this->once())
+            ->method('storeRelations')
+            ->with($eventId, $placeId, $organizerId);
+
+        $eventCopied = new EventCopied(
+            $eventId,
+            $originalEventId,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $domainMessage = new DomainMessage(
+            $eventCopied->getItemId(),
+            1,
+            new Metadata(),
+            $eventCopied,
             DateTime::now()
         );
 

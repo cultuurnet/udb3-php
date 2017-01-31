@@ -1,12 +1,9 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Log;
 
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class ContextEnrichingLoggerTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +25,7 @@ class ContextEnrichingLoggerTest extends \PHPUnit_Framework_TestCase
         $decoratedLogger->expects($this->once())
             ->method('log')
             ->with(
-                Logger::DEBUG,
+                LogLevel::DEBUG,
                 'test',
                 [
                     'foo' => 'bar',
@@ -36,7 +33,7 @@ class ContextEnrichingLoggerTest extends \PHPUnit_Framework_TestCase
                 ]
             );
         $logger->log(
-            Logger::DEBUG,
+            LogLevel::DEBUG,
             'test',
             [
                 'foo' => 'bar'

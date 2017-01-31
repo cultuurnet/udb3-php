@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -203,6 +204,38 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_adds_an_index_when_event_is_copied()
+    {
+        $eventId = 'f2b227c5-4756-49f6-a25d-8286b6a2351f';
+        $originalEventId = '1fd05542-ce0b-4ed1-ad17-cf5a0f316da4';
+        $userId = '1adf21b4-711d-4e33-b9ef-c96843582a56';
+
+        $eventCopied = new EventCopied(
+            $eventId,
+            $originalEventId,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $domainMessage = $this->domainMessage($eventCopied);
+
+        $this->repository->expects($this->once())
+            ->method('updateIndex')
+            ->with(
+                $eventId,
+                EntityType::EVENT(),
+                $userId,
+                '',
+                '',
+                Domain::specifyType('omd.be'),
+                $this->isInstanceOf(\DateTime::class)
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_add_an_indexed_item_when_a_place_is_created()
     {
         $this->repository->expects($this->once())
@@ -268,6 +301,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             array(
                 $this->domainMessage(
                     new PlaceProjectedToJSONLD(
+                        '6ecf5da4-220d-4486-9327-17c7ec8fa070',
                         'http://du.de/place/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),
@@ -276,6 +310,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             array(
                 $this->domainMessage(
                     new EventProjectedToJSONLD(
+                        '6ecf5da4-220d-4486-9327-17c7ec8fa070',
                         'http://du.de/event/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),

@@ -194,6 +194,43 @@ class DBALRepository implements RepositoryInterface
         return $events;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getPlaceOfEvent($eventId)
+    {
+        return $this->getRelationOfEvent($eventId, 'place');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrganizerOfEvent($eventId)
+    {
+        return $this->getRelationOfEvent($eventId, 'organizer');
+    }
+
+    /**
+     * @param string $eventId
+     * @param string $eventType
+     * @return string|null
+     */
+    private function getRelationOfEvent($eventId, $eventType)
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+
+        $queryBuilder->select(['place', 'organizer'])
+            ->from($this->tableName)
+            ->where('event = :eventId')
+            ->setParameter(':eventId', $eventId);
+
+        $statement = $queryBuilder->execute();
+
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        return isset($rows[0][$eventType]) ? $rows[0][$eventType] : null;
+    }
+
     public function removeRelations($eventId)
     {
         $q = $this->connection->createQueryBuilder();
@@ -205,6 +242,7 @@ class DBALRepository implements RepositoryInterface
     }
 
     /**
+     * @param Schema $schema
      * @return \Doctrine\DBAL\Schema\Table|null
      */
     public function configureSchema(Schema $schema)

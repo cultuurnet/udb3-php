@@ -33,6 +33,7 @@ class ContentTypes
             DescriptionTranslated::class => 'application/vnd.cultuurnet.udb3-events.event-description-translated+json',
             DescriptionUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-description-updated+json',
             EventCreated::class => 'application/vnd.cultuurnet.udb3-events.event-created+json',
+            EventCopied::class => 'application/vnd.cultuurnet.udb3-events.event-copied+json',
             EventDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-deleted+json',
             EventImportedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.event-imported-from-udb2+json',
             EventProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.event-projected-to-jsonld+json',
@@ -55,6 +56,7 @@ class ContentTypes
             Rejected::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-rejected+json',
             FlaggedAsDuplicate::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-flagged-as-duplicate+json',
             FlaggedAsInappropriate::class => 'application/vnd.cultuurnet.udb3-events.moderation.event-flagged-as-inappropriate+json',
+            Concluded::class => 'application/vnd.cultuurnet.udb3-events.event-concluded+json',
         ];
     }
 }

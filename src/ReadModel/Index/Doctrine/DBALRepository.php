@@ -247,6 +247,9 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         return $results->fetchAll(\PDO::FETCH_COLUMN);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findByUser($userId, Natural $limit, Natural $start)
     {
         $expr = $this->connection->getExpressionBuilder();
@@ -266,6 +269,9 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function findByUserForDomain(
         $userId,
         Natural $limit,
@@ -292,6 +298,14 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         );
     }
 
+    /**
+     * @param string $userId
+     * @param Natural $limit
+     * @param Natural $start
+     * @param CompositeExpression $filterExpression
+     * @param array $parameters
+     * @return Results
+     */
     private function getPagedDashboardItems(
         $userId,
         Natural $limit,
@@ -352,6 +366,9 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setUpdateDate($id, DateTimeInterface $updated)
     {
         $queryBuilder = $this->connection->createQueryBuilder();

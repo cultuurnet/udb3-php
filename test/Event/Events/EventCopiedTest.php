@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use DateTime;
 
 class EventCopiedTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,9 +34,13 @@ class EventCopiedTest extends \PHPUnit_Framework_TestCase
 
         $this->originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
 
+        // Microseconds are not taken into account when serializing, but since
+        // PHP 7.1 DateTime incorporates them. We set the microseconds
+        // explicitly to 0 in this test to make it pass.
+        // See http://php.net/manual/en/migration71.incompatible.php#migration71.incompatible.datetime-microseconds.
         $this->calendar = new Calendar(
             CalendarType::SINGLE(),
-            new \DateTime()
+            new DateTime('2017-01-24T21:47:26.000000+0000')
         );
 
         $this->eventCopied = new EventCopied(

@@ -20,12 +20,14 @@ use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
@@ -36,6 +38,7 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
@@ -315,6 +318,70 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'foo',
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_copy_event()
+    {
+        $originalEventId = '1';
+        $originalCalendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+        );
+        $eventCreated = $this->createEventCreated($originalEventId, $originalCalendar, null);
+
+        $this->project($eventCreated, $originalEventId);
+
+        $this->project(
+            new Published($originalEventId, new \DateTime()),
+            $originalEventId
+        );
+
+        $this->project(
+            new LabelAdded($originalEventId, new Label('2dotstwice', true)),
+            $originalEventId
+        );
+
+        $this->project(
+            new LabelAdded($originalEventId, new Label('cultuurnet', false)),
+            $originalEventId
+        );
+
+        $eventId = '2';
+        $timestamps = [
+            new Timestamp(
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-27T13:25:21+01:00')
+            ),
+            new Timestamp(
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-28T13:25:21+01:00'),
+                \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-29T13:25:21+01:00')
+            ),
+        ];
+        $calendar = new Calendar(
+            CalendarType::MULTIPLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-29T13:25:21+01:00'),
+            $timestamps
+        );
+        $eventCopied = new EventCopied($eventId, $originalEventId, $calendar);
+
+        $recordedOn = '2018-01-01T11:55:55+01:00';
+        $body = $this->project(
+            $eventCopied,
+            $eventId,
+            new Metadata(['user_nick' => 'info@2dotstwice.be']),
+            DateTime::fromString($recordedOn)
+        );
+
+        $expectedJsonLD = json_decode(file_get_contents(__DIR__ . '/copied_event.json'));
+        $expectedJsonLD->created = $recordedOn;
+        $expectedJsonLD->modified = $recordedOn;
+        $expectedJsonLD->creator = 'info@2dotstwice.be';
+
+        $this->assertEquals($expectedJsonLD, $body);
     }
 
     /**
@@ -809,7 +876,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ],
         ];
 
-        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD((string) $placeIri);
+        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD(
+            $placeID,
+            (string) $placeIri
+        );
 
         $this->projector->handle(
             DomainMessage::recordNow(
@@ -910,7 +980,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             ],
         ];
 
-        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD($organizerId);
+        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
+            $organizerId,
+            'organizers/' . $organizerId
+        );
 
         $this->projector->handle(
             DomainMessage::recordNow(

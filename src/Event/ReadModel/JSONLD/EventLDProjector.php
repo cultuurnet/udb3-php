@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -253,15 +254,9 @@ class EventLDProjector extends OfferLDProjector implements
                 );
 
                 // Add creation date and update date from metadata.
-                $eventCreationDate = $domainMessage->getRecordedOn();
-
-                $eventCreationString = $eventCreationDate->toString();
-                $eventCreationDateTime = \DateTime::createFromFormat(
-                    DateTime::FORMAT_STRING,
-                    $eventCreationString
-                );
-                $eventLd->created = $eventCreationDateTime->format('c');
-                $eventLd->modified = $eventCreationDateTime->format('c');
+                $created = $this->getCreated($domainMessage);
+                $eventLd->created = $created;
+                $eventLd->modified = $created;
 
                 // Add creator.
                 $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
@@ -451,12 +446,9 @@ class EventLDProjector extends OfferLDProjector implements
                     $jsonLD->terms[] = $theme->toJsonLd();
                 }
 
-                $recordedOn = $domainMessage->getRecordedOn()->toString();
-                $jsonLD->created = \DateTime::createFromFormat(
-                    DateTime::FORMAT_STRING,
-                    $recordedOn
-                )->format('c');
-                $jsonLD->modified = $jsonLD->created;
+                $created = $this->getCreated($domainMessage);
+                $jsonLD->created = $created;
+                $jsonLD->modified = $created;
 
                 $metaData = $domainMessage->getMetadata()->serialize();
                 if (isset($metaData['user_email'])) {
@@ -473,6 +465,51 @@ class EventLDProjector extends OfferLDProjector implements
                 return $jsonLD;
             }
         );
+    }
+
+    /**
+     * @param EventCopied $eventCopied
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventCopied(
+        EventCopied $eventCopied,
+        DomainMessage $domainMessage
+    ) {
+        $originalDocument = $this->repository->get($eventCopied->getOriginalEventId());
+        $eventJsonLD = $originalDocument->getBody();
+
+        // Set the created and modified date.
+        $created = $this->getCreated($domainMessage);
+        $eventJsonLD->created = $created;
+        $eventJsonLD->modified = $created;
+
+        // Set the creator.
+        $eventJsonLD->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+
+        // Set the id.
+        $eventJsonLD->{'@id'} = $this->iriGenerator->iri($eventCopied->getItemId());
+
+        // Set the new calendar.
+        $eventJsonLD = (object) array_merge(
+            (array) $eventJsonLD,
+            $eventCopied->getCalendar()->toJsonLd()
+        );
+
+        // Set workflow status.
+        $eventJsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
+
+        // Remove labels.
+        unset($eventJsonLD->labels);
+        unset($eventJsonLD->hiddenLabels);
+
+        // Set available to and from.
+        $availableTo = AvailableTo::createFromCalendar($eventCopied->getCalendar());
+        $eventJsonLD->availableTo = (string) $availableTo;
+        unset($eventJsonLD->availableFrom);
+
+        $newDocument = new JsonDocument($eventCopied->getItemId());
+        $newDocument = $newDocument->withBody($eventJsonLD);
+        $this->repository->save($newDocument);
     }
 
     /**
@@ -584,6 +621,20 @@ class EventLDProjector extends OfferLDProjector implements
         if (isset($properties['consumer']['name'])) {
             return new StringLiteral($properties['consumer']['name']);
         }
+    }
+
+    /**
+     * @param DomainMessage $domainMessage
+     * @return string
+     */
+    private function getCreated(DomainMessage $domainMessage)
+    {
+        $recordedOn = $domainMessage->getRecordedOn()->toString();
+
+        return \DateTime::createFromFormat(
+            DateTime::FORMAT_STRING,
+            $recordedOn
+        )->format('c');
     }
 
     /**

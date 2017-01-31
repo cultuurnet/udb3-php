@@ -43,7 +43,7 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
     ) {
         $this->searchService = $searchService;
         $this->sorting = $sorting;
-        $this->pageSize = 10;
+        $this->pageSize = $pageSize;
 
         // Set a default logger so we don't need to check if a logger is set
         // when we actually try to log something. This can easily be overridden

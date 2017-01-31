@@ -8,9 +8,10 @@ use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
+use CultuurNet\UDB3\Event\Events\EventCopied;
+use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
-use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\Events\AbstractEventWithIri;
@@ -112,7 +113,7 @@ class Projector implements EventListenerInterface
             $identifier = $this->identifierFactory->fromIri(
                 Url::fromNative($event->getIri())
             );
-            $dateUpdated = new DateTime($domainMessage->getRecordedOn()->toString());
+            $dateUpdated = $this->getRecordedDate($domainMessage);
 
             $this->setItemUpdateDate($identifier->getId(), $dateUpdated);
         }
@@ -290,15 +291,11 @@ class Projector implements EventListenerInterface
      */
     protected function applyEventCreated(EventCreated $eventCreated, DomainMessage $domainMessage)
     {
-
         $eventId = $eventCreated->getEventId();
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
+        $userId = $this->getUserId($domainMessage);
 
         $location = $eventCreated->getLocation();
-
-        $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
 
         $this->updateIndex(
             $eventId,
@@ -307,7 +304,28 @@ class Projector implements EventListenerInterface
             $eventCreated->getTitle(),
             $location->getAddress()->getPostalCode(),
             $this->localDomain,
-            $creationDate
+            $this->getRecordedDate($domainMessage)
+        );
+    }
+
+    /**
+     * @param EventCopied $eventCopied
+     * @param DomainMessage $domainMessage
+     */
+    public function applyEventCopied(EventCopied $eventCopied, DomainMessage $domainMessage)
+    {
+        $eventId = $eventCopied->getItemId();
+
+        $userId = $this->getUserId($domainMessage);
+
+        $this->updateIndex(
+            $eventId,
+            EntityType::EVENT(),
+            $userId,
+            '',
+            '',
+            $this->localDomain,
+            $this->getRecordedDate($domainMessage)
         );
     }
 
@@ -318,15 +336,12 @@ class Projector implements EventListenerInterface
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
-
         $placeId = $placeCreated->getPlaceId();
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        $userId = isset($metaData['user_id']) ? $metaData['user_id'] : '';
+        $userId = $this->getUserId($domainMessage);
 
         $address = $placeCreated->getAddress();
 
-        $creationDate = new DateTime('now', new DateTimeZone('Europe/Brussels'));
         $this->updateIndex(
             $placeId,
             EntityType::PLACE(),
@@ -334,7 +349,7 @@ class Projector implements EventListenerInterface
             $placeCreated->getTitle(),
             $address->getPostalCode(),
             $this->localDomain,
-            $creationDate
+            $this->getRecordedDate($domainMessage)
         );
     }
 
@@ -401,5 +416,24 @@ class Projector implements EventListenerInterface
     public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
     {
         $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
+    }
+
+    /**
+     * @param DomainMessage $domainMessage
+     * @return string
+     */
+    private function getUserId(DomainMessage $domainMessage)
+    {
+        $metaData = $domainMessage->getMetadata()->serialize();
+        return isset($metaData['user_id']) ? $metaData['user_id'] : '';
+    }
+
+    /**
+     * @param DomainMessage $domainMessage
+     * @return DateTime
+     */
+    private function getRecordedDate(DomainMessage $domainMessage)
+    {
+        return new DateTime($domainMessage->getRecordedOn()->toString());
     }
 }

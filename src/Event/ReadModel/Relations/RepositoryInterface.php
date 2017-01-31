@@ -49,6 +49,18 @@ interface RepositoryInterface
     public function getEventsOrganizedByOrganizer($organizerId);
 
     /**
+     * @param string $eventId
+     * @return string|null
+     */
+    public function getPlaceOfEvent($eventId);
+
+    /**
+     * @param string $eventId
+     * @return string|null
+     */
+    public function getOrganizerOfEvent($eventId);
+
+    /**
      * Remove all the relations that are linked to this event.
      *
      * @param string $eventId

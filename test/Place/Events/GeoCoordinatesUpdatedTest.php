@@ -1,8 +1,6 @@
 <?php
 
-
 namespace CultuurNet\UDB3\Place\Events;
-
 
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;

@@ -154,7 +154,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
         try {
             // Convert the cdbxml address to a udb3 address.
             $address = $this->addressFactory->fromCdbAddress($addresses[0]);
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             // If conversion failed, log an error and do nothing.
             $this->logger->error(
                 'Could not convert a cdbxml address to a udb3 address for geocoding.',

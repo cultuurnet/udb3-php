@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
@@ -269,7 +270,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
     {
-
         $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
 
         $placeLd = $document->getBody();
@@ -292,7 +292,23 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $placeLd->terms = $terms;
 
         $this->repository->save($document->withBody($placeLd));
+    }
 
+    /**
+     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
+     */
+    protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
+    {
+        $document = $this->loadPlaceDocumentFromRepository($geoCoordinatesUpdated);
+
+        $placeLd = $document->getBody();
+
+        $placeLd->geo = (object) [
+            'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
+            'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
+        ];
+
+        $this->repository->save($document->withBody($placeLd));
     }
 
     /**

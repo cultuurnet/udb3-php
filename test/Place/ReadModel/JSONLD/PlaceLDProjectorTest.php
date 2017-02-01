@@ -7,6 +7,9 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
+use CultuurNet\Geocoding\Coordinate\Latitude;
+use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -26,6 +29,7 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
@@ -513,6 +517,48 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
 
         $body = $this->project($facilitiesUpdated, $id);
+        $this->assertEquals($expectedBody, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_geo_coordinates()
+    {
+        $id = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode(
+                [
+                    '@id' => 'http://uitdatabank/place/' . $id,
+                    '@type' => 'Place',
+                    'name' => 'Test',
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $coordinatesUpdated = new GeoCoordinatesUpdated(
+            $id,
+            new Coordinates(
+                new Latitude(1.1234567),
+                new Longitude(-0.34567)
+            )
+        );
+
+        $expectedBody = (object) [
+            '@id' => 'http://uitdatabank/place/' . $id,
+            '@type' => 'Place',
+            'name' => 'Test',
+            'geo' => (object) [
+                'latitude' => 1.1234567,
+                'longitude' => -0.34567,
+            ],
+        ];
+
+        $body = $this->project($coordinatesUpdated, $id);
         $this->assertEquals($expectedBody, $body);
     }
 

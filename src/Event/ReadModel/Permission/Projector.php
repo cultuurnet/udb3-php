@@ -66,29 +66,29 @@ class Projector implements EventListenerInterface
         EventCreated $eventCreated,
         DomainMessage $domainMessage
     ) {
-        $this->makeOferEditableByUser($eventCreated->getEventId(), $domainMessage);
+        $this->makeOfferEditableByUser($eventCreated->getEventId(), $domainMessage);
     }
 
     protected function applyEventCopied(
         EventCopied $eventCopied,
         DomainMessage $domainMessage
     ) {
-        $this->makeOferEditableByUser($eventCopied->getItemId(), $domainMessage);
+        $this->makeOfferEditableByUser($eventCopied->getItemId(), $domainMessage);
     }
 
     /**
-     * @param string $eventId
+     * @param string $offerId
      * @param DomainMessage $domainMessage
      */
-    private function makeOferEditableByUser(
-        $eventId,
+    private function makeOfferEditableByUser(
+        $offerId,
         DomainMessage $domainMessage
     ) {
         $metadata = $domainMessage->getMetadata()->serialize();
         $ownerId = new StringLiteral($metadata['user_id']);
 
         $this->permissionRepository->markOfferEditableByUser(
-            new StringLiteral($eventId),
+            new StringLiteral($offerId),
             $ownerId
         );
     }

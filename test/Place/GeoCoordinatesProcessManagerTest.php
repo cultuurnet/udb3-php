@@ -60,28 +60,6 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     */
-    public function it_ignores_cdbxml_imports_and_updates_if_they_already_contain_geocoordinates()
-    {
-        $domainMessage = DomainMessage::recordNow(
-            '318F2ACB-F612-6F75-0037C9C29F44087A',
-            0,
-            new Metadata([]),
-            new PlaceImportedFromUDB2(
-                '318F2ACB-F612-6F75-0037C9C29F44087A',
-                file_get_contents(__DIR__ . '/actor.xml'),
-                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-            )
-        );
-
-        $this->commandBus->expects($this->never())
-            ->method('dispatch');
-
-        $this->processManager->handle($domainMessage);
-    }
-
-    /**
-     * @test
      * @dataProvider addressEventDataProvider
      *
      * @param DomainMessage $event
@@ -124,7 +102,7 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
             new Metadata([]),
             new PlaceImportedFromUDB2(
                 '318F2ACB-F612-6F75-0037C9C29F44087A',
-                file_get_contents(__DIR__ . '/actor_without_geocoordinates.xml'),
+                file_get_contents(__DIR__ . '/actor.xml'),
                 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
             )
         );
@@ -226,7 +204,7 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
                     new Metadata([]),
                     new PlaceImportedFromUDB2(
                         '318F2ACB-F612-6F75-0037C9C29F44087A',
-                        file_get_contents(__DIR__ . '/actor_without_geocoordinates.xml'),
+                        file_get_contents(__DIR__ . '/actor.xml'),
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                     )
                 ),
@@ -247,7 +225,7 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
                     new Metadata([]),
                     new PlaceUpdatedFromUDB2(
                         '318F2ACB-F612-6F75-0037C9C29F44087A',
-                        file_get_contents(__DIR__ . '/actor_without_geocoordinates.xml'),
+                        file_get_contents(__DIR__ . '/actor.xml'),
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                     )
                 ),

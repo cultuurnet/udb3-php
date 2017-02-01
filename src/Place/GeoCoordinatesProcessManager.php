@@ -146,14 +146,9 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
         /* @var \CultureFeed_Cdb_Data_Address_PhysicalAddress $cdbAddress */
         $cdbAddress = $addresses[0];
 
-        // Do nothing if the address already has coordinates in cdbxml.
-        if (!empty($cdbAddress->getGeoInformation())) {
-            return;
-        }
-
         try {
             // Convert the cdbxml address to a udb3 address.
-            $address = $this->addressFactory->fromCdbAddress($addresses[0]);
+            $address = $this->addressFactory->fromCdbAddress($cdbAddress);
         } catch (\InvalidArgumentException $e) {
             // If conversion failed, log an error and do nothing.
             $this->logger->error(

@@ -5,9 +5,9 @@ namespace CultuurNet\UDB3\Place\Events;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use CultuurNet\UDB3\Place\PlaceEvent;
 
-class GeoCoordinatesUpdated extends AbstractEvent
+class GeoCoordinatesUpdated extends PlaceEvent
 {
     /**
      * @var Coordinates
@@ -52,7 +52,7 @@ class GeoCoordinatesUpdated extends AbstractEvent
     public static function deserialize(array $data)
     {
         return new GeoCoordinatesUpdated(
-            $data['item_id'],
+            $data['place_id'],
             new Coordinates(
                 new Latitude($data['coordinates']['lat']),
                 new Longitude($data['coordinates']['long'])

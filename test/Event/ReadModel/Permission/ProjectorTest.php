@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
@@ -149,6 +150,38 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Metadata(
                 ['user_id' => $userId->toNative()]
             ),
+            $payload
+        );
+
+        $this->repository->expects($this->once())
+            ->method('markOfferEditableByUser')
+            ->with(
+                $eventId,
+                $userId
+            );
+
+        $this->projector->handle($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_add_permission_to_the_user_that_copied_an_event()
+    {
+        $userId = 'user-id';
+        $eventId = 'event-id';
+        $originalEventId = 'original-event-id';
+
+        $payload = new EventCopied(
+            $eventId,
+            $originalEventId,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $msg = DomainMessage::recordNow(
+            $eventId,
+            1,
+            new Metadata(['user_id' => $userId]),
             $payload
         );
 

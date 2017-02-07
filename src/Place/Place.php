@@ -64,11 +64,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected $actorId;
 
     /**
-     * @var Coordinates
-     */
-    private $coordinates;
-
-    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -161,18 +156,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     public function updateGeoCoordinates(
         Coordinates $coordinates
     ) {
-        if (is_null($this->coordinates) || !$this->coordinates->sameAs($coordinates)) {
-            $this->apply(new GeoCoordinatesUpdated($this->actorId, $coordinates));
-        }
-    }
-
-    /**
-     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
-     */
-    protected function applyGeoCoordinatesUpdated(
-        GeoCoordinatesUpdated $geoCoordinatesUpdated
-    ) {
-        $this->coordinates = $geoCoordinatesUpdated->getCoordinates();
+        // Note: DON'T compare to previous coordinates and apply only on
+        // changes. Various projectors expect GeoCoordinatesUpdated after
+        // MajorInfoUpdated and PlaceUpdatedFromUDB2, even if the address
+        // and thus the coordinates haven't actually changed.
+        $this->apply(new GeoCoordinatesUpdated($this->actorId, $coordinates));
     }
 
     /**

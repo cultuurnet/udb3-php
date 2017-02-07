@@ -668,6 +668,81 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $expectedBody,
             $body
         );
+    }
 
+    /**
+     * @test
+     */
+    public function it_removes_geocoordinates_after_major_info_updated()
+    {
+        $initialDocument = new JsonDocument(
+            '3c4850d7-689a-4729-8c5f-5f6c172ba52d',
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $majorInfoUpdated = new MajorInfoUpdated(
+            '3c4850d7-689a-4729-8c5f-5f6c172ba52d',
+            new Title('New title'),
+            new EventType('1.0.0.0', 'Mock'),
+            new Address(
+                new Street('Natieplein 2'),
+                new PostalCode('1000'),
+                new Locality('Brussel'),
+                Country::fromNative('BE')
+            ),
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $body = $this->project($majorInfoUpdated, '3c4850d7-689a-4729-8c5f-5f6c172ba52d');
+
+        $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_geocoordinates_after_place_updated_from_udb2()
+    {
+        $initialDocument = new JsonDocument(
+            '318F2ACB-F612-6F75-0037C9C29F44087A',
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_long_description.cdbxml.xml');
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            '318F2ACB-F612-6F75-0037C9C29F44087A',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
+
+        $this->assertArrayNotHasKey('geo', (array) $body);
     }
 }

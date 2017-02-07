@@ -143,6 +143,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $udb2Actor
         );
 
+        // Remove geocoordinates, because the address might have been
+        // updated and we might get inconsistent data if it takes a while
+        // before the new geocoordinates are added.
+        // In case geocoding fails, it's also easier to look for places that
+        // have no geocoordinates instead of places that have incorrect
+        // geocoordinates.
+        unset($actorLd->geo);
+
         $this->repository->save($document->withBody($actorLd));
     }
 
@@ -259,6 +267,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         if (!empty($theme)) {
             $jsonLD->terms[] = $theme->toJsonLd();
         }
+
+        // Remove geocoordinates, because the address might have been
+        // updated and we might get inconsistent data if it takes a while
+        // before the new geocoordinates are added.
+        // In case geocoding fails, it's also easier to look for places that
+        // have no geocoordinates instead of places that have incorrect
+        // geocoordinates.
+        unset($jsonLD->geo);
 
         $this->repository->save($document->withBody($jsonLD));
 

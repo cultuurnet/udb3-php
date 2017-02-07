@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
+use CultuurNet\Search\Parameter\FilterQuery;
+use CultuurNet\Search\Parameter\Group;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
@@ -87,14 +89,16 @@ class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
 
         $this->mockGetByUserAndPermission([new StringLiteral('zipCode:3000')]);
 
-        $this->mockCreateFromConstraints(new StringLiteral(
-            '(zipcode:3000 AND cdbid:' . $offerId->toNative() . ')'
-        ));
+        $query = '(zipcode:3000 AND cdbid:' . $offerId->toNative() . ')';
+        $this->mockCreateFromConstraints(new StringLiteral($query));
 
         $cdbXml = file_get_contents(
             __DIR__ . '/samples/single_search_results.xml'
         );
-        $this->mockSearch(new Response('200', null, $cdbXml));
+        $this->mockSearch(
+            $query,
+            new Response('200', null, $cdbXml)
+        );
 
         $matches = $this->userPermissionMatcher->itMatchesOffer(
             $userId,
@@ -146,11 +150,10 @@ class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
 
         $this->mockGetByUserAndPermission([new StringLiteral('zipCode:3000')]);
 
-        $this->mockCreateFromConstraints(new StringLiteral(
-            '(zipcode:3000 AND cdbid:' . $offerId->toNative() . ')'
-        ));
+        $query = '(zipcode:3000 AND cdbid:' . $offerId->toNative() . ')';
+        $this->mockCreateFromConstraints(new StringLiteral($query));
 
-        $this->mockSearch(new Response('400'));
+        $this->mockSearch($query, new Response('400'));
 
         $matches = $this->userPermissionMatcher->itMatchesOffer(
             $userId,
@@ -172,14 +175,16 @@ class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
 
         $this->mockGetByUserAndPermission([new StringLiteral('zipCode:3000')]);
 
-        $this->mockCreateFromConstraints(new StringLiteral(
-            '(zipcode:3000 AND cdbid:' . $offerId->toNative() . ')'
-        ));
+        $query = '(zipcode:3000 AND cdbid:' . $offerId->toNative() . ')';
+        $this->mockCreateFromConstraints(new StringLiteral($query));
 
         $cdbXml = file_get_contents(
             __DIR__ . '/samples/multiple_search_results.xml'
         );
-        $this->mockSearch(new Response('200', null, $cdbXml));
+        $this->mockSearch(
+            $query,
+            new Response('200', null, $cdbXml)
+        );
 
         $matches = $this->userPermissionMatcher->itMatchesOffer(
             $userId,
@@ -209,11 +214,19 @@ class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $query
      * @param Response $response
      */
-    private function mockSearch(Response $response)
+    private function mockSearch($query, Response $response)
     {
         $this->searchService->method('search')
+            ->with(
+                [
+                    $query,
+                    new FilterQuery('private:*'),
+                    new Group(true)
+                ]
+            )
             ->willReturn($response);
     }
 

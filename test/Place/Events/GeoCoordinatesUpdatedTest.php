@@ -13,7 +13,7 @@ class GeoCoordinatesUpdatedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_serialized_and_deserialized()
     {
-        $event = new GeoCoordinatesUpdated(
+        $expectedEvent = new GeoCoordinatesUpdated(
             'f281bc85-3ee4-43a7-b42d-a8982ec9bbc4',
             new Coordinates(
                 new Latitude(0.00456),
@@ -29,11 +29,11 @@ class GeoCoordinatesUpdatedTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $actualArray = $event->serialize();
+        $actualArray = $expectedEvent->serialize();
 
-        $deserialized = GeoCoordinatesUpdated::deserialize($actualArray);
+        $event = GeoCoordinatesUpdated::deserialize($expectedArray);
 
         $this->assertEquals($expectedArray, $actualArray);
-        $this->assertEquals($event, $deserialized);
+        $this->assertEquals($expectedEvent, $event);
     }
 }

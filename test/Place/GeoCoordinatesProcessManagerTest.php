@@ -107,6 +107,7 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
             )
         );
 
+        /** @var CultureFeedAddressFactory|\PHPUnit_Framework_MockObject_MockObject $addressFactory */
         $addressFactory = $this->createMock(CultureFeedAddressFactoryInterface::class);
 
         $processManager = new GeoCoordinatesProcessManager(

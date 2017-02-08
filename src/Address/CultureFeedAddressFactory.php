@@ -14,17 +14,23 @@ class CultureFeedAddressFactory implements CultureFeedAddressFactoryInterface
     {
         $requiredFields = [
             'street' => $cdbAddress->getStreet(),
-            'house number' => $cdbAddress->getHouseNumber(),
             'zip code' => $cdbAddress->getZip(),
             'city' => $cdbAddress->getCity(),
             'country' => $cdbAddress->getCountry(),
         ];
 
+        $missingFields = [];
         foreach ($requiredFields as $key => $requiredField) {
             if (is_null($requiredField)) {
-                throw new \InvalidArgumentException('The given cdbxml address is missing a ' . $key);
+                $missingFields[] = $key;
             }
         }
+
+        if (count($missingFields) > 0) {
+            $keys = implode(', ', $missingFields);
+            throw new \InvalidArgumentException('The given cdbxml address is missing a ' . $keys);
+        }
+
 
         return new Address(
             new Street($cdbAddress->getStreet() . ' ' . $cdbAddress->getHouseNumber()),

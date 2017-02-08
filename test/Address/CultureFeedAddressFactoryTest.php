@@ -68,12 +68,6 @@ class CultureFeedAddressFactoryTest extends \PHPUnit_Framework_TestCase
         $withoutStreet->setCity('Overpelt');
         $withoutStreet->setCountry('BE');
 
-        $withoutHouseNumber = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
-        $withoutHouseNumber->setStreet('Jeugdlaan');
-        $withoutHouseNumber->setZip(3900);
-        $withoutHouseNumber->setCity('Overpelt');
-        $withoutHouseNumber->setCountry('BE');
-
         $withoutZip = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
         $withoutZip->setStreet('Jeugdlaan');
         $withoutZip->setHouseNumber(2);
@@ -92,12 +86,17 @@ class CultureFeedAddressFactoryTest extends \PHPUnit_Framework_TestCase
         $withoutCountry->setZip(3900);
         $withoutCountry->setCity('Overpelt');
 
+        $withoutCityAndCountry = new \CultureFeed_Cdb_Data_Address_PhysicalAddress();
+        $withoutCityAndCountry->setStreet('Jeugdlaan');
+        $withoutCityAndCountry->setHouseNumber(2);
+        $withoutCityAndCountry->setZip(3900);
+
         return [
             [$withoutStreet, 'The given cdbxml address is missing a street'],
-            [$withoutHouseNumber, 'The given cdbxml address is missing a house number'],
             [$withoutZip, 'The given cdbxml address is missing a zip code'],
             [$withoutCity, 'The given cdbxml address is missing a city'],
             [$withoutCountry, 'The given cdbxml address is missing a country'],
+            [$withoutCityAndCountry, 'The given cdbxml address is missing a city, country'],
         ];
     }
 }

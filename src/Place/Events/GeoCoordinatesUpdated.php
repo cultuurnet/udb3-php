@@ -15,12 +15,12 @@ class GeoCoordinatesUpdated extends PlaceEvent
     private $coordinates;
 
     /**
-     * @param string $itemId
+     * @param string $placeId
      * @param Coordinates $coordinates
      */
-    public function __construct($itemId, Coordinates $coordinates)
+    public function __construct($placeId, Coordinates $coordinates)
     {
-        parent::__construct($itemId);
+        parent::__construct($placeId);
         $this->coordinates = $coordinates;
     }
 

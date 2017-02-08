@@ -22,7 +22,6 @@ use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
-use CultuurNet\UDB3\Place\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
@@ -201,6 +200,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
     /**
      * Handle the update of facilities for a place.
+     * @param UpdateFacilities $updateFacilities
      */
     public function handleUpdateFacilities(UpdateFacilities $updateFacilities)
     {
@@ -217,6 +217,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
     /**
      * Handle an update the major info command.
+     * @param UpdateMajorInfo $updateMajorInfo
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {

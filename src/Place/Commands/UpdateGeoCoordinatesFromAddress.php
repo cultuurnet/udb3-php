@@ -13,12 +13,12 @@ class UpdateGeoCoordinatesFromAddress extends AbstractCommand
     private $address;
 
     /**
-     * @param string $placeId
+     * @param string $itemId
      * @param Address $address
      */
-    public function __construct($placeId, Address $address)
+    public function __construct($itemId, Address $address)
     {
-        parent::__construct($placeId);
+        parent::__construct($itemId);
         $this->address = $address;
     }
 

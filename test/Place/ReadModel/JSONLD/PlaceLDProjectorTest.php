@@ -7,6 +7,9 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
+use CultuurNet\Geocoding\Coordinate\Latitude;
+use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -26,6 +29,7 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
@@ -519,6 +523,48 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_projects_the_updating_of_geo_coordinates()
+    {
+        $id = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode(
+                [
+                    '@id' => 'http://uitdatabank/place/' . $id,
+                    '@type' => 'Place',
+                    'name' => 'Test',
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $coordinatesUpdated = new GeoCoordinatesUpdated(
+            $id,
+            new Coordinates(
+                new Latitude(1.1234567),
+                new Longitude(-0.34567)
+            )
+        );
+
+        $expectedBody = (object) [
+            '@id' => 'http://uitdatabank/place/' . $id,
+            '@type' => 'Place',
+            'name' => 'Test',
+            'geo' => (object) [
+                'latitude' => 1.1234567,
+                'longitude' => -0.34567,
+            ],
+        ];
+
+        $body = $this->project($coordinatesUpdated, $id);
+        $this->assertEquals($expectedBody, $body);
+    }
+
+    /**
+     * @test
+     */
     public function it_deletes_places()
     {
         $id = 'foo';
@@ -622,6 +668,81 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $expectedBody,
             $body
         );
+    }
 
+    /**
+     * @test
+     */
+    public function it_removes_geocoordinates_after_major_info_updated()
+    {
+        $initialDocument = new JsonDocument(
+            '3c4850d7-689a-4729-8c5f-5f6c172ba52d',
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $majorInfoUpdated = new MajorInfoUpdated(
+            '3c4850d7-689a-4729-8c5f-5f6c172ba52d',
+            new Title('New title'),
+            new EventType('1.0.0.0', 'Mock'),
+            new Address(
+                new Street('Natieplein 2'),
+                new PostalCode('1000'),
+                new Locality('Brussel'),
+                Country::fromNative('BE')
+            ),
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $body = $this->project($majorInfoUpdated, '3c4850d7-689a-4729-8c5f-5f6c172ba52d');
+
+        $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_geocoordinates_after_place_updated_from_udb2()
+    {
+        $initialDocument = new JsonDocument(
+            '318F2ACB-F612-6F75-0037C9C29F44087A',
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_long_description.cdbxml.xml');
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            '318F2ACB-F612-6F75-0037C9C29F44087A',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
+
+        $this->assertArrayNotHasKey('geo', (array) $body);
     }
 }

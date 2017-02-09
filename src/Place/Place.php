@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\CalendarInterface;
@@ -22,6 +23,7 @@ use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
@@ -146,6 +148,19 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
+    }
+
+    /**
+     * @param Coordinates $coordinates
+     */
+    public function updateGeoCoordinates(
+        Coordinates $coordinates
+    ) {
+        // Note: DON'T compare to previous coordinates and apply only on
+        // changes. Various projectors expect GeoCoordinatesUpdated after
+        // MajorInfoUpdated and PlaceUpdatedFromUDB2, even if the address
+        // and thus the coordinates haven't actually changed.
+        $this->apply(new GeoCoordinatesUpdated($this->actorId, $coordinates));
     }
 
     /**

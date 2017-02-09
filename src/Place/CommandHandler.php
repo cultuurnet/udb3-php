@@ -200,6 +200,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
     /**
      * Handle the update of facilities for a place.
+     * @param UpdateFacilities $updateFacilities
      */
     public function handleUpdateFacilities(UpdateFacilities $updateFacilities)
     {
@@ -216,6 +217,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
     /**
      * Handle an update the major info command.
+     * @param UpdateMajorInfo $updateMajorInfo
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {

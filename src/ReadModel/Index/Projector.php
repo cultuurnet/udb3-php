@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\ReadModel\Index;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
-use CultureFeed_Cdb_Item_Event;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
@@ -153,70 +152,21 @@ class Projector implements EventListenerInterface
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $eventId = $eventImportedFromUDB2->getEventId();
+
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
             $eventImportedFromUDB2->getCdbXml()
         );
         $userId = $this->resolveUserId($udb2Event);
 
-        $this->updateIndexWithUDB2Event($eventId, EntityType::EVENT(), $userId, $udb2Event);
-    }
-
-    /**
-     * @param string $itemId
-     * @param EntityType $itemType
-     * @param string $userId
-     * @param CultureFeed_Cdb_Item_Event $udb2Event
-     */
-    protected function updateIndexWithUDB2Event(
-        $itemId,
-        EntityType $itemType,
-        $userId,
-        CultureFeed_Cdb_Item_Event $udb2Event
-    ) {
-        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
-        $detail = null;
-        $postalCode = '';
-
-        $details = $udb2Event->getDetails();
-        foreach ($details as $languageDetail) {
-            // The first language detail found will be used.
-            $detail = $languageDetail;
-            break;
-        }
-
-        $name = trim($detail->getTitle());
-
-        // Ignore items without a name. They might occur in UDB2 although this
-        // is not considered normal.
-        if (empty($name)) {
-            return;
-        }
-
-        $contact_cdb = $udb2Event->getContactInfo();
-        if ($contact_cdb) {
-            $addresses = $contact_cdb->getAddresses();
-
-            /** @var \CultureFeed_Cdb_Data_Address $address */
-            foreach ($addresses as $address) {
-                /** @var \CultureFeed_Cdb_Data_Address_PhysicalAddress $physicalAddress */
-                $physicalAddress = $address->getPhysicalAddress();
-                if ($physicalAddress) {
-                    $postalCode = $physicalAddress->getZip();
-                }
-            }
-        }
-
         $creationDate = $this->dateTimeFromUDB2DateString(
             $udb2Event->getCreationDate()
         );
 
         $this->updateIndex(
-            $itemId,
-            $itemType,
+            $eventId,
+            EntityType::EVENT(),
             (string) $userId,
-            $name,
-            $postalCode,
             $this->UDB2Domain,
             $creationDate
         );
@@ -228,11 +178,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyPlaceImportedFromUDB2(PlaceImportedFromUDB2 $placeImportedFromUDB2)
     {
-
         $placeId = $placeImportedFromUDB2->getActorId();
-        /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
-        $detail = null;
-        $postalCode = '';
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeImportedFromUDB2->getCdbXmlNamespaceUri(),
@@ -240,34 +186,6 @@ class Projector implements EventListenerInterface
         );
 
         $userId = $this->resolveUserId($udb2Actor);
-
-        $details = $udb2Actor->getDetails();
-        foreach ($details as $languageDetail) {
-            // The first language detail found will be used.
-            $detail = $languageDetail;
-            break;
-        }
-
-        $name = trim($detail->getTitle());
-
-        // Ignore items without a name. They might occur in UDB2 although this
-        // is not considered normal.
-        if (empty($name)) {
-            return;
-        }
-
-        $contact_cdb = $udb2Actor->getContactInfo();
-        if ($contact_cdb) {
-            $addresses = $contact_cdb->getAddresses();
-
-            /** @var \CultureFeed_Cdb_Data_Address $address */
-            foreach ($addresses as $address) {
-                $physicalAddress = $address->getPhysicalAddress();
-                if ($physicalAddress) {
-                    $postalCode = $physicalAddress->getZip();
-                }
-            }
-        }
 
         $creationDate = $this->dateTimeFromUDB2DateString(
             $udb2Actor->getCreationDate()
@@ -277,8 +195,6 @@ class Projector implements EventListenerInterface
             $placeId,
             EntityType::PLACE(),
             $userId,
-            $name,
-            $postalCode,
             $this->UDB2Domain,
             $creationDate
         );
@@ -295,14 +211,10 @@ class Projector implements EventListenerInterface
 
         $userId = $this->getUserId($domainMessage);
 
-        $location = $eventCreated->getLocation();
-
         $this->updateIndex(
             $eventId,
             EntityType::EVENT(),
             $userId,
-            $eventCreated->getTitle(),
-            $location->getAddress()->getPostalCode(),
             $this->localDomain,
             $this->getRecordedDate($domainMessage)
         );
@@ -322,8 +234,6 @@ class Projector implements EventListenerInterface
             $eventId,
             EntityType::EVENT(),
             $userId,
-            '',
-            '',
             $this->localDomain,
             $this->getRecordedDate($domainMessage)
         );
@@ -340,14 +250,10 @@ class Projector implements EventListenerInterface
 
         $userId = $this->getUserId($domainMessage);
 
-        $address = $placeCreated->getAddress();
-
         $this->updateIndex(
             $placeId,
             EntityType::PLACE(),
             $userId,
-            $placeCreated->getTitle(),
-            $address->getPostalCode(),
             $this->localDomain,
             $this->getRecordedDate($domainMessage)
         );
@@ -373,8 +279,6 @@ class Projector implements EventListenerInterface
      * @param $id
      * @param EntityType $type
      * @param $userId
-     * @param $name
-     * @param $postalCode
      * @param Domain $owningDomain
      * @param DateTimeInterface $creationDate
      */
@@ -382,8 +286,6 @@ class Projector implements EventListenerInterface
         $id,
         EntityType $type,
         $userId,
-        $name,
-        $postalCode,
         Domain $owningDomain,
         DateTimeInterface $creationDate = null
     ) {
@@ -391,8 +293,6 @@ class Projector implements EventListenerInterface
             $id,
             $type,
             $userId,
-            $name,
-            $postalCode,
             $owningDomain,
             $creationDate
         );
@@ -401,9 +301,8 @@ class Projector implements EventListenerInterface
     /**
      * Remove the index for events
      * @param EventDeleted $eventDeleted
-     * @param DomainMessage $domainMessage
      */
-    public function applyEventDeleted(EventDeleted $eventDeleted, DomainMessage $domainMessage)
+    public function applyEventDeleted(EventDeleted $eventDeleted)
     {
         $this->repository->deleteIndex($eventDeleted->getItemId(), EntityType::EVENT());
     }
@@ -411,9 +310,8 @@ class Projector implements EventListenerInterface
     /**
      * Remove the index for places
      * @param PlaceDeleted $placeDeleted
-     * @param DomainMessage $domainMessage
      */
-    public function applyPlaceDeleted(PlaceDeleted $placeDeleted, DomainMessage $domainMessage)
+    public function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
         $this->repository->deleteIndex($placeDeleted->getItemId(), EntityType::PLACE());
     }

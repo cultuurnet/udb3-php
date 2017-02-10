@@ -43,17 +43,9 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             array('length' => 36, 'notnull' => true)
         );
         $table->addColumn(
-            'title',
-            'text'
-        );
-        $table->addColumn(
             'uid',
             'guid',
             array('length' => 36, 'notnull' => true)
-        );
-        $table->addColumn(
-            'zip',
-            'text'
         );
         $table->addColumn(
             'created',

@@ -5,7 +5,6 @@ use CultuurNet\UDB3\Dashboard\DashboardItemLookupServiceInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
-use CultuurNet\UDB3\Place\ReadModel\Lookup\PlaceLookupServiceInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use CultuurNet\UDB3\ReadModel\Index\RepositoryInterface;
@@ -20,7 +19,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 
-class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface, DashboardItemLookupServiceInterface
+class DBALRepository implements RepositoryInterface, DashboardItemLookupServiceInterface
 {
     /**
      * @var Connection
@@ -59,8 +58,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $id,
         EntityType $entityType,
         $userId,
-        $name,
-        $postalCode,
         Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
@@ -75,8 +72,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                 $q->update($this->tableName->toNative())
                     ->where($this->matchesIdAndEntityType())
                     ->set('uid', ':uid')
-                    ->set('title', ':title')
-                    ->set('zip', ':zip')
                     ->set('owning_domain', ':owning_domain')
                     ->set('entity_iri', ':entity_iri');
 
@@ -85,7 +80,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                 }
 
                 $this->setIdAndEntityType($q, $id, $entityType);
-                $this->setValues($q, $userId, $name, $postalCode, $owningDomain, $created);
+                $this->setValues($q, $userId, $owningDomain, $created);
                 $q->setParameter('entity_iri', $iri);
 
                 $q->execute();
@@ -102,8 +97,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'entity_type' => ':entity_type',
                             'entity_iri' => ':entity_iri',
                             'uid' => ':uid',
-                            'title' => ':title',
-                            'zip' => ':zip',
                             'created' => ':created',
                             'updated' => ':created',
                             'owning_domain' => ':owning_domain'
@@ -114,8 +107,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                 $this->setValues(
                     $q,
                     $userId,
-                    $name,
-                    $postalCode,
                     $owningDomain,
                     $created
                 );
@@ -135,22 +126,16 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     /**
      * @param QueryBuilder $q
      * @param string $userId
-     * @param string $name
-     * @param string $postalCode
      * @param Domain $owningDomain
      * @param DateTimeInterface $created
      */
     private function setValues(
         QueryBuilder $q,
         $userId,
-        $name,
-        $postalCode,
         Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
         $q->setParameter('uid', $userId);
-        $q->setParameter('title', $name);
-        $q->setParameter('zip', $postalCode);
         $q->setParameter('owning_domain', $owningDomain->toNative());
         if ($created instanceof DateTimeInterface) {
             $q->setParameter('created', $created->getTimestamp());
@@ -220,31 +205,6 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $this->setIdAndEntityType($q, $id, $entityType);
 
         $q->execute();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findPlacesByPostalCode($postalCode)
-    {
-        $q = $this->connection->createQueryBuilder();
-        $expr = $q->expr();
-
-        $q->select('entity_id')
-            ->from($this->tableName->toNative())
-            ->where(
-                $expr->andX(
-                    $expr->eq('entity_type', ':entity_type'),
-                    $expr->eq('zip', ':zip')
-                )
-            );
-
-        $q->setParameter('entity_type', EntityType::PLACE()->toNative());
-        $q->setParameter('zip', $postalCode);
-
-        $results = $q->execute();
-
-        return $results->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**

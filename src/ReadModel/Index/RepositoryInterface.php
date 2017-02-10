@@ -14,8 +14,6 @@ interface RepositoryInterface
      * @param string $id
      * @param EntityType $entityType
      * @param string $userId
-     * @param string $name
-     * @param string $postalCode
      * @param Domain $owningDomain
      * @param DateTimeInterface $created
      * @return void
@@ -24,14 +22,13 @@ interface RepositoryInterface
         $id,
         EntityType $entityType,
         $userId,
-        $name,
-        $postalCode,
         Domain $owningDomain,
         DateTimeInterface $created = null
     );
 
     /**
-     * @param string$id
+     * @param string $id
+     * @param EntityType $entityType
      * @return void
      */
     public function deleteIndex($id, EntityType $entityType);

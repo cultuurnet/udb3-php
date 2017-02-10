@@ -87,8 +87,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '123-456',
                 EntityType::EVENT(),
                 'user-id-one-two-three',
-                'GALLERY TRAEGHE exhibition Janine de Coninck \'BLACK AND WHITE\' 1 - 9 November 2014',
-                '8000',
                 Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2014-09-08T09:10:16',
@@ -110,25 +108,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_ignores_events_imported_from_udb2_without_a_title()
-    {
-        $this->repository->expects($this->never())
-            ->method('updateIndex');
-
-        $this->projector->handle(
-            $this->domainMessage(
-                new EventImportedFromUDB2(
-                    '123-456',
-                    file_get_contents(__DIR__ . '/event-with-empty-title.xml'),
-                    'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                )
-            )
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_should_add_an_indexed_item_when_importing_a_place_from_udb2()
     {
         $this->userIdResolver->expects($this->once())
@@ -141,8 +120,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'place-lace-ace-ce',
                 EntityType::PLACE(),
                 'user-id-one-two-three',
-                'CC Palethe',
-                '3900',
                 Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2010-01-06T13:33:06+0100',
@@ -172,8 +149,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'f2b227c5-4756-49f6-a25d-8286b6a2351f',
                 EntityType::EVENT(),
                 '1adf21b4-711d-4e33-b9ef-c96843582a56',
-                'Algorave',
-                '9630',
                 Domain::specifyType('omd.be'),
                 $this->anything()
             );
@@ -224,8 +199,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 $eventId,
                 EntityType::EVENT(),
                 $userId,
-                '',
-                '',
                 Domain::specifyType('omd.be'),
                 $this->isInstanceOf(\DateTime::class)
             );
@@ -244,8 +217,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'f2b227c5-4756-49f6-a25d-8286b6a2351f',
                 EntityType::PLACE(),
                 '1adf21b4-711d-4e33-b9ef-c96843582a56',
-                'Algorave',
-                '9630',
                 Domain::specifyType('omd.be'),
                 $this->anything()
             );

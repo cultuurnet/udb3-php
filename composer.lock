@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6179c2b2fb7d9b9938bea175fe2c65fd",
+    "content-hash": "56b519bb52536e061c07e20470de36f8",
     "packages": [
         {
             "name": "2dotstwice/collection",
@@ -321,17 +321,20 @@
         },
         {
             "name": "container-interop/container-interop",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/container-interop/container-interop.git",
-                "reference": "fc08354828f8fd3245f77a66b9e23a6bca48297e"
+                "reference": "79cbf1341c22ec75643d841642dd5d6acd83bdb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/container-interop/container-interop/zipball/fc08354828f8fd3245f77a66b9e23a6bca48297e",
-                "reference": "fc08354828f8fd3245f77a66b9e23a6bca48297e",
+                "url": "https://api.github.com/repos/container-interop/container-interop/zipball/79cbf1341c22ec75643d841642dd5d6acd83bdb8",
+                "reference": "79cbf1341c22ec75643d841642dd5d6acd83bdb8",
                 "shasum": ""
+            },
+            "require": {
+                "psr/container": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -344,7 +347,8 @@
                 "MIT"
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
-            "time": "2014-12-30T15:22:37+00:00"
+            "homepage": "https://github.com/container-interop/container-interop",
+            "time": "2017-02-14T19:40:03+00:00"
         },
         {
             "name": "cultuurnet/auth",
@@ -542,16 +546,16 @@
         },
         {
             "name": "cultuurnet/deserializer",
-            "version": "1.x-dev",
+            "version": "dev-feature/III-555",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cultuurnet/deserializer.git",
-                "reference": "3c8ce40b567f37cdc0bc6b64835a7b3114e125cd"
+                "reference": "ad6b24b5164b79749a964e53422fcbd47e7b02cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/3c8ce40b567f37cdc0bc6b64835a7b3114e125cd",
-                "reference": "3c8ce40b567f37cdc0bc6b64835a7b3114e125cd",
+                "url": "https://api.github.com/repos/cultuurnet/deserializer/zipball/ad6b24b5164b79749a964e53422fcbd47e7b02cf",
+                "reference": "ad6b24b5164b79749a964e53422fcbd47e7b02cf",
                 "shasum": ""
             },
             "require": {
@@ -559,8 +563,8 @@
             },
             "require-dev": {
                 "phing/phing": "~2.10",
-                "phpunit/phpunit": "~4.3",
-                "squizlabs/php_codesniffer": "~2.2"
+                "phpunit/phpunit": "~5.7",
+                "squizlabs/php_codesniffer": "2.6.1"
             },
             "type": "library",
             "extra": {
@@ -585,7 +589,7 @@
                 }
             ],
             "description": "Internet media type deserialization library",
-            "time": "2017-01-12 11:18:03"
+            "time": "2017-02-15 14:30:01"
         },
         {
             "name": "cultuurnet/geocoding",
@@ -2145,6 +2149,55 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
+            "name": "psr/container",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common Container Interface (PHP FIG PSR-11)",
+            "homepage": "https://github.com/php-fig/container",
+            "keywords": [
+                "PSR-11",
+                "container",
+                "container-interface",
+                "container-interop",
+                "psr"
+            ],
+            "time": "2017-02-14T16:28:37+00:00"
         },
         {
             "name": "psr/http-message",
@@ -3798,16 +3851,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.12",
+            "version": "5.7.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "944600e244f80a5252679878553b95c63dbf978b"
+                "reference": "60ebeed87a35ea46fd7f7d8029df2d6f013ebb34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/944600e244f80a5252679878553b95c63dbf978b",
-                "reference": "944600e244f80a5252679878553b95c63dbf978b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/60ebeed87a35ea46fd7f7d8029df2d6f013ebb34",
+                "reference": "60ebeed87a35ea46fd7f7d8029df2d6f013ebb34",
                 "shasum": ""
             },
             "require": {
@@ -3876,7 +3929,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-02-08T05:54:05+00:00"
+            "time": "2017-02-10T09:05:10+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4853,6 +4906,12 @@
     ],
     "aliases": [
         {
+            "alias": "1.0",
+            "alias_normalized": "1.0.0.0",
+            "version": "dev-feature/III-555",
+            "package": "cultuurnet/deserializer"
+        },
+        {
             "alias": "1.6",
             "alias_normalized": "1.6.0.0",
             "version": "9999999-dev",
@@ -4861,6 +4920,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "cultuurnet/deserializer": 20,
         "cultuurnet/culturefeed-php": 20
     },
     "prefer-stable": true,

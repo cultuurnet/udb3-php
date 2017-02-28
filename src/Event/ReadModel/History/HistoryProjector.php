@@ -7,6 +7,7 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
@@ -58,6 +59,26 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new StringLiteral('Geüpdatet vanuit UDB2')
+            )
+        );
+    }
+
+    /**
+     * @param EventCreated $eventCreated
+     * @param DomainMessage $domainMessage
+     */
+    protected function applyEventCreated(
+        EventCreated $eventCreated,
+        DomainMessage $domainMessage
+    ) {
+        $this->writeHistory(
+            $eventCreated->getEventId(),
+            new Log(
+                $this->domainMessageDateToNativeDate(
+                    $domainMessage->getRecordedOn()
+                ),
+                new StringLiteral('Aangemaakt in UiTdatabank'),
+                $this->getAuthorFromMetadata($domainMessage->getMetadata())
             )
         );
     }

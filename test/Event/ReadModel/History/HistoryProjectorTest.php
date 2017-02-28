@@ -5,20 +5,30 @@ namespace CultuurNet\UDB3\Event\ReadModel\History;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Theme;
+use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
@@ -167,6 +177,55 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
                 ]
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_logs_creating_an_event()
+    {
+        $eventId = 'f2b227c5-4756-49f6-a25d-8286b6a2351f';
+
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Title('Faith no More'),
+            new EventType('0.50.4.0.0', 'Concert'),
+            new Location(
+                '7a59de16-6111-4658-aa6e-958ff855d14e',
+                new StringLiteral('Het Depot'),
+                new Address(
+                    new Street('Martelarenplein'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
+            ),
+            new Calendar(CalendarType::PERMANENT()),
+            new Theme('1.8.1.0.0', 'Rock')
+        );
+
+        $now = new \DateTime();
+
+        $domainMessage = new DomainMessage(
+            $eventId,
+            4,
+            new Metadata(['user_nick' => 'Jan Janssen']),
+            $eventCreated,
+            DateTime::fromString($now->format(\DateTime::ATOM))
+        );
+
+        $this->historyProjector->handle($domainMessage);
+
+        $this->assertHistoryOfEvent(
+            $eventId,
+            [
+                (object)[
+                    'date' => $now->format('c'),
+                    'author' => 'Jan Janssen',
+                    'description' => 'Aangemaakt in UiTdatabank',
+                ],
             ]
         );
     }

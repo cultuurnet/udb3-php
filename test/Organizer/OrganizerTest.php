@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -240,6 +241,67 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     new ContactPointUpdated($this->id, $initialContactPoint),
                     new ContactPointUpdated($this->id, $updatedContactPoint),
                     new ContactPointUpdated($this->id, $emptyContactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_website_when_different_from_the_current_website()
+    {
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateWebsite(Url::fromNative('http://www.stuk.be'));
+                    $organizer->updateWebsite(Url::fromNative('http://www.hetdepot.be'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with website 'http://www.stuk.be'.
+                    new WebsiteUpdated(
+                        $this->id,
+                        Url::fromNative('http://www.hetdepot.be')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_website_when_organizer_imported_from_udb2()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->given(
+                [
+                    new OrganizerImportedFromUDB2(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateWebsite(Url::fromNative('http://www.hetdepot.be'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with an empty website.
+                    new WebsiteUpdated(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        Url::fromNative('http://www.hetdepot.be')
+                    ),
                 ]
             );
     }

@@ -103,7 +103,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     /**
      * @param UpdateTitle $updateTitle
      */
-    protected function UpdateTitle(UpdateTitle $updateTitle)
+    protected function updateTitle(UpdateTitle $updateTitle)
     {
         $organizer = $this->loadOrganizer($updateTitle->getOrganizerId());
 
@@ -115,7 +115,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     /**
      * @param UpdateAddress $updateAddress
      */
-    protected function UpdateAddress(UpdateAddress $updateAddress)
+    protected function updateAddress(UpdateAddress $updateAddress)
     {
         $organizer = $this->loadOrganizer($updateAddress->getOrganizerId());
 
@@ -127,7 +127,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     /**
      * @param UpdateContactPoint $updateContactPoint
      */
-    protected function UpdateContactPoint(UpdateContactPoint $updateContactPoint)
+    protected function updateContactPoint(UpdateContactPoint $updateContactPoint)
     {
         $organizer = $this->loadOrganizer($updateContactPoint->getOrganizerId());
 

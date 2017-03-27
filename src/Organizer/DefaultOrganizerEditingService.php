@@ -13,6 +13,10 @@ use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
+use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
+use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
@@ -77,6 +81,46 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
         $this->organizerRepository->save($organizer);
 
         return $id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateWebsite($organizerId, Url $website)
+    {
+        return $this->commandBus->dispatch(
+            new UpdateWebsite($organizerId, $website)
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateTitle($organizerId, Title $title)
+    {
+        return $this->commandBus->dispatch(
+            new UpdateTitle($organizerId, $title)
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateAddress($organizerId, Address $address)
+    {
+        return $this->commandBus->dispatch(
+            new UpdateAddress($organizerId, $address)
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateContactPoint($organizerId, ContactPoint $contactPoint)
+    {
+        return $this->commandBus->dispatch(
+            new UpdateContactPoint($organizerId, $contactPoint)
+        );
     }
 
     /**

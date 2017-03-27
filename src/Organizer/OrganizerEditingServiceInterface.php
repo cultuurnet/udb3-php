@@ -21,6 +21,34 @@ interface OrganizerEditingServiceInterface
 
     /**
      * @param string $organizerId
+     * @param Url $website
+     * @return void
+     */
+    public function updateWebsite($organizerId, Url $website);
+
+    /**
+     * @param string $organizerId
+     * @param Title $title
+     * @return void
+     */
+    public function updateTitle($organizerId, Title $title);
+
+    /**
+     * @param string $organizerId
+     * @param Address $address
+     * @return void
+     */
+    public function updateAddress($organizerId, Address $address);
+
+    /**
+     * @param string $organizerId
+     * @param ContactPoint $contactPoint
+     * @return void
+     */
+    public function updateContactPoint($organizerId, ContactPoint $contactPoint);
+
+    /**
+     * @param string $organizerId
      * @param Label $label
      * @return
      */

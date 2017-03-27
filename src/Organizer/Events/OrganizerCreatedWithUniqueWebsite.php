@@ -10,12 +10,12 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     /**
      * @var Url
      */
-    protected $website;
+    private $website;
 
     /**
      * @var Title
      */
-    public $title;
+    private $title;
 
     /**
      * @param string $id

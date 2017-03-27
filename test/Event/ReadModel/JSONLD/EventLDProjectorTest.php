@@ -634,34 +634,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_does_not_add_typical_age_range_when_age_from_is_missing()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_age_from.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertObjectNotHasAttribute('typicalAgeRange', $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_typical_age_range_when_age_from_is_present()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_with_age_from.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertEquals('10-12', $body->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
     public function it_adds_a_language_property_when_cdbxml_has_languages()
     {
         $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(

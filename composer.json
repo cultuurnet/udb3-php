@@ -17,7 +17,7 @@
     "psr/log": "~1.0",
     "cultuurnet/auth": "~1.2",
     "cultuurnet/search": "~1.1",
-    "cultuurnet/cdb": "~2.2.0",
+    "cultuurnet/cdb": "dev-feature/III-1913 as 2.2.0",
     "cultuurnet/deserializer": "~0.1",
     "cultuurnet/clock": "~0.1",
     "cultuurnet/symfony-security-jwt": "~0.1",

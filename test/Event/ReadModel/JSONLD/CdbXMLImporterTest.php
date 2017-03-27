@@ -96,16 +96,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $ageFrom
+     * @param integer|null $ageFrom
+     * @param integer|null $ageTo
      * @return \stdClass
      */
-    private function createJsonEventFromCdbXmlWithAgeFrom($ageFrom)
+    private function createJsonEventFromCdbXmlWithAgeRange($ageFrom = null, $ageTo = null)
     {
         $event = $this->createEventFromCdbXml(
             '../../samples/event_with_age_from.cdbxml.xml'
         );
 
         $event->setAgeFrom($ageFrom);
+        $event->setAgeTo($ageTo);
 
         $jsonEvent = $this->importer->documentWithCdbXML(
             new \stdClass(),
@@ -828,91 +830,41 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_imports_age_from_0_as_typical_age_range_from_0_till_12()
+    public function it_should_import_an_event_without_age_range_when_age_from_and_to_are_not_set()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(0);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(null, null);
 
-        $this->assertEquals('0-12', $jsonEvent->typicalAgeRange);
+        $this->assertObjectNotHasAttribute('typicalAgeRange', $jsonEvent);
     }
 
     /**
      * @test
      */
-    public function it_imports_age_from_3_as_typical_age_range_from_3_till_12()
+    public function it_should_import_an_event_with_a_lower_boundary_when_only_age_from_is_set()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(3);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(3, null);
 
-        $this->assertEquals('3-12', $jsonEvent->typicalAgeRange);
+        $this->assertEquals('3-', $jsonEvent->typicalAgeRange);
     }
 
     /**
      * @test
      */
-    public function it_imports_age_from_12_as_typical_age_range_from_12_till_12()
+    public function it_should_import_an_event_with_an_upper_boundary_when__only_age_to_is_set()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(12);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(null, 65);
 
-        $this->assertEquals('12-12', $jsonEvent->typicalAgeRange);
+        $this->assertEquals('-65', $jsonEvent->typicalAgeRange);
     }
 
     /**
      * @test
      */
-    public function it_imports_age_from_13_as_typical_age_range_from_13_till_18()
+    public function it_should_import_an_event_with_an_upper_and_lower_boundary_when_age_to_or_from_are_set_to_zero()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(13);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(0, 0);
 
-        $this->assertEquals('13-18', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_18_as_typical_age_range_from_18_till_18()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(18);
-
-        $this->assertEquals('18-18', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_19_as_typical_age_range_from_19_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(19);
-
-        $this->assertEquals('19-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_99_as_typical_age_range_from_99_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(99);
-
-        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_100_as_typical_age_range_from_99_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(100);
-
-        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_101_as_typical_age_range_from_99_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(101);
-
-        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
+        $this->assertEquals('0-0', $jsonEvent->typicalAgeRange);
     }
 
     /**
@@ -920,9 +872,9 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_import_age_from_as_string()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom('4');
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange('4');
 
-        $this->assertFalse(isset($jsonEvent->typicalAgeRange));
+        $this->assertObjectNotHasAttribute('typicalAgeRange', $jsonEvent);
     }
 
     /**

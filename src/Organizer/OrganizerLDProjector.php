@@ -20,6 +20,8 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 
@@ -145,6 +147,36 @@ class OrganizerLDProjector extends ActorLDProjector
         if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
             $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
         }
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param WebsiteUpdated $websiteUpdated
+     */
+    protected function applyWebsiteUpdated(WebsiteUpdated $websiteUpdated)
+    {
+        $organizerId = $websiteUpdated->getOrganizerId();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+        $jsonLD->url = (string) $websiteUpdated->getWebsite();
+
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param TitleUpdated $titleUpdated
+     */
+    protected function applyTitleUpdated(TitleUpdated $titleUpdated)
+    {
+        $organizerId = $titleUpdated->getOrganizerId();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+        $jsonLD->name = $titleUpdated->getTitle()->toNative();
 
         $this->repository->save($document->withBody($jsonLD));
     }

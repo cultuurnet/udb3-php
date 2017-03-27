@@ -4,31 +4,31 @@ namespace CultuurNet\UDB3\Organizer\Commands;
 
 use ValueObjects\Web\Url;
 
-class UpdateUrl extends AbstractUpdateOrganizerCommand
+class UpdateWebsite extends AbstractUpdateOrganizerCommand
 {
     /**
      * @var Url
      */
-    private $url;
+    private $website;
 
     /**
      * UpdateUrl constructor.
      * @param string $organizerId
-     * @param Url $url
+     * @param Url $website
      */
     public function __construct(
         $organizerId,
-        Url $url
+        Url $website
     ) {
         parent::__construct($organizerId);
-        $this->url = $url;
+        $this->website = $website;
     }
 
     /**
      * @return Url
      */
-    public function getUrl()
+    public function getWebsite()
     {
-        return $this->url;
+        return $this->website;
     }
 }

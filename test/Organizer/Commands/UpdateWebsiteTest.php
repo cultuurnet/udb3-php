@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Commands;
 
 use ValueObjects\Web\Url;
 
-class UpdateUrlTest extends \PHPUnit_Framework_TestCase
+class UpdateWebsiteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var string
@@ -14,22 +14,22 @@ class UpdateUrlTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Url
      */
-    private $url;
+    private $website;
 
     /**
-     * @var UpdateUrl
+     * @var UpdateWebsite
      */
-    private $updateUrl;
+    private $updateWebsite;
 
     protected function setUp()
     {
         $this->organizerId = '8f9f5180-1099-474e-804c-461fc3701e5c';
 
-        $this->url = Url::fromNative('http://www.company.be');
+        $this->website = Url::fromNative('http://www.company.be');
 
-        $this->updateUrl = new UpdateUrl(
+        $this->updateWebsite = new UpdateWebsite(
             $this->organizerId,
-            $this->url
+            $this->website
         );
     }
 
@@ -40,7 +40,7 @@ class UpdateUrlTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->organizerId,
-            $this->updateUrl->getOrganizerId()
+            $this->updateWebsite->getOrganizerId()
         );
     }
 
@@ -50,8 +50,8 @@ class UpdateUrlTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_url()
     {
         $this->assertEquals(
-            $this->url,
-            $this->updateUrl->getUrl()
+            $this->website,
+            $this->updateWebsite->getWebsite()
         );
     }
 }

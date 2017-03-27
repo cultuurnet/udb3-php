@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -239,6 +240,109 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     new ContactPointUpdated($this->id, $initialContactPoint),
                     new ContactPointUpdated($this->id, $updatedContactPoint),
                     new ContactPointUpdated($this->id, $emptyContactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_title_when_different_from_the_current_title()
+    {
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateTitle(new Title('STUK'));
+                    $organizer->updateTitle(new Title('Het Depot'));
+                    $organizer->updateTitle(new Title('Het Depot'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with title STUK.
+                    new TitleUpdated(
+                        $this->id,
+                        new Title('Het Depot')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_title_on_organizer_imported_from_udb2()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->given(
+                [
+                    new OrganizerImportedFromUDB2(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateTitle(new Title('DE Studio'));
+                    $organizer->updateTitle(new Title('STUK'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was imported with title 'DE Studio'.
+                    new TitleUpdated(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        new Title('STUK')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_title_on_organizer_updated_from_udb2()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) use ($cdbXml) {
+                    $organizer->updateWithCdbXml(
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    );
+                    $organizer->updateTitle(new Title('DE Studio'));
+                    $organizer->updateTitle(new Title('Het Depot'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with title 'STUK,
+                    // but then imported with title 'DE Studio'.
+                    new OrganizerUpdatedFromUDB2(
+                        $this->id,
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                    new TitleUpdated(
+                        $this->id,
+                        new Title('Het Depot')
+                    ),
                 ]
             );
     }

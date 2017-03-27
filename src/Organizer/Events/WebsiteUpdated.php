@@ -4,32 +4,32 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use ValueObjects\Web\Url;
 
-class UrlUpdated extends OrganizerEvent
+class WebsiteUpdated extends OrganizerEvent
 {
     /**
      * @var Url
      */
-    private $url;
+    private $website;
 
     /**
-     * UrlUpdated constructor.
+     * WebsiteUpdated constructor.
      * @param string $organizerId
-     * @param Url $url
+     * @param Url $website
      */
     public function __construct(
         $organizerId,
-        Url $url
+        Url $website
     ) {
         parent::__construct($organizerId);
-        $this->url = $url;
+        $this->website = $website;
     }
 
     /**
      * @return Url
      */
-    public function getUrl()
+    public function getWebsite()
     {
-        return $this->url;
+        return $this->website;
     }
 
     /**
@@ -38,7 +38,7 @@ class UrlUpdated extends OrganizerEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'url' => (string) $this->getUrl()
+                'website' => (string) $this->getWebsite()
             ];
     }
 
@@ -50,7 +50,7 @@ class UrlUpdated extends OrganizerEvent
     {
         return new static(
             $data['organizer_id'],
-            Url::fromNative($data['url'])
+            Url::fromNative($data['website'])
         );
     }
 }

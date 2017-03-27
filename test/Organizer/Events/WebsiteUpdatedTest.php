@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use ValueObjects\Web\Url;
 
-class UrlUpdatedTest extends \PHPUnit_Framework_TestCase
+class WebsiteUpdatedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var string
@@ -14,32 +14,32 @@ class UrlUpdatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Url
      */
-    private $url;
+    private $website;
 
     /**
-     * @var UrlUpdated
+     * @var WebsiteUpdated
      */
-    private $UrlUpdated;
+    private $websiteUpdated;
 
     /**
      * @var array
      */
-    private $urlUpdatedAsArray;
+    private $websiteUpdatedAsArray;
 
     protected function setUp()
     {
         $this->organizerId = '11cab069-7355-4fbc-bb82-eef9edfd7788';
 
-        $this->url = Url::fromNative('http://www.depot.be');
+        $this->website = Url::fromNative('http://www.depot.be');
 
-        $this->UrlUpdated = new UrlUpdated(
+        $this->websiteUpdated = new WebsiteUpdated(
             $this->organizerId,
-            $this->url
+            $this->website
         );
 
-        $this->urlUpdatedAsArray = [
+        $this->websiteUpdatedAsArray = [
             'organizer_id' =>  $this->organizerId,
-            'url' => (string) $this->url
+            'website' => (string) $this->website
         ];
     }
 
@@ -49,8 +49,8 @@ class UrlUpdatedTest extends \PHPUnit_Framework_TestCase
     public function it_can_serialize_to_an_array()
     {
         $this->assertEquals(
-            $this->urlUpdatedAsArray,
-            $this->UrlUpdated->serialize()
+            $this->websiteUpdatedAsArray,
+            $this->websiteUpdated->serialize()
         );
     }
 
@@ -60,8 +60,8 @@ class UrlUpdatedTest extends \PHPUnit_Framework_TestCase
     public function it_can_deserialize_from_an_array()
     {
         $this->assertEquals(
-            UrlUpdated::deserialize($this->urlUpdatedAsArray),
-            $this->UrlUpdated
+            WebsiteUpdated::deserialize($this->websiteUpdatedAsArray),
+            $this->websiteUpdated
         );
     }
 }

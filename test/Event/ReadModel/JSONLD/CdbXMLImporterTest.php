@@ -870,16 +870,6 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_does_not_import_age_from_as_string()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange('4');
-
-        $this->assertObjectNotHasAttribute('typicalAgeRange', $jsonEvent);
-    }
-
-    /**
-     * @test
-     */
     public function it_does_not_import_missing_age_from()
     {
         $jsonEvent = $this->createJsonEventFromCdbXmlWithoutAgeFrom();

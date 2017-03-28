@@ -22,28 +22,28 @@ interface OrganizerEditingServiceInterface
     /**
      * @param string $organizerId
      * @param Url $website
-     * @return void
+     * @return mixed
      */
     public function updateWebsite($organizerId, Url $website);
 
     /**
      * @param string $organizerId
      * @param Title $title
-     * @return void
+     * @return mixed
      */
     public function updateTitle($organizerId, Title $title);
 
     /**
      * @param string $organizerId
      * @param Address $address
-     * @return void
+     * @return mixed
      */
     public function updateAddress($organizerId, Address $address);
 
     /**
      * @param string $organizerId
      * @param ContactPoint $contactPoint
-     * @return void
+     * @return mixed
      */
     public function updateContactPoint($organizerId, ContactPoint $contactPoint);
 

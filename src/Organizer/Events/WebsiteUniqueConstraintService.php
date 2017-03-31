@@ -20,6 +20,14 @@ class WebsiteUniqueConstraintService implements UniqueConstraintServiceInterface
     /**
      * @inheritdoc
      */
+    public function needsUpdateUniqueConstraint(DomainMessage $domainMessage)
+    {
+        return $domainMessage->getPayload() instanceof WebsiteUpdated;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getUniqueConstraintValue(DomainMessage $domainMessage)
     {
         if (!$this->hasUniqueConstraint($domainMessage)) {

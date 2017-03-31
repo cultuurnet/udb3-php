@@ -146,6 +146,63 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_can_update_a_unique_value_when_the_new_value_has_not_yet_been_used()
+    {
+        $this->insert(self::ID, self::OTHER_UNIQUE_VALUE);
+
+        $domainMessage = new DomainMessage(
+            self::ID,
+            0,
+            new Metadata(),
+            null,
+            BroadwayDateTime::now()
+        );
+
+        $this->uniqueConstraintService->expects($this->any())
+            ->method('needsUpdateUniqueConstraint')
+            ->willReturn(true);
+
+        $this->uniqueDBALEventStoreDecorator->append(
+            $domainMessage->getId(),
+            new DomainEventStream([$domainMessage])
+        );
+
+        $unique = $this->select(self::ID);
+
+        $this->assertEquals(self::UNIQUE_VALUE, $unique);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_a_unique_value_when_the_new_value_has_already_been_used()
+    {
+        $this->insert(self::ID, self::OTHER_UNIQUE_VALUE);
+        $this->insert(self::OTHER_UNIQUE_VALUE, self::UNIQUE_VALUE);
+
+        $domainMessage = new DomainMessage(
+            self::ID,
+            0,
+            new Metadata(),
+            null,
+            BroadwayDateTime::now()
+        );
+
+        $this->uniqueConstraintService->expects($this->any())
+            ->method('needsUpdateUniqueConstraint')
+            ->willReturn(true);
+
+        $this->expectException(UniqueConstraintException::class);
+
+        $this->uniqueDBALEventStoreDecorator->append(
+            $domainMessage->getId(),
+            new DomainEventStream([$domainMessage])
+        );
+    }
+
+    /**
      * @param string $uuid
      * @param string $unique
      */

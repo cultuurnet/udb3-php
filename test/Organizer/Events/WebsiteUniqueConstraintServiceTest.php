@@ -56,7 +56,7 @@ class WebsiteUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
                 new Title('CultuurNet')
             )
         );
-        
+
         $this->websiteUpdatedEvent = DomainMessage::recordNow(
             $this->organizerId,
             0,
@@ -99,13 +99,33 @@ class WebsiteUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->service->hasUniqueConstraint($this->websiteUpdatedEvent));
     }
-    
+
     /**
      * @test
      */
     public function it_does_not_support_organizer_created_events()
     {
         $this->assertFalse($this->service->hasUniqueConstraint($this->unsupportedEvent));
+    }
+
+    /**
+     * @test
+     */
+    public function it_allows_update_of_unique_constraint_for_website_updated()
+    {
+        $this->assertTrue(
+            $this->service->needsUpdateUniqueConstraint($this->websiteUpdatedEvent)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_allow_update_of_unique_constraint_for_website_updated()
+    {
+        $this->assertFalse(
+            $this->service->needsUpdateUniqueConstraint($this->websiteCreatedEvent)
+        );
     }
 
     /**

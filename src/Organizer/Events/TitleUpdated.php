@@ -3,42 +3,25 @@
 namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Title;
-use ValueObjects\Web\Url;
 
-class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
+class TitleUpdated extends OrganizerEvent
 {
-    /**
-     * @var Url
-     */
-    private $website;
-
     /**
      * @var Title
      */
     private $title;
 
     /**
-     * @param string $id
-     * @param Url $website
+     * TitleUpdated constructor.
+     * @param string $organizerId
      * @param Title $title
      */
     public function __construct(
-        $id,
-        Url $website,
+        $organizerId,
         Title $title
     ) {
-        parent::__construct($id);
-
-        $this->website = $website;
+        parent::__construct($organizerId);
         $this->title = $title;
-    }
-
-    /**
-     * @return Url
-     */
-    public function getWebsite()
-    {
-        return $this->website;
     }
 
     /**
@@ -54,20 +37,19 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
      */
     public function serialize()
     {
-        return parent::serialize() + array(
-            'website' => (string) $this->getWebsite(),
-            'title' => (string) $this->getTitle(),
-        );
+        return parent::serialize() + [
+                'title' => $this->getTitle()->toNative()
+            ];
     }
 
     /**
+     * @param array $data
      * @return static
      */
     public static function deserialize(array $data)
     {
         return new static(
             $data['organizer_id'],
-            Url::fromNative($data['website']),
             new Title($data['title'])
         );
     }

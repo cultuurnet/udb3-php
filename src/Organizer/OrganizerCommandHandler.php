@@ -10,6 +10,10 @@ use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
+use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
+use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 
@@ -60,6 +64,10 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     protected function getCommandHandlerMethods()
     {
         return [
+            UpdateWebsite::class => 'updateWebsite',
+            UpdateTitle::class => 'updateTitle',
+            UpdateAddress::class => 'updateAddress',
+            UpdateContactPoint::class => 'updateContactPoint',
             DeleteOrganizer::class => 'deleteOrganizer',
             AddLabel::class => 'addLabel',
             RemoveLabel::class => 'removeLabel'
@@ -78,6 +86,54 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             $method = $handlers[$class];
             $this->{$method}($command);
         }
+    }
+
+    /**
+     * @param UpdateWebsite $updateWebsite
+     */
+    protected function updateWebsite(UpdateWebsite $updateWebsite)
+    {
+        $organizer = $this->loadOrganizer($updateWebsite->getOrganizerId());
+
+        $organizer->updateWebsite($updateWebsite->getWebsite());
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateTitle $updateTitle
+     */
+    protected function updateTitle(UpdateTitle $updateTitle)
+    {
+        $organizer = $this->loadOrganizer($updateTitle->getOrganizerId());
+
+        $organizer->updateTitle($updateTitle->getTitle());
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateAddress $updateAddress
+     */
+    protected function updateAddress(UpdateAddress $updateAddress)
+    {
+        $organizer = $this->loadOrganizer($updateAddress->getOrganizerId());
+
+        $organizer->updateAddress($updateAddress->getAddress());
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateContactPoint $updateContactPoint
+     */
+    protected function updateContactPoint(UpdateContactPoint $updateContactPoint)
+    {
+        $organizer = $this->loadOrganizer($updateContactPoint->getOrganizerId());
+
+        $organizer->updateContactPoint($updateContactPoint->getContactPoint());
+
+        $this->organizerRepository->save($organizer);
     }
 
     /**

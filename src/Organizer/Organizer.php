@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
@@ -29,6 +31,16 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * @var string
      */
     protected $actorId;
+
+    /**
+     * @var Url
+     */
+    private $website;
+
+    /**
+     * @var Title
+     */
+    private $title;
 
     /**
      * @var Address|null
@@ -130,6 +142,33 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
+     * @param Url $website
+     */
+    public function updateWebsite(Url $website)
+    {
+        if (is_null($this->website) || !$this->website->sameValueAs($website)) {
+            $this->apply(
+                new WebsiteUpdated(
+                    $this->actorId,
+                    $website
+                )
+            );
+        }
+    }
+
+    /**
+     * @param Title $title
+     */
+    public function updateTitle(Title $title)
+    {
+        if ($this->title && !$this->title->sameValueAs($title)) {
+            $this->apply(
+                new TitleUpdated($this->actorId, $title)
+            );
+        }
+    }
+
+    /**
      * @param Address $address
      */
     public function updateAddress(Address $address)
@@ -187,6 +226,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected function applyOrganizerCreated(OrganizerCreated $organizerCreated)
     {
         $this->actorId = $organizerCreated->getOrganizerId();
+
+        $this->title = $organizerCreated->getTitle();
     }
 
     /**
@@ -196,6 +237,10 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected function applyOrganizerCreatedWithUniqueWebsite(OrganizerCreatedWithUniqueWebsite $organizerCreated)
     {
         $this->actorId = $organizerCreated->getOrganizerId();
+
+        $this->website = $organizerCreated->getWebsite();
+
+        $this->title = $organizerCreated->getTitle();
     }
 
     /**
@@ -211,6 +256,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerImported->getCdbXml()
         );
 
+        $this->title = $this->getTitle($actor);
+
         $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
 
@@ -225,7 +272,25 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerUpdatedFromUDB2->getCdbXml()
         );
 
+        $this->title = $this->getTitle($actor);
+
         $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
+    }
+
+    /**
+     * @param WebsiteUpdated $websiteUpdated
+     */
+    protected function applyWebsiteUpdated(WebsiteUpdated $websiteUpdated)
+    {
+        $this->website = $websiteUpdated->getWebsite();
+    }
+
+    /**
+     * @param TitleUpdated $titleUpdated
+     */
+    protected function applyTitleUpdated(TitleUpdated $titleUpdated)
+    {
+        $this->title = $titleUpdated->getTitle();
     }
 
     /**
@@ -258,5 +323,24 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
         $this->labels = $this->labels->without($labelRemoved->getLabel());
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Item_Actor $actor
+     * @return null|Title
+     */
+    private function getTitle(\CultureFeed_Cdb_Item_Actor $actor)
+    {
+        $details = $actor->getDetails();
+        $details->rewind();
+
+        // The first language detail found will be used to retrieve
+        // properties from which in UDB3 are not any longer considered
+        // to be language specific.
+        if ($details->valid()) {
+            return new Title($details->current()->getTitle());
+        } else {
+            return null;
+        }
     }
 }

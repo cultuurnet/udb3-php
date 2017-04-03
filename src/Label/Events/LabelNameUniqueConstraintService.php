@@ -21,6 +21,14 @@ class LabelNameUniqueConstraintService implements UniqueConstraintServiceInterfa
     /**
      * @inheritdoc
      */
+    public function needsUpdateUniqueConstraint(DomainMessage $domainMessage)
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getUniqueConstraintValue(DomainMessage $domainMessage)
     {
         /** @var Created|CopyCreated $event */

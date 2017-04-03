@@ -143,11 +143,45 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
                     ]
                 );
             } catch (UniqueConstraintViolationException $e) {
-                throw new UniqueConstraintException(
-                    $domainMessage->getId(),
-                    $uniqueValue
-                );
+                if ($this->uniqueConstraintService->needsUpdateUniqueConstraint($domainMessage)) {
+                    $this->updateUniqueConstraint(
+                        $domainMessage->getId(),
+                        $uniqueValue
+                    );
+                } else {
+                    throw new UniqueConstraintException(
+                        $domainMessage->getId(),
+                        $uniqueValue
+                    );
+                }
             }
+        }
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $uniqueValue
+     * @throws UniqueConstraintException
+     */
+    private function updateUniqueConstraint(
+        $id,
+        StringLiteral $uniqueValue
+    ) {
+        try {
+            $this->connection->update(
+                $this->uniqueTableName,
+                [
+                    self::UNIQUE_COLUMN => $uniqueValue->toNative(),
+                ],
+                [
+                    self::UUID_COLUMN => $id,
+                ]
+            );
+        } catch (UniqueConstraintViolationException $e) {
+            throw new UniqueConstraintException(
+                $id,
+                $uniqueValue
+            );
         }
     }
 }

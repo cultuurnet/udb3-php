@@ -90,6 +90,16 @@ class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_never_allows_update_of_unique_constraint()
+    {
+        $this->assertFalse($this->uniqueHelper->needsUpdateUniqueConstraint(
+            $this->copyCreated
+        ));
+    }
+
+    /**
+     * @test
+     */
     public function it_can_get_unique_from_created()
     {
         $this->assertEquals(

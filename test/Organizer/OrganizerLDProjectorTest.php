@@ -22,8 +22,11 @@ use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
@@ -204,6 +207,50 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 BroadwayDateTime::fromString($created)
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_website_update()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $website = Url::fromNative('http://www.depot.be');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new WebsiteUpdated(
+                $organizerId,
+                $website
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_updated_website.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_title_update()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('Het Depot');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleUpdated(
+                $organizerId,
+                $title
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_updated_title.json');
+
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -506,16 +553,16 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param OrganizerEvent $organizerEvent
      * @return DomainMessage
      */
-    private function createDomainMessage(AbstractLabelEvent $labelEvent)
+    private function createDomainMessage(OrganizerEvent $organizerEvent)
     {
         return new DomainMessage(
-            $labelEvent->getOrganizerId(),
+            $organizerEvent->getOrganizerId(),
             0,
             new Metadata(),
-            $labelEvent,
+            $organizerEvent,
             BroadwayDateTime::now()
         );
     }

@@ -7,6 +7,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
@@ -123,10 +124,10 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
 
     /**
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      * @return AbstractUpdateTypicalAgeRange
      */
-    public function createUpdateTypicalAgeRangeCommand($id, $ageRange)
+    public function createUpdateTypicalAgeRangeCommand($id, AgeRange $ageRange)
     {
         return new UpdateTypicalAgeRange($id, $ageRange);
     }

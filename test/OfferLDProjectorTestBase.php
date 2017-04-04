@@ -18,8 +18,10 @@ use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -316,7 +318,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $eventClass = $this->getEventClass('TypicalAgeRangeUpdated');
-        $typicalAgeRangeUpdated = new $eventClass($id, '-18');
+        $typicalAgeRangeUpdated = new $eventClass($id, new AgeRange(null, new Age(18)));
 
         $initialDocument = new JsonDocument(
             $id,

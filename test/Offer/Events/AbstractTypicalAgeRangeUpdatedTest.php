@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
+use ValueObjects\Person\Age;
 
 class AbstractTypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +26,7 @@ class AbstractTypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->itemId = 'Foo';
-        $this->typicalAgeRange = '3-12';
+        $this->typicalAgeRange = new AgeRange(new Age(3), new Age(12));
         $this->typicalAgeRangeUpdated = new TypicalAgeRangeUpdated($this->itemId, $this->typicalAgeRange);
     }
 
@@ -34,7 +36,7 @@ class AbstractTypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
     public function it_can_be_instantiated_With_properties()
     {
         $expectedItemId = 'Foo';
-        $expectedTypicalAgeRange = '3-12';
+        $expectedTypicalAgeRange = new AgeRange(new Age(3), new Age(12));
         $expectedTypicalAgeRangeUpdated = new TypicalAgeRangeUpdated(
             $expectedItemId,
             $expectedTypicalAgeRange
@@ -49,7 +51,7 @@ class AbstractTypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
     public function it_can_return_its_properties()
     {
         $expectedItemId = 'Foo';
-        $expectedTypicalAgeRange = '3-12';
+        $expectedTypicalAgeRange = new AgeRange(new Age(3), new Age(12));
 
         $itemId = $this->typicalAgeRangeUpdated->getItemId();
         $typicalAgeRange = $this->typicalAgeRangeUpdated->getTypicalAgeRange();
@@ -103,7 +105,7 @@ class AbstractTypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
                 ],
                 new TypicalAgeRangeUpdated(
                     'madId',
-                    '3-12'
+                    new AgeRange(new Age(3), new Age(12))
                 ),
             ],
         ];

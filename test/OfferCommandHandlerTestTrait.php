@@ -14,10 +14,12 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Organizer\Organizer;
 use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionObject;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -296,7 +298,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_typical_agerange_of_an_offer()
     {
         $id = '1';
-        $ageRange = '-18';
+        $ageRange = new AgeRange(null, new Age(18));
         $commandClass = $this->getCommandClass('UpdateTypicalAgeRange');
         $eventClass = $this->getEventClass('TypicalAgeRangeUpdated');
 

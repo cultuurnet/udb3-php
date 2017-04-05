@@ -9,9 +9,13 @@ class AgeRangeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider ageRangeStringProvider
+     * @param string $ageRangeString
+     * @param AgeRange $expectedRange
      */
-    public function it_should_create_ranges_from_strings($ageRangeString, AgeRange $expectedRange)
-    {
+    public function it_should_create_ranges_from_strings(
+        $ageRangeString,
+        AgeRange $expectedRange
+    ) {
         $ageRange = AgeRange::fromString($ageRangeString);
 
         $this->assertEquals($expectedRange, $ageRange);
@@ -20,14 +24,21 @@ class AgeRangeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider ageRangeStringProvider
+     * @param string $ageRangeString
+     * @param AgeRange $expectedRange
      */
-    public function it_should_return_a_string_representation_when_casted_to_string($ageRangeString, AgeRange $expectedRange)
-    {
+    public function it_should_return_a_string_representation_when_casted_to_string(
+        $ageRangeString,
+        AgeRange $expectedRange
+    ) {
         $actualAgeRangeString = (string) $expectedRange;
 
         $this->assertEquals($ageRangeString, $actualAgeRangeString);
     }
 
+    /**
+     * @return array
+     */
     public function ageRangeStringProvider()
     {
         return [
@@ -82,51 +93,75 @@ class AgeRangeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider invalidAgeRangeStringProvider
+     * @param string $ageRangeString
+     * @param string $exception
+     * @param string $exceptionMessage
      */
-    public function it_should_throw_an_exception_on_unexpected_age_range_strings($ageRangeString, $exception)
-    {
+    public function it_should_throw_an_exception_on_unexpected_age_range_strings(
+        $ageRangeString,
+        $exception,
+        $exceptionMessage
+    ) {
         $this->expectException($exception);
+        $this->expectExceptionMessage($exceptionMessage);
         AgeRange::fromString($ageRangeString);
     }
 
+    /**
+     * @return array
+     */
     public function invalidAgeRangeStringProvider()
     {
         return [
+            'not a string' => [
+                'ageRangeString' => 5-6,
+                'exception' => InvalidAgeRangeException::class,
+                'Date-range should be of type string.',
+            ],
             'dat boi' => [
                 'ageRangeString' => '🐸-🚲',
                 'exception' => InvalidAgeRangeException::class,
+                'The "from" age should be a natural number or empty.',
             ],
             'limitless' => [
                 'ageRangeString' => '9999999',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it is missing a hyphen.',
             ],
             'words' => [
                 'ageRangeString' => '1 to 18',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it is missing a hyphen.',
             ],
             'en dash' => [
                 'ageRangeString' => '1–18',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it is missing a hyphen.',
             ],
             'horizontal bar' => [
                 'ageRangeString' => '1―18',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it is missing a hyphen.',
             ],
             'tilde' => [
                 'ageRangeString' => '1~18',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it is missing a hyphen.',
             ],
             'triple trouble' => [
                 'ageRangeString' => '1---18',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it has too many hyphens.',
             ],
             '😐' => [
                 'ageRangeString' => '----',
                 'exception' => InvalidAgeRangeException::class,
+                'Date-range string is not valid because it has too many hyphens.',
             ],
             'non numeric upper-bound' => [
                 'ageRangeString' => '0-Z',
                 'exception' => InvalidAgeRangeException::class,
+                'The "to" age should be a natural number or empty.',
             ]
         ];
     }

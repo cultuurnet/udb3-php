@@ -6,6 +6,7 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
@@ -93,10 +94,10 @@ interface OfferCommandFactoryInterface
 
     /**
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      * @return AbstractUpdateTypicalAgeRange
      */
-    public function createUpdateTypicalAgeRangeCommand($id, $ageRange);
+    public function createUpdateTypicalAgeRangeCommand($id, AgeRange $ageRange);
 
     /**
      * @param string $id

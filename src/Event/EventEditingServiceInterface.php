@@ -7,6 +7,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Title;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -24,9 +25,9 @@ interface EventEditingServiceInterface
      * Update the typical age range of an event.
      *
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      */
-    public function updateTypicalAgeRange($id, $ageRange);
+    public function updateTypicalAgeRange($id, AgeRange $ageRange);
 
     /**
      * Delete the typical age range of a place.

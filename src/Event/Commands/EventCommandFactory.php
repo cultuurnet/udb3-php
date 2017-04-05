@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
@@ -136,10 +137,10 @@ class EventCommandFactory implements OfferCommandFactoryInterface
 
     /**
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      * @return AbstractUpdateTypicalAgeRange
      */
-    public function createUpdateTypicalAgeRangeCommand($id, $ageRange)
+    public function createUpdateTypicalAgeRangeCommand($id, AgeRange $ageRange)
     {
         return new UpdateTypicalAgeRange($id, $ageRange);
     }

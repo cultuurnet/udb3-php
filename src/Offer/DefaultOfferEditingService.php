@@ -246,10 +246,10 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
 
     /**
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      * @return string
      */
-    public function updateTypicalAgeRange($id, $ageRange)
+    public function updateTypicalAgeRange($id, AgeRange $ageRange)
     {
         $this->guardId($id);
 

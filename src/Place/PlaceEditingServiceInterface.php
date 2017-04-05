@@ -7,6 +7,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -57,9 +58,9 @@ interface PlaceEditingServiceInterface
      * Update the typical age range of a place.
      *
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      */
-    public function updateTypicalAgeRange($id, $ageRange);
+    public function updateTypicalAgeRange($id, AgeRange $ageRange);
 
     /**
      * Delete the typical age range of a place.

@@ -616,7 +616,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
 
         $offerLd = $document->getBody();
-        $offerLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+        $offerLd->typicalAgeRange = (string) $typicalAgeRangeUpdated->getTypicalAgeRange();
 
         $this->repository->save($document->withBody($offerLd));
     }

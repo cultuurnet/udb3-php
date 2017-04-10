@@ -46,11 +46,6 @@ class EventStream
     /**
      * @var string
      */
-    protected $primaryKey;
-
-    /**
-     * @var string
-     */
     protected $cdbid;
 
     /**
@@ -63,26 +58,37 @@ class EventStream
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
-     * @param int $startId
-     * @param string $primaryKey
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
-        $tableName,
-        $startId = 0,
-        $primaryKey = 'id'
+        $tableName
     ) {
         $this->connection = $connection;
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
-        $this->previousId = $startId > 0 ? $startId - 1 : 0;
+        $this->previousId = 0;
+    }
 
-        $this->primaryKey = $primaryKey;
+    /**
+     * @param int $startId
+     * @return EventStream
+     */
+    public function withStartId($startId)
+    {
+        if (!is_int($startId)) {
+            throw new \InvalidArgumentException('StartId should have type int.');
+        }
 
-        $this->domainEventStreamDecorator = null;
+        if (empty($startId)) {
+            throw new \InvalidArgumentException('StartId can\'t be empty.');
+        }
+
+        $c = clone $this;
+        $c->previousId = $startId > 0 ? $startId - 1 : 0;
+        return $c;
     }
 
     /**
@@ -130,7 +136,7 @@ class EventStream
             $events = [];
             while ($row = $statement->fetch()) {
                 $events[] = $this->deserializeEvent($row);
-                $this->previousId = $row[$this->primaryKey];
+                $this->previousId = $row['id'];
             }
 
             /* @var DomainMessage[] $events */
@@ -171,14 +177,12 @@ class EventStream
     protected function prepareLoadStatement()
     {
         if (null === $this->loadStatement) {
-            $id = $this->primaryKey;
-
             $queryBuilder = $this->connection->createQueryBuilder();
 
-            $queryBuilder->select($id, 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
+            $queryBuilder->select('id', 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
                 ->from($this->tableName)
-                ->where("$id > :previousid")
-                ->orderBy($id, 'ASC')
+                ->where('id > :previousid')
+                ->orderBy('id', 'ASC')
                 ->setMaxResults(1);
 
             if ($this->cdbid) {

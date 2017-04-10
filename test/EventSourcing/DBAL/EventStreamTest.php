@@ -59,6 +59,50 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     */
+    public function it_requires_int_type_for_optional_start_id()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('StartId should have type int.');
+
+        $this->eventStream->withStartId('100');
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_non_empty_value_for_optional_start_id()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('StartId can\'t be empty.');
+
+        $this->eventStream->withStartId(0);
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_string_type_for_optional_cdbid()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cdbid should have type string.');
+
+        $this->eventStream->withCdbid(1021);
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_non_empty_value_for_optional_cdbid()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cdbid can\'t be empty.');
+
+        $this->eventStream->withCdbid('');
+    }
+
+    /**
+     * @test
      * @dataProvider eventStreamDecoratorDataProvider
      * @param EventStreamDecoratorInterface|null $eventStreamDecorator
      * @param array $expectedDecoratedMetadata
@@ -193,9 +237,9 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             $this->getConnection(),
             $payloadSerializer,
             $metadataSerializer,
-            $table,
-            $startId
+            $table
         );
+        $eventStream = $eventStream->withStartId($startId);
 
         $expectedPreviousId = 100;
 

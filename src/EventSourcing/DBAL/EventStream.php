@@ -34,11 +34,6 @@ class EventStream
     protected $tableName;
 
     /**
-     * @var Statement
-     */
-    protected $loadStatement;
-
-    /**
      * @var int
      */
     protected $previousId;
@@ -123,15 +118,8 @@ class EventStream
 
     public function __invoke()
     {
-        $statement = $this->prepareLoadStatement();
-
         do {
-            $statement->bindValue('previousid', $this->previousId, \PDO::PARAM_INT);
-            if ($this->cdbid) {
-                $statement->bindValue('uuid', $this->cdbid, \PDO::PARAM_STR);
-            }
-
-            $statement->execute();
+            $statement = $this->prepareLoadStatement();
 
             $events = [];
             while ($row = $statement->fetch()) {
@@ -171,28 +159,32 @@ class EventStream
     }
 
     /**
+     * The load statement can no longer be 'cashed' because of using the query
+     * builder. The query builder requires all parameters to be set before
+     * using the execute command. The previous solution used the prepare
+     * statement on the connection, this did not require all parameters to be
+     * set up front.
+     *
      * @return Statement
      * @throws DBALException
      */
     protected function prepareLoadStatement()
     {
-        if (null === $this->loadStatement) {
-            $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = $this->connection->createQueryBuilder();
 
-            $queryBuilder->select('id', 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
-                ->from($this->tableName)
-                ->where('id > :previousid')
-                ->orderBy('id', 'ASC')
-                ->setMaxResults(1);
+        $queryBuilder->select('id', 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
+            ->from($this->tableName)
+            ->where('id > :previousid')
+            ->setParameter('previousid', $this->previousId)
+            ->orderBy('id', 'ASC')
+            ->setMaxResults(1);
 
-            if ($this->cdbid) {
-                $queryBuilder->andWhere('uuid = :uuid');
-            }
-
-            $this->loadStatement = $queryBuilder->execute();
+        if ($this->cdbid) {
+            $queryBuilder->andWhere('uuid = :uuid')
+                ->setParameter('uuid', $this->cdbid);
         }
 
-        return $this->loadStatement;
+        return $queryBuilder->execute();
     }
 
     /**

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
@@ -13,8 +10,6 @@ use Broadway\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\Index;
 
 class EventStream
 {
@@ -54,6 +49,11 @@ class EventStream
     protected $primaryKey;
 
     /**
+     * @var string
+     */
+    protected $cdbid;
+
+    /**
      * @var EventStreamDecoratorInterface
      */
     private $domainEventStreamDecorator;
@@ -86,6 +86,25 @@ class EventStream
     }
 
     /**
+     * @param string $cdbid
+     * @return EventStream
+     */
+    public function withCdbid($cdbid)
+    {
+        if (!is_string($cdbid)) {
+            throw new \InvalidArgumentException('Cdbid should have type string.');
+        }
+
+        if (empty($cdbid)) {
+            throw new \InvalidArgumentException('Cdbid can\'t be empty.');
+        }
+
+        $c = clone $this;
+        $c->cdbid = $cdbid;
+        return $c;
+    }
+
+    /**
      * @param EventStreamDecoratorInterface $domainEventStreamDecorator
      * @return EventStream
      */
@@ -101,7 +120,11 @@ class EventStream
         $statement = $this->prepareLoadStatement();
 
         do {
-            $statement->bindValue('previousid', $this->previousId, 'integer');
+            $statement->bindValue('previousid', $this->previousId, \PDO::PARAM_INT);
+            if ($this->cdbid) {
+                $statement->bindValue('uuid', $this->cdbid, \PDO::PARAM_STR);
+            }
+
             $statement->execute();
 
             $events = [];
@@ -149,13 +172,20 @@ class EventStream
     {
         if (null === $this->loadStatement) {
             $id = $this->primaryKey;
-            $query = "SELECT $id, uuid, playhead, metadata, payload, recorded_on
-                FROM $this->tableName
-                WHERE $id > :previousid
-                ORDER BY $id ASC
-                LIMIT 1";
 
-            $this->loadStatement = $this->connection->prepare($query);
+            $queryBuilder = $this->connection->createQueryBuilder();
+
+            $queryBuilder->select($id, 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
+                ->from($this->tableName)
+                ->where("$id > :previousid")
+                ->orderBy($id, 'ASC')
+                ->setMaxResults(1);
+
+            if ($this->cdbid) {
+                $queryBuilder->andWhere('uuid = :uuid');
+            }
+
+            $this->loadStatement = $queryBuilder->execute();
         }
 
         return $this->loadStatement;

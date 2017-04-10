@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
@@ -10,8 +7,6 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\EventHandling\SimpleEventBus;
-use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\EventStore\DBALEventStore;
 use Broadway\Serializer\SerializableInterface;
@@ -72,6 +67,149 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
         EventStreamDecoratorInterface $eventStreamDecorator = null,
         array $expectedDecoratedMetadata = []
     ) {
+        $history = $this->fillHistory();
+
+        if (!is_null($eventStreamDecorator)) {
+            $eventStream = $this->eventStream
+                ->withDomainEventStreamDecorator($eventStreamDecorator);
+        } else {
+            $eventStream = $this->eventStream;
+        }
+
+        $domainEventStreams = $eventStream();
+
+        $domainEventStreams = iterator_to_array($domainEventStreams);
+
+        $expectedDomainEventStreams = [];
+        foreach ($history as $key => $domainMessage) {
+            $expectedDomainMessage = $domainMessage->andMetadata($expectedDecoratedMetadata[$key]);
+            $expectedDomainEventStreams[] = new DomainEventStream([$expectedDomainMessage]);
+        }
+
+        $this->assertEquals(
+            $expectedDomainEventStreams,
+            $domainEventStreams
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function eventStreamDecoratorDataProvider()
+    {
+        return [
+            // No event stream decorator should result in no extra metadata.
+            [
+                null,
+                [
+                    0 => new Metadata(),
+                    1 => new Metadata(),
+                    2 => new Metadata(),
+                    3 => new Metadata(),
+                    4 => new Metadata(),
+                    5 => new Metadata(),
+                    6 => new Metadata(),
+                    7 => new Metadata(),
+                    8 => new Metadata(),
+                ],
+            ],
+            // The dummy event stream decorator should add some extra mock
+            // metadata.
+            [
+                new DummyEventStreamDecorator(),
+                [
+                    0 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                    1 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                    2 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::011A02C5-D395-47C1-BEBE-184840A2C961']
+                    ),
+                    3 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::9B994B6A-FE49-42B0-B67D-F681BE533A7A']
+                    ),
+                    4 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                    5 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                    6 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                    7 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                    8 => new Metadata(
+                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
+                    ),
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_a_specific_cdbid()
+    {
+        $cdbid = '9B994B6A-FE49-42B0-B67D-F681BE533A7A';
+        $history = $this->fillHistory();
+
+        $eventStream = $this->eventStream->withCdbid($cdbid);
+
+        $domainEventStreams = $eventStream();
+        $domainEventStreams = iterator_to_array($domainEventStreams);
+        $expectedDomainEventStreams = [];
+        foreach ($history as $key => $domainMessage) {
+            if ($domainMessage->getId() == $cdbid) {
+                $expectedDomainEventStreams[] = new DomainEventStream(
+                    [
+                        $domainMessage
+                    ]
+                );
+            }
+        }
+
+        $this->assertEquals(
+            $expectedDomainEventStreams,
+            $domainEventStreams
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_return_the_start_id()
+    {
+        $table = 'events';
+        $payloadSerializer = new SimpleInterfaceSerializer();
+        $metadataSerializer = new SimpleInterfaceSerializer();
+        $startId = 101;
+
+        $eventStream = new EventStream(
+            $this->getConnection(),
+            $payloadSerializer,
+            $metadataSerializer,
+            $table,
+            $startId
+        );
+
+        $expectedPreviousId = 100;
+
+        $this->assertEquals(
+            $expectedPreviousId,
+            $eventStream->getPreviousId()
+        );
+    }
+
+    /**
+     * @return DomainMessage[]
+     */
+    private function fillHistory()
+    {
         $idOfEntityA = 'F68E71A1-DBB0-4542-AEE5-BD937E095F74';
         $idOfEntityB = '011A02C5-D395-47C1-BEBE-184840A2C961';
         $idOfEntityC = '9B994B6A-FE49-42B0-B67D-F681BE533A7A';
@@ -177,112 +315,7 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             );
         }
 
-
-        if (!is_null($eventStreamDecorator)) {
-            $eventStream = $this->eventStream
-                ->withDomainEventStreamDecorator($eventStreamDecorator);
-        } else {
-            $eventStream = $this->eventStream;
-        }
-
-        $domainEventStreams = $eventStream();
-
-        $domainEventStreams = iterator_to_array($domainEventStreams);
-
-        $expectedDomainEventStreams = [];
-        foreach ($history as $key => $domainMessage) {
-            $expectedDomainMessage = $domainMessage->andMetadata($expectedDecoratedMetadata[$key]);
-            $expectedDomainEventStreams[] = new DomainEventStream([$expectedDomainMessage]);
-        }
-
-        $this->assertEquals(
-            $expectedDomainEventStreams,
-            $domainEventStreams
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function eventStreamDecoratorDataProvider()
-    {
-        return [
-            // No event stream decorator should result in no extra metadata.
-            [
-                null,
-                [
-                    0 => new Metadata(),
-                    1 => new Metadata(),
-                    2 => new Metadata(),
-                    3 => new Metadata(),
-                    4 => new Metadata(),
-                    5 => new Metadata(),
-                    6 => new Metadata(),
-                    7 => new Metadata(),
-                    8 => new Metadata(),
-                ],
-            ],
-            // The dummy event stream decorator should add some extra mock
-            // metadata.
-            [
-                new DummyEventStreamDecorator(),
-                [
-                    0 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                    1 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                    2 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::011A02C5-D395-47C1-BEBE-184840A2C961']
-                    ),
-                    3 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::9B994B6A-FE49-42B0-B67D-F681BE533A7A']
-                    ),
-                    4 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                    5 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                    6 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                    7 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                    8 => new Metadata(
-                        ['mock' => 'CultuurNet\UDB3\EventSourcing\DBAL\DummyEvent::F68E71A1-DBB0-4542-AEE5-BD937E095F74']
-                    ),
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_return_the_start_id()
-    {
-        $table = 'events';
-        $payloadSerializer = new SimpleInterfaceSerializer();
-        $metadataSerializer = new SimpleInterfaceSerializer();
-        $startId = 101;
-
-        $eventStream = new EventStream(
-            $this->getConnection(),
-            $payloadSerializer,
-            $metadataSerializer,
-            $table,
-            $startId
-        );
-
-        $expectedPreviousId = 100;
-
-        $this->assertEquals(
-            $expectedPreviousId,
-            $eventStream->getPreviousId()
-        );
+        return $history;
     }
 }
 

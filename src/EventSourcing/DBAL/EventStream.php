@@ -36,7 +36,12 @@ class EventStream
     /**
      * @var int
      */
-    protected $previousId;
+    protected $startId;
+
+    /**
+     * @var int
+     */
+    protected $lastProcessedId;
 
     /**
      * @var string
@@ -64,7 +69,7 @@ class EventStream
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
-        $this->previousId = 0;
+        $this->startId = 0;
     }
 
     /**
@@ -82,7 +87,7 @@ class EventStream
         }
 
         $c = clone $this;
-        $c->previousId = $startId > 0 ? $startId - 1 : 0;
+        $c->startId = $startId;
         return $c;
     }
 
@@ -124,7 +129,9 @@ class EventStream
             $events = [];
             while ($row = $statement->fetch()) {
                 $events[] = $this->deserializeEvent($row);
-                $this->previousId = $row['id'];
+                $this->lastProcessedId = $row['id'];
+                // Make sure to increment to prevent endless loop.
+                $this->startId = $row['id'] + 1;
             }
 
             /* @var DomainMessage[] $events */
@@ -153,9 +160,9 @@ class EventStream
     /**
      * @return int
      */
-    public function getPreviousId()
+    public function getLastProcessedId()
     {
-        return $this->previousId;
+        return $this->lastProcessedId;
     }
 
     /**
@@ -174,8 +181,8 @@ class EventStream
 
         $queryBuilder->select('id', 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
             ->from($this->tableName)
-            ->where('id > :previousid')
-            ->setParameter('previousid', $this->previousId)
+            ->where('id >= :startid')
+            ->setParameter('startid', $this->startId)
             ->orderBy('id', 'ASC')
             ->setMaxResults(1);
 

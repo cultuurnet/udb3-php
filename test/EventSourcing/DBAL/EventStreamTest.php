@@ -226,27 +226,49 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_return_the_start_id()
+    public function it_handles_a_start_id()
     {
-        $table = 'events';
-        $payloadSerializer = new SimpleInterfaceSerializer();
-        $metadataSerializer = new SimpleInterfaceSerializer();
-        $startId = 101;
+        $history = $this->fillHistory();
+        $eventStream = $this->eventStream->withStartId(4);
 
-        $eventStream = new EventStream(
-            $this->getConnection(),
-            $payloadSerializer,
-            $metadataSerializer,
-            $table
-        );
-        $eventStream = $eventStream->withStartId($startId);
+        /** @var EventStream|\Generator $domainEventStreams */
+        $domainEventStreams = $eventStream();
 
-        $expectedPreviousId = 100;
+        $domainEventStreams = iterator_to_array($domainEventStreams);
+        $expectedDomainEventStreams = [];
+        foreach ($history as $key => $domainMessage) {
+            // The history array is zero-based but sqlite index is one-based.
+            // So to start from the 4th element the index needs to be 3.
+            if ($key >= 3) {
+                $expectedDomainEventStreams[] = new DomainEventStream(
+                    [
+                        $domainMessage
+                    ]
+                );
+            }
+        }
 
-        $this->assertEquals(
-            $expectedPreviousId,
-            $eventStream->getPreviousId()
-        );
+        $this->assertEquals($expectedDomainEventStreams, $domainEventStreams);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_last_processed_id()
+    {
+        $this->fillHistory();
+
+        $eventStream = $this->eventStream;
+        $domainEventStreams = $eventStream();
+
+        $expectedLastProcessedId = 1;
+        while ($domainEventStreams->current()) {
+            $this->assertEquals(
+                $expectedLastProcessedId++,
+                $eventStream->getLastProcessedId()
+            );
+            $domainEventStreams->next();
+        }
     }
 
     /**

@@ -82,8 +82,8 @@ class EventStream
             throw new \InvalidArgumentException('StartId should have type int.');
         }
 
-        if (empty($startId)) {
-            throw new \InvalidArgumentException('StartId can\'t be empty.');
+        if ($startId <= 0) {
+            throw new \InvalidArgumentException('StartId should be higher than 0.');
         }
 
         $c = clone $this;

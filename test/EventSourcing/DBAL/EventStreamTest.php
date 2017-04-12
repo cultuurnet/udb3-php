@@ -70,13 +70,28 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider invalidStartIdDataProvider
+     *
+     * @param int $invalidStartId
      */
-    public function it_requires_non_empty_value_for_optional_start_id()
+    public function it_requires_a_value_higher_than_zero_for_optional_start_id($invalidStartId)
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('StartId can\'t be empty.');
+        $this->expectExceptionMessage('StartId should be higher than 0.');
 
-        $this->eventStream->withStartId(0);
+        $this->eventStream->withStartId($invalidStartId);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidStartIdDataProvider()
+    {
+        return [
+            [0],
+            [-1],
+            [-0],
+        ];
     }
 
     /**

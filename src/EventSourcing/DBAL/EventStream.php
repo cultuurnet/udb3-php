@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
@@ -13,8 +10,6 @@ use Broadway\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\Index;
 
 class EventStream
 {
@@ -39,19 +34,19 @@ class EventStream
     protected $tableName;
 
     /**
-     * @var Statement
+     * @var int
      */
-    protected $loadStatement;
+    protected $startId;
 
     /**
      * @var int
      */
-    protected $previousId;
+    protected $lastProcessedId;
 
     /**
      * @var string
      */
-    protected $primaryKey;
+    protected $cdbid;
 
     /**
      * @var EventStreamDecoratorInterface
@@ -63,26 +58,56 @@ class EventStream
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
      * @param string $tableName
-     * @param int $startId
-     * @param string $primaryKey
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
-        $tableName,
-        $startId = 0,
-        $primaryKey = 'id'
+        $tableName
     ) {
         $this->connection = $connection;
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
-        $this->previousId = $startId > 0 ? $startId - 1 : 0;
+        $this->startId = 0;
+    }
 
-        $this->primaryKey = $primaryKey;
+    /**
+     * @param int $startId
+     * @return EventStream
+     */
+    public function withStartId($startId)
+    {
+        if (!is_int($startId)) {
+            throw new \InvalidArgumentException('StartId should have type int.');
+        }
 
-        $this->domainEventStreamDecorator = null;
+        if ($startId <= 0) {
+            throw new \InvalidArgumentException('StartId should be higher than 0.');
+        }
+
+        $c = clone $this;
+        $c->startId = $startId;
+        return $c;
+    }
+
+    /**
+     * @param string $cdbid
+     * @return EventStream
+     */
+    public function withCdbid($cdbid)
+    {
+        if (!is_string($cdbid)) {
+            throw new \InvalidArgumentException('Cdbid should have type string.');
+        }
+
+        if (empty($cdbid)) {
+            throw new \InvalidArgumentException('Cdbid can\'t be empty.');
+        }
+
+        $c = clone $this;
+        $c->cdbid = $cdbid;
+        return $c;
     }
 
     /**
@@ -98,16 +123,15 @@ class EventStream
 
     public function __invoke()
     {
-        $statement = $this->prepareLoadStatement();
-
         do {
-            $statement->bindValue('previousid', $this->previousId, 'integer');
-            $statement->execute();
+            $statement = $this->prepareLoadStatement();
 
             $events = [];
             while ($row = $statement->fetch()) {
                 $events[] = $this->deserializeEvent($row);
-                $this->previousId = $row[$this->primaryKey];
+                $this->lastProcessedId = $row['id'];
+                // Make sure to increment to prevent endless loop.
+                $this->startId = $row['id'] + 1;
             }
 
             /* @var DomainMessage[] $events */
@@ -136,29 +160,38 @@ class EventStream
     /**
      * @return int
      */
-    public function getPreviousId()
+    public function getLastProcessedId()
     {
-        return $this->previousId;
+        return $this->lastProcessedId;
     }
 
     /**
+     * The load statement can no longer be 'cached' because of using the query
+     * builder. The query builder requires all parameters to be set before
+     * using the execute command. The previous solution used the prepare
+     * statement on the connection, this did not require all parameters to be
+     * set up front.
+     *
      * @return Statement
      * @throws DBALException
      */
     protected function prepareLoadStatement()
     {
-        if (null === $this->loadStatement) {
-            $id = $this->primaryKey;
-            $query = "SELECT $id, uuid, playhead, metadata, payload, recorded_on
-                FROM $this->tableName
-                WHERE $id > :previousid
-                ORDER BY $id ASC
-                LIMIT 1";
+        $queryBuilder = $this->connection->createQueryBuilder();
 
-            $this->loadStatement = $this->connection->prepare($query);
+        $queryBuilder->select('id', 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
+            ->from($this->tableName)
+            ->where('id >= :startid')
+            ->setParameter('startid', $this->startId)
+            ->orderBy('id', 'ASC')
+            ->setMaxResults(1);
+
+        if ($this->cdbid) {
+            $queryBuilder->andWhere('uuid = :uuid')
+                ->setParameter('uuid', $this->cdbid);
         }
 
-        return $this->loadStatement;
+        return $queryBuilder->execute();
     }
 
     /**

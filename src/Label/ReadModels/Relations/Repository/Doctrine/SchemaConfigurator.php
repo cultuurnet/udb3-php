@@ -13,6 +13,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
     const LABEL_NAME = 'labelName';
     const RELATION_TYPE = 'relationType';
     const RELATION_ID = 'relationId';
+    const IMPORTED = 'imported';
 
     /**
      * @var StringLiteral
@@ -62,6 +63,10 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
         $table->addColumn(self::RELATION_ID, Type::GUID)
             ->setLength(36)
             ->setNotnull(true);
+
+        $table->addColumn(self::IMPORTED, Type::BOOLEAN)
+            ->setNotnull(true)
+            ->setDefault(false);
 
         $table->addIndex([self::LABEL_NAME]);
         $table->addUniqueIndex([

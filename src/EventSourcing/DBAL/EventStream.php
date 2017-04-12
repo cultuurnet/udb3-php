@@ -166,7 +166,7 @@ class EventStream
     }
 
     /**
-     * The load statement can no longer be 'cashed' because of using the query
+     * The load statement can no longer be 'cached' because of using the query
      * builder. The query builder requires all parameters to be set before
      * using the execute command. The previous solution used the prepare
      * statement on the connection, this did not require all parameters to be

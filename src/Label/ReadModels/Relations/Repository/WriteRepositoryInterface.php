@@ -12,11 +12,14 @@ interface WriteRepositoryInterface
      * @param LabelName $labelName
      * @param RelationType $relationType
      * @param StringLiteral $relationId
+     * @param bool $imported
+     * @return void
      */
     public function save(
         LabelName $labelName,
         RelationType $relationType,
-        StringLiteral $relationId
+        StringLiteral $relationId,
+        $imported = false
     );
 
     /**

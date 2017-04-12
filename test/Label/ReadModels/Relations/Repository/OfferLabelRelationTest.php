@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
-use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
@@ -25,6 +24,11 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     private $offerId;
 
     /**
+     * @var bool
+     */
+    private $imported;
+
+    /**
      * @var LabelRelation
      */
     private $offerLabelRelation;
@@ -34,6 +38,7 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
         $this->labelName = new LabelName('2dotstwice');
         $this->relationType = RelationType::PLACE();
         $this->offerId = new StringLiteral('relationId');
+        $this->imported = false;
 
         $this->offerLabelRelation = new LabelRelation(
             $this->labelName,
@@ -76,9 +81,11 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
     {
         $json = json_encode($this->offerLabelRelation);
 
+        $imported = $this->imported ? 'true' : 'false';
         $expectedJson = '{"labelName":"' . $this->labelName->toNative()
             . '","relationType":"' . $this->relationType->toNative()
-            . '","relationId":"' . $this->offerId->toNative() . '"}';
+            . '","relationId":"' . $this->offerId->toNative()
+            . '","imported":' . $imported . '}';
 
         $this->assertEquals($expectedJson, $json);
     }

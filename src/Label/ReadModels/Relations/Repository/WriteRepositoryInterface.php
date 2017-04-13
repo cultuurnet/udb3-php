@@ -19,7 +19,7 @@ interface WriteRepositoryInterface
         LabelName $labelName,
         RelationType $relationType,
         StringLiteral $relationId,
-        $imported = false
+        $imported
     );
 
     /**

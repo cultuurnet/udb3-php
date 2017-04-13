@@ -18,7 +18,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
         LabelName $labelName,
         RelationType $relationType,
         StringLiteral $relationId,
-        $imported = false
+        $imported
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())

@@ -61,7 +61,8 @@ class Projector extends AbstractProjector
                 $this->writeRepository->save(
                     $LabelRelation->getLabelName(),
                     $LabelRelation->getRelationType(),
-                    $LabelRelation->getRelationId()
+                    $LabelRelation->getRelationId(),
+                    false
                 );
             }
         } catch (UniqueConstraintViolationException $exception) {
@@ -208,7 +209,8 @@ class Projector extends AbstractProjector
         $labelRelation = new LabelRelation(
             $labelName,
             $relationType,
-            $relationId
+            $relationId,
+            false
         );
 
         return $labelRelation;

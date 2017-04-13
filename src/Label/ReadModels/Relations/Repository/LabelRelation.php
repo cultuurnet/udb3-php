@@ -40,7 +40,7 @@ class LabelRelation implements \JsonSerializable
         LabelName $labelName,
         RelationType $relationType,
         StringLiteral $relationId,
-        $imported = false
+        $imported
     ) {
         $this->labelName = $labelName;
         $this->relationType = $relationType;

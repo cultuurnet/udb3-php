@@ -38,12 +38,13 @@ class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
         $this->labelName = new LabelName('2dotstwice');
         $this->relationType = RelationType::PLACE();
         $this->offerId = new StringLiteral('relationId');
-        $this->imported = false;
+        $this->imported = true;
 
         $this->offerLabelRelation = new LabelRelation(
             $this->labelName,
             $this->relationType,
-            $this->offerId
+            $this->offerId,
+            true
         );
     }
 

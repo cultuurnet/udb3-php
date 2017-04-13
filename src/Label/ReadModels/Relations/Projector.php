@@ -187,7 +187,8 @@ class Projector extends AbstractProjector
             $this->writeRepository->save(
                 new LabelName((string) $label),
                 $relationType,
-                $relationId
+                $relationId,
+                true
             );
         }
     }

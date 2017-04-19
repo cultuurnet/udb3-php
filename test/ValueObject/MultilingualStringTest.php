@@ -87,6 +87,7 @@ class MultilingualStringTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_allow_translations_of_the_original_language()
     {
         $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Can not translate to original language.');
 
         $this->multilingualString->withTranslation(
             new Language('nl'),

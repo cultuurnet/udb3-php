@@ -226,7 +226,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->with(
                 new LabelName('2dotstwice'),
                 $relationType,
-                $itemId
+                $itemId,
+                true
             );
 
         $this->writeRepository->expects($this->at(2))
@@ -234,7 +235,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->with(
                 new LabelName('cultuurnet'),
                 $relationType,
-                $itemId
+                $itemId,
+                true
             );
 
         $this->projector->handle($domainMessage);

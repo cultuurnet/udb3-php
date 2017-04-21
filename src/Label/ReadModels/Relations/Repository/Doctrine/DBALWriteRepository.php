@@ -17,19 +17,22 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     public function save(
         LabelName $labelName,
         RelationType $relationType,
-        StringLiteral $relationId
+        StringLiteral $relationId,
+        $imported
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::LABEL_NAME => '?',
                 SchemaConfigurator::RELATION_TYPE => '?',
-                SchemaConfigurator::RELATION_ID => '?'
+                SchemaConfigurator::RELATION_ID => '?',
+                SchemaConfigurator::IMPORTED => '?',
             ])
             ->setParameters([
                 $labelName->toNative(),
                 $relationType->toNative(),
-                $relationId->toNative()
+                $relationId->toNative(),
+                $imported ? 1 : 0,
             ]);
 
         $this->executeTransactional($queryBuilder);

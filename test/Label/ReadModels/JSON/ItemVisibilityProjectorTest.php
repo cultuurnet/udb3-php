@@ -68,7 +68,8 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
                     new LabelRelation(
                         $labelName,
                         $relationType,
-                        new StringLiteral($jsonDocument->getId())
+                        new StringLiteral($jsonDocument->getId()),
+                        false
                     ),
                 ]
             );
@@ -419,7 +420,8 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
                     new LabelRelation(
                         $labelName,
                         RelationType::PLACE(),
-                        new StringLiteral((string) $placeId)
+                        new StringLiteral((string) $placeId),
+                        false
                     ),
                 ]
             );

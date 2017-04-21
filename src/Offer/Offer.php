@@ -7,6 +7,7 @@ use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
@@ -42,7 +43,7 @@ use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-abstract class Offer extends EventSourcedAggregateRoot
+abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggregateRoot
 {
     const DUPLICATE_REASON = 'duplicate';
     const INAPPROPRIATE_REASON = 'inappropriate';
@@ -103,7 +104,7 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param Label $label
+     * @inheritdoc
      */
     public function addLabel(Label $label)
     {
@@ -115,7 +116,7 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param Label $label
+     * @inheritdoc
      */
     public function removeLabel(Label $label)
     {

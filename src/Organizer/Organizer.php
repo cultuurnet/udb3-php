@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
@@ -23,7 +24,7 @@ use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
-class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface
+class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXmlInterface, LabelAwareAggregateRoot
 {
     /**
      * The actor id.
@@ -193,7 +194,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
-     * @param Label $label
+     * @inheritdoc
      */
     public function addLabel(Label $label)
     {
@@ -203,7 +204,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
-     * @param Label $label
+     * @inheritdoc
      */
     public function removeLabel(Label $label)
     {

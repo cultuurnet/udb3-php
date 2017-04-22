@@ -2,14 +2,12 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
-use CultuurNet\Hydra\PagedCollection;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
-use PDO;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
@@ -127,8 +125,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'abc',
             EntityType::EVENT(),
             'bar',
-            'Test event abc update',
-            '3020',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
@@ -137,9 +133,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $expectedData[3] = [
             'uid' => 'bar',
-            'title' => 'Test event abc update',
             'created' => '100',
-            'zip' => '3020'
         ] + (array) $expectedData[3];
 
         $expectedData[3] = (object) $expectedData[3];
@@ -160,8 +154,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'blub',
             EntityType::EVENT(),
             'bar',
-            'Test event abc update',
-            '3020',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
@@ -170,9 +162,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $expectedData[5] = [
                 'uid' => 'bar',
-                'title' => 'Test event abc update',
                 'created' => '100',
-                'zip' => '3020',
                 'owning_domain' => 'udb.be',
                 'entity_iri' => 'http://hello.world/something/blub'
             ] + (array) $expectedData[5];
@@ -195,8 +185,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'xyz',
             EntityType::EVENT(),
             'foo',
-            'Test event xyz',
-            '3020',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@0')
         );
@@ -207,8 +195,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'entity_id' => 'xyz',
             'entity_type' => 'event',
             'uid' => 'foo',
-            'title' => 'Test event xyz',
-            'zip' => '3020',
             'created' => 0,
             'updated' => 0,
             'owning_domain' => 'udb.be',
@@ -224,7 +210,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $results = $this->getConnection()->executeQuery('SELECT * from ' . $this->tableName->toNative());
 
-        $actualData = $results->fetchAll(PDO::FETCH_OBJ);
+        $actualData = $results->fetchAll(\PDO::FETCH_OBJ);
 
         $this->assertEquals(
             $expectedData,
@@ -250,22 +236,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         unset($expectedData[3]);
 
         $this->assertCurrentData($expectedData);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_find_places_by_postal_code()
-    {
-        $expectedIds = [
-            'abc',
-            '123'
-        ];
-
-        $this->assertEquals(
-            $expectedIds,
-            $this->repository->findPlacesByPostalCode('3000')
-        );
     }
 
     /**

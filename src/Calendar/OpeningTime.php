@@ -91,7 +91,7 @@ class OpeningTime
     /**
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->toNativeDateTime()->format('H:i');
     }

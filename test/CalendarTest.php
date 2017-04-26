@@ -126,6 +126,43 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function time_stamps_need_to_have_type_time_stamp()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Timestamps should have type TimeStamp.');
+
+        new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            [
+                'wrong timestamp',
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function opening_hours_need_to_have_type_opening_hour()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('OpeningHours should have type OpeningHour.');
+
+        new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            [],
+            [
+                'wrong opening hours',
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_has_the_exact_original_state_after_serialization_and_deserialization()
     {
         $serialized = $this->calendar->serialize();

@@ -62,6 +62,18 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             throw new \UnexpectedValueException('A period should have a start- and end-date.');
         }
 
+        foreach ($timestamps as $timestamp) {
+            if (!is_a($timestamp, Timestamp::class)) {
+                throw new \InvalidArgumentException('Timestamps should have type TimeStamp.');
+            }
+        }
+
+        foreach ($openingHours as $openingHour) {
+            if (!is_a($openingHour, OpeningHour::class)) {
+                throw new \InvalidArgumentException('OpeningHours should have type OpeningHour.');
+            }
+        }
+
         $this->type = $type->toNative();
         $this->startDate = $startDate;
         $this->endDate = $endDate;

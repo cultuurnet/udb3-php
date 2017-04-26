@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Calendar\DayOfWeek;
+use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
@@ -203,7 +204,7 @@ class CalendarFactory implements CalendarFactoryInterface
                     $openingHour = new OpeningHour(
                         OpeningTime::fromNativeDateTime($opens),
                         $closes ? OpeningTime::fromNativeDateTime($closes) : OpeningTime::fromNativeDateTime($opens),
-                        DayOfWeek::fromNative($day->getDayName())
+                        new DayOfWeekCollection(DayOfWeek::fromNative($day->getDayName()))
                     );
 
                     $openingHours = $this->addToOpeningHours($openingHour, ...$openingHours);
@@ -225,7 +226,9 @@ class CalendarFactory implements CalendarFactoryInterface
     ) {
         foreach ($openingHours as $openingHour) {
             if ($openingHour->hasEqualHours($newOpeningHour)) {
-                $openingHour->addDaysOfWeek(...$newOpeningHour->getDaysOfWeek());
+                $openingHour->addDayOfWeekCollection(
+                    $newOpeningHour->getDayOfWeekCollection()
+                );
                 return $openingHours;
             }
         }

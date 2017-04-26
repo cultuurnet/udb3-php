@@ -18,9 +18,9 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     private $closes;
 
     /**
-     * @var DayOfWeek[]
+     * @var DayOfWeekCollection
      */
-    private $weekDays;
+    private $dayOfWeekCollection;
 
     /**
      * @var array
@@ -38,13 +38,13 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
 
         $this->closes = new OpeningTime(new Hour(17), new Minute(0));
 
-        $this->weekDays = [
-            DayOfWeek::fromNative('monday'),
-            DayOfWeek::fromNative('tuesday'),
-            DayOfWeek::fromNative('wednesday'),
-            DayOfWeek::fromNative('thursday'),
-            DayOfWeek::fromNative('friday'),
-        ];
+        $this->dayOfWeekCollection = new DayOfWeekCollection();
+        $this->dayOfWeekCollection
+            ->addDayOfWeek(DayOfWeek::fromNative('monday'))
+            ->addDayOfWeek(DayOfWeek::fromNative('tuesday'))
+            ->addDayOfWeek(DayOfWeek::fromNative('wednesday'))
+            ->addDayOfWeek(DayOfWeek::fromNative('thursday'))
+            ->addDayOfWeek(DayOfWeek::fromNative('friday'));
 
         $this->openingHourAsArray = [
             'opens' => '09:30',
@@ -61,7 +61,7 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
         $this->openingHour = new OpeningHour(
             $this->opens,
             $this->closes,
-            ...$this->weekDays
+            $this->dayOfWeekCollection
         );
     }
 
@@ -95,13 +95,13 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
         $sameOpeningHour = new OpeningHour(
             new OpeningTime(new Hour(9), new Minute(30)),
             new OpeningTime(new Hour(17), new Minute(0)),
-            DayOfWeek::MONDAY()
+            new DayOfWeekCollection(DayOfWeek::MONDAY())
         );
 
         $differentOpeningHour = new OpeningHour(
             new OpeningTime(new Hour(10), new Minute(30)),
             new OpeningTime(new Hour(17), new Minute(0)),
-            DayOfWeek::MONDAY()
+            new DayOfWeekCollection(DayOfWeek::MONDAY())
         );
 
         $this->assertTrue(
@@ -118,8 +118,8 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     public function it_stores_weekdays()
     {
         $this->assertEquals(
-            $this->weekDays,
-            $this->openingHour->getDaysOfWeek()
+            $this->dayOfWeekCollection,
+            $this->openingHour->getDayOfWeekCollection()
         );
     }
 

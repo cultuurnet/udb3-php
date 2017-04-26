@@ -17,32 +17,24 @@ class OpeningHour implements SerializableInterface
     private $closes;
 
     /**
-     * @var DayOfWeek[]
+     * @var DayOfWeekCollection
      */
-    private $daysOfWeek;
+    private $dayOfWeekCollection;
 
     /**
      * OpeningHour constructor.
      * @param OpeningTime $opens
      * @param OpeningTime $closes
-     * @param DayOfWeek[] $daysOfWeek
+     * @param DayOfWeekCollection $dayOfWeekCollection
      */
     public function __construct(
         OpeningTime $opens,
         OpeningTime $closes,
-        DayOfWeek ...$daysOfWeek
+        DayOfWeekCollection $dayOfWeekCollection
     ) {
-        $this->daysOfWeek = $daysOfWeek;
+        $this->dayOfWeekCollection = $dayOfWeekCollection;
         $this->opens = $opens;
         $this->closes = $closes;
-    }
-
-    /**
-     * @param DayOfWeek[] $dayOfWeeks
-     */
-    public function addDaysOfWeek(DayOfWeek ...$dayOfWeeks)
-    {
-        $this->daysOfWeek = array_merge($this->daysOfWeek, $dayOfWeeks);
     }
 
     /**
@@ -62,11 +54,21 @@ class OpeningHour implements SerializableInterface
     }
 
     /**
-     * @return DayOfWeek[]
+     * @return DayOfWeekCollection
      */
-    public function getDaysOfWeek()
+    public function getDayOfWeekCollection()
     {
-        return $this->daysOfWeek;
+        return $this->dayOfWeekCollection;
+    }
+
+    /**
+     * @param DayOfWeekCollection $dayOfWeekCollection
+     */
+    public function addDayOfWeekCollection(DayOfWeekCollection $dayOfWeekCollection)
+    {
+        foreach ($dayOfWeekCollection->getDaysOfWeek() as $dayOfWeek) {
+            $this->dayOfWeekCollection->addDayOfWeek($dayOfWeek);
+        }
     }
 
     /**
@@ -84,17 +86,10 @@ class OpeningHour implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        $weekDays = array_map(
-            function ($dayOfWeek) {
-                return DayOfWeek::fromNative($dayOfWeek);
-            },
-            $data['dayOfWeek']
-        );
-
         return new static(
             OpeningTime::fromNativeString($data['opens']),
             OpeningTime::fromNativeString($data['closes']),
-            ...$weekDays
+            DayOfWeekCollection::deserialize($data['dayOfWeek'])
         );
     }
 
@@ -103,17 +98,10 @@ class OpeningHour implements SerializableInterface
      */
     public function serialize()
     {
-        $serializedWeekDays = array_map(
-            function (DayOfWeek $dayOfWeek) {
-                return $dayOfWeek->getValue();
-            },
-            $this->daysOfWeek
-        );
-
         return [
             'opens' => $this->opens->toNativeString(),
             'closes' => $this->closes->toNativeString(),
-            'dayOfWeek' => $serializedWeekDays
+            'dayOfWeek' => $this->dayOfWeekCollection->serialize()
         ];
     }
 }

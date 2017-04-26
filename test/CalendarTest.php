@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Calendar\DayOfWeek;
+use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
 use DateTime;
@@ -40,33 +41,33 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_2_END_DATE)
         );
 
-        $weekDays = [
-            DayOfWeek::MONDAY(),
-            DayOfWeek::TUESDAY(),
-            DayOfWeek::WEDNESDAY(),
-            DayOfWeek::THURSDAY(),
-            DayOfWeek::FRIDAY(),
-        ];
+        $weekDays = (new DayOfWeekCollection())
+            ->addDayOfWeek(DayOfWeek::MONDAY())
+            ->addDayOfWeek(DayOfWeek::TUESDAY())
+            ->addDayOfWeek(DayOfWeek::WEDNESDAY())
+            ->addDayOfWeek(DayOfWeek::THURSDAY())
+            ->addDayOfWeek(DayOfWeek::FRIDAY());
 
         $openingHour1 = new OpeningHour(
             new OpeningTime(new Hour(9), new Minute(0)),
             new OpeningTime(new Hour(12), new Minute(0)),
-            ...$weekDays
+            $weekDays
         );
 
         $openingHour2 = new OpeningHour(
             new OpeningTime(new Hour(13), new Minute(0)),
             new OpeningTime(new Hour(17), new Minute(0)),
-            ...$weekDays
+            $weekDays
         );
+
+        $weekendDays = (new DayOfWeekCollection())
+            ->addDayOfWeek(DayOfWeek::SATURDAY())
+            ->addDayOfWeek(DayOfWeek::SUNDAY());
 
         $openingHour3 = new OpeningHour(
             new OpeningTime(new Hour(10), new Minute(0)),
             new OpeningTime(new Hour(16), new Minute(0)),
-            ...[
-                DayOfWeek::SATURDAY(),
-                DayOfWeek::SUNDAY(),
-            ]
+            $weekendDays
         );
 
         $this->calendar = new Calendar(

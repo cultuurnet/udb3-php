@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3;
 use CultureFeed_Cdb_Data_Calendar_Timestamp;
 use CultureFeed_Cdb_Data_Calendar_TimestampList;
 use CultuurNet\UDB3\Calendar\DayOfWeek;
+use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
 use DateTimeImmutable;
@@ -64,13 +65,16 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_create_a_calendar_from_a_weekscheme()
     {
-        $weekDays = [
-            DayOfWeek::MONDAY(),
-            DayOfWeek::TUESDAY(),
-            DayOfWeek::WEDNESDAY(),
-            DayOfWeek::THURSDAY(),
-            DayOfWeek::FRIDAY(),
-        ];
+        $weekDays = (new DayOfWeekCollection())
+            ->addDayOfWeek(DayOfWeek::MONDAY())
+            ->addDayOfWeek(DayOfWeek::TUESDAY())
+            ->addDayOfWeek(DayOfWeek::WEDNESDAY())
+            ->addDayOfWeek(DayOfWeek::THURSDAY())
+            ->addDayOfWeek(DayOfWeek::FRIDAY());
+
+        $weekendDays = (new DayOfWeekCollection())
+            ->addDayOfWeek(DayOfWeek::SATURDAY())
+            ->addDayOfWeek(DayOfWeek::SUNDAY());
 
         $expectedCalendar = new Calendar(
             CalendarType::PERMANENT(),
@@ -81,20 +85,17 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 new OpeningHour(
                     new OpeningTime(new Hour(9), new Minute(0)),
                     new OpeningTime(new Hour(12), new Minute(0)),
-                    ...$weekDays
+                    $weekDays
                 ),
                 new OpeningHour(
                     new OpeningTime(new Hour(13), new Minute(0)),
                     new OpeningTime(new Hour(17), new Minute(0)),
-                    ...$weekDays
+                    $weekDays
                 ),
                 new OpeningHour(
                     new OpeningTime(new Hour(10), new Minute(0)),
                     new OpeningTime(new Hour(16), new Minute(0)),
-                    ...[
-                        DayOfWeek::SATURDAY(),
-                        DayOfWeek::SUNDAY(),
-                    ]
+                    $weekendDays
                 ),
             ]
         );

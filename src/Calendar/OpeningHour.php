@@ -3,46 +3,50 @@
 namespace CultuurNet\UDB3\Calendar;
 
 use Broadway\Serializer\SerializableInterface;
-use ValueObjects\DateTime\Time;
-use ValueObjects\DateTime\WeekDay;
 
 class OpeningHour implements SerializableInterface
 {
-    const FORMAT = 'H:i:s';
-
     /**
-     * @var Time
+     * @var OpeningTime
      */
     private $opens;
 
     /**
-     * @var Time
+     * @var OpeningTime
      */
     private $closes;
 
     /**
-     * @var WeekDay[]
+     * @var DayOfWeek[]
      */
-    private $weekDays;
+    private $daysOfWeek;
 
     /**
      * OpeningHour constructor.
-     * @param Time $opens
-     * @param Time $closes
-     * @param WeekDay[] $weekDays
+     * @param OpeningTime $opens
+     * @param OpeningTime $closes
+     * @param DayOfWeek[] $daysOfWeek
      */
     public function __construct(
-        Time $opens,
-        Time $closes,
-        WeekDay ...$weekDays
+        OpeningTime $opens,
+        OpeningTime $closes,
+        DayOfWeek ...$daysOfWeek
     ) {
-        $this->weekDays = $weekDays;
+        $this->daysOfWeek = $daysOfWeek;
         $this->opens = $opens;
         $this->closes = $closes;
     }
 
     /**
-     * @return Time
+     * @param DayOfWeek[] $dayOfWeeks
+     */
+    public function addDaysOfWeek(DayOfWeek ...$dayOfWeeks)
+    {
+        $this->daysOfWeek = array_merge($this->daysOfWeek, $dayOfWeeks);
+    }
+
+    /**
+     * @return OpeningTime
      */
     public function getOpens()
     {
@@ -50,7 +54,7 @@ class OpeningHour implements SerializableInterface
     }
 
     /**
-     * @return Time
+     * @return OpeningTime
      */
     public function getCloses()
     {
@@ -58,11 +62,21 @@ class OpeningHour implements SerializableInterface
     }
 
     /**
-     * @return WeekDay[]
+     * @return DayOfWeek[]
      */
-    public function getWeekDays()
+    public function getDaysOfWeek()
     {
-        return $this->weekDays;
+        return $this->daysOfWeek;
+    }
+
+    /**
+     * @param OpeningHour $otherOpeningHour
+     * @return bool
+     */
+    public function hasEqualHours(OpeningHour $otherOpeningHour)
+    {
+        return $otherOpeningHour->getOpens()->sameValueAs($this->getOpens()) &&
+            $otherOpeningHour->getCloses()->sameValueAs($this->getCloses());
     }
 
     /**
@@ -72,18 +86,14 @@ class OpeningHour implements SerializableInterface
     {
         $weekDays = array_map(
             function ($dayOfWeek) {
-                return WeekDay::fromNative($dayOfWeek);
+                return DayOfWeek::fromNative($dayOfWeek);
             },
             $data['dayOfWeek']
         );
 
         return new static(
-            Time::fromNativeDateTime(
-                \DateTime::createFromFormat(self::FORMAT, $data['opens'])
-            ),
-            Time::fromNativeDateTime(
-                \DateTime::createFromFormat(self::FORMAT, $data['closes'])
-            ),
+            OpeningTime::fromNativeString($data['opens']),
+            OpeningTime::fromNativeString($data['closes']),
             ...$weekDays
         );
     }
@@ -94,15 +104,15 @@ class OpeningHour implements SerializableInterface
     public function serialize()
     {
         $serializedWeekDays = array_map(
-            function (WeekDay $weekDay) {
-                return $weekDay->getValue();
+            function (DayOfWeek $dayOfWeek) {
+                return $dayOfWeek->getValue();
             },
-            $this->weekDays
-        ) ;
+            $this->daysOfWeek
+        );
 
         return [
-            'opens' => $this->opens->toNativeDateTime()->format(self::FORMAT),
-            'closes' => $this->closes->toNativeDateTime()->format(self::FORMAT),
+            'opens' => $this->opens->toNativeString(),
+            'closes' => $this->closes->toNativeString(),
             'dayOfWeek' => $serializedWeekDays
         ];
     }

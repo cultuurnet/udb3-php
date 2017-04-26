@@ -4,31 +4,28 @@ namespace CultuurNet\UDB3\Calendar;
 
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
-use ValueObjects\DateTime\Second;
-use ValueObjects\DateTime\Time;
-use ValueObjects\DateTime\WeekDay;
 
 class OpeningHourTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Time
+     * @var OpeningTime
      */
     private $opens;
 
     /**
-     * @var Time
+     * @var OpeningTime
      */
     private $closes;
 
     /**
-     * @var WeekDay[]
+     * @var DayOfWeek[]
      */
     private $weekDays;
 
     /**
      * @var array
      */
-    private $openingHoursAsArray;
+    private $openingHourAsArray;
 
     /**
      * @var OpeningHour
@@ -37,27 +34,27 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->opens = new Time(new Hour(9), new Minute(30), new Second(0));
+        $this->opens = new OpeningTime(new Hour(9), new Minute(30));
 
-        $this->closes = new Time(new Hour(17), new Minute(0), new Second(0));
+        $this->closes = new OpeningTime(new Hour(17), new Minute(0));
 
         $this->weekDays = [
-            WeekDay::fromNative(WeekDay::MONDAY),
-            WeekDay::fromNative(WeekDay::TUESDAY),
-            WeekDay::fromNative(WeekDay::WEDNESDAY),
-            WeekDay::fromNative(WeekDay::THURSDAY),
-            WeekDay::fromNative(WeekDay::FRIDAY),
+            DayOfWeek::fromNative('monday'),
+            DayOfWeek::fromNative('tuesday'),
+            DayOfWeek::fromNative('wednesday'),
+            DayOfWeek::fromNative('thursday'),
+            DayOfWeek::fromNative('friday'),
         ];
 
-        $this->openingHoursAsArray = [
-            'opens' => '09:30:00',
-            'closes' => '17:00:00',
+        $this->openingHourAsArray = [
+            'opens' => '09:30',
+            'closes' => '17:00',
             'dayOfWeek' => [
-                'Monday',
-                'Tuesday',
-                'Wednesday',
-                'Thursday',
-                'Friday',
+                'monday',
+                'tuesday',
+                'wednesday',
+                'thursday',
+                'friday',
             ],
         ];
 
@@ -71,7 +68,7 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_an_opening_time()
+    public function it_stores_an_opens_time()
     {
         $this->assertEquals(
             $this->opens,
@@ -82,7 +79,7 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_an_closing_time()
+    public function it_stores_a_closes_time()
     {
         $this->assertEquals(
             $this->closes,
@@ -93,11 +90,36 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_can_compare_on_hours()
+    {
+        $sameOpeningHour = new OpeningHour(
+            new OpeningTime(new Hour(9), new Minute(30)),
+            new OpeningTime(new Hour(17), new Minute(0)),
+            DayOfWeek::MONDAY()
+        );
+
+        $differentOpeningHour = new OpeningHour(
+            new OpeningTime(new Hour(10), new Minute(30)),
+            new OpeningTime(new Hour(17), new Minute(0)),
+            DayOfWeek::MONDAY()
+        );
+
+        $this->assertTrue(
+            $this->openingHour->hasEqualHours($sameOpeningHour)
+        );
+        $this->assertFalse(
+            $this->openingHour->hasEqualHours($differentOpeningHour)
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_stores_weekdays()
     {
         $this->assertEquals(
             $this->weekDays,
-            $this->openingHour->getWeekDays()
+            $this->openingHour->getDaysOfWeek()
         );
     }
 
@@ -108,7 +130,7 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->openingHour,
-            OpeningHour::deserialize($this->openingHoursAsArray)
+            OpeningHour::deserialize($this->openingHourAsArray)
         );
     }
 
@@ -118,7 +140,7 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
     public function it_can_serialize()
     {
         $this->assertEquals(
-            $this->openingHoursAsArray,
+            $this->openingHourAsArray,
             $this->openingHour->serialize()
         );
     }

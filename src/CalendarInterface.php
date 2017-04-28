@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Calendar\OpeningHour;
 use DateTimeInterface;
 
 /**
@@ -33,7 +34,7 @@ interface CalendarInterface
     /**
      * Get the opening hours.
      *
-     * @return array
+     * @return OpeningHour[]
      */
     public function getOpeningHours();
 

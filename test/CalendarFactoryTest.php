@@ -4,9 +4,15 @@ namespace CultuurNet\UDB3;
 
 use CultureFeed_Cdb_Data_Calendar_Timestamp;
 use CultureFeed_Cdb_Data_Calendar_TimestampList;
+use CultuurNet\UDB3\Calendar\DayOfWeek;
+use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
+use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Calendar\OpeningTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\DateTime\Hour;
+use ValueObjects\DateTime\Minute;
 
 class CalendarFactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -50,6 +56,57 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 new Timestamp($expectedStartDate, $expectedEndDate),
             ]
         );
+
+        $this->assertEquals($expectedCalendar, $calendar);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_create_a_calendar_from_a_weekscheme()
+    {
+        $weekDays = new DayOfWeekCollection(
+            DayOfWeek::MONDAY(),
+            DayOfWeek::TUESDAY(),
+            DayOfWeek::WEDNESDAY(),
+            DayOfWeek::THURSDAY(),
+            DayOfWeek::FRIDAY()
+        );
+
+        $weekendDays = new DayOfWeekCollection(
+            DayOfWeek::SATURDAY(),
+            DayOfWeek::SUNDAY()
+        );
+
+        $expectedCalendar = new Calendar(
+            CalendarType::PERMANENT(),
+            null,
+            null,
+            [],
+            [
+                new OpeningHour(
+                    new OpeningTime(new Hour(9), new Minute(0)),
+                    new OpeningTime(new Hour(12), new Minute(0)),
+                    $weekDays
+                ),
+                new OpeningHour(
+                    new OpeningTime(new Hour(13), new Minute(0)),
+                    new OpeningTime(new Hour(17), new Minute(0)),
+                    $weekDays
+                ),
+                new OpeningHour(
+                    new OpeningTime(new Hour(10), new Minute(0)),
+                    new OpeningTime(new Hour(16), new Minute(0)),
+                    $weekendDays
+                ),
+            ]
+        );
+
+        $weekScheme = \CultureFeed_Cdb_Data_Calendar_Weekscheme::parseFromCdbXml(
+            simplexml_load_file(__DIR__ . '/week_scheme.xml')
+        );
+
+        $calendar = $this->factory->createFromWeekScheme($weekScheme);
 
         $this->assertEquals($expectedCalendar, $calendar);
     }

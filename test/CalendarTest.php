@@ -2,9 +2,15 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Calendar\DayOfWeek;
+use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
+use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Calendar\OpeningTime;
 use DateTime;
 use DateTimeInterface;
 use UnexpectedValueException;
+use ValueObjects\DateTime\Hour;
+use ValueObjects\DateTime\Minute;
 
 class CalendarTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,14 +41,48 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_2_END_DATE)
         );
 
+        $weekDays = (new DayOfWeekCollection())
+            ->addDayOfWeek(DayOfWeek::MONDAY())
+            ->addDayOfWeek(DayOfWeek::TUESDAY())
+            ->addDayOfWeek(DayOfWeek::WEDNESDAY())
+            ->addDayOfWeek(DayOfWeek::THURSDAY())
+            ->addDayOfWeek(DayOfWeek::FRIDAY());
+
+        $openingHour1 = new OpeningHour(
+            new OpeningTime(new Hour(9), new Minute(0)),
+            new OpeningTime(new Hour(12), new Minute(0)),
+            $weekDays
+        );
+
+        $openingHour2 = new OpeningHour(
+            new OpeningTime(new Hour(13), new Minute(0)),
+            new OpeningTime(new Hour(17), new Minute(0)),
+            $weekDays
+        );
+
+        $weekendDays = (new DayOfWeekCollection())
+            ->addDayOfWeek(DayOfWeek::SATURDAY())
+            ->addDayOfWeek(DayOfWeek::SUNDAY());
+
+        $openingHour3 = new OpeningHour(
+            new OpeningTime(new Hour(10), new Minute(0)),
+            new OpeningTime(new Hour(16), new Minute(0)),
+            $weekendDays
+        );
+
         $this->calendar = new Calendar(
             CalendarType::MULTIPLE(),
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
-            array(
+            [
                 self::TIMESTAMP_1 => $timestamp1,
-                self::TIMESTAMP_2 => $timestamp2
-            )
+                self::TIMESTAMP_2 => $timestamp2,
+            ],
+            [
+                $openingHour1,
+                $openingHour2,
+                $openingHour3,
+            ]
         );
     }
 
@@ -58,7 +98,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         $expectedMessage,
         DateTimeInterface $startDate = null
     ) {
-        $this->setExpectedException(UnexpectedValueException::class, $expectedMessage);
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
         new Calendar($calendarType, $startDate);
     }
 
@@ -79,6 +121,43 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                 'startDate' => null,
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function time_stamps_need_to_have_type_time_stamp()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Timestamps should have type TimeStamp.');
+
+        new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            [
+                'wrong timestamp',
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function opening_hours_need_to_have_type_opening_hour()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('OpeningHours should have type OpeningHour.');
+
+        new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            [],
+            [
+                'wrong opening hours',
+            ]
+        );
     }
 
     /**
@@ -196,7 +275,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             'timestamps' => []
         ];
 
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         Calendar::deserialize($invalidCalendarData);
     }
@@ -213,7 +292,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             'timestamps' => []
         ];
 
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         Calendar::deserialize($invalidCalendarData);
     }
@@ -221,13 +300,12 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider periodicCalendarWithMissingDatesDataProvider
+     * @param $calendarData
      */
     public function it_should_not_create_a_periodic_calendar_with_missing_dates($calendarData)
     {
-        $this->setExpectedException(
-            \UnexpectedValueException::class,
-            'A period should have a start- and end-date.'
-        );
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('A period should have a start- and end-date.');
 
         Calendar::deserialize($calendarData);
     }

@@ -11,5 +11,4 @@ after_script:
 notifications:
   email:
     recipients:
-    - kristof@2dotstwice.be
     - bram@2dotstwice.be

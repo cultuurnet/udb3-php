@@ -13,13 +13,11 @@ class DayOfWeekCollection implements SerializableInterface
 
     /**
      * DayOfWeekCollection constructor.
-     * @param DayOfWeek|null $dayOfWeek
+     * @param DayOfWeek[] ...$daysOfWeek
      */
-    public function __construct(DayOfWeek $dayOfWeek = null)
+    public function __construct(DayOfWeek ...$daysOfWeek)
     {
-        if ($dayOfWeek !== null) {
-            $this->addDayOfWeek($dayOfWeek);
-        }
+        array_walk($daysOfWeek, [$this, 'addDayOfWeek']);
     }
 
     /**
@@ -61,15 +59,13 @@ class DayOfWeekCollection implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        $dayOfWeekCollection = new DayOfWeekCollection();
-
-        foreach ($data as $dayOfWeek) {
-            $dayOfWeekCollection->addDayOfWeek(
-                DayOfWeek::fromNative($dayOfWeek)
-            );
-        }
-
-        return $dayOfWeekCollection;
+        return array_reduce(
+            $data,
+            function (DayOfWeekCollection $collection, $dayOfWeek) {
+                 return $collection->addDayOfWeek(DayOfWeek::fromNative($dayOfWeek));
+            },
+            new DayOfWeekCollection()
+        );
     }
 
     /**

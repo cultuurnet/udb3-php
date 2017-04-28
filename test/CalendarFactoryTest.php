@@ -65,16 +65,18 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_create_a_calendar_from_a_weekscheme()
     {
-        $weekDays = (new DayOfWeekCollection())
-            ->addDayOfWeek(DayOfWeek::MONDAY())
-            ->addDayOfWeek(DayOfWeek::TUESDAY())
-            ->addDayOfWeek(DayOfWeek::WEDNESDAY())
-            ->addDayOfWeek(DayOfWeek::THURSDAY())
-            ->addDayOfWeek(DayOfWeek::FRIDAY());
+        $weekDays = new DayOfWeekCollection(
+            DayOfWeek::MONDAY(),
+            DayOfWeek::TUESDAY(),
+            DayOfWeek::WEDNESDAY(),
+            DayOfWeek::THURSDAY(),
+            DayOfWeek::FRIDAY()
+        );
 
-        $weekendDays = (new DayOfWeekCollection())
-            ->addDayOfWeek(DayOfWeek::SATURDAY())
-            ->addDayOfWeek(DayOfWeek::SUNDAY());
+        $weekendDays = new DayOfWeekCollection(
+            DayOfWeek::SATURDAY(),
+            DayOfWeek::SUNDAY()
+        );
 
         $expectedCalendar = new Calendar(
             CalendarType::PERMANENT(),

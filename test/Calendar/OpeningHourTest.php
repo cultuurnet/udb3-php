@@ -38,13 +38,13 @@ class OpeningHourTest extends \PHPUnit_Framework_TestCase
 
         $this->closes = new OpeningTime(new Hour(17), new Minute(0));
 
-        $this->dayOfWeekCollection = new DayOfWeekCollection();
-        $this->dayOfWeekCollection
-            ->addDayOfWeek(DayOfWeek::fromNative('monday'))
-            ->addDayOfWeek(DayOfWeek::fromNative('tuesday'))
-            ->addDayOfWeek(DayOfWeek::fromNative('wednesday'))
-            ->addDayOfWeek(DayOfWeek::fromNative('thursday'))
-            ->addDayOfWeek(DayOfWeek::fromNative('friday'));
+        $this->dayOfWeekCollection = new DayOfWeekCollection(
+            DayOfWeek::fromNative('monday'),
+            DayOfWeek::fromNative('tuesday'),
+            DayOfWeek::fromNative('wednesday'),
+            DayOfWeek::fromNative('thursday'),
+            DayOfWeek::fromNative('friday')
+        );
 
         $this->openingHourAsArray = [
             'opens' => '09:30',

@@ -46,6 +46,25 @@ class DayOfWeekCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_can_be_constructed_with_a_multiple_day_of_the_week()
+    {
+        $daysOfWeekCollection = new DayOfWeekCollection(
+            DayOfWeek::WEDNESDAY(),
+            DayOfWeek::FRIDAY()
+        );
+
+        $this->assertEquals(
+            [
+                DayOfWeek::WEDNESDAY(),
+                DayOfWeek::FRIDAY()
+            ],
+            $daysOfWeekCollection->getDaysOfWeek()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_allows_adding_more_days_of_the_week()
     {
         $this->dayOfWeekCollection->addDayOfWeek(DayOfWeek::FRIDAY());

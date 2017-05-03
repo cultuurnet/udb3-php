@@ -15,30 +15,18 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\CalendarType;
 use DateTimeInterface;
 
-/**
- * Class CdbEncoder
- *
- * Encodes an UDB3 calendar or serialized calendar data as a cdb calendar.
- * This encoder is set up to be compatible with the Symfony serializer component.
- *
- * @package CultuurNet\UDB3\Calendar
- */
-class CdbEncoder
+class CalendarConverter implements CalendarConverterInterface
 {
     /**
-     * @param CalendarInterface|array $data
-     * @param $format
-     * @param array $context
-     *
-     * @return \CultureFeed_Cdb_Data_Calendar
+     * @param Calendar $calendar
+     * @return \CultureFeed_Cdb_Data_Calendar $cdbCalendar
      */
-    public function encode($data, $format, array $context = array())
+    public function toCdbCalendar(Calendar $calendar)
     {
-        $calendar = $data instanceof CalendarInterface ? $data : Calendar::deserialize($data);
+        $weekScheme = $this->getWeekScheme($calendar);
+        $calendarType = (string) $calendar->getType();
 
-        $weekscheme = $this->getWeekscheme($calendar);
-
-        switch ($calendar->getType()->toNative()) {
+        switch ($calendarType) {
             case CalendarType::MULTIPLE:
                 $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                 foreach ($calendar->getTimestamps() as $timestamp) {
@@ -62,15 +50,15 @@ class CdbEncoder
                 $endDate = $calendar->getEndDate()->format('Y-m-d');
 
                 $period = new CultureFeed_Cdb_Data_Calendar_Period($startDate, $endDate);
-                if (!empty($weekscheme) && !empty($weekscheme->getDays())) {
-                    $period->setWeekScheme($weekscheme);
+                if (!empty($weekScheme) && !empty($weekScheme->getDays())) {
+                    $period->setWeekScheme($weekScheme);
                 }
                 $cdbCalendar->add($period);
                 break;
             case CalendarType::PERMANENT:
                 $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_Permanent();
-                if (!empty($weekscheme)) {
-                    $cdbCalendar->setWeekScheme($weekscheme);
+                if (!empty($weekScheme)) {
+                    $cdbCalendar->setWeekScheme($weekScheme);
                 }
                 break;
             default:
@@ -80,24 +68,19 @@ class CdbEncoder
         return $cdbCalendar;
     }
 
-    public function supportsEncoding($format)
-    {
-        return 'cbd' === $format;
-    }
-
     /**
      * @param \CultuurNet\UDB3\CalendarInterface $itemCalendar
      * @return CultureFeed_Cdb_Data_Calendar_Weekscheme|null
      * @throws \Exception
      */
-    private function getWeekscheme(CalendarInterface $itemCalendar)
+    private function getWeekScheme(CalendarInterface $itemCalendar)
     {
         // Store opening hours.
         $openingHours = $itemCalendar->getOpeningHours();
-        $weekscheme = null;
+        $weekScheme = null;
 
         if (!empty($openingHours)) {
-            $weekscheme = new CultureFeed_Cdb_Data_Calendar_Weekscheme();
+            $weekScheme = new CultureFeed_Cdb_Data_Calendar_Weekscheme();
 
             // Multiple opening times can happen on same day. Store them in array.
             $openingTimesPerDay = array(
@@ -141,11 +124,11 @@ class CdbEncoder
                         $openingInfo->addOpeningTime($openingTime);
                     }
                 }
-                $weekscheme->setDay($day, $openingInfo);
+                $weekScheme->setDay($day, $openingInfo);
             }
         }
 
-        return $weekscheme;
+        return $weekScheme;
     }
 
     /**

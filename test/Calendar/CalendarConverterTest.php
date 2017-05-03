@@ -6,24 +6,23 @@ use CultureFeed_Cdb_Data_Calendar_Period;
 use CultureFeed_Cdb_Data_Calendar_PeriodList;
 use CultureFeed_Cdb_Data_Calendar_Permanent;
 use CultuurNet\UDB3\Calendar;
-
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
 
-class CdbEncoderTest extends \PHPUnit_Framework_TestCase
+class CalendarConverterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function it_encodes_a_permanent_calendar_as_a_cdb_calendar_object()
     {
-        $encoder = new CdbEncoder();
+        $calendarConverter = new CalendarConverter();
         $calendar = new Calendar(CalendarType::PERMANENT());
 
-        $cdbCalendar = $encoder->encode($calendar, 'cdb');
+        $cdbCalendar = $calendarConverter->toCdbCalendar($calendar);
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_Permanent();
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
@@ -34,7 +33,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_encodes_a_calendar_with_single_timestamp_as_a_cdb_calendar_object()
     {
-        $encoder = new CdbEncoder();
+        $calendarConverter = new CalendarConverter();
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-24',
@@ -54,7 +53,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $cdbCalendar = $encoder->encode($calendar, 'cdb');
+        $cdbCalendar = $calendarConverter->toCdbCalendar($calendar);
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }
@@ -64,7 +63,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_encodes_a_calendar_with_multiple_timestamps_as_a_cdb_calendar_object()
     {
-        $encoder = new CdbEncoder();
+        $calendarConverter = new CalendarConverter();
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-24',
@@ -102,7 +101,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $cdbCalendar = $encoder->encode($calendar, 'cdb');
+        $cdbCalendar = $calendarConverter->toCdbCalendar($calendar);
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }
@@ -112,7 +111,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_encodes_permanent_calendar_with_weekscheme_as_a_cdb_calendar_object()
     {
-        $encoder = new CdbEncoder();
+        $calendarConverter = new CalendarConverter();
 
         $weekDays = new DayOfWeekCollection(
             DayOfWeek::MONDAY(),
@@ -157,7 +156,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
         );
         $expectedCalendar->setWeekScheme($weekScheme);
 
-        $cdbCalendar = $encoder->encode($calendar, 'cdb');
+        $cdbCalendar = $calendarConverter->toCdbCalendar($calendar);
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }
@@ -167,7 +166,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_encodes_periodic_calendar_with_weekscheme_as_a_cdb_calendar_object()
     {
-        $encoder = new CdbEncoder();
+        $calendarConverter = new CalendarConverter();
 
         $weekDays = new DayOfWeekCollection(
             DayOfWeek::MONDAY(),
@@ -215,7 +214,7 @@ class CdbEncoderTest extends \PHPUnit_Framework_TestCase
         $expectedCalendar = new CultureFeed_Cdb_Data_Calendar_PeriodList();
         $expectedCalendar->add($expectedPeriod);
 
-        $cdbCalendar = $encoder->encode($calendar, 'cdb');
+        $cdbCalendar = $calendarConverter->toCdbCalendar($calendar);
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }

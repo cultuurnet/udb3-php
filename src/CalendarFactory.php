@@ -2,11 +2,13 @@
 
 namespace CultuurNet\UDB3;
 
+use Carbon\Carbon;
 use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
+use DateTimeInterface;
 
 class CalendarFactory implements CalendarFactoryInterface
 {
@@ -43,7 +45,7 @@ class CalendarFactory implements CalendarFactoryInterface
             /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
             $timestamp = $cdbCalendar->current();
             if ($timestamp->getStartTime()) {
-                $startDateString = $timestamp->getDate() . 'T' . $timestamp->getStartTime();
+                $startDateString = $timestamp->getDate() . 'T' . substr($timestamp->getStartTime(), 0, 5) . ':00';
             } else {
                 $startDateString = $timestamp->getDate() . 'T00:00:00';
             }
@@ -79,6 +81,7 @@ class CalendarFactory implements CalendarFactoryInterface
         $cdbCalendar->rewind();
         $timestamps = [];
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            $splitPeriods = [];
             while ($cdbCalendar->valid()) {
                 /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
                 $timestamp = $cdbCalendar->current();
@@ -93,11 +96,33 @@ class CalendarFactory implements CalendarFactoryInterface
                     $endDateString = $timestamp->getDate() . 'T' . $startTime;
                 }
 
-                $timestamps[] = $this->createTimestamp(
+                $timestamp = $this->createTimestamp(
                     $startDateString,
                     $endDateString
                 );
+
+                $index = intval($timestamp->getStartDate()->format('s'));
+                if ($index > 0) {
+                    $splitPeriods[$index][] = $timestamp;
+                } else {
+                    $timestamps[] = $timestamp;
+                }
             }
+
+            $periods = array_map(
+                function (array $periodParts) {
+                    $firstPart = array_shift($periodParts);
+                    $lastPart = array_pop($periodParts);
+                    $startUnixTime = date_timestamp_get($firstPart->getStartDate());
+                    return new Timestamp(
+                        \DateTimeImmutable::createFromFormat('U', ($startUnixTime - ($startUnixTime % 60))),
+                        $lastPart->getEndDate()
+                    );
+                },
+                $splitPeriods
+            );
+
+            $timestamps = array_merge($timestamps, $periods);
         }
 
         //
@@ -118,20 +143,8 @@ class CalendarFactory implements CalendarFactoryInterface
             $openingHours = $this->createOpeningHoursFromWeekScheme($weekSchema);
         }
 
-        // End date might be before start date in cdbxml when event takes place
-        // between e.g. 9 PM and 3 AM (the next day). UDB3 does not support this
-        // and gracefully ignores the end time.
-        //
-        // Example cdbxml:
-        //
-        // <timestamp>
-        //   <date>2016-12-16</date>
-        //   <timestart>21:00:00</timestart>
-        //   <timeend>05:00:00</timeend>
-        // </timestamp>
-        //
-        if ($endDate < $startDate) {
-            $endDate = $startDate;
+        if (isset($startDate) && isset($endDate)) {
+            $calendarTimeSpan = $this->createChronologicalTimestamp($startDate, $endDate);
         }
 
         //
@@ -139,8 +152,8 @@ class CalendarFactory implements CalendarFactoryInterface
         //
         return new Calendar(
             CalendarType::fromNative($calendarType),
-            $startDate,
-            $endDate,
+            isset($calendarTimeSpan) ? $calendarTimeSpan->getStartDate() : null,
+            isset($calendarTimeSpan) ? $calendarTimeSpan->getEndDate() : null,
             $timestamps,
             $openingHours
         );
@@ -249,19 +262,30 @@ class CalendarFactory implements CalendarFactoryInterface
         $startDate = DateTimeFactory::dateTimeFromDateString($startDateString);
         $endDate = DateTimeFactory::dateTimeFromDateString($endDateString);
 
-        // End date might be before start date in cdbxml when event takes place
-        // between e.g. 9 PM and 3 AM (the next day). UDB3 does not support this
-        // and gracefully ignores the end time.
-        //
-        // Example cdbxml:
-        //
-        // <timestamp>
-        //   <date>2016-12-16</date>
-        //   <timestart>21:00:00</timestart>
-        //   <timeend>05:00:00</timeend>
-        // </timestamp>
-        //
-        if ($endDate < $startDate) {
+        return $this->createChronologicalTimestamp($startDate, $endDate);
+    }
+
+    /**
+     * End date might be before start date in cdbxml when event takes place
+     * between e.g. 9 PM and 3 AM (the next day). To keep the dates chronological we push the end to the next day.
+     *
+     * If the end dates does not make any sense at all, it is forced to the start date.
+     *
+     * @param DateTimeInterface $start
+     * @param DateTimeInterface $end
+     *
+     * @return Timestamp
+     */
+    private function createChronologicalTimestamp(DateTimeInterface &$start, DateTimeInterface &$end)
+    {
+        $startDate = Carbon::instance($start);
+        $endDate = Carbon::instance($end);
+
+        if ($startDate->isSameDay($endDate) && $endDate->lt($startDate)) {
+            $endDate = $endDate->addDay();
+        }
+
+        if ($endDate->lt($startDate)) {
             $endDate = $startDate;
         }
 

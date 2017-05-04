@@ -43,8 +43,12 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
         $calendar = $this->factory->createFromCdbCalendar($cdbCalendar);
 
         $expectedTimeZone = new DateTimeZone('Europe/Brussels');
-        $expectedStartDate = $expectedEndDate = new DateTimeImmutable(
+        $expectedStartDate = new DateTimeImmutable(
             '2016-12-16 21:00:00',
+            $expectedTimeZone
+        );
+        $expectedEndDate = new DateTimeImmutable(
+            '2016-12-17 05:00:00',
             $expectedTimeZone
         );
 
@@ -477,6 +481,221 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             ),
                             new DateTimeImmutable(
                                 '2017-07-21 11:30:00',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import event with multiple timestamps with specific timeformat as one subevent' => [
+                'cdbCalendar' => (function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-21",
+                            "10:00:01",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-22",
+                            "00:00:01",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-23",
+                            "00:00:01",
+                            "16:00:00"
+                        )
+                    );
+                    return $cdbCalendar;
+                })(),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    new DateTimeImmutable(
+                        '2017-05-21 10:00:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2017-05-23 16:00:00',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 10:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-23 16:00:00',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import event with multiple timestamps with specific timeformat as multiple subevents' => [
+                'cdbCalendar' => (function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-21",
+                            "10:00:01",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-22",
+                            "00:00:01",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-23",
+                            "00:00:01",
+                            "16:00:00"
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-24",
+                            "10:00:02",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-25",
+                            "00:00:02",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-26",
+                            "00:00:02",
+                            "16:00:00"
+                        )
+                    );
+                    return $cdbCalendar;
+                })(),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    new DateTimeImmutable(
+                        '2017-05-21 10:00:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2017-05-26 16:00:00',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 10:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-23 16:00:00',
+                                $timeZone
+                            )
+                        ),
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-24 10:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-26 16:00:00',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import event with multiple timestamps: mixed: dates with or without timestart/timeend and dates with specific timeformat imported as subevent' => [
+                'cdbCalendar' => (function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-21",
+                            "10:00:00",
+                            "16:00:00"
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-21",
+                            "20:00:00",
+                            "01:00:00"
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-23",
+                            "10:00:01",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-24",
+                            "00:00:01",
+                            null
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-25",
+                            "00:00:01",
+                            "16:00:00"
+                        )
+                    );
+                    return $cdbCalendar;
+                })(),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    new DateTimeImmutable(
+                        '2017-05-21 10:00:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2017-05-25 16:00:00',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 10:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-21 16:00:00',
+                                $timeZone
+                            )
+                        ),
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 20:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-22 01:00:00',
+                                $timeZone
+                            )
+                        ),
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-23 10:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-25 16:00:00',
                                 $timeZone
                             )
                         ),

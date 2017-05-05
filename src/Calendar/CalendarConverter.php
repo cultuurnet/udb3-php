@@ -31,12 +31,17 @@ class CalendarConverter implements CalendarConverterInterface
                 $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                 $index = 1;
                 foreach ($calendar->getTimestamps() as $timestamp) {
-                    ($this->countTimestamps($cdbCalendar) - $this->countTimestamps($this->timestampCalendar(
+                    $currentCount = $this->countTimestamps($cdbCalendar);
+                    $cdbCalendar = $this->timestampCalendar(
                         $timestamp->getStartDate(),
                         $timestamp->getEndDate(),
                         $cdbCalendar,
                         $index
-                    ))) === -1 ?: $index++ ;
+                    );
+                    $newCount = $this->countTimestamps($cdbCalendar);
+                    if ($currentCount - $newCount !== -1) {
+                        $index++;
+                    }
                 }
                 break;
             case CalendarType::SINGLE:

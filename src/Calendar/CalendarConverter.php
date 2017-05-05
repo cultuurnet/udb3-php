@@ -193,7 +193,7 @@ class CalendarConverter implements CalendarConverterInterface
 
             $endTimestamp = new CultureFeed_Cdb_Data_Calendar_Timestamp(
                 $endDate->format('Y-m-d'),
-                '00:00:' . str_pad((string) $index, 2, '0', STR_PAD_LEFT),
+                $this->createIndexedTimeString($index),
                 $this->formatDateTimeAsCdbTime($endDate)
             );
 
@@ -202,7 +202,7 @@ class CalendarConverter implements CalendarConverterInterface
                 function (DateTimeInterface $dateTime) use ($index) {
                     return new CultureFeed_Cdb_Data_Calendar_Timestamp(
                         $dateTime->format('Y-m-d'),
-                        '00:00:' . str_pad((string) $index, 2, '0', STR_PAD_LEFT)
+                        $this->createIndexedTimeString($index)
                     );
                 },
                 array_slice($days, 1, count($days) === 2 ? 2 : -1)
@@ -241,5 +241,14 @@ class CalendarConverter implements CalendarConverterInterface
         }
 
         return $time;
+    }
+
+    /**
+     * @param int $index
+     * @return string
+     */
+    private function createIndexedTimeString($index)
+    {
+        return '00:00:' . str_pad((string) $index, 2, '0', STR_PAD_LEFT);
     }
 }

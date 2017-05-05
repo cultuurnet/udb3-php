@@ -116,7 +116,6 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @scenario import event with one timestamp: date + timestart, no timeend
      * @dataProvider timestampListDataProvider
      * @test
      */
@@ -697,6 +696,137 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             new DateTimeImmutable(
                                 '2017-05-25 16:00:00',
                                 $timeZone
+                            )
+                        ),
+                    ]
+                )
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider periodListDataProvider
+     * @test
+     */
+    public function it_creates_a_periodic_calendar_from_cdb_calendar_with_period_list(
+        \CultureFeed_Cdb_Data_Calendar_PeriodList $cdbCalendar,
+        Calendar $expectedCalendar
+    ) {
+        $calendar = $this->factory->createFromCdbCalendar($cdbCalendar);
+
+        $this->assertEquals($expectedCalendar, $calendar);
+    }
+
+    /**
+     * @param string $xmlContent
+     * @return \CultureFeed_Cdb_Data_Calendar_PeriodList
+     */
+    private function createPeriodListFromXML($xmlContent)
+    {
+        $xmlElement = new \SimpleXMLElement($xmlContent);
+        return \CultureFeed_Cdb_Data_Calendar_PeriodList::parseFromCdbXml($xmlElement);
+    }
+
+    public function periodListDataProvider()
+    {
+        $timeZone = new DateTimeZone('Europe/Brussels');
+
+        return [
+            'import event with period: datefrom + dateto, no weekscheme' => [
+                'cdbCalendar' => $this->createPeriodListFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/periodic/calendar_udb2_import_example_1101.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERIODIC(),
+                    new DateTimeImmutable('2017-09-01 00:00:00', $timeZone),
+                    new DateTimeImmutable('2017-12-31 00:00:00', $timeZone)
+                )
+            ],
+            'import event with period: datefrom + dateto + weekscheme only openingtimes from' => [
+                'cdbCalendar' => $this->createPeriodListFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/periodic/calendar_udb2_import_example_1201.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERIODIC(),
+                    new DateTimeImmutable('2017-09-01 00:00:00', $timeZone),
+                    new DateTimeImmutable('2017-12-31 00:00:00', $timeZone),
+                    [],
+                    [
+                        new OpeningHour(
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::MONDAY(),
+                                DayOfWeek::THURSDAY(),
+                                DayOfWeek::FRIDAY(),
+                                DayOfWeek::SATURDAY()
+                            )
+                        ),
+                        new OpeningHour(
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::SUNDAY()
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import event with period: datefrom + dateto + weekscheme openingtimes from + to' => [
+                'cdbCalendar' => $this->createPeriodListFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/periodic/calendar_udb2_import_example_1301.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERIODIC(),
+                    new DateTimeImmutable('2017-09-01 00:00:00', $timeZone),
+                    new DateTimeImmutable('2017-12-31 00:00:00', $timeZone),
+                    [],
+                    [
+                        new OpeningHour(
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new OpeningTime(new Hour(22), new Minute(30)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::MONDAY(),
+                                DayOfWeek::THURSDAY(),
+                                DayOfWeek::FRIDAY(),
+                                DayOfWeek::SATURDAY()
+                            )
+                        ),
+                        new OpeningHour(
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new OpeningTime(new Hour(20), new Minute(0)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::SUNDAY()
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import event with period: datefrom + dateto + weekscheme mix openingtimes from + to' => [
+                'cdbCalendar' => $this->createPeriodListFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/periodic/calendar_udb2_import_example_1401.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERIODIC(),
+                    new DateTimeImmutable('2017-09-01 00:00:00', $timeZone),
+                    new DateTimeImmutable('2017-12-31 00:00:00', $timeZone),
+                    [],
+                    [
+                        new OpeningHour(
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new OpeningTime(new Hour(22), new Minute(30)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::MONDAY(),
+                                DayOfWeek::THURSDAY(),
+                                DayOfWeek::FRIDAY(),
+                                DayOfWeek::SATURDAY()
+                            )
+                        ),
+                        new OpeningHour(
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::SUNDAY()
                             )
                         ),
                     ]

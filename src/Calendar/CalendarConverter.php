@@ -32,7 +32,7 @@ class CalendarConverter implements CalendarConverterInterface
                 $index = 1;
                 foreach ($calendar->getTimestamps() as $timestamp) {
                     $currentCount = $this->countTimestamps($cdbCalendar);
-                    $cdbCalendar = $this->timestampCalendar(
+                    $cdbCalendar = $this->createTimestampCalendar(
                         $timestamp->getStartDate(),
                         $timestamp->getEndDate(),
                         $cdbCalendar,
@@ -45,7 +45,7 @@ class CalendarConverter implements CalendarConverterInterface
                 }
                 break;
             case CalendarType::SINGLE:
-                $cdbCalendar = $this->timestampCalendar(
+                $cdbCalendar = $this->createTimestampCalendar(
                     $calendar->getStartDate(),
                     $calendar->getEndDate(),
                     new CultureFeed_Cdb_Data_Calendar_TimestampList(),
@@ -159,19 +159,23 @@ class CalendarConverter implements CalendarConverterInterface
      *
      * @return CultureFeed_Cdb_Data_Calendar_TimestampList
      */
-    private function timestampCalendar(
+    private function createTimestampCalendar(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
         CultureFeed_Cdb_Data_Calendar_TimestampList $calendar,
         $index = null
     ) {
+        // Make a clone of the original calendar to avoid updating input param.
+        $newCalendar = clone $calendar;
+
         $startDay = Period::createFromDay($startDate);
         $untilEndOfNextDay = $startDay
             ->withDuration('2 DAYS')
             ->moveEndDate('-1 SECOND');
 
+        // Easy case an no seconds needed for indexing.
         if ($untilEndOfNextDay->contains($endDate)) {
-            $calendar->add(
+            $newCalendar->add(
                 new CultureFeed_Cdb_Data_Calendar_Timestamp(
                     $startDate->format('Y-m-d'),
                     $this->formatDateTimeAsCdbTime($startDate),
@@ -179,6 +183,7 @@ class CalendarConverter implements CalendarConverterInterface
                 )
             );
         } else if (is_int($index)) {
+            // Complex case and seconds needed for indexing.
             $period = new Period($startDate, $endDate);
 
             $startTimestamp = new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -203,7 +208,7 @@ class CalendarConverter implements CalendarConverterInterface
                 array_slice($days, 1, count($days) === 2 ? 2 : -1)
             );
 
-            $calendar = array_reduce(
+            $newCalendar = array_reduce(
                 array_merge([$startTimestamp], $fillerTimestamps, [$endTimestamp]),
                 function (CultureFeed_Cdb_Data_Calendar_TimestampList $calendar, $timestamp) {
                     $calendar->add($timestamp);
@@ -213,7 +218,7 @@ class CalendarConverter implements CalendarConverterInterface
             );
         }
 
-        return $calendar;
+        return $newCalendar;
     }
 
     /**

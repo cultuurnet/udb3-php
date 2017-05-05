@@ -834,4 +834,131 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider permanentCalendarDataProvider
+     * @test
+     */
+    public function it_creates_a_permanent_calendar_from_cdb_calendar(
+        \CultureFeed_Cdb_Data_Calendar_Permanent $cdbCalendar,
+        Calendar $expectedCalendar
+    ) {
+        $calendar = $this->factory->createFromCdbCalendar($cdbCalendar);
+
+        $this->assertEquals($expectedCalendar, $calendar);
+    }
+
+    /**
+     * @param string $xmlContent
+     * @return \CultureFeed_Cdb_Data_Calendar_Permanent
+     */
+    private function createPermanentCalendarFromXML($xmlContent)
+    {
+        $xmlElement = new \SimpleXMLElement($xmlContent);
+        return \CultureFeed_Cdb_Data_Calendar_Permanent::parseFromCdbXml($xmlElement);
+    }
+
+    public function permanentCalendarDataProvider()
+    {
+        $timeZone = new DateTimeZone('Europe/Brussels');
+
+        return [
+            'import permanent event, no weekscheme as periodic event' => [
+                'cdbCalendar' => $this->createPermanentCalendarFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/permanent/calendar_udb2_import_example_1501.xml')
+                ),
+                'expectedCalendar' => new Calendar(CalendarType::PERMANENT())
+            ],
+            'import permanent event with weekscheme only openingtimes from' => [
+                'cdbCalendar' => $this->createPermanentCalendarFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/permanent/calendar_udb2_import_example_1601.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERMANENT(),
+                    null,
+                    null,
+                    [],
+                    [
+                        new OpeningHour(
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::MONDAY(),
+                                DayOfWeek::THURSDAY(),
+                                DayOfWeek::FRIDAY(),
+                                DayOfWeek::SATURDAY()
+                            )
+                        ),
+                        new OpeningHour(
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::SUNDAY()
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import permanent event with weekscheme openingtimes from + to' => [
+                'cdbCalendar' => $this->createPermanentCalendarFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/permanent/calendar_udb2_import_example_1701.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERMANENT(),
+                    null,
+                    null,
+                    [],
+                    [
+                        new OpeningHour(
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new OpeningTime(new Hour(22), new Minute(30)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::MONDAY(),
+                                DayOfWeek::THURSDAY(),
+                                DayOfWeek::FRIDAY(),
+                                DayOfWeek::SATURDAY()
+                            )
+                        ),
+                        new OpeningHour(
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new OpeningTime(new Hour(20), new Minute(0)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::SUNDAY()
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import permanent event with weekscheme mix openingtimes from + to' => [
+                'cdbCalendar' => $this->createPermanentCalendarFromXML(
+                    file_get_contents(__DIR__ . '/Calendar/samples/permanent/calendar_udb2_import_example_1801.xml')
+                ),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::PERMANENT(),
+                    null,
+                    null,
+                    [],
+                    [
+                        new OpeningHour(
+                            new OpeningTime(new Hour(20), new Minute(30)),
+                            new OpeningTime(new Hour(22), new Minute(30)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::MONDAY(),
+                                DayOfWeek::THURSDAY(),
+                                DayOfWeek::FRIDAY(),
+                                DayOfWeek::SATURDAY()
+                            )
+                        ),
+                        new OpeningHour(
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new OpeningTime(new Hour(16), new Minute(0)),
+                            new DayOfWeekCollection(
+                                DayOfWeek::SUNDAY()
+                            )
+                        ),
+                    ]
+                )
+            ],
+        ];
+    }
 }

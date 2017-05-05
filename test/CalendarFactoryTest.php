@@ -134,7 +134,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
 
         return [
             'import event with one timestamp: date, no timestart or timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -144,7 +144,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::SINGLE(),
                     new DateTimeImmutable(
@@ -170,7 +170,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with one timestamp: date + timestart, no timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -180,7 +180,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::SINGLE(),
                     new DateTimeImmutable(
@@ -206,7 +206,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with one timestamp: date + timestart + timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -216,7 +216,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::SINGLE(),
                     new DateTimeImmutable(
@@ -242,7 +242,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps: dates, no timestart or timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -266,7 +266,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(
@@ -312,7 +312,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps: dates + timestart, no timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -329,7 +329,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(
@@ -365,7 +365,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps: dates + timestart + timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -382,7 +382,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(
@@ -418,7 +418,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps: mixed: dates, with or without timestart/timeend' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -442,7 +442,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(
@@ -488,7 +488,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps with specific timeformat as one subevent' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -512,7 +512,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(
@@ -538,7 +538,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps with specific timeformat as multiple subevents' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -583,7 +583,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(
@@ -619,7 +619,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 )
             ],
             'import event with multiple timestamps: mixed: dates with or without timestart/timeend and dates with specific timeformat imported as subevent' => [
-                'cdbCalendar' => (function () {
+                'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -657,7 +657,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         )
                     );
                     return $cdbCalendar;
-                })(),
+                }),
                 'expectedCalendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     new DateTimeImmutable(

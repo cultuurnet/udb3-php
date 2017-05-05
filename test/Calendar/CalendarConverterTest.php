@@ -159,7 +159,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * TODO: add to features
-     * @scenario permanent event with multiple sets of openinghours
+     * @scenario permanent event with multiple sets of opening hours
      * @test
      */
     public function it_converts_permanent_calendar_with_weekscheme_as_a_cdb_calendar_object()

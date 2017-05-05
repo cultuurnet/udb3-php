@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3;
 
-use Carbon\Carbon;
+use Cake\Chronos\Chronos;
 use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
@@ -113,9 +113,8 @@ class CalendarFactory implements CalendarFactoryInterface
                 function (array $periodParts) {
                     $firstPart = array_shift($periodParts);
                     $lastPart = array_pop($periodParts);
-                    $startUnixTime = date_timestamp_get($firstPart->getStartDate());
                     return new Timestamp(
-                        \DateTimeImmutable::createFromFormat('U', ($startUnixTime - ($startUnixTime % 60))),
+                        Chronos::instance($firstPart->getStartDate())->second(0),
                         $lastPart->getEndDate()
                     );
                 },
@@ -276,10 +275,10 @@ class CalendarFactory implements CalendarFactoryInterface
      *
      * @return Timestamp
      */
-    private function createChronologicalTimestamp(DateTimeInterface &$start, DateTimeInterface &$end)
+    private function createChronologicalTimestamp(DateTimeInterface $start, DateTimeInterface $end)
     {
-        $startDate = Carbon::instance($start);
-        $endDate = Carbon::instance($end);
+        $startDate = Chronos::instance($start);
+        $endDate = Chronos::instance($end);
 
         if ($startDate->isSameDay($endDate) && $endDate->lt($startDate)) {
             $endDate = $endDate->addDay();

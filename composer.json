@@ -38,6 +38,7 @@
     "guzzlehttp/psr7": "~1.2.3",
     "commerceguys/intl": "^0.7.1",
     "ramsey/uuid": "^2.9",
+    "cakephp/chronos": "^1.1",
     "league/period": "^3.3"
   },
   "require-dev": {

@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer\Security;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Commands\PreflightCommand;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
+use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
@@ -18,29 +19,21 @@ class Security implements SecurityInterface
     private $userIdentification;
 
     /**
-     * @var PermissionQueryInterface
+     * @var PermissionVoterInterface
      */
-    private $permissionRepository;
-
-    /**
-     * @var UserPermissionMatcherInterface
-     */
-    private $userPermissionMatcher;
+    private $permissionVoter;
 
     /**
      * Security constructor.
      * @param UserIdentificationInterface $userIdentification
-     * @param PermissionQueryInterface $permissionRepository
-     * @param UserPermissionMatcherInterface $userPermissionMatcher
+     * @param PermissionVoterInterface $permissionVoter
      */
     public function __construct(
         UserIdentificationInterface $userIdentification,
-        PermissionQueryInterface $permissionRepository,
-        UserPermissionMatcherInterface $userPermissionMatcher
+        PermissionVoterInterface $permissionVoter
     ) {
         $this->userIdentification = $userIdentification;
-        $this->permissionRepository = $permissionRepository;
-        $this->userPermissionMatcher = $userPermissionMatcher;
+        $this->permissionVoter = $permissionVoter;
     }
 
     /**
@@ -77,28 +70,10 @@ class Security implements SecurityInterface
             return false;
         }
 
-        // Check if superuser. If so return true.
-        if ($this->userIdentification->isGodUser()) {
-            return true;
-        }
-
-        // Then check if user is owner of the offer. IF so, return true.
-        $editableEvents = $this->permissionRepository->getEditableOffers(
+        return $this->permissionVoter->isAllowed(
+            $command->getPermission(),
+            $offerId,
             $this->userIdentification->getId()
         );
-        if (in_array($offerId, $editableEvents)) {
-            return true;
-        }
-
-        // Check role permissions and constraint. IF ok true. Else false.
-        if ($this->userPermissionMatcher->itMatchesOffer(
-            $this->userIdentification->getId(),
-            $command->getPermission(),
-            $offerId
-        )) {
-            return true;
-        }
-
-        return false;
     }
 }

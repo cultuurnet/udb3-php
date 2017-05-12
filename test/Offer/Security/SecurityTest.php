@@ -4,6 +4,12 @@ namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
+use CultuurNet\UDB3\Offer\Security\Permission\CompositeVoter;
+use CultuurNet\UDB3\Offer\Security\Permission\GodUserVoter;
+use CultuurNet\UDB3\Offer\Security\Permission\OwnerVoter;
+use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
+use CultuurNet\UDB3\Offer\Security\Permission\RoleConstraintVoter;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -13,6 +19,26 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
      * @var UserIdentificationInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $userIdentification;
+
+    /**
+     * @var string
+     */
+    private $godUserId;
+
+    /**
+     * @var string
+     */
+    private $ownerUserId;
+
+    /**
+     * @var string
+     */
+    private $roleUserId;
+
+    /**
+     * @var string
+     */
+    private $notAllowedUserId;
 
     /**
      * @var PermissionQueryInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -25,6 +51,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
     private $userPermissionMatcher;
 
     /**
+     * @var CompositeVoter
+     */
+    private $permissionVoter;
+
+    /**
      * @var Security
      */
     private $security;
@@ -35,6 +66,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             UserIdentificationInterface::class
         );
 
+        $this->godUserId = 'bb0bf2b3-49ba-4f2a-a1e4-ce7ec93a5ea0';
+        $this->ownerUserId = '9cb28282-30a1-4afc-aa23-fc825c7d8ac3';
+        $this->roleUserId = 'a8ae681a-3945-4fce-9ec1-aee09e8d0234';
+        $this->notAllowedUserId = '4b7d9a94-e4ff-4840-92b2-2f3f37ee99d4';
+
         $this->permissionRepository = $this->createMock(
             PermissionQueryInterface::class
         );
@@ -43,10 +79,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             UserPermissionMatcherInterface::class
         );
 
+        $this->permissionVoter = new CompositeVoter(
+            new GodUserVoter([$this->godUserId]),
+            new OwnerVoter($this->permissionRepository),
+            new RoleConstraintVoter($this->userPermissionMatcher)
+        );
+
         $this->security = new Security(
             $this->userIdentification,
-            $this->permissionRepository,
-            $this->userPermissionMatcher
+            $this->permissionVoter
         );
     }
 
@@ -68,9 +109,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_true_for_god_user()
     {
-        $this->mockGetId(new StringLiteral('userId'));
-
-        $this->mockIsGodUser(true);
+        $this->mockGetId(new StringLiteral($this->godUserId));
 
         $offerId = new StringLiteral('offerId');
         $allowsUpdate = $this->security->allowsUpdateWithCdbXml($offerId);
@@ -83,9 +122,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_true_for_own_offer()
     {
-        $this->mockGetId(new StringLiteral('userId'));
-
-        $this->mockIsGodUser(false);
+        $this->mockGetId(new StringLiteral($this->ownerUserId));
 
         $this->mockGetEditableOffers(['offerId', 'otherOfferId']);
 
@@ -102,8 +139,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockGetId(new StringLiteral('userId'));
 
-        $this->mockIsGodUser(false);
-
         $this->mockGetEditableOffers(['otherOfferId', 'andOtherOfferId']);
 
         $this->mockItMatchesOffer(false);
@@ -119,9 +154,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_true_when_not_own_offer_but_matching_user_permission()
     {
-        $this->mockGetId(new StringLiteral('userId'));
-
-        $this->mockIsGodUser(false);
+        $this->mockGetId(new StringLiteral($this->roleUserId));
 
         $this->mockGetEditableOffers(['otherOfferId', 'andOtherOfferId']);
 
@@ -138,13 +171,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_also_handles_authorizable_command()
     {
-        $this->mockGetId(new StringLiteral('userId'));
-
-        $this->mockIsGodUser(true);
+        $this->mockGetId(new StringLiteral($this->godUserId));
 
         $authorizableCommand = $this->createMock(AuthorizableCommandInterface::class);
+
         $authorizableCommand->method('getItemId')
             ->willReturn('offerId');
+
+        $authorizableCommand->method('getPermission')
+            ->willReturn(Permission::AANBOD_BEWERKEN());
 
         $allowsUpdate = $this->security->isAuthorized($authorizableCommand);
 
@@ -158,15 +193,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
     {
         $this->userIdentification->method('getId')
             ->willReturn($userId);
-    }
-
-    /**
-     * @param bool $isGodUser
-     */
-    private function mockIsGodUser($isGodUser)
-    {
-        $this->userIdentification->method('isGodUser')
-            ->willReturn($isGodUser);
     }
 
     /**

@@ -179,7 +179,7 @@ class CalendarConverter implements CalendarConverterInterface
                 new CultureFeed_Cdb_Data_Calendar_Timestamp(
                     $startDate->format('Y-m-d'),
                     $this->formatDateTimeAsCdbTime($startDate),
-                    $this->formatDateTimeAsCdbTime($endDate)
+                    ($startDate == $endDate) ? null : $this->formatDateTimeAsCdbTime($endDate)
                 )
             );
         } else if (is_int($index)) {

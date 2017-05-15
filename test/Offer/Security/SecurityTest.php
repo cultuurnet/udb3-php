@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\CompositeVoter;
 use CultuurNet\UDB3\Offer\Security\Permission\GodUserVoter;
 use CultuurNet\UDB3\Offer\Security\Permission\OwnerVoter;
-use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\RoleConstraintVoter;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
@@ -173,6 +172,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockGetId(new StringLiteral($this->godUserId));
 
+        /** @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject $authorizableCommand */
         $authorizableCommand = $this->createMock(AuthorizableCommandInterface::class);
 
         $authorizableCommand->method('getItemId')

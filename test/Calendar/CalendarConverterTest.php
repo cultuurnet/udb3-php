@@ -602,4 +602,35 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }
+
+    /**
+     * @test
+     */
+    public function it_converts_timestamps_that_start_and_end_at_the_same_time_pas_midnight_to_a_cdb_calendar_without_end_time()
+    {
+        $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+        $expectedCalendar->add(
+            new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+                '2017-05-21',
+                '10:00:00',
+                null
+            )
+        );
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new DateTime('2017-05-21T10:00:00+02:00'),
+            new DateTime('2017-05-21T10:00:00+02:00'),
+            [
+                new Timestamp(
+                    new DateTime('2017-05-21T10:00:00+02:00'),
+                    new DateTime('2017-05-21T10:00:00+02:00')
+                )
+            ]
+        );
+
+        $cdbCalendar = $this->converter->toCdbCalendar($calendar);
+
+        $this->assertEquals($expectedCalendar, $cdbCalendar);
+    }
 }

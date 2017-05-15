@@ -4,21 +4,21 @@
         <permanent>
             <weekscheme>
                 <monday opentype="open">
-                    <openingtime from="20:30:00" to="20:30:00"/>
+                    <openingtime from="20:30:00"/>
                 </monday>
                 <tuesday opentype="closed"/>
                 <wednesday opentype="closed"/>
                 <thursday opentype="open">
-                    <openingtime from="20:30:00" to="20:30:00"/>
+                    <openingtime from="20:30:00"/>
                 </thursday>
                 <friday opentype="open">
-                    <openingtime from="20:30:00" to="20:30:00"/>
+                    <openingtime from="20:30:00"/>
                 </friday>
                 <saturday opentype="open">
-                    <openingtime from="20:30:00" to="20:30:00"/>
+                    <openingtime from="20:30:00"/>
                 </saturday>
                 <sunday opentype="open">
-                    <openingtime from="16:00:00" to="16:00:00"/>
+                    <openingtime from="16:00:00"/>
                 </sunday>
             </weekscheme>
         </permanent>

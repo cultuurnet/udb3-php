@@ -279,25 +279,13 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
-                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                            "2017-05-21",
-                            "00:00:00",
-                            "23:59:00"
-                        )
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp("2017-05-21")
                     );
                     $cdbCalendar->add(
-                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                            "2017-06-21",
-                            "00:00:00",
-                            "23:59:00"
-                        )
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp("2017-06-21")
                     );
                     $cdbCalendar->add(
-                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                            "2017-07-21",
-                            "00:00:00",
-                            "23:59:00"
-                        )
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp("2017-07-21")
                     );
                     return $cdbCalendar;
                 }),
@@ -308,7 +296,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         $timeZone
                     ),
                     new DateTimeImmutable(
-                        '2017-07-21 23:59:00',
+                        '2017-07-21 00:00:00',
                         $timeZone
                     ),
                     [
@@ -318,7 +306,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                                 $timeZone
                             ),
                             new DateTimeImmutable(
-                                '2017-05-21 23:59:00',
+                                '2017-05-21 00:00:00',
                                 $timeZone
                             )
                         ),
@@ -328,7 +316,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                                 $timeZone
                             ),
                             new DateTimeImmutable(
-                                '2017-06-21 23:59:00',
+                                '2017-06-21 00:00:00',
                                 $timeZone
                             )
                         ),
@@ -338,7 +326,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                                 $timeZone
                             ),
                             new DateTimeImmutable(
-                                '2017-07-21 23:59:00',
+                                '2017-07-21 00:00:00',
                                 $timeZone
                             )
                         ),
@@ -352,14 +340,14 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
                             "2017-05-21",
                             "10:00:00",
-                            "10:00:00"
+                            null
                         )
                     );
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
                             "2017-06-21",
                             "10:00:00",
-                            "10:00:00"
+                            null
                         )
                     );
                     return $cdbCalendar;
@@ -455,17 +443,13 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
-                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                            "2017-05-21",
-                            "00:00:00",
-                            "23:59:00"
-                        )
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp("2017-05-21")
                     );
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
                             "2017-06-21",
                             "10:00:00",
-                            "10:00:00"
+                            null
                         )
                     );
                     $cdbCalendar->add(
@@ -494,7 +478,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                                 $timeZone
                             ),
                             new DateTimeImmutable(
-                                '2017-05-21 23:59:00',
+                                '2017-05-21 00:00:00',
                                 $timeZone
                             )
                         ),

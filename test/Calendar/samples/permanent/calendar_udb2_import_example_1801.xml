@@ -18,7 +18,7 @@
                     <openingtime from="20:30:00" to="22:30:00"/>
                 </saturday>
                 <sunday opentype="open">
-                    <openingtime from="16:00:00" to="16:00:00"/>
+                    <openingtime from="16:00:00"/>
                 </sunday>
             </weekscheme>
         </permanent>

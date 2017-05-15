@@ -515,7 +515,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                     return $cdbCalendar;
                 }),
                 'expectedCalendar' => new Calendar(
-                    CalendarType::MULTIPLE(),
+                    CalendarType::SINGLE(),
                     new DateTimeImmutable(
                         '2017-05-21 10:00:00',
                         $timeZone

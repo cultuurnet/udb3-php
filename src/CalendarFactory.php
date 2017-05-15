@@ -18,21 +18,6 @@ class CalendarFactory implements CalendarFactoryInterface
     public function createFromCdbCalendar(\CultureFeed_Cdb_Data_Calendar $cdbCalendar)
     {
         //
-        // Get the calendar type.
-        //
-        $calendarType = '';
-        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $calendarType = 'permanent';
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $calendarType = 'periodic';
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $calendarType = 'single';
-            if (iterator_count($cdbCalendar) > 1) {
-                $calendarType = 'multiple';
-            }
-        }
-
-        //
         // Get the start day.
         //
         $cdbCalendar->rewind();
@@ -144,6 +129,21 @@ class CalendarFactory implements CalendarFactoryInterface
 
         if (isset($startDate) && isset($endDate)) {
             $calendarTimeSpan = $this->createChronologicalTimestamp($startDate, $endDate);
+        }
+
+        //
+        // Get the calendar type.
+        //
+        $calendarType = '';
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+            $calendarType = 'permanent';
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            $calendarType = 'periodic';
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            $calendarType = 'single';
+            if (count($timestamps) > 1) {
+                $calendarType = 'multiple';
+            }
         }
 
         //

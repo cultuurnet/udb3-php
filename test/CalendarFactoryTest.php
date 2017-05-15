@@ -139,6 +139,40 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-21"
+                        )
+                    );
+                    return $cdbCalendar;
+                }),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::SINGLE(),
+                    new DateTimeImmutable(
+                        '2017-05-21 00:00:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2017-05-21 00:00:00',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 00:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-21 00:00:00',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                )
+            ],
+            'import event with one timestamp: date, whole day' => [
+                'cdbCalendar' => call_user_func(function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
                             "2017-05-21",
                             "00:00:00",
                             "23:59:00"
@@ -176,7 +210,6 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
                             "2017-05-21",
-                            "10:00:00",
                             "10:00:00"
                         )
                     );

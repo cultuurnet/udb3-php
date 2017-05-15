@@ -27,7 +27,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_converts_a_permanent_calendar_as_a_cdb_calendar_object()
+    public function it_converts_a_permanent_calendar_to_a_cdb_calendar_object()
     {
         $calendar = new Calendar(CalendarType::PERMANENT());
 
@@ -42,7 +42,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with one timestamp, start and enddate on same day
      * @test
      */
-    public function it_converts_a_calendar_with_single_timestamp_as_a_cdb_calendar_object()
+    public function it_converts_a_calendar_with_single_timestamp_to_a_cdb_calendar_object()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -73,7 +73,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with multiple timestamps, start and enddate on same day
      * @test
      */
-    public function it_converts_a_calendar_with_multiple_timestamps_as_a_cdb_calendar_object()
+    public function it_converts_a_calendar_with_multiple_timestamps_to_a_cdb_calendar_object()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -122,7 +122,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with multiple timestamps, enddate one day later
      * @test
      */
-    public function it_converts_a_calendar_with_multiple_timestamps_that_end_the_next_day_as_a_cdb_calendar_object()
+    public function it_converts_a_calendar_with_multiple_timestamps_that_end_the_next_day_to_a_cdb_calendar_object()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -162,7 +162,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario permanent event with multiple sets of opening hours
      * @test
      */
-    public function it_converts_permanent_calendar_with_weekscheme_as_a_cdb_calendar_object()
+    public function it_converts_permanent_calendar_with_weekscheme_to_a_cdb_calendar_object()
     {
         $weekDays = new DayOfWeekCollection(
             DayOfWeek::MONDAY(),
@@ -217,7 +217,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario periodic event with multiple sets of openinghours
      * @test
      */
-    public function it_converts_periodic_calendar_with_weekscheme_as_a_cdb_calendar_object()
+    public function it_converts_periodic_calendar_with_weekscheme_to_a_cdb_calendar_object()
     {
         $weekDays = new DayOfWeekCollection(
             DayOfWeek::MONDAY(),
@@ -275,7 +275,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario periodic event with one set of openinghours
      * @test
      */
-    public function it_converts_a_periodic_calendar_with_a_single_set_of_opening_hours_as_a_cdb_calendar_with_week_scheme()
+    public function it_converts_a_periodic_calendar_with_a_single_set_of_opening_hours_to_a_cdb_calendar_with_week_scheme()
     {
         $calendar = new Calendar(
             CalendarType::PERIODIC(),
@@ -337,7 +337,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with one timestamp, enddate one day later
      * @test
      */
-    public function it_converts_a_calendar_with_a_timestamp_that_ends_the_next_day_as_single_cdb_timestamp()
+    public function it_converts_a_calendar_with_a_timestamp_that_ends_the_next_day_to_a_single_cdb_timestamp()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -364,7 +364,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with one timestamp, enddate more than one day later
      * @test
      */
-    public function it_converts_a_calendar_with_a_single_timestamp_that_spans_3_days_as_multiple_cdb_timestamps()
+    public function it_converts_a_calendar_with_a_single_timestamp_that_spans_3_days_to_multiple_cdb_timestamps()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -399,7 +399,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with one timestamp, enddate more than one day later
      * @test
      */
-    public function it_converts_a_calendar_with_a_single_timestamp_that_spans_a_whole_week_as_multiple_cdb_timestamps()
+    public function it_converts_a_calendar_with_a_single_timestamp_that_spans_a_whole_week_to_multiple_cdb_timestamps()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
 
@@ -451,7 +451,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with multiple timestamps, start and enddate more than one day apart
      * @test
      */
-    public function it_converts_a_calendar_with_multiple_timestamps_that_span_more_than_two_days_as_multiple_indexed_cdb_timestamps()
+    public function it_converts_a_calendar_with_multiple_timestamps_that_span_more_than_two_days_to_multiple_indexed_cdb_timestamps()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
@@ -525,7 +525,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
      * @scenario event with multiple timestamps (MIX): start and enddate on the same day, enddate one day later, enddate more than one day later
      * @test
      */
-    public function it_converts_a_calendar_with_multiple_timestamp_of_various_duration_as_multiple_indexed_cdb_timestamps()
+    public function it_converts_a_calendar_with_multiple_timestamp_of_various_duration_to_multiple_indexed_cdb_timestamps()
     {
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(

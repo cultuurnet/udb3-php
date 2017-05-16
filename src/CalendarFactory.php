@@ -134,15 +134,15 @@ class CalendarFactory implements CalendarFactoryInterface
         //
         // Get the calendar type.
         //
-        $calendarType = '';
+        $calendarType = null;
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $calendarType = 'permanent';
+            $calendarType = CalendarType::PERMANENT();
         } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $calendarType = 'periodic';
+            $calendarType = CalendarType::PERIODIC();
         } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $calendarType = 'single';
+            $calendarType = CalendarType::SINGLE();
             if (count($timestamps) > 1) {
-                $calendarType = 'multiple';
+                $calendarType = CalendarType::MULTIPLE();
             }
         }
 
@@ -150,7 +150,7 @@ class CalendarFactory implements CalendarFactoryInterface
         // Create the calendar value object.
         //
         return new Calendar(
-            CalendarType::fromNative($calendarType),
+            $calendarType,
             isset($calendarTimeSpan) ? $calendarTimeSpan->getStartDate() : null,
             isset($calendarTimeSpan) ? $calendarTimeSpan->getEndDate() : null,
             $timestamps,

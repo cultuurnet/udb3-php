@@ -18,21 +18,6 @@ class CalendarFactory implements CalendarFactoryInterface
     public function createFromCdbCalendar(\CultureFeed_Cdb_Data_Calendar $cdbCalendar)
     {
         //
-        // Get the calendar type.
-        //
-        $calendarType = '';
-        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
-            $calendarType = 'permanent';
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
-            $calendarType = 'periodic';
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            $calendarType = 'single';
-            if (iterator_count($cdbCalendar) > 1) {
-                $calendarType = 'multiple';
-            }
-        }
-
-        //
         // Get the start day.
         //
         $cdbCalendar->rewind();
@@ -147,10 +132,25 @@ class CalendarFactory implements CalendarFactoryInterface
         }
 
         //
+        // Get the calendar type.
+        //
+        $calendarType = null;
+        if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
+            $calendarType = CalendarType::PERMANENT();
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+            $calendarType = CalendarType::PERIODIC();
+        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+            $calendarType = CalendarType::SINGLE();
+            if (count($timestamps) > 1) {
+                $calendarType = CalendarType::MULTIPLE();
+            }
+        }
+
+        //
         // Create the calendar value object.
         //
         return new Calendar(
-            CalendarType::fromNative($calendarType),
+            $calendarType,
             isset($calendarTimeSpan) ? $calendarTimeSpan->getStartDate() : null,
             isset($calendarTimeSpan) ? $calendarTimeSpan->getEndDate() : null,
             $timestamps,

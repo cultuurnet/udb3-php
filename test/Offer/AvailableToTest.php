@@ -48,6 +48,10 @@ class AvailableToTest extends \PHPUnit_Framework_TestCase
                 $startDate
             ],
             [
+                new Calendar(CalendarType::SINGLE(), $startDate, $endDate),
+                $endDate
+            ],
+            [
                 new Calendar(CalendarType::PERIODIC(), $startDate, $endDate),
                 $endDate
             ],
@@ -56,8 +60,12 @@ class AvailableToTest extends \PHPUnit_Framework_TestCase
                 $endDate
             ],
             [
-            new Calendar(CalendarType::SINGLE(), $startDateNoHours),
+                new Calendar(CalendarType::SINGLE(), $startDateNoHours),
                 $startDateAlmostMidnight
+            ],
+            [
+                new Calendar(CalendarType::SINGLE(), $startDateNoHours, $endDateNoHours),
+                $endDateAlmostMidnight
             ],
             [
                 new Calendar(CalendarType::PERIODIC(), $startDate, $endDateNoHours),

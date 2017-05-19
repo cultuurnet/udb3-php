@@ -577,4 +577,35 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }
+
+    /**
+     * @feature calendar_udb3_update.feature
+     * @scenario event with one timestamp, last all day
+     * @test
+     */
+    public function it_converts_a_calendar_that_lasts_all_day_as_a_single_cdb_timestamp()
+    {
+        $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+        $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+            '2017-05-25',
+            '00:00:00',
+            '23:59:00'
+        ));
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new DateTime('2017-05-25T00:00:00+02:00'),
+            new DateTime('2017-05-25T23:59:00+02:00'),
+            [
+                new Timestamp(
+                    new DateTime('2017-05-25T00:00:00+02:00'),
+                    new DateTime('2017-05-25T23:59:00+02:00')
+                )
+            ]
+        );
+
+        $cdbCalendar = $this->converter->toCdbCalendar($calendar);
+
+        $this->assertEquals($expectedCalendar, $cdbCalendar);
+    }
 }

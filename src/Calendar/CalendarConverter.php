@@ -236,10 +236,6 @@ class CalendarConverter implements CalendarConverterInterface
             ? $timestamp->format('H:i') . ':' . str_pad((string) $index, 2, '0', STR_PAD_LEFT)
             : $timestamp->format('H:i:s');
 
-        if ($time == '00:00:00') {
-            $time = null;
-        }
-
         return $time;
     }
 

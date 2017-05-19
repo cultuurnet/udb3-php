@@ -30,7 +30,7 @@ class AvailableTo
         if ($calendar->getType() === CalendarType::PERMANENT()) {
             $availableTo = new \DateTime('2100-01-01T00:00:00Z');
         } else if ($calendar->getType() === CalendarType::SINGLE()) {
-            $availableTo = $calendar->getStartDate();
+            $availableTo = $calendar->getEndDate() ? $calendar->getEndDate() : $calendar->getStartDate();
         } else {
             $availableTo = $calendar->getEndDate();
         }

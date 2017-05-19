@@ -1050,7 +1050,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
-        $expectedJsonLD->availableTo = $expectedJsonLD->startDate;
+        $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
 
         $body = $this->project($majorInfoUpdated, $id);
 

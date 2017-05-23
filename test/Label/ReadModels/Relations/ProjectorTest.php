@@ -218,7 +218,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->writeRepository->expects($this->at(0))
-            ->method('deleteByRelationId')
+            ->method('deleteImportedByRelationId')
             ->with($itemId);
 
         $this->writeRepository->expects($this->at(1))

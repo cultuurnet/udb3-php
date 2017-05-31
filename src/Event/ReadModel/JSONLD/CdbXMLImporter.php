@@ -4,6 +4,8 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
+use CultuurNet\UDB3\Cdb\Description\LongDescriptionCdbXmlToJsonLdFilter;
+use CultuurNet\UDB3\Cdb\Description\ShortDescriptionCdbXmlToJsonLdFilter;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
@@ -79,23 +81,8 @@ class CdbXMLImporter
         $this->calendarFactory = $calendarFactory;
         $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
 
-        $consecutiveBlockOfTextFilter = new ConsecutiveBlockOfTextStringFilter();
-
-        $this->longDescriptionFilter = new CombinedStringFilter();
-        $this->longDescriptionFilter->addFilter(
-            new StripSourceStringFilter()
-        );
-        $this->longDescriptionFilter->addFilter(
-            $consecutiveBlockOfTextFilter
-        );
-        $this->longDescriptionFilter->addFilter(
-            new BreakTagToNewlineStringFilter()
-        );
-        $this->longDescriptionFilter->addFilter(
-            new StripSurroundingSpaceStringFilter()
-        );
-
-        $this->shortDescriptionFilter = $consecutiveBlockOfTextFilter;
+        $this->longDescriptionFilter = new LongDescriptionCdbXmlToJsonLdFilter();
+        $this->shortDescriptionFilter = new ShortDescriptionCdbXmlToJsonLdFilter();
     }
 
     /**

@@ -5,9 +5,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\Description\LongDescription;
-use CultuurNet\UDB3\Cdb\Description\LongDescriptionCdbXmlToJsonLdFilter;
 use CultuurNet\UDB3\Cdb\Description\ShortDescription;
-use CultuurNet\UDB3\Cdb\Description\ShortDescriptionCdbXmlToJsonLdFilter;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
@@ -15,12 +13,6 @@ use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
-use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
-use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
-use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)

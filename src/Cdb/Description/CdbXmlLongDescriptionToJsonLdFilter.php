@@ -8,7 +8,7 @@ use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
 use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
 use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
-class LongDescriptionCdbXmlToJsonLdFilter extends CombinedStringFilter
+class CdbXmlLongDescriptionToJsonLdFilter extends CombinedStringFilter
 {
     public function __construct()
     {

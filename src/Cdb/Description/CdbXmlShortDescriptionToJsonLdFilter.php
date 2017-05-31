@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Cdb\Description;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
 use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
 
-class ShortDescriptionCdbXmlToJsonLdFilter extends CombinedStringFilter
+class CdbXmlShortDescriptionToJsonLdFilter extends CombinedStringFilter
 {
     public function __construct()
     {

@@ -2,12 +2,13 @@
 
 namespace CultuurNet\UDB3\Cdb\Description;
 
+use CultuurNet\UDB3\StringFilter\StringFilterInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class ShortDescription extends StringLiteral
 {
     /**
-     * @var ShortDescriptionCdbXmlToJsonLdFilter
+     * @var StringFilterInterface
      */
     private static $cdbXmlToJsonLdFilter;
 
@@ -25,12 +26,12 @@ class ShortDescription extends StringLiteral
     }
 
     /**
-     * @return ShortDescriptionCdbXmlToJsonLdFilter
+     * @return StringFilterInterface
      */
     private static function getCdbXmlToJsonLdFilter()
     {
         if (!isset(self::$cdbXmlToJsonLdFilter)) {
-            self::$cdbXmlToJsonLdFilter = new ShortDescriptionCdbXmlToJsonLdFilter();
+            self::$cdbXmlToJsonLdFilter = new CdbXmlShortDescriptionToJsonLdFilter();
         }
         return self::$cdbXmlToJsonLdFilter;
     }

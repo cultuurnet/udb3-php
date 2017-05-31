@@ -176,7 +176,7 @@ class CdbXMLImporter
         $longDescription = $languageDetail->getLongDescription();
 
         if ($longDescription) {
-            $longDescription = (new LongDescription($longDescription))
+            $longDescription = LongDescription::fromCdbXmlToJsonLdFormat($longDescription)
                 ->toNative();
         }
 
@@ -186,7 +186,7 @@ class CdbXMLImporter
         if ($shortDescription) {
             $includeShortDescription = true;
 
-            $shortDescription = (new ShortDescription($shortDescription))
+            $shortDescription = ShortDescription::fromCdbXmlToJsonLdFormat($shortDescription)
                 ->toNative();
 
             if ($longDescription) {

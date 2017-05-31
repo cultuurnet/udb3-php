@@ -13,21 +13,16 @@ class LongDescription extends StringLiteral
     private static $cdbXmlToJsonLdFilter;
 
     /**
-     * @param string $value
+     * @param string $longDescriptionAsString
+     * @return LongDescription
      */
-    public function __construct($value)
+    public static function fromCdbXmlToJsonLdFormat($longDescriptionAsString)
     {
-        $filtered = self::getCdbXmlToJsonLdFilter()->filter($value);
-        parent::__construct($filtered);
-    }
+        $cdbXmlToJsonLdFilter = self::getCdbXmlToJsonLdFilter();
 
-    /**
-     * @param ShortDescription $shortDescription
-     * @param LongDescription $longDescription
-     * @return LongDescription $longDescription
-     */
-    public static function merge(ShortDescription $shortDescription, LongDescription $longDescription)
-    {
+        return new LongDescription(
+            $cdbXmlToJsonLdFilter->filter($longDescriptionAsString)
+        );
     }
 
     /**

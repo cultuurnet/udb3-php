@@ -13,12 +13,16 @@ class ShortDescription extends StringLiteral
     private static $cdbXmlToJsonLdFilter;
 
     /**
-     * @param string $value
+     * @param string $shortDescriptionAsString
+     * @return ShortDescription
      */
-    public function __construct($value)
+    public static function fromCdbXmlToJsonLdFormat($shortDescriptionAsString)
     {
-        $filtered = self::getCdbXmlToJsonLdFilter()->filter($value);
-        parent::__construct($filtered);
+        $cdbXmlToJsonLdFilter = self::getCdbXmlToJsonLdFilter();
+
+        return new ShortDescription(
+            $cdbXmlToJsonLdFilter->filter($shortDescriptionAsString)
+        );
     }
 
     /**

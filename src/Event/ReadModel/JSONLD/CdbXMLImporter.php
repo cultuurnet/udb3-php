@@ -4,7 +4,9 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
+use CultuurNet\UDB3\Cdb\Description\LongDescription;
 use CultuurNet\UDB3\Cdb\Description\LongDescriptionCdbXmlToJsonLdFilter;
+use CultuurNet\UDB3\Cdb\Description\ShortDescription;
 use CultuurNet\UDB3\Cdb\Description\ShortDescriptionCdbXmlToJsonLdFilter;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -42,16 +44,6 @@ class CdbXMLImporter
     private $priceDescriptionParser;
 
     /**
-     * @var StringFilterInterface
-     */
-    private $longDescriptionFilter;
-
-    /**
-     * @var StringFilterInterface
-     */
-    private $shortDescriptionFilter;
-
-    /**
      * @var CalendarFactoryInterface
      */
     private $calendarFactory;
@@ -80,9 +72,6 @@ class CdbXMLImporter
         $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
         $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
-
-        $this->longDescriptionFilter = new LongDescriptionCdbXmlToJsonLdFilter();
-        $this->shortDescriptionFilter = new ShortDescriptionCdbXmlToJsonLdFilter();
     }
 
     /**
@@ -195,9 +184,8 @@ class CdbXMLImporter
         $longDescription = $languageDetail->getLongDescription();
 
         if ($longDescription) {
-            $longDescription = $this->longDescriptionFilter->filter(
-                $longDescription
-            );
+            $longDescription = LongDescription::fromCdbXmlToJsonLdFormat($longDescription)
+                ->toNative();
         }
 
         $descriptions = [];
@@ -206,9 +194,8 @@ class CdbXMLImporter
         if ($shortDescription) {
             $includeShortDescription = true;
 
-            $shortDescription = $this->shortDescriptionFilter->filter(
-                $shortDescription
-            );
+            $shortDescription = ShortDescription::fromCdbXmlToJsonLdFormat($shortDescription)
+                ->toNative();
 
             if ($longDescription) {
                 $includeShortDescription =

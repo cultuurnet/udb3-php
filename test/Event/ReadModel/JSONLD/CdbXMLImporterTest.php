@@ -891,11 +891,11 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'event_without_short_description.cdbxml.xml',
                 'description_from_only_long_description.txt',
             ),
-            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description' => array(
+            'remove repetition of short description in long description for events when complete short description is equal to the first part of long description' => array(
                 'event_with_short_description_included_in_long_description.cdbxml.xml',
                 'description.txt',
             ),
-            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description' => array(
+            'remove repetition of short description in long description for events when complete short description is equal to the first part of long description and keep HTML of long description' => array(
                 'event_vertelavond_jan_gabriels.cdbxml.xml',
                 'description_vertelavond_jan_gabriels.txt',
                 '3.3',

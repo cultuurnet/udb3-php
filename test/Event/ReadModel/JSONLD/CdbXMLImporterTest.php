@@ -900,6 +900,10 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 'description_vertelavond_jan_gabriels.txt',
                 '3.3',
             ),
+            'take ellipsis into consideration when merging short and long description' => array(
+                'event_with_short_description_and_ellipsis_included_in_long_description.cdbxml.xml',
+                'description.txt',
+            ),
             'newlines, leading & trailing whitespace are removed from longdescription' => array(
                 'event_brussels_buzzing.cdbxml.xml',
                 'description_brussels_buzzing.txt',

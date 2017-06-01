@@ -83,11 +83,22 @@ class MergedDescription extends StringLiteral
         $shortAsString = $shortDescription->toNative();
         $longAsString = $longDescription->toNative();
 
+        $shortAsStringWithoutEllipsis = rtrim($shortAsString, '. ');
+
         $longFormattedAsUdb2Short = self::getShortDescriptionUDB2FormattingFilter()->filter($longAsString);
         $longFormattedAsUdb3Short = self::getShortDescriptionUDB3FormattingFilter()->filter($longAsString);
 
-        $udb2Comparison = strncmp($longFormattedAsUdb2Short, $shortAsString, mb_strlen($shortAsString));
-        $udb3Comparison = strncmp($longFormattedAsUdb3Short, $shortAsString, mb_strlen($shortAsString));
+        $udb2Comparison = strncmp(
+            $longFormattedAsUdb2Short,
+            $shortAsStringWithoutEllipsis,
+            mb_strlen($shortAsStringWithoutEllipsis)
+        );
+
+        $udb3Comparison = strncmp(
+            $longFormattedAsUdb3Short,
+            $shortAsStringWithoutEllipsis,
+            mb_strlen($shortAsStringWithoutEllipsis)
+        );
 
         $shortIncludedInLong = $udb2Comparison === 0 || $udb3Comparison === 0;
 

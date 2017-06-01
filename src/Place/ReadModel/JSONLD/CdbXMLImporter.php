@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\Description\LongDescription;
+use CultuurNet\UDB3\Cdb\Description\MergedDescription;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
@@ -85,7 +86,7 @@ class CdbXMLImporter
         }
 
         try {
-            $description = LongDescription::fromCdbActorDetail($detail);
+            $description = MergedDescription::fromCdbActorDetail($detail);
             $jsonLD->description->nl = $description->toNative();
         } catch (\InvalidArgumentException $e) {
             // No description found.

@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\Description\LongDescription;
+use CultuurNet\UDB3\Cdb\Description\MergedDescription;
 use CultuurNet\UDB3\Cdb\Description\ShortDescription;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -175,7 +176,7 @@ class CdbXMLImporter
     private function importDescription($languageDetail, $jsonLD, $language)
     {
         try {
-            $description = LongDescription::fromCdbEventDetail($languageDetail);
+            $description = MergedDescription::fromCdbEventDetail($languageDetail);
             $jsonLD->description[$language] = $description->toNative();
         } catch (\InvalidArgumentException $e) {
             return;

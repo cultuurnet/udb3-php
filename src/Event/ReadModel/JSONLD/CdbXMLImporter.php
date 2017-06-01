@@ -13,6 +13,7 @@ use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use ValueObjects\StringLiteral\StringLiteral;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -173,42 +174,12 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $longDescription = $languageDetail->getLongDescription();
-
-        if ($longDescription) {
-            $longDescription = LongDescription::fromCdbXmlToJsonLdFormat($longDescription)
-                ->toNative();
+        try {
+            $description = LongDescription::fromCdbEventDetail($languageDetail);
+            $jsonLD->description[$language] = $description->toNative();
+        } catch (\InvalidArgumentException $e) {
+            return;
         }
-
-        $descriptions = [];
-
-        $shortDescription = $languageDetail->getShortDescription();
-        if ($shortDescription) {
-            $includeShortDescription = true;
-
-            $shortDescription = ShortDescription::fromCdbXmlToJsonLdFormat($shortDescription)
-                ->toNative();
-
-            if ($longDescription) {
-                $includeShortDescription =
-                    !$this->longDescriptionStartsWithShortDescription(
-                        $longDescription,
-                        $shortDescription
-                    );
-            }
-
-            if ($includeShortDescription) {
-                $descriptions[] = $shortDescription;
-            }
-        }
-
-        if ($longDescription) {
-            $descriptions[] = $longDescription;
-        }
-
-        $description = implode("\n\n", $descriptions);
-
-        $jsonLD->description[$language] = $description;
     }
 
     /**
@@ -501,19 +472,5 @@ class CdbXMLImporter
         $audience = new Audience(AudienceType::fromNative($audienceType));
 
         $jsonLD->audience = $audience->serialize();
-    }
-
-    /**
-     * @param string $longDescription
-     * @param string $shortDescription
-     * @return bool
-     */
-    private function longDescriptionStartsWithShortDescription(
-        $longDescription,
-        $shortDescription
-    ) {
-        $longDescription = strip_tags(html_entity_decode($longDescription));
-
-        return 0 === strncmp($longDescription, $shortDescription, mb_strlen($shortDescription));
     }
 }

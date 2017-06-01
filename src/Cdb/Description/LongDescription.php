@@ -30,12 +30,33 @@ class LongDescription extends StringLiteral
      */
     public static function fromCdbEventDetail(\CultureFeed_Cdb_Data_EventDetail $eventDetail)
     {
-        $longDescription = $eventDetail->getLongDescription();
+        return self::fromCdbEventOrActorDetails($eventDetail);
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_ActorDetail $actorDetail
+     * @return LongDescription
+     * @throws \InvalidArgumentException
+     *   When there is no long and no short description on the actor detail.
+     */
+    public static function fromCdbActorDetail(\CultureFeed_Cdb_Data_ActorDetail $actorDetail)
+    {
+        return self::fromCdbEventOrActorDetails($actorDetail);
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_EventDetail|\CultureFeed_Cdb_Data_ActorDetail $detail
+     * @return LongDescription
+     * @throws \InvalidArgumentException
+     */
+    private static function fromCdbEventOrActorDetails($detail)
+    {
+        $longDescription = $detail->getLongDescription();
         if ($longDescription) {
             $longDescription = LongDescription::fromCdbXmlToJsonLdFormat($longDescription);
         }
 
-        $shortDescription = $eventDetail->getShortDescription();
+        $shortDescription = $detail->getShortDescription();
         if ($shortDescription) {
             $shortDescription = ShortDescription::fromCdbXmlToJsonLdFormat($shortDescription);
         }

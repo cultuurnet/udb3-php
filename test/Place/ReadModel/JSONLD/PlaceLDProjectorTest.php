@@ -335,7 +335,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $samples = array(
             ['place_with_short_description.cdbxml.xml', 'Korte beschrijving.'],
             ['place_with_long_description.cdbxml.xml', 'Lange beschrijving.'],
-            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.<br/>Lange beschrijving."]
+            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.\n\nLange beschrijving."]
         );
 
         return $samples;
@@ -358,7 +358,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
-        $this->assertEquals('Korte beschrijving.<br/>Lange beschrijving.', $body->description->nl);
+        $this->assertEquals("Korte beschrijving.\n\nLange beschrijving.", $body->description->nl);
     }
 
     /**
@@ -381,7 +381,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
-        $this->assertEquals('Korte beschrijving.<br/>Lange beschrijving.', $body->description->nl);
+        $this->assertEquals("Korte beschrijving.\n\nLange beschrijving.", $body->description->nl);
 
     }
 

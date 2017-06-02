@@ -89,7 +89,7 @@ class OrganizerLDProjector extends ActorLDProjector
             $organizerCreated->getOrganizerId()
         );
 
-        $jsonLD->name['nl'] = $organizerCreated->getTitle();
+        $jsonLD->name = ['nl' => $organizerCreated->getTitle()];
 
         $addresses = $organizerCreated->getAddresses();
         $jsonLD->addresses = array();
@@ -137,7 +137,8 @@ class OrganizerLDProjector extends ActorLDProjector
         );
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
-        $jsonLD->name = $organizerCreated->getTitle();
+
+        $jsonLD->name = ['nl' => $organizerCreated->getTitle()];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
@@ -182,22 +183,6 @@ class OrganizerLDProjector extends ActorLDProjector
     protected function applyTitleTranslated(TitleTranslated $titleTranslated)
     {
         $this->applyTitle($titleTranslated, $titleTranslated->getLanguage());
-    }
-
-    /**
-     * @param TitleUpdated $titleUpdated
-     * @param Language $language
-     */
-    private function applyTitle(TitleUpdated $titleUpdated, Language $language)
-    {
-        $organizerId = $titleUpdated->getOrganizerId();
-
-        $document = $this->repository->get($organizerId);
-
-        $jsonLD = $document->getBody();
-        $jsonLD->name->{$language->getCode()} = $titleUpdated->getTitle()->toNative();
-
-        $this->repository->save($document->withBody($jsonLD));
     }
 
     /**
@@ -342,5 +327,30 @@ class OrganizerLDProjector extends ActorLDProjector
         $organizerLd->{'@context'} = '/contexts/organizer';
 
         return $document->withBody($organizerLd);
+    }
+
+    /**
+     * @param TitleUpdated $titleUpdated
+     * @param Language $language
+     */
+    private function applyTitle(TitleUpdated $titleUpdated, Language $language)
+    {
+        $organizerId = $titleUpdated->getOrganizerId();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+
+        // For old projections the name is untranslated and just a string.
+        // This needs to be upgraded to an object with languages and translation.
+        if (isset($jsonLD->name) && is_string($jsonLD->name)) {
+            $title = $jsonLD->name;
+            $jsonLD->name = new \StdClass();
+            $jsonLD->name->{'nl'} = $title;
+        }
+
+        $jsonLD->name->{$language->getCode()} = $titleUpdated->getTitle()->toNative();
+
+        $this->repository->save($document->withBody($jsonLD));
     }
 }

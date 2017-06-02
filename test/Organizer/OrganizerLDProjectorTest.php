@@ -190,7 +190,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
         $jsonLD->url = 'http://www.stuk.be';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->name['nl'] = 'some representative title';
         $jsonLD->created = $created;
 
         $expectedDocument = (new JsonDocument($id))
@@ -264,6 +264,29 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $title = new Title('EssaiOrganisation');
 
         $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleTranslated(
+                $organizerId,
+                $title,
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_translation_of_organizer_with_untranslated_name()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('EssaiOrganisation');
+
+        $this->mockGet($organizerId, 'organizer_untranslated_name.json');
 
         $domainMessage = $this->createDomainMessage(
             new TitleTranslated(

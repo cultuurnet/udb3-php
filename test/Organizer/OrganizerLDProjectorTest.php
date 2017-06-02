@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
@@ -25,6 +26,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -249,6 +251,29 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->expectSave($organizerId, 'organizer_with_updated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_title_translated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('EssaiOrganisation');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleTranslated(
+                $organizerId,
+                $title,
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_title.json');
 
         $this->projector->handle($domainMessage);
     }

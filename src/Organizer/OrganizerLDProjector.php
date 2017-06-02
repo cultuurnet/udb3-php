@@ -87,7 +87,7 @@ class OrganizerLDProjector extends ActorLDProjector
             $organizerCreated->getOrganizerId()
         );
 
-        $jsonLD->name = $organizerCreated->getTitle();
+        $jsonLD->name['nl'] = $organizerCreated->getTitle();
 
         $addresses = $organizerCreated->getAddresses();
         $jsonLD->addresses = array();

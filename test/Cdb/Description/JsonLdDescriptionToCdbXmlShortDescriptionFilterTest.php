@@ -4,12 +4,12 @@ namespace CultuurNet\UDB3\Cdb\Description;
 
 use CultuurNet\UDB3\StringFilter\StringFilterTest;
 
-class ShortDescriptionTruncateFilterTest extends StringFilterTest
+class JsonLdDescriptionToCdbXmlShortDescriptionFilterTest extends StringFilterTest
 {
     /**
      * @var string
      */
-    protected $filterClass = ShortDescriptionTruncateFilter::class;
+    protected $filterClass = JsonLdDescriptionToCdbXmlShortDescriptionFilter::class;
 
     /**
      * @test

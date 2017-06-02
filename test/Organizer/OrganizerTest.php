@@ -311,7 +311,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_update_the_title_when_different_from_the_current_title()
+    public function it_can_update_the_title_when_different_from_same_language_title()
     {
         $this->scenario
             ->given(
@@ -333,15 +333,37 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         new Title('Het Depot'),
                         new Language('nl')
                     );
+                    $organizer->updateTitle(
+                        new Title('Le Depot'),
+                        new Language('fr')
+                    );
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('fr')
+                    );
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('fr')
+                    );
                 }
             )
             ->then(
                 [
-                    // Organizer was created with title STUK.
+                    // Organizer was created with 'nl' title STUK.
                     new TitleUpdated(
                         $this->id,
                         new Title('Het Depot')
                     ),
+                    new TitleTranslated(
+                        $this->id,
+                        new Title('Le Depot'),
+                        new Language('fr')
+                    ),
+                    new TitleTranslated(
+                        $this->id,
+                        new Title('STUK'),
+                        new Language('fr')
+                    )
                 ]
             );
     }

@@ -46,9 +46,9 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     private $website;
 
     /**
-     * @var Title
+     * @var Title[]
      */
-    private $title;
+    private $titles;
 
     /**
      * @var Address|null
@@ -176,17 +176,17 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         Title $title,
         Language $language
     ) {
-        if ($this->title && !$this->title->sameValueAs($title)) {
-            $event = new TitleUpdated(
-                $this->actorId,
-                $title
-            );
-
-            if ($language->getCode() != $this->mainLanguage->getCode()) {
+        if ($this->isTitleChanged($title, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
                 $event = new TitleTranslated(
                     $this->actorId,
                     $title,
                     $language
+                );
+            } else {
+                $event = new TitleUpdated(
+                    $this->actorId,
+                    $title
                 );
             }
 
@@ -253,7 +253,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     {
         $this->actorId = $organizerCreated->getOrganizerId();
 
-        $this->title = $organizerCreated->getTitle();
+        $this->setTitle($organizerCreated->getTitle(), $this->mainLanguage);
     }
 
     /**
@@ -266,7 +266,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
         $this->website = $organizerCreated->getWebsite();
 
-        $this->title = $organizerCreated->getTitle();
+        $this->setTitle($organizerCreated->getTitle(), $this->mainLanguage);
     }
 
     /**
@@ -282,7 +282,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerImported->getCdbXml()
         );
 
-        $this->title = $this->getTitle($actor);
+        $this->setTitle($this->getTitle($actor), $this->mainLanguage);
 
         $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
@@ -298,7 +298,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerUpdatedFromUDB2->getCdbXml()
         );
 
-        $this->title = $this->getTitle($actor);
+        $this->setTitle($this->getTitle($actor), $this->mainLanguage);
 
         $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
@@ -316,7 +316,15 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     protected function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
-        $this->title = $titleUpdated->getTitle();
+        $this->setTitle($titleUpdated->getTitle(), $this->mainLanguage);
+    }
+
+    /**
+     * @param TitleTranslated $titleTranslated
+     */
+    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        $this->setTitle($titleTranslated->getTitle(), $titleTranslated->getLanguage());
     }
 
     /**
@@ -367,6 +375,30 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             return new Title($details->current()->getTitle());
         } else {
             return null;
+        }
+    }
+
+    /**
+     * @param Title $title
+     * @param Language $language
+     */
+    private function setTitle(Title $title, Language $language)
+    {
+        $this->titles[$language->getCode()] = $title;
+    }
+
+    /**
+     * @param Title $title
+     * @param Language $language
+     * @return bool
+     */
+    private function isTitleChanged(Title $title, Language $language)
+    {
+        if (!isset($this->titles[$language->getCode()]) ||
+            !$title->sameValueAs($this->titles[$language->getCode()])) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -20,6 +21,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
@@ -171,12 +173,29 @@ class OrganizerLDProjector extends ActorLDProjector
      */
     protected function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
+        $this->applyTitle($titleUpdated, new Language('nl'));
+    }
+
+    /**
+     * @param TitleTranslated $titleTranslated
+     */
+    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        $this->applyTitle($titleTranslated, $titleTranslated->getLanguage());
+    }
+
+    /**
+     * @param TitleUpdated $titleUpdated
+     * @param Language $language
+     */
+    private function applyTitle(TitleUpdated $titleUpdated, Language $language)
+    {
         $organizerId = $titleUpdated->getOrganizerId();
 
         $document = $this->repository->get($organizerId);
 
         $jsonLD = $document->getBody();
-        $jsonLD->name = $titleUpdated->getTitle()->toNative();
+        $jsonLD->name->{$language->getCode()} = $titleUpdated->getTitle()->toNative();
 
         $this->repository->save($document->withBody($jsonLD));
     }

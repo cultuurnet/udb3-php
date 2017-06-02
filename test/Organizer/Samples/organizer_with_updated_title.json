@@ -1,7 +1,9 @@
 {
   "@id": "http:\/\/udb-silex.dev\/organizer\/586f596d-7e43-4ab9-b062-04db9436fca4",
   "@context": "\/api\/1.0\/organizer.jsonld",
-  "name": "Het Depot",
+  "name": {
+    "nl": "Het Depot"
+  },
   "addresses": [
     {
       "addressCountry": "BE",

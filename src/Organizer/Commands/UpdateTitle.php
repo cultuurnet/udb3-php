@@ -44,7 +44,7 @@ class UpdateTitle extends AbstractUpdateOrganizerCommand
     /**
      * @return Language
      */
-    public function getLanguage(): Language
+    public function getLanguage()
     {
         return $this->language;
     }

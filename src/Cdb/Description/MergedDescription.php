@@ -18,33 +18,11 @@ class MergedDescription extends StringLiteral
     private static $shortDescriptionUDB3FormattingFilter;
 
     /**
-     * @param \CultureFeed_Cdb_Data_EventDetail $eventDetail
-     * @return MergedDescription
-     * @throws \InvalidArgumentException
-     *   When there is no long and no short description on the event detail.
-     */
-    public static function fromCdbEventDetail(\CultureFeed_Cdb_Data_EventDetail $eventDetail)
-    {
-        return self::fromCdbEventOrActorDetails($eventDetail);
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Data_ActorDetail $actorDetail
-     * @return MergedDescription
-     * @throws \InvalidArgumentException
-     *   When there is no long and no short description on the actor detail.
-     */
-    public static function fromCdbActorDetail(\CultureFeed_Cdb_Data_ActorDetail $actorDetail)
-    {
-        return self::fromCdbEventOrActorDetails($actorDetail);
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Data_EventDetail|\CultureFeed_Cdb_Data_ActorDetail $detail
+     * @param \CultureFeed_Cdb_Data_Detail $detail
      * @return MergedDescription
      * @throws \InvalidArgumentException
      */
-    private static function fromCdbEventOrActorDetails($detail)
+    public static function fromCdbDetail(\CultureFeed_Cdb_Data_Detail $detail)
     {
         $longDescription = $detail->getLongDescription();
         if ($longDescription) {

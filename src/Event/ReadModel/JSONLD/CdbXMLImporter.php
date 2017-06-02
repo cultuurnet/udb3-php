@@ -176,7 +176,7 @@ class CdbXMLImporter
     private function importDescription($languageDetail, $jsonLD, $language)
     {
         try {
-            $description = MergedDescription::fromCdbEventDetail($languageDetail);
+            $description = MergedDescription::fromCdbDetail($languageDetail);
             $jsonLD->description[$language] = $description->toNative();
         } catch (\InvalidArgumentException $e) {
             return;

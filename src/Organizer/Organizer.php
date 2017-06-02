@@ -10,6 +10,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -19,6 +20,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
@@ -32,6 +34,11 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * @var string
      */
     protected $actorId;
+
+    /**
+     * @var Language
+     */
+    private $mainLanguage;
 
     /**
      * @var Url
@@ -68,6 +75,10 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     public function __construct()
     {
+        // For now the main language is hard coded on nl.
+        // In the future it should be set on create.
+        $this->mainLanguage = new Language('nl');
+
         // Contact points can be empty, but we only want to start recording
         // ContactPointUpdated events as soon as the organizer is updated
         // with a non-empty contact point. To enforce this we initialize the
@@ -159,13 +170,27 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     /**
      * @param Title $title
+     * @param Language $language
      */
-    public function updateTitle(Title $title)
-    {
+    public function updateTitle(
+        Title $title,
+        Language $language
+    ) {
         if ($this->title && !$this->title->sameValueAs($title)) {
-            $this->apply(
-                new TitleUpdated($this->actorId, $title)
+            $event = new TitleUpdated(
+                $this->actorId,
+                $title
             );
+
+            if ($language->getCode() != $this->mainLanguage->getCode()) {
+                $event = new TitleTranslated(
+                    $this->actorId,
+                    $title,
+                    $language
+                );
+            }
+
+            $this->apply($event);
         }
     }
 

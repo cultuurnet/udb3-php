@@ -6,6 +6,7 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -107,7 +108,10 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = $this->loadOrganizer($updateTitle->getOrganizerId());
 
-        $organizer->updateTitle($updateTitle->getTitle());
+        $organizer->updateTitle(
+            $updateTitle->getTitle(),
+            $updateTitle->getLanguage()
+        );
 
         $this->organizerRepository->save($organizer);
     }

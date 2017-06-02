@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
@@ -319,9 +321,18 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             )
             ->when(
                 function (Organizer $organizer) {
-                    $organizer->updateTitle(new Title('STUK'));
-                    $organizer->updateTitle(new Title('Het Depot'));
-                    $organizer->updateTitle(new Title('Het Depot'));
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('nl')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Het Depot'),
+                        new Language('nl')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Het Depot'),
+                        new Language('nl')
+                    );
                 }
             )
             ->then(
@@ -330,6 +341,36 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     new TitleUpdated(
                         $this->id,
                         new Title('Het Depot')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_a_title()
+    {
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateTitle(
+                        new Title('Pièce'),
+                        new Language('fr')
+                    );
+                }
+            )
+            ->then(
+                [
+                    new TitleTranslated(
+                        $this->id,
+                        new Title('Pièce'),
+                        new Language('fr')
                     ),
                 ]
             );
@@ -354,8 +395,14 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             )
             ->when(
                 function (Organizer $organizer) {
-                    $organizer->updateTitle(new Title('DE Studio'));
-                    $organizer->updateTitle(new Title('STUK'));
+                    $organizer->updateTitle(
+                        new Title('DE Studio'),
+                        new Language('nl')
+                    );
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('nl')
+                    );
                 }
             )
             ->then(
@@ -388,8 +435,14 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         $cdbXml,
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
                     );
-                    $organizer->updateTitle(new Title('DE Studio'));
-                    $organizer->updateTitle(new Title('Het Depot'));
+                    $organizer->updateTitle(
+                        new Title('DE Studio'),
+                        new Language('nl')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Het Depot'),
+                        new Language('nl')
+                    );
                 }
             )
             ->then(

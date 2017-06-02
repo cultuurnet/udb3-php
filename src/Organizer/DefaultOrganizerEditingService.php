@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -96,10 +97,10 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateTitle($organizerId, Title $title)
+    public function updateTitle($organizerId, Title $title, Language $language)
     {
         return $this->commandBus->dispatch(
-            new UpdateTitle($organizerId, $title)
+            new UpdateTitle($organizerId, $title, $language)
         );
     }
 

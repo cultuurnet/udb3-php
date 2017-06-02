@@ -546,10 +546,17 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private function expectSave($organizerId, $fileName)
     {
-        $organizerWithLabelJson = file_get_contents(__DIR__ . '/Samples/' . $fileName);
+        $expectedOrganizerJson = file_get_contents(__DIR__ . '/Samples/' . $fileName);
+        // The expected organizer json still has newline formatting.
+        // The actual organizer json on the other hand has no newlines
+        // because it was created by using the withBody method on JsonDocument.
+        // By calling json_encode(json_decode(...)) the newlines are also removed
+        // from the expected document.
+        $expectedOrganizerJson = json_encode(json_decode($expectedOrganizerJson));
+
         $this->documentRepository->expects($this->once())
             ->method('save')
-            ->with(new JsonDocument($organizerId, $organizerWithLabelJson));
+            ->with(new JsonDocument($organizerId, $expectedOrganizerJson));
     }
 
     /**

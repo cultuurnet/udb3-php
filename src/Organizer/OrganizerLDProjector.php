@@ -367,17 +367,4 @@ class OrganizerLDProjector implements EventListenerInterface
 
         return $document;
     }
-
-    /**
-     * Returns an iri.
-     *
-     * @param string $id
-     *   The id.
-     *
-     * @return string
-     */
-    private function iri($id)
-    {
-        return $this->iriGenerator->iri($id);
-    }
 }

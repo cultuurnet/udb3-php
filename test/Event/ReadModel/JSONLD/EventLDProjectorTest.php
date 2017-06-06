@@ -461,6 +461,34 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_should_set_a_main_language_when_importing_cdbxml()
+    {
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_with_calendar_periods.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_updating_from_cdbxml()
+    {
+        $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
+            'samples/event_with_calendar_periods.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
     public function it_strips_empty_keywords_when_importing_from_udb2()
     {
         $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(

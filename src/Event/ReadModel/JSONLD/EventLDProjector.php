@@ -335,6 +335,8 @@ class EventLDProjector extends OfferLDProjector implements
             $this->slugger
         );
 
+        $this->setMainLanguage($jsonLd, new Language('nl'));
+
         // Because we can not properly track media coming from UDB2 we simply
         // ignore it and give priority to content added through UDB3.
         // It's possible that an event has been deleted in udb3, but never

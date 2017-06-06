@@ -16,4 +16,17 @@ trait MultilingualJsonLDProjectorTrait
         $jsonLd->mainLanguage = $language->getCode();
         return $jsonLd;
     }
+
+    /**
+     * @param \stdClass $jsonLd
+     * @return Language
+     */
+    protected function getMainLanguage(\stdClass $jsonLd)
+    {
+        if (isset($jsonLd->mainLanguage)) {
+            return new Language($jsonLd->mainLanguage);
+        } else {
+            return new Language('nl');
+        }
+    }
 }

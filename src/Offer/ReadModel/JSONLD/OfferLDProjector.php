@@ -11,7 +11,6 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
@@ -40,12 +39,14 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
 
 abstract class OfferLDProjector implements OrganizerServiceInterface
 {
+    use MultilingualJsonLDProjectorTrait;
     use DelegateEventHandlingToSpecificMethodTrait {
         DelegateEventHandlingToSpecificMethodTrait::handle as handleUnknownEvents;
     }
@@ -813,16 +814,5 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
                 '@id' => $this->organizerService->iri($organizerId)
             );
         }
-    }
-
-    /**
-     * @param \stdClass $jsonLd
-     * @param Language $language
-     * @return \stdClass
-     */
-    protected function setMainLanguage(\stdClass $jsonLd, Language $language)
-    {
-        $jsonLd->mainLanguage = $language->getCode();
-        return $jsonLd;
     }
 }

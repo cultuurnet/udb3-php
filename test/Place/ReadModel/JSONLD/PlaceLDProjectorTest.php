@@ -796,5 +796,4 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         return $event;
     }
-
 }

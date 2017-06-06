@@ -387,8 +387,9 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $jsonLD = $document->getBody();
 
+        $mainLanguage = $this->getMainLanguage($jsonLD);
         if ($language === null) {
-            $language = new Language($this->getMainLanguage($jsonLD));
+            $language = $mainLanguage;
         }
 
         // For old projections the name is untranslated and just a string.
@@ -397,7 +398,7 @@ class OrganizerLDProjector implements EventListenerInterface
         if (isset($jsonLD->name) && is_string($jsonLD->name)) {
             $title = $jsonLD->name;
             $jsonLD->name = new \StdClass();
-            $jsonLD->name->{$language->getCode()} = $title;
+            $jsonLD->name->{$mainLanguage->getCode()} = $title;
         }
 
         $jsonLD->name->{$language->getCode()} = $titleUpdated->getTitle()->toNative();

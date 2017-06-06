@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
@@ -182,6 +183,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $placeCreated->getPlaceId()
         );
+
+        $this->setMainLanguage($jsonLD, new Language('nl'));
 
         if (empty($jsonLD->name)) {
             $jsonLD->name = new \stdClass();

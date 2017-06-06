@@ -171,6 +171,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
           'addressCountry' => 'BE',
@@ -224,6 +225,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
             'addressCountry' => 'BE',
@@ -280,8 +282,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name = (object) ['nl' => 'some representative title'];
         $jsonLD->address = (object)[
             'addressCountry' => 'BE',
             'addressLocality' => 'Leuven',
@@ -298,8 +301,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
-        $jsonLD->creator = '1 (Tester)';
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->creator = 'Tester';
+        $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
 
         $metadata = new Metadata(
             [
@@ -307,12 +311,15 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'user_nick' => 'Tester'
             ]
         );
-        $this->project(
+
+        $actualJsonLD = $this->project(
             $placeCreated,
             $id,
             $metadata,
             DateTime::fromString($created)
         );
+
+        $this->assertEquals($jsonLD, $actualJsonLD);
     }
 
     /**
@@ -420,7 +427,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $this->address, $calendar, $theme);
 
         $jsonLD = new stdClass();
-        $jsonLD->id = $id;
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)['nl'=>'some representative title'];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',
@@ -443,7 +451,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->documentRepository->save($initialDocument);
 
         $expectedJsonLD = new stdClass();
-        $expectedJsonLD->id = $id;
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
+        $expectedJsonLD->mainLanguage = 'nl';
         $expectedJsonLD->name = (object)['nl'=>'new title'];
         $expectedJsonLD->address = (object)[
             'addressCountry' => 'BE',

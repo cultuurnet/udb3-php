@@ -45,6 +45,7 @@ use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -90,7 +91,7 @@ class EventLDProjector extends OfferLDProjector implements
     /**
      * @var CdbXMLImporter
      */
-    protected $cdbXmlImporter;
+    protected $cdbXMLImporter;
 
     /**
      * @param DocumentRepositoryInterface $repository
@@ -334,6 +335,8 @@ class EventLDProjector extends OfferLDProjector implements
             $this->slugger
         );
 
+        $this->setMainLanguage($jsonLd, new Language('nl'));
+
         // Because we can not properly track media coming from UDB2 we simply
         // ignore it and give priority to content added through UDB3.
         // It's possible that an event has been deleted in udb3, but never
@@ -417,6 +420,9 @@ class EventLDProjector extends OfferLDProjector implements
                 $jsonLD->{'@id'} = $this->iriGenerator->iri(
                     $eventCreated->getEventId()
                 );
+
+                $this->setMainLanguage($jsonLD, new Language('nl'));
+
                 $jsonLD->name['nl'] = $eventCreated->getTitle();
                 $jsonLD->location = array(
                         '@type' => 'Place',
@@ -522,6 +528,7 @@ class EventLDProjector extends OfferLDProjector implements
 
     /**
      * Apply the major info updated command to the projector.
+     * @param MajorInfoUpdated $majorInfoUpdated
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {

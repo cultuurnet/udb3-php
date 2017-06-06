@@ -39,12 +39,14 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
 
 abstract class OfferLDProjector implements OrganizerServiceInterface
 {
+    use MultilingualJsonLDProjectorTrait;
     use DelegateEventHandlingToSpecificMethodTrait {
         DelegateEventHandlingToSpecificMethodTrait::handle as handleUnknownEvents;
     }

@@ -5,12 +5,15 @@ namespace CultuurNet\UDB3\Organizer;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventBusInterface;
-use CultuurNet\UDB3\Actor\ActorLDProjector;
+use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\Actor\ActorEvent;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -24,9 +27,41 @@ use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 
-class OrganizerLDProjector extends ActorLDProjector
+class OrganizerLDProjector implements EventListenerInterface
 {
+    use MultilingualJsonLDProjectorTrait;
+    /**
+     * @uses applyOrganizerImportedFromUDB2
+     * @uses applyOrganizerCreated
+     * @uses applyOrganizerCreatedWithUniqueWebsite
+     * @uses applyWebsiteUpdated
+     * @uses applyTitleUpdated
+     * @uses applyAddressUpdated
+     * @uses applyContactPointUpdated
+     * @uses applyOrganizerUpdatedFRomUDB2
+     * @uses applyLabelAdded
+     * @uses applyLabelRemoved
+     * @uses applyOrganizerDeleted
+     */
+    use DelegateEventHandlingToSpecificMethodTrait;
+
+    /**
+     * @var DocumentRepositoryInterface
+     */
+    protected $repository;
+
+    /**
+     * @var IriGeneratorInterface
+     */
+    protected $iriGenerator;
+
+    /**
+     * @var EventBusInterface
+     */
+    protected $eventBus;
+
     /**
      * @var CdbXMLImporter
      */
@@ -42,19 +77,16 @@ class OrganizerLDProjector extends ActorLDProjector
         IriGeneratorInterface $iriGenerator,
         EventBusInterface $eventBus
     ) {
-        parent::__construct(
-            $repository,
-            $iriGenerator,
-            $eventBus
-        );
-
+        $this->repository = $repository;
+        $this->iriGenerator = $iriGenerator;
+        $this->eventBus = $eventBus;
         $this->cdbXMLImporter = new CdbXMLImporter();
     }
 
     /**
      * @param OrganizerImportedFromUDB2 $organizerImportedFromUDB2
      */
-    public function applyOrganizerImportedFromUDB2(
+    private function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImportedFromUDB2
     ) {
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -64,6 +96,8 @@ class OrganizerLDProjector extends ActorLDProjector
 
         $document = $this->newDocument($organizerImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
+
+        $this->setMainLanguage($actorLd, new Language('nl'));
 
         $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
             $actorLd,
@@ -77,7 +111,7 @@ class OrganizerLDProjector extends ActorLDProjector
      * @param OrganizerCreated $organizerCreated
      * @param DomainMessage $domainMessage
      */
-    protected function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
+    private function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
     {
         $document = $this->newDocument($organizerCreated->getOrganizerId());
 
@@ -86,6 +120,8 @@ class OrganizerLDProjector extends ActorLDProjector
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $organizerCreated->getOrganizerId()
         );
+
+        $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->name = $organizerCreated->getTitle();
 
@@ -122,7 +158,7 @@ class OrganizerLDProjector extends ActorLDProjector
      * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
      * @param DomainMessage $domainMessage
      */
-    protected function applyOrganizerCreatedWithUniqueWebsite(
+    private function applyOrganizerCreatedWithUniqueWebsite(
         OrganizerCreatedWithUniqueWebsite $organizerCreated,
         DomainMessage $domainMessage
     ) {
@@ -133,6 +169,8 @@ class OrganizerLDProjector extends ActorLDProjector
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $organizerCreated->getOrganizerId()
         );
+
+        $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
         $jsonLD->name = $organizerCreated->getTitle();
@@ -154,7 +192,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param WebsiteUpdated $websiteUpdated
      */
-    protected function applyWebsiteUpdated(WebsiteUpdated $websiteUpdated)
+    private function applyWebsiteUpdated(WebsiteUpdated $websiteUpdated)
     {
         $organizerId = $websiteUpdated->getOrganizerId();
 
@@ -169,7 +207,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param TitleUpdated $titleUpdated
      */
-    protected function applyTitleUpdated(TitleUpdated $titleUpdated)
+    private function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
         $organizerId = $titleUpdated->getOrganizerId();
 
@@ -184,7 +222,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param AddressUpdated $addressUpdated
      */
-    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    private function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
         $organizerId = $addressUpdated->getOrganizerId();
         $address = $addressUpdated->getAddress();
@@ -200,7 +238,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param ContactPointUpdated $contactPointUpdated
      */
-    protected function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
+    private function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
         $organizerId = $contactPointUpdated->getOrganizerId();
         $contactPoint = $contactPointUpdated->getContactPoint();
@@ -216,7 +254,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
      */
-    public function applyOrganizerUpdatedFromUDB2(
+    private function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
     ) {
         // It's possible that an organizer has been deleted in udb3, but never
@@ -241,13 +279,15 @@ class OrganizerLDProjector extends ActorLDProjector
             $udb2Actor
         );
 
+        $this->setMainLanguage($actorLd, new Language('nl'));
+
         $this->repository->save($document->withBody($actorLd));
     }
 
     /**
      * @param LabelAdded $labelAdded
      */
-    public function applyLabelAdded(LabelAdded $labelAdded)
+    private function applyLabelAdded(LabelAdded $labelAdded)
     {
         $document = $this->repository->get($labelAdded->getOrganizerId());
 
@@ -268,7 +308,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param LabelRemoved $labelRemoved
      */
-    public function applyLabelRemoved(LabelRemoved $labelRemoved)
+    private function applyLabelRemoved(LabelRemoved $labelRemoved)
     {
         $document = $this->repository->get($labelRemoved->getOrganizerId());
         $jsonLD = $document->getBody();
@@ -304,7 +344,7 @@ class OrganizerLDProjector extends ActorLDProjector
     /**
      * @param OrganizerDeleted $organizerDeleted
      */
-    public function applyOrganizerDeleted(
+    private function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted
     ) {
         $this->repository->remove($organizerDeleted->getOrganizerId());
@@ -314,7 +354,7 @@ class OrganizerLDProjector extends ActorLDProjector
      * @param string $id
      * @return JsonDocument
      */
-    protected function newDocument($id)
+    private function newDocument($id)
     {
         $document = new JsonDocument($id);
 
@@ -323,5 +363,20 @@ class OrganizerLDProjector extends ActorLDProjector
         $organizerLd->{'@context'} = '/contexts/organizer';
 
         return $document->withBody($organizerLd);
+    }
+
+    /**
+     * @param ActorEvent $actor
+     * @return JsonDocument
+     */
+    private function loadDocumentFromRepository(ActorEvent $actor)
+    {
+        $document = $this->repository->get($actor->getActorId());
+
+        if (!$document) {
+            return $this->newDocument($actor->getActorId());
+        }
+
+        return $document;
     }
 }

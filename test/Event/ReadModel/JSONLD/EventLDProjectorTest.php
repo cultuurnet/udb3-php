@@ -38,7 +38,6 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
-use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
@@ -456,6 +455,34 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->assertEquals($jsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_importing_cdbxml()
+    {
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_with_calendar_periods.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_updating_from_cdbxml()
+    {
+        $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
+            'samples/event_with_calendar_periods.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
     }
 
     /**
@@ -1095,6 +1122,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $events = [$importedFromUDB2, $majorInfoUpdated];
+        $body = null;
         foreach ($events as $event) {
             $body = $this->project($event, $importedFromUDB2->getEventId());
         }
@@ -1174,7 +1202,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             )
         );
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $this->expectException(DocumentGoneException::class);
 
         $this->documentRepository->get($id);
     }
@@ -1296,6 +1324,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/'. $eventId;
         $jsonLD->{'@context'} = '/contexts/event';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[
             'nl' => 'some representative title'
         ];

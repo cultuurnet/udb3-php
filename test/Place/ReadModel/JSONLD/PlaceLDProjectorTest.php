@@ -135,24 +135,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     }
 
     /**
-     * @param string $fileName
-     * @return PlaceImportedFromUDB2
-     */
-    private function placeImportedFromUDB2($fileName)
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/' . $fileName
-        );
-        $event = new PlaceImportedFromUDB2(
-            'someId',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-        );
-
-        return $event;
-    }
-
-    /**
      * @test
      */
     public function it_handles_new_places_without_theme()
@@ -171,6 +153,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
           'addressCountry' => 'BE',
@@ -224,6 +207,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object)[
             'addressCountry' => 'BE',
@@ -280,8 +264,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name = (object) ['nl' => 'some representative title'];
         $jsonLD->address = (object)[
             'addressCountry' => 'BE',
             'addressLocality' => 'Leuven',
@@ -298,8 +283,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
-        $jsonLD->creator = '1 (Tester)';
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->creator = 'Tester';
+        $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
 
         $metadata = new Metadata(
             [
@@ -307,12 +293,39 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'user_nick' => 'Tester'
             ]
         );
-        $this->project(
+
+        $actualJsonLD = $this->project(
             $placeCreated,
             $id,
             $metadata,
             DateTime::fromString($created)
         );
+
+        $this->assertEquals($jsonLD, $actualJsonLD);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_importing_from_udb2()
+    {
+        $event = $this->placeImportedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+
+        $body = $this->project($event, $event->getActorId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_updating_from_udb2()
+    {
+        $event = $this->placeUpdatedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+
+        $body = $this->project($event, $event->getActorId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
     }
 
     /**
@@ -420,7 +433,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $this->address, $calendar, $theme);
 
         $jsonLD = new stdClass();
-        $jsonLD->id = $id;
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)['nl'=>'some representative title'];
         $jsonLD->address = (object)[
           'addressCountry' => '$country',
@@ -443,7 +457,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->documentRepository->save($initialDocument);
 
         $expectedJsonLD = new stdClass();
-        $expectedJsonLD->id = $id;
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
+        $expectedJsonLD->mainLanguage = 'nl';
         $expectedJsonLD->name = (object)['nl'=>'new title'];
         $expectedJsonLD->address = (object)[
             'addressCountry' => 'BE',
@@ -744,5 +759,41 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
 
         $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @param string $fileName
+     * @return PlaceImportedFromUDB2
+     */
+    private function placeImportedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new PlaceImportedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param string $fileName
+     * @return PlaceUpdatedFromUDB2
+     */
+    private function placeUpdatedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new PlaceUpdatedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
     }
 }

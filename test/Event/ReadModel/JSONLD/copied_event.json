@@ -1,6 +1,7 @@
 {
   "@id": "http://example.com/entity/2",
   "@context": "/contexts/event",
+  "mainLanguage": "nl",
   "name": {
     "nl": "some representative title"
   },

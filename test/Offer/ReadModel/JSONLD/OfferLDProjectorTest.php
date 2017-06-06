@@ -576,9 +576,15 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider mediaObjectDataProvider
+     * @param JsonDocument $initialDocument
+     * @param Image $image
+     * @param $expectedProjection
      */
-    public function it_should_remove_the_media_object_of_an_image(JsonDocument $initialDocument, Image $image, $expectedProjection)
-    {
+    public function it_should_remove_the_media_object_of_an_image(
+        JsonDocument $initialDocument,
+        Image $image,
+        $expectedProjection
+    ) {
         $this->documentRepository->save($initialDocument);
         $imageRemovedEvent = new ImageRemoved($initialDocument->getId(), $image);
         $eventBody = $this->project($imageRemovedEvent, $initialDocument->getId());
@@ -1016,6 +1022,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param ImageCollection $images
+     * @param $expectedMediaObjects
      */
     public function it_should_project_imported_udb2_media_files_as_media_objects(
         ImageCollection $images,
@@ -1031,6 +1039,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param ImageCollection $images
+     * @param $expectedMediaObjects
      */
     public function it_should_project_updated_udb2_media_files_as_media_objects(
         ImageCollection $images,
@@ -1046,9 +1056,11 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param ImageCollection $images
      */
-    public function it_should_project_the_main_udb2_picture_as_image(ImageCollection $images)
-    {
+    public function it_should_project_the_main_udb2_picture_as_image(
+        ImageCollection $images
+    ) {
         $itemId = UUID::generateAsString();
         $imagesImportedEvent = new ImagesImportedFromUDB2($itemId, $images);
         $expectedImage = 'http://foo.bar/media/my_pic.jpg';

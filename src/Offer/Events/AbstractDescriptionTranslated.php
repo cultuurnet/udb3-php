@@ -24,7 +24,7 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getDescription()
     {

@@ -7,6 +7,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\Actor\ActorEvent;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -17,7 +18,6 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -139,7 +139,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
-        $jsonLD->name['nl'] = 'some representative title';
+
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name[$jsonLD->mainLanguage] = 'some representative title';
+
         $jsonLD->addresses = [
             [
                 'addressCountry' => $country,
@@ -189,6 +192,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name['nl'] = 'some representative title';
         $jsonLD->created = $created;
@@ -258,6 +262,42 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_should_set_main_language_when_importing_from_udb2()
+    {
+        $event = $this->organizerImportedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+                return $body->mainLanguage === 'nl';
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_main_language_when_updating_from_udb2()
+    {
+        $event = $this->organizerUpdatedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+                return $body->mainLanguage === 'nl';
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
     public function it_handles_title_translated()
     {
         $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
@@ -307,6 +347,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_an_email_property_when_cdbxml_has_an_email()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -322,7 +363,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $emails == $expectedEmails;
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -331,6 +372,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_an_email_property_when_cdbxml_has_no_email()
     {
         $event = $this->organizerImportedFromUDB2('organizer_without_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -340,7 +382,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 return empty($body->contactPoint->email);
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -349,6 +391,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_an_email_property_when_cdbxml_has_multiple_emails()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_emails.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -365,7 +408,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $emails == $expectedEmails;
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -374,6 +417,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_a_phone_property_when_cdbxml_has_a_phone_number()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_phone_number.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -388,7 +432,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 return is_array($phones) && $phones == $expectedPhones;
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -397,6 +441,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_phone_numbers.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -412,7 +457,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 return is_array($phones) && $phones == $expectedPhones;
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -421,6 +466,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_a_phone_property_when_cdbxml_has_no_phone()
     {
         $event = $this->organizerImportedFromUDB2('organizer_without_phone_number.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -430,7 +476,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 return empty($body->contactPoint->phone);
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -440,12 +486,13 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $organizerId = 'ORG-123-FOO';
         $organizerDeleted = new OrganizerDeleted($organizerId);
+        $domainMessage = $this->createDomainMessage($organizerDeleted);
 
         $this->documentRepository->expects($this->once())
             ->method('remove')
             ->with($organizerId);
 
-        $this->projector->applyOrganizerDeleted($organizerDeleted);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -454,6 +501,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_can_update_an_organizer_from_udb2_even_if_it_has_been_deleted()
     {
         $organizerUpdatedFromUdb2 = $this->organizerUpdatedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($organizerUpdatedFromUdb2);
         $actorId = $organizerUpdatedFromUdb2->getActorId();
 
         $this->documentRepository->expects($this->once())
@@ -471,7 +519,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->projector->applyOrganizerUpdatedFromUDB2($organizerUpdatedFromUdb2);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -608,13 +656,19 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param OrganizerEvent $organizerEvent
+     * @param ActorEvent|OrganizerEvent $organizerEvent
      * @return DomainMessage
      */
-    private function createDomainMessage(OrganizerEvent $organizerEvent)
+    private function createDomainMessage($organizerEvent)
     {
+        if ($organizerEvent instanceof ActorEvent) {
+            $id = $organizerEvent->getActorId();
+        } else {
+            $id = $organizerEvent->getOrganizerId();
+        }
+
         return new DomainMessage(
-            $organizerEvent->getOrganizerId(),
+            $id,
             0,
             new Metadata(),
             $organizerEvent,

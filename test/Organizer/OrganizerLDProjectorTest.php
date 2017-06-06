@@ -138,6 +138,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = 'some representative title';
         $jsonLD->addresses = [
             [
@@ -188,6 +189,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name = 'some representative title';
         $jsonLD->created = $created;

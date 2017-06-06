@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -27,9 +28,11 @@ use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 
 class OrganizerLDProjector implements EventListenerInterface
 {
+    use MultilingualJsonLDProjectorTrait;
     use DelegateEventHandlingToSpecificMethodTrait;
 
     /**
@@ -104,6 +107,8 @@ class OrganizerLDProjector implements EventListenerInterface
             $organizerCreated->getOrganizerId()
         );
 
+        $this->setMainLanguage($jsonLD, new Language('nl'));
+
         $jsonLD->name = $organizerCreated->getTitle();
 
         $addresses = $organizerCreated->getAddresses();
@@ -150,6 +155,8 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $organizerCreated->getOrganizerId()
         );
+
+        $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
         $jsonLD->name = $organizerCreated->getTitle();

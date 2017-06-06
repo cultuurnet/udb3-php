@@ -91,7 +91,7 @@ class EventLDProjector extends OfferLDProjector implements
     /**
      * @var CdbXMLImporter
      */
-    protected $cdbXmlImporter;
+    protected $cdbXMLImporter;
 
     /**
      * @param DocumentRepositoryInterface $repository

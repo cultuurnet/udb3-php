@@ -21,7 +21,7 @@ class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getTitle()
     {

@@ -528,6 +528,7 @@ class EventLDProjector extends OfferLDProjector implements
 
     /**
      * Apply the major info updated command to the projector.
+     * @param MajorInfoUpdated $majorInfoUpdated
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {

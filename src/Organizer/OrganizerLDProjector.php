@@ -32,6 +32,19 @@ use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 class OrganizerLDProjector implements EventListenerInterface
 {
     use MultilingualJsonLDProjectorTrait;
+    /**
+     * @uses applyOrganizerImportedFromUDB2
+     * @uses applyOrganizerCreated
+     * @uses applyOrganizerCreatedWithUniqueWebsite
+     * @uses applyWebsiteUpdated
+     * @uses applyTitleUpdated
+     * @uses applyAddressUpdated
+     * @uses applyContactPointUpdated
+     * @uses applyOrganizerUpdatedFRomUDB2
+     * @uses applyLabelAdded
+     * @uses applyLabelRemoved
+     * @uses applyOrganizerDeleted
+     */
     use DelegateEventHandlingToSpecificMethodTrait;
 
     /**

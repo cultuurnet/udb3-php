@@ -259,6 +259,42 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_should_set_main_language_when_importing_from_udb2()
+    {
+        $event = $this->organizerImportedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+                return $body->mainLanguage === 'nl';
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_main_language_when_updating_from_udb2()
+    {
+        $event = $this->organizerUpdatedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+                return $body->mainLanguage === 'nl';
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_an_email_property_when_cdbxml_has_an_email()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_email.cdbxml.xml');

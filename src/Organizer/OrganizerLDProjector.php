@@ -85,6 +85,8 @@ class OrganizerLDProjector implements EventListenerInterface
         $document = $this->newDocument($organizerImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
 
+        $this->setMainLanguage($actorLd, new Language('nl'));
+
         $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
             $actorLd,
             $udb2Actor
@@ -264,6 +266,8 @@ class OrganizerLDProjector implements EventListenerInterface
             $document->getBody(),
             $udb2Actor
         );
+
+        $this->setMainLanguage($actorLd, new Language('nl'));
 
         $this->repository->save($document->withBody($actorLd));
     }

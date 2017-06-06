@@ -1296,6 +1296,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/'. $eventId;
         $jsonLD->{'@context'} = '/contexts/event';
+        $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[
             'nl' => 'some representative title'
         ];

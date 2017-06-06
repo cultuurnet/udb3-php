@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
@@ -812,5 +813,16 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
                 '@id' => $this->organizerService->iri($organizerId)
             );
         }
+    }
+
+    /**
+     * @param \stdClass $jsonLd
+     * @param Language $language
+     * @return \stdClass
+     */
+    protected function setMainLanguage(\stdClass $jsonLd, Language $language)
+    {
+        $jsonLd->mainLanguage = $language->getCode();
+        return $jsonLd;
     }
 }

@@ -45,6 +45,7 @@ use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -417,6 +418,9 @@ class EventLDProjector extends OfferLDProjector implements
                 $jsonLD->{'@id'} = $this->iriGenerator->iri(
                     $eventCreated->getEventId()
                 );
+
+                $this->setMainLanguage($jsonLD, new Language('nl'));
+
                 $jsonLD->name['nl'] = $eventCreated->getTitle();
                 $jsonLD->location = array(
                         '@type' => 'Place',

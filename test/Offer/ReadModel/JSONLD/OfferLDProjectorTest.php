@@ -584,7 +584,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         JsonDocument $initialDocument,
         Image $image,
         $expectedProjection
-    ){
+    ) {
         $this->documentRepository->save($initialDocument);
         $imageRemovedEvent = new ImageRemoved($initialDocument->getId(), $image);
         $eventBody = $this->project($imageRemovedEvent, $initialDocument->getId());

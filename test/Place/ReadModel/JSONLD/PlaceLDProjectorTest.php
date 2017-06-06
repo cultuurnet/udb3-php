@@ -135,24 +135,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     }
 
     /**
-     * @param string $fileName
-     * @return PlaceImportedFromUDB2
-     */
-    private function placeImportedFromUDB2($fileName)
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/' . $fileName
-        );
-        $event = new PlaceImportedFromUDB2(
-            'someId',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-        );
-
-        return $event;
-    }
-
-    /**
      * @test
      */
     public function it_handles_new_places_without_theme()
@@ -320,6 +302,30 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->assertEquals($jsonLD, $actualJsonLD);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_importing_from_udb2()
+    {
+        $event = $this->placeImportedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+
+        $body = $this->project($event, $event->getActorId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_updating_from_udb2()
+    {
+        $event = $this->placeUpdatedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+
+        $body = $this->project($event, $event->getActorId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
     }
 
     /**
@@ -754,4 +760,41 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->assertArrayNotHasKey('geo', (array) $body);
     }
+
+    /**
+     * @param string $fileName
+     * @return PlaceImportedFromUDB2
+     */
+    private function placeImportedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new PlaceImportedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param string $fileName
+     * @return PlaceUpdatedFromUDB2
+     */
+    private function placeUpdatedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new PlaceUpdatedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
+    }
+
 }

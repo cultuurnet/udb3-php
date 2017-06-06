@@ -144,6 +144,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $udb2Actor
         );
 
+        $this->setMainLanguage($actorLd, new Language('nl'));
+
         // Remove geocoordinates, because the address might have been
         // updated and we might get inconsistent data if it takes a while
         // before the new geocoordinates are added.

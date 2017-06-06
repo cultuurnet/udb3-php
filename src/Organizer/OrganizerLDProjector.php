@@ -39,6 +39,7 @@ class OrganizerLDProjector implements EventListenerInterface
      * @uses applyOrganizerCreatedWithUniqueWebsite
      * @uses applyWebsiteUpdated
      * @uses applyTitleUpdated
+     * @uses applyTitleTranslated
      * @uses applyAddressUpdated
      * @uses applyContactPointUpdated
      * @uses applyOrganizerUpdatedFRomUDB2
@@ -177,7 +178,9 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
 
-        $jsonLD->name = ['nl' => $organizerCreated->getTitle()];
+        $jsonLD->name = [
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+        ];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
@@ -213,13 +216,13 @@ class OrganizerLDProjector implements EventListenerInterface
      */
     private function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
-        $this->applyTitle($titleUpdated, new Language('nl'));
+        $this->applyTitle($titleUpdated);
     }
 
     /**
      * @param TitleTranslated $titleTranslated
      */
-    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    private function applyTitleTranslated(TitleTranslated $titleTranslated)
     {
         $this->applyTitle($titleTranslated, $titleTranslated->getLanguage());
     }
@@ -372,22 +375,29 @@ class OrganizerLDProjector implements EventListenerInterface
 
     /**
      * @param TitleUpdated $titleUpdated
-     * @param Language $language
+     * @param Language|null $language
      */
-    private function applyTitle(TitleUpdated $titleUpdated, Language $language)
-    {
+    private function applyTitle(
+        TitleUpdated $titleUpdated,
+        Language $language = null
+    ) {
         $organizerId = $titleUpdated->getOrganizerId();
 
         $document = $this->repository->get($organizerId);
 
         $jsonLD = $document->getBody();
 
+        if ($language === null) {
+            $language = new Language($this->getMainLanguage($jsonLD));
+        }
+
         // For old projections the name is untranslated and just a string.
         // This needs to be upgraded to an object with languages and translation.
+        // When a full replay is done this code becomes obsolete.
         if (isset($jsonLD->name) && is_string($jsonLD->name)) {
             $title = $jsonLD->name;
             $jsonLD->name = new \StdClass();
-            $jsonLD->name->{'nl'} = $title;
+            $jsonLD->name->{$language->getCode()} = $title;
         }
 
         $jsonLD->name->{$language->getCode()} = $titleUpdated->getTitle()->toNative();

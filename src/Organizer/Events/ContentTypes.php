@@ -30,6 +30,7 @@ class ContentTypes
             OrganizerProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.organizer-projected-to-jsonld+json',
             WebsiteUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-website-updated+json',
             TitleUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-title-updated+json',
+            TitleTranslated::class => 'application/vnd.cultuurnet.udb3-events.organizer-title-translated+json',
             LabelAdded::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-added+json',
             LabelRemoved::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-removed+json',
             AddressUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-address-updated+json',

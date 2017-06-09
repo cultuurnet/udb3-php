@@ -2,12 +2,8 @@
 
 namespace CultuurNet\UDB3\Cdb\Description;
 
-use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
 use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
-use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
 use CultuurNet\UDB3\StringFilter\NewlineToBreakTagStringFilter;
-use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
-use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
 class JsonLdDescriptionToCdbXmlLongDescriptionFilter extends CombinedStringFilter
 {

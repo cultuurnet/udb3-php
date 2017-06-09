@@ -2,10 +2,7 @@
 
 namespace CultuurNet\UDB3\Cdb\Description;
 
-use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
-use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
 use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\StringFilter\StripHtmlStringFilter;
 
 class ShortDescriptionUDB2FormattingFilter implements StringFilterInterface
 {

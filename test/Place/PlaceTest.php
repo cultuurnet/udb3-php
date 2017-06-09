@@ -4,9 +4,20 @@ namespace CultuurNet\UDB3\Place;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Address\Address;
+use CultuurNet\UDB3\Address\Locality;
+use CultuurNet\UDB3\Address\PostalCode;
+use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Title;
+use ValueObjects\Geography\Country;
 
 class PlaceTest extends AggregateRootScenarioTestCase
 {
@@ -25,6 +36,140 @@ class PlaceTest extends AggregateRootScenarioTestCase
         return file_get_contents(
             __DIR__ . $filename
         );
+    }
+
+    /**
+     * @test
+     * @dataProvider updateAddressDataProvider
+     *
+     * @param Address $originalAddress
+     * @param Address $updatedAddress
+     */
+    public function it_should_update_the_address_on_a_newly_created_place(
+        Address $originalAddress,
+        Address $updatedAddress
+    ) {
+        $this->scenario
+            ->withAggregateId('a3ac59a1-eba3-4071-b765-6b38bec74a62')
+            ->given(
+                [
+                    new PlaceCreated(
+                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
+                        new Title('JH Sojo'),
+                        new EventType('0.1.1', 'Jeugdhuis'),
+                        $originalAddress,
+                        new Calendar(CalendarType::PERMANENT())
+                    ),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($updatedAddress) {
+                    $place->updateAddress($updatedAddress);
+                }
+            )
+            ->then(
+                [
+                    new MajorInfoUpdated(
+                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
+                        new Title('JH Sojo'),
+                        new EventType('0.1.1', 'Jeugdhuis'),
+                        $updatedAddress,
+                        new Calendar(CalendarType::PERMANENT())
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @dataProvider updateAddressDataProvider
+     *
+     * @param Address $originalAddress
+     * @param Address $updatedAddress
+     */
+    public function it_should_update_the_address_on_a_place_that_had_its_major_info_updated(
+        Address $originalAddress,
+        Address $updatedAddress
+    ) {
+        $this->scenario
+            ->withAggregateId('a3ac59a1-eba3-4071-b765-6b38bec74a62')
+            ->given(
+                [
+                    new PlaceCreated(
+                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
+                        new Title('JH Sojo'),
+                        new EventType('0.1.1', 'Jeugdhuis'),
+                        $originalAddress,
+                        new Calendar(CalendarType::PERMANENT())
+                    ),
+                    new MajorInfoUpdated(
+                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
+                        new Title('JH Sojo UPDATED'),
+                        new EventType('0.1.1.2', 'Jeugdhuis en jeugdcentrum'),
+                        $originalAddress,
+                        new Calendar(
+                            CalendarType::SINGLE(),
+                            \DateTimeImmutable::createFromFormat(
+                                \DateTime::ATOM,
+                                '2017-06-09T16:00:00+02:00'
+                            ),
+                            \DateTimeImmutable::createFromFormat(
+                                \DateTime::ATOM,
+                                '2017-06-09T22:00:00+02:00'
+                            )
+                        )
+                    ),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($updatedAddress) {
+                    $place->updateAddress($updatedAddress);
+                }
+            )
+            ->then(
+                [
+                    new MajorInfoUpdated(
+                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
+                        new Title('JH Sojo UPDATED'),
+                        new EventType('0.1.1.2', 'Jeugdhuis en jeugdcentrum'),
+                        $updatedAddress,
+                        new Calendar(
+                            CalendarType::SINGLE(),
+                            \DateTimeImmutable::createFromFormat(
+                                \DateTime::ATOM,
+                                '2017-06-09T16:00:00+02:00'
+                            ),
+                            \DateTimeImmutable::createFromFormat(
+                                \DateTime::ATOM,
+                                '2017-06-09T22:00:00+02:00'
+                            )
+                        )
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @return array
+     */
+    public function updateAddressDataProvider()
+    {
+        return [
+            [
+                'original' => new Address(
+                    new Street('Eenmeilaan'),
+                    new PostalCode('3010'),
+                    new Locality('Kessel-Lo'),
+                    Country::fromNative('BE')
+                ),
+                'updated' => new Address(
+                    new Street('Eenmeilaan 35'),
+                    new PostalCode('3010'),
+                    new Locality('Kessel-Lo'),
+                    Country::fromNative('BE')
+                ),
+            ],
+        ];
     }
 
     /**

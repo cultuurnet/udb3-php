@@ -62,6 +62,31 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     private $placeId;
 
     /**
+     * @var Title
+     */
+    private $title;
+
+    /**
+     * @var EventType
+     */
+    private $eventType;
+
+    /**
+     * @var Theme|null
+     */
+    private $theme;
+
+    /**
+     * @var Address
+     */
+    private $address;
+
+    /**
+     * @var CalendarInterface
+     */
+    private $calendar;
+
+    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -116,6 +141,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->placeId = $placeCreated->getPlaceId();
+        $this->title = $placeCreated->getTitle();
+        $this->eventType = $placeCreated->getEventType();
+        $this->theme = $placeCreated->getTheme();
+        $this->address = $placeCreated->getAddress();
+        $this->calendar = $placeCreated->getCalendar();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
@@ -145,7 +175,45 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         CalendarInterface $calendar,
         Theme $theme = null
     ) {
-        $this->apply(new MajorInfoUpdated($this->placeId, $title, $eventType, $address, $calendar, $theme));
+        $this->apply(
+            new MajorInfoUpdated(
+                $this->placeId,
+                $title,
+                $eventType,
+                $address,
+                $calendar,
+                $theme
+            )
+        );
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function updateAddress(Address $address)
+    {
+        $this->apply(
+            new MajorInfoUpdated(
+                $this->placeId,
+                $this->title,
+                $this->eventType,
+                $address,
+                $this->calendar,
+                $this->theme
+            )
+        );
+    }
+
+    /**
+     * @param MajorInfoUpdated $majorInfoUpdated
+     */
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+        $this->title = $majorInfoUpdated->getTitle();
+        $this->eventType = $majorInfoUpdated->getEventType();
+        $this->theme = $majorInfoUpdated->getTheme();
+        $this->address = $majorInfoUpdated->getAddress();
+        $this->calendar = $majorInfoUpdated->getCalendar();
     }
 
     /**

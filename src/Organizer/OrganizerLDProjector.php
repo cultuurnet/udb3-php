@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
@@ -29,6 +30,7 @@ use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\Title;
 
 class OrganizerLDProjector implements EventListenerInterface
 {
@@ -216,7 +218,7 @@ class OrganizerLDProjector implements EventListenerInterface
      */
     private function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
-        $this->applyTitle($titleUpdated);
+        $this->applyTitle($titleUpdated, $titleUpdated->getTitle());
     }
 
     /**
@@ -224,7 +226,11 @@ class OrganizerLDProjector implements EventListenerInterface
      */
     private function applyTitleTranslated(TitleTranslated $titleTranslated)
     {
-        $this->applyTitle($titleTranslated, $titleTranslated->getLanguage());
+        $this->applyTitle(
+            $titleTranslated,
+            $titleTranslated->getTitle(),
+            $titleTranslated->getLanguage()
+        );
     }
 
     /**
@@ -374,14 +380,16 @@ class OrganizerLDProjector implements EventListenerInterface
     }
 
     /**
-     * @param TitleUpdated $titleUpdated
+     * @param OrganizerEvent $organizerEvent
+     * @param Title $title
      * @param Language|null $language
      */
     private function applyTitle(
-        TitleUpdated $titleUpdated,
+        OrganizerEvent $organizerEvent,
+        Title $title,
         Language $language = null
     ) {
-        $organizerId = $titleUpdated->getOrganizerId();
+        $organizerId = $organizerEvent->getOrganizerId();
 
         $document = $this->repository->get($organizerId);
 
@@ -396,12 +404,12 @@ class OrganizerLDProjector implements EventListenerInterface
         // This needs to be upgraded to an object with languages and translation.
         // When a full replay is done this code becomes obsolete.
         if (isset($jsonLD->name) && is_string($jsonLD->name)) {
-            $title = $jsonLD->name;
+            $previousTitle = $jsonLD->name;
             $jsonLD->name = new \StdClass();
-            $jsonLD->name->{$mainLanguage->getCode()} = $title;
+            $jsonLD->name->{$mainLanguage->getCode()} = $previousTitle;
         }
 
-        $jsonLD->name->{$language->getCode()} = $titleUpdated->getTitle()->toNative();
+        $jsonLD->name->{$language->getCode()} = $title->toNative();
 
         $this->repository->save($document->withBody($jsonLD));
     }

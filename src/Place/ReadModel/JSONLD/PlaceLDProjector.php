@@ -20,6 +20,8 @@ use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -292,7 +294,28 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         unset($jsonLD->geo);
 
         $this->repository->save($document->withBody($jsonLD));
+    }
 
+    /**
+     * @param AddressUpdated $addressUpdated
+     */
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $document = $this->loadPlaceDocumentFromRepository($addressUpdated);
+        $jsonLD = $document->getBody();
+        $this->setAddress($jsonLD, $addressUpdated->getAddress(), $this->getMainLanguage($jsonLD));
+        $this->repository->save($document->withBody($jsonLD));
+    }
+
+    /**
+     * @param AddressTranslated $addressTranslated
+     */
+    protected function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        $document = $this->loadPlaceDocumentFromRepository($addressTranslated);
+        $jsonLD = $document->getBody();
+        $this->setAddress($jsonLD, $addressTranslated->getAddress(), $addressTranslated->getLanguage());
+        $this->repository->save($document->withBody($jsonLD));
     }
 
     /**

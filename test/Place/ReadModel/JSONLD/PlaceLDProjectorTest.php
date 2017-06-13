@@ -24,10 +24,13 @@ use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
@@ -308,6 +311,145 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->assertEquals($jsonLD, $actualJsonLD);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_project_an_updated_address()
+    {
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name = (object) ['nl'=>'some representative title'];
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
+        ];
+        $jsonLD->calendarType = 'permanent';
+        $jsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ]
+        ];
+
+        $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $expectedJsonLD->mainLanguage = 'nl';
+        $expectedJsonLD->name = (object) ['nl'=>'some representative title'];
+        $expectedJsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Kessel-lo',
+                'postalCode' => '3010',
+                'streetAddress' => 'Eenmeilaan 35',
+            ],
+        ];
+        $expectedJsonLD->calendarType = 'permanent';
+        $expectedJsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ]
+        ];
+
+        $addressUpdated = new AddressUpdated(
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            new Address(
+                new Street('Eenmeilaan 35'),
+                new PostalCode('3010'),
+                new Locality('Kessel-lo'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $body = $this->project($addressUpdated, '66f30742-dee9-4794-ac92-fa44634692b8');
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_project_a_translated_address()
+    {
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name = (object) ['nl'=>'some representative title'];
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
+        ];
+        $jsonLD->calendarType = 'permanent';
+        $jsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ]
+        ];
+
+        $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $expectedJsonLD->mainLanguage = 'nl';
+        $expectedJsonLD->name = (object) ['nl'=>'some representative title'];
+        $expectedJsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
+            'fr' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Kessel-lo',
+                'postalCode' => '3010',
+                'streetAddress' => 'Eenmeilaan 35',
+            ],
+        ];
+        $expectedJsonLD->calendarType = 'permanent';
+        $expectedJsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ]
+        ];
+
+        $addressTranslated = new AddressTranslated(
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            new Address(
+                new Street('Eenmeilaan 35'),
+                new PostalCode('3010'),
+                new Locality('Kessel-lo'),
+                Country::fromNative('BE')
+            ),
+            new Language('fr')
+        );
+
+        $body = $this->project($addressTranslated, '66f30742-dee9-4794-ac92-fa44634692b8');
+        $this->assertEquals($expectedJsonLD, $body);
     }
 
     /**

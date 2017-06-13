@@ -394,11 +394,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     private function isTitleChanged(Title $title, Language $language)
     {
-        if (!isset($this->titles[$language->getCode()]) ||
-            !$title->sameValueAs($this->titles[$language->getCode()])) {
-            return true;
-        } else {
-            return false;
-        }
+        return !isset($this->titles[$language->getCode()]) ||
+            !$title->sameValueAs($this->titles[$language->getCode()]);
     }
 }

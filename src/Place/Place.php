@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -62,29 +64,18 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     private $placeId;
 
     /**
-     * @var Title
+     * @var Language
      */
-    private $title;
+    private $mainLanguage;
 
-    /**
-     * @var EventType
-     */
-    private $eventType;
+    public function __construct()
+    {
+        parent::__construct();
 
-    /**
-     * @var Theme|null
-     */
-    private $theme;
-
-    /**
-     * @var Address
-     */
-    private $address;
-
-    /**
-     * @var CalendarInterface
-     */
-    private $calendar;
+        // For now the main language is hardcoded as nl.
+        // In the future it should be set dynamically on create.
+        $this->mainLanguage = new Language('nl');
+    }
 
     /**
      * {@inheritdoc}
@@ -141,11 +132,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->placeId = $placeCreated->getPlaceId();
-        $this->title = $placeCreated->getTitle();
-        $this->eventType = $placeCreated->getEventType();
-        $this->theme = $placeCreated->getTheme();
-        $this->address = $placeCreated->getAddress();
-        $this->calendar = $placeCreated->getCalendar();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
@@ -189,31 +175,17 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     /**
      * @param Address $address
+     * @param Language $language
      */
-    public function updateAddress(Address $address)
+    public function updateAddress(Address $address, Language $language)
     {
-        $this->apply(
-            new MajorInfoUpdated(
-                $this->placeId,
-                $this->title,
-                $this->eventType,
-                $address,
-                $this->calendar,
-                $this->theme
-            )
-        );
-    }
+        if ($language->getCode() === $this->mainLanguage->getCode()) {
+            $event = new AddressUpdated($this->placeId, $address);
+        } else {
+            $event = new AddressTranslated($this->placeId, $address, $language);
+        }
 
-    /**
-     * @param MajorInfoUpdated $majorInfoUpdated
-     */
-    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
-    {
-        $this->title = $majorInfoUpdated->getTitle();
-        $this->eventType = $majorInfoUpdated->getEventType();
-        $this->theme = $majorInfoUpdated->getTheme();
-        $this->address = $majorInfoUpdated->getAddress();
-        $this->calendar = $majorInfoUpdated->getCalendar();
+        $this->apply($event);
     }
 
     /**

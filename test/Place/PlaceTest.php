@@ -12,11 +12,16 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
+use ValueObjects\DateTime\Hour;
+use ValueObjects\DateTime\Minute;
 use ValueObjects\Geography\Country;
 
 class PlaceTest extends AggregateRootScenarioTestCase
@@ -45,37 +50,33 @@ class PlaceTest extends AggregateRootScenarioTestCase
      * @param Address $originalAddress
      * @param Address $updatedAddress
      */
-    public function it_should_update_the_address_on_a_newly_created_place(
+    public function it_should_update_the_address_in_the_main_language(
         Address $originalAddress,
         Address $updatedAddress
     ) {
+        $language = new Language('nl');
+
         $this->scenario
-            ->withAggregateId('a3ac59a1-eba3-4071-b765-6b38bec74a62')
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
             ->given(
                 [
                     new PlaceCreated(
-                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
-                        new Title('JH Sojo'),
+                        'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                        new Title('Test place'),
                         new EventType('0.1.1', 'Jeugdhuis'),
                         $originalAddress,
                         new Calendar(CalendarType::PERMANENT())
-                    ),
+                    )
                 ]
             )
             ->when(
-                function (Place $place) use ($updatedAddress) {
-                    $place->updateAddress($updatedAddress);
+                function (Place $place) use ($updatedAddress, $language) {
+                    $place->updateAddress($updatedAddress, $language);
                 }
             )
             ->then(
                 [
-                    new MajorInfoUpdated(
-                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
-                        new Title('JH Sojo'),
-                        new EventType('0.1.1', 'Jeugdhuis'),
-                        $updatedAddress,
-                        new Calendar(CalendarType::PERMANENT())
-                    ),
+                    new AddressUpdated('c5c1b435-0f3c-4b75-9f28-94d93be7078b', $updatedAddress),
                 ]
             );
     }
@@ -87,64 +88,33 @@ class PlaceTest extends AggregateRootScenarioTestCase
      * @param Address $originalAddress
      * @param Address $updatedAddress
      */
-    public function it_should_update_the_address_on_a_place_that_had_its_major_info_updated(
+    public function it_should_translate_the_address_in_any_other_language_than_the_main_language(
         Address $originalAddress,
         Address $updatedAddress
     ) {
+        $language = new Language('fr');
+
         $this->scenario
-            ->withAggregateId('a3ac59a1-eba3-4071-b765-6b38bec74a62')
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
             ->given(
                 [
                     new PlaceCreated(
-                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
-                        new Title('JH Sojo'),
+                        'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                        new Title('Test place'),
                         new EventType('0.1.1', 'Jeugdhuis'),
                         $originalAddress,
                         new Calendar(CalendarType::PERMANENT())
-                    ),
-                    new MajorInfoUpdated(
-                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
-                        new Title('JH Sojo UPDATED'),
-                        new EventType('0.1.1.2', 'Jeugdhuis en jeugdcentrum'),
-                        $originalAddress,
-                        new Calendar(
-                            CalendarType::SINGLE(),
-                            \DateTimeImmutable::createFromFormat(
-                                \DateTime::ATOM,
-                                '2017-06-09T16:00:00+02:00'
-                            ),
-                            \DateTimeImmutable::createFromFormat(
-                                \DateTime::ATOM,
-                                '2017-06-09T22:00:00+02:00'
-                            )
-                        )
-                    ),
+                    )
                 ]
             )
             ->when(
-                function (Place $place) use ($updatedAddress) {
-                    $place->updateAddress($updatedAddress);
+                function (Place $place) use ($updatedAddress, $language) {
+                    $place->updateAddress($updatedAddress, $language);
                 }
             )
             ->then(
                 [
-                    new MajorInfoUpdated(
-                        'a3ac59a1-eba3-4071-b765-6b38bec74a62',
-                        new Title('JH Sojo UPDATED'),
-                        new EventType('0.1.1.2', 'Jeugdhuis en jeugdcentrum'),
-                        $updatedAddress,
-                        new Calendar(
-                            CalendarType::SINGLE(),
-                            \DateTimeImmutable::createFromFormat(
-                                \DateTime::ATOM,
-                                '2017-06-09T16:00:00+02:00'
-                            ),
-                            \DateTimeImmutable::createFromFormat(
-                                \DateTime::ATOM,
-                                '2017-06-09T22:00:00+02:00'
-                            )
-                        )
-                    ),
+                    new AddressTranslated('c5c1b435-0f3c-4b75-9f28-94d93be7078b', $updatedAddress, $language),
                 ]
             );
     }

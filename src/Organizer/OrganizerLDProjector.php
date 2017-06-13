@@ -400,9 +400,10 @@ class OrganizerLDProjector implements EventListenerInterface
             $language = $mainLanguage;
         }
 
-        // For old projections the name is untranslated and just a string.
+        // @replay_i18n For old projections the name is untranslated and just a string.
         // This needs to be upgraded to an object with languages and translation.
         // When a full replay is done this code becomes obsolete.
+        // @see https://jira.uitdatabank.be/browse/III-2201
         if (isset($jsonLD->name) && is_string($jsonLD->name)) {
             $previousTitle = $jsonLD->name;
             $jsonLD->name = new \StdClass();

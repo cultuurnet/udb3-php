@@ -45,4 +45,28 @@ class AddressTranslated extends PlaceEvent
     {
         return $this->language;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + [
+            'address' => $this->address->serialize(),
+            'language' => $this->language->getCode(),
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return AddressTranslated
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['place_id'],
+            Address::deserialize($data['address']),
+            new Language($data['language'])
+        );
+    }
 }

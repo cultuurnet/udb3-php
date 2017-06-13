@@ -29,4 +29,23 @@ class AddressUpdated extends PlaceEvent
     {
         return $this->address;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + [
+            'address' => $this->address->serialize(),
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return AddressUpdated
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['place_id'], Address::deserialize($data['address']));
+    }
 }

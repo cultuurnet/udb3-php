@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Theme;
@@ -45,6 +46,13 @@ interface PlaceEditingServiceInterface
      * @param Theme|null $theme
      */
     public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
+
+    /**
+     * @param $id
+     * @param Address $address
+     * @param Language $language
+     */
+    public function updateAddress($id, Address $address, Language $language);
 
     /**
      * Update the description of a place.

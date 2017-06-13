@@ -567,6 +567,69 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_should_keep_address_translations_when_updating_from_cdbxml()
+    {
+        $initialJsonLd = new stdClass();
+        $initialJsonLd->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $initialJsonLd->mainLanguage = 'nl';
+        $initialJsonLd->name = (object) ['nl'=>'some representative title'];
+        $initialJsonLd->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Brussel',
+                'postalCode' => '1000',
+                'streetAddress' => 'Wetstraat 1',
+            ],
+            'fr' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Bruxelles',
+                'postalCode' => '1000',
+                'streetAddress' => 'Rue de la loi 1',
+            ],
+        ];
+        $initialJsonLd->calendarType = 'permanent';
+        $initialJsonLd->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ]
+        ];
+
+        $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
+            ->withBody($initialJsonLd);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLdAddress = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Overpelt',
+                'postalCode' => '3900',
+                'streetAddress' => 'Jeugdlaan 2',
+            ],
+            'fr' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Bruxelles',
+                'postalCode' => '1000',
+                'streetAddress' => 'Rue de la loi 1',
+            ],
+        ];
+
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_long_description.cdbxml.xml');
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        $actualJsonLd = $this->project($placeUpdatedFromUdb2, '66f30742-dee9-4794-ac92-fa44634692b8');
+        $this->assertEquals($expectedJsonLdAddress, $actualJsonLd->address);
+    }
+
+    /**
+     * @test
+     */
     public function it_projects_the_updating_of_major_info()
     {
         $id = 'foo';

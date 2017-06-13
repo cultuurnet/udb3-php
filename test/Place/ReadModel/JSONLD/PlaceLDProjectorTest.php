@@ -155,11 +155,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/contexts/place';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
-        $jsonLD->address = (object)[
-          'addressCountry' => 'BE',
-          'addressLocality' => 'Leuven',
-          'postalCode' => '3000',
-          'streetAddress' => 'Kerkstraat 69',
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
@@ -209,11 +211,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/contexts/place';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
-        $jsonLD->address = (object)[
-            'addressCountry' => 'BE',
-            'addressLocality' => 'Leuven',
-            'postalCode' => '3000',
-            'streetAddress' => 'Kerkstraat 69',
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
@@ -267,11 +271,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/contexts/place';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object) ['nl' => 'some representative title'];
-        $jsonLD->address = (object)[
-            'addressCountry' => 'BE',
-            'addressLocality' => 'Leuven',
-            'postalCode' => '3000',
-            'streetAddress' => 'Kerkstraat 69',
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -436,11 +442,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)['nl'=>'some representative title'];
-        $jsonLD->address = (object)[
-          'addressCountry' => '$country',
-          'addressLocality' => '$locality',
-          'postalCode' => '$postalCode',
-          'streetAddress' => '$street',
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -460,11 +468,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
         $expectedJsonLD->mainLanguage = 'nl';
         $expectedJsonLD->name = (object)['nl'=>'new title'];
-        $expectedJsonLD->address = (object)[
-            'addressCountry' => 'BE',
-            'addressLocality' => 'Leuven',
-            'postalCode' => '3000',
-            'streetAddress' => 'Kerkstraat 69',
+        $expectedJsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->terms = [

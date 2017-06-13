@@ -6,6 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -194,7 +195,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $jsonLD->name->nl = $placeCreated->getTitle();
 
-        $jsonLD->address = $placeCreated->getAddress()->toJsonLd();
+        $this->setAddress(
+            $jsonLD,
+            $placeCreated->getAddress(),
+            $this->getMainLanguage($jsonLD)
+        );
 
         $calendarJsonLD = $placeCreated->getCalendar()->toJsonLd();
         $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
@@ -253,7 +258,12 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD = $document->getBody();
 
         $jsonLD->name->nl = $majorInfoUpdated->getTitle();
-        $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
+
+        $this->setAddress(
+            $jsonLD,
+            $majorInfoUpdated->getAddress(),
+            $this->getMainLanguage($jsonLD)
+        );
 
         $availableTo = AvailableTo::createFromCalendar($majorInfoUpdated->getCalendar());
         $jsonLD->availableTo = (string)$availableTo;
@@ -283,6 +293,32 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $this->repository->save($document->withBody($jsonLD));
 
+    }
+
+    /**
+     * @param \stdClass $jsonLd
+     * @param Address $address
+     * @param Language $language
+     */
+    protected function setAddress(\stdClass $jsonLd, Address $address, Language $language)
+    {
+        if (!isset($jsonLd->address)) {
+            $jsonLd->address = new \stdClass();
+        }
+
+        if (isset($jsonLd->address->streetAddress)) {
+            // Old projections have their address in a single language.
+            // Set the old address as the address for the main language before
+            // updating it or adding another address.
+            // @replay_i18n
+            // @see https://jira.uitdatabank.be/browse/III-2201
+            $mainLanguageCode = $this->getMainLanguage($jsonLd)->getCode();
+            $jsonLd->address = (object) [
+                $mainLanguageCode => $jsonLd->address,
+            ];
+        }
+
+        $jsonLd->address->{$language->getCode()} = $address->toJsonLd();
     }
 
     /**

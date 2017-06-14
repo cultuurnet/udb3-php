@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Media;
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
@@ -74,7 +75,8 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             StringLiteral::fromNative('description'),
             StringLiteral::fromNative('copyright'),
-            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $logger = $this->createMock(LoggerInterface::class);
@@ -111,7 +113,8 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             StringLiteral::fromNative('description'),
             StringLiteral::fromNative('copyright'),
-            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->pathGenerator
@@ -145,13 +148,15 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
         $description = new Description('sexy ladies without clothes');
         $copyrightHolder = new CopyrightHolder('Bart Ramakers');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
+        $language = new Language('en');
 
         $mediaObject = MediaObject::create(
             new UUID($id),
             $fileType,
             $description,
             $copyrightHolder,
-            $location
+            $location,
+            $language
         );
 
         $this->repository

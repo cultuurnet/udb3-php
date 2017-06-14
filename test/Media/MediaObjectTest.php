@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
@@ -29,17 +30,19 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
         $description = new StringLiteral('sexy ladies without clothes');
         $copyrightHolder = new StringLiteral('Bart Ramakers');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
+        $language = new Language('en');
 
         $this->scenario
             ->withAggregateId($fileId->toNative())
             ->when(
-                function () use ($fileId, $fileType, $description, $copyrightHolder, $location) {
+                function () use ($fileId, $fileType, $description, $copyrightHolder, $location, $language) {
                     return MediaObject::create(
                         $fileId,
                         $fileType,
                         $description,
                         $copyrightHolder,
-                        $location
+                        $location,
+                        $language
                     );
                 }
             )
@@ -50,7 +53,8 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
                         $fileType,
                         $description,
                         $copyrightHolder,
-                        $location
+                        $location,
+                        $language
                     ),
                 ]
             );
@@ -66,7 +70,8 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new StringLiteral('sexy ladies without clothes'),
             new StringLiteral('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->assertEquals(

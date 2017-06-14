@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media\Events;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -36,11 +37,17 @@ class MediaObjectCreated implements SerializableInterface
     protected $sourceLocation;
 
     /**
+     * @var Language
+     */
+    protected $language;
+
+    /**
      * MediaObjectCreated constructor.
      * @param UUID $id
      * @param MIMEType $fileType
      * @param \ValueObjects\StringLiteral\StringLiteral $description
      * @param \ValueObjects\StringLiteral\StringLiteral $copyrightHolder
+     * @param Language $language
      * @param Url $sourceLocation
      */
     public function __construct(
@@ -48,13 +55,23 @@ class MediaObjectCreated implements SerializableInterface
         MIMEType $fileType,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
-        Url $sourceLocation
+        Url $sourceLocation,
+        Language $language
     ) {
         $this->mediaObjectId = $id;
         $this->mimeType = $fileType;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
         $this->sourceLocation = $sourceLocation;
+        $this->language = $language;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getLanguage()
+    {
+        return $this->language;
     }
 
     /**
@@ -66,7 +83,7 @@ class MediaObjectCreated implements SerializableInterface
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getDescription()
     {
@@ -74,7 +91,7 @@ class MediaObjectCreated implements SerializableInterface
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getCopyrightHolder()
     {
@@ -107,7 +124,8 @@ class MediaObjectCreated implements SerializableInterface
             'mime_type' => $this->getMimeType()->toNative(),
             'description' => $this->getDescription()->toNative(),
             'copyright_holder' => $this->getCopyrightHolder()->toNative(),
-            'source_location' => (string) $this->getSourceLocation()
+            'source_location' => (string) $this->getSourceLocation(),
+            'language' => (string) $this->getLanguage()
         );
     }
 
@@ -123,7 +141,8 @@ class MediaObjectCreated implements SerializableInterface
             new MIMEType($data['mime_type']),
             new StringLiteral($data['description']),
             new StringLiteral($data['copyright_holder']),
-            Url::fromNative($data['source_location'])
+            Url::fromNative($data['source_location']),
+            new Language($data['language'])
         );
     }
 }

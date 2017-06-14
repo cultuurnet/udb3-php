@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
@@ -54,6 +55,7 @@ class MediaObject extends EventSourcedAggregateRoot
      * @param StringLiteral $description
      * @param StringLiteral $copyrightHolder
      * @param Url $sourceLocation
+     * @param Language $language
      *
      * @return MediaObject
      */
@@ -62,7 +64,8 @@ class MediaObject extends EventSourcedAggregateRoot
         MIMEType $mimeType,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
-        Url $sourceLocation
+        Url $sourceLocation,
+        Language $language
     ) {
         $mediaObject = new self();
         $mediaObject->apply(
@@ -71,7 +74,8 @@ class MediaObject extends EventSourcedAggregateRoot
                 $mimeType,
                 $description,
                 $copyrightHolder,
-                $sourceLocation
+                $sourceLocation,
+                $language
             )
         );
 

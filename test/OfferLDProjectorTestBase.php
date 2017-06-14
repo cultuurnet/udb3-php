@@ -1,20 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\OfferLDProjectorTestTrait.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -269,10 +262,6 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
         $description = StringLiteral::fromNative('Some description.');
         $copyrightHolder = StringLiteral::fromNative('Dirk Dirkington');
-        $type = new MIMEType('image/png');
-        $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
-
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $location);
         $eventClass = $this->getEventClass('ImageUpdated');
         $imageUpdated = new $eventClass($id, $imageId, $description, $copyrightHolder);
 

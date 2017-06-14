@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
@@ -47,14 +48,16 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
                     'mime_type' => 'image/png',
                     'description' => 'sexy ladies without clothes',
                     'copyright_holder' => 'Bart Ramakers',
-                    'source_location' => 'http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png'
+                    'source_location' => 'http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                    'language' => 'en'
                 ],
                 new MediaObjectCreated(
                     new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
                     new MIMEType('image/png'),
                     new StringLiteral('sexy ladies without clothes'),
                     new StringLiteral('Bart Ramakers'),
-                    Url::fromNative('http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+                    Url::fromNative('http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+                    new Language('en')
                 )
             ]
         ];

@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media\Serialization;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -11,7 +12,6 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
@@ -106,7 +106,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('video/avi'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->setExpectedException(
@@ -127,7 +128,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('video/avi'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->setExpectedException(

@@ -93,5 +93,10 @@ class MediaObjectTest extends AggregateRootScenarioTestCase
             new StringLiteral('Bart Ramakers'),
             $mediaObject->getCopyrightHolder()
         );
+
+        $this->assertEquals(
+            new Language('en'),
+            $mediaObject->getLanguage()
+        );
     }
 }

@@ -50,6 +50,11 @@ class MediaObject extends EventSourcedAggregateRoot
     protected $sourceLocation;
 
     /**
+     * @var Language
+     */
+    protected $language;
+
+    /**
      * @param UUID $id
      * @param MIMEType $mimeType
      * @param StringLiteral $description
@@ -97,6 +102,7 @@ class MediaObject extends EventSourcedAggregateRoot
         $this->description = $mediaObjectCreated->getDescription();
         $this->copyrightHolder = $mediaObjectCreated->getCopyrightHolder();
         $this->sourceLocation = $mediaObjectCreated->getSourceLocation();
+        $this->language = $mediaObjectCreated->getLanguage();
     }
 
     /**
@@ -137,5 +143,13 @@ class MediaObject extends EventSourcedAggregateRoot
     public function getSourceLocation()
     {
         return $this->sourceLocation;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getLanguage()
+    {
+        return $this->language;
     }
 }

@@ -150,8 +150,6 @@ class CdbXMLImporter
 
         $this->importPerformers($detail, $jsonLD);
 
-        $this->importLanguages($event, $jsonLD);
-
         $this->importUitInVlaanderenReference($event, $slugger, $jsonLD);
 
         $this->cdbXMLItemBaseImporter->importExternalId($event, $jsonLD);
@@ -378,23 +376,6 @@ class CdbXMLImporter
                     $jsonLD->performer[] = $performerData;
                 }
             }
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
-    private function importLanguages(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
-    {
-        /** @var \CultureFeed_Cdb_Data_Language $udb2Language */
-        $languages = $event->getLanguages();
-        if ($languages) {
-            $jsonLD->language = [];
-            foreach ($languages as $udb2Language) {
-                $jsonLD->language[] = $udb2Language->getLanguage();
-            }
-            $jsonLD->language = array_unique($jsonLD->language);
         }
     }
 

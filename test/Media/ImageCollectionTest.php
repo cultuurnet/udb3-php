@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -21,7 +22,8 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
             MIMEType::fromSubtype('jpeg'),
             new Description('my best selfie'),
             new CopyrightHolder('Henk'),
-            Url::fromNative('http://du.de/images/henk_032.jpg')
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
+            new Language('en')
         );
         $images = (new ImageCollection())->withMain($mainImage);
 
@@ -56,7 +58,8 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
             MIMEType::fromSubtype('jpeg'),
             new Description('my best selfie'),
             new CopyrightHolder('Henk'),
-            Url::fromNative('http://du.de/images/henk_032.jpg')
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
+            new Language('en')
         );
         $images = (new ImageCollection())->with($image);
 

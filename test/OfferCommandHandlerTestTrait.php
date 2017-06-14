@@ -136,7 +136,8 @@ trait OfferCommandHandlerTestTrait
             new MIMEType('image/png'),
             new Description('Some description.'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $commandClass = $this->getCommandClass('AddImage');
         $eventClass = $this->getEventClass('ImageAdded');
@@ -163,7 +164,8 @@ trait OfferCommandHandlerTestTrait
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $imageAddedEventClass = $this->getEventClass('ImageAdded');
         $commandClass = $this->getCommandClass('RemoveImage');

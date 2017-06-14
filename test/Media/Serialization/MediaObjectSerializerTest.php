@@ -42,7 +42,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $this->iriGenerator
@@ -56,7 +57,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
             'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
             'description' => 'my pic',
-            'copyrightHolder' => 'Dirk Dirkington'
+            'copyrightHolder' => 'Dirk Dirkington',
+            'inLanguage' => 'en'
         ];
 
         $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');
@@ -74,7 +76,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('application/octet-stream'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $this->iriGenerator
@@ -88,7 +91,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
             'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
             'description' => 'my pic',
-            'copyrightHolder' => 'Dirk Dirkington'
+            'copyrightHolder' => 'Dirk Dirkington',
+            'inLanguage' => 'en'
         ];
 
         $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');

@@ -45,6 +45,7 @@ class MediaObjectSerializer implements SerializerInterface
             'thumbnailUrl' => (string) $mediaObject->getSourceLocation(),
             'description' => (string) $mediaObject->getDescription(),
             'copyrightHolder' => (string) $mediaObject->getCopyrightHolder(),
+            'inLanguage' => (string) $mediaObject->getLanguage(),
         ];
 
         return $normalizedData;

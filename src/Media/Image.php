@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
@@ -36,18 +37,33 @@ class Image implements SerializableInterface
      */
     protected $sourceLocation;
 
+    /**
+     * @var Language
+     */
+    protected $language;
+
     public function __construct(
         UUID $id,
         MIMEType $mimeType,
         Description $description,
         CopyrightHolder $copyrightHolder,
-        Url $sourceLocation
+        Url $sourceLocation,
+        Language $language
     ) {
         $this->mediaObjectId = $id;
         $this->mimeType = $mimeType;
         $this->description = $description;
         $this->copyrightHolder = $copyrightHolder;
         $this->sourceLocation = $sourceLocation;
+        $this->language = $language;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getLanguage()
+    {
+        return $this->language;
     }
 
     /**
@@ -100,7 +116,8 @@ class Image implements SerializableInterface
             new MIMEType($data['mime_type']),
             new Description($data['description']),
             new CopyrightHolder($data['copyright_holder']),
-            Url::fromNative($data['source_location'])
+            Url::fromNative($data['source_location']),
+            new Language($data['language'])
         );
     }
 
@@ -114,7 +131,8 @@ class Image implements SerializableInterface
             'mime_type' => (string) $this->getMimeType(),
             'description' => (string) $this->getDescription(),
             'copyright_holder' => (string) $this->getCopyrightHolder(),
-            'source_location' => (string) $this->getSourceLocation()
+            'source_location' => (string) $this->getSourceLocation(),
+            'language' => (string) $this->getLanguage()
         ];
     }
 }

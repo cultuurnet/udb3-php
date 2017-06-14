@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
@@ -93,7 +94,8 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                         new MIMEType('image/jpg'),
                         new Description('my pic'),
                         new CopyrightHolder('Dirk Dirkington'),
-                        Url::fromNative('http://foo.bar/media/my_pic.jpg')
+                        Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+                        new Language('en')
                     )
                 ]
             ],

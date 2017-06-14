@@ -172,7 +172,8 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             $fileType,
             $description,
             $copyrightHolder,
-            $location
+            $location,
+            $language
         );
 
         $this->assertEquals($expectedImage, $image);

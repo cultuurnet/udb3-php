@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -21,7 +22,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $serializedImage = $image->serialize();
@@ -30,7 +32,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             'mime_type' => 'image/jpg',
             'description' => 'my pic',
             'copyright_holder' => 'Dirk Dirkington',
-            'source_location' => 'http://foo.bar/media/my_pic.jpg'
+            'source_location' => 'http://foo.bar/media/my_pic.jpg',
+            'language' => 'en'
         ];
 
         $this->assertEquals($expectedSerializedImage, $serializedImage);
@@ -46,7 +49,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             'mime_type' => 'image/jpg',
             'description' => 'my pic',
             'copyright_holder' => 'Dirk Dirkington',
-            'source_location' => 'http://foo.bar/media/my_pic.jpg'
+            'source_location' => 'http://foo.bar/media/my_pic.jpg',
+            'language' => 'en'
         ];
         $image = Image::deserialize($serializedData);
         $expectedImage = new Image(
@@ -54,7 +58,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $this->assertEquals($expectedImage, $image);

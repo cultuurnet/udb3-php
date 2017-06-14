@@ -438,7 +438,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $expectedMediaObjects = [
             (object) [
@@ -447,7 +448,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                 'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'description' => 'sexy ladies without clothes',
-                'copyrightHolder' => 'Bart Ramakers'
+                'copyrightHolder' => 'Bart Ramakers',
+                'inLanguage' => 'en',
             ]
         ];
         $initialDocument = new JsonDocument(
@@ -483,7 +485,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                         'description' => 'my best pokerface',
-                        'copyrightHolder' => 'Hans Langucci'
+                        'copyrightHolder' => 'Hans Langucci',
+                        'inLanguage' => 'en',
                     ],
                     (object) [
                         '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
@@ -491,7 +494,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ];
@@ -503,7 +507,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new CopyrightHolder('Hans Langucci'),
             Url::fromNative(
                 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png'
-            )
+            ),
+            new Language('en')
         );
 
         $image2 = new Image(
@@ -513,7 +518,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new CopyrightHolder('Bart Ramakers'),
             Url::fromNative(
                 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'
-            )
+            ),
+            new Language('en')
         );
 
         $expectedWithoutLastImage = (object) [
@@ -525,7 +531,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                     'description' => 'my best pokerface',
-                    'copyrightHolder' => 'Hans Langucci'
+                    'copyrightHolder' => 'Hans Langucci',
+                    'inLanguage' => 'en',
                 ]
             ]
         ];
@@ -539,7 +546,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'description' => 'sexy ladies without clothes',
-                    'copyrightHolder' => 'Bart Ramakers'
+                    'copyrightHolder' => 'Bart Ramakers',
+                    'inLanguage' => 'en',
                 ]
             ]
         ];
@@ -606,7 +614,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -618,7 +627,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ])
@@ -642,7 +652,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -655,7 +666,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ])
@@ -679,7 +691,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -709,7 +722,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -722,7 +736,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ],
                     [
                         '@id' => 'http://example.com/entity/5ae74e68-20a3-4cb1-b255-8e405aa01ab9',
@@ -730,7 +745,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'thumbnailUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'description' => 'funny giphy image',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ])
@@ -757,7 +773,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -770,7 +787,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ],
                     [
                         '@id' => 'http://example.com/entity/5ae74e68-20a3-4cb1-b255-8e405aa01ab9',
@@ -778,7 +796,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'thumbnailUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'description' => 'funny giphy image',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ])
@@ -1076,7 +1095,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $selfie = new Image(
@@ -1084,7 +1104,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my favorite selfie'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/img_182.jpg')
+            Url::fromNative('http://foo.bar/media/img_182.jpg'),
+            new Language('en')
         );
 
         return [
@@ -1098,6 +1119,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
                         'description' => 'my pic',
                         'copyrightHolder' => 'Dirk Dirkington',
+                        'inLanguage' => 'en',
                     ],
                     (object)[
                         '@type' => 'schema:ImageObject',
@@ -1106,6 +1128,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'thumbnailUrl' => 'http://foo.bar/media/img_182.jpg',
                         'description' => 'my favorite selfie',
                         'copyrightHolder' => 'Dirk Dirkington',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ]

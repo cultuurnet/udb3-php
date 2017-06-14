@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -416,7 +417,8 @@ class EventTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $cdbXml = file_get_contents(
@@ -462,7 +464,8 @@ class EventTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->scenario
@@ -511,7 +514,8 @@ class EventTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->scenario

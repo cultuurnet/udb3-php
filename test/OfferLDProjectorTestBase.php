@@ -227,8 +227,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $copyrightHolder = new CopyrightHolder('Dirk Dirkington');
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
+        $language = new Language('en');
 
-        $image = new Image($imageId, $type, $description, $copyrightHolder, $location);
+        $image = new Image($imageId, $type, $description, $copyrightHolder, $location, $language);
         $eventClass = $this->getEventClass('ImageAdded');
         $imageAdded = new $eventClass($id, $image);
 
@@ -244,7 +245,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'description' => (string) $description,
-                    'copyrightHolder' => (string) $copyrightHolder
+                    'copyrightHolder' => (string) $copyrightHolder,
+                    'inLanguage' => 'en',
                 ]
             ]
         ];
@@ -275,7 +277,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'olddescription',
-                        'copyrightHolder' => 'oldcopyrightHolder'
+                        'copyrightHolder' => 'oldcopyrightHolder',
+                        'inLanguage' => 'en',
                     ]
                 ]
             ])
@@ -290,7 +293,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'description' => (string) $description,
-                    'copyrightHolder' => (string) $copyrightHolder
+                    'copyrightHolder' => (string) $copyrightHolder,
+                    'inLanguage' => 'en',
                 ]
             ]
         ];

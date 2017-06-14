@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
+use CultuurNet\UDB3\Cdb\Description\MergedDescription;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
@@ -11,12 +12,6 @@ use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
-use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
-use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
-use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -38,16 +33,6 @@ class CdbXMLImporter
      * @var PriceDescriptionParser
      */
     private $priceDescriptionParser;
-
-    /**
-     * @var StringFilterInterface
-     */
-    private $longDescriptionFilter;
-
-    /**
-     * @var StringFilterInterface
-     */
-    private $shortDescriptionFilter;
 
     /**
      * @var CalendarFactoryInterface
@@ -78,24 +63,6 @@ class CdbXMLImporter
         $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
         $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
-
-        $consecutiveBlockOfTextFilter = new ConsecutiveBlockOfTextStringFilter();
-
-        $this->longDescriptionFilter = new CombinedStringFilter();
-        $this->longDescriptionFilter->addFilter(
-            new StripSourceStringFilter()
-        );
-        $this->longDescriptionFilter->addFilter(
-            $consecutiveBlockOfTextFilter
-        );
-        $this->longDescriptionFilter->addFilter(
-            new BreakTagToNewlineStringFilter()
-        );
-        $this->longDescriptionFilter->addFilter(
-            new StripSurroundingSpaceStringFilter()
-        );
-
-        $this->shortDescriptionFilter = $consecutiveBlockOfTextFilter;
     }
 
     /**
@@ -205,44 +172,12 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $longDescription = $languageDetail->getLongDescription();
-
-        if ($longDescription) {
-            $longDescription = $this->longDescriptionFilter->filter(
-                $longDescription
-            );
+        try {
+            $description = MergedDescription::fromCdbDetail($languageDetail);
+            $jsonLD->description[$language] = $description->toNative();
+        } catch (\InvalidArgumentException $e) {
+            return;
         }
-
-        $descriptions = [];
-
-        $shortDescription = $languageDetail->getShortDescription();
-        if ($shortDescription) {
-            $includeShortDescription = true;
-
-            $shortDescription = $this->shortDescriptionFilter->filter(
-                $shortDescription
-            );
-
-            if ($longDescription) {
-                $includeShortDescription =
-                    !$this->longDescriptionStartsWithShortDescription(
-                        $longDescription,
-                        $shortDescription
-                    );
-            }
-
-            if ($includeShortDescription) {
-                $descriptions[] = $shortDescription;
-            }
-        }
-
-        if ($longDescription) {
-            $descriptions[] = $longDescription;
-        }
-
-        $description = implode("\n\n", $descriptions);
-
-        $jsonLD->description[$language] = $description;
     }
 
     /**
@@ -535,19 +470,5 @@ class CdbXMLImporter
         $audience = new Audience(AudienceType::fromNative($audienceType));
 
         $jsonLD->audience = $audience->serialize();
-    }
-
-    /**
-     * @param string $longDescription
-     * @param string $shortDescription
-     * @return bool
-     */
-    private function longDescriptionStartsWithShortDescription(
-        $longDescription,
-        $shortDescription
-    ) {
-        $longDescription = strip_tags(html_entity_decode($longDescription));
-
-        return 0 === strncmp($longDescription, $shortDescription, mb_strlen($shortDescription));
     }
 }

@@ -64,4 +64,29 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedImage, $image);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_default_to_dutch_when_deserializing_image_data_without_a_language()
+    {
+        $serializedData = [
+            'media_object_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
+            'mime_type' => 'image/jpg',
+            'description' => 'my pic',
+            'copyright_holder' => 'Dirk Dirkington',
+            'source_location' => 'http://foo.bar/media/my_pic.jpg'
+        ];
+        $image = Image::deserialize($serializedData);
+        $expectedImage = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/jpg'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('nl')
+        );
+
+        $this->assertEquals($expectedImage, $image);
+    }
 }

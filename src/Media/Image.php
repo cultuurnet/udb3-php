@@ -117,7 +117,7 @@ class Image implements SerializableInterface
             new Description($data['description']),
             new CopyrightHolder($data['copyright_holder']),
             Url::fromNative($data['source_location']),
-            new Language($data['language'])
+            array_key_exists('language', $data) ? new Language($data['language']) : new Language('nl')
         );
     }
 

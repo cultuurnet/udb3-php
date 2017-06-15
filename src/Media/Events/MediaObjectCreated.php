@@ -142,7 +142,7 @@ class MediaObjectCreated implements SerializableInterface
             new StringLiteral($data['description']),
             new StringLiteral($data['copyright_holder']),
             Url::fromNative($data['source_location']),
-            new Language($data['language'])
+            array_key_exists('language', $data) ? new Language($data['language']) : new Language('nl')
         );
     }
 }

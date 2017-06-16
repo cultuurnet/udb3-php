@@ -48,7 +48,7 @@ interface PlaceEditingServiceInterface
     public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
 
     /**
-     * @param $id
+     * @param string $id
      * @param Address $address
      * @param Language $language
      */

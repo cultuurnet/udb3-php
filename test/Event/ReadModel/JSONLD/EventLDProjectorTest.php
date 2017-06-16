@@ -661,43 +661,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_adds_a_language_property_when_cdbxml_has_languages()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_with_languages.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $expectedLanguages = [
-            'Nederlands',
-            'Frans',
-            'Engels'
-        ];
-
-        $this->assertEquals(
-            $expectedLanguages,
-            $body->language
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_add_an_empty_language_property()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_languages.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertObjectNotHasAttribute('language', $body);
-    }
-
-    /**
-     * @test
-     */
     public function it_projects_the_addition_of_a_label()
     {
         $labelAdded = new LabelAdded(

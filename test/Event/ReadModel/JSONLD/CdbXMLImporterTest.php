@@ -38,7 +38,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $mediaIriGenerator = new CallableIriGenerator(function ($file) {
+        $mediaIriGenerator = new CallableIriGenerator(function () {
             return 'http://du.de/media/87e8b421-5e87-4fae-bb3b-2c9119852a11';
         });
 

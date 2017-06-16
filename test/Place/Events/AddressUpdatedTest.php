@@ -25,7 +25,7 @@ class AddressUpdatedTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $expectedArray = [
+        $eventAsArray = [
             'place_id' => 'a9088117-5ec8-4117-8ce0-5ce27e685055',
             'address' => [
                 'streetAddress' => 'Eenmeilaan 35',
@@ -35,10 +35,10 @@ class AddressUpdatedTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $serialized = $event->serialize();
-        $deserialized = AddressUpdated::deserialize($serialized);
+        $serializedEvent = $event->serialize();
+        $this->assertEquals($eventAsArray, $serializedEvent);
 
-        $this->assertEquals($expectedArray, $serialized);
-        $this->assertEquals($event, $deserialized);
+        $deserializedEvent = AddressUpdated::deserialize($eventAsArray);
+        $this->assertEquals($event, $deserializedEvent);
     }
 }

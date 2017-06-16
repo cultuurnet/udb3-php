@@ -27,7 +27,7 @@ class AddressTranslatedTest extends \PHPUnit_Framework_TestCase
             new Language('en')
         );
 
-        $expectedArray = [
+        $eventAsArray = [
             'place_id' => 'a9088117-5ec8-4117-8ce0-5ce27e685055',
             'address' => [
                 'streetAddress' => 'Eenmeilaan 35',
@@ -38,10 +38,10 @@ class AddressTranslatedTest extends \PHPUnit_Framework_TestCase
             'language' => 'en',
         ];
 
-        $serialized = $event->serialize();
-        $deserialized = AddressTranslated::deserialize($serialized);
+        $serializedEvent = $event->serialize();
+        $this->assertEquals($eventAsArray, $serializedEvent);
 
-        $this->assertEquals($expectedArray, $serialized);
-        $this->assertEquals($event, $deserialized);
+        $deserializedEvent = AddressTranslated::deserialize($eventAsArray);
+        $this->assertEquals($event, $deserializedEvent);
     }
 }

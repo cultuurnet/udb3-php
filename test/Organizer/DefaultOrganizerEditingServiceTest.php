@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
@@ -187,14 +188,19 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $organizerId = 'baee2963-e1ba-4777-a803-4c645c6fd31c';
         $title = new Title('Het Depot');
+        $language = new Language('nl');
 
-        $expectedUpdateTitle = new UpdateTitle($organizerId, $title);
+        $expectedUpdateTitle = new UpdateTitle(
+            $organizerId,
+            $title,
+            $language
+        );
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->with($expectedUpdateTitle);
 
-        $this->service->updateTitle($organizerId, $title);
+        $this->service->updateTitle($organizerId, $title, $language);
     }
 
     /**

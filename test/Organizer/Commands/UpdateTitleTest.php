@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer\Commands;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 
 class UpdateTitleTest extends \PHPUnit_Framework_TestCase
@@ -17,6 +18,11 @@ class UpdateTitleTest extends \PHPUnit_Framework_TestCase
     private $title;
 
     /**
+     * @var Language
+     */
+    private $language;
+
+    /**
      * @var UpdateTitle
      */
     private $updateTitle;
@@ -27,9 +33,12 @@ class UpdateTitleTest extends \PHPUnit_Framework_TestCase
 
         $this->title = new Title('Het Depot');
 
+        $this->language = new Language('nl');
+
         $this->updateTitle = new UpdateTitle(
             $this->organizerId,
-            $this->title
+            $this->title,
+            $this->language
         );
     }
 
@@ -52,6 +61,17 @@ class UpdateTitleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $this->title,
             $this->updateTitle->getTitle()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_a_language()
+    {
+        $this->assertEquals(
+            $this->language,
+            $this->updateTitle->getLanguage()
         );
     }
 }

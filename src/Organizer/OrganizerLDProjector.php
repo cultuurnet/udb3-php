@@ -21,13 +21,16 @@ use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\Title;
 
 class OrganizerLDProjector implements EventListenerInterface
 {
@@ -38,6 +41,7 @@ class OrganizerLDProjector implements EventListenerInterface
      * @uses applyOrganizerCreatedWithUniqueWebsite
      * @uses applyWebsiteUpdated
      * @uses applyTitleUpdated
+     * @uses applyTitleTranslated
      * @uses applyAddressUpdated
      * @uses applyContactPointUpdated
      * @uses applyOrganizerUpdatedFRomUDB2
@@ -123,7 +127,9 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $this->setMainLanguage($jsonLD, new Language('nl'));
 
-        $jsonLD->name = $organizerCreated->getTitle();
+        $jsonLD->name = [
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+        ];
 
         $addresses = $organizerCreated->getAddresses();
         $jsonLD->addresses = array();
@@ -173,7 +179,10 @@ class OrganizerLDProjector implements EventListenerInterface
         $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
-        $jsonLD->name = $organizerCreated->getTitle();
+
+        $jsonLD->name = [
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+        ];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
@@ -209,14 +218,19 @@ class OrganizerLDProjector implements EventListenerInterface
      */
     private function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
-        $organizerId = $titleUpdated->getOrganizerId();
+        $this->applyTitle($titleUpdated, $titleUpdated->getTitle());
+    }
 
-        $document = $this->repository->get($organizerId);
-
-        $jsonLD = $document->getBody();
-        $jsonLD->name = $titleUpdated->getTitle()->toNative();
-
-        $this->repository->save($document->withBody($jsonLD));
+    /**
+     * @param TitleTranslated $titleTranslated
+     */
+    private function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        $this->applyTitle(
+            $titleTranslated,
+            $titleTranslated->getTitle(),
+            $titleTranslated->getLanguage()
+        );
     }
 
     /**
@@ -363,6 +377,42 @@ class OrganizerLDProjector implements EventListenerInterface
         $organizerLd->{'@context'} = '/contexts/organizer';
 
         return $document->withBody($organizerLd);
+    }
+
+    /**
+     * @param OrganizerEvent $organizerEvent
+     * @param Title $title
+     * @param Language|null $language
+     */
+    private function applyTitle(
+        OrganizerEvent $organizerEvent,
+        Title $title,
+        Language $language = null
+    ) {
+        $organizerId = $organizerEvent->getOrganizerId();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+
+        $mainLanguage = $this->getMainLanguage($jsonLD);
+        if ($language === null) {
+            $language = $mainLanguage;
+        }
+
+        // @replay_i18n For old projections the name is untranslated and just a string.
+        // This needs to be upgraded to an object with languages and translation.
+        // When a full replay is done this code becomes obsolete.
+        // @see https://jira.uitdatabank.be/browse/III-2201
+        if (isset($jsonLD->name) && is_string($jsonLD->name)) {
+            $previousTitle = $jsonLD->name;
+            $jsonLD->name = new \StdClass();
+            $jsonLD->name->{$mainLanguage->getCode()} = $previousTitle;
+        }
+
+        $jsonLD->name->{$language->getCode()} = $title->toNative();
+
+        $this->repository->save($document->withBody($jsonLD));
     }
 
     /**

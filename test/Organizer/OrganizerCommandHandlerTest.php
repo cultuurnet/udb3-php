@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
@@ -207,7 +208,8 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when(
                 new UpdateTitle(
                     $organizerId,
-                    new Title('Het Depot')
+                    new Title('Het Depot'),
+                    new Language('nl')
                 )
             )
             ->then(

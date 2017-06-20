@@ -1,11 +1,11 @@
 <?php
 
-namespace CultuurNet\UDB3\Organizer\Commands;
+namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 
-class UpdateTitle extends AbstractUpdateOrganizerCommand
+class TitleTranslated extends OrganizerEvent
 {
     /**
      * @var Title
@@ -18,7 +18,7 @@ class UpdateTitle extends AbstractUpdateOrganizerCommand
     private $language;
 
     /**
-     * UpdateTitle constructor.
+     * TitleTranslated constructor.
      * @param string $organizerId
      * @param Title $title
      * @param Language $language
@@ -29,6 +29,7 @@ class UpdateTitle extends AbstractUpdateOrganizerCommand
         Language $language
     ) {
         parent::__construct($organizerId);
+
         $this->title = $title;
         $this->language = $language;
     }
@@ -47,5 +48,29 @@ class UpdateTitle extends AbstractUpdateOrganizerCommand
     public function getLanguage()
     {
         return $this->language;
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return parent::serialize() + [
+                'title' => $this->getTitle()->toNative(),
+                'language' => $this->getLanguage()->getCode()
+            ];
+    }
+
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
+    {
+        return new static(
+            $data['organizer_id'],
+            new Title($data['title']),
+            new Language($data['language'])
+        );
     }
 }

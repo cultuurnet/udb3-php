@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface as RelationsReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -53,6 +54,11 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $writeRepository;
 
     /**
+     * @var RelationsReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $relationsReadRepository;
+
+    /**
      * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $readRepository;
@@ -76,10 +82,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->writeRepository = $this->createMock(WriteRepositoryInterface::class);
         $this->readRepository = $this->createMock(ReadRepositoryInterface::class);
+        $this->relationsReadRepository = $this->createMock(RelationsReadRepositoryInterface::class);
         $this->offerTypeResolver = new LabelEventRelationTypeResolver();
 
         $this->projector = new Projector(
             $this->writeRepository,
+            $this->relationsReadRepository,
             $this->offerTypeResolver
         );
     }
@@ -235,6 +243,52 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ->with(
                 new LabelName('cultuurnet'),
                 $relationType,
+                $itemId,
+                true
+            );
+
+        $this->relationsReadRepository->expects($this->once())
+            ->method('getLabelRelationsForItem')
+            ->with($itemId)
+            ->willReturn([]);
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_only_add_labels_from_udb2_when_updating_with_labels_already_present_in_udb3()
+    {
+        $itemId = new StringLiteral('d53c2bc9-8f0e-4c9a-8457-77e8b3cab3d1');
+        $cdbXmlNamespaceUri = \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.3');
+
+        $domainMessage = $this->createDomainMessage(
+            $itemId->toNative(),
+            new OrganizerUpdatedFromUDB2(
+                $itemId->toNative(),
+                file_get_contents(__DIR__ . '/Samples/organizer_with_same_label_but_different_casing.xml'),
+                $cdbXmlNamespaceUri
+            )
+        );
+
+        $this->relationsReadRepository->expects($this->once())
+            ->method('getLabelRelationsForItem')
+            ->with($itemId)
+            ->willReturn([
+                new Label\ReadModels\Relations\Repository\LabelRelation(
+                    new LabelName('2dotstwice'),
+                    RelationType::ORGANIZER(),
+                    new StringLiteral('123'),
+                    false
+                )
+            ]);
+
+        $this->writeRepository->expects($this->once())
+            ->method('save')
+            ->with(
+                new LabelName('cultuurnet'),
+                RelationType::ORGANIZER(),
                 $itemId,
                 true
             );

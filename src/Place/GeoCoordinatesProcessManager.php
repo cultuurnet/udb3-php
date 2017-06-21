@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Address\CultureFeedAddressFactoryInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Place\Commands\UpdateGeoCoordinatesFromAddress;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -56,6 +57,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
         return [
             PlaceCreated::class => 'handlePlaceCreated',
             MajorInfoUpdated::class => 'handleMajorInfoUpdated',
+            AddressUpdated::class => 'handleAddressUpdated',
             PlaceImportedFromUDB2::class => 'handleActorImportedFromUDB2',
             PlaceUpdatedFromUDB2::class => 'handleActorImportedFromUDB2',
         ];
@@ -66,6 +68,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
      *
      * @uses handlePlaceCreated
      * @uses handleMajorInfoUpdated
+     * @uses handleAddressUpdated
      * @uses handleActorImportedFromUDB2
      */
     public function handle(DomainMessage $domainMessage)
@@ -105,6 +108,19 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
         $command = new UpdateGeoCoordinatesFromAddress(
             $majorInfoUpdated->getPlaceId(),
             $majorInfoUpdated->getAddress()
+        );
+
+        $this->commandBus->dispatch($command);
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     */
+    private function handleAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $command = new UpdateGeoCoordinatesFromAddress(
+            $addressUpdated->getPlaceId(),
+            $addressUpdated->getAddress()
         );
 
         $this->commandBus->dispatch($command);

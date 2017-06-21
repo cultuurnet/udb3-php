@@ -17,8 +17,9 @@ use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
@@ -181,5 +182,31 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             ],
             $this->eventStore->getEvents()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_address_of_a_place_by_dispatching_a_relevant_command()
+    {
+        $id = 'ad93103d-1395-4af7-a52a-2829d466c232';
+        $address = new Address(
+            new Street('Eenmeilaan 35'),
+            new PostalCode('3010'),
+            new Locality('Kessel-Lo'),
+            Country::fromNative('BE')
+        );
+        $language = new Language('nl');
+
+        $expectedCommandId = '98994a85-f0d9-4862-a91e-02f116bd609b';
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with(new UpdateAddress($id, $address, $language))
+            ->willReturn($expectedCommandId);
+
+        $actualCommandId = $this->placeEditingService->updateAddress($id, $address, $language);
+
+        $this->assertEquals($expectedCommandId, $actualCommandId);
     }
 }

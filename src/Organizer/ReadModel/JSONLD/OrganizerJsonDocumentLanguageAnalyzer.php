@@ -55,10 +55,11 @@ class OrganizerJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLang
     private function polyFillMultilingualFields(JsonDocument $jsonDocument)
     {
         $body = $jsonDocument->getBody();
+        $mainLanguage = isset($body->mainLanguage) ? $body->mainLanguage : 'nl';
 
         if (is_string($body->name)) {
             $body->name = (object) [
-                'nl' => $body->name,
+                $mainLanguage => $body->name,
             ];
         }
 

@@ -57,10 +57,11 @@ class PlaceJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLanguage
     private function polyFillMultilingualFields(JsonDocument $jsonDocument)
     {
         $body = $jsonDocument->getBody();
+        $mainLanguage = isset($body->mainLanguage) ? $body->mainLanguage : 'nl';
 
         if (isset($body->address->streetAddress)) {
             $body->address = (object) [
-                'nl' => $body->address,
+                $mainLanguage => $body->address,
             ];
         }
 

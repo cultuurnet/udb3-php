@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Organizer\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Place\ReadModel\JSONLD\OrganizerJsonDocumentLanguageAnalyzer;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class OrganizerJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase

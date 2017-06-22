@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
+namespace CultuurNet\UDB3\Organizer\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\ReadModel\ConfigurableJsonDocumentLanguageAnalyzer;
 use CultuurNet\UDB3\ReadModel\JsonDocument;

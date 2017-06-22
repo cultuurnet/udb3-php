@@ -56,6 +56,13 @@ class ConfigurableJsonDocumentLanguageAnalyzer implements JsonDocumentLanguageAn
         foreach ($this->translatableProperties as $translatableProperty) {
             $languageStringsOnProperty = $this->getLanguageStringsFromProperty($json, $translatableProperty);
 
+            if (empty($languageStringsOnProperty)) {
+                // Property was not found, which means it's not set for the
+                // original language either. Skip it, as it can't be translated
+                // without an original value.
+                continue;
+            }
+
             if ($translatableProperty == $this->translatableProperties[0]) {
                 $languageStrings = $languageStringsOnProperty;
             } else {

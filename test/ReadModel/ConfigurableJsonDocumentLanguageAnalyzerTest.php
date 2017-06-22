@@ -97,4 +97,46 @@ class ConfigurableJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_Te
 
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_ignore_missing_properties()
+    {
+        $data = [
+            'id' => '919c7904-ecfa-440c-92d0-ae912213c615',
+            'name' => [
+                'nl' => 'Naam NL',
+                'fr' => 'Nom FR',
+                'en' => 'Name EN',
+                'de' => 'Name DE',
+            ],
+            'teaser' => [
+                'nl' => 'Teaser NL',
+                'fr' => 'Teaser FR',
+                'de' => 'Teaser DE',
+            ],
+        ];
+
+        $document = new JsonDocument('919c7904-ecfa-440c-92d0-ae912213c615', json_encode($data));
+
+        $expectedAll = [
+            new Language('nl'),
+            new Language('fr'),
+            new Language('en'),
+            new Language('de'),
+        ];
+
+        $expectedCompleted = [
+            new Language('nl'),
+            new Language('fr'),
+            new Language('de'),
+        ];
+
+        $actualAll = $this->analyzer->getAllLanguages($document);
+        $actualCompleted = $this->analyzer->getCompletedLanguages($document);
+
+        $this->assertEquals($expectedAll, $actualAll);
+        $this->assertEquals($expectedCompleted, $actualCompleted);
+    }
 }

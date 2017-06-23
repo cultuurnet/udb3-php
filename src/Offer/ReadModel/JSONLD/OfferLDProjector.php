@@ -39,6 +39,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -67,9 +68,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $organizerService;
 
     /**
-     * @var SluggerInterface
+     * @var JsonDocumentMetaDataEnricherInterface
      */
-    protected $slugger;
+    protected $jsonDocumentMetaDataEnricher;
 
     /**
      * @var SerializerInterface
@@ -77,23 +78,31 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $mediaObjectSerializer;
 
     /**
+     * @var SluggerInterface
+     */
+    protected $slugger;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
+     * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer
+        SerializerInterface $mediaObjectSerializer,
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
-        $this->slugger = new CulturefeedSlugger();
-
+        $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
+
+        $this->slugger = new CulturefeedSlugger();
     }
 
     /**
@@ -124,6 +133,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         }
 
         foreach ($jsonDocuments as $jsonDocument) {
+            $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
             $this->repository->save($jsonDocument);
         }
     }

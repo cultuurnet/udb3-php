@@ -44,6 +44,7 @@ use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\PriceInfo\Tariff;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentNullEnricher;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -99,8 +100,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
-            new EventCdbIdExtractor(),
-            new CalendarFactory()
+            new JsonDocumentNullEnricher()
         );
     }
 

@@ -41,6 +41,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentNullEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -126,7 +127,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
-            $this->cdbXMLImporter
+            $this->cdbXMLImporter,
+            new JsonDocumentNullEnricher()
         );
 
         $street = new Street('Kerkstraat 69');

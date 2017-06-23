@@ -48,6 +48,7 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentNullEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
@@ -164,7 +165,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->organizerService,
             $this->serializer,
             $this->iriOfferIdentifierFactory,
-            $this->cdbXMLImporter
+            $this->cdbXMLImporter,
+            new JsonDocumentNullEnricher()
         );
     }
 

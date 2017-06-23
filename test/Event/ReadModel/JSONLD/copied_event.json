@@ -37,5 +37,7 @@
       "startDate": "2015-01-28T13:25:21+01:00",
       "endDate": "2015-01-29T13:25:21+01:00"
     }
-  ]
+  ],
+  "languages": ["nl"],
+  "completedLanguages": ["nl"]
 }

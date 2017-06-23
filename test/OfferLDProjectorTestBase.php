@@ -209,13 +209,28 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $eventClass = $this->getEventClass('DescriptionUpdated');
         $descriptionUpdated = new $eventClass($id, $description);
 
-        $initialDocument = new JsonDocument($id);
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Foo',
+                    ],
+                ]
+            )
+        );
+
         $this->documentRepository->save($initialDocument);
 
-        $expectedBody = (object)[
-            'description' => (object)[
+        $expectedBody = (object) [
+            'name' => (object) [
+                'nl' => 'Foo',
+            ],
+            'description' => (object) [
                 'nl' => $description
-            ]
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
         ];
 
         $body = $this->project($descriptionUpdated, $id);

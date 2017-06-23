@@ -127,6 +127,21 @@ class EventLDProjector extends OfferLDProjector implements
         $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
     }
 
+    /**
+     * @param string $id
+     * @return JsonDocument
+     */
+    protected function newDocument($id)
+    {
+        $document = new JsonDocument($id);
+
+        $offerLd = $document->getBody();
+        $offerLd->{'@id'} = $this->iriGenerator->iri($id);
+        $offerLd->{'@context'} = '/contexts/event';
+
+        return $document->withBody($offerLd);
+    }
+
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
     {
         $eventIds = $this->eventsOrganizedByOrganizer(
@@ -136,6 +151,8 @@ class EventLDProjector extends OfferLDProjector implements
         $organizer = $this->organizerService->getEntity(
             $organizerProjectedToJSONLD->getId()
         );
+
+        $documents = [];
 
         foreach ($eventIds as $eventId) {
             $document = $this->loadDocumentFromRepositoryByItemId(
@@ -147,9 +164,11 @@ class EventLDProjector extends OfferLDProjector implements
             $newEventLD->organizer = json_decode($organizer);
 
             if ($newEventLD != $eventLD) {
-                $this->repository->save($document->withBody($newEventLD));
+                $documents[] = $document->withBody($newEventLD);
             }
         }
+
+        return $documents;
     }
 
     protected function applyPlaceProjectedToJSONLD(
@@ -167,6 +186,8 @@ class EventLDProjector extends OfferLDProjector implements
             $identifier->getId()
         );
 
+        $documents = [];
+
         foreach ($eventsLocatedAtPlace as $eventId) {
             $document = $this->loadDocumentFromRepositoryByItemId(
                 $eventId
@@ -177,9 +198,11 @@ class EventLDProjector extends OfferLDProjector implements
             $newEventLD->location = json_decode($placeJSONLD);
 
             if ($newEventLD != $eventLD) {
-                $this->repository->save($document->withBody($newEventLD));
+                $documents[] = $document->withBody($newEventLD);
             }
         }
+
+        return $documents;
     }
 
     /**
@@ -206,11 +229,12 @@ class EventLDProjector extends OfferLDProjector implements
 
     /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
+     * @return JsonDocument
      */
     protected function applyEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
-        $this->applyEventCdbXmlFromUDB2(
+        return $this->applyEventCdbXmlFromUDB2(
             $eventImportedFromUDB2->getEventId(),
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
             $eventImportedFromUDB2->getCdbXml()
@@ -219,11 +243,12 @@ class EventLDProjector extends OfferLDProjector implements
 
     /**
      * @param EventUpdatedFromUDB2 $eventUpdatedFromUDB2
+     * @return JsonDocument
      */
     protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2
     ) {
-        $this->applyEventCdbXmlFromUDB2(
+        return $this->applyEventCdbXmlFromUDB2(
             $eventUpdatedFromUDB2->getEventId(),
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $eventUpdatedFromUDB2->getCdbXml()
@@ -237,6 +262,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     protected function applyEventFromCdbXml(
         $eventId,
@@ -244,43 +270,27 @@ class EventLDProjector extends OfferLDProjector implements
         $cdbXml,
         $domainMessage
     ) {
-        $this->saveNewDocument(
+        $document = $this->newDocument($eventId);
+
+        $eventLd = $this->projectEventCdbXmlToObject(
+            $document->getBody(),
             $eventId,
-            function (\stdClass $eventLd) use ($eventId, $cdbXmlNamespaceUri, $cdbXml, $domainMessage) {
-                $eventLd = $this->projectEventCdbXmlToObject(
-                    $eventLd,
-                    $eventId,
-                    $cdbXmlNamespaceUri,
-                    $cdbXml
-                );
-
-                // Add creation date and update date from metadata.
-                $created = $this->getCreated($domainMessage);
-                $eventLd->created = $created;
-                $eventLd->modified = $created;
-
-                // Add creator.
-                $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
-
-                // Add publisher, which is the consumer name.
-                $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
-
-                return $eventLd;
-            }
+            $cdbXmlNamespaceUri,
+            $cdbXml
         );
-    }
 
-    /**
-     * @param string $eventId
-     * @param callable $fn
-     */
-    protected function saveNewDocument($eventId, callable $fn)
-    {
-        $document = $this
-            ->newDocument($eventId)
-            ->apply($fn);
+        // Add creation date and update date from metadata.
+        $created = $this->getCreated($domainMessage);
+        $eventLd->created = $created;
+        $eventLd->modified = $created;
 
-        $this->repository->save($document);
+        // Add creator.
+        $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+
+        // Add publisher, which is the consumer name.
+        $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
+
+        return $document->withBody($eventLd);
     }
 
     /**
@@ -289,23 +299,24 @@ class EventLDProjector extends OfferLDProjector implements
      * @param string $eventId
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
+     *
+     * @return JsonDocument
      */
     protected function applyEventCdbXmlFromUDB2(
         $eventId,
         $cdbXmlNamespaceUri,
         $cdbXml
     ) {
-        $this->saveNewDocument(
+        $document = $this->newDocument($eventId);
+
+        $eventLd = $this->projectEventCdbXmlToObject(
+            $document->getBody(),
             $eventId,
-            function (\stdClass $eventLd) use ($cdbXmlNamespaceUri, $eventId, $cdbXml) {
-                return $this->projectEventCdbXmlToObject(
-                    $eventLd,
-                    $eventId,
-                    $cdbXmlNamespaceUri,
-                    $cdbXml
-                ) ;
-            }
+            $cdbXmlNamespaceUri,
+            $cdbXml
         );
+
+        return $document->withBody($eventLd);
     }
 
     /**
@@ -409,73 +420,73 @@ class EventLDProjector extends OfferLDProjector implements
     /**
      * @param EventCreated $eventCreated
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     protected function applyEventCreated(
         EventCreated $eventCreated,
         DomainMessage $domainMessage
     ) {
-        $this->saveNewDocument(
-            $eventCreated->getEventId(),
-            function (\stdClass $jsonLD) use ($eventCreated, $domainMessage) {
-                $jsonLD->{'@id'} = $this->iriGenerator->iri(
-                    $eventCreated->getEventId()
-                );
+        $document = $this->newDocument($eventCreated->getEventId());
+        $jsonLD = $document->getBody();
 
-                $this->setMainLanguage($jsonLD, new Language('nl'));
-
-                $jsonLD->name['nl'] = $eventCreated->getTitle();
-                $jsonLD->location = array(
-                        '@type' => 'Place',
-                    ) + (array)$this->placeJSONLD(
-                        $eventCreated->getLocation()->getCdbid()
-                    );
-
-                $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
-                $jsonLD = (object)array_merge((array)$jsonLD, $calendarJsonLD);
-
-                $availableTo = AvailableTo::createFromCalendar($eventCreated->getCalendar());
-                $jsonLD->availableTo = (string)$availableTo;
-
-                // Same as.
-                $jsonLD->sameAs = $this->generateSameAs(
-                    $eventCreated->getEventId(),
-                    reset($jsonLD->name)
-                );
-
-                $eventType = $eventCreated->getEventType();
-                $jsonLD->terms = [
-                    $eventType->toJsonLd()
-                ];
-
-                $theme = $eventCreated->getTheme();
-                if (!empty($theme)) {
-                    $jsonLD->terms[] = $theme->toJsonLd();
-                }
-
-                $created = $this->getCreated($domainMessage);
-                $jsonLD->created = $created;
-                $jsonLD->modified = $created;
-
-                $metaData = $domainMessage->getMetadata()->serialize();
-                if (isset($metaData['user_email'])) {
-                    $jsonLD->creator = $metaData['user_email'];
-                } elseif (isset($metaData['user_nick'])) {
-                    $jsonLD->creator = $metaData['user_nick'];
-                }
-
-                $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
-
-                $defaultAudience = new Audience(AudienceType::EVERYONE());
-                $jsonLD->audience = $defaultAudience->serialize();
-
-                return $jsonLD;
-            }
+        $jsonLD->{'@id'} = $this->iriGenerator->iri(
+            $eventCreated->getEventId()
         );
+
+        $this->setMainLanguage($jsonLD, new Language('nl'));
+
+        $jsonLD->name['nl'] = $eventCreated->getTitle();
+        $jsonLD->location = array(
+                '@type' => 'Place',
+            ) + (array)$this->placeJSONLD(
+                $eventCreated->getLocation()->getCdbid()
+            );
+
+        $calendarJsonLD = $eventCreated->getCalendar()->toJsonLd();
+        $jsonLD = (object)array_merge((array)$jsonLD, $calendarJsonLD);
+
+        $availableTo = AvailableTo::createFromCalendar($eventCreated->getCalendar());
+        $jsonLD->availableTo = (string)$availableTo;
+
+        // Same as.
+        $jsonLD->sameAs = $this->generateSameAs(
+            $eventCreated->getEventId(),
+            reset($jsonLD->name)
+        );
+
+        $eventType = $eventCreated->getEventType();
+        $jsonLD->terms = [
+            $eventType->toJsonLd()
+        ];
+
+        $theme = $eventCreated->getTheme();
+        if (!empty($theme)) {
+            $jsonLD->terms[] = $theme->toJsonLd();
+        }
+
+        $created = $this->getCreated($domainMessage);
+        $jsonLD->created = $created;
+        $jsonLD->modified = $created;
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_email'])) {
+            $jsonLD->creator = $metaData['user_email'];
+        } elseif (isset($metaData['user_nick'])) {
+            $jsonLD->creator = $metaData['user_nick'];
+        }
+
+        $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
+
+        $defaultAudience = new Audience(AudienceType::EVERYONE());
+        $jsonLD->audience = $defaultAudience->serialize();
+
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param EventCopied $eventCopied
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     protected function applyEventCopied(
         EventCopied $eventCopied,
@@ -515,20 +526,23 @@ class EventLDProjector extends OfferLDProjector implements
 
         $newDocument = new JsonDocument($eventCopied->getItemId());
         $newDocument = $newDocument->withBody($eventJsonLD);
-        $this->repository->save($newDocument);
+        return $newDocument;
     }
 
     /**
      * @param EventDeleted $eventDeleted
+     * @return null
      */
     protected function applyEventDeleted(EventDeleted $eventDeleted)
     {
         $this->repository->remove($eventDeleted->getItemId());
+        return null;
     }
 
     /**
      * Apply the major info updated command to the projector.
      * @param MajorInfoUpdated $majorInfoUpdated
+     * @return JsonDocument
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
@@ -560,11 +574,12 @@ class EventLDProjector extends OfferLDProjector implements
             $jsonLD->terms[] = $theme->toJsonLd();
         }
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param AudienceUpdated $audienceUpdated
+     * @return JsonDocument
      */
     protected function applyAudienceUpdated(AudienceUpdated $audienceUpdated)
     {
@@ -573,7 +588,7 @@ class EventLDProjector extends OfferLDProjector implements
 
         $jsonLD->audience = $audienceUpdated->getAudience()->serialize();
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**

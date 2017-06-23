@@ -45,5 +45,4 @@ class JsonDocumentLanguageEnricher implements JsonDocumentMetaDataEnricherInterf
 
         return $jsonDocument->withBody($body);
     }
-
 }

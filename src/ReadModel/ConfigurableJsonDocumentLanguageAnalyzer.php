@@ -98,7 +98,7 @@ class ConfigurableJsonDocumentLanguageAnalyzer implements JsonDocumentLanguageAn
     private function getLanguageStringsAsValueObjects(array $languageStrings)
     {
         return array_map(
-            function($languageString) {
+            function ($languageString) {
                 return new Language($languageString);
             },
             $languageStrings

@@ -41,7 +41,7 @@ class OrganizerJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestC
             new Language('de'),
         ];
 
-        $actual = $this->analyzer->getAllLanguages($document);
+        $actual = $this->analyzer->determineAvailableLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -70,7 +70,7 @@ class OrganizerJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestC
             new Language('de'),
         ];
 
-        $actual = $this->analyzer->getCompletedLanguages($document);
+        $actual = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -91,8 +91,8 @@ class OrganizerJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestC
             new Language('nl'),
         ];
 
-        $actualAll = $this->analyzer->getAllLanguages($document);
-        $actualCompleted = $this->analyzer->getCompletedLanguages($document);
+        $actualAll = $this->analyzer->determineAvailableLanguages($document);
+        $actualCompleted = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expected, $actualAll);
         $this->assertEquals($expected, $actualCompleted);

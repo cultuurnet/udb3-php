@@ -60,7 +60,7 @@ class PlaceJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
             new Language('de'),
         ];
 
-        $actual = $this->analyzer->getAllLanguages($document);
+        $actual = $this->analyzer->determineAvailableLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -106,7 +106,7 @@ class PlaceJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
             new Language('fr'),
         ];
 
-        $actual = $this->analyzer->getCompletedLanguages($document);
+        $actual = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -150,8 +150,8 @@ class PlaceJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
             new Language('nl'),
         ];
 
-        $actualAll = $this->analyzer->getAllLanguages($document);
-        $actualCompleted = $this->analyzer->getCompletedLanguages($document);
+        $actualAll = $this->analyzer->determineAvailableLanguages($document);
+        $actualCompleted = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expectedAll, $actualAll);
         $this->assertEquals($expectedCompleted, $actualCompleted);

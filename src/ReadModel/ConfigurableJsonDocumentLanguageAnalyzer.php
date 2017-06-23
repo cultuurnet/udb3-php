@@ -25,7 +25,7 @@ class ConfigurableJsonDocumentLanguageAnalyzer implements JsonDocumentLanguageAn
      * @param JsonDocument $jsonDocument
      * @return Language[]
      */
-    public function getAllLanguages(JsonDocument $jsonDocument)
+    public function determineAvailableLanguages(JsonDocument $jsonDocument)
     {
         $json = $jsonDocument->getBody();
         $languageStrings = [];
@@ -48,7 +48,7 @@ class ConfigurableJsonDocumentLanguageAnalyzer implements JsonDocumentLanguageAn
      * @param JsonDocument $jsonDocument
      * @return Language[]
      */
-    public function getCompletedLanguages(JsonDocument $jsonDocument)
+    public function determineCompletedLanguages(JsonDocument $jsonDocument)
     {
         $json = $jsonDocument->getBody();
         $languageStrings = [];

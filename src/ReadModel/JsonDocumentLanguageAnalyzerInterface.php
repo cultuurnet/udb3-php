@@ -10,11 +10,11 @@ interface JsonDocumentLanguageAnalyzerInterface
      * @param JsonDocument $jsonDocument
      * @return Language[]
      */
-    public function getAllLanguages(JsonDocument $jsonDocument);
+    public function determineAvailableLanguages(JsonDocument $jsonDocument);
 
     /**
      * @param JsonDocument $jsonDocument
      * @return Language[]
      */
-    public function getCompletedLanguages(JsonDocument $jsonDocument);
+    public function determineCompletedLanguages(JsonDocument $jsonDocument);
 }

@@ -24,10 +24,10 @@ class OrganizerJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLang
      * @param JsonDocument $jsonDocument
      * @return \CultuurNet\UDB3\Language[]
      */
-    public function getAllLanguages(JsonDocument $jsonDocument)
+    public function determineAvailableLanguages(JsonDocument $jsonDocument)
     {
         $jsonDocument = $this->polyFillMultilingualFields($jsonDocument);
-        return parent::getAllLanguages($jsonDocument);
+        return parent::determineAvailableLanguages($jsonDocument);
     }
 
     /**
@@ -38,10 +38,10 @@ class OrganizerJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLang
      * @param JsonDocument $jsonDocument
      * @return \CultuurNet\UDB3\Language[]
      */
-    public function getCompletedLanguages(JsonDocument $jsonDocument)
+    public function determineCompletedLanguages(JsonDocument $jsonDocument)
     {
         $jsonDocument = $this->polyFillMultilingualFields($jsonDocument);
-        return parent::getCompletedLanguages($jsonDocument);
+        return parent::determineCompletedLanguages($jsonDocument);
     }
 
     /**

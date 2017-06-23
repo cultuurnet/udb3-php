@@ -34,12 +34,12 @@ class JsonDocumentLanguageEnricher implements JsonDocumentMetaDataEnricherInterf
 
         $body->languages = array_map(
             $castLanguageToString,
-            $this->languageAnalyzer->getAllLanguages($jsonDocument)
+            $this->languageAnalyzer->determineAvailableLanguages($jsonDocument)
         );
 
         $body->completedLanguages = array_map(
             $castLanguageToString,
-            $this->languageAnalyzer->getCompletedLanguages($jsonDocument)
+            $this->languageAnalyzer->determineCompletedLanguages($jsonDocument)
         );
 
         return $jsonDocument->withBody($body);

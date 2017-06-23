@@ -56,7 +56,7 @@ class ConfigurableJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_Te
             new Language('de'),
         ];
 
-        $actual = $this->analyzer->getAllLanguages($document);
+        $actual = $this->analyzer->determineAvailableLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -93,7 +93,7 @@ class ConfigurableJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_Te
             new Language('fr'),
         ];
 
-        $actual = $this->analyzer->getCompletedLanguages($document);
+        $actual = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -133,8 +133,8 @@ class ConfigurableJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_Te
             new Language('de'),
         ];
 
-        $actualAll = $this->analyzer->getAllLanguages($document);
-        $actualCompleted = $this->analyzer->getCompletedLanguages($document);
+        $actualAll = $this->analyzer->determineAvailableLanguages($document);
+        $actualCompleted = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expectedAll, $actualAll);
         $this->assertEquals($expectedCompleted, $actualCompleted);

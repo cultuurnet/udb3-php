@@ -47,7 +47,7 @@ class EventJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
             new Language('de'),
         ];
 
-        $actual = $this->analyzer->getAllLanguages($document);
+        $actual = $this->analyzer->determineAvailableLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }
@@ -80,7 +80,7 @@ class EventJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
             new Language('de'),
         ];
 
-        $actual = $this->analyzer->getCompletedLanguages($document);
+        $actual = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expected, $actual);
     }

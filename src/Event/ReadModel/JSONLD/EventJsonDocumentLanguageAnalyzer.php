@@ -1,9 +1,8 @@
 <?php
 
-namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
+namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\ReadModel\ConfigurableJsonDocumentLanguageAnalyzer;
-use CultuurNet\UDB3\ReadModel\JsonDocument;
 
 class EventJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLanguageAnalyzer
 {

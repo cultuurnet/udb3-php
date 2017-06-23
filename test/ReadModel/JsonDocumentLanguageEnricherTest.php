@@ -80,4 +80,21 @@ class JsonDocumentLanguageEnricherTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedJsonDocument, $actualDocument);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_not_enrich_empty_properties_if_no_languages_are_found()
+    {
+        $givenJsonDocument = new JsonDocument(
+            '41278834-8a90-4b4a-bca2-c3189787146d',
+            json_encode(
+                [
+                    'foo' => 'bar',
+                ]
+            )
+        );
+
+        $this->assertEquals($givenJsonDocument, $this->enricher->enrich($givenJsonDocument, new Metadata()));
+    }
 }

@@ -29,6 +29,7 @@ use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 use CultuurNet\UDB3\Title;
 
@@ -56,17 +57,22 @@ class OrganizerLDProjector implements EventListenerInterface
     /**
      * @var DocumentRepositoryInterface
      */
-    protected $repository;
+    private $repository;
 
     /**
      * @var IriGeneratorInterface
      */
-    protected $iriGenerator;
+    private $iriGenerator;
 
     /**
      * @var EventBusInterface
      */
-    protected $eventBus;
+    private $eventBus;
+
+    /**
+     * @var JsonDocumentMetaDataEnricherInterface
+     */
+    private $jsonDocumentMetaDataEnricher;
 
     /**
      * @var CdbXMLImporter
@@ -77,15 +83,18 @@ class OrganizerLDProjector implements EventListenerInterface
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventBusInterface $eventBus
+     * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EventBusInterface $eventBus
+        EventBusInterface $eventBus,
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->eventBus = $eventBus;
+        $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->cdbXMLImporter = new CdbXMLImporter();
     }
 
@@ -104,6 +113,7 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonDocument = $this->{$handleMethod}($event, $domainMessage);
 
         if ($jsonDocument) {
+            $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
             $this->repository->save($jsonDocument);
         }
     }

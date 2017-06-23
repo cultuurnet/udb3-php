@@ -29,7 +29,9 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
+use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\OrganizerJsonDocumentLanguageAnalyzer;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -71,7 +73,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector = new OrganizerLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->eventBus
+            $this->eventBus,
+            new JsonDocumentLanguageEnricher(
+                new OrganizerJsonDocumentLanguageAnalyzer()
+            )
         );
     }
 
@@ -155,6 +160,8 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->email = ['test@test.be', 'test2@test.be'];
         $jsonLD->url = ['http://www.google.be'];
         $jsonLD->created = $created;
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -196,6 +203,8 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name['nl'] = 'some representative title';
         $jsonLD->created = $created;
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);

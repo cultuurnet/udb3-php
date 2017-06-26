@@ -7,10 +7,10 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
@@ -29,6 +29,11 @@ class Projector extends AbstractProjector
      * @var WriteRepositoryInterface
      */
     private $writeRepository;
+    
+    /**
+     * @var ReadRepositoryInterface
+     */
+    private $readRepository;
 
     /**
      * @var LabelEventRelationTypeResolverInterface
@@ -38,13 +43,16 @@ class Projector extends AbstractProjector
     /**
      * Projector constructor.
      * @param WriteRepositoryInterface $writeRepository
+     * @param ReadRepositoryInterface $readRepository
      * @param LabelEventRelationTypeResolverInterface $labelEventOfferTypeResolver
      */
     public function __construct(
         WriteRepositoryInterface $writeRepository,
+        ReadRepositoryInterface $readRepository,
         LabelEventRelationTypeResolverInterface $labelEventOfferTypeResolver
     ) {
         $this->writeRepository = $writeRepository;
+        $this->readRepository = $readRepository;
         $this->offerTypeResolver = $labelEventOfferTypeResolver;
 
     }
@@ -185,7 +193,20 @@ class Projector extends AbstractProjector
         $keywords = $cdbItem->getKeywords();
         $labelCollection = LabelCollection::fromStrings($keywords);
 
-        foreach ($labelCollection->asArray() as $label) {
+        // Calculate the UDB2 imported labels.
+        $udb3Labels = array_map(
+            function (LabelRelation $labelRelation) {
+                return $labelRelation->getLabelName()->toNative();
+            },
+            $this->readRepository->getLabelRelationsForItem($relationId)
+        );
+        $udb2Labels = array_diff(
+            $labelCollection->asArray(),
+            $udb3Labels
+        );
+
+        // Only save the UDB2 labels, because the UDB3 labels are still present.
+        foreach ($udb2Labels as $label) {
             $this->writeRepository->save(
                 new LabelName((string) $label),
                 $relationType,

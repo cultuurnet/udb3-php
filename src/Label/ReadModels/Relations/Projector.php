@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolverInterface;
 use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
@@ -30,16 +29,16 @@ class Projector extends AbstractProjector
      * @var WriteRepositoryInterface
      */
     private $writeRepository;
+    
+    /**
+     * @var ReadRepositoryInterface
+     */
+    private $readRepository;
 
     /**
      * @var LabelEventRelationTypeResolverInterface
      */
     private $offerTypeResolver;
-
-    /**
-     * @var ReadRepositoryInterface
-     */
-    private $readRepository;
 
     /**
      * Projector constructor.
@@ -194,6 +193,7 @@ class Projector extends AbstractProjector
         $keywords = $cdbItem->getKeywords();
         $labelCollection = LabelCollection::fromStrings($keywords);
 
+        // Calculate the UDB2 imported labels.
         $udb3Labels = array_map(
             function (LabelRelation $labelRelation) {
                 return $labelRelation->getLabelName()->toNative();
@@ -204,6 +204,8 @@ class Projector extends AbstractProjector
             $labelCollection->asArray(),
             $udb3Labels
         );
+
+        // Only save the UDB2 labels, because the UDB3 labels are still present.
         foreach ($udb2Labels as $label) {
             $this->writeRepository->save(
                 new LabelName((string) $label),

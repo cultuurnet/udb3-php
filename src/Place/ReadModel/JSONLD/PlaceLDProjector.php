@@ -8,7 +8,6 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
@@ -54,6 +53,7 @@ use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -74,55 +74,50 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param CdbXMLImporter $cdbXMLImporter
+     * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
-        CdbXMLImporter $cdbXMLImporter
+        CdbXMLImporter $cdbXMLImporter,
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
-            $mediaObjectSerializer
+            $mediaObjectSerializer,
+            $jsonDocumentMetaDataEnricher
         );
 
-        $this->slugger = new CulturefeedSlugger();
         $this->cdbXMLImporter = $cdbXMLImporter;
-    }
-
-    protected function getImagesImportedFromUdb2ClassName()
-    {
-        return ImagesImportedFromUDB2::class;
-    }
-
-    protected function getImagesUpdatedFromUdb2ClassName()
-    {
-        return ImagesUpdatedFromUDB2::class;
     }
 
     /**
      * @param PlaceImportedFromUDB2 $placeImportedFromUDB2
+     * @return JsonDocument
      */
     protected function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImportedFromUDB2
     ) {
-        $this->projectActorImportedFromUDB2($placeImportedFromUDB2);
+        return $this->projectActorImportedFromUDB2($placeImportedFromUDB2);
     }
 
     /**
      * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+     * @return JsonDocument
      */
     protected function applyPlaceUpdatedFromUDB2(
         PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
     ) {
-        $this->projectActorImportedFromUDB2($placeUpdatedFromUDB2);
+        return $this->projectActorImportedFromUDB2($placeUpdatedFromUDB2);
     }
 
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
+     * @return JsonDocument
      */
     protected function projectActorImportedFromUDB2(
         ActorImportedFromUDB2 $actorImportedFromUDB2
@@ -157,7 +152,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         // geocoordinates.
         unset($actorLd->geo);
 
-        $this->repository->save($document->withBody($actorLd));
+        return $document->withBody($actorLd);
     }
 
     /**
@@ -178,6 +173,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     /**
      * @param PlaceCreated $placeCreated
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
@@ -236,20 +232,23 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param PlaceDeleted $placeDeleted
+     * @return null
      */
     protected function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
         $this->repository->remove($placeDeleted->getItemId());
+        return null;
     }
 
     /**
      * Apply the major info updated command to the projector.
      * @param MajorInfoUpdated $majorInfoUpdated
+     * @return JsonDocument
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
@@ -293,29 +292,31 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         // geocoordinates.
         unset($jsonLD->geo);
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param AddressUpdated $addressUpdated
+     * @return JsonDocument
      */
     protected function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
         $document = $this->loadPlaceDocumentFromRepository($addressUpdated);
         $jsonLD = $document->getBody();
         $this->setAddress($jsonLD, $addressUpdated->getAddress(), $this->getMainLanguage($jsonLD));
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param AddressTranslated $addressTranslated
+     * @return JsonDocument
      */
     protected function applyAddressTranslated(AddressTranslated $addressTranslated)
     {
         $document = $this->loadPlaceDocumentFromRepository($addressTranslated);
         $jsonLD = $document->getBody();
         $this->setAddress($jsonLD, $addressTranslated->getAddress(), $addressTranslated->getLanguage());
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
@@ -347,6 +348,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     /**
      * Apply the facilitiesupdated event to the place repository.
      * @param FacilitiesUpdated $facilitiesUpdated
+     * @return JsonDocument
      */
     protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
     {
@@ -371,11 +373,12 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $placeLd->terms = $terms;
 
-        $this->repository->save($document->withBody($placeLd));
+        return $document->withBody($placeLd);
     }
 
     /**
      * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
+     * @return JsonDocument
      */
     protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
     {
@@ -388,7 +391,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
         ];
 
-        $this->repository->save($document->withBody($placeLd));
+        return $document->withBody($placeLd);
     }
 
     /**
@@ -554,5 +557,15 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getFlaggedAsInappropriateClassName()
     {
         return FlaggedAsInappropriate::class;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
     }
 }

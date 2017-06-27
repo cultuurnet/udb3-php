@@ -48,6 +48,7 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
@@ -164,7 +165,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->organizerService,
             $this->serializer,
             $this->iriOfferIdentifierFactory,
-            $this->cdbXMLImporter
+            $this->cdbXMLImporter,
+            new JsonDocumentLanguageEnricher(
+                new EventJsonDocumentLanguageAnalyzer()
+            )
         );
     }
 
@@ -804,6 +808,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'name' => [
                     'nl' => 'Quicksand Valley',
                 ],
+                'languages' => ['nl'],
+                'completedLanguages' => ['nl'],
             ])
         );
 
@@ -827,6 +833,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'name' => (object)[
                 'nl' => 'Quicksand Valley',
             ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
             'location' => (object)[
                 'name' => "t,arsenaal mechelen",
                 'address' => (object)[
@@ -913,6 +921,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     'nl' => 'Rekanto - TaiQi',
                     'fr' => 'Raviva - TaiQi'
                 ],
+                'languages' => ['nl', 'fr'],
+                'completedLanguages' => ['nl', 'fr'],
             ])
         );
 
@@ -934,6 +944,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'nl' => 'Rekanto - TaiQi',
                 'fr' => 'Raviva - TaiQi'
             ],
+            'languages' => ['nl', 'fr'],
+            'completedLanguages' => ['nl', 'fr'],
             'organizer' => (object)[
                 'name' => 'stichting tegen Kanker',
                 'email' => [
@@ -1010,6 +1022,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
@@ -1038,6 +1052,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'theme',
             ]
         ];
+        $expectedJsonLD->languages = ['nl'];
+        $expectedJsonLD->completedLanguages = ['nl'];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
@@ -1305,6 +1321,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'DRAFT';
         $jsonLD->audience = (object)['audienceType' => 'everyone'];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         return $jsonLD;
     }

@@ -41,6 +41,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -126,7 +127,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
-            $this->cdbXMLImporter
+            $this->cdbXMLImporter,
+            new JsonDocumentLanguageEnricher(
+                new PlaceJsonDocumentLanguageAnalyzer()
+            )
         );
 
         $street = new Street('Kerkstraat 69');
@@ -178,6 +182,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $body = $this->project(
             $placeCreated,
@@ -239,6 +245,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $body = $this->project(
             $placeCreated,
@@ -295,6 +303,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->creator = 'Tester';
         $jsonLD->workflowStatus = 'DRAFT';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $metadata = new Metadata(
             [
@@ -338,6 +348,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
             ->withBody($jsonLD);
@@ -364,6 +376,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $expectedJsonLD->languages = ['nl'];
+        $expectedJsonLD->completedLanguages = ['nl'];
 
         $addressUpdated = new AddressUpdated(
             '66f30742-dee9-4794-ac92-fa44634692b8',
@@ -404,6 +418,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
             ->withBody($jsonLD);
@@ -436,6 +452,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $expectedJsonLD->languages = ['nl', 'fr'];
+        $expectedJsonLD->completedLanguages = ['nl'];
 
         $addressTranslated = new AddressTranslated(
             '66f30742-dee9-4794-ac92-fa44634692b8',
@@ -595,6 +613,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $initialJsonLd->languages = ['nl', 'fr'];
+        $initialJsonLd->completedLanguages = ['nl'];
 
         $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
             ->withBody($initialJsonLd);
@@ -663,6 +683,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ]
         ];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
@@ -697,6 +719,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
+        $expectedJsonLD->languages = ['nl'];
+        $expectedJsonLD->completedLanguages = ['nl'];
 
         $body = $this->project($majorInfoUpdated, $majorInfoUpdated->getPlaceId());
         $this->assertEquals($expectedJsonLD, $body);
@@ -718,32 +742,40 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $initialDocument = new JsonDocument(
             $id,
-            json_encode([
-                'terms' => [
-                    [
-                        'id' => 'facility1',
-                        'label' => 'facility label',
-                        'domain' => 'facility',
-                    ]
+            json_encode(
+                [
+                    'name' => ['nl' => 'Foo'],
+                    'terms' => [
+                        [
+                            'id' => 'facility1',
+                            'label' => 'facility label',
+                            'domain' => 'facility',
+                        ]
+                    ],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
                 ]
-            ])
+            )
         );
 
         $this->documentRepository->save($initialDocument);
 
-        $expectedBody = (object)[
+        $expectedBody = (object) [
+            'name' => (object) ['nl' => 'Foo'],
             'terms' => [
-                (object)[
+                (object) [
                     'id' => 'facility1',
                     'label' => 'facility label',
                     'domain' => 'facility',
                 ],
-                (object)[
+                (object) [
                     'id' => 'facility2',
                     'label' => 'facility label2',
                     'domain' => 'facility',
                 ]
-            ]
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
         ];
 
         $body = $this->project($facilitiesUpdated, $id);
@@ -763,7 +795,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 [
                     '@id' => 'http://uitdatabank/place/' . $id,
                     '@type' => 'Place',
-                    'name' => 'Test',
+                    'name' => [
+                        'nl' => 'Test'
+                    ],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
                 ]
             )
         );
@@ -781,7 +817,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $expectedBody = (object) [
             '@id' => 'http://uitdatabank/place/' . $id,
             '@type' => 'Place',
-            'name' => 'Test',
+            'name' => (object) ['nl' => 'Test'],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
             'geo' => (object) [
                 'latitude' => 1.1234567,
                 'longitude' => -0.34567,
@@ -917,6 +955,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                         'longitude' => -0.9524,
                     ],
                     'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
                 ]
             )
         );
@@ -958,6 +998,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                         'longitude' => -0.9524,
                     ],
                     'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
                 ]
             )
         );

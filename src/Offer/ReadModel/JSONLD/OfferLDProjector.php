@@ -755,7 +755,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     {
         $document = $this->loadDocumentFromRepository($imagesImportedFromUDB2);
         $offerLd = $document->getBody();
-        $this->applyImagesEvent($offerLd, $imagesImportedFromUDB2);
+        $this->applyUdb2ImagesEvent($offerLd, $imagesImportedFromUDB2);
         return $document->withBody($offerLd);
     }
 
@@ -767,29 +767,41 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     {
         $document = $this->loadDocumentFromRepository($imagesUpdatedFromUDB2);
         $offerLd = $document->getBody();
-        $this->applyImagesEvent($offerLd, $imagesUpdatedFromUDB2);
+        $this->applyUdb2ImagesEvent($offerLd, $imagesUpdatedFromUDB2);
         return $document->withBody($offerLd);
     }
 
     /**
+     * This indirect apply method can be called internally to deal with images coming from UDB2.
+     * Imports from UDB2 only contain the native Dutch content.
+     * @see https://github.com/cultuurnet/udb3-udb2-bridge/blob/db0a7ab2444f55bb3faae3d59b82b39aaeba253b/test/Media/ImageCollectionFactoryTest.php#L79-L103
+     * Because of this we have to make sure translated images are left in place.
+     *
      * @param \stdClass $offerLd
      * @param AbstractImagesEvent $imagesEvent
      */
-    private function applyImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
+    private function applyUdb2ImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
     {
         $images = $imagesEvent->getImages();
-        $jsonMediaObjects = array_map(
+        $currentMediaObjects = isset($offerLd->mediaObject) ? $offerLd->mediaObject : [];
+        $dutchMediaObjects = array_map(
             function (Image $image) {
                 return $this->mediaObjectSerializer->serialize($image, 'json-ld');
             },
             $images->toArray()
         );
+        $translatedMediaObjects = array_filter(
+            $currentMediaObjects,
+            function ($image) {
+                return $image->inLanguage !== 'nl';
+            }
+        );
         $mainImage = $images->getMain();
 
         unset($offerLd->mediaObject, $offerLd->image);
 
-        if (!empty($jsonMediaObjects)) {
-            $offerLd->mediaObject = $jsonMediaObjects;
+        if (!empty($dutchMediaObjects) || !empty($translatedMediaObjects)) {
+            $offerLd->mediaObject = array_merge($dutchMediaObjects, $translatedMediaObjects);
         }
 
         if (isset($mainImage)) {

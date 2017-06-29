@@ -1087,6 +1087,67 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $importedItem = $this->project($imagesImportedEvent, $itemId);
         $this->assertEquals($expectedImage, $importedItem->image);
     }
+    /**
+     * @test
+     */
+    public function it_should_keep_images_translated_in_ubd3_when_updating_images_from_udb2()
+    {
+        $eventId = 'event-1';
+        $image = new Image(
+            new UUID('ED5B9B25-8C16-48E5-9899-27BB2D110C57'),
+            new MIMEType('image/jpg'),
+            new Description('epische panorama foto'),
+            new CopyrightHolder('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/ED5B9B25-8C16-48E5-9899-27BB2D110C57.jpg'),
+            new Language('nl')
+        );
+        $expectedMediaObjects = [
+            (object) [
+                '@id' => 'http://example.com/entity/ED5B9B25-8C16-48E5-9899-27BB2D110C57',
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => 'http://foo.bar/media/ED5B9B25-8C16-48E5-9899-27BB2D110C57.jpg',
+                'thumbnailUrl' => 'http://foo.bar/media/ED5B9B25-8C16-48E5-9899-27BB2D110C57.jpg',
+                'description' => 'epische panorama foto',
+                'copyrightHolder' => 'Bart Ramakers',
+                'inLanguage' => 'nl',
+            ],
+            (object) [
+                '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'description' => 'sexy ladies without clothes',
+                'copyrightHolder' => 'Bart Ramakers',
+                'inLanguage' => 'en',
+            ]
+        ];
+        $initialDocument = new JsonDocument(
+            $eventId,
+            json_encode([
+                'image' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'mediaObject' => [
+                    (object) [
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:ImageObject',
+                        'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'description' => 'sexy ladies without clothes',
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ]
+                ]
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+        $imageUpdatedEvent = new ImagesUpdatedFromUDB2($eventId, ImageCollection::fromArray([$image]));
+        $eventBody = $this->project($imageUpdatedEvent, $eventId);
+
+        $this->assertEquals(
+            $expectedMediaObjects,
+            $eventBody->mediaObject
+        );
+    }
 
     public function imageCollectionDataProvider()
     {

@@ -24,7 +24,7 @@
     "cultuurnet/geocoding": "~0.1",
     "broadway/broadway": "~0.10",
     "chrisboulton/php-resque": "~1.2",
-    "cultuurnet/culturefeed-php": "dev-master as 1.6",
+    "cultuurnet/culturefeed-php": "~1.6",
     "cultuurnet/valueobjects": "~3.0",
     "php": "~5.6 || >=7.0",
     "predis/predis": "~1.0",

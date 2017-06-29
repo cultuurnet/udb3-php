@@ -39,6 +39,13 @@ class ImageCollection extends AbstractCollection implements CollectionInterface
             return null;
         }
 
-        return $this->mainImage ? $this->mainImage : $this->getIterator()->offsetGet(0);
+        if ($this->mainImage) {
+            return $this->mainImage;
+        } else {
+            $iterator = $this->getIterator();
+            $iterator->rewind();
+
+            return $iterator->current();
+        }
     }
 }

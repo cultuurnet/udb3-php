@@ -54,14 +54,9 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $labels;
 
     /**
-     * @var UUID[]
+     * @var ImageCollection
      */
-    protected $mediaObjects = [];
-
-    /**
-     * @var UUID
-     */
-    protected $mainImageId;
+    protected $images;
 
     /**
      * @var string
@@ -91,6 +86,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     public function __construct()
     {
         $this->labels = new LabelCollection();
+        $this->images = new ImageCollection();
     }
 
     /**
@@ -100,7 +96,8 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     protected function getMainImageId()
     {
-        return $this->mainImageId;
+        $mainImage = $this->images->getMain();
+        return isset($mainImage) ? $mainImage->getMediaObjectId() : null;
     }
 
     /**
@@ -263,31 +260,13 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
-     * @param Image $image
-     * @return boolean
-     */
-    private function containsImage(Image $image)
-    {
-        $equalImages = array_filter(
-            $this->mediaObjects,
-            function ($existingMediaObjectId) use ($image) {
-                return $image
-                    ->getMediaObjectId()
-                    ->sameValueAs($existingMediaObjectId);
-            }
-        );
-
-        return !empty($equalImages);
-    }
-
-    /**
      * Add a new image.
      *
      * @param Image $image
      */
     public function addImage(Image $image)
     {
-        if (!$this->containsImage($image)) {
+        if (!$this->images->contains($image)) {
             $this->apply(
                 $this->createImageAddedEvent($image)
             );
@@ -311,7 +290,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function removeImage(Image $image)
     {
-        if ($this->containsImage($image)) {
+        if ($this->images->contains($image)) {
             $this->apply(
                 $this->createImageRemovedEvent($image)
             );
@@ -325,11 +304,13 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function selectMainImage(Image $image)
     {
-        if (!$this->containsImage($image)) {
+        if (!$this->images->contains($image)) {
             throw new \InvalidArgumentException('You can not select a random image to be main, it has to be added to the item.');
         }
 
-        if ($this->mainImageId !== $image->getMediaObjectId()) {
+        $oldMainImage = $this->images->getMain();
+
+        if (!isset($oldMainImage) || $oldMainImage->getMediaObjectId() !== $image->getMediaObjectId()) {
             $this->apply(
                 $this->createMainImageSelectedEvent($image)
             );
@@ -523,30 +504,17 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
-        $imageId = $imageAdded->getImage()->getMediaObjectId();
-        $this->mediaObjects[] = $imageId;
-
-        if (count($this->mediaObjects) === 1) {
-            $this->mainImageId = $imageId;
-        }
+        $this->images = $this->images->with($imageAdded->getImage());
     }
 
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
     {
-        $this->mediaObjects = array_diff(
-            $this->mediaObjects,
-            [$imageRemoved->getImage()->getMediaObjectId()]
-        );
-
-        $oldestImageId = reset($this->mediaObjects);
-        if ($oldestImageId) {
-            $this->mainImageId = $oldestImageId;
-        }
+        $this->images = $this->images->without($imageRemoved->getImage());
     }
 
     protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)
     {
-        $this->mainImageId = $mainImageSelected->getImage()->getMediaObjectId();
+        $this->images = $this->images->withMain($mainImageSelected->getImage());
     }
 
     protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
@@ -564,7 +532,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     protected function applyImagesImportedFromUDB2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
     {
-        $this->applyImagesEvent($imagesImportedFromUDB2);
+        $this->applyUdb2ImagesEvent($imagesImportedFromUDB2);
     }
 
     /**
@@ -572,26 +540,38 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     protected function applyImagesUpdatedFromUDB2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
     {
-        $this->applyImagesEvent($imagesUpdatedFromUDB2);
+        $this->applyUdb2ImagesEvent($imagesUpdatedFromUDB2);
     }
 
     /**
-     * Overwrites or resets the main image and all media objects.
+     * This indirect apply method can be called internally to deal with images coming from UDB2.
+     * Imports from UDB2 only contain the native Dutch content.
+     * @see https://github.com/cultuurnet/udb3-udb2-bridge/blob/db0a7ab2444f55bb3faae3d59b82b39aaeba253b/test/Media/ImageCollectionFactoryTest.php#L79-L103
+     * Because of this we have to make sure translated images are left in place.
      *
      * @param AbstractImagesEvent $imagesEvent
      */
-    protected function applyImagesEvent(AbstractImagesEvent $imagesEvent)
+    protected function applyUdb2ImagesEvent(AbstractImagesEvent $imagesEvent)
     {
-        $mainImage = $imagesEvent->getImages()->getMain();
+        $newMainImage = $imagesEvent->getImages()->getMain();
 
-        $this->mainImageId = $mainImage ? $mainImage->getMediaObjectId() : null;
-
-        $this->mediaObjects = array_map(
+        $dutchImagesList = array_filter(
+            $imagesEvent->getImages()->toArray(),
             function (Image $image) {
-                return $image->getMediaObjectId();
-            },
-            $imagesEvent->getImages()->toArray()
+                return $image->getLanguage()->getCode() === 'nl';
+            }
         );
+        $translatedImagesList = array_filter(
+            $this->images->toArray(),
+            function (Image $image) {
+                return $image->getLanguage()->getCode() !== 'nl';
+            }
+        );
+
+        $imagesList = array_merge($dutchImagesList, $translatedImagesList);
+        $images = ImageCollection::fromArray($imagesList);
+
+        $this->images = isset($newMainImage) ? $images->withMain($newMainImage) : $images;
     }
 
     /**

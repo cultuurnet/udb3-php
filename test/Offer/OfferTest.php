@@ -745,6 +745,55 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @test
      * @dataProvider imageCollectionDataProvider
      */
+    public function it_should_keep_images_translated_in_ubd3_when_updating_images_from_udb2(
+        Image $image
+    ) {
+        $itemId = UUID::generateAsString();
+
+        $dutchUdb3Image = new Image(
+            new UUID('0773EB2A-54BE-49AD-B261-5D1099F319D4'),
+            new MIMEType('image/jpg'),
+            new Description('mijn favoriete wallpaper'),
+            new CopyrightHolder('Dirk Dirkingn'),
+            Url::fromNative('http://foo.bar/media/mijn_favoriete_wallpaper_<3.jpg'),
+            new Language('nl')
+        );
+
+        $udb2Images = ImageCollection::fromArray([
+            new Image(
+                new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+                new MIMEType('image/jpg'),
+                new Description('episch panorama'),
+                new CopyrightHolder('Dirk Dirkingn'),
+                Url::fromNative('http://foo.bar/media/episch_panorama.jpg'),
+                new Language('nl')
+            )
+        ]);
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(function (Item $item) use ($image, $dutchUdb3Image, $udb2Images) {
+                $item->addImage($image);
+                $item->addImage($dutchUdb3Image);
+                $item->importImagesFromUDB2($udb2Images);
+                $item->addImage($image);
+                $item->addImage($dutchUdb3Image);
+            })
+            ->then([
+                new ImageAdded($itemId, $image),
+                new ImageAdded($itemId, $dutchUdb3Image),
+                new ImagesImportedFromUDB2($itemId, $udb2Images),
+                new ImageAdded($itemId, $dutchUdb3Image),
+            ]);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
     public function it_should_update_images_from_udb2_as_media_object_and_main_image(
         Image $image,
         ImageCollection $imageCollection

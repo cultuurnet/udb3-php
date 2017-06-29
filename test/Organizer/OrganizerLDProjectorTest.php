@@ -17,7 +17,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -26,9 +26,12 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
+use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\OrganizerJsonDocumentLanguageAnalyzer;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -70,7 +73,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector = new OrganizerLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->eventBus
+            $this->eventBus,
+            new JsonDocumentLanguageEnricher(
+                new OrganizerJsonDocumentLanguageAnalyzer()
+            )
         );
     }
 
@@ -138,8 +144,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
+
         $jsonLD->mainLanguage = 'nl';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->name[$jsonLD->mainLanguage] = 'some representative title';
+
         $jsonLD->addresses = [
             [
                 'addressCountry' => $country,
@@ -152,6 +160,8 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->email = ['test@test.be', 'test2@test.be'];
         $jsonLD->url = ['http://www.google.be'];
         $jsonLD->created = $created;
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -191,8 +201,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->{'@context'} = '/contexts/organizer';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->url = 'http://www.stuk.be';
-        $jsonLD->name = 'some representative title';
+        $jsonLD->name['nl'] = 'some representative title';
         $jsonLD->created = $created;
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -288,6 +300,52 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $body = $document->getBody();
                 return $body->mainLanguage === 'nl';
             }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_title_translated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('EssaiOrganisation');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleTranslated(
+                $organizerId,
+                $title,
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_translation_of_organizer_with_untranslated_name()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('EssaiOrganisation');
+
+        $this->mockGet($organizerId, 'organizer_untranslated_name.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleTranslated(
+                $organizerId,
+                $title,
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_title.json');
 
         $this->projector->handle($domainMessage);
     }
@@ -593,10 +651,17 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private function expectSave($organizerId, $fileName)
     {
-        $organizerWithLabelJson = file_get_contents(__DIR__ . '/Samples/' . $fileName);
+        $expectedOrganizerJson = file_get_contents(__DIR__ . '/Samples/' . $fileName);
+        // The expected organizer json still has newline formatting.
+        // The actual organizer json on the other hand has no newlines
+        // because it was created by using the withBody method on JsonDocument.
+        // By calling json_encode(json_decode(...)) the newlines are also removed
+        // from the expected document.
+        $expectedOrganizerJson = json_encode(json_decode($expectedOrganizerJson));
+
         $this->documentRepository->expects($this->once())
             ->method('save')
-            ->with(new JsonDocument($organizerId, $organizerWithLabelJson));
+            ->with(new JsonDocument($organizerId, $expectedOrganizerJson));
     }
 
     /**

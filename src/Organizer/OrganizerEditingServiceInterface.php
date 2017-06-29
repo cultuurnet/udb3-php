@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Organizer;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
@@ -29,9 +30,10 @@ interface OrganizerEditingServiceInterface
     /**
      * @param string $organizerId
      * @param Title $title
+     * @param Language $language
      * @return mixed
      */
-    public function updateTitle($organizerId, Title $title);
+    public function updateTitle($organizerId, Title $title, Language $language);
 
     /**
      * @param string $organizerId

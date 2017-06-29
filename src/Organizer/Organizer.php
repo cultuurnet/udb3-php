@@ -10,6 +10,7 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -19,6 +20,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
@@ -34,14 +36,19 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected $actorId;
 
     /**
+     * @var Language
+     */
+    private $mainLanguage;
+
+    /**
      * @var Url
      */
     private $website;
 
     /**
-     * @var Title
+     * @var Title[]
      */
-    private $title;
+    private $titles;
 
     /**
      * @var Address|null
@@ -68,6 +75,10 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     public function __construct()
     {
+        // For now the main language is hard coded on nl.
+        // In the future it should be set on create.
+        $this->mainLanguage = new Language('nl');
+
         // Contact points can be empty, but we only want to start recording
         // ContactPointUpdated events as soon as the organizer is updated
         // with a non-empty contact point. To enforce this we initialize the
@@ -159,13 +170,27 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     /**
      * @param Title $title
+     * @param Language $language
      */
-    public function updateTitle(Title $title)
-    {
-        if ($this->title && !$this->title->sameValueAs($title)) {
-            $this->apply(
-                new TitleUpdated($this->actorId, $title)
-            );
+    public function updateTitle(
+        Title $title,
+        Language $language
+    ) {
+        if ($this->isTitleChanged($title, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
+                $event = new TitleTranslated(
+                    $this->actorId,
+                    $title,
+                    $language
+                );
+            } else {
+                $event = new TitleUpdated(
+                    $this->actorId,
+                    $title
+                );
+            }
+
+            $this->apply($event);
         }
     }
 
@@ -228,7 +253,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     {
         $this->actorId = $organizerCreated->getOrganizerId();
 
-        $this->title = $organizerCreated->getTitle();
+        $this->setTitle($organizerCreated->getTitle(), $this->mainLanguage);
     }
 
     /**
@@ -241,7 +266,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
         $this->website = $organizerCreated->getWebsite();
 
-        $this->title = $organizerCreated->getTitle();
+        $this->setTitle($organizerCreated->getTitle(), $this->mainLanguage);
     }
 
     /**
@@ -257,7 +282,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerImported->getCdbXml()
         );
 
-        $this->title = $this->getTitle($actor);
+        $this->setTitle($this->getTitle($actor), $this->mainLanguage);
 
         $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
@@ -273,7 +298,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             $organizerUpdatedFromUDB2->getCdbXml()
         );
 
-        $this->title = $this->getTitle($actor);
+        $this->setTitle($this->getTitle($actor), $this->mainLanguage);
 
         $this->labels = LabelCollection::fromKeywords($actor->getKeywords(true));
     }
@@ -291,7 +316,15 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     protected function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
-        $this->title = $titleUpdated->getTitle();
+        $this->setTitle($titleUpdated->getTitle(), $this->mainLanguage);
+    }
+
+    /**
+     * @param TitleTranslated $titleTranslated
+     */
+    protected function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        $this->setTitle($titleTranslated->getTitle(), $titleTranslated->getLanguage());
     }
 
     /**
@@ -343,5 +376,25 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param Title $title
+     * @param Language $language
+     */
+    private function setTitle(Title $title, Language $language)
+    {
+        $this->titles[$language->getCode()] = $title;
+    }
+
+    /**
+     * @param Title $title
+     * @param Language $language
+     * @return bool
+     */
+    private function isTitleChanged(Title $title, Language $language)
+    {
+        return !isset($this->titles[$language->getCode()]) ||
+            !$title->sameValueAs($this->titles[$language->getCode()]);
     }
 }

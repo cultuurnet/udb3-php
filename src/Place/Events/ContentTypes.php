@@ -26,6 +26,8 @@ class ContentTypes
     public static function map()
     {
         return [
+            AddressUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-address-updated+json',
+            AddressTranslated::class => 'application/vnd.cultuurnet.udb3-events.place-address-translated+json',
             BookingInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-booking-info-updated+json',
             PriceInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-price-info-updated.json',
             ContactPointUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-contact-point-updated+json',

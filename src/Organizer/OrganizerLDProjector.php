@@ -21,13 +21,17 @@ use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\Title;
 
 class OrganizerLDProjector implements EventListenerInterface
 {
@@ -38,6 +42,7 @@ class OrganizerLDProjector implements EventListenerInterface
      * @uses applyOrganizerCreatedWithUniqueWebsite
      * @uses applyWebsiteUpdated
      * @uses applyTitleUpdated
+     * @uses applyTitleTranslated
      * @uses applyAddressUpdated
      * @uses applyContactPointUpdated
      * @uses applyOrganizerUpdatedFRomUDB2
@@ -45,22 +50,29 @@ class OrganizerLDProjector implements EventListenerInterface
      * @uses applyLabelRemoved
      * @uses applyOrganizerDeleted
      */
-    use DelegateEventHandlingToSpecificMethodTrait;
+    use DelegateEventHandlingToSpecificMethodTrait {
+        DelegateEventHandlingToSpecificMethodTrait::handle as handleMethodSpecificEvents;
+    }
 
     /**
      * @var DocumentRepositoryInterface
      */
-    protected $repository;
+    private $repository;
 
     /**
      * @var IriGeneratorInterface
      */
-    protected $iriGenerator;
+    private $iriGenerator;
 
     /**
      * @var EventBusInterface
      */
-    protected $eventBus;
+    private $eventBus;
+
+    /**
+     * @var JsonDocumentMetaDataEnricherInterface
+     */
+    private $jsonDocumentMetaDataEnricher;
 
     /**
      * @var CdbXMLImporter
@@ -71,20 +83,44 @@ class OrganizerLDProjector implements EventListenerInterface
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventBusInterface $eventBus
+     * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EventBusInterface $eventBus
+        EventBusInterface $eventBus,
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->eventBus = $eventBus;
+        $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->cdbXMLImporter = new CdbXMLImporter();
     }
 
     /**
+     * @inheritdoc
+     */
+    public function handle(DomainMessage $domainMessage)
+    {
+        $event = $domainMessage->getPayload();
+
+        $handleMethod = $this->getHandleMethodName($event);
+        if (!$handleMethod) {
+            return;
+        }
+
+        $jsonDocument = $this->{$handleMethod}($event, $domainMessage);
+
+        if ($jsonDocument) {
+            $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
+            $this->repository->save($jsonDocument);
+        }
+    }
+
+    /**
      * @param OrganizerImportedFromUDB2 $organizerImportedFromUDB2
+     * @return JsonDocument
      */
     private function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImportedFromUDB2
@@ -104,12 +140,13 @@ class OrganizerLDProjector implements EventListenerInterface
             $udb2Actor
         );
 
-        $this->repository->save($document->withBody($actorLd));
+        return $document->withBody($actorLd);
     }
 
     /**
      * @param OrganizerCreated $organizerCreated
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     private function applyOrganizerCreated(OrganizerCreated $organizerCreated, DomainMessage $domainMessage)
     {
@@ -123,7 +160,9 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $this->setMainLanguage($jsonLD, new Language('nl'));
 
-        $jsonLD->name = $organizerCreated->getTitle();
+        $jsonLD->name = [
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+        ];
 
         $addresses = $organizerCreated->getAddresses();
         $jsonLD->addresses = array();
@@ -151,12 +190,13 @@ class OrganizerLDProjector implements EventListenerInterface
             $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
         }
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param OrganizerCreatedWithUniqueWebsite $organizerCreated
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     private function applyOrganizerCreatedWithUniqueWebsite(
         OrganizerCreatedWithUniqueWebsite $organizerCreated,
@@ -173,7 +213,10 @@ class OrganizerLDProjector implements EventListenerInterface
         $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->url = (string) $organizerCreated->getWebsite();
-        $jsonLD->name = $organizerCreated->getTitle();
+
+        $jsonLD->name = [
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+        ];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();
         $jsonLD->created = \DateTime::createFromFormat(
@@ -186,11 +229,12 @@ class OrganizerLDProjector implements EventListenerInterface
             $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
         }
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param WebsiteUpdated $websiteUpdated
+     * @return JsonDocument
      */
     private function applyWebsiteUpdated(WebsiteUpdated $websiteUpdated)
     {
@@ -201,26 +245,34 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonLD = $document->getBody();
         $jsonLD->url = (string) $websiteUpdated->getWebsite();
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param TitleUpdated $titleUpdated
+     * @return JsonDocument
      */
     private function applyTitleUpdated(TitleUpdated $titleUpdated)
     {
-        $organizerId = $titleUpdated->getOrganizerId();
+        return $this->applyTitle($titleUpdated, $titleUpdated->getTitle());
+    }
 
-        $document = $this->repository->get($organizerId);
-
-        $jsonLD = $document->getBody();
-        $jsonLD->name = $titleUpdated->getTitle()->toNative();
-
-        $this->repository->save($document->withBody($jsonLD));
+    /**
+     * @param TitleTranslated $titleTranslated
+     * @return JsonDocument
+     */
+    private function applyTitleTranslated(TitleTranslated $titleTranslated)
+    {
+        return $this->applyTitle(
+            $titleTranslated,
+            $titleTranslated->getTitle(),
+            $titleTranslated->getLanguage()
+        );
     }
 
     /**
      * @param AddressUpdated $addressUpdated
+     * @return JsonDocument
      */
     private function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
@@ -232,11 +284,12 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonLD = $document->getBody();
         $jsonLD->address = $address->toJsonLd();
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param ContactPointUpdated $contactPointUpdated
+     * @return JsonDocument
      */
     private function applyContactPointUpdated(ContactPointUpdated $contactPointUpdated)
     {
@@ -248,11 +301,12 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonLD = $document->getBody();
         $jsonLD->contactPoint = $contactPoint->toJsonLd();
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+     * @return JsonDocument
      */
     private function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
@@ -281,7 +335,7 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $this->setMainLanguage($actorLd, new Language('nl'));
 
-        $this->repository->save($document->withBody($actorLd));
+        return $document->withBody($actorLd);
     }
 
     /**
@@ -302,7 +356,7 @@ class OrganizerLDProjector implements EventListenerInterface
         $labels[] = $label;
         $jsonLD->{$labelsProperty} = array_unique($labels);
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
@@ -338,16 +392,18 @@ class OrganizerLDProjector implements EventListenerInterface
             }
         }
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param OrganizerDeleted $organizerDeleted
+     * @return null
      */
     private function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted
     ) {
         $this->repository->remove($organizerDeleted->getOrganizerId());
+        return null;
     }
 
     /**
@@ -363,6 +419,43 @@ class OrganizerLDProjector implements EventListenerInterface
         $organizerLd->{'@context'} = '/contexts/organizer';
 
         return $document->withBody($organizerLd);
+    }
+
+    /**
+     * @param OrganizerEvent $organizerEvent
+     * @param Title $title
+     * @param Language|null $language
+     * @return JsonDocument
+     */
+    private function applyTitle(
+        OrganizerEvent $organizerEvent,
+        Title $title,
+        Language $language = null
+    ) {
+        $organizerId = $organizerEvent->getOrganizerId();
+
+        $document = $this->repository->get($organizerId);
+
+        $jsonLD = $document->getBody();
+
+        $mainLanguage = $this->getMainLanguage($jsonLD);
+        if ($language === null) {
+            $language = $mainLanguage;
+        }
+
+        // @replay_i18n For old projections the name is untranslated and just a string.
+        // This needs to be upgraded to an object with languages and translation.
+        // When a full replay is done this code becomes obsolete.
+        // @see https://jira.uitdatabank.be/browse/III-2201
+        if (isset($jsonLD->name) && is_string($jsonLD->name)) {
+            $previousTitle = $jsonLD->name;
+            $jsonLD->name = new \StdClass();
+            $jsonLD->name->{$mainLanguage->getCode()} = $previousTitle;
+        }
+
+        $jsonLD->name->{$language->getCode()} = $title->toNative();
+
+        return $document->withBody($jsonLD);
     }
 
     /**

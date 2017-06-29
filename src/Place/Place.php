@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -57,18 +59,30 @@ use ValueObjects\StringLiteral\StringLiteral;
 class Place extends Offer implements UpdateableWithCdbXmlInterface
 {
     /**
-     * The actor id.
-     *
      * @var string
      */
-    protected $actorId;
+    private $placeId;
+
+    /**
+     * @var Language
+     */
+    private $mainLanguage;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // For now the main language is hardcoded as nl.
+        // In the future it should be set dynamically on create.
+        $this->mainLanguage = new Language('nl');
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
     {
-        return $this->actorId;
+        return $this->placeId;
     }
 
     /**
@@ -117,7 +131,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
-        $this->actorId = $placeCreated->getPlaceId();
+        $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
@@ -128,7 +142,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function updateFacilities(array $facilities)
     {
-        $this->apply(new FacilitiesUpdated($this->actorId, $facilities));
+        $this->apply(new FacilitiesUpdated($this->placeId, $facilities));
     }
 
     /**
@@ -147,7 +161,31 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         CalendarInterface $calendar,
         Theme $theme = null
     ) {
-        $this->apply(new MajorInfoUpdated($this->actorId, $title, $eventType, $address, $calendar, $theme));
+        $this->apply(
+            new MajorInfoUpdated(
+                $this->placeId,
+                $title,
+                $eventType,
+                $address,
+                $calendar,
+                $theme
+            )
+        );
+    }
+
+    /**
+     * @param Address $address
+     * @param Language $language
+     */
+    public function updateAddress(Address $address, Language $language)
+    {
+        if ($language->getCode() === $this->mainLanguage->getCode()) {
+            $event = new AddressUpdated($this->placeId, $address);
+        } else {
+            $event = new AddressTranslated($this->placeId, $address, $language);
+        }
+
+        $this->apply($event);
     }
 
     /**
@@ -160,7 +198,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         // changes. Various projectors expect GeoCoordinatesUpdated after
         // MajorInfoUpdated and PlaceUpdatedFromUDB2, even if the address
         // and thus the coordinates haven't actually changed.
-        $this->apply(new GeoCoordinatesUpdated($this->actorId, $coordinates));
+        $this->apply(new GeoCoordinatesUpdated($this->placeId, $coordinates));
     }
 
     /**
@@ -198,7 +236,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     public function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImported
     ) {
-        $this->actorId = $placeImported->getActorId();
+        $this->placeId = $placeImported->getActorId();
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeImported->getCdbXmlNamespaceUri(),
@@ -233,7 +271,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
         $this->apply(
             new PlaceUpdatedFromUDB2(
-                $this->actorId,
+                $this->placeId,
                 $cdbXml,
                 $cdbXmlNamespaceUri
             )
@@ -246,7 +284,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createLabelAddedEvent(Label $label)
     {
-        return new LabelAdded($this->actorId, $label);
+        return new LabelAdded($this->placeId, $label);
     }
 
     /**
@@ -255,24 +293,24 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createLabelRemovedEvent(Label $label)
     {
-        return new LabelRemoved($this->actorId, $label);
+        return new LabelRemoved($this->placeId, $label);
     }
 
     protected function createImageAddedEvent(Image $image)
     {
-        return new ImageAdded($this->actorId, $image);
+        return new ImageAdded($this->placeId, $image);
     }
 
     protected function createImageRemovedEvent(Image $image)
     {
-        return new ImageRemoved($this->actorId, $image);
+        return new ImageRemoved($this->placeId, $image);
     }
 
     protected function createImageUpdatedEvent(
         AbstractUpdateImage $updateImageCommand
     ) {
         return new ImageUpdated(
-            $this->actorId,
+            $this->placeId,
             $updateImageCommand->getMediaObjectId(),
             $updateImageCommand->getDescription(),
             $updateImageCommand->getCopyrightHolder()
@@ -281,7 +319,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     protected function createMainImageSelectedEvent(Image $image)
     {
-        return new MainImageSelected($this->actorId, $image);
+        return new MainImageSelected($this->placeId, $image);
     }
 
     /**
@@ -291,7 +329,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
     {
-        return new TitleTranslated($this->actorId, $language, $title);
+        return new TitleTranslated($this->placeId, $language, $title);
     }
 
     /**
@@ -301,7 +339,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
     {
-        return new DescriptionTranslated($this->actorId, $language, $description);
+        return new DescriptionTranslated($this->placeId, $language, $description);
     }
 
     /**
@@ -310,7 +348,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createDescriptionUpdatedEvent($description)
     {
-        return new DescriptionUpdated($this->actorId, $description);
+        return new DescriptionUpdated($this->placeId, $description);
     }
 
     /**
@@ -319,7 +357,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
     {
-        return new TypicalAgeRangeUpdated($this->actorId, $typicalAgeRange);
+        return new TypicalAgeRangeUpdated($this->placeId, $typicalAgeRange);
     }
 
     /**
@@ -327,7 +365,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createTypicalAgeRangeDeletedEvent()
     {
-        return new TypicalAgeRangeDeleted($this->actorId);
+        return new TypicalAgeRangeDeleted($this->placeId);
     }
 
     /**
@@ -336,7 +374,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createOrganizerUpdatedEvent($organizerId)
     {
-        return new OrganizerUpdated($this->actorId, $organizerId);
+        return new OrganizerUpdated($this->placeId, $organizerId);
     }
 
     /**
@@ -345,7 +383,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createOrganizerDeletedEvent($organizerId)
     {
-        return new OrganizerDeleted($this->actorId, $organizerId);
+        return new OrganizerDeleted($this->placeId, $organizerId);
     }
 
     /**
@@ -354,7 +392,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
     {
-        return new ContactPointUpdated($this->actorId, $contactPoint);
+        return new ContactPointUpdated($this->placeId, $contactPoint);
     }
 
     /**
@@ -363,7 +401,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createBookingInfoUpdatedEvent(BookingInfo $bookingInfo)
     {
-        return new BookingInfoUpdated($this->actorId, $bookingInfo);
+        return new BookingInfoUpdated($this->placeId, $bookingInfo);
     }
 
     /**
@@ -372,7 +410,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createPriceInfoUpdatedEvent(PriceInfo $priceInfo)
     {
-        return new PriceInfoUpdated($this->actorId, $priceInfo);
+        return new PriceInfoUpdated($this->placeId, $priceInfo);
     }
 
     /**
@@ -380,7 +418,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createOfferDeletedEvent()
     {
-        return new PlaceDeleted($this->actorId);
+        return new PlaceDeleted($this->placeId);
     }
 
     /**
@@ -388,7 +426,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createPublishedEvent(\DateTimeInterface $publicationDate)
     {
-        return new Published($this->actorId, $publicationDate);
+        return new Published($this->placeId, $publicationDate);
     }
 
     /**
@@ -396,7 +434,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createApprovedEvent()
     {
-        return new Approved($this->actorId);
+        return new Approved($this->placeId);
     }
 
     /**
@@ -404,7 +442,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createRejectedEvent(StringLiteral $reason)
     {
-        return new Rejected($this->actorId, $reason);
+        return new Rejected($this->placeId, $reason);
     }
 
     /**
@@ -412,7 +450,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createFlaggedAsDuplicate()
     {
-        return new FlaggedAsDuplicate($this->actorId);
+        return new FlaggedAsDuplicate($this->placeId);
     }
 
     /**
@@ -420,7 +458,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createFlaggedAsInappropriate()
     {
-        return new FlaggedAsInappropriate($this->actorId);
+        return new FlaggedAsInappropriate($this->placeId);
     }
 
     /**
@@ -429,7 +467,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createImagesImportedFromUDB2(ImageCollection $images)
     {
-        return new ImagesImportedFromUDB2($this->actorId, $images);
+        return new ImagesImportedFromUDB2($this->placeId, $images);
     }
 
     /**
@@ -438,6 +476,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function createImagesUpdatedFromUDB2(ImageCollection $images)
     {
-        return new ImagesUpdatedFromUDB2($this->actorId, $images);
+        return new ImagesUpdatedFromUDB2($this->placeId, $images);
     }
 }

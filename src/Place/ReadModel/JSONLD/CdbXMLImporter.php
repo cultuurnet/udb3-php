@@ -113,7 +113,11 @@ class CdbXMLImporter
                 $address = $address->getPhysicalAddress();
 
                 if ($address) {
-                    $jsonLD->address = array(
+                    if (!isset($jsonLD->address)) {
+                        $jsonLD->address = new \stdClass();
+                    }
+
+                    $jsonLD->address->nl = array(
                         'addressCountry' => $address->getCountry(),
                         'addressLocality' => $address->getCity(),
                         'postalCode' => $address->getZip(),

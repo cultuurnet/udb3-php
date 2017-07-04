@@ -554,13 +554,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected function applyUdb2ImagesEvent(AbstractImagesEvent $imagesEvent)
     {
         $newMainImage = $imagesEvent->getImages()->getMain();
-
-        $dutchImagesList = array_filter(
-            $imagesEvent->getImages()->toArray(),
-            function (Image $image) {
-                return $image->getLanguage()->getCode() === 'nl';
-            }
-        );
+        $dutchImagesList = $imagesEvent->getImages()->toArray();
         $translatedImagesList = array_filter(
             $this->images->toArray(),
             function (Image $image) {

@@ -128,7 +128,7 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
                         Url::fromNative('http://du.de/place/c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d'),
                         'c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d',
                         OfferType::PLACE()
-                    )
+                    ),
                 ]
             ),
             new Integer(1820)
@@ -223,7 +223,7 @@ class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
                         Url::fromNative('http://www.omd.de/places/c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d'),
                         'c2a8a22d-e4c5-41a9-bbee-0d7f6e5e194d',
                         OfferType::PLACE()
-                    )
+                    ),
                 ]
             ),
             new Integer(1820)

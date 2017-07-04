@@ -39,7 +39,7 @@ class WebsiteUpdatedTest extends \PHPUnit_Framework_TestCase
 
         $this->websiteUpdatedAsArray = [
             'organizer_id' =>  $this->organizerId,
-            'website' => (string) $this->website
+            'website' => (string) $this->website,
         ];
     }
 

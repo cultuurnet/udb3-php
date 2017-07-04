@@ -210,12 +210,14 @@ trait OfferCommandHandlerTestTrait
                     $copyrightHolder
                 )
             )
-            ->then([new $eventClass(
+            ->then([
+                new $eventClass(
                 $itemId,
                 $mediaObjectId,
                 $description,
                 $copyrightHolder
-            )]);
+                ),
+            ]);
     }
 
     /**
@@ -234,7 +236,7 @@ trait OfferCommandHandlerTestTrait
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new $organizerUpdatedClass($id, $organizerId)
+                    new $organizerUpdatedClass($id, $organizerId),
                 ]
             )
             ->when(

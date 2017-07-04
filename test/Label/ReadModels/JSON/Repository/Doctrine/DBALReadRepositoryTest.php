@@ -227,7 +227,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
         $this->assertEquals(
             [
                 $this->entityByName,
-                $this->entityPrivateAccess
+                $this->entityPrivateAccess,
             ],
             $entities
         );
@@ -379,7 +379,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
             $this->labelRolesTableName->toNative(),
             [
                 LabelRolesSchemaConfigurator::LABEL_ID_COLUMN => $labelId->toNative(),
-                LabelRolesSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                LabelRolesSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }
@@ -394,7 +394,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
             $this->userRolesTableName->toNative(),
             [
                 PermissionsSchemaConfigurator::USER_ID_COLUMN => $userId->toNative(),
-                PermissionsSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                PermissionsSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }

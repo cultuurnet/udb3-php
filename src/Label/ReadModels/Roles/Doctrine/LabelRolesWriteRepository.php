@@ -42,7 +42,7 @@ class LabelRolesWriteRepository implements LabelRolesWriteRepositoryInterface
             $this->labelRolesTableName,
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }
@@ -57,7 +57,7 @@ class LabelRolesWriteRepository implements LabelRolesWriteRepositoryInterface
             $this->labelRolesTableName,
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }
@@ -70,7 +70,7 @@ class LabelRolesWriteRepository implements LabelRolesWriteRepositoryInterface
         $this->connection->delete(
             $this->labelRolesTableName,
             [
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }

@@ -137,7 +137,7 @@ class AbstractBookingInfoEventTest extends \PHPUnit_Framework_TestCase
                         'name' => 'name',
                         'description' => 'description',
                         'availabilityStarts' => '01/01/2016',
-                        'availabilityEnds' => '31/01/2016'
+                        'availabilityEnds' => '31/01/2016',
                     ],
                 ],
                 new MockAbstractBookingInfoEvent(

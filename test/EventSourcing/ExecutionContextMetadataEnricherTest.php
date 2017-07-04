@@ -45,7 +45,7 @@ class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
         $context = new Metadata(
             [
                 'user_id' => 1,
-                'user_nick' => 'admin'
+                'user_nick' => 'admin',
             ]
         );
 
@@ -61,7 +61,7 @@ class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
             [
                 'foo' => 'bar',
                 'user_id' => 1,
-                'user_nick' => 'admin'
+                'user_nick' => 'admin',
             ],
             $enrichedMetadata->serialize()
         );

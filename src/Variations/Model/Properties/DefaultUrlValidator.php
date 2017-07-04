@@ -61,9 +61,7 @@ class DefaultUrlValidator implements UrlValidator
             $this->entityServices[$offerType->toNative()]->getEntity($offerId);
         } catch (EntityNotFoundException $e) {
             throw new ValidationException(
-                [
-                    "Unable to load {$offerType}. The specified URL does not seem to point to an existing {$offerType}."
-                ]
+                ["Unable to load {$offerType}. The specified URL does not seem to point to an existing {$offerType}."]
             );
         }
     }

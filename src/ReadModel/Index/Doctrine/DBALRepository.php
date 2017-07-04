@@ -106,7 +106,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'zip' => ':zip',
                             'created' => ':created',
                             'updated' => ':created',
-                            'owning_domain' => ':owning_domain'
+                            'owning_domain' => ':owning_domain',
                         ]
                     );
 

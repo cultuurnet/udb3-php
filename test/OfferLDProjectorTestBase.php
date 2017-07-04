@@ -151,8 +151,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'name' => $name,
                 'description' => $description,
                 'availabilityStarts' => $availabilityStarts,
-                'availabilityEnds' => $availabilityEnds
-            ]
+                'availabilityEnds' => $availabilityEnds,
+            ],
         ];
 
         $body = $this->project($bookingInfoUpdated, $id);
@@ -183,7 +183,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'phone' => $phones,
                 'email' => $emails,
                 'url' => $urls,
-            ]
+            ],
         ];
 
         $this->assertEquals(
@@ -220,7 +220,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'nl' => 'Foo',
             ],
             'description' => (object) [
-                'nl' => $description
+                'nl' => $description,
             ],
             'languages' => ['nl'],
             'completedLanguages' => ['nl'],
@@ -262,8 +262,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'description' => (string) $description,
                     'copyrightHolder' => (string) $copyrightHolder,
                     'inLanguage' => 'en',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $body = $this->project($imageAdded, $id);
@@ -294,8 +294,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                         'description' => 'olddescription',
                         'copyrightHolder' => 'oldcopyrightHolder',
                         'inLanguage' => 'en',
-                    ]
-                ]
+                    ],
+                ],
             ])
         );
         $this->documentRepository->save($initialDocument);
@@ -310,8 +310,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'description' => (string) $description,
                     'copyrightHolder' => (string) $copyrightHolder,
                     'inLanguage' => 'en',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $body = $this->project($imageUpdated, $id);
@@ -331,13 +331,13 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             $id,
             json_encode([
-                'typicalAgeRange' => '12-14'
+                'typicalAgeRange' => '12-14',
             ])
         );
         $this->documentRepository->save($initialDocument);
 
         $expectedBody = (object)[
-            'typicalAgeRange' => '-18'
+            'typicalAgeRange' => '-18',
         ];
 
         $body = $this->project($typicalAgeRangeUpdated, $id);
@@ -357,7 +357,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             $id,
             json_encode([
-                'typicalAgeRange' => '-18'
+                'typicalAgeRange' => '-18',
             ])
         );
         $this->documentRepository->save($initialDocument);

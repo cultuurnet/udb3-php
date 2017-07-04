@@ -227,7 +227,7 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
     {
         return json_encode(
             [
-                '@id' => 'http://example.com/event/' . $eventId
+                '@id' => 'http://example.com/event/' . $eventId,
             ]
         );
     }
@@ -239,7 +239,7 @@ class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
                 '@id' => 'http://example.com/variations/' . $variationId,
                 'sameAs' => [
                     'http://example.com/event/' . $eventId,
-                ]
+                ],
             ]
         );
     }

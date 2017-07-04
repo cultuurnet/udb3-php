@@ -77,7 +77,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => (string) $permission
+                SchemaConfigurator::PERMISSION_COLUMN => (string) $permission,
             )
         );
     }
@@ -91,7 +91,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => (string) $permission
+                SchemaConfigurator::PERMISSION_COLUMN => (string) $permission,
             )
         );
     }
@@ -105,7 +105,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::USER_ID_COLUMN => (string) $userId
+                SchemaConfigurator::USER_ID_COLUMN => (string) $userId,
             )
         );
     }
@@ -119,7 +119,7 @@ class UserPermissionsWriteRepository implements UserPermissionsWriteRepositoryIn
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::USER_ID_COLUMN => (string) $userId,
-                SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId
+                SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
             )
         );
     }

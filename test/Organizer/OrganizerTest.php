@@ -120,7 +120,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         [],
                         [],
                         []
-                    )
+                    ),
                 ]
             )
             ->when(
@@ -363,7 +363,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         $this->id,
                         new Title('STUK'),
                         new Language('fr')
-                    )
+                    ),
                 ]
             );
     }

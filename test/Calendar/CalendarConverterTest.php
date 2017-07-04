@@ -59,7 +59,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
                 new Timestamp(
                     new DateTime('2017-01-24T08:00:00.000000+0000'),
                     new DateTime('2017-01-24T18:00:00.000000+0000')
-                )
+                ),
             ]
         );
 
@@ -522,7 +522,8 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @feature calendar_udb3_update.feature
-     * @scenario event with multiple timestamps (MIX): start and enddate on the same day, enddate one day later, enddate more than one day later
+     * @scenario event with multiple timestamps (MIX): start and enddate on the same day, enddate one day later,
+     *  enddate more than one day later
      * @test
      */
     public function it_converts_a_calendar_with_multiple_timestamp_of_various_duration_as_multiple_indexed_cdb_timestamps()
@@ -600,7 +601,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
                 new Timestamp(
                     new DateTime('2017-05-25T00:00:00+02:00'),
                     new DateTime('2017-05-25T23:59:00+02:00')
-                )
+                ),
             ]
         );
 

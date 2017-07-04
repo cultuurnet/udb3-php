@@ -205,11 +205,11 @@ class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ->withConsecutive(
                 [
                     $this->offerIdentifiers[1],
-                    $label
+                    $label,
                 ],
                 [
                     $this->offerIdentifiers[2],
-                    $label
+                    $label,
                 ]
             );
     }

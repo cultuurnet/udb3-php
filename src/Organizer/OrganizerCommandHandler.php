@@ -71,7 +71,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             UpdateContactPoint::class => 'updateContactPoint',
             DeleteOrganizer::class => 'deleteOrganizer',
             AddLabel::class => 'addLabel',
-            RemoveLabel::class => 'removeLabel'
+            RemoveLabel::class => 'removeLabel',
         ];
     }
 

@@ -861,7 +861,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         } catch (EntityNotFoundException $e) {
             // In case the place can not be found at the moment, just add its ID
             return array(
-                '@id' => $this->organizerService->iri($organizerId)
+                '@id' => $this->organizerService->iri($organizerId),
             );
         }
     }

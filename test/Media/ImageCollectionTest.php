@@ -40,7 +40,7 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
             new UUID(),
             MIMEType::fromSubtype('jpeg'),
             new StringLiteral('my best selfie'),
-            Url::fromNative('http://du.de/images/henk_032.jpg')
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
         ];
 
         $images = new ImageCollection($notImages);

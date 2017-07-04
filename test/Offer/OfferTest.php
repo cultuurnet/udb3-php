@@ -87,7 +87,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new ItemCreated($itemId)
+                new ItemCreated($itemId),
             ])
             ->when(
                 function (Item $item) {
@@ -116,7 +116,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new ItemCreated($itemId)
+                new ItemCreated($itemId),
             ])
             ->when(
                 function (Item $item) {
@@ -165,7 +165,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -179,7 +179,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                 [
                     new ImageAdded('someId', $image),
                     new ImageAdded('someId', $anotherImage),
-                    new MainImageSelected('someId', $anotherImage)
+                    new MainImageSelected('someId', $anotherImage),
                 ]
             );
     }
@@ -211,7 +211,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -229,7 +229,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new ImageAdded('someId', $originalMainImage),
                     new ImageAdded('someId', $oldestImage),
                     new ImageAdded('someId', $newerImage),
-                    new ImageRemoved('someId', $originalMainImage)
+                    new ImageRemoved('someId', $originalMainImage),
                 ]
             );
     }
@@ -245,7 +245,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -281,7 +281,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -312,13 +312,13 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new ItemCreated($itemId)
+                new ItemCreated($itemId),
             ])
             ->when(function (Item $item) use ($now) {
                 $item->publish($now);
             })
             ->then([
-                new Published($itemId, $now)
+                new Published($itemId, $now),
             ]);
     }
 
@@ -333,7 +333,7 @@ class OfferTest extends AggregateRootScenarioTestCase
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
-                new Published($itemId, $now)
+                new Published($itemId, $now),
             ])
             ->when(function (Item $item) use ($now) {
                 $item->publish($now);
@@ -358,7 +358,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given([
                 new ItemCreated($itemId),
                 new Published($itemId, $now),
-                new FlaggedAsDuplicate($itemId)
+                new FlaggedAsDuplicate($itemId),
             ])
             ->when(function (Item $item) use ($now) {
                 $item->publish($now);
@@ -379,7 +379,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -389,7 +389,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Approved($itemId)
+                    new Approved($itemId),
                 ]
             );
     }
@@ -407,7 +407,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -418,7 +418,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Approved($itemId)
+                    new Approved($itemId),
                 ]
             );
     }
@@ -438,7 +438,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             )
             ->when(
@@ -463,7 +463,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -474,7 +474,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             );
     }
@@ -495,7 +495,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             )
             ->when(
@@ -520,7 +520,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -530,7 +530,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             );
     }
@@ -548,7 +548,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -558,7 +558,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new FlaggedAsDuplicate($itemId)
+                    new FlaggedAsDuplicate($itemId),
                 ]
             );
     }
@@ -578,7 +578,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new FlaggedAsDuplicate($itemId)
+                    new FlaggedAsDuplicate($itemId),
                 ]
             )
             ->when(
@@ -602,7 +602,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -612,7 +612,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new FlaggedAsInappropriate($itemId)
+                    new FlaggedAsInappropriate($itemId),
                 ]
             );
     }
@@ -632,7 +632,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new FlaggedAsInappropriate($itemId)
+                    new FlaggedAsInappropriate($itemId),
                 ]
             )
             ->when(
@@ -658,7 +658,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Approved($itemId)
+                    new Approved($itemId),
                 ]
             )
             ->when(
@@ -767,7 +767,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                 new CopyrightHolder('Dirk Dirkingn'),
                 Url::fromNative('http://foo.bar/media/episch_panorama.jpg'),
                 new Language('nl')
-            )
+            ),
         ]);
 
         $this->scenario
@@ -827,8 +827,8 @@ class OfferTest extends AggregateRootScenarioTestCase
         return [
             'single image' => [
                 'mainImage' => $image,
-                'imageCollection' => ImageCollection::fromArray([$image])
-            ]
+                'imageCollection' => ImageCollection::fromArray([$image]),
+            ],
         ];
     }
 }

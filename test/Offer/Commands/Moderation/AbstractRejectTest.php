@@ -26,7 +26,7 @@ class AbstractRejectTest extends AbstractModerationCommandTestBase
             AbstractReject::class,
             [
                 'e1d026e2-d158-40e9-b82a-dfcd62de2a77',
-                $reason
+                $reason,
             ]
         );
 

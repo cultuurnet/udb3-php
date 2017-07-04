@@ -132,7 +132,7 @@ class Image implements SerializableInterface
             'description' => (string) $this->getDescription(),
             'copyright_holder' => (string) $this->getCopyrightHolder(),
             'source_location' => (string) $this->getSourceLocation(),
-            'language' => (string) $this->getLanguage()
+            'language' => (string) $this->getLanguage(),
         ];
     }
 }

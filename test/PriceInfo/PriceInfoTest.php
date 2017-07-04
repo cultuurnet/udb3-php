@@ -34,7 +34,7 @@ class PriceInfoTest extends \PHPUnit_Framework_TestCase
                 new StringLiteral('Werkloze dodo kwekers'),
                 new Price(0),
                 Currency::fromNative('EUR')
-            )
+            ),
         ];
 
         $this->priceInfo = (new PriceInfo($this->basePrice))

@@ -19,7 +19,7 @@ class DescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
                     'event-123',
                     'description-456'
                 ),
-            ]
+            ],
         ];
     }
 

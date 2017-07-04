@@ -88,7 +88,7 @@ class RoleRenamedTest extends \PHPUnit_Framework_TestCase
     {
         return [
             'uuid' => $this->roleRenamed->getUuid()->toNative(),
-            'name' => $this->roleRenamed->getName()->toNative()
+            'name' => $this->roleRenamed->getName()->toNative(),
         ];
     }
 }

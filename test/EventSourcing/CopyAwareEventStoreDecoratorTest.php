@@ -59,7 +59,7 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
         $expectedEventStream = new DomainEventStream([
             $parentFirstEventMessage,
             $parentOtherEventMessage,
-            $aggregateOldestEventMessage
+            $aggregateOldestEventMessage,
         ]);
 
         $this->eventStore->method('load')
@@ -88,7 +88,7 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
         $expectedEventStream = new DomainEventStream([
             $parentFirstEventMessage,
             $parentOtherEventMessage,
-            $aggregateOldestEventMessage
+            $aggregateOldestEventMessage,
         ]);
 
         $this->eventStore->method('load')
@@ -118,7 +118,7 @@ class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             $parentFirstEventMessage,
             $parentJumpedEventMessage,
             $parentOldestEventMessage,
-            $aggregateOldestEventMessage
+            $aggregateOldestEventMessage,
         ]);
 
         $this->eventStore->method('load')

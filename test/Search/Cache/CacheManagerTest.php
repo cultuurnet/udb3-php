@@ -162,7 +162,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
                         'city:leuven',
                         new Label('test-3')
                     )
-                )
+                ),
             ],
         ];
     }

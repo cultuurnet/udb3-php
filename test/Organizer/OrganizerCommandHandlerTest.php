@@ -126,12 +126,14 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->organizerCreated = new OrganizerCreated(
             new UUID(),
             new Title('Organizer Title'),
-            [new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )],
+            [
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('9630'),
+                    new Locality('Zottegem'),
+                    Country::fromNative('BE')
+                ),
+            ],
             ['phone'],
             ['email'],
             ['url']
@@ -271,7 +273,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                 '0123456789',
             ],
             [
-                'info@hetdepot.be'
+                'info@hetdepot.be',
             ]
         );
 
@@ -340,7 +342,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $label)
+                new LabelAdded($organizerId, $label),
             ])
             ->when(new AddLabel($organizerId, $label))
             ->then([]);
@@ -358,7 +360,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $label)
+                new LabelAdded($organizerId, $label),
             ])
             ->when(new RemoveLabel($organizerId, $label))
             ->then([new LabelRemoved($organizerId, $label)]);
@@ -376,7 +378,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $label)
+                new LabelAdded($organizerId, $label),
             ])
             ->when(new RemoveLabel($organizerId, $label))
             ->then([new LabelRemoved($organizerId, $label)]);
@@ -419,7 +421,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new LabelAdded($organizerId, $labelFoo),
                 new LabelAdded($organizerId, $labelBar),
                 new LabelRemoved($organizerId, $labelFoo),
-                new LabelRemoved($organizerId, $labelBar)
+                new LabelRemoved($organizerId, $labelBar),
             ]);
     }
 

@@ -96,8 +96,8 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                         new CopyrightHolder('Dirk Dirkington'),
                         Url::fromNative('http://foo.bar/media/my_pic.jpg'),
                         new Language('en')
-                    )
-                ]
+                    ),
+                ],
             ],
             [
                 'updatePriceInfo',
@@ -108,9 +108,9 @@ class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
                             Price::fromFloat(10.5),
                             Currency::fromNative('EUR')
                         )
-                    )
-                ]
-            ]
+                    ),
+                ],
+            ],
         ];
     }
 }

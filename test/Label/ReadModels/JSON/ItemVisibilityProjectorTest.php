@@ -146,7 +146,7 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 RelationType::ORGANIZER(),
-            ]
+            ],
         ];
     }
 

@@ -101,7 +101,7 @@ class OpeningHour implements SerializableInterface
         return [
             'opens' => $this->opens->toNativeString(),
             'closes' => $this->closes->toNativeString(),
-            'dayOfWeek' => $this->dayOfWeekCollection->serialize()
+            'dayOfWeek' => $this->dayOfWeekCollection->serialize(),
         ];
     }
 }

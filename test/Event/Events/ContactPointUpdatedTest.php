@@ -54,7 +54,7 @@ class ContactPointUpdatedTest extends \PHPUnit_Framework_TestCase
                         'url' => [
                             'http://foo.bar',
                             ],
-                    ]
+                    ],
                 ],
                 new ContactPointUpdated(
                     'foo',

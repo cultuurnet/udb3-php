@@ -99,7 +99,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
             OfferAbstractLabelCommand::class,
             [
                 '6a475eb2-04dd-41e3-95d1-225a1cd511f1',
-                new Label('bibliotheekweek')
+                new Label('bibliotheekweek'),
             ]
         );
 

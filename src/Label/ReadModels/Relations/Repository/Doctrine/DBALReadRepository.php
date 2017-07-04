@@ -67,7 +67,7 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
             SchemaConfigurator::LABEL_NAME,
             SchemaConfigurator::RELATION_TYPE,
             SchemaConfigurator::RELATION_ID,
-            SchemaConfigurator::IMPORTED
+            SchemaConfigurator::IMPORTED,
         ];
     }
 }

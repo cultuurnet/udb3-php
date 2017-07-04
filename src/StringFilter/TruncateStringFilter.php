@@ -126,7 +126,7 @@ class TruncateStringFilter implements StringFilterInterface
         if ($this->sentenceFriendly && $hasEndingSymbolInRange === 1) {
             $sentenceTruncated = preg_replace($sentencePattern, "$1".$suffix, $trunc);
             $truncated = Stringy::create($sentenceTruncated, 'UTF-8');
-        } else if ($wordSafe) {
+        } elseif ($wordSafe) {
             $truncated = $stringy->safeTruncate($maxLength, $suffix);
         } else {
             $truncated = $stringy->truncate($maxLength, $suffix);

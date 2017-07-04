@@ -236,7 +236,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
                 '01213456789',
             ],
             [
-                'info@hetdepot.be'
+                'info@hetdepot.be',
             ]
         );
 

@@ -39,7 +39,7 @@ class TitleUpdatedTest extends \PHPUnit_Framework_TestCase
 
         $this->titleUpdatedAsArray = [
             'organizer_id' =>  $this->organizerId,
-            'title' => $this->title->toNative()
+            'title' => $this->title->toNative(),
         ];
     }
 

@@ -139,7 +139,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'bar',
             'title' => 'Test event abc update',
             'created' => '100',
-            'zip' => '3020'
+            'zip' => '3020',
         ] + (array) $expectedData[3];
 
         $expectedData[3] = (object) $expectedData[3];
@@ -174,7 +174,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                 'created' => '100',
                 'zip' => '3020',
                 'owning_domain' => 'udb.be',
-                'entity_iri' => 'http://hello.world/something/blub'
+                'entity_iri' => 'http://hello.world/something/blub',
             ] + (array) $expectedData[5];
 
         $expectedData[5] = (object) $expectedData[5];
@@ -259,7 +259,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     {
         $expectedIds = [
             'abc',
-            '123'
+            '123',
         ];
 
         $this->assertEquals(

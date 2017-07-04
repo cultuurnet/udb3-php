@@ -30,7 +30,7 @@ class PriceDescriptionParserTest extends \PHPUnit_Framework_TestCase
         $expectedPrices = array(
             'Basistarief' => 12.5,
             'Met kinderen' => 20,
-            'Senioren' => 30
+            'Senioren' => 30,
         );
 
         $prices = $this->parser->parse($description);

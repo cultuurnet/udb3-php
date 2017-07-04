@@ -34,8 +34,8 @@ class UpdateContactPointTest extends \PHPUnit_Framework_TestCase
                     'info@company.be',
                 ],
                 [
-                    'www.company.be'
-                ]
+                    'www.company.be',
+                ],
             ]
         );
 

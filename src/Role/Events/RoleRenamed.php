@@ -48,7 +48,7 @@ class RoleRenamed extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-            'name' => $this->name->toNative()
+            'name' => $this->name->toNative(),
         ];
     }
 }

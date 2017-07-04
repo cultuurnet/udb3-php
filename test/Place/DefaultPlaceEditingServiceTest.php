@@ -134,7 +134,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $address,
                     $calendar,
                     $theme
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );
@@ -178,7 +178,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $calendar,
                     $theme,
                     $publicationDate
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );

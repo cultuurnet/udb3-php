@@ -69,7 +69,7 @@ class ResultsTest extends \PHPUnit_Framework_TestCase
         new Results(
             OfferIdentifierCollection::fromArray(
                 [
-                    new IriOfferIdentifier(Url::fromNative('http://du.de/event/1'), '1', OfferType::EVENT())
+                    new IriOfferIdentifier(Url::fromNative('http://du.de/event/1'), '1', OfferType::EVENT()),
                 ]
             ),
             'foo'

@@ -32,7 +32,7 @@ class LabelAddedTest extends \PHPUnit_Framework_TestCase
         $labelAddesAsArray = [
             'organizer_id' => 'organizerId',
             'label' => 'foo',
-            'visibility' => false
+            'visibility' => false,
         ];
 
         $this->assertEquals(

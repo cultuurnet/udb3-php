@@ -57,7 +57,7 @@ class TitleTranslated extends OrganizerEvent
     {
         return parent::serialize() + [
                 'title' => $this->getTitle()->toNative(),
-                'language' => $this->getLanguage()->getCode()
+                'language' => $this->getLanguage()->getCode(),
             ];
     }
 

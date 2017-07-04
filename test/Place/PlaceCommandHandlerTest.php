@@ -207,7 +207,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new LabelAdded($id, new Label('foo'))
+                    new LabelAdded($id, new Label('foo')),
                 ]
             )
             ->when(new RemoveLabel($id, new Label('foo')))
@@ -241,7 +241,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     $this->factorOfferCreated($id),
                     new LabelAdded($id, new Label('foo')),
-                    new LabelRemoved($id, new Label('foo'))
+                    new LabelRemoved($id, new Label('foo')),
                 ]
             )
             ->when(new RemoveLabel($id, new Label('foo')))
@@ -260,13 +260,13 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    $this->factorOfferCreated($id)
+                    $this->factorOfferCreated($id),
                 ]
             )
             ->when(new TranslateTitle($id, $language, $title))
             ->then(
                 [
-                    new TitleTranslated($id, $language, $title)
+                    new TitleTranslated($id, $language, $title),
                 ]
             );
     }

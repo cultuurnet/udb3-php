@@ -177,7 +177,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
@@ -240,7 +240,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
@@ -296,7 +296,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
@@ -309,7 +309,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $metadata = new Metadata(
             [
                 'user_id' => '1',
-                'user_nick' => 'Tester'
+                'user_nick' => 'Tester',
             ]
         );
 
@@ -346,7 +346,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
@@ -374,7 +374,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $expectedJsonLD->languages = ['nl'];
         $expectedJsonLD->completedLanguages = ['nl'];
@@ -416,7 +416,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
@@ -450,7 +450,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $expectedJsonLD->languages = ['nl', 'fr'];
         $expectedJsonLD->completedLanguages = ['nl'];
@@ -514,7 +514,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $samples = array(
             ['place_with_short_description.cdbxml.xml', 'Korte beschrijving.'],
             ['place_with_long_description.cdbxml.xml', 'Lange beschrijving.'],
-            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.\n\nLange beschrijving."]
+            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.\n\nLange beschrijving."],
         );
 
         return $samples;
@@ -570,8 +570,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      * @param string $fileName
      * @param string $expectedDescription
      */
-    public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description($fileName, $expectedDescription)
-    {
+    public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description(
+        $fileName,
+        $expectedDescription
+    ) {
         $event = $this->placeImportedFromUDB2($fileName);
 
         $body = $this->project($event, $event->getActorId());
@@ -611,7 +613,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $initialJsonLd->languages = ['nl', 'fr'];
         $initialJsonLd->completedLanguages = ['nl'];
@@ -681,7 +683,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
@@ -714,7 +716,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
@@ -750,7 +752,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                             'id' => 'facility1',
                             'label' => 'facility label',
                             'domain' => 'facility',
-                        ]
+                        ],
                     ],
                     'languages' => ['nl'],
                     'completedLanguages' => ['nl'],
@@ -772,7 +774,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                     'id' => 'facility2',
                     'label' => 'facility label2',
                     'domain' => 'facility',
-                ]
+                ],
             ],
             'languages' => ['nl'],
             'completedLanguages' => ['nl'],
@@ -796,7 +798,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                     '@id' => 'http://uitdatabank/place/' . $id,
                     '@type' => 'Place',
                     'name' => [
-                        'nl' => 'Test'
+                        'nl' => 'Test',
                     ],
                     'languages' => ['nl'],
                     'completedLanguages' => ['nl'],
@@ -866,7 +868,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A']
+                'labels' => ['label A'],
             ])
         );
 
@@ -888,7 +890,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A', 'label B', 'label C']
+                'labels' => ['label A', 'label B', 'label C'],
             ])
         );
 
@@ -915,7 +917,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'bar' => 'stool'
+                'bar' => 'stool',
             ])
         );
 

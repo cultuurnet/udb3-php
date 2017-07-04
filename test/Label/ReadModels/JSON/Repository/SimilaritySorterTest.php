@@ -21,15 +21,35 @@ class SimilaritySorterTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $fruits = ['abrikoos', 'kiwi', 'banaan', 'druif', 'appelsien',
-            'mandarijn', 'meloen', 'peer', 'nectarine', 'appel'];
+        $fruits = [
+            'abrikoos',
+            'kiwi',
+            'banaan',
+            'druif',
+            'appelsien',
+            'mandarijn',
+            'meloen',
+            'peer',
+            'nectarine',
+            'appel',
+        ];
 
         foreach ($fruits as $fruit) {
             $this->entities[] = $this->createEntity(new StringLiteral($fruit));
         }
 
-        $expectedFruits = ['peer', 'appel', 'appelsien', 'meloen', 'nectarine',
-            'kiwi', 'druif', 'banaan', 'abrikoos', 'mandarijn'];
+        $expectedFruits = [
+            'peer',
+            'appel',
+            'appelsien',
+            'meloen',
+            'nectarine',
+            'kiwi',
+            'druif',
+            'banaan',
+            'abrikoos',
+            'mandarijn',
+        ];
 
         foreach ($expectedFruits as $expectedFruit) {
             $this->expectedOrder[] = $this->createEntity(

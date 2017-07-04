@@ -110,7 +110,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
             'addressCountry' => $this->countryCode,
             'addressLocality' => $this->locality->toNative(),
             'postalCode' => $this->postalCode->toNative(),
-            'streetAddress' => $this->streetAddress->toNative()
+            'streetAddress' => $this->streetAddress->toNative(),
         ];
     }
 

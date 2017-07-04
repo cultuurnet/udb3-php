@@ -168,7 +168,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with one timestamp: date + timestart, no timeend' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -204,7 +204,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with one timestamp: date + timestart + timeend' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -240,7 +240,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps: dates, no timestart or timeend' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -310,7 +310,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps: dates + timestart, no timeend' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -363,7 +363,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps: dates + timestart + timeend' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -416,7 +416,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps: mixed: dates, with or without timestart/timeend' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -486,7 +486,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps with specific timeformat as one subevent' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -536,7 +536,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps with specific timeformat as multiple subevents' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -617,7 +617,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with multiple timestamps: mixed: dates with or without timestart/timeend and dates with specific timeformat imported as subevent' => [
                 'cdbCalendar' => call_user_func(function () {
@@ -701,7 +701,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
         ];
     }
@@ -744,7 +744,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                     CalendarType::PERIODIC(),
                     new DateTimeImmutable('2017-09-01 00:00:00', $timeZone),
                     new DateTimeImmutable('2017-12-31 00:00:00', $timeZone)
-                )
+                ),
             ],
             'import event with period: datefrom + dateto + weekscheme only openingtimes from' => [
                 'cdbCalendar' => $this->createPeriodListFromXML(
@@ -774,7 +774,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with period: datefrom + dateto + weekscheme openingtimes from + to' => [
                 'cdbCalendar' => $this->createPeriodListFromXML(
@@ -804,7 +804,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import event with period: datefrom + dateto + weekscheme mix openingtimes from + to' => [
                 'cdbCalendar' => $this->createPeriodListFromXML(
@@ -834,7 +834,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
         ];
     }
@@ -874,7 +874,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                 'cdbCalendar' => $this->createPermanentCalendarFromXML(
                     file_get_contents(__DIR__ . '/Calendar/samples/permanent/calendar_udb2_import_example_1501.xml')
                 ),
-                'expectedCalendar' => new Calendar(CalendarType::PERMANENT())
+                'expectedCalendar' => new Calendar(CalendarType::PERMANENT()),
             ],
             'import permanent event with weekscheme only openingtimes from' => [
                 'cdbCalendar' => $this->createPermanentCalendarFromXML(
@@ -904,7 +904,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import permanent event with weekscheme openingtimes from + to' => [
                 'cdbCalendar' => $this->createPermanentCalendarFromXML(
@@ -934,7 +934,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
             'import permanent event with weekscheme mix openingtimes from + to' => [
                 'cdbCalendar' => $this->createPermanentCalendarFromXML(
@@ -964,7 +964,7 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                             )
                         ),
                     ]
-                )
+                ),
             ],
         ];
     }

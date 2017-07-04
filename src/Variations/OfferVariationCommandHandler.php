@@ -70,7 +70,7 @@ class OfferVariationCommandHandler extends CommandHandler implements LoggerAware
             $this->logger->info(
                 'job_info',
                 [
-                    'offer_variation_id' => (string) $deleteEventVariation->getId()
+                    'offer_variation_id' => (string) $deleteEventVariation->getId(),
                 ]
             );
         }

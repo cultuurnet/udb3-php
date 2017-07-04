@@ -55,7 +55,7 @@ class BroadcastingDocumentRepositoryDecorator extends DocumentRepositoryDecorato
                 1,
                 new Metadata(),
                 $event
-            )
+            ),
         ];
 
         $this->eventBus->publish(

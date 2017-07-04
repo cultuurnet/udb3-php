@@ -19,21 +19,21 @@ class OfferUpdateTest extends \PHPUnit_Framework_TestCase
             'some_id',
             json_encode([
                 'name' => [
-                    'nl' => 'heyo!'
+                    'nl' => 'heyo!',
                 ],
                 'terms' => [
                     [
                         'id' => '0.50.4.0.0',
                         'label' => 'concert',
                         'domain' => 'eventtype',
-                    ]
+                    ],
                 ],
                 'openingHours' => [
-                    ['something' => 'that looks like opening hours']
+                    ['something' => 'that looks like opening hours'],
                 ],
                 'calendar' => [
-                    'calendarType' => 'permanent'
-                ]
+                    'calendarType' => 'permanent',
+                ],
             ])
         );
 
@@ -41,19 +41,19 @@ class OfferUpdateTest extends \PHPUnit_Framework_TestCase
             'some_id',
             json_encode([
                 'name' => [
-                    'nl' => 'heyo!'
+                    'nl' => 'heyo!',
                 ],
                 'terms' => [
                     [
                         'id' => '0.50.4.0.0',
                         'label' => 'concert',
                         'domain' => 'eventtype',
-                    ]
+                    ],
                 ],
                 'calendar' => [
-                    'calendarType' => 'permanent'
+                    'calendarType' => 'permanent',
                 ],
-                'calendarType' => 'permanent'
+                'calendarType' => 'permanent',
             ])
         );
 

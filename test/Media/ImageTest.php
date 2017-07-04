@@ -33,7 +33,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             'description' => 'my pic',
             'copyright_holder' => 'Dirk Dirkington',
             'source_location' => 'http://foo.bar/media/my_pic.jpg',
-            'language' => 'en'
+            'language' => 'en',
         ];
 
         $this->assertEquals($expectedSerializedImage, $serializedImage);
@@ -50,7 +50,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             'description' => 'my pic',
             'copyright_holder' => 'Dirk Dirkington',
             'source_location' => 'http://foo.bar/media/my_pic.jpg',
-            'language' => 'en'
+            'language' => 'en',
         ];
         $image = Image::deserialize($serializedData);
         $expectedImage = new Image(
@@ -75,7 +75,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
             'mime_type' => 'image/jpg',
             'description' => 'my pic',
             'copyright_holder' => 'Dirk Dirkington',
-            'source_location' => 'http://foo.bar/media/my_pic.jpg'
+            'source_location' => 'http://foo.bar/media/my_pic.jpg',
         ];
         $image = Image::deserialize($serializedData);
         $expectedImage = new Image(

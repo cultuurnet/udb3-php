@@ -125,7 +125,7 @@ class MediaObjectCreated implements SerializableInterface
             'description' => $this->getDescription()->toNative(),
             'copyright_holder' => $this->getCopyrightHolder()->toNative(),
             'source_location' => (string) $this->getSourceLocation(),
-            'language' => (string) $this->getLanguage()
+            'language' => (string) $this->getLanguage(),
         );
     }
 

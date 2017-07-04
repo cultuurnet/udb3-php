@@ -38,7 +38,7 @@ class WebsiteUpdated extends OrganizerEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'website' => (string) $this->getWebsite()
+                'website' => (string) $this->getWebsite(),
             ];
     }
 

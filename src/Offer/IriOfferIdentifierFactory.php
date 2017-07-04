@@ -48,7 +48,7 @@ class IriOfferIdentifierFactory implements IriOfferIdentifierFactoryInterface
         if (0 === $match) {
             throw new ValidationException(
                 [
-                    'The given URL can not be used. It might not be a cultural event, or no integration is provided with the system the cultural event is located at.'
+                    'The given URL can not be used. It might not be a cultural event, or no integration is provided with the system the cultural event is located at.',
                 ]
             );
         }

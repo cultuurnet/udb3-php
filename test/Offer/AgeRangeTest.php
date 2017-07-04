@@ -162,7 +162,7 @@ class AgeRangeTest extends \PHPUnit_Framework_TestCase
                 'ageRangeString' => '0-Z',
                 'exception' => InvalidAgeRangeException::class,
                 'The "to" age should be a natural number or empty.',
-            ]
+            ],
         ];
     }
 

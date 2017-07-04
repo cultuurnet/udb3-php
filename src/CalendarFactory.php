@@ -26,7 +26,7 @@ class CalendarFactory implements CalendarFactoryInterface
             /** @var \CultureFeed_Cdb_Data_Calendar_Period $period */
             $period = $cdbCalendar->current();
             $startDateString = $period->getDateFrom() . 'T00:00:00';
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        } elseif ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
             /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
             $timestamp = $cdbCalendar->current();
             if ($timestamp->getStartTime()) {
@@ -46,7 +46,7 @@ class CalendarFactory implements CalendarFactoryInterface
             /** @var \CultureFeed_Cdb_Data_Calendar_Period $period */
             $period = $cdbCalendar->current();
             $endDateString = $period->getDateTo() . 'T00:00:00';
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        } elseif ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
             $firstTimestamp = $cdbCalendar->current();
             /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
             $cdbCalendarAsArray = iterator_to_array($cdbCalendar);
@@ -119,7 +119,7 @@ class CalendarFactory implements CalendarFactoryInterface
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
             $period = $cdbCalendar->current();
             $weekSchema = $period->getWeekScheme();
-        } else if ($cdbCalendar instanceof  \CultureFeed_Cdb_Data_Calendar_Permanent) {
+        } elseif ($cdbCalendar instanceof  \CultureFeed_Cdb_Data_Calendar_Permanent) {
             $weekSchema = $cdbCalendar->getWeekScheme();
         }
 
@@ -137,9 +137,9 @@ class CalendarFactory implements CalendarFactoryInterface
         $calendarType = null;
         if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_Permanent) {
             $calendarType = CalendarType::PERMANENT();
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
+        } elseif ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_PeriodList) {
             $calendarType = CalendarType::PERIODIC();
-        } else if ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
+        } elseif ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
             $calendarType = CalendarType::SINGLE();
             if (count($timestamps) > 1) {
                 $calendarType = CalendarType::MULTIPLE();

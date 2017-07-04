@@ -43,7 +43,7 @@ class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
                     Url::fromNative('http://du.de/event/3'),
                     '3',
                     OfferType::EVENT()
-                )
+                ),
             ]
         );
 

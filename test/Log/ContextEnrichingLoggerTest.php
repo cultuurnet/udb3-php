@@ -29,14 +29,14 @@ class ContextEnrichingLoggerTest extends \PHPUnit_Framework_TestCase
                 'test',
                 [
                     'foo' => 'bar',
-                    'job_id' => 1
+                    'job_id' => 1,
                 ]
             );
         $logger->log(
             LogLevel::DEBUG,
             'test',
             [
-                'foo' => 'bar'
+                'foo' => 'bar',
             ]
         );
     }

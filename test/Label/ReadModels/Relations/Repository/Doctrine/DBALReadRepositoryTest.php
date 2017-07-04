@@ -63,7 +63,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
 
         $expectedRelations = [
             $this->relation1,
-            $this->relation2
+            $this->relation2,
         ];
 
         $this->assertEquals($expectedRelations, $offerLabelRelations);

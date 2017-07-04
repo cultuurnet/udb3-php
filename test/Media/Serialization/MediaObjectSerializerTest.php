@@ -58,7 +58,7 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
             'description' => 'my pic',
             'copyrightHolder' => 'Dirk Dirkington',
-            'inLanguage' => 'en'
+            'inLanguage' => 'en',
         ];
 
         $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');
@@ -92,7 +92,7 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
             'description' => 'my pic',
             'copyrightHolder' => 'Dirk Dirkington',
-            'inLanguage' => 'en'
+            'inLanguage' => 'en',
         ];
 
         $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');

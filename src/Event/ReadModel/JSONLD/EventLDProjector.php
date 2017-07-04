@@ -460,7 +460,7 @@ class EventLDProjector extends OfferLDProjector implements
 
         $eventType = $eventCreated->getEventType();
         $jsonLD->terms = [
-            $eventType->toJsonLd()
+            $eventType->toJsonLd(),
         ];
 
         $theme = $eventCreated->getTheme();
@@ -613,12 +613,12 @@ class EventLDProjector extends OfferLDProjector implements
         } catch (EntityNotFoundException $e) {
             // In case the place can not be found at the moment, just add its ID
             return array(
-                '@id' => $this->placeService->iri($placeId)
+                '@id' => $this->placeService->iri($placeId),
             );
         } catch (DocumentGoneException $e) {
             // In case the place can not be found at the moment, just add its ID
             return array(
-                '@id' => $this->placeService->iri($placeId)
+                '@id' => $this->placeService->iri($placeId),
             );
         }
     }

@@ -498,7 +498,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                     'name' => 'Basistarief',
                     'price' => 12.00,
                     'priceCurrency' => 'EUR',
-                ]
+                ],
             ],
             $jsonEvent->priceInfo
         );
@@ -575,22 +575,22 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-06T13:00:00+01:00',
-                    'endDate' => '2017-02-06T16:45:00+01:00'
+                    'endDate' => '2017-02-06T16:45:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-20T13:00:00+01:00',
-                    'endDate' => '2017-02-20T16:45:00+01:00'
+                    'endDate' => '2017-02-20T16:45:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-06T13:00:00+01:00',
-                    'endDate' => '2017-03-06T16:45:00+01:00'
+                    'endDate' => '2017-03-06T16:45:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-20T13:00:00+01:00',
-                    'endDate' => '2017-03-20T16:45:00+01:00'
+                    'endDate' => '2017-03-20T16:45:00+01:00',
                 ],
             ],
             $jsonEvent->subEvent
@@ -612,32 +612,32 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-01-30T13:00:00+01:00',
-                    'endDate' => '2016-01-30T13:00:00+01:00'
+                    'endDate' => '2016-01-30T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-11-30T13:00:00+01:00',
-                    'endDate' => '2016-11-30T17:00:00+01:00'
+                    'endDate' => '2016-11-30T17:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-12-03T00:00:00+01:00',
-                    'endDate' => '2016-12-03T00:00:00+01:00'
+                    'endDate' => '2016-12-03T00:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-12-09T00:00:00+01:00',
-                    'endDate' => '2016-12-09T00:00:00+01:00'
+                    'endDate' => '2016-12-09T00:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-12-30T13:00:00+01:00',
-                    'endDate' => '2016-12-30T13:00:00+01:00'
+                    'endDate' => '2016-12-30T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-11-30T13:00:00+01:00',
-                    'endDate' => '2017-11-30T17:00:00+01:00'
+                    'endDate' => '2017-11-30T17:00:00+01:00',
                 ],
             ],
             $jsonEvent->subEvent
@@ -659,22 +659,22 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-06T13:00:00+01:00',
-                    'endDate' => '2017-02-06T13:00:00+01:00'
+                    'endDate' => '2017-02-06T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-20T13:00:00+01:00',
-                    'endDate' => '2017-02-20T13:00:00+01:00'
+                    'endDate' => '2017-02-20T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-06T13:00:00+01:00',
-                    'endDate' => '2017-03-06T13:00:00+01:00'
+                    'endDate' => '2017-03-06T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-20T13:00:00+01:00',
-                    'endDate' => '2017-03-20T13:00:00+01:00'
+                    'endDate' => '2017-03-20T13:00:00+01:00',
                 ],
             ],
             $jsonEvent->subEvent
@@ -712,18 +712,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'wednesday',
                         'thursday',
                         'friday',
-                        'saturday'
+                        'saturday',
                     ],
                     'opens' => '10:00',
-                    'closes' => '18:00'
+                    'closes' => '18:00',
                 ],
                 [
                     'dayOfWeek' => [
-                        'sunday'
+                        'sunday',
                     ],
                     'opens' => '08:00',
-                    'closes' => '12:00'
-                ]
+                    'closes' => '12:00',
+                ],
             ],
             $jsonEvent->openingHours
         );
@@ -746,18 +746,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'monday',
                         'thursday',
                         'friday',
-                        'saturday'
+                        'saturday',
                     ],
                     'opens' => '20:30',
-                    'closes' => '20:30'
+                    'closes' => '20:30',
                 ],
                 [
                     'dayOfWeek' => [
-                        'sunday'
+                        'sunday',
                     ],
                     'opens' => '16:00',
-                    'closes' => '16:00'
-                ]
+                    'closes' => '16:00',
+                ],
             ],
             $jsonEvent->openingHours
         );
@@ -789,15 +789,15 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'saturday',
                     ],
                     'opens' => '09:30',
-                    'closes' => '11:30'
+                    'closes' => '11:30',
                 ],
                 [
                     'dayOfWeek' => [
-                        'thursday'
+                        'thursday',
                     ],
                     'opens' => '09:00',
-                    'closes' => '17:00'
-                ]
+                    'closes' => '17:00',
+                ],
             ],
             $jsonEvent->openingHours
         );
@@ -885,7 +885,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         return array(
             'merge short description and long description when short description is not repeated in long description for events' => array(
                 'event_with_short_and_long_description.cdbxml.xml',
-                'description.txt'
+                'description.txt',
             ),
             'use long description when there is no short description in UDB2' => array(
                 'event_without_short_description.cdbxml.xml',

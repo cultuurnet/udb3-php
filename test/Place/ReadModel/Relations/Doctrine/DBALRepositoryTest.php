@@ -40,7 +40,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_place_organizer_relation()
     {
         $expectedRelations = [
-            ['place' => 'placeId', 'organizer' => 'organizerId']
+            ['place' => 'placeId', 'organizer' => 'organizerId'],
         ];
         $this->repository->storeRelations('placeId', 'organizerId');
 
@@ -89,7 +89,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             ['place' => 'placeId2', 'organizer' => 'organizerId1'],
             ['place' => 'placeId3', 'organizer' => 'organizerId2'],
             ['place' => 'placeId4', 'organizer' => 'organizerId2'],
-            ['place' => 'placeId5', 'organizer' => 'organizerId3']
+            ['place' => 'placeId5', 'organizer' => 'organizerId3'],
         ];
 
         foreach ($relations as $relation) {

@@ -56,7 +56,7 @@ class DayOfWeekCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 DayOfWeek::WEDNESDAY(),
-                DayOfWeek::FRIDAY()
+                DayOfWeek::FRIDAY(),
             ],
             $daysOfWeekCollection->getDaysOfWeek()
         );

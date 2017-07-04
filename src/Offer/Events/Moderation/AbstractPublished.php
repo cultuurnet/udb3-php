@@ -35,7 +35,7 @@ abstract class AbstractPublished extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-            'publication_date' => $this->publicationDate->format(\DateTime::ATOM)
+            'publication_date' => $this->publicationDate->format(\DateTime::ATOM),
         ];
     }
 

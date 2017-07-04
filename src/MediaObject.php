@@ -133,7 +133,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
             'thumbnail_url' => $this->thumbnailUrl,
             'description' => $this->description,
             'copyright_holder' => $this->copyrightHolder,
-            'internal_id' => $this->internalId
+            'internal_id' => $this->internalId,
         ];
     }
 

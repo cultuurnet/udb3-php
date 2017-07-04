@@ -28,13 +28,13 @@ class EntityIriGeneratorFactoryTest extends \PHPUnit_Framework_TestCase
             [
                 EntityType::EVENT(),
                 'aef8d300-4dfa-48e1-8332-99d279c19b54',
-                'http://hello.world/event/aef8d300-4dfa-48e1-8332-99d279c19b54'
+                'http://hello.world/event/aef8d300-4dfa-48e1-8332-99d279c19b54',
             ],
             [
                 EntityType::PLACE(),
                 '11ac20cb-89a0-4cf2-8f8a-ccdec3417ec2',
-                'http://hello.world/place/11ac20cb-89a0-4cf2-8f8a-ccdec3417ec2'
-            ]
+                'http://hello.world/place/11ac20cb-89a0-4cf2-8f8a-ccdec3417ec2',
+            ],
         ];
     }
 }

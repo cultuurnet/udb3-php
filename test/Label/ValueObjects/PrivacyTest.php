@@ -34,7 +34,7 @@ class PrivacyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 Privacy::PRIVACY_PUBLIC()->getName() => Privacy::PRIVACY_PUBLIC,
-                Privacy::PRIVACY_PRIVATE()->getName() => Privacy::PRIVACY_PRIVATE
+                Privacy::PRIVACY_PRIVATE()->getName() => Privacy::PRIVACY_PRIVATE,
             ],
             $options
         );

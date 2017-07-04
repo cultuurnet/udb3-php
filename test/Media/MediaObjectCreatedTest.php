@@ -49,7 +49,7 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
                     'description' => 'sexy ladies without clothes',
                     'copyright_holder' => 'Bart Ramakers',
                     'source_location' => 'http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png',
-                    'language' => 'en'
+                    'language' => 'en',
                 ],
                 new MediaObjectCreated(
                     new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
@@ -58,8 +58,8 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
                     new StringLiteral('Bart Ramakers'),
                     Url::fromNative('http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
                     new Language('en')
-                )
-            ]
+                ),
+            ],
         ];
     }
 
@@ -73,7 +73,7 @@ class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
             'mime_type' => 'image/png',
             'description' => 'sexy ladies without clothes',
             'copyright_holder' => 'Bart Ramakers',
-            'source_location' => 'http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png'
+            'source_location' => 'http://foo.be/de305d54-75b4-431b-adb2-eb6b9e546014.png',
         ];
 
         $expectedEvent = new MediaObjectCreated(

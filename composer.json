@@ -42,6 +42,7 @@
     "league/period": "^3.3"
   },
   "require-dev": {
+    "escapestudios/symfony2-coding-standard": "~2.0",
     "phpunit/phpunit": "~5.7",
     "squizlabs/php_codesniffer": "2.6.1",
     "phing/phing": "~2.10",

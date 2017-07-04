@@ -26,7 +26,7 @@ class ImagesImportedFromUDB2Test extends \PHPUnit_Framework_TestCase
                 new CopyrightHolder('Dirkinator'),
                 Url::fromNative('http://du.de/media/dsc_00001.jpg'),
                 new Language('en')
-            )
+            ),
         ]);
 
         $event = new ImagesImportedFromUDB2('c6048768-8cbf-483d-a616-c3241e313383', $images);

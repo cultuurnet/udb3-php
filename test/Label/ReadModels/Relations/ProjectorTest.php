@@ -150,7 +150,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     new Label('labelName')
                 ),
                 RelationType::ORGANIZER(),
-            ]
+            ],
         ];
     }
 
@@ -281,7 +281,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                     RelationType::ORGANIZER(),
                     new StringLiteral('123'),
                     false
-                )
+                ),
             ]);
 
         $this->writeRepository->expects($this->once())

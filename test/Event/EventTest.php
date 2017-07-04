@@ -104,7 +104,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected eventId to be a string, received integer');
 
-        $event = Event::create(
+        Event::create(
             101,
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
@@ -151,7 +151,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $newEventId,
                         'foo',
                         $calendar
-                    )
+                    ),
                 ]
             );
     }
@@ -163,7 +163,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -184,7 +184,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -204,7 +204,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -231,7 +231,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace)
+                new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace),
             ])
             ->when(
                 function (Event $event) {
@@ -276,7 +276,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $label
                     ),
-                ]
+                ],
             ],
             'label added by update from udb2' => [
                 $id,
@@ -288,7 +288,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $cdbXmlWithFooKeyword,
                         $ns
                     ),
-                ]
+                ],
             ],
             'label with different casing' => [
                 $id,
@@ -299,8 +299,8 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         new Label('fOO')
                     ),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -325,7 +325,7 @@ class EventTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new LabelRemoved($id, $label)
+                    new LabelRemoved($id, $label),
                 ]
             );
     }
@@ -353,7 +353,7 @@ class EventTest extends AggregateRootScenarioTestCase
                 $label,
                 [
                     $eventImportedFromUdb2,
-                ]
+                ],
             ],
             'label previously removed by an update from udb2' => [
                 $label,
@@ -368,7 +368,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $cdbXml,
                         $ns
                     ),
-                ]
+                ],
             ],
             'label previously removed' => [
                 $label,
@@ -382,8 +382,8 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $label
                     ),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -551,7 +551,7 @@ class EventTest extends AggregateRootScenarioTestCase
     ) {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) use ($audiences) {
@@ -676,7 +676,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     new LabelAdded(
                         $newEventId,
                         $label
-                    )
+                    ),
                 ]
             );
     }
@@ -777,7 +777,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $this->scenario
             ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {

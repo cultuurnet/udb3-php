@@ -41,9 +41,9 @@ class LabelEventRelationTypeResolver implements LabelEventRelationTypeResolverIn
     {
         if ($this->eventTypeSpecification->isSatisfiedBy($labelEvent)) {
             $relationType = RelationType::EVENT();
-        } else if ($this->placeTypeSpecification->isSatisfiedBy($labelEvent)) {
+        } elseif ($this->placeTypeSpecification->isSatisfiedBy($labelEvent)) {
             $relationType = RelationType::PLACE();
-        } else if ($this->organizerTypeSpecification->isSatisfiedBy($labelEvent)) {
+        } elseif ($this->organizerTypeSpecification->isSatisfiedBy($labelEvent)) {
             $relationType = RelationType::ORGANIZER();
         } else {
             $message = $this->createIllegalArgumentMessage($labelEvent);

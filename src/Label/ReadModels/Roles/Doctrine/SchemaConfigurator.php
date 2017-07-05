@@ -46,7 +46,7 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
 
             $labelRolesTable->setPrimaryKey([
                 self::LABEL_ID_COLUMN,
-                self::ROLE_ID_COLUMN
+                self::ROLE_ID_COLUMN,
             ]);
 
             $schemaManager->createTable($labelRolesTable);

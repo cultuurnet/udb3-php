@@ -203,7 +203,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                ]
+                ],
             ],
             'multiple' => [
                 'calendar' => new Calendar(
@@ -215,7 +215,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                ]
+                ],
             ],
             'periodic' => [
                 'calendar' => new Calendar(
@@ -227,7 +227,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                     'calendarType' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                ]
+                ],
             ],
             'permanent' => [
                 'calendar' => new Calendar(
@@ -235,7 +235,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                 ),
                 'jsonld' => [
                     'calendarType' => 'permanent',
-                ]
+                ],
             ],
         ];
     }
@@ -249,7 +249,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             'type' => 'single',
             'startDate' => '2016-03-06T10:00:00',
             'endDate' => '2016-03-13T12:00:00',
-            'timestamps' => []
+            'timestamps' => [],
         ];
 
         $expectedCalendar = new Calendar(
@@ -272,7 +272,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             'type' => 'single',
             'startDate' => '2016-03-06 10:00:00',
             'endDate' => '2016-03-13T12:00:00',
-            'timestamps' => []
+            'timestamps' => [],
         ];
 
         $this->expectException(\InvalidArgumentException::class);
@@ -289,7 +289,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
             'type' => 'single',
             'startDate' => '2016-03-06T10:00:00',
             'endDate' => '2016-03-13 12:00:00',
-            'timestamps' => []
+            'timestamps' => [],
         ];
 
         $this->expectException(\InvalidArgumentException::class);
@@ -315,21 +315,21 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
         return [
             'no dates' => [
                 'calendarData' => [
-                    'type' => 'periodic'
-                ]
+                    'type' => 'periodic',
+                ],
             ],
             'start date missing' => [
                 'calendarData' => [
                     'type' => 'periodic',
                     'endDate' => '2016-03-13T12:00:00',
-                ]
+                ],
             ],
             'end date missing' => [
                 'calendarData' => [
                     'type' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00',
-                ]
-            ]
+                ],
+            ],
         ];
     }
 }

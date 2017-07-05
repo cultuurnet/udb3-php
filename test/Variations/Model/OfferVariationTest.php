@@ -40,7 +40,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
                     new OwnerId('b7159c3d-8ba2-499c-b4ca-01767a95625d'),
                     new Purpose('personal'),
                     new Description('my custom description')
-                )
+                ),
             ],
             $eventVariation
         );
@@ -83,7 +83,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
                 new DescriptionEdited(
                     $id,
                     $description
-                )
+                ),
             ],
             $eventVariation
         );

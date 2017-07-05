@@ -56,7 +56,7 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     'theme' => array(
                         'id' => 'themeid',
                         'label' => 'theme_label',
-                        'domain' => 'theme'
+                        'domain' => 'theme',
                     ),
                     'location' => array(
                         'cdbid' => '395fe7eb-9bac-4647-acae-316b6446a85e',
@@ -65,7 +65,7 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                             'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'Kerkstraat 69'
+                            'streetAddress' => 'Kerkstraat 69',
                         ),
                     ),
                     'calendar' => array(
@@ -74,8 +74,8 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
-                    )
+                        'domain' => 'eventtype',
+                    ),
                 ],
                 new MajorInfoUpdated(
                     'test 456',

@@ -161,7 +161,7 @@ class OrganizerLDProjector implements EventListenerInterface
         $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->name = [
-            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle(),
         ];
 
         $addresses = $organizerCreated->getAddresses();
@@ -215,7 +215,7 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonLD->url = (string) $organizerCreated->getWebsite();
 
         $jsonLD->name = [
-            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle()
+            $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle(),
         ];
 
         $recordedOn = $domainMessage->getRecordedOn()->toString();

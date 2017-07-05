@@ -34,7 +34,7 @@ class VisibilityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 Visibility::VISIBLE()->getName() => Visibility::VISIBLE,
-                Visibility::INVISIBLE()->getName() => Visibility::INVISIBLE
+                Visibility::INVISIBLE()->getName() => Visibility::INVISIBLE,
             ],
             $options
         );

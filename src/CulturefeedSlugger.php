@@ -276,7 +276,7 @@ class CulturefeedSlugger implements SluggerInterface
                 chr(197) . chr(190) => 'z',
                 chr(197) . chr(191) => 's',
                 // Euro Sign
-                chr(226) . chr(130) . chr(172) => 'E'
+                chr(226) . chr(130) . chr(172) => 'E',
             );
         }
 

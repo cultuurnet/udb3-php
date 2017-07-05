@@ -93,7 +93,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
                     new OwnerId('xyz'),
                     new Purpose('personal'),
                     new Description('my personal description')
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );
@@ -126,7 +126,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                new OfferVariationDeleted($variationId)
+                new OfferVariationDeleted($variationId),
             ],
             $events
         );

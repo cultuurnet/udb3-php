@@ -139,7 +139,7 @@ class BookingInfo implements JsonLdSerializableInterface
           'name' => $this->name,
           'description' => $this->description,
           'availabilityStarts' => $this->availabilityStarts,
-          'availabilityEnds' => $this->availabilityEnds
+          'availabilityEnds' => $this->availabilityEnds,
         ];
     }
 

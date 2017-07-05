@@ -1,20 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\OfferLDProjectorTestTrait.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -158,8 +151,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'name' => $name,
                 'description' => $description,
                 'availabilityStarts' => $availabilityStarts,
-                'availabilityEnds' => $availabilityEnds
-            ]
+                'availabilityEnds' => $availabilityEnds,
+            ],
         ];
 
         $body = $this->project($bookingInfoUpdated, $id);
@@ -190,7 +183,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'phone' => $phones,
                 'email' => $emails,
                 'url' => $urls,
-            ]
+            ],
         ];
 
         $this->assertEquals(
@@ -227,7 +220,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'nl' => 'Foo',
             ],
             'description' => (object) [
-                'nl' => $description
+                'nl' => $description,
             ],
             'languages' => ['nl'],
             'completedLanguages' => ['nl'],
@@ -249,8 +242,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $copyrightHolder = new CopyrightHolder('Dirk Dirkington');
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
+        $language = new Language('en');
 
-        $image = new Image($imageId, $type, $description, $copyrightHolder, $location);
+        $image = new Image($imageId, $type, $description, $copyrightHolder, $location, $language);
         $eventClass = $this->getEventClass('ImageAdded');
         $imageAdded = new $eventClass($id, $image);
 
@@ -266,9 +260,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'description' => (string) $description,
-                    'copyrightHolder' => (string) $copyrightHolder
-                ]
-            ]
+                    'copyrightHolder' => (string) $copyrightHolder,
+                    'inLanguage' => 'en',
+                ],
+            ],
         ];
 
         $body = $this->project($imageAdded, $id);
@@ -284,10 +279,6 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
         $description = StringLiteral::fromNative('Some description.');
         $copyrightHolder = StringLiteral::fromNative('Dirk Dirkington');
-        $type = new MIMEType('image/png');
-        $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');
-
-        $mediaObject = MediaObject::create($imageId, $type, $description, $copyrightHolder, $location);
         $eventClass = $this->getEventClass('ImageUpdated');
         $imageUpdated = new $eventClass($id, $imageId, $description, $copyrightHolder);
 
@@ -301,9 +292,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'olddescription',
-                        'copyrightHolder' => 'oldcopyrightHolder'
-                    ]
-                ]
+                        'copyrightHolder' => 'oldcopyrightHolder',
+                        'inLanguage' => 'en',
+                    ],
+                ],
             ])
         );
         $this->documentRepository->save($initialDocument);
@@ -316,9 +308,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'description' => (string) $description,
-                    'copyrightHolder' => (string) $copyrightHolder
-                ]
-            ]
+                    'copyrightHolder' => (string) $copyrightHolder,
+                    'inLanguage' => 'en',
+                ],
+            ],
         ];
 
         $body = $this->project($imageUpdated, $id);
@@ -338,13 +331,13 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             $id,
             json_encode([
-                'typicalAgeRange' => '12-14'
+                'typicalAgeRange' => '12-14',
             ])
         );
         $this->documentRepository->save($initialDocument);
 
         $expectedBody = (object)[
-            'typicalAgeRange' => '-18'
+            'typicalAgeRange' => '-18',
         ];
 
         $body = $this->project($typicalAgeRangeUpdated, $id);
@@ -364,7 +357,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             $id,
             json_encode([
-                'typicalAgeRange' => '-18'
+                'typicalAgeRange' => '-18',
             ])
         );
         $this->documentRepository->save($initialDocument);

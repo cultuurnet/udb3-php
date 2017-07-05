@@ -328,7 +328,7 @@ class CdbXMLImporter
         $themeBlacklist = [
             'Thema onbepaald',
             'Meerder kunstvormen',
-            'Meerdere filmgenres'
+            'Meerdere filmgenres',
         ];
         $categories = array();
         foreach ($event->getCategories() as $category) {

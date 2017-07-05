@@ -30,7 +30,7 @@ abstract class AbstractProjector implements EventListenerInterface
                 $domainMessage->getPayload(),
                 $domainMessage->getMetadata()
             );
-        } else if ($this->isLabelRemoved($payload)) {
+        } elseif ($this->isLabelRemoved($payload)) {
             $this->applyLabelRemoved(
                 $domainMessage->getPayload(),
                 $domainMessage->getMetadata()

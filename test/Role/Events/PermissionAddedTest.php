@@ -52,7 +52,7 @@ class PermissionAddedTest extends \PHPUnit_Framework_TestCase
 
         $expectedArray = [
             'uuid' => $this->uuid->toNative(),
-            'permission' => $this->permission->toNative()
+            'permission' => $this->permission->toNative(),
         ];
 
         $this->assertEquals($expectedArray, $actualArray);
@@ -62,7 +62,7 @@ class PermissionAddedTest extends \PHPUnit_Framework_TestCase
     {
         $data = [
             'uuid' => $this->uuid->toNative(),
-            'permission' => $this->permission->toNative()
+            'permission' => $this->permission->toNative(),
         ];
         $actualEvent = $this->event->deserialize($data);
         $expectedEvent = $this->event;

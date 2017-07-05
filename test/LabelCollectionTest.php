@@ -76,14 +76,14 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
             'Correct label',
             'F',
             'This label is much too long and will also be ignored, just like the label F which is too short. But a few more extra characters are needed to make it fail! Like many aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaas',
-            'Another correct label'
+            'Another correct label',
         ];
 
         $labelCollection = LabelCollection::fromStrings($labelsAsStrings);
 
         $expectedLabelCollection = new LabelCollection([
             new Label('Correct label'),
-            new Label('Another correct label')
+            new Label('Another correct label'),
         ]);
 
         $this->assertEquals($expectedLabelCollection, $labelCollection);

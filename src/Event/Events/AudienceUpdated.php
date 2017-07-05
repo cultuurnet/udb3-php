@@ -40,7 +40,7 @@ class AudienceUpdated extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'audience' => $this->audience->serialize()
+                'audience' => $this->audience->serialize(),
             ];
     }
 

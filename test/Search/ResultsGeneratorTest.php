@@ -298,7 +298,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                     [
                         $event4,
                         $event5,
-                    ]
+                    ],
                 ],
                 [
                     $event1,
@@ -345,7 +345,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                     ],
                     [
                         $event6,
-                    ]
+                    ],
                 ],
                 [
                     $event1,
@@ -374,7 +374,7 @@ class ResultsGeneratorTest extends \PHPUnit_Framework_TestCase
                         $event4,
                         $event6,
                         $event7,
-                    ]
+                    ],
                 ],
                 [
                     $event1,

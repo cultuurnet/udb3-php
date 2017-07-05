@@ -95,7 +95,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $existingData[] = (object)[
             'event' => 'event-id',
             'organizer' => 'old-organizer-id',
-            'place' => 'some-place-id'
+            'place' => 'some-place-id',
         ];
         $this->insertTableData($this->tableName, $existingData);
         $eventId = 'event-id';
@@ -103,7 +103,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedData[] = (object)[
             'event' => 'event-id',
             'organizer' => 'new-organizer-id',
-            'place' => 'some-place-id'
+            'place' => 'some-place-id',
         ];
 
         $this->repository->storeOrganizer($eventId, $organizerId);
@@ -121,7 +121,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedData[] = (object)[
             'event' => 'event-id',
             'organizer' => 'organizer-id',
-            'place' => null
+            'place' => null,
         ];
 
         $this->repository->storeOrganizer($eventId, $organizerId);
@@ -137,14 +137,14 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $existingData[] = (object)[
             'event' => 'event-id',
             'organizer' => 'organizer-id',
-            'place' => 'some-place-id'
+            'place' => 'some-place-id',
         ];
         $this->insertTableData($this->tableName, $existingData);
         $eventId = 'event-id';
         $expectedData[] = (object)[
             'event' => 'event-id',
             'organizer' => null,
-            'place' => 'some-place-id'
+            'place' => 'some-place-id',
         ];
 
         $this->repository->removeOrganizer($eventId);
@@ -161,12 +161,12 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'event' => 'e201cea1-4a79-4834-9501-b28a92900fa1',
                 'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
-                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426',
             ],
             (object)[
                 'event' => 'cd996276-7aac-40b7-8bf4-e505dbbf11bf',
                 'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
-                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426',
             ],
         ];
         $this->insertTableData($this->tableName, $existingData);
@@ -174,7 +174,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedData[] = (object)[
             'event' => 'cd996276-7aac-40b7-8bf4-e505dbbf11bf',
             'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
-            'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+            'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426',
         ];
 
         $this->repository->removeRelations($eventId);
@@ -191,12 +191,12 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'event' => 'e201cea1-4a79-4834-9501-b28a92900fa1',
                 'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
-                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426',
             ],
             (object)[
                 'event' => 'cd996276-7aac-40b7-8bf4-e505dbbf11bf',
                 'organizer' => '3a4abf90-1859-49de-a667-b713c81aad28',
-                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426'
+                'place' => 'e64362f5-43e1-468b-97d6-8981fb0fe426',
             ],
         ];
         $this->insertTableData($this->tableName, $existingData);
@@ -220,7 +220,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'event' => $eventId,
                 'organizer' => $organizerId,
-                'place' => $placeId
+                'place' => $placeId,
             ],
         ];
         $this->insertTableData($this->tableName, $existingData);
@@ -243,7 +243,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'event' => $eventId,
                 'organizer' => $organizerId,
-                'place' => $placeId
+                'place' => $placeId,
             ],
         ];
         $this->insertTableData($this->tableName, $existingData);
@@ -266,7 +266,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'event' => $eventId,
                 'organizer' => $organizerId,
-                'place' => $placeId
+                'place' => $placeId,
             ],
         ];
         $this->insertTableData($this->tableName, $existingData);
@@ -289,7 +289,7 @@ class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'event' => $eventId,
                 'organizer' => $organizerId,
-                'place' => $placeId
+                'place' => $placeId,
             ],
         ];
         $this->insertTableData($this->tableName, $existingData);

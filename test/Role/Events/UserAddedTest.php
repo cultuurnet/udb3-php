@@ -49,7 +49,7 @@ class UserAddedTest extends \PHPUnit_Framework_TestCase
     {
         $userAddedAsArray = [
             AbstractUserEvent::UUID => $this->uuid->toNative(),
-            AbstractUserEvent::USER_ID => $this->userId->toNative()
+            AbstractUserEvent::USER_ID => $this->userId->toNative(),
         ];
 
         $actualUserAdded = UserAdded::deserialize($userAddedAsArray);

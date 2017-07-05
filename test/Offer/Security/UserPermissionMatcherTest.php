@@ -224,7 +224,7 @@ class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
                 [
                     $query,
                     new FilterQuery('private:*'),
-                    new Group(true)
+                    new Group(true),
                 ]
             )
             ->willReturn($response);

@@ -47,7 +47,7 @@ class LabelDetailsProjectedToJSONLD implements SerializableInterface
     public function serialize()
     {
         return [
-            self::UUID => $this->getUuid()->toNative()
+            self::UUID => $this->getUuid()->toNative(),
         ];
     }
 }

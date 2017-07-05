@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media\Serialization;
 
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -11,7 +12,6 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
@@ -42,7 +42,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $this->iriGenerator
@@ -56,7 +57,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
             'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
             'description' => 'my pic',
-            'copyrightHolder' => 'Dirk Dirkington'
+            'copyrightHolder' => 'Dirk Dirkington',
+            'inLanguage' => 'en',
         ];
 
         $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');
@@ -74,7 +76,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('application/octet-stream'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $this->iriGenerator
@@ -88,7 +91,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
             'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
             'description' => 'my pic',
-            'copyrightHolder' => 'Dirk Dirkington'
+            'copyrightHolder' => 'Dirk Dirkington',
+            'inLanguage' => 'en',
         ];
 
         $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');
@@ -106,7 +110,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('video/avi'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->setExpectedException(
@@ -127,7 +132,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new MIMEType('video/avi'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->setExpectedException(

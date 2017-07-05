@@ -159,7 +159,7 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
                 'Could not convert a cdbxml address to a udb3 address for geocoding.',
                 [
                     'placeId' => '318F2ACB-F612-6F75-0037C9C29F44087A',
-                    'error' => 'The given cdbxml address is missing a city'
+                    'error' => 'The given cdbxml address is missing a city',
                 ]
             );
 

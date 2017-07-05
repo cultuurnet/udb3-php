@@ -127,7 +127,7 @@ class Entity implements \JsonSerializable
             self::ID => $this->uuid->toNative(),
             self::NAME => $this->name->toNative(),
             self::VISIBILITY => $this->visibility->toNative(),
-            self::PRIVACY => $this->privacy->toNative()
+            self::PRIVACY => $this->privacy->toNative(),
         ];
     }
 }

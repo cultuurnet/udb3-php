@@ -305,7 +305,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                         'http://du.de/place/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),
-                '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                '6ecf5da4-220d-4486-9327-17c7ec8fa070',
             ),
             array(
                 $this->domainMessage(
@@ -314,7 +314,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                         'http://du.de/event/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                     )
                 ),
-                '6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                '6ecf5da4-220d-4486-9327-17c7ec8fa070',
             ),
         );
     }
@@ -361,7 +361,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             '123',
             1,
             new Metadata([
-                'user_id' => '1adf21b4-711d-4e33-b9ef-c96843582a56'
+                'user_id' => '1adf21b4-711d-4e33-b9ef-c96843582a56',
             ]),
             $payload,
             DateTime::fromString(self::DATETIME)

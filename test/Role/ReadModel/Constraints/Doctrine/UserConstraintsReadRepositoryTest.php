@@ -86,7 +86,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $expectedConstraints = [
             new StringLiteral('zipCode:1000'),
-            new StringLiteral('zipCode:3000')
+            new StringLiteral('zipCode:3000'),
         ];
 
         $this->assertEquals(
@@ -167,7 +167,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->userRolesTableName,
             [
                 PermissionSchemaConfigurator::USER_ID_COLUMN => $userId->toNative(),
-                PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }
@@ -182,7 +182,7 @@ class UserConstraintsReadRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->rolePermissionsTableName,
             [
                 PermissionSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
-                PermissionSchemaConfigurator::PERMISSION_COLUMN => $permission->toNative()
+                PermissionSchemaConfigurator::PERMISSION_COLUMN => $permission->toNative(),
             ]
         );
     }

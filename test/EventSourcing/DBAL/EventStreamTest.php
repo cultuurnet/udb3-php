@@ -226,7 +226,7 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             if ($domainMessage->getId() == $cdbid) {
                 $expectedDomainEventStreams[] = new DomainEventStream(
                     [
-                        $domainMessage
+                        $domainMessage,
                     ]
                 );
             }
@@ -257,7 +257,7 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
             if ($key >= 3) {
                 $expectedDomainEventStreams[] = new DomainEventStream(
                     [
-                        $domainMessage
+                        $domainMessage,
                     ]
                 );
             }
@@ -386,7 +386,7 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
                     'entity a test content playhead 7'
                 ),
                 DateTime::fromString('2015-01-03T19:45:00+0100')
-            )
+            ),
         ];
 
         foreach ($history as $domainMessage) {
@@ -455,7 +455,7 @@ class DummyEventStreamDecorator implements EventStreamDecoratorInterface
         foreach ($eventStream as $message) {
             $metadata = new Metadata(
                 [
-                    'mock' => $aggregateType . '::' . $aggregateIdentifier
+                    'mock' => $aggregateType . '::' . $aggregateIdentifier,
                 ]
             );
 

@@ -30,23 +30,23 @@ class CulturefeedSluggerTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 'Babbelut - conversatietafels',
-                'babbelut-conversatietafels'
+                'babbelut-conversatietafels',
             ],
             [
                 'Uw toren is niet af - Klos mee!',
-                'uw-toren-is-niet-af-klos-mee'
+                'uw-toren-is-niet-af-klos-mee',
             ],
             [
                 'Jump! Kids (danslessenreeks voor 7 - 10 jarigen)',
-                'jump-kids-danslessenreeks-voor-7-10-jarigen'
+                'jump-kids-danslessenreeks-voor-7-10-jarigen',
             ],
             [
                 'BABBELonië',
-                'babbelonie'
+                'babbelonie',
             ],
             [
                 'Djembé : Gezinsbond Beersel',
-                'djembe-gezinsbond-beersel'
+                'djembe-gezinsbond-beersel',
             ],
             [
                 'Tai Chi vrijdagavond nieuwe reeks van 15 lessen 2015',

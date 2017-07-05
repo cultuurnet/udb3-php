@@ -116,7 +116,7 @@ class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
         $this->searchService->search([
             new Query('pop'),
             new FilterQuery('type:event OR (type:actor AND category_id:8.15.0.0.0)'),
-            new Group()
+            new Group(),
         ]);
     }
 

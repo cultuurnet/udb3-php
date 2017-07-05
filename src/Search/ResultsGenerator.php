@@ -122,7 +122,7 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
                         array(
                             'query' => $query,
                             'error' => "Found duplicate offer {$id} on page {$currentPage}, " .
-                                "occurred first time on page {$ids[$id]}."
+                                "occurred first time on page {$ids[$id]}.",
                         )
                     );
                 }

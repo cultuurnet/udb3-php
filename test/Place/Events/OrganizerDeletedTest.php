@@ -19,7 +19,7 @@ class OrganizerDeletedTest extends \PHPUnit_Framework_TestCase
                     'place-123',
                     'organizer-456'
                 ),
-            ]
+            ],
         ];
     }
 

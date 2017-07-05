@@ -211,7 +211,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $location,
                     $calendar,
                     $theme
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );
@@ -270,7 +270,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $eventId,
                     $originalEventId,
                     $calendar
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );
@@ -350,7 +350,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $calendar,
                     $theme,
                     $publicationDate
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );

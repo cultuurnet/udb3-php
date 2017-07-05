@@ -73,7 +73,7 @@ class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedArray = [
             'item_id' => $this->itemId,
-            'publication_date' => $this->publicationDate->format(\DateTime::ATOM)
+            'publication_date' => $this->publicationDate->format(\DateTime::ATOM),
         ];
 
         $actualArray = $this->abstractPublished->serialize();

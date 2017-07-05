@@ -77,7 +77,7 @@ class DBALRepository implements PermissionRepositoryInterface, PermissionQueryIn
                 $this->tableName->toNative(),
                 [
                     $this->idField->toNative() => $eventId->toNative(),
-                    'user_id' => $uitId->toNative()
+                    'user_id' => $uitId->toNative(),
                 ]
             );
         } catch (UniqueConstraintViolationException $e) {

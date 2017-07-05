@@ -182,7 +182,7 @@ class CalendarConverter implements CalendarConverterInterface
                     $this->formatDateTimeAsCdbTime($endDate)
                 )
             );
-        } else if (is_int($index)) {
+        } elseif (is_int($index)) {
             // Complex case and seconds needed for indexing.
             $period = new Period($startDate, $endDate);
 

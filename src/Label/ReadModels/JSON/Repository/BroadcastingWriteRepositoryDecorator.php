@@ -120,7 +120,7 @@ class BroadcastingWriteRepositoryDecorator implements WriteRepositoryInterface
                 1,
                 new Metadata(),
                 $event
-            )
+            ),
         ];
 
         $this->eventBus->publish(

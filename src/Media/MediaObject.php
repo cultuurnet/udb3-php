@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
@@ -49,11 +50,17 @@ class MediaObject extends EventSourcedAggregateRoot
     protected $sourceLocation;
 
     /**
+     * @var Language
+     */
+    protected $language;
+
+    /**
      * @param UUID $id
      * @param MIMEType $mimeType
      * @param StringLiteral $description
      * @param StringLiteral $copyrightHolder
      * @param Url $sourceLocation
+     * @param Language $language
      *
      * @return MediaObject
      */
@@ -62,7 +69,8 @@ class MediaObject extends EventSourcedAggregateRoot
         MIMEType $mimeType,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
-        Url $sourceLocation
+        Url $sourceLocation,
+        Language $language
     ) {
         $mediaObject = new self();
         $mediaObject->apply(
@@ -71,7 +79,8 @@ class MediaObject extends EventSourcedAggregateRoot
                 $mimeType,
                 $description,
                 $copyrightHolder,
-                $sourceLocation
+                $sourceLocation,
+                $language
             )
         );
 
@@ -93,6 +102,7 @@ class MediaObject extends EventSourcedAggregateRoot
         $this->description = $mediaObjectCreated->getDescription();
         $this->copyrightHolder = $mediaObjectCreated->getCopyrightHolder();
         $this->sourceLocation = $mediaObjectCreated->getSourceLocation();
+        $this->language = $mediaObjectCreated->getLanguage();
     }
 
     /**
@@ -133,5 +143,13 @@ class MediaObject extends EventSourcedAggregateRoot
     public function getSourceLocation()
     {
         return $this->sourceLocation;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getLanguage()
+    {
+        return $this->language;
     }
 }

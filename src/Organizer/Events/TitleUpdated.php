@@ -38,7 +38,7 @@ class TitleUpdated extends OrganizerEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'title' => $this->getTitle()->toNative()
+                'title' => $this->getTitle()->toNative(),
             ];
     }
 

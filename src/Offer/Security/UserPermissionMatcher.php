@@ -75,7 +75,7 @@ class UserPermissionMatcher implements UserPermissionMatcherInterface
             [
                 $query,
                 new FilterQuery('private:*'),
-                new Group(true)
+                new Group(true),
             ]
         );
         if ($response->getStatusCode() != 200) {

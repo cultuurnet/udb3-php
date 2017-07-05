@@ -16,7 +16,7 @@ class OrganizerUpdatedTest extends \PHPUnit_Framework_TestCase
                     'place123',
                     'organizer-456'
                 ),
-            ]
+            ],
         ];
     }
 

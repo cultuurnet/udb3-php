@@ -63,7 +63,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                         new EventType('0.1.1', 'Jeugdhuis'),
                         $originalAddress,
                         new Calendar(CalendarType::PERMANENT())
-                    )
+                    ),
                 ]
             )
             ->when(
@@ -101,7 +101,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                         new EventType('0.1.1', 'Jeugdhuis'),
                         $originalAddress,
                         new Calendar(CalendarType::PERMANENT())
-                    )
+                    ),
                 ]
             )
             ->when(
@@ -164,7 +164,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                         '318F2ACB-F612-6F75-0037C9C29F44087A',
                         $cdbXml,
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    )
+                    ),
                 ]
             )
             ->when(
@@ -192,7 +192,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                         '318F2ACB-F612-6F75-0037C9C29F44087A',
                         $cdbXml,
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    )
+                    ),
                 ]
             )
             ->when(
@@ -206,7 +206,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                         '318F2ACB-F612-6F75-0037C9C29F44087A',
                         $cdbXml,
                         'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-                    )
+                    ),
                 ]
             )
             ->when(

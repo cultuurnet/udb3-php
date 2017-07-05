@@ -64,7 +64,7 @@ class Location implements SerializableInterface
         return [
           'cdbid' => $this->cdbid,
           'name' => $this->name->toNative(),
-          'address' => $this->address->serialize()
+          'address' => $this->address->serialize(),
         ];
     }
 

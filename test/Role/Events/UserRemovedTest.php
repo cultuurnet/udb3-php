@@ -49,7 +49,7 @@ class UserRemovedTest extends \PHPUnit_Framework_TestCase
     {
         $userRemovedAsArray = [
             AbstractUserEvent::UUID => $this->uuid->toNative(),
-            AbstractUserEvent::USER_ID => $this->userId->toNative()
+            AbstractUserEvent::USER_ID => $this->userId->toNative(),
         ];
 
         $actualUserAdded = UserRemoved::deserialize($userRemovedAsArray);

@@ -165,9 +165,9 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => null
+                    'publication_date' => null,
                 ],
                 new PlaceCreated(
                     'test 456',
@@ -205,9 +205,9 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => null
+                    'publication_date' => null,
                 ],
                 new PlaceCreated(
                     'test 456',
@@ -242,9 +242,9 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+02:00'
+                    'publication_date' => '2016-08-01T00:00:00+02:00',
                 ],
                 new PlaceCreated(
                     'test 456',

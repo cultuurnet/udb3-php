@@ -91,7 +91,7 @@ class OfferVariationCommandHandlerTest extends CommandHandlerScenarioTestCase
                         $ownerId,
                         $purpose,
                         $description
-                    )
+                    ),
                 ]
             );
     }

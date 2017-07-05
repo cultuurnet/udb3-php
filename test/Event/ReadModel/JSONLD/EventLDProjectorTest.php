@@ -192,7 +192,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
 
         $this->mockPlaceService();
@@ -232,7 +232,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
 
         $this->mockPlaceService();
@@ -279,7 +279,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $jsonLD->creator = $expectedCreator;
 
@@ -430,7 +430,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 '@type' => 'Event',
                 'startDate' => '2015-01-28T13:25:21+01:00',
                 'endDate' => '2015-01-29T13:25:21+01:00',
-            ]
+            ],
         ];
         $jsonLD->availableTo = $jsonLD->endDate;
         $jsonLD->sameAs = [
@@ -446,7 +446,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
 
         $this->mockPlaceService();
@@ -675,7 +675,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A']
+                'labels' => ['label A'],
             ])
         );
 
@@ -697,7 +697,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A', 'label B', 'label C']
+                'labels' => ['label A', 'label B', 'label C'],
             ])
         );
 
@@ -724,7 +724,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'bar' => 'stool'
+                'bar' => 'stool',
             ])
         );
 
@@ -919,7 +919,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             json_encode([
                 'name' => [
                     'nl' => 'Rekanto - TaiQi',
-                    'fr' => 'Raviva - TaiQi'
+                    'fr' => 'Raviva - TaiQi',
                 ],
                 'languages' => ['nl', 'fr'],
                 'completedLanguages' => ['nl', 'fr'],
@@ -942,7 +942,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedSecondEventBody = (object) [
             'name' => (object)[
                 'nl' => 'Rekanto - TaiQi',
-                'fr' => 'Raviva - TaiQi'
+                'fr' => 'Raviva - TaiQi',
             ],
             'languages' => ['nl', 'fr'],
             'completedLanguages' => ['nl', 'fr'],
@@ -1012,7 +1012,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->name = ['nl' => 'some representative title'];
         $jsonLD->location = [
             '@type' => 'Place',
-            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e'
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -1020,7 +1020,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
@@ -1033,11 +1033,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD = new stdClass();
         $expectedJsonLD->id = $id;
         $expectedJsonLD->name = (object)[
-            'nl' => 'new title'
+            'nl' => 'new title',
         ];
         $expectedJsonLD->location = (object)[
             '@type' => 'Place',
-            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e'
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->terms = [
@@ -1050,7 +1050,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $expectedJsonLD->languages = ['nl'];
         $expectedJsonLD->completedLanguages = ['nl'];
@@ -1126,7 +1126,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
 
         $this->assertEquals($expectedTerms, $body->terms);
@@ -1149,7 +1149,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJson = (object) [
                 '@id' => 'http://example.com/entity/' . $eventId,
                 '@context' => '/contexts/event',
-                'audience' => (object) ['audienceType' => 'education']
+                'audience' => (object) ['audienceType' => 'education'],
             ];
 
         $this->assertEquals($expectedJson, $body);
@@ -1220,9 +1220,9 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                    ],
+                ],
             ])
         );
 
@@ -1233,8 +1233,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'description' => 'sexy ladies without clothes',
-                'copyrightHolder' => 'Bart Ramakers'
-            ]
+                'copyrightHolder' => 'Bart Ramakers',
+            ],
         ];
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
@@ -1259,8 +1259,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     $eventUpdatedFromUDB2,
                     DateTime::fromString($importedDate)
                 ),
-                $expectedMediaObjects
-            ]
+                $expectedMediaObjects,
+            ],
         ];
     }
 
@@ -1305,11 +1305,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->{'@context'} = '/contexts/event';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[
-            'nl' => 'some representative title'
+            'nl' => 'some representative title',
         ];
         $jsonLD->location = (object)[
             '@type' => 'Place',
-            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e'
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';

@@ -156,7 +156,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                             'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'Kerkstraat 69'
+                            'streetAddress' => 'Kerkstraat 69',
                         ),
                     ),
                     'calendar' => array(
@@ -165,9 +165,9 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => null
+                    'publication_date' => null,
                 ],
                 new EventCreated(
                     'test 456',
@@ -204,7 +204,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                             'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'Kerkstraat 69'
+                            'streetAddress' => 'Kerkstraat 69',
                         ),
                     ),
                     'calendar' => array(
@@ -213,9 +213,9 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => null
+                    'publication_date' => null,
                 ],
                 new EventCreated(
                     'test 456',
@@ -249,7 +249,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                             'addressCountry' => 'BE',
                             'addressLocality' => 'Zottegem',
                             'postalCode' => '9620',
-                            'streetAddress' => 'Kerkstraat 69'
+                            'streetAddress' => 'Kerkstraat 69',
                         ),
                     ),
                     'calendar' => array(
@@ -258,9 +258,9 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+02:00'
+                    'publication_date' => '2016-08-01T00:00:00+02:00',
                 ],
                 new EventCreated(
                     'test 456',

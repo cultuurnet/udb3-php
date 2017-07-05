@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -72,7 +73,8 @@ class OfferTest extends AggregateRootScenarioTestCase
             new MIMEType('image/gif'),
             new Description('my favorite giphy gif'),
             new CopyrightHolder('Bert Ramakers'),
-            Url::fromNative('http://foo.bar/media/my_favorite_giphy_gif.gif')
+            Url::fromNative('http://foo.bar/media/my_favorite_giphy_gif.gif'),
+            new Language('en')
         );
     }
 
@@ -85,7 +87,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new ItemCreated($itemId)
+                new ItemCreated($itemId),
             ])
             ->when(
                 function (Item $item) {
@@ -114,7 +116,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new ItemCreated($itemId)
+                new ItemCreated($itemId),
             ])
             ->when(
                 function (Item $item) {
@@ -154,7 +156,8 @@ class OfferTest extends AggregateRootScenarioTestCase
             new MIMEType('image/jpeg'),
             new Description('my best selfie'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_best_selfie.gif')
+            Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
+            new Language('en')
         );
         $image = $this->image;
 
@@ -162,7 +165,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -176,7 +179,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                 [
                     new ImageAdded('someId', $image),
                     new ImageAdded('someId', $anotherImage),
-                    new MainImageSelected('someId', $anotherImage)
+                    new MainImageSelected('someId', $anotherImage),
                 ]
             );
     }
@@ -191,14 +194,16 @@ class OfferTest extends AggregateRootScenarioTestCase
             new MIMEType('image/gif'),
             new Description('my best selfie'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_best_selfie.gif')
+            Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
+            new Language('en')
         );
         $newerImage = new Image(
             new UUID('fdfac613-61f9-43ac-b1a9-c75f9fd58386'),
             new MIMEType('image/jpeg'),
             new Description('pic'),
             new CopyrightHolder('Henk'),
-            Url::fromNative('http://foo.bar/media/pic.jpeg')
+            Url::fromNative('http://foo.bar/media/pic.jpeg'),
+            new Language('en')
         );
         $originalMainImage = $this->image;
 
@@ -206,7 +211,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -224,7 +229,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new ImageAdded('someId', $originalMainImage),
                     new ImageAdded('someId', $oldestImage),
                     new ImageAdded('someId', $newerImage),
-                    new ImageRemoved('someId', $originalMainImage)
+                    new ImageRemoved('someId', $originalMainImage),
                 ]
             );
     }
@@ -240,7 +245,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -268,14 +273,15 @@ class OfferTest extends AggregateRootScenarioTestCase
             new MIMEType('image/jpeg'),
             new Description('pic'),
             new CopyrightHolder('Henk'),
-            Url::fromNative('http://foo.bar/media/pic.jpeg')
+            Url::fromNative('http://foo.bar/media/pic.jpeg'),
+            new Language('en')
         );
 
         $this->scenario
             ->withAggregateId('someId')
             ->given(
                 [
-                    new ItemCreated('someId')
+                    new ItemCreated('someId'),
                 ]
             )
             ->when(
@@ -306,13 +312,13 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new ItemCreated($itemId)
+                new ItemCreated($itemId),
             ])
             ->when(function (Item $item) use ($now) {
                 $item->publish($now);
             })
             ->then([
-                new Published($itemId, $now)
+                new Published($itemId, $now),
             ]);
     }
 
@@ -327,7 +333,7 @@ class OfferTest extends AggregateRootScenarioTestCase
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
-                new Published($itemId, $now)
+                new Published($itemId, $now),
             ])
             ->when(function (Item $item) use ($now) {
                 $item->publish($now);
@@ -352,7 +358,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given([
                 new ItemCreated($itemId),
                 new Published($itemId, $now),
-                new FlaggedAsDuplicate($itemId)
+                new FlaggedAsDuplicate($itemId),
             ])
             ->when(function (Item $item) use ($now) {
                 $item->publish($now);
@@ -373,7 +379,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -383,7 +389,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Approved($itemId)
+                    new Approved($itemId),
                 ]
             );
     }
@@ -401,7 +407,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -412,7 +418,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Approved($itemId)
+                    new Approved($itemId),
                 ]
             );
     }
@@ -432,7 +438,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             )
             ->when(
@@ -457,7 +463,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -468,7 +474,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             );
     }
@@ -489,7 +495,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             )
             ->when(
@@ -514,7 +520,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -524,7 +530,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new Rejected($itemId, $reason)
+                    new Rejected($itemId, $reason),
                 ]
             );
     }
@@ -542,7 +548,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -552,7 +558,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new FlaggedAsDuplicate($itemId)
+                    new FlaggedAsDuplicate($itemId),
                 ]
             );
     }
@@ -572,7 +578,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new FlaggedAsDuplicate($itemId)
+                    new FlaggedAsDuplicate($itemId),
                 ]
             )
             ->when(
@@ -596,7 +602,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Published($itemId, $now)
+                    new Published($itemId, $now),
                 ]
             )
             ->when(
@@ -606,7 +612,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new FlaggedAsInappropriate($itemId)
+                    new FlaggedAsInappropriate($itemId),
                 ]
             );
     }
@@ -626,7 +632,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new FlaggedAsInappropriate($itemId)
+                    new FlaggedAsInappropriate($itemId),
                 ]
             )
             ->when(
@@ -652,7 +658,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new Approved($itemId)
+                    new Approved($itemId),
                 ]
             )
             ->when(
@@ -739,6 +745,55 @@ class OfferTest extends AggregateRootScenarioTestCase
      * @test
      * @dataProvider imageCollectionDataProvider
      */
+    public function it_should_keep_images_translated_in_ubd3_when_updating_images_from_udb2(
+        Image $image
+    ) {
+        $itemId = UUID::generateAsString();
+
+        $dutchUdb3Image = new Image(
+            new UUID('0773EB2A-54BE-49AD-B261-5D1099F319D4'),
+            new MIMEType('image/jpg'),
+            new Description('mijn favoriete wallpaper'),
+            new CopyrightHolder('Dirk Dirkingn'),
+            Url::fromNative('http://foo.bar/media/mijn_favoriete_wallpaper_<3.jpg'),
+            new Language('nl')
+        );
+
+        $udb2Images = ImageCollection::fromArray([
+            new Image(
+                new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+                new MIMEType('image/jpg'),
+                new Description('episch panorama'),
+                new CopyrightHolder('Dirk Dirkingn'),
+                Url::fromNative('http://foo.bar/media/episch_panorama.jpg'),
+                new Language('nl')
+            ),
+        ]);
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(function (Item $item) use ($image, $dutchUdb3Image, $udb2Images) {
+                $item->addImage($image);
+                $item->addImage($dutchUdb3Image);
+                $item->importImagesFromUDB2($udb2Images);
+                $item->addImage($image);
+                $item->addImage($dutchUdb3Image);
+            })
+            ->then([
+                new ImageAdded($itemId, $image),
+                new ImageAdded($itemId, $dutchUdb3Image),
+                new ImagesImportedFromUDB2($itemId, $udb2Images),
+                new ImageAdded($itemId, $dutchUdb3Image),
+            ]);
+    }
+
+    /**
+     * @test
+     * @dataProvider imageCollectionDataProvider
+     */
     public function it_should_update_images_from_udb2_as_media_object_and_main_image(
         Image $image,
         ImageCollection $imageCollection
@@ -765,14 +820,15 @@ class OfferTest extends AggregateRootScenarioTestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkingn'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         return [
             'single image' => [
                 'mainImage' => $image,
-                'imageCollection' => ImageCollection::fromArray([$image])
-            ]
+                'imageCollection' => ImageCollection::fromArray([$image]),
+            ],
         ];
     }
 }

@@ -24,7 +24,7 @@ class SimilaritySorter
             // list, so it needs to be the smallest.
             if ($weight1 > $weight2) {
                 return -1;
-            } else if ($weight1 < $weight2) {
+            } elseif ($weight1 < $weight2) {
                 return 1;
             } else {
                 return $entity1->getName()->toNative() < $entity2->getName()->toNative();

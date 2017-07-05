@@ -207,7 +207,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $eventType = $placeCreated->getEventType();
         $jsonLD->terms = [
-            $eventType->toJsonLd()
+            $eventType->toJsonLd(),
         ];
 
         $theme = $placeCreated->getTheme();
@@ -276,7 +276,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $eventType = $majorInfoUpdated->getEventType();
         $jsonLD->terms = [
-            $eventType->toJsonLd()
+            $eventType->toJsonLd(),
         ];
 
         $theme = $majorInfoUpdated->getTheme();

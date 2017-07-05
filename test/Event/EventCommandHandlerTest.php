@@ -123,13 +123,13 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->given(
                 [
-                    $this->factorOfferCreated($id)
+                    $this->factorOfferCreated($id),
                 ]
             )
             ->when(new TranslateTitle($id, $language, $title))
             ->then(
                 [
-                    new TitleTranslated($id, $language, $title)
+                    new TitleTranslated($id, $language, $title),
                 ]
             );
     }
@@ -192,7 +192,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new LabelAdded($id, new Label('foo'))
+                    new LabelAdded($id, new Label('foo')),
                 ]
             )
             ->when(new RemoveLabel($id, new Label('foo')))
@@ -210,7 +210,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->factorOfferCreated($id),
-                    new LabelAdded($id, new Label('bar', false))
+                    new LabelAdded($id, new Label('bar', false)),
                 ]
             )
             ->when(new RemoveLabel($id, new Label('bar')))
@@ -244,7 +244,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     $this->factorOfferCreated($id),
                     new LabelAdded($id, new Label('foo')),
-                    new LabelRemoved($id, new Label('foo'))
+                    new LabelRemoved($id, new Label('foo')),
                 ]
             )
             ->when(new RemoveLabel($id, new Label('foo')))

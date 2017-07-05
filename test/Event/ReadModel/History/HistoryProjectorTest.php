@@ -100,7 +100,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
-                ]
+                ],
             ]
         );
 
@@ -133,7 +133,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-09-08T09:10:16+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'info@traeghe.be',
-                ]
+                ],
             ]
         );
     }
@@ -166,7 +166,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             [
                 (object)[
                     'description' => 'Geüpdatet vanuit UDB2',
-                    'date' => '2015-03-25T10:17:19+02:00'
+                    'date' => '2015-03-25T10:17:19+02:00',
                 ],
                 (object)[
                     'date' => '2015-03-04T10:17:19+02:00',
@@ -176,7 +176,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
-                ]
+                ],
             ]
         );
     }
@@ -307,7 +307,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
-                ]
+                ],
             ]
         );
     }
@@ -351,7 +351,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
-                ]
+                ],
             ]
         );
     }
@@ -394,7 +394,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
-                ]
+                ],
             ]
         );
     }
@@ -437,7 +437,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
-                ]
+                ],
             ]
         );
     }

@@ -54,7 +54,7 @@ class WriteResult implements \JsonSerializable
     {
         return [
             self::COMMAND_ID => $this->commandId->toNative(),
-            self::UUID => $this->uuid->toNative()
+            self::UUID => $this->uuid->toNative(),
         ];
     }
 }

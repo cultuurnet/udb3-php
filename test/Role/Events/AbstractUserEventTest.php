@@ -59,7 +59,7 @@ class AbstractUserEventTest extends \PHPUnit_Framework_TestCase
 
         $expectedArray = [
             AbstractUserEvent::UUID => $this->uuid->toNative(),
-            AbstractUserEvent::USER_ID => $this->userId->toNative()
+            AbstractUserEvent::USER_ID => $this->userId->toNative(),
         ];
 
         $this->assertEquals($expectedArray, $actualArray);

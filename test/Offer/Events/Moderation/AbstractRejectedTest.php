@@ -31,7 +31,7 @@ class AbstractRejectedTest extends \PHPUnit_Framework_TestCase
             AbstractRejected::class,
             [
                 $this->itemId,
-                $this->reason
+                $this->reason,
             ]
         );
     }
@@ -65,7 +65,7 @@ class AbstractRejectedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedArray = [
             'item_id' => $this->itemId,
-            'reason' => $this->reason
+            'reason' => $this->reason,
         ];
 
         $this->assertEquals($expectedArray, $this->abstractRejected->serialize());

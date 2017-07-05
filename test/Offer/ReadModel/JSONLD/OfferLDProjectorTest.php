@@ -161,7 +161,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A']
+                'labels' => ['label A'],
             ])
         );
 
@@ -188,7 +188,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A']
+                'labels' => ['label A'],
             ])
         );
 
@@ -210,7 +210,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A', 'label B', 'label C']
+                'labels' => ['label A', 'label B', 'label C'],
             ])
         );
 
@@ -238,7 +238,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'foo',
             json_encode([
                 'labels' => ['label A', 'label B'],
-                'hiddenLabels' => ['label C']
+                'hiddenLabels' => ['label C'],
             ])
         );
 
@@ -265,7 +265,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'bar' => 'stool'
+                'bar' => 'stool',
             ])
         );
 
@@ -304,10 +304,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'foo',
             json_encode([
                 'name' => [
-                    'nl'=> 'Titel'
+                    'nl'=> 'Titel',
                 ],
                 'description' => [
-                    'nl' => 'Omschrijving'
+                    'nl' => 'Omschrijving',
                 ],
             ])
         );
@@ -320,10 +320,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             (object)[
                 'name' => (object)[
                     'nl'=> 'Titel',
-                    'en' => 'English title'
+                    'en' => 'English title',
                 ],
                 'description' => (object)[
-                    'nl' => 'Omschrijving'
+                    'nl' => 'Omschrijving',
                 ],
             ],
             $body
@@ -345,10 +345,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'foo',
             json_encode([
                 'name' => [
-                    'nl'=> 'Titel'
+                    'nl'=> 'Titel',
                 ],
                 'description' => [
-                    'nl' => 'Omschrijving'
+                    'nl' => 'Omschrijving',
                 ],
             ])
         );
@@ -438,7 +438,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $expectedMediaObjects = [
             (object) [
@@ -447,8 +448,9 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                 'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'description' => 'sexy ladies without clothes',
-                'copyrightHolder' => 'Bart Ramakers'
-            ]
+                'copyrightHolder' => 'Bart Ramakers',
+                'inLanguage' => 'en',
+            ],
         ];
         $initialDocument = new JsonDocument(
             $eventId,
@@ -483,7 +485,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                         'description' => 'my best pokerface',
-                        'copyrightHolder' => 'Hans Langucci'
+                        'copyrightHolder' => 'Hans Langucci',
+                        'inLanguage' => 'en',
                     ],
                     (object) [
                         '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
@@ -491,9 +494,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ],
+                ],
             ];
 
         $image1 = new Image(
@@ -503,7 +507,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new CopyrightHolder('Hans Langucci'),
             Url::fromNative(
                 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png'
-            )
+            ),
+            new Language('en')
         );
 
         $image2 = new Image(
@@ -513,7 +518,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new CopyrightHolder('Bart Ramakers'),
             Url::fromNative(
                 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'
-            )
+            ),
+            new Language('en')
         );
 
         $expectedWithoutLastImage = (object) [
@@ -525,9 +531,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-ddde-eddd-adb2-eb6b9e546014.png',
                     'description' => 'my best pokerface',
-                    'copyrightHolder' => 'Hans Langucci'
-                ]
-            ]
+                    'copyrightHolder' => 'Hans Langucci',
+                    'inLanguage' => 'en',
+                ],
+            ],
         ];
 
         $expectedWithoutFirstImage = (object) [
@@ -539,9 +546,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                     'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                     'description' => 'sexy ladies without clothes',
-                    'copyrightHolder' => 'Bart Ramakers'
-                ]
-            ]
+                    'copyrightHolder' => 'Bart Ramakers',
+                    'inLanguage' => 'en',
+                ],
+            ],
         ];
 
 
@@ -569,7 +577,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                 ),
                 $image1,
                 (object) $initialJsonStructure,
-            ]
+            ],
         ];
     }
 
@@ -606,7 +614,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -618,9 +627,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ],
+                ],
             ])
         );
 
@@ -642,7 +652,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -655,9 +666,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ],
+                ],
             ])
         );
 
@@ -679,12 +691,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
             json_encode([
-                'pro' => 'jection'
+                'pro' => 'jection',
             ])
         );
 
@@ -709,7 +722,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -722,7 +736,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ],
                     [
                         '@id' => 'http://example.com/entity/5ae74e68-20a3-4cb1-b255-8e405aa01ab9',
@@ -730,9 +745,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'thumbnailUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'description' => 'funny giphy image',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ],
+                ],
             ])
         );
 
@@ -757,7 +773,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
         $initialDocument = new JsonDocument(
             $eventId,
@@ -770,7 +787,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
                     ],
                     [
                         '@id' => 'http://example.com/entity/5ae74e68-20a3-4cb1-b255-8e405aa01ab9',
@@ -778,9 +796,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'contentUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'thumbnailUrl' => 'http://foo.bar/media/5ae74e68-20a3-4cb1-b255-8e405aa01ab9.png',
                         'description' => 'funny giphy image',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ],
+                ],
             ])
         );
 
@@ -821,8 +840,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 'organizer' => [
                     '@type' => 'Organizer',
-                    '@id' => 'http://example.com/entity/ORGANIZER-ABC-123'
-                ]
+                    '@id' => 'http://example.com/entity/ORGANIZER-ABC-123',
+                ],
             ])
         );
         $this->documentRepository->save($initialDocument);
@@ -832,8 +851,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $expectedBody = (object)[
             'organizer' => (object)[
                 '@type' => 'Organizer',
-                '@id' => 'http://example.com/entity/' . $organizerId
-            ]
+                '@id' => 'http://example.com/entity/' . $organizerId,
+            ],
         ];
 
         $this->assertEquals($expectedBody, $body);
@@ -866,7 +885,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                 '@type' => 'Organizer',
                 'id' => $organizerId,
                 'name' => 'name',
-            ]
+            ],
         ];
 
         $body = $this->project($organizerUpdated, $id);
@@ -889,8 +908,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 'organizer' => [
                     '@type' => 'Organizer',
-                    '@id' => 'http://example.com/entity/' . $organizerId
-                ]
+                    '@id' => 'http://example.com/entity/' . $organizerId,
+                ],
             ])
         );
 
@@ -915,14 +934,14 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 '@id' => $itemId,
                 '@type' => 'event',
-                'workflowStatus' => 'DRAFT'
+                'workflowStatus' => 'DRAFT',
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
             '@type' => 'event',
             'availableFrom' => $now->format(\DateTime::ATOM),
-            'workflowStatus' => 'READY_FOR_VALIDATION'
+            'workflowStatus' => 'READY_FOR_VALIDATION',
         ];
 
         $this->documentRepository->save($itemDocumentReadyDraft);
@@ -945,13 +964,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 '@id' => $itemId,
                 '@type' => 'event',
-                'workflowStatus' => 'READY_FOR_VALIDATION'
+                'workflowStatus' => 'READY_FOR_VALIDATION',
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
             '@type' => 'event',
-            'workflowStatus' => 'APPROVED'
+            'workflowStatus' => 'APPROVED',
         ];
 
         $this->documentRepository->save($itemDocumentReadyForValidation);
@@ -977,13 +996,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 '@id' => $itemId,
                 '@type' => 'event',
-                'workflowStatus' => 'READY_FOR_VALIDATION'
+                'workflowStatus' => 'READY_FOR_VALIDATION',
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
             '@type' => 'event',
-            'workflowStatus' => 'REJECTED'
+            'workflowStatus' => 'REJECTED',
         ];
 
         $this->documentRepository->save($itemDocumentReadyForValidation);
@@ -1006,16 +1025,16 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                 'event' => new Rejected(
                     $itemId,
                     new StringLiteral('Image contains nudity.')
-                )
+                ),
             ],
             'offer flagged as duplicate' => [
                 'itemId' => $itemId,
-                'event' => new FlaggedAsDuplicate($itemId)
+                'event' => new FlaggedAsDuplicate($itemId),
             ],
             'offer flagged as inappropriate' => [
                 'itemId' => $itemId,
-                'event' => new FlaggedAsInappropriate($itemId)
-            ]
+                'event' => new FlaggedAsInappropriate($itemId),
+            ],
         ];
     }
 
@@ -1068,6 +1087,67 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $importedItem = $this->project($imagesImportedEvent, $itemId);
         $this->assertEquals($expectedImage, $importedItem->image);
     }
+    /**
+     * @test
+     */
+    public function it_should_keep_images_translated_in_ubd3_when_updating_images_from_udb2()
+    {
+        $eventId = 'event-1';
+        $image = new Image(
+            new UUID('ED5B9B25-8C16-48E5-9899-27BB2D110C57'),
+            new MIMEType('image/jpg'),
+            new Description('epische panorama foto'),
+            new CopyrightHolder('Bart Ramakers'),
+            Url::fromNative('http://foo.bar/media/ED5B9B25-8C16-48E5-9899-27BB2D110C57.jpg'),
+            new Language('nl')
+        );
+        $expectedMediaObjects = [
+            (object) [
+                '@id' => 'http://example.com/entity/ED5B9B25-8C16-48E5-9899-27BB2D110C57',
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => 'http://foo.bar/media/ED5B9B25-8C16-48E5-9899-27BB2D110C57.jpg',
+                'thumbnailUrl' => 'http://foo.bar/media/ED5B9B25-8C16-48E5-9899-27BB2D110C57.jpg',
+                'description' => 'epische panorama foto',
+                'copyrightHolder' => 'Bart Ramakers',
+                'inLanguage' => 'nl',
+            ],
+            (object) [
+                '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                '@type' => 'schema:ImageObject',
+                'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'description' => 'sexy ladies without clothes',
+                'copyrightHolder' => 'Bart Ramakers',
+                'inLanguage' => 'en',
+            ],
+        ];
+        $initialDocument = new JsonDocument(
+            $eventId,
+            json_encode([
+                'image' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                'mediaObject' => [
+                    (object) [
+                        '@id' => 'http://example.com/entity/de305d54-75b4-431b-adb2-eb6b9e546014',
+                        '@type' => 'schema:ImageObject',
+                        'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
+                        'description' => 'sexy ladies without clothes',
+                        'copyrightHolder' => 'Bart Ramakers',
+                        'inLanguage' => 'en',
+                    ],
+                ],
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+        $imageUpdatedEvent = new ImagesUpdatedFromUDB2($eventId, ImageCollection::fromArray([$image]));
+        $eventBody = $this->project($imageUpdatedEvent, $eventId);
+
+        $this->assertEquals(
+            $expectedMediaObjects,
+            $eventBody->mediaObject
+        );
+    }
 
     public function imageCollectionDataProvider()
     {
@@ -1076,7 +1156,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my pic'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/my_pic.jpg')
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
         );
 
         $selfie = new Image(
@@ -1084,7 +1165,8 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new MIMEType('image/jpg'),
             new Description('my favorite selfie'),
             new CopyrightHolder('Dirk Dirkington'),
-            Url::fromNative('http://foo.bar/media/img_182.jpg')
+            Url::fromNative('http://foo.bar/media/img_182.jpg'),
+            new Language('en')
         );
 
         return [
@@ -1098,6 +1180,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
                         'description' => 'my pic',
                         'copyrightHolder' => 'Dirk Dirkington',
+                        'inLanguage' => 'en',
                     ],
                     (object)[
                         '@type' => 'schema:ImageObject',
@@ -1106,9 +1189,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                         'thumbnailUrl' => 'http://foo.bar/media/img_182.jpg',
                         'description' => 'my favorite selfie',
                         'copyrightHolder' => 'Dirk Dirkington',
-                    ]
-                ]
-            ]
+                        'inLanguage' => 'en',
+                    ],
+                ],
+            ],
         ];
     }
 }

@@ -51,7 +51,7 @@ class AbstractLabelEventTest extends PHPUnit_Framework_TestCase
 
         $expectedArray = [
             AbstractEvent::UUID => $this->uuid->toNative(),
-            AbstractLabelEvent::LABEL_ID => $this->labelId->toNative()
+            AbstractLabelEvent::LABEL_ID => $this->labelId->toNative(),
         ];
 
         $this->assertEquals($expectedArray, $actualArray);
@@ -64,7 +64,7 @@ class AbstractLabelEventTest extends PHPUnit_Framework_TestCase
     {
         $data = [
              AbstractEvent::UUID => $this->uuid->toNative(),
-            AbstractLabelEvent::LABEL_ID => $this->labelId->toNative()
+            AbstractLabelEvent::LABEL_ID => $this->labelId->toNative(),
         ];
 
         $actualEvent = $this->event->deserialize($data);

@@ -38,7 +38,7 @@ class PublishedTest extends \PHPUnit_Framework_TestCase
     {
         $publishedAsArray = [
             'item_id' => $this->itemId,
-            'publication_date' => $this->publicationDate->format(\DateTime::ATOM)
+            'publication_date' => $this->publicationDate->format(\DateTime::ATOM),
         ];
 
         $this->assertEquals(

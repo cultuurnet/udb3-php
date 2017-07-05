@@ -18,7 +18,7 @@ class OfferVariationEventTest extends \PHPUnit_Framework_TestCase
         $event = $this->getMockForAbstractClass(
             OfferVariationEvent::class,
             [
-                new Id('28CD91A1-EB0F-49A9-991D-5DCAFEC0A043')
+                new Id('28CD91A1-EB0F-49A9-991D-5DCAFEC0A043'),
             ]
         );
 

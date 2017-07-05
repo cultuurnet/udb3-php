@@ -154,7 +154,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 'addressLocality' => $locality,
                 'postalCode' => $postalCode,
                 'streetAddress' => $street,
-            ]
+            ],
         ];
         $jsonLD->phone = ['050/123'];
         $jsonLD->email = ['test@test.be', 'test2@test.be'];
@@ -365,7 +365,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
                 $emails = $body->contactPoint->email;
                 $expectedEmails = [
-                    'info@villanella.be'
+                    'info@villanella.be',
                 ];
 
                 return is_array($emails) &&
@@ -410,7 +410,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $emails = $body->contactPoint->email;
                 $expectedEmails = [
                     'info@villanella.be',
-                    'dirk@dirkinc.be'
+                    'dirk@dirkinc.be',
                 ];
 
                 return is_array($emails) &&
@@ -435,7 +435,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
                 $phones = $body->contactPoint->phone;
                 $expectedPhones = [
-                    '+32 3 260 96 10'
+                    '+32 3 260 96 10',
                 ];
 
                 return is_array($phones) && $phones == $expectedPhones;
@@ -460,7 +460,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $phones = $body->contactPoint->phone;
                 $expectedPhones = [
                     '+32 3 260 96 10',
-                    '+32 3 062 69 01'
+                    '+32 3 062 69 01',
                 ];
 
                 return is_array($phones) && $phones == $expectedPhones;
@@ -600,18 +600,18 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             [
                 new Label('labelName'),
                 'organizer_with_one_label.json',
-                'organizer.json'
+                'organizer.json',
             ],
             [
                 new Label('anotherLabel'),
                 'organizer_with_two_labels.json',
-                'organizer_with_one_label.json'
+                'organizer_with_one_label.json',
             ],
             [
                 new Label('yetAnotherLabel'),
                 'organizer_with_three_labels.json',
-                'organizer_with_two_labels.json'
-            ]
+                'organizer_with_two_labels.json',
+            ],
         ];
     }
 

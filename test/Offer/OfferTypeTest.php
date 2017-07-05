@@ -34,7 +34,7 @@ class OfferTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 OfferType::EVENT()->getName() => OfferType::EVENT,
-                OfferType::PLACE()->getName() => OfferType::PLACE
+                OfferType::PLACE()->getName() => OfferType::PLACE,
             ],
             $options
         );

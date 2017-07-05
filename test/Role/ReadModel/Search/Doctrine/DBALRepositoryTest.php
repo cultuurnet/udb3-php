@@ -41,7 +41,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->role = array(
             'uuid' => '8d17cffe-6f28-459c-8627-1f6345f8b296',
             'name' => 'Leuven validatoren',
-            'constraint_query' => 'city:Leuven'
+            'constraint_query' => 'city:Leuven',
         );
     }
 

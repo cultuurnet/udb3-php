@@ -120,7 +120,7 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $description)
+                new $commandClass($id, $description, new Language('nl'))
             )
             ->then([new $eventClass($id, $description)]);
     }

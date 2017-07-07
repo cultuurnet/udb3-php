@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
+use CultuurNet\UDB3\Language;
+
 class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -19,14 +21,20 @@ class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
      */
     protected $description;
 
+    /**
+     * @var Language
+     */
+    protected $language;
+
     public function setUp()
     {
         $this->itemId = 'Foo';
         $this->description = 'This is the event description update.';
+        $this->language = new Language('en');
 
         $this->updateDescriptionCommand = $this->getMockForAbstractClass(
             AbstractUpdateDescription::class,
-            array($this->itemId, $this->description)
+            array($this->itemId, $this->description, $this->language)
         );
     }
 
@@ -44,5 +52,13 @@ class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_keep_track_of_the_description_language()
+    {
+        $this->assertEquals(new Language('en'), $this->updateDescriptionCommand->getLanguage());
     }
 }

@@ -11,6 +11,8 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
@@ -716,6 +718,57 @@ class OfferTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([new OrganizerUpdated($itemId, $organizerId)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_ignore_a_description_update_that_does_not_change_the_existing_descriptions()
+    {
+        $itemId = UUID::generateAsString();
+        $description = new \CultuurNet\UDB3\Description('Een beschrijving');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new DescriptionUpdated($itemId, (string) $description),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($description) {
+                    $item->updateDescription($description, new Language('nl'));
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_translate_the_description_when_updating_with_a_foreign_language()
+    {
+        $itemId = UUID::generateAsString();
+        $description = new \CultuurNet\UDB3\Description('La description');
+        $language = new Language('fr');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new DescriptionUpdated($itemId, 'Een beschrijving'),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($description, $language) {
+                    $item->updateDescription($description, $language);
+                }
+            )
+            ->then([
+                new DescriptionTranslated($itemId, $language, $description),
+            ]);
     }
 
     /**

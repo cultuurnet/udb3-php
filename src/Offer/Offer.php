@@ -270,6 +270,18 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->labels = $this->labels->without($labelRemoved->getLabel());
     }
 
+    protected function applyDescriptionUpdated(AbstractDescriptionUpdated $descriptionUpdated)
+    {
+        $mainLanguageCode = $this->mainLanguage->getCode();
+        $this->descriptions[$mainLanguageCode] = new Description($descriptionUpdated->getDescription());
+    }
+
+    protected function applyDescriptionTranslated(AbstractDescriptionTranslated $descriptionTranslated)
+    {
+        $languageCode = $descriptionTranslated->getLanguage()->getCode();
+        $this->descriptions[$languageCode] = $descriptionTranslated->getDescription();
+    }
+
     /**
      * Add a new image.
      *
@@ -455,8 +467,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     private function isDescriptionChanged(Description $description, Language $language)
     {
-        return !isset($this->descriptions[$language->getCode()]) ||
-            !$description->sameValueAs($this->descriptions[$language->getCode()]);
+        $languageCode = $language->getCode();
+
+        return !isset($this->descriptions[$languageCode]) ||
+            !$description->sameValueAs($this->descriptions[$languageCode]);
     }
 
     /**

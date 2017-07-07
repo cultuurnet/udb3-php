@@ -6,6 +6,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -143,15 +144,15 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Description $description
      * @return string
      */
-    public function translateDescription($id, Language $language, StringLiteral $description)
+    public function updateDescription($id, Language $language, Description $description)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createTranslateDescriptionCommand(
+            $this->commandFactory->createUpdateDescriptionCommand(
                 $id,
                 $language,
                 $description
@@ -227,20 +228,6 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
 
         return $this->commandBus->dispatch(
             $this->commandFactory->createSelectMainImageCommand($id, $image)
-        );
-    }
-
-    /**
-     * @param string $id
-     * @param string $description
-     * @return string
-     */
-    public function updateDescription($id, $description)
-    {
-        $this->guardId($id);
-
-        return $this->commandBus->dispatch(
-            $this->commandFactory->createUpdateDescriptionCommand($id, $description)
         );
     }
 

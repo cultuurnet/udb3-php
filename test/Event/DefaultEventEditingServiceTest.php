@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -134,7 +135,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_translate_description_of_unknown_event()
+    public function it_refuses_to_update_the_description_of_unknown_event()
     {
         $id = 'some-unknown-id';
 
@@ -142,10 +143,10 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateDescription(
+        $this->eventEditingService->updateDescription(
             $id,
-            new Language('nl'),
-            new StringLiteral('new description')
+            new Language('en'),
+            new Description('new description')
         );
     }
 

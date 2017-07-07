@@ -2,13 +2,14 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Language;
 
 abstract class AbstractUpdateDescription extends AbstractCommand
 {
     /**
      * Description to be added.
-     * @var string
+     * @var Description
      */
     protected $description;
 
@@ -19,10 +20,10 @@ abstract class AbstractUpdateDescription extends AbstractCommand
 
     /**
      * @param string $itemId
-     * @param string $description
+     * @param Description $description
      * @param Language $language
      */
-    public function __construct($itemId, $description, Language $language)
+    public function __construct($itemId, Language $language, Description $description)
     {
         parent::__construct($itemId);
         $this->description = $description;
@@ -30,7 +31,7 @@ abstract class AbstractUpdateDescription extends AbstractCommand
     }
 
     /**
-     * @return string
+     * @return Description
      */
     public function getDescription()
     {

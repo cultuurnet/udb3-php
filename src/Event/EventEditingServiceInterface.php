@@ -4,7 +4,9 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
@@ -17,9 +19,10 @@ interface EventEditingServiceInterface
      * Update the description of an event.
      *
      * @param string $id
-     * @param string $description
+     * @param Language $language
+     * @param Description $description
      */
-    public function updateDescription($id, $description);
+    public function updateDescription($id, Language $language, Description $description);
 
     /**
      * Update the typical age range of an event.

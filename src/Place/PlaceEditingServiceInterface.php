@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Place;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
@@ -58,9 +59,10 @@ interface PlaceEditingServiceInterface
      * Update the description of a place.
      *
      * @param string $id
-     * @param string $description
+     * @param Language $language
+     * @param Description $description
      */
-    public function updateDescription($id, $description);
+    public function updateDescription($id, Language $language, Description $description);
 
     /**
      * Update the typical age range of a place.

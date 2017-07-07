@@ -6,6 +6,7 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
@@ -81,10 +82,25 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $priceInfo;
 
     /**
+     * @var Description[]
+     */
+    protected $descriptions;
+
+    /**
+     * @var Language
+     */
+    protected $mainLanguage;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
     {
+        // For now the main language is hard coded on nl.
+        // In the future it should be set on create.
+        $this->mainLanguage = new Language('nl');
+
+        $this->descriptions = [];
         $this->labels = new LabelCollection();
         $this->images = new ImageCollection();
     }
@@ -136,25 +152,20 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
+     * @param Description $description
      * @param Language $language
-     * @param StringLiteral $description
      */
-    public function translateDescription(Language $language, StringLiteral $description)
+    public function updateDescription(Description $description, Language $language)
     {
-        $this->apply(
-            $this->createDescriptionTranslatedEvent($language, $description)
-        );
-    }
+        if ($this->isDescriptionChanged($description, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
+                $event = $this->createDescriptionTranslatedEvent($language, $description);
+            } else {
+                $event = $this->createDescriptionUpdatedEvent((string) $description);
+            }
 
-
-    /**
-     * @param string $description
-     */
-    public function updateDescription($description)
-    {
-        $this->apply(
-            $this->createDescriptionUpdatedEvent($description)
-        );
+            $this->apply($event);
+        }
     }
 
     /**
@@ -435,6 +446,17 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         }
 
         return false;
+    }
+
+    /**
+     * @param Description $description
+     * @param Language $language
+     * @return bool
+     */
+    private function isDescriptionChanged(Description $description, Language $language)
+    {
+        return !isset($this->descriptions[$language->getCode()]) ||
+            !$description->sameValueAs($this->descriptions[$language->getCode()]);
     }
 
     /**

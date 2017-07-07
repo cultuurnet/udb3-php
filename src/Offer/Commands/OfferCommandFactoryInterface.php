@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
@@ -80,17 +81,10 @@ interface OfferCommandFactoryInterface
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractTranslateDescription
-     */
-    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description);
-
-    /**
-     * @param string $id
-     * @param string $description
+     * @param Description $description
      * @return AbstractUpdateDescription
      */
-    public function createUpdateDescriptionCommand($id, $description);
+    public function createUpdateDescriptionCommand($id, Language $language, Description $description);
 
     /**
      * @param string $id

@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
@@ -37,10 +38,10 @@ interface OfferEditingServiceInterface
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Description $description
      * @return string
      */
-    public function translateDescription($id, Language $language, StringLiteral $description);
+    public function updateDescription($id, Language $language, Description $description);
 
     /**
      * @param string $id
@@ -75,13 +76,6 @@ interface OfferEditingServiceInterface
      * @return string
      */
     public function selectMainImage($id, Image $image);
-
-    /**
-     * @param string $id
-     * @param string $description
-     * @return string
-     */
-    public function updateDescription($id, $description);
 
     /**
      * @param string $id

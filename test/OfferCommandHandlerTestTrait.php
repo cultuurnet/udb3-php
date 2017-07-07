@@ -12,7 +12,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
-use CultuurNet\UDB3\Media\Properties\Description;
+use CultuurNet\UDB3\Media\Properties\Description as MediaDescription;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Organizer\Organizer;
@@ -110,7 +110,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_description_of_an_offer()
     {
         $id = '1';
-        $description = 'foo';
+        $description = new Description('foo');
         $commandClass = $this->getCommandClass('UpdateDescription');
         $eventClass = $this->getEventClass('DescriptionUpdated');
 
@@ -120,7 +120,7 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $description, new Language('nl'))
+                new $commandClass($id, new Language('nl'), $description)
             )
             ->then([new $eventClass($id, $description)]);
     }
@@ -134,7 +134,7 @@ trait OfferCommandHandlerTestTrait
         $image = new Image(
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new Description('Some description.'),
+            new MediaDescription('Some description.'),
             new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
             new Language('en')
@@ -162,7 +162,7 @@ trait OfferCommandHandlerTestTrait
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new Description('sexy ladies without clothes'),
+            new MediaDescription('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
             new Language('en')

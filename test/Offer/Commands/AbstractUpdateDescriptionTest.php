@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Language;
 
 class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
@@ -29,12 +30,12 @@ class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->itemId = 'Foo';
-        $this->description = 'This is the event description update.';
+        $this->description = new Description('This is the event description update.');
         $this->language = new Language('en');
 
         $this->updateDescriptionCommand = $this->getMockForAbstractClass(
             AbstractUpdateDescription::class,
-            array($this->itemId, $this->description, $this->language)
+            array($this->itemId, $this->language, $this->description)
         );
     }
 
@@ -44,7 +45,7 @@ class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
     public function it_can_return_its_properties()
     {
         $description = $this->updateDescriptionCommand->getDescription();
-        $expectedDescription = 'This is the event description update.';
+        $expectedDescription = new Description('This is the event description update.');
 
         $this->assertEquals($expectedDescription, $description);
 

@@ -18,7 +18,6 @@ use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\SelectMainImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateOrganizer;
@@ -64,14 +63,6 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getTranslateTitleClassName()
     {
         return TranslateTitle::class;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getTranslateDescriptionClassName()
-    {
-        return TranslateDescription::class;
     }
 
     protected function getUpdateDescriptionClassName()

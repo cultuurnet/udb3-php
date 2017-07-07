@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Variations\Model\Properties\Description;
 
 class UpdateDescriptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,8 +16,8 @@ class UpdateDescriptionTest extends \PHPUnit_Framework_TestCase
     {
         $this->updateDescription = new UpdateDescription(
             'id',
-            new Description('La description'),
-            new Language('fr')
+            new Language('fr'),
+            new Description('La description')
         );
     }
 
@@ -28,8 +28,8 @@ class UpdateDescriptionTest extends \PHPUnit_Framework_TestCase
     {
         $expectedUpdateDescription = new UpdateDescription(
             'id',
-            new Description('La description'),
-            new Language('fr')
+            new Language('fr'),
+            new Description('La description')
         );
 
         $this->assertEquals($expectedUpdateDescription, $this->updateDescription);

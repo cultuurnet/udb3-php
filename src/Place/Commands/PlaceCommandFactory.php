@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Language;
@@ -11,7 +12,6 @@ use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
@@ -94,12 +94,12 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractTranslateDescription
+     * @param Description $description
+     * @return AbstractUpdateDescription
      */
-    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description)
+    public function createUpdateDescriptionCommand($id, Language $language, Description $description)
     {
-        return new TranslateDescription($id, $language, $description);
+        return new UpdateDescription($id, $language, $description);
     }
 
     /**
@@ -110,16 +110,6 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     public function createSelectMainImageCommand($id, Image $image)
     {
         return new SelectMainImage($id, $image);
-    }
-
-    /**
-     * @param string $id
-     * @param string $description
-     * @return AbstractUpdateDescription
-     */
-    public function createUpdateDescriptionCommand($id, $description)
-    {
-        return new UpdateDescription($id, $description);
     }
 
     /**

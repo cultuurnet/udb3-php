@@ -12,14 +12,15 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\CopyEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
-use CultuurNet\UDB3\Event\Commands\TranslateDescription;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
@@ -137,17 +138,17 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_translate_the_description_of_an_event()
+    public function it_can_translate_the_description_of_an_event_by_updating_with_a_foreign_language()
     {
         $id = '1';
-        $description = new StringLiteral('Lorem ipsum dolor si amet...');
-        $language = new Language('nl');
+        $description = new Description('Lorem ipsum dolor si amet...');
+        $language = new Language('fr');
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new TranslateDescription($id, $language, $description))
+            ->when(new UpdateDescription($id, $language, $description))
             ->then([new DescriptionTranslated($id, $language, $description)]);
     }
 

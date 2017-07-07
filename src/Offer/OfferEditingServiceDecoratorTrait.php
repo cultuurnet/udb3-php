@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
@@ -35,12 +36,6 @@ trait OfferEditingServiceDecoratorTrait
             ->translateTitle($id, $language, $title);
     }
 
-    public function translateDescription($id, Language $language, StringLiteral $description)
-    {
-        return $this->getDecoratedEditingService()
-            ->translateDescription($id, $language, $description);
-    }
-
     public function addImage($id, Image $image)
     {
         return $this->getDecoratedEditingService()
@@ -65,10 +60,10 @@ trait OfferEditingServiceDecoratorTrait
             ->selectMainImage($id, $image);
     }
 
-    public function updateDescription($id, $description)
+    public function updateDescription($id, Language $language, Description $description)
     {
         return $this->getDecoratedEditingService()
-            ->updateDescription($id, $description);
+            ->updateDescription($id, $language, $description);
     }
 
     public function updateTypicalAgeRange($id, $ageRange)

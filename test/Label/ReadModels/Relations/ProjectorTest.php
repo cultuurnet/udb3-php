@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved as LabelRemovedFromEvent;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
+use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\LabelRelation;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface as RelationsReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
@@ -272,12 +273,13 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
+        // Make sure to have different casing for the UDB3 label then the UDB2 label.
         $this->relationsReadRepository->expects($this->once())
             ->method('getLabelRelationsForItem')
             ->with($itemId)
             ->willReturn([
-                new Label\ReadModels\Relations\Repository\LabelRelation(
-                    new LabelName('2dotstwice'),
+                new LabelRelation(
+                    new LabelName('2DOTStwice'),
                     RelationType::ORGANIZER(),
                     new StringLiteral('123'),
                     false

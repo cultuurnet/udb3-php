@@ -200,9 +200,10 @@ class Projector extends AbstractProjector
             },
             $this->readRepository->getLabelRelationsForItem($relationId)
         );
-        $udb2Labels = array_diff(
+        $udb2Labels = array_udiff(
             $labelCollection->asArray(),
-            $udb3Labels
+            $udb3Labels,
+            'strcasecmp'
         );
 
         // Only save the UDB2 labels, because the UDB3 labels are still present.

@@ -100,7 +100,7 @@ class CalendarFactory implements CalendarFactoryInterface
                     $lastPart = array_pop($periodParts);
                     return new Timestamp(
                         Chronos::instance($firstPart->getStartDate())->second(0),
-                        $lastPart->getEndDate()
+                        $lastPart ? $lastPart->getEndDate() : $firstPart->getEndDate()
                     );
                 },
                 $splitPeriods

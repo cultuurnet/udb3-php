@@ -213,7 +213,7 @@ trait OfferCommandHandlerTestTrait
                             Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
                             new Language('en')
                         )
-                    )
+                    ),
                 ]
             )
             ->when(

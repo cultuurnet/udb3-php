@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Media;
 
 use TwoDotsTwice\Collection\AbstractCollection;
 use TwoDotsTwice\Collection\CollectionInterface;
+use ValueObjects\Identity\UUID;
 
 class ImageCollection extends AbstractCollection implements CollectionInterface
 {
@@ -47,5 +48,21 @@ class ImageCollection extends AbstractCollection implements CollectionInterface
 
             return $iterator->current();
         }
+    }
+
+    /**
+     * @param UUID $uuid
+     * @return Image|null
+     */
+    public function findImageByUUID(UUID $uuid)
+    {
+        /** @var Image $image */
+        foreach ($this->items as $image) {
+            if ($image->getMediaObjectId() === $uuid) {
+                return $image;
+            }
+        }
+        
+        return null;
     }
 }

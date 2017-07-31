@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
@@ -180,6 +181,40 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new ImageAdded('someId', $image),
                     new ImageAdded('someId', $anotherImage),
                     new MainImageSelected('someId', $anotherImage),
+                ]
+            );
+    }
+    
+    /**
+     * @test
+     */
+    public function it_checks_for_presence_of_image_when_updating()
+    {
+        $updateImage = new UpdateImage(
+            'someId',
+            $this->image->getMediaObjectId(),
+            new Description('my favorite cat'),
+            new CopyrightHolder('Jane Doe')
+        );
+
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($updateImage) {
+                    $item->addImage($this->image);
+                    $item->removeImage($this->image);
+                    $item->updateImage($updateImage);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded('someId', $this->image),
+                    new ImageRemoved('someId', $this->image),
                 ]
             );
     }

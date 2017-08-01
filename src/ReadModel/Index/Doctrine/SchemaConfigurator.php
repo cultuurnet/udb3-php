@@ -59,17 +59,17 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
         $table->addColumn(
             'created',
             'string',
-            array('length' => 36, 'notnull' => true)
+            array('length' => 32, 'notnull' => true)
         );
         $table->addColumn(
             'updated',
             'string',
-            array('length' => 36, 'notnull' => true)
+            array('length' => 32, 'notnull' => true)
         );
         $table->addColumn(
             'owning_domain',
             'string',
-            array('length' => 36, 'notnull' => true)
+            array('length' => 256, 'notnull' => true)
         );
         $table->addColumn(
             'entity_iri',

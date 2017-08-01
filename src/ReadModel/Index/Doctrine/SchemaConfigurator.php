@@ -53,27 +53,31 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
         );
         $table->addColumn(
             'zip',
-            'text'
+            'string',
+            array('length' => 32)
         );
         $table->addColumn(
             'created',
-            'text',
-            array('length' => 36, 'notnull' => true)
+            'string',
+            array('length' => 32, 'notnull' => true)
         );
         $table->addColumn(
             'updated',
-            'text',
-            array('length' => 36, 'notnull' => true)
+            'string',
+            array('length' => 32, 'notnull' => true)
         );
         $table->addColumn(
             'owning_domain',
-            'text',
-            array('length' => 36, 'notnull' => true)
+            'string',
+            array('length' => 256, 'notnull' => true)
         );
         $table->addColumn(
             'entity_iri',
-            'text'
+            'string',
+            array('length' => 256)
         );
+
+        $table->setPrimaryKey(['entity_id']);
 
         $schemaManager->createTable($table);
     }

@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
-use CultuurNet\Hydra\PagedCollection;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -237,7 +236,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function it_deletes_by_unique_combination_of_id_and_entity_type()
     {
-        $this->repository->deleteIndex('abc', EntityType::PLACE());
+        $this->repository->deleteIndex('abcd', EntityType::PLACE());
 
         $expectedData = $this->data;
 
@@ -258,7 +257,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     public function it_can_find_places_by_postal_code()
     {
         $expectedIds = [
-            'abc',
+            'abcd',
             '123',
         ];
 

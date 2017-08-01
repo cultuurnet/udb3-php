@@ -609,4 +609,70 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCalendar, $cdbCalendar);
     }
+
+    /**
+     * @test
+     */
+    public function it_converts_a_calendar_that_spans_two_days_and_start_and_ends_on_the_same_time_of_day()
+    {
+        $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+        $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+            '2017-07-20',
+            '20:00:01'
+        ));
+        $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+            '2017-07-21',
+            '00:00:01',
+            '20:00:00'
+        ));
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new DateTime('2017-07-20T20:00:00+02:00'),
+            new DateTime('2017-07-21T20:00:00+02:00'),
+            [
+                new Timestamp(
+                    new DateTime('2017-07-20T20:00:00+02:00'),
+                    new DateTime('2017-07-21T20:00:00+02:00')
+                ),
+            ]
+        );
+
+        $cdbCalendar = $this->converter->toCdbCalendar($calendar);
+
+        $this->assertEquals($expectedCalendar, $cdbCalendar);
+    }
+
+    /**
+     * @test
+     */
+    public function it_converts_a_calendar_that_spans_two_days_and_the_time_of_day_of_the_end_date_is_later_than_the_start_date()
+    {
+        $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
+        $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+            '2017-07-20',
+            '20:00:01'
+        ));
+        $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
+            '2017-07-21',
+            '00:00:01',
+            '21:00:00'
+        ));
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            new DateTime('2017-07-20T20:00:00+02:00'),
+            new DateTime('2017-07-21T20:00:00+02:00'),
+            [
+                new Timestamp(
+                    new DateTime('2017-07-20T20:00:00+02:00'),
+                    new DateTime('2017-07-21T21:00:00+02:00')
+                ),
+            ]
+        );
+
+        $cdbCalendar = $this->converter->toCdbCalendar($calendar);
+
+        $this->assertEquals($expectedCalendar, $cdbCalendar);
+    }
 }

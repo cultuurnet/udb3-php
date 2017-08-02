@@ -662,7 +662,7 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             new DateTime('2017-07-20T20:00:00+02:00'),
-            new DateTime('2017-07-21T20:00:00+02:00'),
+            new DateTime('2017-07-21T21:00:00+02:00'),
             [
                 new Timestamp(
                     new DateTime('2017-07-20T20:00:00+02:00'),

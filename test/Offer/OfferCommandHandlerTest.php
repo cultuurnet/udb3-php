@@ -20,7 +20,6 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
-use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
@@ -88,7 +87,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $organizerRepository;
 
     /**
-     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $labelRepository;
 

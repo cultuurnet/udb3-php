@@ -63,18 +63,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $placeId;
 
-    /**
-     * @var Language
-     */
-    private $mainLanguage;
-
     public function __construct()
     {
         parent::__construct();
-
-        // For now the main language is hardcoded as nl.
-        // In the future it should be set dynamically on create.
-        $this->mainLanguage = new Language('nl');
     }
 
     /**

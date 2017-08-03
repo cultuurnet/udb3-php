@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
@@ -25,9 +26,9 @@ use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\RemoveLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
-use CultuurNet\UDB3\Place\Commands\TranslateDescription;
 use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
+use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
@@ -274,17 +275,17 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_translate_the_description_of_an_event()
+    public function it_can_translate_the_description_by_updating_with_a_foreign_language()
     {
         $id = '1';
-        $description = new StringLiteral('Lorem ipsum dolor si amet...');
-        $language = new Language('nl');
+        $description = new Description('Lorem ipsum dolor si amet...');
+        $language = new Language('fr');
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [$this->factorOfferCreated($id)]
             )
-            ->when(new TranslateDescription($id, $language, $description))
+            ->when(new UpdateDescription($id, $language, $description))
             ->then([new DescriptionTranslated($id, $language, $description)]);
     }
 

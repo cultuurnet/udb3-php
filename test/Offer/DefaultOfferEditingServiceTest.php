@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -11,10 +12,10 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
@@ -73,11 +74,6 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     private $translateTitleCommand;
 
-    /**
-     * @var AbstractTranslateDescription
-     */
-    private $translateDescriptionCommand;
-
     public function setUp()
     {
         $this->commandBus = $this->createMock(CommandBusInterface::class);
@@ -99,11 +95,6 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->translateTitleCommand = $this->getMockForAbstractClass(
             AbstractTranslateTitle::class,
             array('foo', new Language('en'), new StringLiteral('English title'))
-        );
-
-        $this->translateDescriptionCommand = $this->getMockForAbstractClass(
-            AbstractTranslateDescription::class,
-            array('foo', new Language('en'), new StringLiteral('English description'))
         );
 
         $this->offerEditingService = new DefaultOfferEditingService(
@@ -193,25 +184,25 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_translate_a_description()
+    public function it_can_update_the_description_in_a_given_language()
     {
         $this->offerRepository->expects($this->once())
             ->method('get')
             ->with('foo');
 
         $this->commandFactory->expects($this->once())
-            ->method('createTranslateDescriptionCommand')
-            ->with('foo', new Language('en'), new StringLiteral('English description'))
-            ->willReturn($this->translateDescriptionCommand);
+            ->method('createUpdateDescriptionCommand')
+            ->with('foo', new Language('fr'), new Description('La description'))
+            ->willReturn(new UpdateDescription('foo', new Language('fr'), new Description('La description')));
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->willReturn($this->expectedCommandId);
 
-        $commandId = $this->offerEditingService->translateDescription(
+        $commandId = $this->offerEditingService->updateDescription(
             'foo',
-            new Language('en'),
-            new StringLiteral('English description')
+            new Language('fr'),
+            new Description('La description')
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);

@@ -18,10 +18,8 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
-use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
@@ -37,7 +35,6 @@ use CultuurNet\UDB3\Offer\Item\ItemRepository;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel as AddLabelToSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\RemoveLabel as RemoveLabelFromSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
-use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSomethingElse;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
@@ -90,7 +87,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $organizerRepository;
 
     /**
-     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $labelRepository;
 
@@ -255,46 +252,6 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->when(
                 new TranslateTitleOnSomethingElse($this->id, $this->language, $this->title)
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_translate_description_commands_from_the_correct_namespace()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given(
-                [
-                    $this->itemCreated,
-                ]
-            )
-            ->when(
-                new TranslateDescription($this->id, $this->language, $this->description)
-            )
-            ->then(
-                [
-                    new DescriptionTranslated($this->id, $this->language, $this->description),
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_ignores_translate_description_commands_from_incorrect_namespace()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given(
-                [
-                    $this->itemCreated,
-                ]
-            )
-            ->when(
-                new TranslateDescriptionOnSomethingElse($this->id, $this->language, $this->description)
             )
             ->then([]);
     }

@@ -1,18 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\CommandHandlerTestTrait.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\CommandHandling\Testing\Scenario;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
-use CultuurNet\UDB3\Media\Properties\Description;
+use CultuurNet\UDB3\Media\Properties\Description as MediaDescription;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Organizer\Organizer;
@@ -25,6 +21,7 @@ use ValueObjects\Web\Url;
 
 /**
  * Provides a trait to test commands that are applicable for all UDB3 offer types
+ * @property Scenario $scenario
  */
 trait OfferCommandHandlerTestTrait
 {
@@ -40,7 +37,7 @@ trait OfferCommandHandlerTestTrait
 
     /**
      * Get the namespaced classname of the command to create.
-     * @param type $className
+     * @param string $className
      *   Name of the class
      * @return string
      */
@@ -52,7 +49,7 @@ trait OfferCommandHandlerTestTrait
 
     /**
      * Get the namespaced classname of the event to create.
-     * @param type $className
+     * @param string $className
      *   Name of the class
      * @return string
      */
@@ -110,7 +107,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_description_of_an_offer()
     {
         $id = '1';
-        $description = 'foo';
+        $description = new Description('foo');
         $commandClass = $this->getCommandClass('UpdateDescription');
         $eventClass = $this->getEventClass('DescriptionUpdated');
 
@@ -120,7 +117,7 @@ trait OfferCommandHandlerTestTrait
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $description)
+                new $commandClass($id, new Language('nl'), $description)
             )
             ->then([new $eventClass($id, $description)]);
     }
@@ -134,7 +131,7 @@ trait OfferCommandHandlerTestTrait
         $image = new Image(
             UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new Description('Some description.'),
+            new MediaDescription('Some description.'),
             new CopyrightHolder('Dirk Dirkington'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
             new Language('en')
@@ -162,7 +159,7 @@ trait OfferCommandHandlerTestTrait
         $image = new Image(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('image/png'),
-            new Description('sexy ladies without clothes'),
+            new MediaDescription('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
             Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
             new Language('en')
@@ -208,7 +205,7 @@ trait OfferCommandHandlerTestTrait
                         $anotherImage = new Image(
                             $mediaObjectId,
                             new MIMEType('image/jpeg'),
-                            new Description('my best selfie'),
+                            new MediaDescription('my best selfie'),
                             new CopyrightHolder('Dirk Dirkington'),
                             Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
                             new Language('en')

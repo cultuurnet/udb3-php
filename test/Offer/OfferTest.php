@@ -11,6 +11,8 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
@@ -184,7 +186,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             );
     }
-    
+
     /**
      * @test
      */
@@ -381,10 +383,8 @@ class OfferTest extends AggregateRootScenarioTestCase
      */
     public function it_throws_when_trying_to_publish_a_non_draft_offer()
     {
-        $this->setExpectedException(
-            Exception::class,
-            'You can not publish an offer that is not draft'
-        );
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('You can not publish an offer that is not draft');
 
         $itemId = 'itemId';
         $now = new \DateTime();
@@ -755,7 +755,60 @@ class OfferTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_should_ignore_a_description_update_that_does_not_change_the_existing_descriptions()
+    {
+        $itemId = UUID::generateAsString();
+        $description = new \CultuurNet\UDB3\Description('Een beschrijving');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new DescriptionUpdated($itemId, (string) $description),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($description) {
+                    $item->updateDescription($description, new Language('nl'));
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_translate_the_description_when_updating_with_a_foreign_language()
+    {
+        $itemId = UUID::generateAsString();
+        $description = new \CultuurNet\UDB3\Description('La description');
+        $language = new Language('fr');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new DescriptionUpdated($itemId, 'Een beschrijving'),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($description, $language) {
+                    $item->updateDescription($description, $language);
+                }
+            )
+            ->then([
+                new DescriptionTranslated($itemId, $language, $description),
+            ]);
+    }
+
+    /**
+     * @test
      * @dataProvider imageCollectionDataProvider
+     * @param Image $image
+     * @param ImageCollection $imageCollection
      */
     public function it_should_import_images_from_udb2_as_media_object_and_main_image(
         Image $image,
@@ -779,6 +832,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param Image $image
      */
     public function it_should_keep_images_translated_in_ubd3_when_updating_images_from_udb2(
         Image $image
@@ -828,6 +882,8 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param Image $image
+     * @param ImageCollection $imageCollection
      */
     public function it_should_update_images_from_udb2_as_media_object_and_main_image(
         Image $image,

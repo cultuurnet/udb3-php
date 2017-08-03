@@ -348,10 +348,8 @@ class OfferTest extends AggregateRootScenarioTestCase
      */
     public function it_throws_when_trying_to_publish_a_non_draft_offer()
     {
-        $this->setExpectedException(
-            Exception::class,
-            'You can not publish an offer that is not draft'
-        );
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('You can not publish an offer that is not draft');
 
         $itemId = 'itemId';
         $now = new \DateTime();
@@ -774,6 +772,8 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param Image $image
+     * @param ImageCollection $imageCollection
      */
     public function it_should_import_images_from_udb2_as_media_object_and_main_image(
         Image $image,
@@ -797,6 +797,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param Image $image
      */
     public function it_should_keep_images_translated_in_ubd3_when_updating_images_from_udb2(
         Image $image
@@ -846,6 +847,8 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      * @dataProvider imageCollectionDataProvider
+     * @param Image $image
+     * @param ImageCollection $imageCollection
      */
     public function it_should_update_images_from_udb2_as_media_object_and_main_image(
         Image $image,

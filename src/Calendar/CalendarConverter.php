@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Calendar;
 
+use Cake\Chronos\Chronos;
 use CultureFeed_Cdb_Data_Calendar_OpeningTime;
 use CultureFeed_Cdb_Data_Calendar_Period;
 use CultureFeed_Cdb_Data_Calendar_PeriodList;
@@ -12,6 +13,7 @@ use CultureFeed_Cdb_Data_Calendar_TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\CalendarType;
+use DateInterval;
 use DateTimeInterface;
 use InvalidArgumentException;
 use League\Period\Period;
@@ -168,13 +170,10 @@ class CalendarConverter implements CalendarConverterInterface
         // Make a clone of the original calendar to avoid updating input param.
         $newCalendar = clone $calendar;
 
-        $startDay = Period::createFromDay($startDate);
-        $untilEndOfNextDay = $startDay
-            ->withDuration('2 DAYS')
-            ->moveEndDate('-1 SECOND');
+        $first24Hours = Period::createFromDuration($startDate, new DateInterval('P1D'));
 
         // Easy case an no seconds needed for indexing.
-        if ($untilEndOfNextDay->contains($endDate)) {
+        if ($first24Hours->contains($endDate)) {
             $newCalendar->add(
                 new CultureFeed_Cdb_Data_Calendar_Timestamp(
                     $startDate->format('Y-m-d'),
@@ -197,16 +196,25 @@ class CalendarConverter implements CalendarConverterInterface
                 $this->formatDateTimeAsCdbTime($endDate)
             );
 
-            $days = iterator_to_array($period->getDatePeriod('1 DAY'));
-            $fillerTimestamps = array_map(
-                function (DateTimeInterface $dateTime) use ($index) {
-                    return new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                        $dateTime->format('Y-m-d'),
-                        $this->createIndexedTimeString($index)
-                    );
-                },
-                array_slice($days, 1, count($days) === 2 ? 2 : -1)
+            $untilEndOfSecondDay = new Period(
+                $startDate,
+                Chronos::instance($startDate)->addDay()->endOfDay()
             );
+
+            if ($untilEndOfSecondDay->contains($endDate)) {
+                $fillerTimestamps = [];
+            } else {
+                $days = iterator_to_array($period->getDatePeriod('1 DAY'));
+                $fillerTimestamps = array_map(
+                    function (DateTimeInterface $dateTime) use ($index) {
+                        return new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            $dateTime->format('Y-m-d'),
+                            $this->createIndexedTimeString($index)
+                        );
+                    },
+                    array_slice($days, 1, count($days) === 2 ? 2 : -1)
+                );
+            }
 
             $newCalendar = array_reduce(
                 array_merge([$startTimestamp], $fillerTimestamps, [$endTimestamp]),
@@ -214,7 +222,7 @@ class CalendarConverter implements CalendarConverterInterface
                     $calendar->add($timestamp);
                     return $calendar;
                 },
-                $calendar
+                $newCalendar
             );
         }
 

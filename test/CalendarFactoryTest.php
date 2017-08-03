@@ -703,6 +703,78 @@ class CalendarFactoryTest extends PHPUnit_Framework_TestCase
                     ]
                 ),
             ],
+            'import event with timestamp with seconds but no index' => [
+                'cdbCalendar' => call_user_func(function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            '2011-11-11',
+                            '11:11:11',
+                            '12:12:12'
+                        )
+                    );
+                    return $cdbCalendar;
+                }),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::SINGLE(),
+                    new DateTimeImmutable(
+                        '2011-11-11 11:11:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2011-11-11 12:12:12',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2011-11-11 11:11:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2011-11-11 12:12:12',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                ),
+            ],
+            'import event with timestamp with seconds but no index and no end time' => [
+                'cdbCalendar' => call_user_func(function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            '2011-11-11',
+                            '11:11:11',
+                            null
+                        )
+                    );
+                    return $cdbCalendar;
+                }),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::SINGLE(),
+                    new DateTimeImmutable(
+                        '2011-11-11 11:11:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2011-11-11 11:11:11',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2011-11-11 11:11:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2011-11-11 11:11:11',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                ),
+            ],
         ];
     }
 

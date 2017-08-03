@@ -191,13 +191,27 @@ trait OfferCommandHandlerTestTrait
         $mediaObjectId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
         $description = new StringLiteral('A description.');
         $copyrightHolder = new StringLiteral('Dirk');
+        $imageAdded = $this->getEventClass('ImageAdded');
         $commandClass = $this->getCommandClass('UpdateImage');
         $eventClass = $this->getEventClass('ImageUpdated');
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
-                [$this->factorOfferCreated($itemId)]
+                [
+                    $this->factorOfferCreated($itemId),
+                    new $imageAdded(
+                        $itemId,
+                        $anotherImage = new Image(
+                            $mediaObjectId,
+                            new MIMEType('image/jpeg'),
+                            new MediaDescription('my best selfie'),
+                            new CopyrightHolder('Dirk Dirkington'),
+                            Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
+                            new Language('en')
+                        )
+                    ),
+                ]
             )
             ->when(
                 new $commandClass(

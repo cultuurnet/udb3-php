@@ -73,4 +73,37 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(null, (new ImageCollection())->getMain());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_find_an_image_based_on_uuid()
+    {
+        $uuid = new UUID();
+
+        $image = new Image(
+            $uuid,
+            MIMEType::fromSubtype('jpeg'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Henk'),
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
+            new Language('en')
+        );
+
+        $anotherImage = new Image(
+            new UUID(),
+            MIMEType::fromSubtype('jpeg'),
+            new Description('world biggest cat'),
+            new CopyrightHolder('Doggy Junier'),
+            Url::fromNative('http://www.cats.com/biggest.jpeg'),
+            new Language('en')
+        );
+
+        $images = (new ImageCollection())
+            ->with($image)
+            ->with($anotherImage);
+
+        $this->assertEquals($image, $images->findImageByUUID($uuid));
+        $this->assertNull($images->findImageByUUID(new UUID()));
+    }
 }

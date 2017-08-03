@@ -301,9 +301,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateImage(AbstractUpdateImage $updateImageCommand)
     {
-        $this->apply(
-            $this->createImageUpdatedEvent($updateImageCommand)
-        );
+        if ($this->images->findImageByUUID($updateImageCommand->getMediaObjectId())) {
+            $this->apply(
+                $this->createImageUpdatedEvent($updateImageCommand)
+            );
+        }
     }
 
     /**

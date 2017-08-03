@@ -104,6 +104,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param Url $jsonLDContext
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -114,14 +115,16 @@ class EventLDProjector extends OfferLDProjector implements
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
         CdbXMLImporter $cdbXMLImporter,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        Url $jsonLDContext
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            $jsonDocumentMetaDataEnricher
+            $jsonDocumentMetaDataEnricher,
+            $jsonLDContext
         );
 
         $this->placeService = $placeService;
@@ -137,13 +140,12 @@ class EventLDProjector extends OfferLDProjector implements
      */
     protected function newDocument($id)
     {
-        $document = new JsonDocument($id);
+        $document = parent::newDocument($id);
 
-        $offerLd = $document->getBody();
-        $offerLd->{'@id'} = $this->iriGenerator->iri($id);
-        $offerLd->{'@context'} = '/contexts/event';
+        $eventLd = $document->getBody();
+        $eventLd->{'@type'} = 'event';
 
-        return $document->withBody($offerLd);
+        return $document->withBody($eventLd);
     }
 
     protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)

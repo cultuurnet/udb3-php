@@ -44,6 +44,7 @@ use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Web\Url;
 
 abstract class OfferLDProjector implements OrganizerServiceInterface
 {
@@ -83,24 +84,32 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $slugger;
 
     /**
+     * @var Url
+     */
+    protected $jsonLDContext;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param Url $jsonLdContext
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        Url $jsonLDContext
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
+        $this->jsonLDContext = $jsonLDContext;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -819,6 +828,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
         $offerLd->{'@id'} = $this->iriGenerator->iri($id);
+        $offerLd->{'@context'} = (object) [
+            '@vocab' => (string) $this->jsonLDContext,
+        ];
 
         return $document->withBody($offerLd);
     }

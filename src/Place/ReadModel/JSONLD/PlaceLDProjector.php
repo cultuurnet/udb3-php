@@ -56,6 +56,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
+use ValueObjects\Web\Url;
 
 /**
  * Projects state changes on Place entities to a JSON-LD read model in a
@@ -82,14 +83,16 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         CdbXMLImporter $cdbXMLImporter,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        Url $jsonLDContext
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            $jsonDocumentMetaDataEnricher
+            $jsonDocumentMetaDataEnricher,
+            $jsonLDContext
         );
 
         $this->cdbXMLImporter = $cdbXMLImporter;
@@ -161,11 +164,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function newDocument($id)
     {
-        $document = new JsonDocument($id);
+        $document = parent::newDocument($id);
 
         $placeLd = $document->getBody();
-        $placeLd->{'@id'} = $this->iriGenerator->iri($id);
-        $placeLd->{'@context'} = '/contexts/place';
+        $placeLd->{'@type'} = 'place';
 
         return $document->withBody($placeLd);
     }

@@ -1,14 +1,10 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\CommandHandlerTestTrait.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
+use Broadway\CommandHandling\Testing\Scenario;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -25,6 +21,7 @@ use ValueObjects\Web\Url;
 
 /**
  * Provides a trait to test commands that are applicable for all UDB3 offer types
+ * @property Scenario $scenario
  */
 trait OfferCommandHandlerTestTrait
 {
@@ -40,7 +37,7 @@ trait OfferCommandHandlerTestTrait
 
     /**
      * Get the namespaced classname of the command to create.
-     * @param type $className
+     * @param string $className
      *   Name of the class
      * @return string
      */
@@ -52,7 +49,7 @@ trait OfferCommandHandlerTestTrait
 
     /**
      * Get the namespaced classname of the event to create.
-     * @param type $className
+     * @param string $className
      *   Name of the class
      * @return string
      */

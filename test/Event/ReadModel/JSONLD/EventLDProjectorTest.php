@@ -26,6 +26,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\EventServiceInterface;
@@ -1059,6 +1060,54 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
 
         $body = $this->project($majorInfoUpdated, $id);
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_location()
+    {
+        $this->mockPlaceService();
+
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $location = new Location(
+            '395fe7eb-9bac-4647-acae-316b6446a85e',
+            new StringLiteral('Repeteerkot'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9620'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $locationUpdated = new LocationUpdated(
+            $eventId,
+            $location
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->id = $eventId;
+        $jsonLD->location = [
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+        ];
+
+        $initialDocument = (new JsonDocument($eventId))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->id = $eventId;
+        $expectedJsonLD->location = (object)[
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+        ];
+
+        $body = $this->project($locationUpdated, $eventId);
 
         $this->assertEquals($expectedJsonLD, $body);
     }

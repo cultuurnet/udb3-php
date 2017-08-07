@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
@@ -374,6 +375,41 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn($expectedCommandId);
 
         $commandId = $this->eventEditingService->updateAudience($eventId, $audience);
+
+        $this->assertEquals($expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_location_command()
+    {
+        $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
+
+        $location = new Location(
+            '57738178-28a5-4afb-90c0-fd0beba172a8',
+            new StringLiteral('Het Depot'),
+            new Address(
+                new Street('Martelarenplein 1'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $updateLocation = new UpdateLocation(
+            $eventId,
+            $location
+        );
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateLocation)
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->eventEditingService->updateLocation($eventId, $location);
 
         $this->assertEquals($expectedCommandId, $commandId);
     }

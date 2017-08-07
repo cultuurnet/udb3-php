@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
 use CultuurNet\UDB3\Title;
@@ -130,12 +131,12 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
     /**
      * @inheritdoc
      */
-    public function updateLocation($eventId, Location $location)
+    public function updateLocation($eventId, LocationId $locationId)
     {
         $this->guardId($eventId);
 
         return $this->commandBus->dispatch(
-            new UpdateLocation($eventId, $location)
+            new UpdateLocation($eventId, $locationId)
         );
     }
 

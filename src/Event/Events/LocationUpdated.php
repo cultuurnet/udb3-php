@@ -2,36 +2,35 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
 class LocationUpdated extends AbstractEvent
 {
     /**
-     * @var Location
+     * @var LocationId
      */
-    private $location;
+    private $locationId;
 
     /**
-     * LocationUpdated constructor.
      * @param string $eventId
-     * @param Location $location
+     * @param LocationId $locationId
      */
     public function __construct(
         $eventId,
-        Location $location
+        LocationId $locationId
     ) {
         parent::__construct($eventId);
 
-        $this->location = $location;
+        $this->locationId = $locationId;
     }
 
     /**
-     * @return Location
+     * @return LocationId
      */
-    public function getLocation()
+    public function getLocationId()
     {
-        return $this->location;
+        return $this->locationId;
     }
 
     /**
@@ -40,7 +39,7 @@ class LocationUpdated extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + [
-                'location' => $this->location->serialize(),
+                'location_id' => $this->locationId->toNative(),
             ];
     }
 
@@ -51,7 +50,7 @@ class LocationUpdated extends AbstractEvent
     {
         return new static(
             $data['item_id'],
-            Location::deserialize($data['location'])
+            new LocationId($data['location_id'])
         );
     }
 }

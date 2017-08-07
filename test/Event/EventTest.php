@@ -26,6 +26,7 @@ use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
@@ -547,16 +548,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
 
-        $location = new Location(
-            '57738178-28a5-4afb-90c0-fd0beba172a8',
-            new StringLiteral('Het Depot'),
-            new Address(
-                new Street('Martelarenplein 1'),
-                new PostalCode('3000'),
-                new Locality('Leuven'),
-                Country::fromNative('BE')
-            )
-        );
+        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
         $this->scenario
             ->given(
@@ -565,13 +557,13 @@ class EventTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Event $event) use ($location) {
-                    $event->updateLocation($location);
+                function (Event $event) use ($locationId) {
+                    $event->updateLocation($locationId);
                 }
             )
             ->then(
                 [
-                    new LocationUpdated($eventId, $location),
+                    new LocationUpdated($eventId, $locationId),
                 ]
             );
     }

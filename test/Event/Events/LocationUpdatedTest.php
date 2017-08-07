@@ -2,13 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
-use CultuurNet\UDB3\Location\Location;
-use ValueObjects\Geography\Country;
-use ValueObjects\StringLiteral\StringLiteral;
+use CultuurNet\UDB3\Location\LocationId;
 
 class LocationUpdatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,9 +12,9 @@ class LocationUpdatedTest extends \PHPUnit_Framework_TestCase
     private $eventId;
 
     /**
-     * @var Location
+     * @var LocationId
      */
-    private $location;
+    private $locationId;
 
     /**
      * @var array
@@ -36,34 +30,16 @@ class LocationUpdatedTest extends \PHPUnit_Framework_TestCase
     {
         $this->eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
 
-        $this->location = new Location(
-            '57738178-28a5-4afb-90c0-fd0beba172a8',
-            new StringLiteral('Het Depot'),
-            new Address(
-                new Street('Martelarenplein 1'),
-                new PostalCode('3000'),
-                new Locality('Leuven'),
-                Country::fromNative('BE')
-            )
-        );
+        $this->locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
         $this->locationUpdatedAsArray = [
             'item_id' => $this->eventId,
-            'location' => [
-                'cdbid' => '57738178-28a5-4afb-90c0-fd0beba172a8',
-                'name' => 'Het Depot',
-                'address' => [
-                    'streetAddress' => 'Martelarenplein 1',
-                    'postalCode' => '3000',
-                    'addressLocality' => 'Leuven',
-                    'addressCountry' => 'BE',
-                ],
-            ],
+            'location_id' => '57738178-28a5-4afb-90c0-fd0beba172a8',
         ];
 
         $this->locationUpdated = new LocationUpdated(
             $this->eventId,
-            $this->location
+            $this->locationId
         );
     }
 
@@ -78,9 +54,9 @@ class LocationUpdatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_stores_a_location()
+    public function it_stores_a_location_id()
     {
-        $this->assertEquals($this->location, $this->locationUpdated->getLocation());
+        $this->assertEquals($this->locationId, $this->locationUpdated->getLocationId());
     }
 
     /**

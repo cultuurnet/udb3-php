@@ -595,7 +595,7 @@ class EventLDProjector extends OfferLDProjector implements
 
         $jsonLD->location = [
             '@type' => 'Place',
-         ] + $this->placeJSONLD($locationUpdated->getLocation()->getCdbid());
+         ] + $this->placeJSONLD($locationUpdated->getLocationId()->toNative());
 
         return $document->withBody($jsonLD);
     }

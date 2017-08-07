@@ -38,6 +38,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
@@ -1072,20 +1073,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $this->mockPlaceService();
 
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
-        $location = new Location(
-            '395fe7eb-9bac-4647-acae-316b6446a85e',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9620'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $locationId = new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e');
 
         $locationUpdated = new LocationUpdated(
             $eventId,
-            $location
+            $locationId
         );
 
         $jsonLD = new stdClass();

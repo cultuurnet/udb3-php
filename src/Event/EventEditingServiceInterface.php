@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Title;
@@ -131,11 +132,11 @@ interface EventEditingServiceInterface
 
     /**
      * @param string $eventId
-     * @param Location $location
+     * @param LocationId $locationId
      *
      * @return string $commandId
      */
-    public function updateLocation($eventId, Location $location);
+    public function updateLocation($eventId, LocationId $locationId);
 
     /**
      * @param string $eventId

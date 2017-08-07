@@ -2,35 +2,35 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 
 class UpdateLocation extends AbstractCommand
 {
     /**
-     * @var Location
+     * @var LocationId
      */
-    private $location;
+    private $locationId;
 
     /**
      * UpdateLocation constructor.
      * @param string $itemId
-     * @param Location $location
+     * @param LocationId $locationId
      */
     public function __construct(
         $itemId,
-        Location $location
+        LocationId $locationId
     ) {
         parent::__construct($itemId);
 
-        $this->location = $location;
+        $this->locationId = $locationId;
     }
 
     /**
-     * @return Location
+     * @return LocationId
      */
-    public function getLocation()
+    public function getLocationId()
     {
-        return $this->location;
+        return $this->locationId;
     }
 }

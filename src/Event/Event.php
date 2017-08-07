@@ -46,6 +46,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
@@ -267,12 +268,12 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Location $location
+     * @param LocationId $locationId
      */
-    public function updateLocation(Location $location)
+    public function updateLocation(LocationId $locationId)
     {
         // For now no special business rules for updating the location of an event.
-        $this->apply(new LocationUpdated($this->eventId, $location));
+        $this->apply(new LocationUpdated($this->eventId, $locationId));
     }
 
     /**

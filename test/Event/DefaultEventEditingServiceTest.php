@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
@@ -386,21 +387,9 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
 
-        $location = new Location(
-            '57738178-28a5-4afb-90c0-fd0beba172a8',
-            new StringLiteral('Het Depot'),
-            new Address(
-                new Street('Martelarenplein 1'),
-                new PostalCode('3000'),
-                new Locality('Leuven'),
-                Country::fromNative('BE')
-            )
-        );
+        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
-        $updateLocation = new UpdateLocation(
-            $eventId,
-            $location
-        );
+        $updateLocation = new UpdateLocation($eventId, $locationId);
 
         $expectedCommandId = 'commandId';
 
@@ -409,7 +398,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with($updateLocation)
             ->willReturn($expectedCommandId);
 
-        $commandId = $this->eventEditingService->updateLocation($eventId, $location);
+        $commandId = $this->eventEditingService->updateLocation($eventId, $locationId);
 
         $this->assertEquals($expectedCommandId, $commandId);
     }

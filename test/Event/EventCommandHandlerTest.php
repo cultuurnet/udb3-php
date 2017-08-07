@@ -41,6 +41,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
@@ -291,16 +292,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
 
-        $location = new Location(
-            '57738178-28a5-4afb-90c0-fd0beba172a8',
-            new StringLiteral('Het Depot'),
-            new Address(
-                new Street('Martelarenplein 1'),
-                new PostalCode('3000'),
-                new Locality('Leuven'),
-                Country::fromNative('BE')
-            )
-        );
+        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
         $this->scenario
             ->withAggregateId($eventId)
@@ -310,11 +302,11 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(
-                new UpdateLocation($eventId, $location)
+                new UpdateLocation($eventId, $locationId)
             )
             ->then(
                 [
-                    new LocationUpdated($eventId, $location),
+                    new LocationUpdated($eventId, $locationId),
                 ]
             );
     }

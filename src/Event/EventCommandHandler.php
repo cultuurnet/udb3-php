@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
@@ -56,6 +57,19 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
 
         $this->offerRepository->save($event);
 
+    }
+
+    /**
+     * @param UpdateLocation $updateLocation
+     */
+    public function handleUpdateLocation(UpdateLocation $updateLocation)
+    {
+        /** @var Event $event */
+        $event = $this->offerRepository->load($updateLocation->getItemId());
+
+        $event->updateLocation($updateLocation->getLocation());
+
+        $this->offerRepository->save($event);
     }
 
     /**

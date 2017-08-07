@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
@@ -27,6 +28,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
@@ -280,6 +282,41 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
             )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_location_of_an_event()
+    {
+        $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
+
+        $location = new Location(
+            '57738178-28a5-4afb-90c0-fd0beba172a8',
+            new StringLiteral('Het Depot'),
+            new Address(
+                new Street('Martelarenplein 1'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                ]
+            )
+            ->when(
+                new UpdateLocation($eventId, $location)
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $location),
+                ]
+            );
     }
 
     /**

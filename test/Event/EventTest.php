@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
@@ -537,6 +538,42 @@ class EventTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_location()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $location = new Location(
+            '57738178-28a5-4afb-90c0-fd0beba172a8',
+            new StringLiteral('Het Depot'),
+            new Address(
+                new Street('Martelarenplein 1'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $this->scenario
+            ->given(
+                [
+                    $this->getCreationEvent(),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($location) {
+                    $event->updateLocation($location);
+                }
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $location),
+                ]
+            );
     }
 
     /**

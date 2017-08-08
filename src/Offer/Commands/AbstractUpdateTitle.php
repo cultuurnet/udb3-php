@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Commands;
 use CultuurNet\UDB3\Language;
 use ValueObjects\StringLiteral\StringLiteral;
 
-abstract class AbstractTranslateTitle extends AbstractTranslatePropertyCommand
+abstract class AbstractUpdateTitle extends AbstractTranslatePropertyCommand
 {
     /**
      * @var string

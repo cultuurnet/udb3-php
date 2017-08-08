@@ -33,7 +33,7 @@ interface OfferEditingServiceInterface
      * @param StringLiteral $title
      * @return string
      */
-    public function translateTitle($id, Language $language, StringLiteral $title);
+    public function updateTitle($id, Language $language, StringLiteral $title);
 
     /**
      * @param $id

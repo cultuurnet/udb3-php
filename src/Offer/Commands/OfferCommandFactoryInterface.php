@@ -74,9 +74,9 @@ interface OfferCommandFactoryInterface
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
-     * @return AbstractTranslateTitle
+     * @return AbstractUpdateTitle
      */
-    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title);
+    public function createUpdateTitleCommand($id, Language $language, StringLiteral $title);
 
     /**
      * @param $id

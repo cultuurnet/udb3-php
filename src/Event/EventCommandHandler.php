@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\SelectMainImage;
-use CultuurNet\UDB3\Event\Commands\TranslateTitle;
+use CultuurNet\UDB3\Event\Commands\UpdateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
@@ -122,9 +122,9 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     /**
      * @return string
      */
-    protected function getTranslateTitleClassName()
+    protected function getUpdateTitleClassName()
     {
-        return TranslateTitle::class;
+        return UpdateTitle::class;
     }
 
     /**

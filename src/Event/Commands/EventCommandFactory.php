@@ -18,7 +18,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
@@ -106,11 +106,11 @@ class EventCommandFactory implements OfferCommandFactoryInterface
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
-     * @return AbstractTranslateTitle
+     * @return AbstractUpdateTitle
      */
-    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title)
+    public function createUpdateTitleCommand($id, Language $language, StringLiteral $title)
     {
-        return new TranslateTitle($id, $language, $title);
+        return new UpdateTitle($id, $language, $title);
     }
 
     /**

@@ -23,7 +23,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
@@ -117,7 +117,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
-    abstract protected function getTranslateTitleClassName();
+    abstract protected function getUpdateTitleClassName();
 
     /**
      * @return string
@@ -249,12 +249,12 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
-     * @param AbstractTranslateTitle $translateTitle
+     * @param AbstractUpdateTitle $translateTitle
      */
-    private function handleTranslateTitle(AbstractTranslateTitle $translateTitle)
+    private function handleUpdateTitle(AbstractUpdateTitle $translateTitle)
     {
         $offer = $this->load($translateTitle->getItemId());
-        $offer->translateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
+        $offer->updateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
         $this->offerRepository->save($offer);
     }
 

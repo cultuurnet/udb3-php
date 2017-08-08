@@ -26,11 +26,11 @@ use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\RemoveLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
-use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
+use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
@@ -252,11 +252,11 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_can_translate_the_title_of_an_event()
+    public function it_can_translate_the_title_of_a_place_by_updating_with_a_foreign_language()
     {
         $id = '1';
         $title = new StringLiteral('Voorbeeld');
-        $language = new Language('nl');
+        $language = new Language('fr');
         $this->scenario
             ->withAggregateId($id)
             ->given(
@@ -264,7 +264,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                     $this->factorOfferCreated($id),
                 ]
             )
-            ->when(new TranslateTitle($id, $language, $title))
+            ->when(new UpdateTitle($id, $language, $title))
             ->then(
                 [
                     new TitleTranslated($id, $language, $title),

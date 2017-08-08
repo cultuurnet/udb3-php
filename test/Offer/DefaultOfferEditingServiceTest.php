@@ -12,10 +12,11 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
@@ -70,7 +71,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $expectedCommandId;
 
     /**
-     * @var AbstractTranslateTitle
+     * @var AbstractUpdateTitle
      */
     private $translateTitleCommand;
 
@@ -93,7 +94,7 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->translateTitleCommand = $this->getMockForAbstractClass(
-            AbstractTranslateTitle::class,
+            AbstractUpdateTitle::class,
             array('foo', new Language('en'), new StringLiteral('English title'))
         );
 
@@ -161,22 +162,26 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_translate_a_title()
+    public function it_can_update_a_title_in_a_given_language()
     {
         $this->offerRepository->expects($this->once())
             ->method('get')
             ->with('foo');
 
         $this->commandFactory->expects($this->once())
-            ->method('createTranslateTitleCommand')
+            ->method('createUpdateTitleCommand')
             ->with('foo', new Language('en'), new StringLiteral('English title'))
-            ->willReturn($this->translateTitleCommand);
+            ->willReturn(new UpdateTitle('foo', new Language('en'), new StringLiteral('English title')));
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->willReturn($this->expectedCommandId);
 
-        $commandId = $this->offerEditingService->translateTitle('foo', new Language('en'), new StringLiteral('English title'));
+        $commandId = $this->offerEditingService->updateTitle(
+            'foo',
+            new Language('en'),
+            new StringLiteral('English title')
+        );
 
         $this->assertEquals($this->expectedCommandId, $commandId);
     }

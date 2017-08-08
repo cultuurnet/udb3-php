@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand as OfferAbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
-use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
+use CultuurNet\UDB3\Offer\Mock\Commands\UpdateTitle;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -78,7 +78,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_is_authorized_to_decoratee_when_not_label_security_command()
     {
-        $translateTitle = new TranslateTitle(
+        $translateTitle = new UpdateTitle(
             'cc9b975b-80e3-47db-ae77-8a930e453232',
             new Language('nl'),
             new StringLiteral('Hallo wereld')

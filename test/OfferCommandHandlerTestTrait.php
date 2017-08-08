@@ -104,6 +104,27 @@ trait OfferCommandHandlerTestTrait
     /**
      * @test
      */
+    public function it_can_update_title_of_an_offer()
+    {
+        $id = '1';
+        $title = new StringLiteral('foo title');
+        $commandClass = $this->getCommandClass('UpdateTitle');
+        $eventClass = $this->getEventClass('TitleUpdated');
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(
+                new $commandClass($id, new Language('nl'), $title)
+            )
+            ->then([new $eventClass($id, $title)]);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_update_description_of_an_offer()
     {
         $id = '1';

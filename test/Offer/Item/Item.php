@@ -31,6 +31,7 @@ use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Offer;
@@ -117,6 +118,15 @@ class Item extends Offer
     protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
     {
         return new TitleTranslated($this->id, $language, $title);
+    }
+
+    /**
+     * @param string $title
+     * @return TitleUpdated
+     */
+    protected function createTitleUpdatedEvent($title)
+    {
+        return new TitleUpdated($this->id, $title);
     }
 
     /**

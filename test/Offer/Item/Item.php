@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
@@ -12,6 +13,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
@@ -136,6 +138,14 @@ class Item extends Offer
     protected function createDescriptionUpdatedEvent($description)
     {
         return new DescriptionUpdated($this->id, $description);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createCalendarUpdatedEvent(Calendar $calendar)
+    {
+        return new CalendarUpdated($this->id, $calendar);
     }
 
     /**

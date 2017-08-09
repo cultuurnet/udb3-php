@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
@@ -166,6 +167,17 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
             $this->apply($event);
         }
+    }
+
+    /**
+     * @param Calendar $calendar
+     */
+    public function updateCalendar(Calendar $calendar)
+    {
+        // For now no special business rules for updating the calendar.
+        $this->apply(
+            $this->createCalendarUpdatedEvent($calendar)
+        );
     }
 
     /**
@@ -668,6 +680,12 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractDescriptionUpdated
      */
     abstract protected function createDescriptionUpdatedEvent($description);
+
+    /**
+     * @param Calendar $calendar
+     * @return AbstractCalendarUpdated
+     */
+    abstract protected function createCalendarUpdatedEvent(Calendar $calendar);
 
     /**
      * @param string $typicalAgeRange

@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -11,6 +13,7 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
@@ -802,6 +805,38 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->then([
                 new DescriptionTranslated($itemId, $language, $description),
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_calendar_updated_events()
+    {
+        $itemId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($calendar) {
+                    $item->updateCalendar($calendar);
+                }
+            )
+            ->then(
+                [
+                    new CalendarUpdated($itemId, $calendar),
+                ]
+            );
     }
 
     /**

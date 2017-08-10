@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\DescriptionUpdated;
@@ -761,6 +762,11 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getDescriptionUpdatedClassName()
     {
         return DescriptionUpdated::class;
+    }
+
+    protected function getCalendarUpdatedClassName()
+    {
+        return CalendarUpdated::class;
     }
 
     protected function getTypicalAgeRangeUpdatedClassName()

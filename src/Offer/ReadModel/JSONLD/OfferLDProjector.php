@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
@@ -232,6 +233,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getDescriptionUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getCalendarUpdatedClassName();
 
     /**
      * @return string
@@ -529,6 +535,18 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd->description->{$languageCode} = $description;
 
         return $document->withBody($offerLd);
+    }
+
+    /**
+     * @param AbstractCalendarUpdated $calendarUpdated
+     *
+     * @return JsonDocument
+     */
+    protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($calendarUpdated);
+
+        return $document->apply(OfferUpdate::calendar($calendarUpdated->getCalendar()));
     }
 
     /**

@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\CalendarUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
@@ -522,6 +523,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getDescriptionUpdatedClassName()
     {
         return DescriptionUpdated::class;
+    }
+
+    protected function getCalendarUpdatedClassName()
+    {
+        return CalendarUpdated::class;
     }
 
     protected function getTypicalAgeRangeUpdatedClassName()

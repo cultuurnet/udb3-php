@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
@@ -118,6 +119,11 @@ class ItemLDProjector extends OfferLDProjector
     protected function getDescriptionUpdatedClassName()
     {
         return DescriptionUpdated::class;
+    }
+
+    protected function getCalendarUpdatedClassName()
+    {
+        return CalendarUpdated::class;
     }
 
     protected function getTypicalAgeRangeUpdatedClassName()

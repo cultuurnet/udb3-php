@@ -190,7 +190,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_dispatch_an_update_calendar_command()
     {
-        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+        $placeId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),
@@ -198,13 +198,13 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
         );
 
-        $updateCalendar = new UpdateCalendar($eventId, $calendar);
+        $updateCalendar = new UpdateCalendar($placeId, $calendar);
 
         $expectedCommandId = 'commandId';
 
         $this->commandFactory->expects($this->once())
             ->method('createUpdateCalendarCommand')
-            ->with($eventId, $calendar)
+            ->with($placeId, $calendar)
             ->willReturn($updateCalendar);
 
         $this->commandBus->expects($this->once())
@@ -212,7 +212,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with($updateCalendar)
             ->willReturn($expectedCommandId);
 
-        $commandId = $this->placeEditingService->updateCalendar($eventId, $calendar);
+        $commandId = $this->placeEditingService->updateCalendar($placeId, $calendar);
 
         $this->assertEquals($expectedCommandId, $commandId);
     }

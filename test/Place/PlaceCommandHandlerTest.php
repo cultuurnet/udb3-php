@@ -327,7 +327,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
      */
     public function it_can_update_the_calendar_of_an_event()
     {
-        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+        $placeId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),
@@ -336,18 +336,18 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId($eventId)
+            ->withAggregateId($placeId)
             ->given(
                 [
-                    $this->factorOfferCreated($eventId),
+                    $this->factorOfferCreated($placeId),
                 ]
             )
             ->when(
-                new UpdateCalendar($eventId, $calendar)
+                new UpdateCalendar($placeId, $calendar)
             )
             ->then(
                 [
-                    new CalendarUpdated($eventId, $calendar),
+                    new CalendarUpdated($placeId, $calendar),
                 ]
             );
     }

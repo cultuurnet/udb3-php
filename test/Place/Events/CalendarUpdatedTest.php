@@ -10,7 +10,7 @@ class CalendarUpdatedTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    private $eventId;
+    private $placeId;
 
     /**
      * @var Calendar
@@ -29,7 +29,7 @@ class CalendarUpdatedTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+        $this->placeId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
 
         $this->calendar = new Calendar(
             CalendarType::SINGLE(),
@@ -47,7 +47,7 @@ class CalendarUpdatedTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->calendarUpdated = new CalendarUpdated(
-            $this->eventId,
+            $this->placeId,
             $this->calendar
         );
     }
@@ -57,7 +57,7 @@ class CalendarUpdatedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_an_event_id()
     {
-        $this->assertEquals($this->eventId, $this->calendarUpdated->getItemId());
+        $this->assertEquals($this->placeId, $this->calendarUpdated->getItemId());
     }
 
     /**

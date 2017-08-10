@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Place\Commands\SelectMainImage;
 use CultuurNet\UDB3\Place\Commands\TranslateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
+use CultuurNet\UDB3\Place\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
@@ -99,6 +100,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getUpdateDescriptionClassName()
     {
         return UpdateDescription::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateCalendarClassName()
+    {
+        return UpdateCalendar::class;
     }
 
     /**

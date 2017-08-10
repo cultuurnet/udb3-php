@@ -19,9 +19,11 @@ use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -280,6 +282,36 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
             )
             ->then([new MajorInfoUpdated($id, $title, $eventType, $location, $calendar)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_calendar_of_an_event()
+    {
+        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                ]
+            )
+            ->when(
+                new UpdateCalendar($eventId, $calendar)
+            )
+            ->then(
+                [
+                    new CalendarUpdated($eventId, $calendar),
+                ]
+            );
     }
 
     /**

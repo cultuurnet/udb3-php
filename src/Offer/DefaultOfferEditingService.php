@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
@@ -156,6 +157,21 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
                 $id,
                 $language,
                 $description
+            )
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateCalendar($id, Calendar $calendar)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateCalendarCommand(
+                $id,
+                $calendar
             )
         );
     }

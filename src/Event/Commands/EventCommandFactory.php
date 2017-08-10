@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
@@ -122,6 +123,14 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     public function createUpdateDescriptionCommand($id, Language $language, Description $description)
     {
         return new UpdateDescription($id, $language, $description);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createUpdateCalendarCommand($id, Calendar $calendar)
+    {
+        return new UpdateCalendar($id, $calendar);
     }
 
     /**

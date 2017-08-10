@@ -186,7 +186,7 @@ class CdbXMLImporter
     private function importLocation(\CultureFeed_Cdb_Item_Event $event, PlaceServiceInterface $placeManager, $jsonLD)
     {
         $location = array();
-        $location['@type'] = 'Place';
+        $location['@type'] = 'udb:Place';
 
         $location_id = $this->cdbIdExtractor->getRelatedPlaceCdbId($event);
 
@@ -250,7 +250,7 @@ class CdbXMLImporter
         }
 
         if (!is_null($organizer)) {
-            $organizer['@type'] = 'Organizer';
+            $organizer['@type'] = 'udb:Organizer';
             $jsonLD->organizer = $organizer;
         }
     }

@@ -573,22 +573,22 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-02-06T13:00:00+01:00',
                     'endDate' => '2017-02-06T16:45:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-02-20T13:00:00+01:00',
                     'endDate' => '2017-02-20T16:45:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-03-06T13:00:00+01:00',
                     'endDate' => '2017-03-06T16:45:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-03-20T13:00:00+01:00',
                     'endDate' => '2017-03-20T16:45:00+01:00',
                 ],
@@ -610,32 +610,32 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2016-01-30T13:00:00+01:00',
                     'endDate' => '2016-01-30T13:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2016-11-30T13:00:00+01:00',
                     'endDate' => '2016-11-30T17:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2016-12-03T00:00:00+01:00',
                     'endDate' => '2016-12-03T00:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2016-12-09T00:00:00+01:00',
                     'endDate' => '2016-12-09T00:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2016-12-30T13:00:00+01:00',
                     'endDate' => '2016-12-30T13:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-11-30T13:00:00+01:00',
                     'endDate' => '2017-11-30T17:00:00+01:00',
                 ],
@@ -657,22 +657,22 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-02-06T13:00:00+01:00',
                     'endDate' => '2017-02-06T13:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-02-20T13:00:00+01:00',
                     'endDate' => '2017-02-20T13:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-03-06T13:00:00+01:00',
                     'endDate' => '2017-03-06T13:00:00+01:00',
                 ],
                 [
-                    '@type' => 'Event',
+                    '@type' => 'udb:Event',
                     'startDate' => '2017-03-20T13:00:00+01:00',
                     'endDate' => '2017-03-20T13:00:00+01:00',
                 ],

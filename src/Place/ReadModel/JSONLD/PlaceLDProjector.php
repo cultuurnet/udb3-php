@@ -167,7 +167,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $document = parent::newDocument($id);
 
         $placeLd = $document->getBody();
-        $placeLd->{'@type'} = 'place';
+        $placeLd->{'@type'} = 'udb:Place';
 
         return $document->withBody($placeLd);
     }

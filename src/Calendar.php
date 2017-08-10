@@ -222,7 +222,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             $jsonLd['subEvent'] = array();
             foreach ($timestamps as $timestamp) {
                 $jsonLd['subEvent'][] = array(
-                  '@type' => 'Event',
+                  '@type' => 'udb:Event',
                   'startDate' => $timestamp->getStartDate()->format(DateTime::ATOM),
                   'endDate' => $timestamp->getEndDate()->format(DateTime::ATOM),
                 );

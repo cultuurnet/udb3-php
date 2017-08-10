@@ -109,6 +109,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $cdbXMLImporter;
 
     /**
+     * @var Url
+     */
+    protected $jsonLDContext;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -145,6 +150,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
+        $this->jsonLDContext = Url::fromNative('https://io.uitdatabank.be/contexts/');
+
         $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
             new CdbXMLItemBaseImporter($this->mediaIriGenerator),
@@ -168,7 +175,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->cdbXMLImporter,
             new JsonDocumentLanguageEnricher(
                 new EventJsonDocumentLanguageAnalyzer()
-            )
+            ),
+            $this->jsonLDContext
         );
     }
 
@@ -422,12 +430,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->endDate = '2015-01-29T13:25:21+01:00';
         $jsonLD->subEvent = [
             (object)[
-                '@type' => 'Event',
+                '@type' => 'udb:Event',
                 'startDate' => '2015-01-26T13:25:21+01:00',
                 'endDate' => '2015-01-27T13:25:21+01:00',
             ],
             (object)[
-                '@type' => 'Event',
+                '@type' => 'udb:Event',
                 'startDate' => '2015-01-28T13:25:21+01:00',
                 'endDate' => '2015-01-29T13:25:21+01:00',
             ],
@@ -528,7 +536,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($event, $event->getEventId());
 
         // asset the location is still a place object
-        $this->assertEquals("Place", $body->location->{'@type'});
+        $this->assertEquals("udb:Place", $body->location->{'@type'});
         $this->assertEquals(
             "http://culudb-silex.dev:8080/place/f31033c4-96b1-4012-99ac-4439c614f701",
             $body->location->{'@id'}
@@ -1011,7 +1019,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->id = $id;
         $jsonLD->name = ['nl' => 'some representative title'];
         $jsonLD->location = [
-            '@type' => 'Place',
+            '@type' => 'udb:Place',
             '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $jsonLD->calendarType = 'permanent';
@@ -1036,7 +1044,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'nl' => 'new title',
         ];
         $expectedJsonLD->location = (object)[
-            '@type' => 'Place',
+            '@type' => 'udb:Place',
             '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $expectedJsonLD->calendarType = 'single';
@@ -1148,7 +1156,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $expectedJson = (object) [
                 '@id' => 'http://example.com/entity/' . $eventId,
-                '@context' => '/contexts/event',
+                '@context' => (object) ['udb' => (string) $this->jsonLDContext],
+                '@type' => 'udb:Event',
                 'audience' => (object) ['audienceType' => 'education'],
             ];
 
@@ -1302,13 +1311,16 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     {
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/'. $eventId;
-        $jsonLD->{'@context'} = '/contexts/event';
+        $jsonLD->{'@type'} = 'udb:Event';
+        $jsonLD->{'@context'} = (object)[
+           'udb' => 'https://io.uitdatabank.be/contexts/',
+        ];
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[
             'nl' => 'some representative title',
         ];
         $jsonLD->location = (object)[
-            '@type' => 'Place',
+            '@type' => 'udb:Place',
             '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $jsonLD->calendarType = 'single';

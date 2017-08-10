@@ -1,12 +1,15 @@
 {
   "@id": "http://example.com/entity/2",
-  "@context": "/contexts/event",
+  "@context": {
+    "udb": "https:\/\/io.uitdatabank.be\/contexts\/"
+  },
+  "@type": "udb:Event",
   "mainLanguage": "nl",
   "name": {
     "nl": "some representative title"
   },
   "location": {
-    "@type": "Place"
+    "@type": "udb:Place"
   },
   "calendarType": "multiple",
   "startDate": "2015-01-26T13:25:21+01:00",
@@ -28,12 +31,12 @@
   "endDate": "2015-01-29T13:25:21+01:00",
   "subEvent": [
     {
-      "@type": "Event",
+      "@type": "udb:Event",
       "startDate": "2015-01-26T13:25:21+01:00",
       "endDate": "2015-01-27T13:25:21+01:00"
     },
     {
-      "@type": "Event",
+      "@type": "udb:Event",
       "startDate": "2015-01-28T13:25:21+01:00",
       "endDate": "2015-01-29T13:25:21+01:00"
     }

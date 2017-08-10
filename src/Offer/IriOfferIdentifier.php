@@ -67,7 +67,7 @@ class IriOfferIdentifier implements \JsonSerializable, \Serializable
     {
         return [
             '@id' => (string) $this->iri,
-            '@type' => $this->type->toNative(),
+            '@type' => 'udb:' . ucfirst($this->type->toNative()),
         ];
     }
 

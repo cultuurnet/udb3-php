@@ -79,6 +79,11 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     protected $serializer;
 
     /**
+     * @var Url
+     */
+    protected $jsonLDContext;
+
+    /**
      * @inheritdoc
      */
     public function setUp()
@@ -95,12 +100,15 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
+        $this->jsonLDContext = Url::fromNative('https://io.uitdatabank.be/contexts/');
+
         $this->projector = new ItemLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
-            new JsonDocumentNullEnricher()
+            new JsonDocumentNullEnricher(),
+            $this->jsonLDContext
         );
     }
 
@@ -839,7 +847,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $id,
             json_encode([
                 'organizer' => [
-                    '@type' => 'Organizer',
+                    '@type' => 'udb:Organizer',
                     '@id' => 'http://example.com/entity/ORGANIZER-ABC-123',
                 ],
             ])
@@ -850,7 +858,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $expectedBody = (object)[
             'organizer' => (object)[
-                '@type' => 'Organizer',
+                '@type' => 'udb:Organizer',
                 '@id' => 'http://example.com/entity/' . $organizerId,
             ],
         ];
@@ -882,7 +890,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $expectedBody = (object)[
             'organizer' => (object)[
-                '@type' => 'Organizer',
+                '@type' => 'udb:Organizer',
                 'id' => $organizerId,
                 'name' => 'name',
             ],
@@ -907,7 +915,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $id,
             json_encode([
                 'organizer' => [
-                    '@type' => 'Organizer',
+                    '@type' => 'udb:Organizer',
                     '@id' => 'http://example.com/entity/' . $organizerId,
                 ],
             ])
@@ -933,13 +941,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $itemId,
             json_encode([
                 '@id' => $itemId,
-                '@type' => 'event',
+                '@type' => 'udb:Event',
                 'workflowStatus' => 'DRAFT',
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
-            '@type' => 'event',
+            '@type' => 'udb:Event',
             'availableFrom' => $now->format(\DateTime::ATOM),
             'workflowStatus' => 'READY_FOR_VALIDATION',
         ];
@@ -963,13 +971,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $itemId,
             json_encode([
                 '@id' => $itemId,
-                '@type' => 'event',
+                '@type' => 'udb:Event',
                 'workflowStatus' => 'READY_FOR_VALIDATION',
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
-            '@type' => 'event',
+            '@type' => 'udb:Event',
             'workflowStatus' => 'APPROVED',
         ];
 
@@ -995,13 +1003,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $itemId,
             json_encode([
                 '@id' => $itemId,
-                '@type' => 'event',
+                '@type' => 'udb:Event',
                 'workflowStatus' => 'READY_FOR_VALIDATION',
             ])
         );
         $expectedItem = (object)[
             '@id' => $itemId,
-            '@type' => 'event',
+            '@type' => 'udb:Event',
             'workflowStatus' => 'REJECTED',
         ];
 

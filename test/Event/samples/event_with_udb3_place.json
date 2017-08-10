@@ -1,6 +1,8 @@
 {
   "@id": "http:\/\/culudb-silex.dev:8080\/event\/e3604613-af01-4d2b-8cee-13ab61b89651",
-  "@context": "\/api\/1.0\/event.jsonld",
+  "@context": {
+    "udb": "https:\/\/io.uitdatabank.be\/contexts\/"
+  },
   "name": {
     "nl": "Blubblub"
   },
@@ -10,9 +12,11 @@
   "available": "2016-04-13T13:21:55+02:00",
   "calendarSummary": "woe 13\/04\/16, woe 13\/04\/16, om 08:00, van 08:00 tot 12:00",
   "location": {
-    "@type": "Place",
+    "@type": "udb:Place",
     "@id": "http:\/\/culudb-silex.dev:8080\/place\/f31033c4-96b1-4012-99ac-4439c614f701",
-    "@context": "\/api\/1.0\/place.jsonld",
+    "@context": {
+      "udb": "https:\/\/io.uitdatabank.be\/contexts\/"
+    },
     "description": {},
     "name": {
       "nl": "urgh"

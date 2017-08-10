@@ -47,6 +47,7 @@ use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use ValueObjects\Geography\Country;
+use ValueObjects\Web\Url;
 
 class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 {
@@ -86,6 +87,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $mediaIriGenerator;
 
     /**
+     * @var Url
+     */
+    private $jsonLDContext;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -122,6 +128,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new CdbXmlContactInfoImporter()
         );
 
+        $this->jsonLDContext = Url::fromNative('https://io.uitdatabank.be/contexts/');
+
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
@@ -130,7 +138,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $this->cdbXMLImporter,
             new JsonDocumentLanguageEnricher(
                 new PlaceJsonDocumentLanguageAnalyzer()
-            )
+            ),
+            $this->jsonLDContext
         );
 
         $street = new Street('Kerkstraat 69');
@@ -158,8 +167,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $jsonLD = new stdClass();
+        $jsonLD->{'@context'} = (object) ['udb' => (string) $this->jsonLDContext];
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->{'@type'} = 'udb:Place';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object) [
@@ -216,8 +226,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $jsonLD = new stdClass();
+        $jsonLD->{'@context'} = (object) ['udb' => (string) $this->jsonLDContext];
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->{'@type'} = 'udb:Place';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
         $jsonLD->address = (object) [
@@ -278,8 +289,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $jsonLD = new stdClass();
+        $jsonLD->{'@context'} = (object) ['udb' => (string) $this->jsonLDContext];
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->{'@type'} = 'udb:Place';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name = (object) ['nl' => 'some representative title'];
         $jsonLD->address = (object) [

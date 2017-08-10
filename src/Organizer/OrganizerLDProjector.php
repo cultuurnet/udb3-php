@@ -32,6 +32,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Web\Url;
 
 class OrganizerLDProjector implements EventListenerInterface
 {
@@ -80,22 +81,30 @@ class OrganizerLDProjector implements EventListenerInterface
     private $cdbXMLImporter;
 
     /**
+     * @var Url
+     */
+    private $jsonLDContext;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EventBusInterface $eventBus
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param Url $jsonLDContext
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EventBusInterface $eventBus,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        Url $jsonLDContext
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->eventBus = $eventBus;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->cdbXMLImporter = new CdbXMLImporter();
+        $this->jsonLDContext = $jsonLDContext;
     }
 
     /**
@@ -415,8 +424,11 @@ class OrganizerLDProjector implements EventListenerInterface
         $document = new JsonDocument($id);
 
         $organizerLd = $document->getBody();
+        $organizerLd->{'@context'} = (object) [
+            'udb' => (string) $this->jsonLDContext,
+        ];
         $organizerLd->{'@id'} = $this->iriGenerator->iri($id);
-        $organizerLd->{'@context'} = '/contexts/organizer';
+        $organizerLd->{'@type'} = 'udb:Organizer';
 
         return $document->withBody($organizerLd);
     }

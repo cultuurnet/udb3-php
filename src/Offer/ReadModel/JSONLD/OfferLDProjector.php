@@ -94,7 +94,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
-     * @param Url $jsonLdContext
+     * @param Url $jsonLDContext
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -552,7 +552,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
 
         $offerLd->organizer = array(
-                '@type' => 'Organizer',
+                '@type' => 'udb:Organizer',
             ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
 
         return $document->withBody($offerLd);
@@ -827,10 +827,10 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $document = new JsonDocument($id);
 
         $offerLd = $document->getBody();
-        $offerLd->{'@id'} = $this->iriGenerator->iri($id);
         $offerLd->{'@context'} = (object) [
-            '@vocab' => (string) $this->jsonLDContext,
+            'udb' => (string) $this->jsonLDContext,
         ];
+        $offerLd->{'@id'} = $this->iriGenerator->iri($id);
 
         return $document->withBody($offerLd);
     }

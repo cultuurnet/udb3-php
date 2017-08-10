@@ -58,6 +58,11 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $iriGenerator;
 
+    /**
+     * @var Url
+     */
+    protected $jsonLDContext;
+
     public function setUp()
     {
         $this->documentRepository = $this->createMock(DocumentRepositoryInterface::class);
@@ -70,13 +75,16 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             }
         );
 
+        $this->jsonLDContext = Url::fromNative('https://io.uitdatabank.be/contexts/');
+
         $this->projector = new OrganizerLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->eventBus,
             new JsonDocumentLanguageEnricher(
                 new OrganizerJsonDocumentLanguageAnalyzer()
-            )
+            ),
+            $this->jsonLDContext
         );
     }
 
@@ -142,8 +150,9 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $jsonLD = new \stdClass();
+        $jsonLD->{'@context'} = (object) ['udb' => (string) $this->jsonLDContext];
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->{'@type'} = 'udb:Organizer';
 
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name[$jsonLD->mainLanguage] = 'some representative title';
@@ -197,8 +206,9 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $jsonLD = new \stdClass();
+        $jsonLD->{'@context'} = (object) ['udb' => (string) $this->jsonLDContext];
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->{'@type'} = 'udb:Organizer';
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name['nl'] = 'some representative title';

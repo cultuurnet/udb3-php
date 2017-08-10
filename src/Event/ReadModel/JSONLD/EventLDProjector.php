@@ -143,7 +143,7 @@ class EventLDProjector extends OfferLDProjector implements
         $document = parent::newDocument($id);
 
         $eventLd = $document->getBody();
-        $eventLd->{'@type'} = 'event';
+        $eventLd->{'@type'} = 'udb:Event';
 
         return $document->withBody($eventLd);
     }
@@ -443,7 +443,7 @@ class EventLDProjector extends OfferLDProjector implements
 
         $jsonLD->name['nl'] = $eventCreated->getTitle();
         $jsonLD->location = array(
-                '@type' => 'Place',
+                '@type' => 'udb:Place',
             ) + (array)$this->placeJSONLD(
                 $eventCreated->getLocation()->getCdbid()
             );
@@ -560,7 +560,7 @@ class EventLDProjector extends OfferLDProjector implements
 
         $jsonLD->name->nl = $majorInfoUpdated->getTitle();
         $jsonLD->location = array(
-          '@type' => 'Place',
+          '@type' => 'udb:Place',
         ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());
 
         $availableTo = AvailableTo::createFromCalendar($majorInfoUpdated->getCalendar());

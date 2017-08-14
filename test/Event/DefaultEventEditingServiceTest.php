@@ -29,6 +29,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -397,6 +398,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with($updateLocation)
             ->willReturn($expectedCommandId);
+
+        $this->readRepository->expects($this->once())
+            ->method('get')
+            ->with($eventId)
+            ->willReturn(new JsonDocument($eventId));
 
         $commandId = $this->eventEditingService->updateLocation($eventId, $locationId);
 

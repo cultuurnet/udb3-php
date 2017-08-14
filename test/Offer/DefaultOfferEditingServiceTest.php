@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -19,6 +20,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -115,7 +117,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->offerRepository->expects($this->once())
             ->method('get')
-            ->with('foo');
+            ->with('foo')
+            ->willReturn(new JsonDocument('foo'));
 
         $this->labelService->expects($this->once())
             ->method('createLabelAggregateIfNew')
@@ -142,7 +145,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->offerRepository->expects($this->once())
             ->method('get')
-            ->with('foo');
+            ->with('foo')
+            ->willReturn(new JsonDocument('foo'));
 
         $this->commandFactory->expects($this->once())
             ->method('createRemoveLabelCommand')
@@ -165,7 +169,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->offerRepository->expects($this->once())
             ->method('get')
-            ->with('foo');
+            ->with('foo')
+            ->willReturn(new JsonDocument('foo'));
 
         $this->commandFactory->expects($this->once())
             ->method('createTranslateTitleCommand')
@@ -188,7 +193,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->offerRepository->expects($this->once())
             ->method('get')
-            ->with('foo');
+            ->with('foo')
+            ->willReturn(new JsonDocument('foo'));
 
         $this->commandFactory->expects($this->once())
             ->method('createUpdateDescriptionCommand')
@@ -238,11 +244,33 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with($updatePriceInfoCommand)
             ->willReturn($expectedCommandId);
 
+        $this->offerRepository->expects($this->once())
+            ->method('get')
+            ->with('940ce4d1-740b-43d2-a1a6-85be04a3eb30')
+            ->willReturn(new JsonDocument('940ce4d1-740b-43d2-a1a6-85be04a3eb30'));
+
         $commandId = $this->offerEditingService->updatePriceInfo(
             $aggregateId,
             $priceInfo
         );
 
         $this->assertEquals($expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_guard_that_a_document_exists_for_a_given_id()
+    {
+        $unknownId = '8FEFDA81-993D-4F33-851F-C19F8CB90712';
+
+        $this->offerRepository->expects($this->once())
+            ->method('get')
+            ->with($unknownId)
+            ->willReturn(null);
+
+        $this->expectException(EntityNotFoundException::class);
+
+        $this->offerEditingService->guardId($unknownId);
     }
 }

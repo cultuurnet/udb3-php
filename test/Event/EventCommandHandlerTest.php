@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Event\Commands\TranslateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\CalendarUpdated;
@@ -29,6 +30,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
@@ -41,6 +43,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
@@ -310,6 +313,32 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->then(
                 [
                     new CalendarUpdated($eventId, $calendar),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_location_of_an_event()
+    {
+        $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
+
+        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given(
+                [
+                    $this->factorOfferCreated($eventId),
+                ]
+            )
+            ->when(
+                new UpdateLocation($eventId, $locationId)
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $locationId),
                 ]
             );
     }

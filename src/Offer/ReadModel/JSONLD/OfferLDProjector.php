@@ -12,6 +12,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
@@ -544,9 +545,15 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      */
     protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
     {
-        $document = $this->loadDocumentFromRepository($calendarUpdated);
+        $document = $this->loadDocumentFromRepository($calendarUpdated)
+            ->apply(OfferUpdate::calendar($calendarUpdated->getCalendar()));
 
-        return $document->apply(OfferUpdate::calendar($calendarUpdated->getCalendar()));
+        $offerLd = $document->getBody();
+
+        $availableTo = AvailableTo::createFromCalendar($calendarUpdated->getCalendar());
+        $offerLd->availableTo = (string)$availableTo;
+
+        return $document->withBody($offerLd);
     }
 
     /**

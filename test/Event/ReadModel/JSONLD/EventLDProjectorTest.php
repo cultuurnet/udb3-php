@@ -1095,6 +1095,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->startDate = '2020-01-26T11:11:11+01:00';
         $expectedJsonLD->endDate = '2020-01-27T12:12:12+01:00';
+        $expectedJsonLD->availableTo = '2020-01-27T12:12:12+01:00';
 
         $body = $this->project($calendarUpdated, $eventId);
 

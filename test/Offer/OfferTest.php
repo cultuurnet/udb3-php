@@ -776,7 +776,9 @@ class OfferTest extends AggregateRootScenarioTestCase
                     $item->updateTitle(new Language('nl'), $title);
                 }
             )
-            ->then([]);
+            ->then([
+                new TitleUpdated($itemId, $title),
+            ]);
     }
 
     /**

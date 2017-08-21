@@ -5,10 +5,10 @@ namespace CultuurNet\UDB3\Offer\Events;
 abstract class AbstractTitleUpdated extends AbstractEvent
 {
     /**
-     * The new description.
+     * The new title.
      * @var string
      */
-    protected $description;
+    protected $title;
 
     /**
      * @param string $id
@@ -34,7 +34,7 @@ abstract class AbstractTitleUpdated extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + array(
-            'description' => $this->title,
+            'title' => $this->title,
         );
     }
 

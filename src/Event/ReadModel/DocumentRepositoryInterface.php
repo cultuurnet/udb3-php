@@ -8,7 +8,8 @@ interface DocumentRepositoryInterface
 {
     /**
      * @param string $id
-     * @return JsonDocument
+     * @return JsonDocument|null
+     *  The document with matching if or null when no document was found.
      *
      * @throws DocumentGoneException
      * @TODO Move class to Offer namespace as it is also used in Place.

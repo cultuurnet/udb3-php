@@ -7,6 +7,8 @@ use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -342,9 +344,17 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
 
     /**
      * @param string $id
+     *
+     * @throws EntityNotFoundException|DocumentGoneException
      */
     public function guardId($id)
     {
-        $this->readRepository->get($id);
+        $offer = $this->readRepository->get($id);
+
+        if (is_null($offer)) {
+            throw new EntityNotFoundException(
+                sprintf('Offer with id: %s not found.', $id)
+            );
+        }
     }
 }

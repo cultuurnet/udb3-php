@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 
@@ -87,6 +88,11 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->eventStore,
             new SimpleEventBus()
         );
+
+        $this->readRepository->expects($this->any())
+            ->method('get')
+            ->with('ad93103d-1395-4af7-a52a-2829d466c232')
+            ->willReturn(new JsonDocument('ad93103d-1395-4af7-a52a-2829d466c232'));
 
         $this->labelService = $this->createMock(LabelServiceInterface::class);
 

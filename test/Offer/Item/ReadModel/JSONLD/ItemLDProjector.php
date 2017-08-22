@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -163,5 +164,10 @@ class ItemLDProjector extends OfferLDProjector
     protected function getImagesUpdatedFromUdb2ClassName()
     {
         return ImagesUpdatedFromUDB2::class;
+    }
+
+    protected function getTitleUpdatedClassName()
+    {
+        return TitleUpdated::class;
     }
 }

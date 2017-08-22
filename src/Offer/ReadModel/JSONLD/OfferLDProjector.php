@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -197,6 +198,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getTitleTranslatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTitleUpdatedClassName();
 
     /**
      * @return string
@@ -507,6 +513,21 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
         $offerLd->name->{$titleTranslated->getLanguage()->getCode(
         )} = $titleTranslated->getTitle()->toNative();
+
+        return $document->withBody($offerLd);
+    }
+
+    /**
+     * @param AbstractTitleUpdated $titleUpdated
+     * @return JsonDocument
+     */
+    protected function applyTitleUpdated(AbstractTitleUpdated $titleUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($titleUpdated);
+        $offerLd = $document->getBody();
+        $mainLanguage = isset($offerLd->mainLanguage) ? $offerLd->mainLanguage : 'nl';
+
+        $offerLd->name->{$mainLanguage} = $titleUpdated->getTitle()->toNative();
 
         return $document->withBody($offerLd);
     }

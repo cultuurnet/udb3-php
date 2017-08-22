@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -577,6 +578,24 @@ class EventLDProjector extends OfferLDProjector implements
         if (!empty($theme)) {
             $jsonLD->terms[] = $theme->toJsonLd();
         }
+
+        return $document->withBody($jsonLD);
+    }
+
+    /**
+     * @param LocationUpdated $locationUpdated
+     *
+     * @return JsonDocument
+     */
+    public function applyLocationUpdated(LocationUpdated $locationUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($locationUpdated);
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->location = [
+            '@type' => 'Place',
+         ] + (array) $this->placeJSONLD($locationUpdated->getLocationId()->toNative());
 
         return $document->withBody($jsonLD);
     }

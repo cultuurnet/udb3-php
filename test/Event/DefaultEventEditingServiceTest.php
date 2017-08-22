@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
@@ -26,6 +27,7 @@ use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
@@ -374,6 +376,29 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn($expectedCommandId);
 
         $commandId = $this->eventEditingService->updateAudience($eventId, $audience);
+
+        $this->assertEquals($expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_location_command()
+    {
+        $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
+
+        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+
+        $updateLocation = new UpdateLocation($eventId, $locationId);
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateLocation)
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->eventEditingService->updateLocation($eventId, $locationId);
 
         $this->assertEquals($expectedCommandId, $commandId);
     }

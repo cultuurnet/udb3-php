@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -46,6 +47,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
@@ -264,6 +266,15 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
+    }
+
+    /**
+     * @param LocationId $locationId
+     */
+    public function updateLocation(LocationId $locationId)
+    {
+        // For now no special business rules for updating the location of an event.
+        $this->apply(new LocationUpdated($this->eventId, $locationId));
     }
 
     /**

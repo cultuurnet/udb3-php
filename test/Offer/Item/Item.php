@@ -40,6 +40,7 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Title;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Item extends Offer
@@ -121,10 +122,10 @@ class Item extends Offer
     }
 
     /**
-     * @param string $title
+     * @param Title $title
      * @return TitleUpdated
      */
-    protected function createTitleUpdatedEvent($title)
+    protected function createTitleUpdatedEvent(Title $title)
     {
         return new TitleUpdated($this->id, $title);
     }

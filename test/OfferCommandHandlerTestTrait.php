@@ -107,7 +107,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_title_of_an_offer()
     {
         $id = '1';
-        $title = new StringLiteral('foo title');
+        $title = new Title('foo title');
         $commandClass = $this->getCommandClass('UpdateTitle');
         $eventClass = $this->getEventClass('TitleUpdated');
 

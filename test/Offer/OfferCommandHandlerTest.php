@@ -39,6 +39,7 @@ use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSome
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -62,7 +63,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $language;
 
     /**
-     * @var StringLiteral
+     * @var Title
      */
     protected $title;
 
@@ -98,7 +99,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->id = '123';
         $this->label = new Label('foo');
         $this->language = new Language('en');
-        $this->title = new StringLiteral('English title');
+        $this->title = new Title('English title');
         $this->description = new StringLiteral('English description');
 
         $this->itemCreated = new ItemCreated($this->id);

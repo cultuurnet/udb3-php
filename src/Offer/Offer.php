@@ -41,6 +41,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -149,15 +150,15 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     /**
      * @param Language $language
-     * @param StringLiteral $title
+     * @param Title $title
      */
-    public function updateTitle(Language $language, StringLiteral $title)
+    public function updateTitle(Language $language, Title $title)
     {
         if ($this->isTitleChanged($title, $language)) {
             if ($language->getCode() !== $this->mainLanguage->getCode()) {
                 $event = $this->createTitleTranslatedEvent($language, $title);
             } else {
-                $event = $this->createTitleUpdatedEvent((string) $title);
+                $event = $this->createTitleUpdatedEvent($title);
             }
 
             $this->apply($event);
@@ -476,11 +477,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
-     * @param StringLiteral $title
+     * @param Title $title
      * @param Language $language
      * @return bool
      */
-    private function isTitleChanged(StringLiteral $title, Language $language)
+    private function isTitleChanged(Title $title, Language $language)
     {
         $languageCode = $language->getCode();
 
@@ -690,10 +691,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     abstract protected function createOfferDeletedEvent();
 
     /**
-     * @param string $title
+     * @param Title $title
      * @return AbstractTitleUpdated
      */
-    abstract protected function createTitleUpdatedEvent($title);
+    abstract protected function createTitleUpdatedEvent(Title $title);
 
     /**
      * @param string $description

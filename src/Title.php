@@ -1,11 +1,6 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
-
-use CultuurNet\UDB3\TrimmedString;
 
 class Title extends TrimmedString implements \JsonSerializable
 {

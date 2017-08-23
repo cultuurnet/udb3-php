@@ -402,10 +402,10 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param string $title
+     * @param Title $title
      * @return TitleUpdated
      */
-    protected function createTitleUpdatedEvent($title)
+    protected function createTitleUpdatedEvent(Title $title)
     {
         return new TitleUpdated($this->eventId, $title);
     }

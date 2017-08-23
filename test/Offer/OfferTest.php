@@ -32,6 +32,7 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
+use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -761,14 +762,14 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_should_ignore_a_title_update_that_does_not_change_the_existing_title()
     {
         $itemId = UUID::generateAsString();
-        $title = new StringLiteral('Titel');
+        $title = new Title('Titel');
 
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new TitleUpdated($itemId, (string) $title),
+                    new TitleUpdated($itemId, $title),
                 ]
             )
             ->when(
@@ -787,7 +788,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     public function it_should_translate_the_title_when_updating_with_a_foreign_language()
     {
         $itemId = UUID::generateAsString();
-        $title = new StringLiteral('The Title');
+        $title = new Title('The Title');
         $language = new Language('en');
 
         $this->scenario
@@ -795,7 +796,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new TitleUpdated($itemId, 'Een titel'),
+                    new TitleUpdated($itemId, new Title('Een titel')),
                 ]
             )
             ->when(

@@ -120,7 +120,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_can_translate_the_title_of_an_event_by_updating_with_a_foreign_language()
     {
         $id = '1';
-        $title = new StringLiteral('Voorbeeld');
+        $title = new Title('Voorbeeld');
         $language = new Language('fr');
         $this->scenario
             ->withAggregateId($id)

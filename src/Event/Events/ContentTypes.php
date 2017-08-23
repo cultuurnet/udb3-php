@@ -49,6 +49,7 @@ class ContentTypes
             OrganizerDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-organizer-deleted+json',
             OrganizerUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-organizer-updated+json',
             TitleTranslated::class => 'application/vnd.cultuurnet.udb3-events.event-title-translated+json',
+            TitleUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-title-updated+json',
             TypicalAgeRangeUpdated::class => 'application/vnd.cultuurnet.udb3-events.event-typical-age-range-updated+json',
             TypicalAgeRangeDeleted::class => 'application/vnd.cultuurnet.udb3-events.event-typical-age-range-deleted+json',
             // Moderation

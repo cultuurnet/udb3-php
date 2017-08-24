@@ -13,6 +13,8 @@ use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
@@ -30,6 +32,7 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
+use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -751,6 +754,59 @@ class OfferTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([new OrganizerUpdated($itemId, $organizerId)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_ignore_a_title_update_that_does_not_change_the_existing_title()
+    {
+        $itemId = UUID::generateAsString();
+        $title = new Title('Titel');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new TitleUpdated($itemId, $title),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($title) {
+                    $item->updateTitle(new Language('nl'), $title);
+                }
+            )
+            ->then([
+                new TitleUpdated($itemId, $title),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_translate_the_title_when_updating_with_a_foreign_language()
+    {
+        $itemId = UUID::generateAsString();
+        $title = new Title('The Title');
+        $language = new Language('en');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new TitleUpdated($itemId, new Title('Een titel')),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($title, $language) {
+                    $item->updateTitle($language, $title);
+                }
+            )
+            ->then([
+                new TitleTranslated($itemId, $language, $title),
+            ]);
     }
 
     /**

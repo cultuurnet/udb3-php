@@ -16,6 +16,8 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -33,13 +35,13 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
-use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -82,6 +84,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $priceInfo;
 
     /**
+     * @var StringLiteral[]
+     */
+    protected $titles;
+
+    /**
      * @var Description[]
      */
     protected $descriptions;
@@ -100,6 +107,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         // In the future it should be set on create.
         $this->mainLanguage = new Language('nl');
 
+        $this->titles = [];
         $this->descriptions = [];
         $this->labels = new LabelCollection();
         $this->images = new ImageCollection();
@@ -142,13 +150,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     /**
      * @param Language $language
-     * @param StringLiteral $title
+     * @param Title $title
      */
-    public function translateTitle(Language $language, StringLiteral $title)
+    public function updateTitle(Language $language, Title $title)
     {
-        $this->apply(
-            $this->createTitleTranslatedEvent($language, $title)
-        );
+        if ($this->isTitleChanged($title, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
+                $event = $this->createTitleTranslatedEvent($language, $title);
+            } else {
+                $event = $this->createTitleUpdatedEvent($title);
+            }
+
+            $this->apply($event);
+        }
     }
 
     /**
@@ -463,6 +477,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
+     * @param Title $title
+     * @param Language $language
+     * @return bool
+     */
+    private function isTitleChanged(Title $title, Language $language)
+    {
+        $languageCode = $language->getCode();
+
+        return !isset($this->titles[$languageCode]) ||
+            !$title->sameValueAs($this->titles[$languageCode]);
+    }
+
+    /**
      * @param Description $description
      * @param Language $language
      * @return bool
@@ -662,6 +689,12 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractOfferDeleted
      */
     abstract protected function createOfferDeletedEvent();
+
+    /**
+     * @param Title $title
+     * @return AbstractTitleUpdated
+     */
+    abstract protected function createTitleUpdatedEvent(Title $title);
 
     /**
      * @param string $description

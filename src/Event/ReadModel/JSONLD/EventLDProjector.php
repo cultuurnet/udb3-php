@@ -37,6 +37,7 @@ use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TitleUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventType;
@@ -825,5 +826,10 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getImagesUpdatedFromUdb2ClassName()
     {
         return ImagesUpdatedFromUDB2::class;
+    }
+
+    protected function getTitleUpdatedClassName()
+    {
+        return TitleUpdated::class;
     }
 }

@@ -49,6 +49,7 @@ class ContentTypes
             PlaceProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.place-projected-to-jsonld+json',
             PlaceUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.place-updated-from-udb2+json',
             TitleTranslated::class => 'application/vnd.cultuurnet.udb3-events.place-title-translated+json',
+            TitleUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-title-updated+json',
             TypicalAgeRangeUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-typical-age-range-updated+json',
             TypicalAgeRangeDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-typical-age-range-deleted+json',
             // Moderation

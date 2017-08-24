@@ -130,12 +130,12 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
      * @param StringLiteral $title
      * @return string
      */
-    public function translateTitle($id, Language $language, StringLiteral $title)
+    public function updateTitle($id, Language $language, StringLiteral $title)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createTranslateTitleCommand(
+            $this->commandFactory->createUpdateTitleCommand(
                 $id,
                 $language,
                 $title

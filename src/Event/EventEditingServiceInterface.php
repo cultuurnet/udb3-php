@@ -16,6 +16,16 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 interface EventEditingServiceInterface
 {
+
+    /**
+     * Update the title of an event.
+     *
+     * @param string $id
+     * @param Language $language
+     * @param StringLiteral $title
+     */
+    public function updateTitle($id, Language $language, StringLiteral $title);
+
     /**
      * Update the description of an event.
      *

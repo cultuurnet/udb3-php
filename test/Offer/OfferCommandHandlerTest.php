@@ -18,7 +18,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
@@ -34,11 +34,12 @@ use CultuurNet\UDB3\Offer\Item\ItemCommandHandler;
 use CultuurNet\UDB3\Offer\Item\ItemRepository;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel as AddLabelToSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\RemoveLabel as RemoveLabelFromSomethingElse;
-use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
+use CultuurNet\UDB3\Offer\Mock\Commands\UpdateTitle as UpdateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSomethingElse;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -62,7 +63,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $language;
 
     /**
-     * @var StringLiteral
+     * @var Title
      */
     protected $title;
 
@@ -98,7 +99,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->id = '123';
         $this->label = new Label('foo');
         $this->language = new Language('en');
-        $this->title = new StringLiteral('English title');
+        $this->title = new Title('English title');
         $this->description = new StringLiteral('English description');
 
         $this->itemCreated = new ItemCreated($this->id);
@@ -229,7 +230,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(
-                new TranslateTitle($this->id, $this->language, $this->title)
+                new UpdateTitle($this->id, $this->language, $this->title)
             )
             ->then(
                 [
@@ -251,7 +252,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 ]
             )
             ->when(
-                new TranslateTitleOnSomethingElse($this->id, $this->language, $this->title)
+                new UpdateTitleOnSomethingElse($this->id, $this->language, $this->title)
             )
             ->then([]);
     }

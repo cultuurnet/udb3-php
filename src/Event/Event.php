@@ -39,6 +39,7 @@ use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TitleUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -398,6 +399,15 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
     {
         return new TitleTranslated($this->eventId, $language, $title);
+    }
+
+    /**
+     * @param Title $title
+     * @return TitleUpdated
+     */
+    protected function createTitleUpdatedEvent(Title $title)
+    {
+        return new TitleUpdated($this->eventId, $title);
     }
 
     /**

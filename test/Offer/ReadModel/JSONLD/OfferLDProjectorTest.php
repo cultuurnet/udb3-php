@@ -37,6 +37,7 @@ use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
@@ -45,6 +46,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\PriceInfo\Tariff;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentNullEnricher;
+use CultuurNet\UDB3\Title;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -287,6 +289,45 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $body
         );
 
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_main_language_name_property_when_a_title_updated_event_occurs()
+    {
+        $titleUpdatedEvent = new TitleUpdated(
+            '5582FCA5-38FD-40A0-B8FB-9FA70AB7ADA3',
+            new Title('A cycling adventure')
+        );
+
+        $initialDocument = new JsonDocument(
+            '5582FCA5-38FD-40A0-B8FB-9FA70AB7ADA3',
+            json_encode([
+                'mainLanguage' => 'en',
+                'name' => [
+                    'nl'=> 'Fietsen langs kapelletjes',
+                    'en'=> 'Cycling through Flanders',
+                ],
+            ])
+        );
+
+        $expectedDocument = new JsonDocument(
+            '5582FCA5-38FD-40A0-B8FB-9FA70AB7ADA3',
+            json_encode([
+                'mainLanguage' => 'en',
+                'name' => [
+                    'nl'=> 'Fietsen langs kapelletjes',
+                    'en'=> 'A cycling adventure',
+                ],
+            ])
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $projectedBody = $this->project($titleUpdatedEvent, '5582FCA5-38FD-40A0-B8FB-9FA70AB7ADA3');
+
+        $this->assertEquals($expectedDocument->getBody(), $projectedBody);
     }
 
     /**

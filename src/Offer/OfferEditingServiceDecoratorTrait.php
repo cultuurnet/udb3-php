@@ -30,10 +30,10 @@ trait OfferEditingServiceDecoratorTrait
             ->removeLabel($id, $label);
     }
 
-    public function translateTitle($id, Language $language, StringLiteral $title)
+    public function updateTitle($id, Language $language, StringLiteral $title)
     {
         return $this->getDecoratedEditingService()
-            ->translateTitle($id, $language, $title);
+            ->updateTitle($id, $language, $title);
     }
 
     public function addImage($id, Image $image)

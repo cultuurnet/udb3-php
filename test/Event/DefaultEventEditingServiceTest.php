@@ -120,7 +120,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_translate_title_of_unknown_event()
+    public function it_refuses_to_update_title_of_unknown_event()
     {
         $id = 'some-unknown-id';
 
@@ -128,7 +128,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateTitle(
+        $this->eventEditingService->updateTitle(
             $id,
             new Language('nl'),
             new StringLiteral('new title')

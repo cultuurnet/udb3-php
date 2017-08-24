@@ -48,6 +48,7 @@ use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
+use CultuurNet\UDB3\Place\Events\TitleUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
@@ -321,6 +322,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
     {
         return new TitleTranslated($this->placeId, $language, $title);
+    }
+
+    /**
+     * @param Title $title
+     * @return TitleUpdated
+     */
+    protected function createTitleUpdatedEvent(Title $title)
+    {
+        return new TitleUpdated($this->placeId, $title);
     }
 
     /**

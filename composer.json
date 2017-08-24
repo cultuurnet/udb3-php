@@ -35,7 +35,7 @@
     "symfony/http-foundation": "~2.7.2",
     "justinrainbow/json-schema": "1.4.3",
     "php-http/httplug": "^1.0",
-    "guzzlehttp/psr7": "~1.2.3",
+    "guzzlehttp/psr7": "~1.4",
     "commerceguys/intl": "^0.7.1",
     "ramsey/uuid": "^2.9",
     "cakephp/chronos": "^1.1",

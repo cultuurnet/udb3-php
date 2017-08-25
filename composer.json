@@ -39,7 +39,8 @@
     "commerceguys/intl": "^0.7.1",
     "ramsey/uuid": "^2.9",
     "cakephp/chronos": "^1.1",
-    "league/period": "^3.3"
+    "league/period": "^3.3",
+    "league/uri": "^4.2"
   },
   "require-dev": {
     "escapestudios/symfony2-coding-standard": "~2.0",

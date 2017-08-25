@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use Guzzle\Http\QueryString;
 use GuzzleHttp\Psr7\Request;
 use Http\Client\HttpClient;
+use League\Uri\Components\Query;
 use Psr\Http\Message\UriInterface;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
@@ -44,8 +45,13 @@ class Sapi3SearchService implements SearchServiceInterface
 
     public function search($query, $limit = 30, $start = 0, $sort = null)
     {
-        $query = QueryString::fromString('q=' . $query . '&start=' . $start . '&limit=' . $limit);
-        $offerQueryUri = $this->searchLocation->withQuery((string) $query);
+        $queryParameters = Query::createFromPairs([
+           'q' => $query,
+           'start' => (string) $start,
+           'limit' => (string) $limit,
+        ]);
+        $queryString = str_replace('+', '%2B', (string) $queryParameters);
+        $offerQueryUri = $this->searchLocation->withQuery($queryString);
 
         $offerRequest = new Request('GET', $offerQueryUri);
 

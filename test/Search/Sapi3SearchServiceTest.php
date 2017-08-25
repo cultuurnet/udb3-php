@@ -52,7 +52,7 @@ class Sapi3SearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_fetch_search_results_from_sapi_3()
     {
-        $searchResponse = new Response(200, [], file_get_contents(__DIR__ . '/search-response.json'));
+        $searchResponse = new Response(200, [], file_get_contents(__DIR__ . '/samples/search-response.json'));
 
         $expectedRequest = new Request(
             'GET',
@@ -91,7 +91,7 @@ class Sapi3SearchServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_properly_encode_plus_signs_in_queries()
     {
-        $searchResponse = new Response(200, [], file_get_contents(__DIR__ . '/search-response.json'));
+        $searchResponse = new Response(200, [], file_get_contents(__DIR__ . '/samples/search-response.json'));
 
         $expectedRequest = new Request(
             'GET',

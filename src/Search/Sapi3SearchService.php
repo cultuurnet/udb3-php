@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Search;
 
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
+use Guzzle\Http\QueryString;
 use GuzzleHttp\Psr7\Request;
 use Http\Client\HttpClient;
 use Psr\Http\Message\UriInterface;
@@ -43,14 +44,10 @@ class Sapi3SearchService implements SearchServiceInterface
 
     public function search($query, $limit = 30, $start = 0, $sort = null)
     {
-        $queryParameters = 'q=' . $query . '&start=' . $start . '&limit=' . $limit;
+        $query = QueryString::fromString('q=' . $query . '&start=' . $start . '&limit=' . $limit);
+        $offerQueryUri = $this->searchLocation->withQuery((string) $query);
 
-        $offerQuery = $this->searchLocation->withQuery($queryParameters);
-
-        $offerRequest = new Request(
-            'GET',
-            (string) $offerQuery
-        );
+        $offerRequest = new Request('GET', $offerQueryUri);
 
         $searchResponseData = json_decode($this->httpClient
             ->sendRequest($offerRequest)

@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactory;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
-use Guzzle\Http\QueryString;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Response;
@@ -57,7 +56,7 @@ class Sapi3SearchServiceTest extends \PHPUnit_Framework_TestCase
 
         $expectedRequest = new Request(
             'GET',
-            $this->searchLocation->withQuery('q=foo:bar&start=0&limit=30')
+            $this->searchLocation->withQuery('q=foo%3Abar&start=0&limit=30')
         );
 
         $this->httpClient
@@ -96,7 +95,9 @@ class Sapi3SearchServiceTest extends \PHPUnit_Framework_TestCase
 
         $expectedRequest = new Request(
             'GET',
-            $this->searchLocation->withQuery('q=modified:%5B2016-08-24T00:00:00%2B02:00%20TO%20*%5D&start=0&limit=30')
+            $this->searchLocation->withQuery(
+                'q=modified%3A%5B2016-08-24T00%3A00%3A00%2B02%3A00+TO+%2A%5D&start=0&limit=30'
+            )
         );
 
         $this->httpClient

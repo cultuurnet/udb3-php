@@ -30,6 +30,7 @@ class Sapi3SearchService implements SearchServiceInterface
     /**
      * @param UriInterface $searchLocation
      * @param HttpClient $httpClient
+     * @param IriOfferIdentifierFactoryInterface $offerIdentifier
      */
     public function __construct(
         UriInterface $searchLocation,

@@ -383,7 +383,7 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      */
     public function handleUpdateContactPoint(AbstractUpdateContactPoint $updateContactPoint)
     {
-        $offer = $this->load($updateContactPoint->getId());
+        $offer = $this->load($updateContactPoint->getItemId());
 
         $offer->updateContactPoint(
             $updateContactPoint->getContactPoint()

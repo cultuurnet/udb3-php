@@ -46,13 +46,12 @@ class AbstractUpdateContactPointTest extends \PHPUnit_Framework_TestCase
         $expectedContactPoint = new ContactPoint(
             array('0123456789'),
             array('foo@bar.com'),
-            array('http://foo.bar'),
-            'type'
+            array('http://foo.bar')
         );
 
         $this->assertEquals($expectedContactPoint, $contactPoint);
 
-        $itemId = $this->updateContactPoint->getId();
+        $itemId = $this->updateContactPoint->getItemId();
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);

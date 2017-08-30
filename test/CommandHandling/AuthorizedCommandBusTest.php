@@ -94,6 +94,10 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
             ->method('isAuthorized')
             ->with($command);
 
+        $this->mockGetId(new StringLiteral('E4606B71-3BCA-49C0-8026-1375E770767C'));
+
+        $this->expectException(UnauthorizableCommandException::class);
+
         $this->authorizedCommandBus->dispatch($command);
     }
 

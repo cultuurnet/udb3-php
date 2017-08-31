@@ -2,7 +2,10 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-class Conclude
+use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
+
+class Conclude implements AuthorizableCommandInterface
 {
     /**
      * @var string
@@ -31,5 +34,10 @@ class Conclude
     public function getItemId()
     {
         return $this->itemId;
+    }
+
+    public function getPermission()
+    {
+        Permission::AANBOD_MODEREREN();
     }
 }

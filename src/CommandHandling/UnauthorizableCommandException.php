@@ -23,7 +23,7 @@ class UnauthorizableCommandException extends \Exception
     public function __construct(StringLiteral $userId, $command)
     {
         parent::__construct('User with id: ' . $userId->toNative() .
-            ' failed to executing command: ' . get_class($command) .
+            ' failed to execute command: ' . get_class($command) .
             ' because it is not authorizable.');
 
         $this->userId = $userId;

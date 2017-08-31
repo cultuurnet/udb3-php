@@ -46,16 +46,13 @@ abstract class AbstractLabelCommand extends AbstractOrganizerCommand implements 
     /**
      * @inheritdoc
      */
-    public function getPermission()
-    {
-        return Permission::AANBOD_BEWERKEN();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getName()
     {
         return new StringLiteral((string) $this->label);
+    }
+
+    public static function getPermission()
+    {
+        return Permission::AANBOD_BEWERKEN();
     }
 }

@@ -7,10 +7,7 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 
 abstract class AbstractModerationCommand extends AbstractCommand
 {
-    /**
-     * @return Permission
-     */
-    public function getPermission()
+    public static function getPermission()
     {
         return Permission::AANBOD_MODEREREN();
     }

@@ -70,7 +70,7 @@ class Security implements SecurityInterface
         }
 
         return $this->permissionVoter->isAllowed(
-            $command->getPermission(),
+            $command::getPermission(),
             $offerId,
             $this->userIdentification->getId()
         );

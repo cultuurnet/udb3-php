@@ -19,7 +19,7 @@ class AbstractModerationCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             Permission::AANBOD_MODEREREN(),
-            $abstractModerationCommand->getPermission()
+            $abstractModerationCommand::getPermission()
         );
     }
 }

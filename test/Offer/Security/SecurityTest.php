@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Offer\Commands\PreflightCommand;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionQueryInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\CompositeVoter;
 use CultuurNet\UDB3\Offer\Security\Permission\GodUserVoter;
@@ -172,14 +173,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockGetId(new StringLiteral($this->godUserId));
 
-        /** @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject $authorizableCommand */
-        $authorizableCommand = $this->createMock(AuthorizableCommandInterface::class);
-
-        $authorizableCommand->method('getItemId')
-            ->willReturn('offerId');
-
-        $authorizableCommand->method('getPermission')
-            ->willReturn(Permission::AANBOD_BEWERKEN());
+        $authorizableCommand = new PreflightCommand('offerId', Permission::AANBOD_BEWERKEN());
 
         $allowsUpdate = $this->security->isAuthorized($authorizableCommand);
 

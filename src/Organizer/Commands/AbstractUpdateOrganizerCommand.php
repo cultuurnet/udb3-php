@@ -15,10 +15,7 @@ abstract class AbstractUpdateOrganizerCommand extends AbstractOrganizerCommand i
         return $this->getOrganizerId();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getPermission()
+    public static function getPermission()
     {
         return Permission::ORGANISATIES_BEHEREN();
     }

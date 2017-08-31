@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\CommandHandling;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Offer\Commands\PreflightCommand;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use CultuurNet\UDB3\Security\SecurityInterface;
@@ -46,7 +47,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
 
         $this->security = $this->createMock(SecurityInterface::class);
 
-        $this->command = $this->createMock(AuthorizableCommandInterface::class);
+        $this->command = new PreflightCommand('itemId', Permission::AANBOD_BEWERKEN());
 
         $this->authorizedCommandBus = new AuthorizedCommandBus(
             $this->decoratee,
@@ -110,9 +111,9 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
 
         $userId = new StringLiteral('userId');
         $this->mockGetId($userId);
-
-        $this->mockGetPermission(Permission::AANBOD_BEWERKEN());
-        $this->mockGetItemId('itemId');
+//
+//        $this->mockGetPermission(Permission::AANBOD_BEWERKEN());
+//        $this->mockGetItemId('itemId');
 
         $this->setExpectedException(CommandAuthorizationException::class);
 
@@ -172,7 +173,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
      */
     private function mockGetPermission(Permission $permission)
     {
-        $this->command->method('getPermission')
+        $this->command->method('permission')
             ->willReturn($permission);
     }
 

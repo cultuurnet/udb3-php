@@ -34,10 +34,7 @@ abstract class AbstractCommand implements AuthorizableCommandInterface
         return $this->itemId;
     }
 
-    /**
-     * @return Permission
-     */
-    public function getPermission()
+    public static function getPermission()
     {
         return Permission::AANBOD_BEWERKEN();
     }

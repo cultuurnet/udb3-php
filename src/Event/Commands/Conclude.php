@@ -36,8 +36,11 @@ class Conclude implements AuthorizableCommandInterface
         return $this->itemId;
     }
 
-    public function getPermission()
+    /**
+     * @return Permission
+     */
+    public static function getPermission()
     {
-        Permission::AANBOD_MODEREREN();
+        return  Permission::AANBOD_MODEREREN();
     }
 }

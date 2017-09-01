@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\CommandHandling;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
-use CultuurNet\UDB3\Offer\Commands\PreflightCommand;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use CultuurNet\UDB3\Security\SecurityInterface;
@@ -47,7 +46,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
 
         $this->security = $this->createMock(SecurityInterface::class);
 
-        $this->command = new PreflightCommand('itemId', Permission::AANBOD_BEWERKEN());
+        $this->command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->authorizedCommandBus = new AuthorizedCommandBus(
             $this->decoratee,
@@ -61,6 +60,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_is_authorized_call_to_security()
     {
+        /** @var AuthorizableCommandInterface $command */
         $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->mockIsAuthorized(true);
@@ -111,11 +111,11 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
 
         $userId = new StringLiteral('userId');
         $this->mockGetId($userId);
-//
-//        $this->mockGetPermission(Permission::AANBOD_BEWERKEN());
-//        $this->mockGetItemId('itemId');
 
-        $this->setExpectedException(CommandAuthorizationException::class);
+        $this->mockGetPermission(Permission::AANBOD_BEWERKEN());
+        $this->mockGetItemId('itemId');
+
+        $this->expectException(CommandAuthorizationException::class);
 
         $this->authorizedCommandBus->dispatch($this->command);
     }
@@ -173,7 +173,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
      */
     private function mockGetPermission(Permission $permission)
     {
-        $this->command->method('permission')
+        $this->command->method('getPermission')
             ->willReturn($permission);
     }
 

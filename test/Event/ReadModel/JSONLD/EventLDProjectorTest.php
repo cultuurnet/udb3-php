@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
@@ -1068,6 +1069,42 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
+    public function it_projects_calendar_updated()
+    {
+        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $calendarUpdated = new CalendarUpdated($eventId, $calendar);
+
+        $jsonLD = new stdClass();
+        $jsonLD->id = $eventId;
+
+        $initialDocument = (new JsonDocument('foo'))
+            ->withBody($jsonLD);
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = (object) [
+            '@id' => 'http://example.com/entity/' . $eventId,
+            '@context' => '/contexts/event',
+        ];
+        $expectedJsonLD->calendarType = 'single';
+        $expectedJsonLD->startDate = '2020-01-26T11:11:11+01:00';
+        $expectedJsonLD->endDate = '2020-01-27T12:12:12+01:00';
+        $expectedJsonLD->availableTo = '2020-01-27T12:12:12+01:00';
+
+        $body = $this->project($calendarUpdated, $eventId);
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
     public function it_projects_the_updating_of_location()
     {
         $this->mockPlaceService();
@@ -1089,7 +1126,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $initialDocument = (new JsonDocument($eventId))
             ->withBody($jsonLD);
-
         $this->documentRepository->save($initialDocument);
 
         $expectedJsonLD = new stdClass();

@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
@@ -85,6 +86,13 @@ interface OfferCommandFactoryInterface
      * @return AbstractUpdateDescription
      */
     public function createUpdateDescriptionCommand($id, Language $language, Description $description);
+
+    /**
+     * @param string $id
+     * @param Calendar $calendar
+     * @return AbstractUpdateCalendar
+     */
+    public function createUpdateCalendarCommand($id, Calendar $calendar);
 
     /**
      * @param string $id

@@ -12,7 +12,9 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
@@ -238,6 +240,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getDescriptionUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getCalendarUpdatedClassName();
 
     /**
      * @return string
@@ -548,6 +555,24 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             $offerLd->description = new \stdClass();
         }
         $offerLd->description->{$languageCode} = $description;
+
+        return $document->withBody($offerLd);
+    }
+
+    /**
+     * @param AbstractCalendarUpdated $calendarUpdated
+     *
+     * @return JsonDocument
+     */
+    protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($calendarUpdated)
+            ->apply(OfferUpdate::calendar($calendarUpdated->getCalendar()));
+
+        $offerLd = $document->getBody();
+
+        $availableTo = AvailableTo::createFromCalendar($calendarUpdated->getCalendar());
+        $offerLd->availableTo = (string)$availableTo;
 
         return $document->withBody($offerLd);
     }

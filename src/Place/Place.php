@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Place;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
@@ -21,6 +22,7 @@ use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\CalendarUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
@@ -352,6 +354,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return new DescriptionUpdated($this->placeId, $description);
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected function createCalendarUpdatedEvent(Calendar $calendar)
+    {
+        return new CalendarUpdated($this->placeId, $calendar);
+    }
+    
     /**
      * @param string $typicalAgeRange
      * @return TypicalAgeRangeUpdated

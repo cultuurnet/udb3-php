@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
+use CultuurNet\UDB3\Place\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
@@ -188,6 +189,38 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
             ],
             $this->eventStore->getEvents()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_calendar_command()
+    {
+        $placeId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $updateCalendar = new UpdateCalendar($placeId, $calendar);
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdateCalendarCommand')
+            ->with($placeId, $calendar)
+            ->willReturn($updateCalendar);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateCalendar)
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->placeEditingService->updateCalendar($placeId, $calendar);
+
+        $this->assertEquals($expectedCommandId, $commandId);
     }
 
     /**

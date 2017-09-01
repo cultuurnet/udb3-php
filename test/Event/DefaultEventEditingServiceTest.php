@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -358,6 +359,38 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ],
             $this->eventStore->getEvents()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_calendar_command()
+    {
+        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $updateCalendar = new UpdateCalendar($eventId, $calendar);
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdateCalendarCommand')
+            ->with($eventId, $calendar)
+            ->willReturn($updateCalendar);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateCalendar)
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->eventEditingService->updateCalendar($eventId, $calendar);
+
+        $this->assertEquals($expectedCommandId, $commandId);
     }
 
     /**

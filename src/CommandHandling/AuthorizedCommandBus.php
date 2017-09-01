@@ -50,13 +50,11 @@ class AuthorizedCommandBus extends CommandBusDecoratorBase implements Authorized
      */
     public function dispatch($command)
     {
-        if ($command instanceof AuthorizableCommandInterface) {
-            $authorized = $this->isAuthorized($command);
-        } else {
-            $authorized = true;
+        if (!($command instanceof AuthorizableCommandInterface)) {
+            throw new UnauthorizableCommandException($this->userIdentification->getId(), $command);
         }
 
-        if ($authorized) {
+        if ($this->isAuthorized($command)) {
             parent::dispatch($command);
         } else {
             throw new CommandAuthorizationException(

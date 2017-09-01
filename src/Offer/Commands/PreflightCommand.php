@@ -12,7 +12,6 @@ class PreflightCommand extends AbstractCommand
     private $permission;
 
     /**
-     * PreflightCommand constructor.
      * @param string $itemId
      * @param Permission $permission
      */

@@ -14,5 +14,5 @@ interface AuthorizableCommandInterface
     /**
      * @return Permission
      */
-    public static function getPermission();
+    public function getPermission();
 }

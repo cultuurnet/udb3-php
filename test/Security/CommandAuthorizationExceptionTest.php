@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
-use CultuurNet\UDB3\Offer\Commands\PreflightCommand;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -39,7 +38,12 @@ class CommandAuthorizationExceptionTest extends \PHPUnit_Framework_TestCase
         $this->userId = new StringLiteral('85b040e5-766a-4ca7-a01b-e21e9250165f');
         $this->permission = Permission::AANBOD_BEWERKEN();
         $this->itemId = '69aa5d8d-5d56-4774-9320-d8e7c1721693';
-        $this->command = new PreflightCommand($this->itemId, $this->permission);
+
+        $this->command = $this->createMock(AuthorizableCommandInterface::class);
+        $this->command->method('getPermission')
+            ->willReturn($this->permission);
+        $this->command->method('getItemId')
+            ->willReturn($this->itemId);
 
         $this->commandAuthorizationException = new CommandAuthorizationException(
             $this->userId,

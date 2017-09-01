@@ -44,19 +44,17 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_return_its_properties()
     {
-        $labelCommand = $this->labelCommand;
-
-        $label = $labelCommand->getLabel();
+        $label = $this->labelCommand->getLabel();
         $expectedLabel = new Label('LabelTest');
 
         $this->assertEquals($expectedLabel, $label);
 
-        $itemId = $labelCommand->getItemId();
+        $itemId = $this->labelCommand->getItemId();
         $expectedItemId = 'Foo';
 
         $this->assertEquals($expectedItemId, $itemId);
 
-        $permission = $labelCommand::getPermission();
+        $permission = $this->labelCommand->getPermission();
         $expectedPermission = Permission::AANBOD_BEWERKEN();
 
         $this->assertEquals($expectedPermission, $permission);

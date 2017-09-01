@@ -25,7 +25,7 @@ class AddLabelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->addLabel, $addLabel);
 
         $expectedPermission = $this->addLabel->getPermission();
-        $permission = $addLabel::getPermission();
+        $permission = $addLabel->getPermission();
         $this->assertEquals($expectedPermission, $permission);
     }
 }

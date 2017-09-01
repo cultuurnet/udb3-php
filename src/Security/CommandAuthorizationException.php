@@ -27,7 +27,7 @@ class CommandAuthorizationException extends \Exception
         AuthorizableCommandInterface $command
     ) {
         parent::__construct('User with id: ' . $userId->toNative() .
-            ' has no permission: "' . $command::getPermission()->toNative() .
+            ' has no permission: "' . $command->getPermission()->toNative() .
             '" on item: ' . $command->getItemId() .
             ' when executing command: ' . get_class($command));
 

@@ -18,7 +18,7 @@ class DeleteOrganizer extends AbstractOrganizerCommand implements AuthorizableCo
     /**
      * @inheritdoc
      */
-    public static function getPermission()
+    public function getPermission()
     {
         return Permission::ORGANISATIES_BEHEREN();
     }

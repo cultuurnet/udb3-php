@@ -51,7 +51,7 @@ abstract class AbstractLabelCommand extends AbstractOrganizerCommand implements 
         return new StringLiteral((string) $this->label);
     }
 
-    public static function getPermission()
+    public function getPermission()
     {
         return Permission::AANBOD_BEWERKEN();
     }

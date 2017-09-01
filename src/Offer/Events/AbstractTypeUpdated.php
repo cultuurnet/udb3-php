@@ -21,6 +21,14 @@ abstract class AbstractTypeUpdated extends AbstractEvent
         $this->type = $type;
     }
 
+    /**
+     * @return Category
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
     public function serialize()
     {
         return parent::serialize() + [

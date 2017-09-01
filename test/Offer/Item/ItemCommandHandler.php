@@ -19,10 +19,12 @@ use CultuurNet\UDB3\Offer\Item\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTheme;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\SelectMainImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateType;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 
@@ -142,5 +144,15 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getFlagAsInappropriateClassName()
     {
         return FlagAsInappropriate::class;
+    }
+
+    protected function getUpdateTypeClassName()
+    {
+        return UpdateType::class;
+    }
+
+    protected function getUpdateThemeClassName()
+    {
+        return UpdateTheme::class;
     }
 }

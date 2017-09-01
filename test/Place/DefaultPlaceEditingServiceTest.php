@@ -196,7 +196,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_dispatch_an_update_calendar_command()
     {
-        $placeId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+        $placeId = 'ad93103d-1395-4af7-a52a-2829d466c232';
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),

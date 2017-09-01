@@ -388,6 +388,11 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->with($updateCalendar)
             ->willReturn($expectedCommandId);
 
+        $this->readRepository->expects($this->once())
+            ->method('get')
+            ->with($eventId)
+            ->willReturn(new JsonDocument($eventId));
+
         $commandId = $this->eventEditingService->updateCalendar($eventId, $calendar);
 
         $this->assertEquals($expectedCommandId, $commandId);

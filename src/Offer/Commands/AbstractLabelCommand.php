@@ -24,7 +24,6 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     {
         parent::__construct($itemId);
         $this->label = $label;
-        $this->itemId = $itemId;
     }
 
     /**

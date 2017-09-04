@@ -53,18 +53,32 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     protected $publicationDate;
 
     /**
+     * @var TypeResolverInterface
+     */
+    protected $typeResolver;
+
+    /**
+     * @var ThemeResolverInterface
+     */
+    protected $themeResolver;
+
+    /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
      * @param DocumentRepositoryInterface $readRepository
      * @param OfferCommandFactoryInterface $commandFactory
      * @param LabelServiceInterface $labelService
+     * @param TypeResolverInterface $typeResolver
+     * @param ThemeResolverInterface $themeResolver
      */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
         DocumentRepositoryInterface $readRepository,
         OfferCommandFactoryInterface $commandFactory,
-        LabelServiceInterface $labelService
+        LabelServiceInterface $labelService,
+        TypeResolverInterface $typeResolver,
+        ThemeResolverInterface $themeResolver
     ) {
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
@@ -72,6 +86,38 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         $this->commandFactory = $commandFactory;
         $this->labelService = $labelService;
         $this->publicationDate = null;
+        $this->typeResolver = $typeResolver;
+        $this->themeResolver = $themeResolver;
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $typeId
+     * @return string
+     */
+    public function updateType($id, StringLiteral $typeId)
+    {
+        $this->guardId($id);
+        $type = $this->typeResolver->byId($typeId);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateTypeCommand($id, $type)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $themeId
+     * @return string
+     */
+    public function updateTheme($id, StringLiteral $themeId)
+    {
+        $this->guardId($id);
+        $theme = $this->themeResolver->byId($themeId);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateThemeCommand($id, $theme)
+        );
     }
 
     /**

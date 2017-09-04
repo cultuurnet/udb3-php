@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
@@ -19,14 +20,17 @@ use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTheme;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateType;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -50,6 +54,16 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     public function createRemoveLabelCommand($id, Label $label)
     {
         return new RemoveLabel($id, $label);
+    }
+
+    public function createUpdateTypeCommand($id, Category $type)
+    {
+        return new UpdateType($id, $type);
+    }
+
+    public function createUpdateThemeCommand($id, Theme $theme)
+    {
+        return new UpdateTheme($id, $theme);
     }
 
     /**

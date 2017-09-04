@@ -54,7 +54,9 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $uuidGenerator,
             $readRepository,
             $commandFactory,
-            $labelService
+            $labelService,
+            new EventTypeResolver(),
+            new EventThemeResolver()
         );
         $this->eventService = $eventService;
         $this->writeRepository = $writeRepository;

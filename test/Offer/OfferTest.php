@@ -232,7 +232,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                         $this->image->getMediaObjectId(),
                         new Description('my favorite cat'),
                         new CopyrightHolder('Jane Doe')
-                    )
+                    ),
                 ]
             );
     }

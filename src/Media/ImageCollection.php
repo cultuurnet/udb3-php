@@ -58,11 +58,11 @@ class ImageCollection extends AbstractCollection implements CollectionInterface
     {
         /** @var Image $image */
         foreach ($this->items as $image) {
-            if ($image->getMediaObjectId() === $uuid) {
+            if ($image->getMediaObjectId()->sameValueAs($uuid)){
                 return $image;
             }
         }
-        
+
         return null;
     }
 }

@@ -37,8 +37,10 @@ use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ThemeUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TitleUpdated;
+use CultuurNet\UDB3\Event\Events\TypeUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventType;
@@ -837,5 +839,15 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getTitleUpdatedClassName()
     {
         return TitleUpdated::class;
+    }
+
+    protected function getTypeUpdatedClassName()
+    {
+        return TypeUpdated::class;
+    }
+
+    protected function getThemeUpdatedClassName()
+    {
+        return ThemeUpdated::class;
     }
 }

@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
@@ -36,6 +37,7 @@ use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TypeUpdated;
 use CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD\ItemLDProjector;
 use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
@@ -1126,6 +1128,75 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $importedItem = $this->project($imagesImportedEvent, $itemId);
         $this->assertEquals($expectedImage, $importedItem->image);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_project_the_new_type_as_a_term_when_updated()
+    {
+        $itemId = UUID::generateAsString();
+        $type = new Category('YVBc8KVdrU6XfTNvhMYUpg', 'Discotheek', 'eventtype');
+        $typeUpdatedEvent = new TypeUpdated($itemId, $type);
+
+        $expectedTerms = [
+            (object) [
+                'id' => 'YVBc8KVdrU6XfTNvhMYUpg',
+                'label' => 'Discotheek',
+                'domain' => 'eventtype',
+            ],
+        ];
+
+        $updatedItem = $this->project($typeUpdatedEvent, $itemId);
+        $this->assertEquals($expectedTerms, $updatedItem->terms);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_replace_the_existing_type_term_when_updating_with_a_new_type()
+    {
+        $itemId = UUID::generateAsString();
+        $documentWithExistingTerms = new JsonDocument(
+            $itemId,
+            json_encode([
+                '@id' => $itemId,
+                '@type' => 'event',
+                'terms' => [
+                    (object) [
+                        'id' => '1.8.3.3.0',
+                        'label' => 'Dance',
+                        'domain' => 'theme',
+                    ],
+                    (object) [
+                        'id' => '3CuHvenJ+EGkcvhXLg9Ykg',
+                        'label' => 'Archeologische Site',
+                        'domain' => 'eventtype',
+                    ],
+                ],
+            ])
+        );
+        $type = new Category('YVBc8KVdrU6XfTNvhMYUpg', 'Discotheek', 'eventtype');
+        $typeUpdatedEvent = new TypeUpdated($itemId, $type);
+
+        $this->documentRepository->save($documentWithExistingTerms);
+
+        $expectedTerms = [
+            (object) [
+                'id' => '1.8.3.3.0',
+                'label' => 'Dance',
+                'domain' => 'theme',
+            ],
+            (object) [
+                'id' => 'YVBc8KVdrU6XfTNvhMYUpg',
+                'label' => 'Discotheek',
+                'domain' => 'eventtype',
+            ],
+        ];
+
+        $updatedItem = $this->project($typeUpdatedEvent, $itemId);
+        $this->assertEquals($expectedTerms, $updatedItem->terms);
+    }
+
     /**
      * @test
      */

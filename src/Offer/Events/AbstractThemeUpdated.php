@@ -21,6 +21,14 @@ abstract class AbstractThemeUpdated extends AbstractEvent
         $this->theme = $theme;
     }
 
+    /**
+     * @return Theme
+     */
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
     public function serialize()
     {
         return parent::serialize() + [

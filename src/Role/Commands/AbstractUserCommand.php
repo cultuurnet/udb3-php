@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\Commands;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractUserCommand extends AbstractCommand
+abstract class AbstractUserCommand extends AbstractCommand
 {
     /**
      * @var StringLiteral

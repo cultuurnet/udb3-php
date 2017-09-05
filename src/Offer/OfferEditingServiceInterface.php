@@ -132,4 +132,18 @@ interface OfferEditingServiceInterface
      * @param PriceInfo $priceInfo
      */
     public function updatePriceInfo($id, PriceInfo $priceInfo);
+
+    /**
+     * @param string $id
+     * @param StringLiteral $typeId
+     * @return string
+     */
+    public function updateType($id, StringLiteral $typeId);
+
+    /**
+     * @param string $id
+     * @param StringLiteral $themeId
+     * @return string
+     */
+    public function updateTheme($id, StringLiteral $themeId);
 }

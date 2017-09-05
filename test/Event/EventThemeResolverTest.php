@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-
 use CultuurNet\UDB3\Theme;
 use ValueObjects\StringLiteral\StringLiteral;
 

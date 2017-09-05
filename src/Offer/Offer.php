@@ -6,9 +6,9 @@ use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
@@ -129,9 +129,9 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
-     * @param Category $type
+     * @param EventType $type
      */
-    public function updateType(Category $type)
+    public function updateType(EventType $type)
     {
         if (!$this->typeId || $this->typeId !== $type->getId()) {
             $this->apply($this->createTypeUpdatedEvent($type));
@@ -835,10 +835,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     abstract protected function createImagesUpdatedFromUDB2(ImageCollection $images);
 
     /**
-     * @param Category $type
+     * @param EventType $type
      * @return AbstractTypeUpdated
      */
-    abstract protected function createTypeUpdatedEvent(Category $type);
+    abstract protected function createTypeUpdatedEvent(EventType $type);
 
     /**
      * @param Theme $theme

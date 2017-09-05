@@ -4,9 +4,9 @@ namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Language;
@@ -14,13 +14,11 @@ use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTheme;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
-use CultuurNet\UDB3\Offer\Commands\AbstractUpdateType;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
@@ -240,7 +238,7 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
         return new FlagAsDuplicate($id);
     }
 
-    public function createUpdateTypeCommand($id, Category $type)
+    public function createUpdateTypeCommand($id, EventType $type)
     {
         return new UpdateType($id, $type);
     }

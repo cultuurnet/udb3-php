@@ -5,8 +5,8 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -1137,7 +1137,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_should_project_the_new_type_as_a_term_when_updated()
     {
         $itemId = UUID::generateAsString();
-        $type = new Category('YVBc8KVdrU6XfTNvhMYUpg', 'Discotheek', 'eventtype');
+        $type = new EventType('YVBc8KVdrU6XfTNvhMYUpg', 'Discotheek');
         $typeUpdatedEvent = new TypeUpdated($itemId, $type);
 
         $expectedTerms = [
@@ -1177,7 +1177,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
                 ],
             ])
         );
-        $type = new Category('YVBc8KVdrU6XfTNvhMYUpg', 'Discotheek', 'eventtype');
+        $type = new EventType('YVBc8KVdrU6XfTNvhMYUpg', 'Discotheek');
         $typeUpdatedEvent = new TypeUpdated($itemId, $type);
 
         $this->documentRepository->save($documentWithExistingTerms);

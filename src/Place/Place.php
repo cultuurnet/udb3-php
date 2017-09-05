@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
@@ -17,8 +16,6 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
-use CultuurNet\UDB3\Offer\Events\AbstractTypeUpdated;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -495,7 +492,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return new ImagesUpdatedFromUDB2($this->placeId, $images);
     }
 
-    protected function createTypeUpdatedEvent(Category $type)
+    protected function createTypeUpdatedEvent(EventType $type)
     {
         return new TypeUpdated($this->placeId, $type);
     }

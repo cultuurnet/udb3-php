@@ -2,27 +2,27 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-use CultuurNet\UDB3\Category;
+use CultuurNet\UDB3\Event\EventType;
 
 abstract class AbstractUpdateType extends AbstractCommand
 {
     /**
-     * @var Category
+     * @var EventType
      */
     protected $type;
 
     /**
      * @param string $itemId
-     * @param Category $type
+     * @param EventType $type
      */
-    public function __construct($itemId, Category $type)
+    public function __construct($itemId, EventType $type)
     {
         parent::__construct($itemId);
         $this->type = $type;
     }
 
     /**
-     * @return Category
+     * @return EventType
      */
     public function getType()
     {

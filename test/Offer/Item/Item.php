@@ -4,17 +4,15 @@ namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
-use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
-use CultuurNet\UDB3\Offer\Events\AbstractTypeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
@@ -293,7 +291,7 @@ class Item extends Offer
         return new FlaggedAsInappropriate($this->id);
     }
 
-    protected function createTypeUpdatedEvent(Category $type)
+    protected function createTypeUpdatedEvent(EventType $type)
     {
         return new TypeUpdated($this->id, $type);
     }

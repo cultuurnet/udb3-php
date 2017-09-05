@@ -2,14 +2,14 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use CultuurNet\UDB3\Category;
+use CultuurNet\UDB3\Event\EventType;
 use ValueObjects\StringLiteral\StringLiteral;
 
 interface TypeResolverInterface
 {
     /**
      * @param StringLiteral $typeId
-     * @return Category
+     * @return EventType
      */
     public function byId(StringLiteral $typeId);
 }

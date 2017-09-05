@@ -2,27 +2,27 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-use CultuurNet\UDB3\Category;
+use CultuurNet\UDB3\Event\EventType;
 
 abstract class AbstractTypeUpdated extends AbstractEvent
 {
     /**
-     * @var Category
+     * @var EventType
      */
     protected $type;
 
     /**
      * @param $itemId
-     * @param Category $type
+     * @param EventType $type
      */
-    public function __construct($itemId, Category $type)
+    public function __construct($itemId, EventType $type)
     {
         parent::__construct($itemId);
         $this->type = $type;
     }
 
     /**
-     * @return Category
+     * @return EventType
      */
     public function getType()
     {
@@ -38,6 +38,6 @@ abstract class AbstractTypeUpdated extends AbstractEvent
 
     public static function deserialize(array $data)
     {
-        return new static($data['item_id'], Category::deserialize($data['type']));
+        return new static($data['item_id'], EventType::deserialize($data['type']));
     }
 }

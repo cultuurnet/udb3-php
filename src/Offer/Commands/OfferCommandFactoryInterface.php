@@ -4,9 +4,9 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
@@ -177,10 +177,10 @@ interface OfferCommandFactoryInterface
 
     /**
      * @param string $id
-     * @param Category $type
+     * @param EventType $type
      * @return AbstractUpdateType
      */
-    public function createUpdateTypeCommand($id, Category $type);
+    public function createUpdateTypeCommand($id, EventType $type);
 
     /**
      * @param string $id

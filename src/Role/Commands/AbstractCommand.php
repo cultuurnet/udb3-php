@@ -2,9 +2,11 @@
 
 namespace CultuurNet\UDB3\Role\Commands;
 
+use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 
-abstract class AbstractCommand
+abstract class AbstractCommand implements AuthorizableCommandInterface
 {
     /**
      * @var UUID
@@ -26,5 +28,15 @@ abstract class AbstractCommand
     public function getUuid()
     {
         return $this->uuid;
+    }
+
+    public function getItemId()
+    {
+        return (string) $this->getUuid();
+    }
+
+    public function getPermission()
+    {
+        return Permission::GEBRUIKERS_BEHEREN();
     }
 }

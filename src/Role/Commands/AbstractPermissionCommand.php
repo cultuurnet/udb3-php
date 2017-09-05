@@ -10,28 +10,28 @@ class AbstractPermissionCommand extends AbstractCommand
     /**
      * @var string
      */
-    private $permission;
+    private $rolePermission;
 
     /**
      * @param UUID $uuid
-     * @param Permission $permission
+     * @param Permission $rolePermission
      */
     public function __construct(
         UUID $uuid,
-        Permission $permission
+        Permission $rolePermission
     ) {
         parent::__construct($uuid);
 
         // The built-in serialize call does not work on Enum.
         // Just store them internally as string but expose as Enum.
-        $this->permission = $permission->toNative();
+        $this->rolePermission = $rolePermission->toNative();
     }
 
     /**
      * @return Permission
      */
-    public function getPermission()
+    public function getRolePermission()
     {
-        return Permission::fromNative($this->permission);
+        return Permission::fromNative($this->rolePermission);
     }
 }

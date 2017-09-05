@@ -84,7 +84,7 @@ class CommandHandler extends AbstractCommandHandler
 
         $role->addPermission(
             $addPermission->getUuid(),
-            $addPermission->getPermission()
+            $addPermission->getRolePermission()
         );
 
         $this->save($role);
@@ -99,7 +99,7 @@ class CommandHandler extends AbstractCommandHandler
 
         $role->removePermission(
             $removePermission->getUuid(),
-            $removePermission->getPermission()
+            $removePermission->getRolePermission()
         );
 
         $this->save($role);

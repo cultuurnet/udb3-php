@@ -21,7 +21,7 @@ class PlaceThemeResolver implements ThemeResolverInterface
     public function byId(StringLiteral $themeId)
     {
         if (!array_key_exists((string) $themeId, $this->themes)) {
-            throw new \Exception("Unknown place theme");
+            throw new \Exception("Unknown place theme id: " . $themeId);
         }
         return $this->themes[(string) $themeId];
     }

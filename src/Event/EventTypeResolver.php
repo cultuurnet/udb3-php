@@ -41,7 +41,7 @@ class EventTypeResolver implements TypeResolverInterface
     public function byId(StringLiteral $typeId)
     {
         if (!array_key_exists((string) $typeId, $this->types)) {
-            throw new \Exception("Unknown event type");
+            throw new \Exception("Unknown event type id: " . $typeId);
         }
         return $this->types[(string) $typeId];
     }

@@ -593,7 +593,7 @@ class EventThemeResolver implements ThemeResolverInterface
             function ($themes, array $type) {
                 if (array_key_exists('themes', $type)) {
                     foreach ($type['themes'] as $themeData) {
-                        $themes[$themeData['id']] = new EventType($themeData['id'], $themeData['label']);
+                        $themes[$themeData['id']] = new Theme($themeData['id'], $themeData['label']);
                     }
                 }
 
@@ -606,7 +606,7 @@ class EventThemeResolver implements ThemeResolverInterface
     public function byId(StringLiteral $themeId)
     {
         if (!array_key_exists((string) $themeId, $this->themes)) {
-            throw new \Exception("Unknown event theme");
+            throw new \Exception("Unknown event theme id: " . $themeId);
         }
         return $this->themes[(string) $themeId];
     }

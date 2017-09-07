@@ -12,7 +12,7 @@ abstract class AbstractThemeUpdated extends AbstractEvent
     protected $theme;
 
     /**
-     * @param $itemId
+     * @param string $itemId
      * @param Theme $theme
      */
     public function __construct($itemId, Theme $theme)
@@ -29,6 +29,9 @@ abstract class AbstractThemeUpdated extends AbstractEvent
         return $this->theme;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function serialize()
     {
         return parent::serialize() + [
@@ -36,6 +39,9 @@ abstract class AbstractThemeUpdated extends AbstractEvent
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function deserialize(array $data)
     {
         return new static($data['item_id'], Theme::deserialize($data['theme']));

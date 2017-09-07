@@ -12,7 +12,7 @@ abstract class AbstractTypeUpdated extends AbstractEvent
     protected $type;
 
     /**
-     * @param $itemId
+     * @param string $itemId
      * @param EventType $type
      */
     public function __construct($itemId, EventType $type)
@@ -29,6 +29,9 @@ abstract class AbstractTypeUpdated extends AbstractEvent
         return $this->type;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function serialize()
     {
         return parent::serialize() + [
@@ -36,6 +39,9 @@ abstract class AbstractTypeUpdated extends AbstractEvent
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function deserialize(array $data)
     {
         return new static($data['item_id'], EventType::deserialize($data['type']));

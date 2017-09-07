@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Offer\Item\Events;
+namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\EventType;
 

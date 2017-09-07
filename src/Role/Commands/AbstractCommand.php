@@ -30,11 +30,17 @@ abstract class AbstractCommand implements AuthorizableCommandInterface
         return $this->uuid;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getItemId()
     {
         return (string) $this->getUuid();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getPermission()
     {
         return Permission::GEBRUIKERS_BEHEREN();

@@ -8,8 +8,12 @@ use CultuurNet\UDB3\Security\SecurityDecoratorBase;
 
 class MediaSecurity extends SecurityDecoratorBase
 {
+    /**
+     * @inheritdoc
+     */
     public function isAuthorized(AuthorizableCommandInterface $command)
     {
+        // All authenticated users can upload media.
         if ($command->getPermission()->sameValueAs(Permission::MEDIA_UPLOADEN())) {
             return true;
         }

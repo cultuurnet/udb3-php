@@ -15,7 +15,7 @@ class AbstractPermissionCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Permission
      */
-    private $permission;
+    private $rolePermission;
 
     /**
      * @var AbstractPermissionCommand
@@ -25,11 +25,11 @@ class AbstractPermissionCommandTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->uuid = new UUID();
-        $this->permission = Permission::AANBOD_BEWERKEN();
+        $this->rolePermission = Permission::AANBOD_BEWERKEN();
 
         $this->abstractPermissionCommand = $this->getMockForAbstractClass(
             AbstractPermissionCommand::class,
-            [$this->uuid, $this->permission]
+            [$this->uuid, $this->rolePermission]
         );
     }
 
@@ -38,6 +38,9 @@ class AbstractPermissionCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_permission()
     {
-        $this->assertEquals($this->permission, $this->abstractPermissionCommand->getPermission());
+        $this->assertEquals(
+            $this->rolePermission,
+            $this->abstractPermissionCommand->getRolePermission()
+        );
     }
 }

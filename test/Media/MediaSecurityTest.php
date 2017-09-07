@@ -2,9 +2,14 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\Commands\UploadImage;
+use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\SecurityInterface;
+use ValueObjects\Identity\UUID;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class MediaSecurityTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,12 +34,14 @@ class MediaSecurityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_always_authorize_command_with_media_upload_permission()
     {
-        /** @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject $command */
-        $command = $this->createMock(AuthorizableCommandInterface::class);
-        $command
-            ->expects($this->once())
-            ->method('getPermission')
-            ->willReturn(Permission::MEDIA_UPLOADEN());
+        $command = new UploadImage(
+            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('image/png'),
+            StringLiteral::fromNative('description'),
+            StringLiteral::fromNative('copyright'),
+            StringLiteral::fromNative('/uploads/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
+        );
 
         $authorized = $this->mediaSecurity->isAuthorized($command);
 

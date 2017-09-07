@@ -85,39 +85,9 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
         $this->readRepository = $readRepository;
         $this->commandFactory = $commandFactory;
         $this->labelService = $labelService;
-        $this->publicationDate = null;
         $this->typeResolver = $typeResolver;
         $this->themeResolver = $themeResolver;
-    }
-
-    /**
-     * @param string $id
-     * @param StringLiteral $typeId
-     * @return string
-     */
-    public function updateType($id, StringLiteral $typeId)
-    {
-        $this->guardId($id);
-        $type = $this->typeResolver->byId($typeId);
-
-        return $this->commandBus->dispatch(
-            $this->commandFactory->createUpdateTypeCommand($id, $type)
-        );
-    }
-
-    /**
-     * @param string $id
-     * @param StringLiteral $themeId
-     * @return string
-     */
-    public function updateTheme($id, StringLiteral $themeId)
-    {
-        $this->guardId($id);
-        $theme = $this->themeResolver->byId($themeId);
-
-        return $this->commandBus->dispatch(
-            $this->commandFactory->createUpdateThemeCommand($id, $theme)
-        );
+        $this->publicationDate = null;
     }
 
     /**
@@ -168,6 +138,36 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
                 $id,
                 $label
             )
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $typeId
+     * @return string
+     */
+    public function updateType($id, StringLiteral $typeId)
+    {
+        $this->guardId($id);
+        $type = $this->typeResolver->byId($typeId);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateTypeCommand($id, $type)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $themeId
+     * @return string
+     */
+    public function updateTheme($id, StringLiteral $themeId)
+    {
+        $this->guardId($id);
+        $theme = $this->themeResolver->byId($themeId);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateThemeCommand($id, $theme)
         );
     }
 

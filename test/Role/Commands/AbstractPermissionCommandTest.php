@@ -38,6 +38,9 @@ class AbstractPermissionCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function it_stores_a_permission()
     {
-        $this->assertEquals($this->rolePermission, $this->abstractPermissionCommand->getRolePermission());
+        $this->assertEquals(
+            $this->rolePermission,
+            $this->abstractPermissionCommand->getRolePermission()
+        );
     }
 }

@@ -18,6 +18,9 @@ class PlaceThemeResolver implements ThemeResolverInterface
         $this->themes = [];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function byId(StringLiteral $themeId)
     {
         if (!array_key_exists((string) $themeId, $this->themes)) {

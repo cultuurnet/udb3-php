@@ -603,6 +603,9 @@ class EventThemeResolver implements ThemeResolverInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function byId(StringLiteral $themeId)
     {
         if (!array_key_exists((string) $themeId, $this->themes)) {

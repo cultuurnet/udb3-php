@@ -36,6 +36,9 @@ class PlaceTypeResolver implements TypeResolverInterface
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function byId(StringLiteral $typeId)
     {
         if (!array_key_exists((string) $typeId, $this->types)) {

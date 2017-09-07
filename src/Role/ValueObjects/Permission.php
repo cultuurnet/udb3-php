@@ -14,7 +14,6 @@ use ValueObjects\Enum\Enum;
  * @method static Permission GEBRUIKERS_BEHEREN()
  * @method static Permission LABELS_BEHEREN()
  * @method static Permission MEDIA_UPLOADEN()
- * @method static Permission AANBOD_LABELEN()
  */
 class Permission extends Enum
 {

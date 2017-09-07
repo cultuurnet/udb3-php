@@ -43,6 +43,6 @@ abstract class AbstractCommand implements AuthorizableCommandInterface
      */
     public function getPermission()
     {
-        return Permission::AANBOD_LABELEN();
+        return Permission::LABELS_BEHEREN();
     }
 }

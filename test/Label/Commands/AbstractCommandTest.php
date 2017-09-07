@@ -52,7 +52,7 @@ class AbstractCommandTest extends \PHPUnit_Framework_TestCase
     public function it_has_permission_aanbod_labelen()
     {
         $this->assertEquals(
-            Permission::AANBOD_LABELEN(),
+            Permission::LABELS_BEHEREN(),
             $this->abstractCommand->getPermission()
         );
     }

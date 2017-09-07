@@ -249,11 +249,17 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
         return FlagAsInappropriate::class;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function getUpdateTypeClassName()
     {
         return UpdateType::class;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function getUpdateThemeClassName()
     {
         return UpdateTheme::class;

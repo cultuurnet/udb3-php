@@ -54,7 +54,6 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Offer\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -553,6 +552,22 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    protected function createTypeUpdatedEvent(EventType $type)
+    {
+        return new TypeUpdated($this->eventId, $type);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createThemeUpdatedEvent(Theme $theme)
+    {
+        return new ThemeUpdated($this->eventId, $theme);
+    }
+
+    /**
      * Use reflection to get check if the aggregate has uncommitted events.
      * @return bool
      */
@@ -580,15 +595,5 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyConcluded(Concluded $concluded)
     {
         $this->concluded = true;
-    }
-
-    protected function createTypeUpdatedEvent(EventType $type)
-    {
-        return new TypeUpdated($this->eventId, $type);
-    }
-
-    protected function createThemeUpdatedEvent(Theme $theme)
-    {
-        return new ThemeUpdated($this->eventId, $theme);
     }
 }

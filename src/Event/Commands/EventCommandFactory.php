@@ -54,11 +54,21 @@ class EventCommandFactory implements OfferCommandFactoryInterface
         return new RemoveLabel($id, $label);
     }
 
+    /**
+     * @param string $id
+     * @param EventType $type
+     * @return UpdateType
+     */
     public function createUpdateTypeCommand($id, EventType $type)
     {
         return new UpdateType($id, $type);
     }
 
+    /**
+     * @param string $id
+     * @param Theme $theme
+     * @return UpdateTheme
+     */
     public function createUpdateThemeCommand($id, Theme $theme)
     {
         return new UpdateTheme($id, $theme);

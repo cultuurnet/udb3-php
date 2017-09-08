@@ -24,5 +24,4 @@ class Permission extends Enum
     const GEBRUIKERS_BEHEREN = 'Gebruikers beheren';
     const LABELS_BEHEREN = 'Labels beheren';
     const MEDIA_UPLOADEN = 'Media uploaden';
-    const AANBOD_LABELEN = 'Aanbod labelen';
 }

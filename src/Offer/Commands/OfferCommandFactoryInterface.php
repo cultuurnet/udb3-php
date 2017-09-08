@@ -6,6 +6,7 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
@@ -17,6 +18,7 @@ use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Language;
@@ -172,4 +174,18 @@ interface OfferCommandFactoryInterface
      * @return AbstractFlagAsDuplicate
      */
     public function createFlagAsDuplicate($id);
+
+    /**
+     * @param string $id
+     * @param EventType $type
+     * @return AbstractUpdateType
+     */
+    public function createUpdateTypeCommand($id, EventType $type);
+
+    /**
+     * @param string $id
+     * @param Theme $theme
+     * @return AbstractUpdateTheme
+     */
+    public function createUpdateThemeCommand($id, Theme $theme);
 }

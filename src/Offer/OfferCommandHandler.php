@@ -19,6 +19,8 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTheme;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateType;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
@@ -214,6 +216,40 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getFlagAsInappropriateClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateTypeClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateThemeClassName();
+
+    /**
+     * @param AbstractUpdateType $updateType
+     */
+    public function handleUpdateType(AbstractUpdateType $updateType)
+    {
+        $offer = $this->load($updateType->getItemId());
+
+        $offer->updateType($updateType->getType());
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractUpdateTheme $updateTheme
+     */
+    public function handleUpdateTheme(AbstractUpdateTheme $updateTheme)
+    {
+        $offer = $this->load($updateTheme->getItemId());
+
+        $offer->updateTheme($updateTheme->getTheme());
+
+        $this->offerRepository->save($offer);
+    }
 
     /**
      * @param AbstractAddLabel $addLabel

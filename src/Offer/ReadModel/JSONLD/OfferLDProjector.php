@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
+use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
@@ -24,8 +25,10 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -290,6 +293,65 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getImagesUpdatedFromUdb2ClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getTypeUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getThemeUpdatedClassName();
+
+    /**
+     * @param AbstractTypeUpdated $typeUpdated
+     * @return JsonDocument
+     */
+    protected function applyTypeUpdated(AbstractTypeUpdated $typeUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($typeUpdated);
+
+        return $this->updateTerm($document, $typeUpdated->getType());
+    }
+
+    /**
+     * @param AbstractThemeUpdated $themeUpdated
+     * @return JsonDocument
+     */
+    protected function applyThemeUpdated(AbstractThemeUpdated $themeUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($themeUpdated);
+
+        return $this->updateTerm($document, $themeUpdated->getTheme());
+    }
+
+    /**
+     * @param JsonDocument $document
+     * @param Category $category
+     *
+     * @return JsonDocument
+     */
+    private function updateTerm(JsonDocument $document, Category $category)
+    {
+        $offerLD = $document->getBody();
+
+        $oldTerms = property_exists($offerLD, 'terms') ? $offerLD->terms : [];
+        $newTerm = (object) $category->serialize();
+
+        $newTerms = array_filter(
+            $oldTerms,
+            function ($term) use ($category) {
+                return !property_exists($term, 'domain') || $term->domain !== $category->getDomain();
+            }
+        );
+
+        array_push($newTerms, $newTerm);
+
+        $offerLD->terms = array_values($newTerms);
+
+        return $document->withBody($offerLD);
+    }
 
     /**
      * @param AbstractLabelAdded $labelAdded

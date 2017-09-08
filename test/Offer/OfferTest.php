@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
@@ -35,7 +37,9 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TypeUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
@@ -86,6 +90,58 @@ class OfferTest extends AggregateRootScenarioTestCase
             Url::fromNative('http://foo.bar/media/my_favorite_giphy_gif.gif'),
             new Language('en')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_only_change_the_theme_when_updating_with_another_id()
+    {
+        $itemId = UUID::generateAsString();
+        $circusTheme = new Theme('0.52.0.0.0', 'Circus');
+        $musicalTheme = new Theme('1.4.0.0.0', 'Musical');
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use ($circusTheme, $musicalTheme) {
+                    $item->updateTheme($circusTheme);
+                    $item->updateTheme($circusTheme);
+                    $item->updateTheme($musicalTheme);
+                }
+            )
+            ->then([
+                new ThemeUpdated($itemId, $circusTheme),
+                new ThemeUpdated($itemId, $musicalTheme),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_only_change_the_type_when_updating_with_another_id()
+    {
+        $itemId = UUID::generateAsString();
+        $filmType = new EventType("0.50.6.0.0", "Film");
+        $concertType = new EventType("0.50.4.0.0", "Concert");
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use ($filmType, $concertType) {
+                    $item->updateType($filmType);
+                    $item->updateType($filmType);
+                    $item->updateType($concertType);
+                }
+            )
+            ->then([
+                new TypeUpdated($itemId, $filmType),
+                new TypeUpdated($itemId, $concertType),
+            ]);
     }
 
     /**

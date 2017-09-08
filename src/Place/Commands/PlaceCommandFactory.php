@@ -6,6 +6,7 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Language;
@@ -26,6 +27,7 @@ use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -234,5 +236,15 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     public function createFlagAsDuplicate($id)
     {
         return new FlagAsDuplicate($id);
+    }
+
+    public function createUpdateTypeCommand($id, EventType $type)
+    {
+        return new UpdateType($id, $type);
+    }
+
+    public function createUpdateThemeCommand($id, Theme $theme)
+    {
+        return new UpdateTheme($id, $theme);
     }
 }

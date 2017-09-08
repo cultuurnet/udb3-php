@@ -40,8 +40,10 @@ use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ThemeUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TitleUpdated;
+use CultuurNet\UDB3\Event\Events\TypeUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -52,7 +54,6 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Offer\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -548,6 +549,22 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsInappropriate()
     {
         return new FlaggedAsInappropriate($this->eventId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createTypeUpdatedEvent(EventType $type)
+    {
+        return new TypeUpdated($this->eventId, $type);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createThemeUpdatedEvent(Theme $theme)
+    {
+        return new ThemeUpdated($this->eventId, $theme);
     }
 
     /**

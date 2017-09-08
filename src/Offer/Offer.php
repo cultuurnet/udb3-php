@@ -8,6 +8,7 @@ use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
@@ -17,6 +18,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
@@ -27,6 +29,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -42,6 +45,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
@@ -100,6 +104,16 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $mainLanguage;
 
     /**
+     * @var string;
+     */
+    protected $typeId;
+
+    /**
+     * @var string;
+     */
+    protected $themeId;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -112,6 +126,26 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->descriptions = [];
         $this->labels = new LabelCollection();
         $this->images = new ImageCollection();
+    }
+
+    /**
+     * @param EventType $type
+     */
+    public function updateType(EventType $type)
+    {
+        if (!$this->typeId || $this->typeId !== $type->getId()) {
+            $this->apply($this->createTypeUpdatedEvent($type));
+        }
+    }
+
+    /**
+     * @param Theme $theme
+     */
+    public function updateTheme(Theme $theme)
+    {
+        if (!$this->themeId || $this->themeId !== $theme->getId()) {
+            $this->apply($this->createThemeUpdatedEvent($theme));
+        }
     }
 
     /**
@@ -294,6 +328,22 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected function applyLabelRemoved(AbstractLabelRemoved $labelRemoved)
     {
         $this->labels = $this->labels->without($labelRemoved->getLabel());
+    }
+
+    /**
+     * @param AbstractThemeUpdated $themeUpdated
+     */
+    protected function applyThemeUpdated(AbstractThemeUpdated $themeUpdated)
+    {
+        $this->themeId = $themeUpdated->getTheme()->getId();
+    }
+
+    /**
+     * @param AbstractTypeUpdated $themeUpdated
+     */
+    protected function applyTypeUpdated(AbstractTypeUpdated $themeUpdated)
+    {
+        $this->typeId = $themeUpdated->getType()->getId();
     }
 
     protected function applyDescriptionUpdated(AbstractDescriptionUpdated $descriptionUpdated)
@@ -799,4 +849,16 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractImagesUpdatedFromUDB2
      */
     abstract protected function createImagesUpdatedFromUDB2(ImageCollection $images);
+
+    /**
+     * @param EventType $type
+     * @return AbstractTypeUpdated
+     */
+    abstract protected function createTypeUpdatedEvent(EventType $type);
+
+    /**
+     * @param Theme $theme
+     * @return AbstractThemeUpdated
+     */
+    abstract protected function createThemeUpdatedEvent(Theme $theme);
 }

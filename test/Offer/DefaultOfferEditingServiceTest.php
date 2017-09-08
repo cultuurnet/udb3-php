@@ -6,6 +6,7 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -17,11 +18,14 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTheme;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateType;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -77,6 +81,16 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
      */
     private $translateTitleCommand;
 
+    /**
+     * @var TypeResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $typeResolver;
+
+    /**
+     * @var ThemeResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $themeResolver;
+
     public function setUp()
     {
         $this->commandBus = $this->createMock(CommandBusInterface::class);
@@ -84,6 +98,8 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->offerRepository = $this->createMock(DocumentRepositoryInterface::class);
         $this->commandFactory = $this->createMock(OfferCommandFactoryInterface::class);
         $this->labelService = $this->createMock(LabelServiceInterface::class);
+        $this->typeResolver = $this->createMock(TypeResolverInterface::class);
+        $this->themeResolver = $this->createMock(ThemeResolverInterface::class);
 
         $this->addLabelCommand = $this->getMockForAbstractClass(
             AbstractAddLabel::class,
@@ -105,7 +121,9 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->uuidGenerator,
             $this->offerRepository,
             $this->commandFactory,
-            $this->labelService
+            $this->labelService,
+            $this->typeResolver,
+            $this->themeResolver
         );
 
         $this->expectedCommandId = '123456';
@@ -277,5 +295,85 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->expectException(EntityNotFoundException::class);
 
         $this->offerEditingService->guardId($unknownId);
+    }
+
+    /**
+     * @param string $offerId
+     */
+    private function expectPlaceholderDocument($offerId)
+    {
+        $this->offerRepository->expects($this->once())
+            ->method('get')
+            ->with($offerId)
+            ->willReturn(new JsonDocument($offerId));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_an_offer_type_and_return_the_resulting_command()
+    {
+        $expectedCommandId = 'f42802e4-c1f1-4aa6-9909-a08cfc66f355';
+        $offerId = '2D015370-7CBA-4CB9-B0E4-07D2DEAAB2FF';
+        $type = new EventType("0.15.0.0.0", "Natuur, park of tuin");
+        $this->expectPlaceholderDocument($offerId);
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdateTypeCommand')
+            ->with($offerId, $type)
+            ->willReturn(new UpdateType($offerId, $type));
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with(new UpdateType($offerId, $type))
+            ->willReturn($expectedCommandId);
+
+        $this->typeResolver
+            ->expects($this->once())
+            ->method('byId')
+            ->with('0.15.0.0.0')
+            ->willReturn($type);
+
+        $commandId = $this->offerEditingService->updateType(
+            '2D015370-7CBA-4CB9-B0E4-07D2DEAAB2FF',
+            new StringLiteral('0.15.0.0.0')
+        );
+
+        $this->assertEquals($expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_an_offer_theme_and_return_the_resulting_command()
+    {
+        $expectedCommandId = 'f42802e4-c1f1-4aa6-9909-a08cfc66f355';
+        $offerId = '2D015370-7CBA-4CB9-B0E4-07D2DEAAB2FF';
+        $theme = new Theme('0.52.0.0.0', 'Circus');
+        $updateThemeCommand = new UpdateTheme($offerId, $theme);
+        $this->expectPlaceholderDocument($offerId);
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdateThemeCommand')
+            ->with($offerId, $theme)
+            ->willReturn($updateThemeCommand);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateThemeCommand)
+            ->willReturn($expectedCommandId);
+
+        $this->themeResolver
+            ->expects($this->once())
+            ->method('byId')
+            ->with('0.52.0.0.0')
+            ->willReturn($theme);
+
+        $commandId = $this->offerEditingService->updateTheme(
+            '2D015370-7CBA-4CB9-B0E4-07D2DEAAB2FF',
+            new StringLiteral('0.52.0.0.0')
+        );
+
+        $this->assertEquals($expectedCommandId, $commandId);
     }
 }

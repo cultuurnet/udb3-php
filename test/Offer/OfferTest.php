@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
@@ -256,7 +257,7 @@ class OfferTest extends AggregateRootScenarioTestCase
     {
         $updateImage = new UpdateImage(
             'someId',
-            $this->image->getMediaObjectId(),
+            new UUID($this->image->getMediaObjectId()),
             new Description('my favorite cat'),
             new CopyrightHolder('Jane Doe')
         );
@@ -273,12 +274,21 @@ class OfferTest extends AggregateRootScenarioTestCase
                     $item->addImage($this->image);
                     $item->removeImage($this->image);
                     $item->updateImage($updateImage);
+                    $item->addImage($this->image);
+                    $item->updateImage($updateImage);
                 }
             )
             ->then(
                 [
                     new ImageAdded('someId', $this->image),
                     new ImageRemoved('someId', $this->image),
+                    new ImageAdded('someId', $this->image),
+                    new ImageUpdated(
+                        'someId',
+                        $this->image->getMediaObjectId(),
+                        new Description('my favorite cat'),
+                        new CopyrightHolder('Jane Doe')
+                    ),
                 ]
             );
     }

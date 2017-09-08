@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Role\Commands;
 
 use ValueObjects\Identity\UUID;
 
-class AbstractLabelCommand extends AbstractCommand
+abstract class AbstractLabelCommand extends AbstractCommand
 {
     /**
      * @var UUID

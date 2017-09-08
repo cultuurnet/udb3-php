@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Role\Commands;
 
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 
 class AbstractCommandTest extends \PHPUnit_Framework_TestCase
@@ -32,5 +33,27 @@ class AbstractCommandTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_uuid()
     {
         $this->assertEquals($this->uuid, $this->abstractCommand->getUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_an_item_id()
+    {
+        $this->assertEquals(
+            $this->uuid->toNative(),
+            $this->abstractCommand->getItemId()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_permission_aanbod_labelen()
+    {
+        $this->assertEquals(
+            Permission::GEBRUIKERS_BEHEREN(),
+            $this->abstractCommand->getPermission()
+        );
     }
 }

@@ -835,24 +835,21 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_deletes_places()
+    public function it_updates_workflow_status_on_delete()
     {
-        $id = 'foo';
+        $placeId = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
 
-        $placeDeleted = new PlaceDeleted($id);
+        $placeDeleted = new PlaceDeleted($placeId);
 
-        $this->projector->handle(
-            DomainMessage::recordNow(
-                $id,
-                2,
-                new Metadata(),
-                $placeDeleted
-            )
-        );
+        $body = $this->project($placeDeleted, $placeId);
 
-        $this->expectException(DocumentGoneException::class);
+        $expectedJson = (object) [
+            '@id' => 'http://example.com/entity/' . $placeId,
+            '@context' => '/contexts/place',
+            'workflowStatus' => 'DELETED',
+        ];
 
-        $this->documentRepository->get($id);
+        $this->assertEquals($expectedJson, $body);
     }
 
     /**

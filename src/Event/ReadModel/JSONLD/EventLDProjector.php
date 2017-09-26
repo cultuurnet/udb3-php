@@ -544,8 +544,13 @@ class EventLDProjector extends OfferLDProjector implements
      */
     protected function applyEventDeleted(EventDeleted $eventDeleted)
     {
-        $this->repository->remove($eventDeleted->getItemId());
-        return null;
+        $document = $this->loadDocumentFromRepository($eventDeleted);
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->workflowStatus = WorkflowStatus::DELETED()->getName();
+
+        return $document->withBody($jsonLD);
     }
 
     /**

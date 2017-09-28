@@ -491,15 +491,17 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_deletes_an_organizer()
+    public function it_updates_workflow_status_on_delete()
     {
-        $organizerId = 'ORG-123-FOO';
-        $organizerDeleted = new OrganizerDeleted($organizerId);
-        $domainMessage = $this->createDomainMessage($organizerDeleted);
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
 
-        $this->documentRepository->expects($this->once())
-            ->method('remove')
-            ->with($organizerId);
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new OrganizerDeleted($organizerId)
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_deleted_workflow_status.json');
 
         $this->projector->handle($domainMessage);
     }

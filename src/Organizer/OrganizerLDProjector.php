@@ -14,6 +14,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -402,8 +403,13 @@ class OrganizerLDProjector implements EventListenerInterface
     private function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted
     ) {
-        $this->repository->remove($organizerDeleted->getOrganizerId());
-        return null;
+        $document =  $this->repository->get($organizerDeleted->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->workflowStatus = WorkflowStatus::DELETED()->getName();
+
+        return $document->withBody($jsonLD);
     }
 
     /**

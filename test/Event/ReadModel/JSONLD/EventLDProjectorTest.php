@@ -1235,32 +1235,21 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_deletes_events()
+    public function it_updates_workflow_status_on_delete()
     {
-        $id = 'foo';
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
 
-        $this->documentRepository->save(
-            (new JsonDocument($id))
-                ->withBody(
-                    (object)[
-                        'foo' => 'bar',
-                    ]
-                )
-        );
+        $eventDeleted = new EventDeleted($eventId);
 
-        $eventDeleted = new EventDeleted($id);
-        $this->projector->handle(
-            DomainMessage::recordNow(
-                $id,
-                1,
-                new Metadata(),
-                $eventDeleted
-            )
-        );
+        $body = $this->project($eventDeleted, $eventId);
 
-        $this->expectException(DocumentGoneException::class);
+        $expectedJson = (object) [
+            '@id' => 'http://example.com/entity/' . $eventId,
+            '@context' => '/contexts/event',
+            'workflowStatus' => 'DELETED',
+        ];
 
-        $this->documentRepository->get($id);
+        $this->assertEquals($expectedJson, $body);
     }
 
     /**

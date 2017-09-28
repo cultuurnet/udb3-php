@@ -245,8 +245,13 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
-        $this->repository->remove($placeDeleted->getItemId());
-        return null;
+        $document = $this->loadDocumentFromRepository($placeDeleted);
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->workflowStatus = WorkflowStatus::DELETED()->getName();
+
+        return $document->withBody($jsonLD);
     }
 
     /**

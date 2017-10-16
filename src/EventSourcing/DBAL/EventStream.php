@@ -44,9 +44,9 @@ class EventStream
     protected $lastProcessedId;
 
     /**
-     * @var string
+     * @var string[]
      */
-    protected $cdbid;
+    protected $cdbids;
 
     /**
      * @var EventStreamDecoratorInterface
@@ -92,21 +92,21 @@ class EventStream
     }
 
     /**
-     * @param string $cdbid
+     * @param string[] $cdbids
      * @return EventStream
      */
-    public function withCdbid($cdbid)
+    public function withCdbids($cdbids)
     {
-        if (!is_string($cdbid)) {
-            throw new \InvalidArgumentException('Cdbid should have type string.');
+        if (!is_array($cdbids)) {
+            throw new \InvalidArgumentException('Cdbids should have type array.');
         }
 
-        if (empty($cdbid)) {
-            throw new \InvalidArgumentException('Cdbid can\'t be empty.');
+        if (empty($cdbids)) {
+            throw new \InvalidArgumentException('Cdbids can\'t be empty.');
         }
 
         $c = clone $this;
-        $c->cdbid = $cdbid;
+        $c->cdbids = $cdbids;
         return $c;
     }
 
@@ -186,9 +186,9 @@ class EventStream
             ->orderBy('id', 'ASC')
             ->setMaxResults(1);
 
-        if ($this->cdbid) {
-            $queryBuilder->andWhere('uuid = :uuid')
-                ->setParameter('uuid', $this->cdbid);
+        if ($this->cdbids) {
+            $queryBuilder->andWhere('uuid IN (:uuids)')
+                ->setParameter('uuids', $this->cdbids, Connection::PARAM_STR_ARRAY);
         }
 
         return $queryBuilder->execute();

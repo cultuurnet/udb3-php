@@ -100,9 +100,9 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
     public function it_requires_string_type_for_optional_cdbid()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cdbid should have type string.');
+        $this->expectExceptionMessage('Cdbids should have type array.');
 
-        $this->eventStream->withCdbid(1021);
+        $this->eventStream->withCdbids("1021");
     }
 
     /**
@@ -111,9 +111,9 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
     public function it_requires_non_empty_value_for_optional_cdbid()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cdbid can\'t be empty.');
+        $this->expectExceptionMessage('Cdbids can\'t be empty.');
 
-        $this->eventStream->withCdbid('');
+        $this->eventStream->withCdbids([]);
     }
 
     /**
@@ -215,9 +215,10 @@ class EventStreamTest extends PHPUnit_Framework_TestCase
     public function it_handles_a_specific_cdbid()
     {
         $cdbid = '9B994B6A-FE49-42B0-B67D-F681BE533A7A';
+        $cdbids = [$cdbid];
         $history = $this->fillHistory();
 
-        $eventStream = $this->eventStream->withCdbid($cdbid);
+        $eventStream = $this->eventStream->withCdbids($cdbids);
 
         $domainEventStreams = $eventStream();
         $domainEventStreams = iterator_to_array($domainEventStreams);

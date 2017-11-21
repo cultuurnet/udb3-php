@@ -21,6 +21,11 @@ use ValueObjects\StringLiteral\StringLiteral;
 class ImageUploaderService implements ImageUploaderInterface
 {
     /**
+     * @var MediaManagerInterface
+     */
+    protected $mediaManager;
+
+    /**
      * @var UuidGeneratorInterface
      */
     protected $uuidGenerator;
@@ -48,6 +53,7 @@ class ImageUploaderService implements ImageUploaderInterface
     protected $maxFileSize;
 
     /**
+     * @param MediaManagerInterface $mediaManager
      * @param UuidGeneratorInterface $uuidGenerator
      * @param CommandBusInterface $commandBus
      * @param FilesystemInterface $filesystem
@@ -57,12 +63,14 @@ class ImageUploaderService implements ImageUploaderInterface
      *  The maximum file size in bytes.
      */
     public function __construct(
+        MediaManagerInterface $mediaManager,
         UuidGeneratorInterface $uuidGenerator,
         CommandBusInterface $commandBus,
         FilesystemInterface $filesystem,
         $uploadDirectory,
         Natural $maxFileSize = null
     ) {
+        $this->mediaManager = $mediaManager;
         $this->uuidGenerator = $uuidGenerator;
         $this->commandBus = $commandBus;
         $this->filesystem = $filesystem;
@@ -74,6 +82,45 @@ class ImageUploaderService implements ImageUploaderInterface
      * @inheritdoc
      */
     public function upload(
+        UploadedFile $file,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
+        Language $language
+    ) {
+        $uploadImageCommand = $this->createUploadImageCommand(
+            $file,
+            $description,
+            $copyrightHolder,
+            $language
+        );
+
+        $this->mediaManager->handleUploadImage($uploadImageCommand);
+
+        return $uploadImageCommand->getFileId();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function uploadAsync(
+        UploadedFile $file,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder,
+        Language $language
+    ) {
+        $uploadImageCommand = $this->createUploadImageCommand(
+            $file,
+            $description,
+            $copyrightHolder,
+            $language
+        );
+
+        return $this->commandBus->dispatch(
+            $uploadImageCommand
+        );
+    }
+
+    private function createUploadImageCommand(
         UploadedFile $file,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
@@ -106,15 +153,13 @@ class ImageUploaderService implements ImageUploaderInterface
         $this->filesystem->writeStream($destination, $stream);
         fclose($stream);
 
-        return $this->commandBus->dispatch(
-            new UploadImage(
-                $fileId,
-                $mimeType,
-                $description,
-                $copyrightHolder,
-                new StringLiteral($destination),
-                $language
-            )
+        return new UploadImage(
+            $fileId,
+            $mimeType,
+            $description,
+            $copyrightHolder,
+            new StringLiteral($destination),
+            $language
         );
     }
 

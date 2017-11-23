@@ -3,8 +3,6 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\Entry\Number;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -20,11 +18,6 @@ use ValueObjects\StringLiteral\StringLiteral;
  */
 class ImageUploaderService implements ImageUploaderInterface
 {
-    /**
-     * @var UuidGeneratorInterface
-     */
-    protected $uuidGenerator;
-
     /**
      * @var CommandBusInterface
      */
@@ -48,7 +41,6 @@ class ImageUploaderService implements ImageUploaderInterface
     protected $maxFileSize;
 
     /**
-     * @param UuidGeneratorInterface $uuidGenerator
      * @param CommandBusInterface $commandBus
      * @param FilesystemInterface $filesystem
      * @param $uploadDirectory
@@ -57,13 +49,11 @@ class ImageUploaderService implements ImageUploaderInterface
      *  The maximum file size in bytes.
      */
     public function __construct(
-        UuidGeneratorInterface $uuidGenerator,
         CommandBusInterface $commandBus,
         FilesystemInterface $filesystem,
         $uploadDirectory,
         Natural $maxFileSize = null
     ) {
-        $this->uuidGenerator = $uuidGenerator;
         $this->commandBus = $commandBus;
         $this->filesystem = $filesystem;
         $this->uploadDirectory = $uploadDirectory;
@@ -74,6 +64,7 @@ class ImageUploaderService implements ImageUploaderInterface
      * @inheritdoc
      */
     public function upload(
+        UUID $fileId,
         UploadedFile $file,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
@@ -97,9 +88,9 @@ class ImageUploaderService implements ImageUploaderInterface
             throw new \InvalidArgumentException('The uploaded file is not an image.');
         }
 
+        /** @var MIMEType $mimeType */
         $mimeType = MIMEType::fromNative($mimeTypeString);
 
-        $fileId = new UUID($this->uuidGenerator->generate());
         $fileName = $fileId . '.' . $file->guessExtension();
         $destination = $this->getUploadDirectory() . '/' . $fileName;
         $stream = fopen($file->getRealPath(), 'r+');

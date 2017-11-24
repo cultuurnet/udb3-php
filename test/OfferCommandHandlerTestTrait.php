@@ -7,6 +7,7 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\CommandHandling\Testing\Scenario;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description as MediaDescription;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -34,6 +35,11 @@ trait OfferCommandHandlerTestTrait
      * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $labelRepository;
+
+    /**
+     * @var MediaManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $mediaManager;
 
     /**
      * Get the namespaced classname of the command to create.
@@ -149,8 +155,9 @@ trait OfferCommandHandlerTestTrait
     public function it_can_add_an_image_to_an_offer()
     {
         $id = '1';
+        $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
         $image = new Image(
-            UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            $imageId,
             new MIMEType('image/png'),
             new MediaDescription('Some description.'),
             new CopyrightHolder('Dirk Dirkington'),
@@ -160,13 +167,18 @@ trait OfferCommandHandlerTestTrait
         $commandClass = $this->getCommandClass('AddImage');
         $eventClass = $this->getEventClass('ImageAdded');
 
+        $this->mediaManager->expects($this->once())
+            ->method('getImage')
+            ->with($imageId)
+            ->willReturn($image);
+
         $this->scenario
             ->withAggregateId($id)
             ->given(
                 [$this->factorOfferCreated($id)]
             )
             ->when(
-                new $commandClass($id, $image)
+                new $commandClass($id, $imageId)
             )
             ->then([new $eventClass($id, $image)]);
     }

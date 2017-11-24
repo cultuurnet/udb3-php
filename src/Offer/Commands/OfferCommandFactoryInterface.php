@@ -41,10 +41,10 @@ interface OfferCommandFactoryInterface
 
     /**
      * @param $id
-     * @param Image $image
+     * @param UUID $imageId
      * @return AbstractAddImage
      */
-    public function createAddImageCommand($id, Image $image);
+    public function createAddImageCommand($id, UUID $imageId);
 
     /**
      * @param $id

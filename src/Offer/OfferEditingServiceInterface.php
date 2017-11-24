@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 interface OfferEditingServiceInterface
@@ -54,10 +55,10 @@ interface OfferEditingServiceInterface
 
     /**
      * @param string $id
-     * @param Image $image
+     * @param UUID $imageId
      * @return string
      */
-    public function addImage($id, Image $image);
+    public function addImage($id, UUID $imageId);
 
     /**
      * @param string $id

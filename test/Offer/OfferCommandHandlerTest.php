@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
@@ -92,6 +93,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     protected $labelRepository;
 
+    /**
+     * @var MediaManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $mediaManager;
+
     public function setUp()
     {
         parent::setUp();
@@ -128,10 +134,13 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 Privacy::PRIVACY_PUBLIC()
             ));
 
+        $this->mediaManager = $this->createMock(MediaManager::class);
+
         return new ItemCommandHandler(
             new ItemRepository($eventStore, $eventBus),
             $this->organizerRepository,
-            $this->labelRepository
+            $this->labelRepository,
+            $this->mediaManager
         );
     }
 

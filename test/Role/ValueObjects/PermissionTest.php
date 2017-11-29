@@ -20,6 +20,7 @@ class PermissionTest extends \PHPUnit_Framework_TestCase
                 Permission::LABELS_BEHEREN()->getName() => Permission::LABELS_BEHEREN,
                 Permission::ORGANISATIES_BEHEREN()->getName() => Permission::ORGANISATIES_BEHEREN,
                 Permission::MEDIA_UPLOADEN()->getName() => Permission::MEDIA_UPLOADEN,
+                Permission::VOORZIENINGEN_BEWERKEN()->getName() => Permission::VOORZIENINGEN_BEWERKEN,
             ],
             $permissions
         );

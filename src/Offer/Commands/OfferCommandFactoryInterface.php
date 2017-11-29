@@ -188,4 +188,11 @@ interface OfferCommandFactoryInterface
      * @return AbstractUpdateTheme
      */
     public function createUpdateThemeCommand($id, Theme $theme);
+
+    /**
+     * @param string $id
+     * @param array $facilities
+     * @return AbstractUpdateFacilities
+     */
+    public function createUpdateFacilitiesCommand($id, array $facilities);
 }

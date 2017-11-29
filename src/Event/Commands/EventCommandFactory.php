@@ -75,6 +75,14 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function createUpdateFacilitiesCommand($id, array $facilities)
+    {
+        return new UpdateFacilities($id, $facilities);
+    }
+
+    /**
      * @param $id
      * @param Image $image
      * @return AddImage

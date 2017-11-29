@@ -855,4 +855,9 @@ class EventLDProjector extends OfferLDProjector implements
     {
         return ThemeUpdated::class;
     }
+
+    protected function getFacilitiesUpdatedClassName()
+    {
+        return FacilitiesUpdated::class;
+    }
 }

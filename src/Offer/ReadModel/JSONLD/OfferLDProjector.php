@@ -10,6 +10,7 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
@@ -20,6 +21,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
@@ -305,6 +307,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     abstract protected function getThemeUpdatedClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getFacilitiesUpdatedClassName();
+
+    /**
      * @param AbstractTypeUpdated $typeUpdated
      * @return JsonDocument
      */
@@ -351,6 +358,36 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLD->terms = array_values($newTerms);
 
         return $document->withBody($offerLD);
+    }
+
+    /**
+     * @param AbstractFacilitiesUpdated $facilitiesUpdated
+     * @return JsonDocument
+     */
+    protected function applyFacilitiesUpdated(AbstractFacilitiesUpdated $facilitiesUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($facilitiesUpdated);
+
+        $placeLd = $document->getBody();
+
+        $terms = isset($placeLd->terms) ? $placeLd->terms : array();
+
+        // Remove all old facilities + get numeric keys.
+        $terms = array_values(array_filter(
+            $terms,
+            function ($term) {
+                return $term->domain !== Facility::DOMAIN;
+            }
+        ));
+
+        // Add the new facilities.
+        foreach ($facilitiesUpdated->getFacilities() as $facility) {
+            $terms[] = $facility->toJsonLd();
+        }
+
+        $placeLd->terms = $terms;
+
+        return $document->withBody($placeLd);
     }
 
     /**

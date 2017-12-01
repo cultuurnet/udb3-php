@@ -146,4 +146,11 @@ interface OfferEditingServiceInterface
      * @return string
      */
     public function updateTheme($id, StringLiteral $themeId);
+
+    /**
+     * @param string $id
+     * @param array $facilities
+     * @return string
+     */
+    public function updateFacilities($id, array $facilities);
 }

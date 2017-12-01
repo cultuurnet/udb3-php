@@ -1,12 +1,10 @@
 <?php
 
-namespace CultuurNet\UDB3\Offer\Security;
+namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
-use CultuurNet\UDB3\Security\SecurityInterface;
-use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
@@ -87,6 +85,7 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_to_parent_when_not_a_facility_command()
     {
+        /** @var AuthorizableCommandInterface $command */
         $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->security->expects($this->once())

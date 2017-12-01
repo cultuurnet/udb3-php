@@ -1,15 +1,14 @@
 <?php
 
-namespace CultuurNet\UDB3\Offer\Security;
+namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
-use CultuurNet\UDB3\Security\SecurityInterface;
-use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
+class SecurityWithUserPermissionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -27,9 +26,14 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
     private $permissionVoter;
 
     /**
-     * @var SecurityWithFacilityPermission
+     * @var CommandFilterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $securityWithFacilityPermission;
+    private $commandFilter;
+
+    /**
+     * @var SecurityWithUserPermission
+     */
+    private $securityWithUserPermission;
 
     protected function setUp()
     {
@@ -39,25 +43,26 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
 
         $this->permissionVoter = $this->createMock(PermissionVoterInterface::class);
 
-        $this->securityWithFacilityPermission = new SecurityWithFacilityPermission(
+        $this->commandFilter = $this->createMock(CommandFilterInterface::class);
+
+        $this->securityWithUserPermission = new SecurityWithUserPermission(
             $this->security,
             $this->userIdentification,
-            $this->permissionVoter
+            $this->permissionVoter,
+            $this->commandFilter
         );
     }
 
     /**
      * @test
      */
-    public function it_delegates_to_permission_voter_when_facility_command()
+    public function it_delegates_to_permission_voter_when_command_matches()
     {
-        $updateFacilities = new UpdateFacilities(
-            '600ccde6-0f43-46ec-912c-b0f88a2d7bf9',
-            [
-                'facility1',
-                'facility2',
-            ]
-        );
+        /** @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject $command */
+        $command = $this->createMock(AuthorizableCommandInterface::class);
+        $command->expects($this->once())
+            ->method('getPermission')
+            ->willReturn(Permission::VOORZIENINGEN_BEWERKEN());
 
         $userId = new StringLiteral('315820fe-9ba4-43b3-b567-5a1e43ec430d');
         $this->userIdentification->expects($this->once())
@@ -67,7 +72,7 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
         $this->permissionVoter->expects($this->once())
             ->method('isAllowed')
             ->with(
-                $updateFacilities->getPermission(),
+                Permission::VOORZIENINGEN_BEWERKEN(),
                 new StringLiteral(''),
                 $userId
             )
@@ -75,9 +80,14 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
                 true
             );
 
+        $this->commandFilter->expects($this->once())
+            ->method('matches')
+            ->with($command)
+            ->willReturn(true);
+
         $this->assertTrue(
-            $this->securityWithFacilityPermission->isAuthorized(
-                $updateFacilities
+            $this->securityWithUserPermission->isAuthorized(
+                $command
             )
         );
     }
@@ -85,8 +95,9 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_delegates_to_parent_when_not_a_facility_command()
+    public function it_delegates_to_parent_when_command_does_not_match()
     {
+        /** @var AuthorizableCommandInterface $command */
         $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->security->expects($this->once())
@@ -94,8 +105,13 @@ class SecurityWithFacilityPermissionTest extends \PHPUnit_Framework_TestCase
             ->with($command)
             ->willReturn(true);
 
+        $this->commandFilter->expects($this->once())
+            ->method('matches')
+            ->with($command)
+            ->willReturn(false);
+
         $this->assertTrue(
-            $this->securityWithFacilityPermission->isAuthorized($command)
+            $this->securityWithUserPermission->isAuthorized($command)
         );
     }
 }

@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
 use CultureFeed_Cdb_Data_File;
@@ -18,7 +17,6 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
@@ -117,7 +115,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         });
 
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
+            new CdbXMLItemBaseImporter(),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );

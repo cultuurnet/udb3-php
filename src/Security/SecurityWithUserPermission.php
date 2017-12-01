@@ -4,13 +4,9 @@ namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
-use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
-use CultuurNet\UDB3\Security\SecurityDecoratorBase;
-use CultuurNet\UDB3\Security\SecurityInterface;
-use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityWithFacilityPermission extends SecurityDecoratorBase
+class SecurityWithUserPermission extends SecurityDecoratorBase
 {
     /**
      * @var UserIdentificationInterface
@@ -23,19 +19,27 @@ class SecurityWithFacilityPermission extends SecurityDecoratorBase
     private $permissionVoter;
 
     /**
+     * @var CommandFilterInterface
+     */
+    private $commandFilter;
+
+    /**
      * @param SecurityInterface $decoratee
      * @param UserIdentificationInterface $userIdentification
      * @param PermissionVoterInterface $permissionVoter
+     * @param CommandFilterInterface $commandFilter
      */
     public function __construct(
         SecurityInterface $decoratee,
         UserIdentificationInterface $userIdentification,
-        PermissionVoterInterface $permissionVoter
+        PermissionVoterInterface $permissionVoter,
+        CommandFilterInterface $commandFilter
     ) {
         parent::__construct($decoratee);
 
         $this->userIdentification = $userIdentification;
         $this->permissionVoter = $permissionVoter;
+        $this->commandFilter = $commandFilter;
     }
 
     /**
@@ -43,9 +47,7 @@ class SecurityWithFacilityPermission extends SecurityDecoratorBase
      */
     public function isAuthorized(AuthorizableCommandInterface $command)
     {
-        //@todo: When extending for events create an interface.
-        // https://jira.uitdatabank.be/browse/III-2413
-        if ($command instanceof UpdateFacilities) {
+        if ($this->commandFilter->matches($command)) {
             return $this->permissionVoter->isAllowed(
                 $command->getPermission(),
                 new StringLiteral(''),

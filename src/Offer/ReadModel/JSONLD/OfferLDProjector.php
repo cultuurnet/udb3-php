@@ -368,9 +368,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     {
         $document = $this->loadDocumentFromRepository($facilitiesUpdated);
 
-        $placeLd = $document->getBody();
+        $offerLd = $document->getBody();
 
-        $terms = isset($placeLd->terms) ? $placeLd->terms : array();
+        $terms = isset($offerLd->terms) ? $offerLd->terms : array();
 
         // Remove all old facilities + get numeric keys.
         $terms = array_values(array_filter(
@@ -385,9 +385,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             $terms[] = $facility->toJsonLd();
         }
 
-        $placeLd->terms = $terms;
+        $offerLd->terms = $terms;
 
-        return $document->withBody($placeLd);
+        return $document->withBody($offerLd);
     }
 
     /**

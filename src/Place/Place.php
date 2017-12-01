@@ -132,16 +132,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Update the facilities.
-     *
-     * @param array $facilities
-     */
-    public function updateFacilities(array $facilities)
-    {
-        $this->apply(new FacilitiesUpdated($this->placeId, $facilities));
-    }
-
-    /**
      * Update the major info.
      *
      * @param Title $title
@@ -500,5 +490,13 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createThemeUpdatedEvent(Theme $theme)
     {
         return new ThemeUpdated($this->placeId, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createFacilitiesUpdatedEvent(array $facilities)
+    {
+        return new FacilitiesUpdated($this->placeId, $facilities);
     }
 }

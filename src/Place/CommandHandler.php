@@ -213,23 +213,6 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Handle the update of facilities for a place.
-     * @param UpdateFacilities $updateFacilities
-     */
-    public function handleUpdateFacilities(UpdateFacilities $updateFacilities)
-    {
-
-        /** @var Place $place */
-        $place = $this->offerRepository->load($updateFacilities->getItemId());
-
-        $place->updateFacilities(
-            $updateFacilities->getFacilities()
-        );
-
-        $this->offerRepository->save($place);
-    }
-
-    /**
      * Handle an update the major info command.
      * @param UpdateMajorInfo $updateMajorInfo
      */
@@ -259,5 +242,13 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getUpdateThemeClassName()
     {
         return UpdateTheme::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateFacilitiesClassName()
+    {
+        return UpdateFacilities::class;
     }
 }

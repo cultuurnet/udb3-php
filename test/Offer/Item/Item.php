@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
@@ -299,5 +300,13 @@ class Item extends Offer
     protected function createThemeUpdatedEvent(Theme $theme)
     {
         return new ThemeUpdated($this->id, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createFacilitiesUpdatedEvent(array $facilities)
+    {
+        return new FacilitiesUpdated($this->id, $facilities);
     }
 }

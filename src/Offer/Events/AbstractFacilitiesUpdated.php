@@ -42,7 +42,7 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
             $facilities[] = Facility::deserialize($facility);
         }
 
-        return new static($data['place_id'], $facilities);
+        return new static($data['item_id'], $facilities);
     }
 
     /**

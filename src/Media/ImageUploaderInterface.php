@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Media;
 
 use CultuurNet\UDB3\Language;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**
@@ -14,16 +13,13 @@ use ValueObjects\StringLiteral\StringLiteral;
 interface ImageUploaderInterface
 {
     /**
-     * @param UUID $fileId
      * @param UploadedFile $file
      * @param StringLiteral $description
      * @param StringLiteral $copyrightHolder
      * @param Language $language
-     * @return String The id of the upload command.
-     * The id of the upload command.
+     * @return ImageUploadResult
      */
     public function upload(
-        UUID $fileId,
         UploadedFile $file,
         StringLiteral $description,
         StringLiteral $copyrightHolder,

@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 
 class UpdateFacilities extends AbstractCommand
 {
@@ -28,5 +29,13 @@ class UpdateFacilities extends AbstractCommand
     public function getFacilities()
     {
         return $this->facilities;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPermission()
+    {
+        return Permission::VOORZIENINGEN_BEWERKEN();
     }
 }

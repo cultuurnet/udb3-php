@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTheme;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateType;
@@ -373,6 +374,35 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
             '2D015370-7CBA-4CB9-B0E4-07D2DEAAB2FF',
             new StringLiteral('0.52.0.0.0')
         );
+
+        $this->assertEquals($expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_facilities_and_return_resulting_command()
+    {
+        $expectedCommandId = 'f42802e4-c1f1-4aa6-9909-a08cfc66f355';
+        $offerId = '2D015370-7CBA-4CB9-B0E4-07D2DEAAB2FF';
+        $facilities = [
+            'facility1',
+            'facility2',
+        ];
+        $updateFacilities = new UpdateFacilities($offerId, $facilities);
+        $this->expectPlaceholderDocument($offerId);
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdateFacilitiesCommand')
+            ->with($offerId, $facilities)
+            ->willReturn($updateFacilities);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateFacilities)
+            ->willReturn($expectedCommandId);
+
+        $commandId = $this->offerEditingService->updateFacilities($offerId, $facilities);
 
         $this->assertEquals($expectedCommandId, $commandId);
     }

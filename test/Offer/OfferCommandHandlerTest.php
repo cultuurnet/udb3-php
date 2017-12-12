@@ -6,6 +6,7 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -18,8 +19,10 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
@@ -377,6 +380,26 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when(new Reject($this->id, $reason))
             ->then([
                 new Rejected($this->id, $reason),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_facilities_of_a_place()
+    {
+        $facilities = [
+            new Facility('facility1', 'facility label'),
+        ];
+
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given([
+                $this->itemCreated,
+            ])
+            ->when(new UpdateFacilities($this->id, $facilities))
+            ->then([
+                new FacilitiesUpdated($this->id, $facilities),
             ]);
     }
 }

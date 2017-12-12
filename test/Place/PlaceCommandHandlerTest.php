@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -29,14 +28,12 @@ use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
-use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\CalendarUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
-use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
@@ -144,27 +141,6 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 ),
             ],
         ];
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_update_facilities_of_a_place()
-    {
-        $id = '1';
-        $facilities = [
-            new Facility('facility1', 'facility label'),
-        ];
-
-        $this->scenario
-            ->withAggregateId($id)
-            ->given(
-                [$this->factorOfferCreated($id)]
-            )
-            ->when(
-                new UpdateFacilities($id, $facilities)
-            )
-            ->then([new FacilitiesUpdated($id, $facilities)]);
     }
 
     /**

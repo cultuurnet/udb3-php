@@ -22,6 +22,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
@@ -565,6 +566,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createThemeUpdatedEvent(Theme $theme)
     {
         return new ThemeUpdated($this->eventId, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createFacilitiesUpdatedEvent(array $facilities)
+    {
+        return new FacilitiesUpdated($this->eventId, $facilities);
     }
 
     /**

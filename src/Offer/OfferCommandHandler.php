@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateCalendar;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateFacilities;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTheme;
@@ -228,6 +229,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     abstract protected function getUpdateThemeClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getUpdateFacilitiesClassName();
+
+    /**
      * @param AbstractUpdateType $updateType
      */
     public function handleUpdateType(AbstractUpdateType $updateType)
@@ -247,6 +253,18 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $offer = $this->load($updateTheme->getItemId());
 
         $offer->updateTheme($updateTheme->getTheme());
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractUpdateFacilities $updateFacilities
+     */
+    public function handleUpdateFacilities(AbstractUpdateFacilities $updateFacilities)
+    {
+        $offer = $this->load($updateFacilities->getItemId());
+
+        $offer->updateFacilities($updateFacilities->getFacilities());
 
         $this->offerRepository->save($offer);
     }

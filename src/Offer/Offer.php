@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
@@ -146,6 +147,14 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         if (!$this->themeId || $this->themeId !== $theme->getId()) {
             $this->apply($this->createThemeUpdatedEvent($theme));
         }
+    }
+
+    /**
+     * @param array $facilities
+     */
+    public function updateFacilities(array $facilities)
+    {
+        $this->apply($this->createFacilitiesUpdatedEvent($facilities));
     }
 
     /**
@@ -861,4 +870,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractThemeUpdated
      */
     abstract protected function createThemeUpdatedEvent(Theme $theme);
+
+    /**
+     * @param array $facilities
+     * @return AbstractFacilitiesUpdated
+     */
+    abstract protected function createFacilitiesUpdatedEvent(array $facilities);
 }

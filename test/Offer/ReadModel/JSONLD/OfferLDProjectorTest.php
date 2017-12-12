@@ -8,6 +8,7 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -20,6 +21,7 @@ use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ImageAdded;
@@ -1265,6 +1267,61 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $updatedItem = $this->project($themeUpdatedEvent, $itemId);
         $this->assertEquals($expectedTerms, $updatedItem->terms);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_facilities()
+    {
+        $id = 'foo';
+        $facilities = [
+            new Facility('facility1', 'facility label'),
+            new Facility('facility2', 'facility label2'),
+        ];
+
+        $facilitiesUpdated = new FacilitiesUpdated($id, $facilities);
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode(
+                [
+                    'name' => ['nl' => 'Foo'],
+                    'terms' => [
+                        [
+                            'id' => 'facility1',
+                            'label' => 'facility label',
+                            'domain' => 'facility',
+                        ],
+                    ],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedBody = (object) [
+            'name' => (object) ['nl' => 'Foo'],
+            'terms' => [
+                (object) [
+                    'id' => 'facility1',
+                    'label' => 'facility label',
+                    'domain' => 'facility',
+                ],
+                (object) [
+                    'id' => 'facility2',
+                    'label' => 'facility label2',
+                    'domain' => 'facility',
+                ],
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+        ];
+
+        $body = $this->project($facilitiesUpdated, $id);
+        $this->assertEquals($expectedBody, $body);
     }
 
     /**

@@ -17,7 +17,6 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -380,6 +379,15 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     }
 
     /**
+     * @test
+     */
+    public function it_replaces_place_id_with_item_id_on_event_facilities_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_facilities_updated_class.json';
+        $this->assertPlaceIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
      * @param string $sampleFile
      */
     private function assertEventIdReplacedWithItemId($sampleFile)
@@ -406,7 +414,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $typedId = $decoded['payload'][$type . '_id'];
 
         /**
-         * @var AbstractEvent $abstractEvent
+         * @var \CultuurNet\UDB3\Offer\Events\AbstractEvent $abstractEvent
          */
         $abstractEvent = $this->serializer->deserialize($decoded);
         $itemId = $abstractEvent->getItemId();

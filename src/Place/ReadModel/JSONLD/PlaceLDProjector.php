@@ -355,37 +355,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * Apply the facilitiesupdated event to the place repository.
-     * @param FacilitiesUpdated $facilitiesUpdated
-     * @return JsonDocument
-     */
-    protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
-    {
-        $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
-
-        $placeLd = $document->getBody();
-
-        $terms = isset($placeLd->terms) ? $placeLd->terms : array();
-
-        // Remove all old facilities + get numeric keys.
-        $terms = array_values(array_filter(
-            $terms,
-            function ($term) {
-                return $term->domain !== Facility::DOMAIN;
-            }
-        ));
-
-        // Add the new facilities.
-        foreach ($facilitiesUpdated->getFacilities() as $facility) {
-            $terms[] = $facility->toJsonLd();
-        }
-
-        $placeLd->terms = $terms;
-
-        return $document->withBody($placeLd);
-    }
-
-    /**
      * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
      * @return JsonDocument
      */
@@ -596,5 +565,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getThemeUpdatedClassName()
     {
         return ThemeUpdated::class;
+    }
+
+    protected function getFacilitiesUpdatedClassName()
+    {
+        return FacilitiesUpdated::class;
     }
 }

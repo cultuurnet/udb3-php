@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
-use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\StringLiteral\StringLiteral;
 

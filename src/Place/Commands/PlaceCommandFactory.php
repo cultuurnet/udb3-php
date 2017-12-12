@@ -247,4 +247,12 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     {
         return new UpdateTheme($id, $theme);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function createUpdateFacilitiesCommand($id, array $facilities)
+    {
+        return new UpdateFacilities($id, $facilities);
+    }
 }

@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
 use CultureFeed_Cdb_Data_File;
@@ -18,9 +17,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -31,7 +28,6 @@ use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
-use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
@@ -117,7 +113,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         });
 
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
+            new CdbXMLItemBaseImporter(),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );
@@ -726,62 +722,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($majorInfoUpdated, $majorInfoUpdated->getPlaceId());
         $this->assertEquals($expectedJsonLD, $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_projects_the_updating_of_facilities()
-    {
-
-        $id = 'foo';
-        $facilities = [
-            new Facility('facility1', 'facility label'),
-            new Facility('facility2', 'facility label2'),
-        ];
-
-        $facilitiesUpdated = new FacilitiesUpdated($id, $facilities);
-
-        $initialDocument = new JsonDocument(
-            $id,
-            json_encode(
-                [
-                    'name' => ['nl' => 'Foo'],
-                    'terms' => [
-                        [
-                            'id' => 'facility1',
-                            'label' => 'facility label',
-                            'domain' => 'facility',
-                        ],
-                    ],
-                    'languages' => ['nl'],
-                    'completedLanguages' => ['nl'],
-                ]
-            )
-        );
-
-        $this->documentRepository->save($initialDocument);
-
-        $expectedBody = (object) [
-            'name' => (object) ['nl' => 'Foo'],
-            'terms' => [
-                (object) [
-                    'id' => 'facility1',
-                    'label' => 'facility label',
-                    'domain' => 'facility',
-                ],
-                (object) [
-                    'id' => 'facility2',
-                    'label' => 'facility label2',
-                    'domain' => 'facility',
-                ],
-            ],
-            'languages' => ['nl'],
-            'completedLanguages' => ['nl'],
-        ];
-
-        $body = $this->project($facilitiesUpdated, $id);
-        $this->assertEquals($expectedBody, $body);
     }
 
     /**

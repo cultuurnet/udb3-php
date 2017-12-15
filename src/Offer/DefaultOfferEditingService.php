@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class DefaultOfferEditingService implements OfferEditingServiceInterface
@@ -240,15 +241,15 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
 
     /**
      * @param string $id
-     * @param Image $image
+     * @param UUID $imageId
      * @return string
      */
-    public function addImage($id, Image $image)
+    public function addImage($id, UUID $imageId)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createAddImageCommand($id, $image)
+            $this->commandFactory->createAddImageCommand($id, $imageId)
         );
     }
 

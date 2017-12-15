@@ -44,6 +44,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
@@ -87,12 +88,15 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                 }
             ));
 
+        $this->mediaManager = $this->createMock(MediaManager::class);
+
         $this->commandFactory = new EventCommandFactory();
 
         return new EventCommandHandler(
             $repository,
             $this->organizerRepository,
-            $this->labelRepository
+            $this->labelRepository,
+            $this->mediaManager
         );
     }
 

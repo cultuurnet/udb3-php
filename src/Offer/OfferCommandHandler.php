@@ -7,6 +7,8 @@ use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Media\MediaManager;
+use CultuurNet\UDB3\Media\MediaManagerInterface;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
@@ -54,18 +56,26 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     protected $labelRepository;
 
     /**
+     * @var MediaManagerInterface|MediaManager
+     */
+    protected $mediaManager;
+
+    /**
      * @param RepositoryInterface $offerRepository
      * @param RepositoryInterface $organizerRepository
      * @param ReadRepositoryInterface $labelRepository
+     * @param MediaManagerInterface $mediaManager
      */
     public function __construct(
         RepositoryInterface $offerRepository,
         RepositoryInterface $organizerRepository,
-        ReadRepositoryInterface $labelRepository
+        ReadRepositoryInterface $labelRepository,
+        MediaManagerInterface $mediaManager
     ) {
         $this->offerRepository = $offerRepository;
         $this->organizerRepository = $organizerRepository;
         $this->labelRepository = $labelRepository;
+        $this->mediaManager = $mediaManager;
     }
 
     /**
@@ -325,7 +335,10 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     public function handleAddImage(AbstractAddImage $addImage)
     {
         $offer = $this->load($addImage->getItemId());
-        $offer->addImage($addImage->getImage());
+
+        $image = $this->mediaManager->getImage($addImage->getImageId());
+        $offer->addImage($image);
+
         $this->offerRepository->save($offer);
     }
 

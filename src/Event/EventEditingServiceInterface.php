@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 interface EventEditingServiceInterface
@@ -78,9 +79,9 @@ interface EventEditingServiceInterface
      * Add an image to the event.
      *
      * @param string $id
-     * @param Image $image
+     * @param UUID $imageId
      */
-    public function addImage($id, Image $image);
+    public function addImage($id, UUID $imageId);
 
     /**
      * Update an image of the event.

@@ -20,6 +20,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\RemoveLabel;
@@ -349,12 +350,15 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
                 Privacy::PRIVACY_PUBLIC()
             ));
 
+        $this->mediaManager = $this->createMock(MediaManager::class);
+
         $this->commandFactory = new PlaceCommandFactory();
 
         return new CommandHandler(
             $repository,
             $this->organizerRepository,
-            $this->labelRepository
+            $this->labelRepository,
+            $this->mediaManager
         );
     }
 

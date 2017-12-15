@@ -53,10 +53,14 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
         return new RemoveLabel($id, $label);
     }
 
-
-    public function createAddImageCommand($id, Image $image)
+    /**
+     * @param $id
+     * @param UUID $imageId
+     * @return AddImage
+     */
+    public function createAddImageCommand($id, UUID $imageId)
     {
-        return new AddImage($id, $image);
+        return new AddImage($id, $imageId);
     }
 
     public function createRemoveImageCommand($id, Image $image)

@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Media;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\Entry\Number;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -97,6 +96,7 @@ class ImageUploaderService implements ImageUploaderInterface
             throw new \InvalidArgumentException('The uploaded file is not an image.');
         }
 
+        /** @var MIMEType $mimeType */
         $mimeType = MIMEType::fromNative($mimeTypeString);
 
         $fileId = new UUID($this->uuidGenerator->generate());
@@ -106,7 +106,7 @@ class ImageUploaderService implements ImageUploaderInterface
         $this->filesystem->writeStream($destination, $stream);
         fclose($stream);
 
-        return $this->commandBus->dispatch(
+        $jobId = $this->commandBus->dispatch(
             new UploadImage(
                 $fileId,
                 $mimeType,
@@ -115,6 +115,11 @@ class ImageUploaderService implements ImageUploaderInterface
                 new StringLiteral($destination),
                 $language
             )
+        );
+
+        return new ImageUploadResult(
+            $fileId,
+            $jobId
         );
     }
 

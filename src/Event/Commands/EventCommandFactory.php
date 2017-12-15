@@ -84,12 +84,12 @@ class EventCommandFactory implements OfferCommandFactoryInterface
 
     /**
      * @param $id
-     * @param Image $image
+     * @param UUID $imageId
      * @return AddImage
      */
-    public function createAddImageCommand($id, Image $image)
+    public function createAddImageCommand($id, UUID $imageId)
     {
-        return new AddImage($id, $image);
+        return new AddImage($id, $imageId);
     }
 
     /**

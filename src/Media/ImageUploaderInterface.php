@@ -17,9 +17,7 @@ interface ImageUploaderInterface
      * @param StringLiteral $description
      * @param StringLiteral $copyrightHolder
      * @param Language $language
-     *
-     * @return String
-     *  The id of the upload command.
+     * @return ImageUploadResult
      */
     public function upload(
         UploadedFile $file,

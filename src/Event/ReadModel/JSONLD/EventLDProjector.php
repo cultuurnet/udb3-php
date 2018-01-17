@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
-use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
@@ -63,6 +62,7 @@ use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -289,10 +289,10 @@ class EventLDProjector extends OfferLDProjector implements
             $cdbXml
         );
 
-        // Add creation date and update date from metadata.
-        $created = $this->getCreated($domainMessage);
-        $eventLd->created = $created;
-        $eventLd->modified = $created;
+        // Add creation date and update date from domain message.
+        $created = RecordedOn::fromDomainMessage($domainMessage);
+        $eventLd->created = $created->toString();
+        $eventLd->modified = $created->toString();
 
         // Add creator.
         $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
@@ -474,9 +474,9 @@ class EventLDProjector extends OfferLDProjector implements
             $jsonLD->terms[] = $theme->toJsonLd();
         }
 
-        $created = $this->getCreated($domainMessage);
-        $jsonLD->created = $created;
-        $jsonLD->modified = $created;
+        $created = RecordedOn::fromDomainMessage($domainMessage);
+        $jsonLD->created = $created->toString();
+        $jsonLD->modified = $created->toString();
 
         $metaData = $domainMessage->getMetadata()->serialize();
         if (isset($metaData['user_email'])) {
@@ -506,9 +506,9 @@ class EventLDProjector extends OfferLDProjector implements
         $eventJsonLD = $originalDocument->getBody();
 
         // Set the created and modified date.
-        $created = $this->getCreated($domainMessage);
-        $eventJsonLD->created = $created;
-        $eventJsonLD->modified = $created;
+        $created = RecordedOn::fromDomainMessage($domainMessage);
+        $eventJsonLD->created = $created->toString();
+        $eventJsonLD->modified = $created->toString();
 
         // Set the creator.
         $eventJsonLD->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
@@ -676,20 +676,6 @@ class EventLDProjector extends OfferLDProjector implements
         if (isset($properties['consumer']['name'])) {
             return new StringLiteral($properties['consumer']['name']);
         }
-    }
-
-    /**
-     * @param DomainMessage $domainMessage
-     * @return string
-     */
-    private function getCreated(DomainMessage $domainMessage)
-    {
-        $recordedOn = $domainMessage->getRecordedOn()->toString();
-
-        return \DateTime::createFromFormat(
-            DateTime::FORMAT_STRING,
-            $recordedOn
-        )->format('c');
     }
 
     /**

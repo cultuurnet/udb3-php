@@ -34,7 +34,7 @@ class RecordedOn
      * @param DateTime $dateTime
      * @return RecordedOn
      */
-    public static function fromBroadWayDateTime(DateTime $dateTime)
+    public static function fromBroadwayDateTime(DateTime $dateTime)
     {
         return new self($dateTime);
     }

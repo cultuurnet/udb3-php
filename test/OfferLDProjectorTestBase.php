@@ -55,7 +55,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
 
         $this->eventNamespace = $eventNamespace;
 
-        $this->recordedOn = RecordedOn::fromBroadWayDateTime(DateTime::now());
+        $this->recordedOn = RecordedOn::fromBroadwayDateTime(DateTime::now());
     }
 
     /**

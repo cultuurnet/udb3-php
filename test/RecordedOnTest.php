@@ -15,7 +15,7 @@ class RecordedOnTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->recordedOn = RecordedOn::fromBroadWayDateTime(
+        $this->recordedOn = RecordedOn::fromBroadwayDateTime(
             DateTime::fromString('2018-01-16T12:13:33Z')
         );
     }
@@ -47,7 +47,7 @@ class RecordedOnTest extends \PHPUnit_Framework_TestCase
         $dateTime = DateTime::fromString('2018-01-16T12:13:33Z');
 
         $this->assertEquals(
-            RecordedOn::fromBroadWayDateTime($dateTime),
+            RecordedOn::fromBroadwayDateTime($dateTime),
             $this->recordedOn
         );
     }

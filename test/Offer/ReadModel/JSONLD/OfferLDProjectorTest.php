@@ -115,7 +115,9 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new JsonDocumentNullEnricher()
         );
 
-        $this->recordedOn = new RecordedOn(DateTime::fromString('2018-01-01T08:30:00+0100'));
+        $this->recordedOn = RecordedOn::fromBroadWayDateTime(
+            DateTime::fromString('2018-01-01T08:30:00+0100')
+        );
     }
 
     /**

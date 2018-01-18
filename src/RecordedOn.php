@@ -16,7 +16,7 @@ class RecordedOn
      * ModifiedDateTime constructor.
      * @param DateTime $recorded
      */
-    public function __construct(DateTime $recorded)
+    private function __construct(DateTime $recorded)
     {
         $this->recorded = $recorded;
     }
@@ -28,6 +28,15 @@ class RecordedOn
     public static function fromDomainMessage(DomainMessage $domainMessage)
     {
         return new self($domainMessage->getRecordedOn());
+    }
+
+    /**
+     * @param DateTime $dateTime
+     * @return RecordedOn
+     */
+    public static function fromBroadWayDateTime(DateTime $dateTime)
+    {
+        return new self($dateTime);
     }
 
     /**

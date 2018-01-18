@@ -15,7 +15,9 @@ class RecordedOnTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->recordedOn = new RecordedOn(DateTime::fromString('2018-01-16T12:13:33Z'));
+        $this->recordedOn = RecordedOn::fromBroadWayDateTime(
+            DateTime::fromString('2018-01-16T12:13:33Z')
+        );
     }
 
     /**
@@ -33,6 +35,19 @@ class RecordedOnTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             RecordedOn::fromDomainMessage($domainMessage),
+            $this->recordedOn
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_created_from_a_broadway_datetime()
+    {
+        $dateTime = DateTime::fromString('2018-01-16T12:13:33Z');
+
+        $this->assertEquals(
+            RecordedOn::fromBroadWayDateTime($dateTime),
             $this->recordedOn
         );
     }

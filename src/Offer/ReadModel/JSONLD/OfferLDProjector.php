@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -49,6 +50,7 @@ use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
@@ -142,6 +144,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         foreach ($jsonDocuments as $jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
+
+            $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
+
             $this->repository->save($jsonDocument);
         }
     }
@@ -1009,5 +1014,20 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
                 '@id' => $this->organizerService->iri($organizerId),
             );
         }
+    }
+
+    /**
+     * @param JsonDocument $jsonDocument
+     * @param DomainMessage $domainMessage
+     * @return JsonDocument
+     */
+    private function updateModified(JsonDocument $jsonDocument, DomainMessage $domainMessage)
+    {
+        $body = $jsonDocument->getBody();
+
+        $recordedDateTime = RecordedOn::fromDomainMessage($domainMessage);
+        $body->modified = $recordedDateTime->toString();
+
+        return $jsonDocument->withBody($body);
     }
 }

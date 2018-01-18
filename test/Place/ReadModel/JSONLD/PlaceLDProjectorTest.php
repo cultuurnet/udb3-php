@@ -374,6 +374,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $expectedJsonLD->languages = ['nl'];
         $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
 
         $addressUpdated = new AddressUpdated(
             '66f30742-dee9-4794-ac92-fa44634692b8',
@@ -385,7 +386,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             )
         );
 
-        $body = $this->project($addressUpdated, '66f30742-dee9-4794-ac92-fa44634692b8');
+        $body = $this->project(
+            $addressUpdated,
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            null,
+            $this->recordedOn->getRecordedOn()
+        );
+
         $this->assertEquals($expectedJsonLD, $body);
     }
 
@@ -450,6 +457,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $expectedJsonLD->languages = ['nl', 'fr'];
         $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
 
         $addressTranslated = new AddressTranslated(
             '66f30742-dee9-4794-ac92-fa44634692b8',
@@ -462,7 +470,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Language('fr')
         );
 
-        $body = $this->project($addressTranslated, '66f30742-dee9-4794-ac92-fa44634692b8');
+        $body = $this->project(
+            $addressTranslated,
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            null,
+            $this->recordedOn->getRecordedOn()
+        );
+
         $this->assertEquals($expectedJsonLD, $body);
     }
 
@@ -719,8 +733,15 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
         $expectedJsonLD->languages = ['nl'];
         $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
 
-        $body = $this->project($majorInfoUpdated, $majorInfoUpdated->getPlaceId());
+        $body = $this->project(
+            $majorInfoUpdated,
+            $majorInfoUpdated->getPlaceId(),
+            null,
+            $this->recordedOn->getRecordedOn()
+        );
+
         $this->assertEquals($expectedJsonLD, $body);
     }
 
@@ -766,9 +787,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'latitude' => 1.1234567,
                 'longitude' => -0.34567,
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($coordinatesUpdated, $id);
+        $body = $this->project($coordinatesUpdated, $id, null, $this->recordedOn->getRecordedOn());
         $this->assertEquals($expectedBody, $body);
     }
 
@@ -781,12 +803,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $placeDeleted = new PlaceDeleted($placeId);
 
-        $body = $this->project($placeDeleted, $placeId);
+        $body = $this->project($placeDeleted, $placeId, null, $this->recordedOn->getRecordedOn());
 
         $expectedJson = (object) [
             '@id' => 'http://example.com/entity/' . $placeId,
             '@context' => '/contexts/place',
             'workflowStatus' => 'DELETED',
+            'modified' => $this->recordedOn->toString(),
         ];
 
         $this->assertEquals($expectedJson, $body);
@@ -865,11 +888,12 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Label('label B')
         );
 
-        $body = $this->project($labelAdded, 'foo');
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->getRecordedOn());
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';
         $expectedBody->labels = ['label B'];
+        $expectedBody->modified = $this->recordedOn->toString();
 
         $this->assertEquals(
             $expectedBody,

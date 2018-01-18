@@ -18,6 +18,7 @@ use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\EventListener\EventFilterInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -77,6 +78,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $cdbXMLImporter;
 
     /**
+     * @var EventFilterInterface
+     */
+    private $eventFilter;
+
+    /**
      * @var IriGeneratorInterface
      */
     private $mediaIriGenerator;
@@ -118,6 +124,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new CdbXmlContactInfoImporter()
         );
 
+        $this->eventFilter = $this->createMock(EventFilterInterface::class);
+
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
@@ -126,7 +134,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $this->cdbXMLImporter,
             new JsonDocumentLanguageEnricher(
                 new PlaceJsonDocumentLanguageAnalyzer()
-            )
+            ),
+            $this->eventFilter
         );
 
         $street = new Street('Kerkstraat 69');

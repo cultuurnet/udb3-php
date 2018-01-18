@@ -8,6 +8,7 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
+use CultuurNet\UDB3\EventListener\EventFilterInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
@@ -86,6 +87,11 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     protected $serializer;
 
     /**
+     * @var EventFilterInterface
+     */
+    protected $eventFilter;
+
+    /**
      * @var RecordedOn
      */
     protected $recordedOn;
@@ -107,12 +113,15 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
+        $this->eventFilter = $this->createMock(EventFilterInterface::class);
+
         $this->projector = new ItemLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
-            new JsonDocumentNullEnricher()
+            new JsonDocumentNullEnricher(),
+            $this->eventFilter
         );
 
         $this->recordedOn = RecordedOn::fromBroadwayDateTime(

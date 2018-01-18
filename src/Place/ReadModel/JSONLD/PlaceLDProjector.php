@@ -12,6 +12,7 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use CultuurNet\UDB3\EventListener\EventFilterInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Language;
@@ -79,6 +80,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param SerializerInterface $mediaObjectSerializer
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param EventFilterInterface $eventFilter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -86,14 +88,16 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         CdbXMLImporter $cdbXMLImporter,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        EventFilterInterface $eventFilter
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            $jsonDocumentMetaDataEnricher
+            $jsonDocumentMetaDataEnricher,
+            $eventFilter
         );
 
         $this->cdbXMLImporter = $cdbXMLImporter;

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\EventListener\EventFilterInterface;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -88,6 +89,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $mediaObjectSerializer;
 
     /**
+     * @var EventFilterInterface
+     */
+    protected $eventFilter;
+
+    /**
      * @var SluggerInterface
      */
     protected $slugger;
@@ -98,19 +104,22 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param EventFilterInterface $eventFilter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        EventFilterInterface $eventFilter
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
+        $this->eventFilter = $eventFilter;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -145,7 +154,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         foreach ($jsonDocuments as $jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
 
-            $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
+            if (!$this->eventFilter->matches($event)) {
+                $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
+            }
 
             $this->repository->save($jsonDocument);
         }

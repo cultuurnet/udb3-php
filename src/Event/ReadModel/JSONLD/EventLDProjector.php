@@ -49,6 +49,7 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\EventListener\EventFilterInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
@@ -110,6 +111,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param EventFilterInterface $eventFilter
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -120,14 +122,16 @@ class EventLDProjector extends OfferLDProjector implements
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
         CdbXMLImporter $cdbXMLImporter,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        EventFilterInterface $eventFilter
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
             $mediaObjectSerializer,
-            $jsonDocumentMetaDataEnricher
+            $jsonDocumentMetaDataEnricher,
+            $eventFilter
         );
 
         $this->placeService = $placeService;

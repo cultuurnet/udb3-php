@@ -59,7 +59,7 @@ class RecordedOnTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(
             DateTime::fromString('2018-01-16T12:13:33Z')->equals(
-                $this->recordedOn->getRecordedOn()
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
     }

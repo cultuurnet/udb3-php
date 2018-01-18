@@ -390,7 +390,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $addressUpdated,
             '66f30742-dee9-4794-ac92-fa44634692b8',
             null,
-            $this->recordedOn->getRecordedOn()
+            $this->recordedOn->toBroadwayDateTime()
         );
 
         $this->assertEquals($expectedJsonLD, $body);
@@ -474,7 +474,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $addressTranslated,
             '66f30742-dee9-4794-ac92-fa44634692b8',
             null,
-            $this->recordedOn->getRecordedOn()
+            $this->recordedOn->toBroadwayDateTime()
         );
 
         $this->assertEquals($expectedJsonLD, $body);
@@ -739,7 +739,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $majorInfoUpdated,
             $majorInfoUpdated->getPlaceId(),
             null,
-            $this->recordedOn->getRecordedOn()
+            $this->recordedOn->toBroadwayDateTime()
         );
 
         $this->assertEquals($expectedJsonLD, $body);
@@ -790,7 +790,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($coordinatesUpdated, $id, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($coordinatesUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
         $this->assertEquals($expectedBody, $body);
     }
 
@@ -803,7 +803,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $placeDeleted = new PlaceDeleted($placeId);
 
-        $body = $this->project($placeDeleted, $placeId, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($placeDeleted, $placeId, null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedJson = (object) [
             '@id' => 'http://example.com/entity/' . $placeId,
@@ -888,7 +888,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Label('label B')
         );
 
-        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';

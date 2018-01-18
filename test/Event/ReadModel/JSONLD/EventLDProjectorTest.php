@@ -739,7 +739,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Label('label B')
         );
 
-        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';
@@ -864,7 +864,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 0,
                 new Metadata(),
                 $placeProjectedToJSONLD,
-                $this->recordedOn->getRecordedOn()
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
 
@@ -975,7 +975,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 0,
                 new Metadata(),
                 $organizerProjectedToJSONLD,
-                $this->recordedOn->getRecordedOn()
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
 
@@ -1070,7 +1070,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
         $expectedJsonLD->modified = $this->recordedOn->toString();
 
-        $body = $this->project($majorInfoUpdated, $id, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($majorInfoUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedJsonLD, $body);
     }
@@ -1107,7 +1107,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->availableTo = '2020-01-27T12:12:12+01:00';
         $expectedJsonLD->modified = $this->recordedOn->toString();
 
-        $body = $this->project($calendarUpdated, $eventId, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($calendarUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedJsonLD, $body);
     }
@@ -1146,7 +1146,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $expectedJsonLD->modified = $this->recordedOn->toString();
 
-        $body = $this->project($locationUpdated, $eventId, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($locationUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedJsonLD, $body);
     }
@@ -1232,7 +1232,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Audience(AudienceType::EDUCATION())
         );
 
-        $body = $this->project($audienceUpdated, $eventId, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($audienceUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedJson = (object) [
                 '@id' => 'http://example.com/entity/' . $eventId,
@@ -1253,7 +1253,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventDeleted = new EventDeleted($eventId);
 
-        $body = $this->project($eventDeleted, $eventId, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($eventDeleted, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedJson = (object) [
             '@id' => 'http://example.com/entity/' . $eventId,

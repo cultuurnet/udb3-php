@@ -210,7 +210,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals(
             (object) [
@@ -269,7 +269,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new Label('label C', false)
         );
 
-        $body = $this->project($labelRemoved, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($labelRemoved, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals(
             (object) [
@@ -299,7 +299,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             new Label('label B')
         );
 
-        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';
@@ -352,7 +352,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $titleUpdatedEvent,
             '5582FCA5-38FD-40A0-B8FB-9FA70AB7ADA3',
             null,
-            $this->recordedOn->getRecordedOn()
+            $this->recordedOn->toBroadwayDateTime()
         );
 
         $this->assertEquals($expectedDocument->getBody(), $projectedBody);
@@ -383,7 +383,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($titleTranslated, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($titleTranslated, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals(
             (object)[
@@ -425,7 +425,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($descriptionTranslated, 'foo', null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($descriptionTranslated, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals(
             (object)[
@@ -494,7 +494,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $actualBody = $this->project($priceInfoUpdated, $aggregateId, null, $this->recordedOn->getRecordedOn());
+        $actualBody = $this->project($priceInfoUpdated, $aggregateId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedBody, $actualBody);
     }
@@ -669,7 +669,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     ) {
         $this->documentRepository->save($initialDocument);
         $imageRemovedEvent = new ImageRemoved($initialDocument->getId(), $image);
-        $eventBody = $this->project($imageRemovedEvent, $initialDocument->getId(), null, $this->recordedOn->getRecordedOn());
+        $eventBody = $this->project($imageRemovedEvent, $initialDocument->getId(), null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals(
             $expectedProjection,
@@ -920,7 +920,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($organizerUpdated, $id, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($organizerUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = (object)[
             'organizer' => (object)[
@@ -964,7 +964,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($organizerUpdated, $id, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($organizerUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedBody, $body);
     }
@@ -991,7 +991,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($organizerDeleted, $id, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($organizerDeleted, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals((object)['modified' => $this->recordedOn->toString()], $body);
     }
@@ -1023,7 +1023,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($itemDocumentReadyDraft);
 
-        $approvedItem = $this->project($publishedEvent, $itemId, null, $this->recordedOn->getRecordedOn());
+        $approvedItem = $this->project($publishedEvent, $itemId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedItem, $approvedItem);
     }
@@ -1053,7 +1053,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($itemDocumentReadyForValidation);
 
-        $approvedItem = $this->project($approvedEvent, $itemId, null, $this->recordedOn->getRecordedOn());
+        $approvedItem = $this->project($approvedEvent, $itemId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedItem, $approvedItem);
     }
@@ -1086,7 +1086,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->documentRepository->save($itemDocumentReadyForValidation);
 
-        $rejectedItem = $this->project($rejectionEvent, $itemId, null, $this->recordedOn->getRecordedOn());
+        $rejectedItem = $this->project($rejectionEvent, $itemId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedItem, $rejectedItem);
     }
@@ -1355,7 +1355,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($facilitiesUpdated, $id, null, $this->recordedOn->getRecordedOn());
+        $body = $this->project($facilitiesUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
         $this->assertEquals($expectedBody, $body);
     }
 

@@ -42,7 +42,7 @@ class RecordedOn
     /**
      * @return DateTime
      */
-    public function getRecordedOn()
+    public function toBroadwayDateTime()
     {
         return $this->recorded;
     }

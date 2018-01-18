@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
-use Broadway\Domain\DateTime as BroadwayDateTime;
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
@@ -32,6 +32,7 @@ use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\OrganizerJsonDocumentLanguageAnalyzer;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -58,6 +59,11 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $iriGenerator;
 
+    /**
+     * @var RecordedOn
+     */
+    private $recordedOn;
+
     public function setUp()
     {
         $this->documentRepository = $this->createMock(DocumentRepositoryInterface::class);
@@ -77,6 +83,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             new JsonDocumentLanguageEnricher(
                 new OrganizerJsonDocumentLanguageAnalyzer()
             )
+        );
+
+        $this->recordedOn = RecordedOn::fromBroadwayDateTime(
+            DateTime::fromString('2018-01-18T13:57:09Z')
         );
     }
 
@@ -125,7 +135,6 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $uuidGenerator = new Version4Generator();
         $id = $uuidGenerator->generate();
-        $created = '2015-01-20T13:25:21+01:00';
 
         $street = new Street('Kerkstraat 69');
         $locality = new Locality('Leuven');
@@ -159,9 +168,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->phone = ['050/123'];
         $jsonLD->email = ['test@test.be', 'test2@test.be'];
         $jsonLD->url = ['http://www.google.be'];
-        $jsonLD->created = $created;
+        $jsonLD->created = $this->recordedOn->toString();
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->modified = $this->recordedOn->toString();
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -176,7 +186,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 new Metadata(),
                 $organizerCreated,
-                BroadwayDateTime::fromString($created)
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
     }
@@ -188,7 +198,6 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $uuidGenerator = new Version4Generator();
         $id = $uuidGenerator->generate();
-        $created = '2015-01-20T13:25:21+01:00';
 
         $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
             $id,
@@ -202,9 +211,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name['nl'] = 'some representative title';
-        $jsonLD->created = $created;
+        $jsonLD->created = $this->recordedOn->toString();
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->modified = $this->recordedOn->toString();
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -219,7 +229,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 new Metadata(),
                 $organizerCreated,
-                BroadwayDateTime::fromString($created)
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
     }
@@ -602,7 +612,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             [
                 new Label('labelName'),
                 'organizer_with_one_label.json',
-                'organizer.json',
+                'organizer_with_modified.json',
             ],
             [
                 new Label('anotherLabel'),
@@ -630,7 +640,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $labelRemoved = new LabelRemoved($organizerId, $label);
         $domainMessage = $this->createDomainMessage($labelRemoved);
 
-        $this->expectSave($organizerId, 'organizer.json');
+        $this->expectSave($organizerId, 'organizer_with_modified.json');
 
         $this->projector->handle($domainMessage);
     }
@@ -683,7 +693,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             0,
             new Metadata(),
             $organizerEvent,
-            BroadwayDateTime::now()
+            $this->recordedOn->toBroadwayDateTime()
         );
     }
 }

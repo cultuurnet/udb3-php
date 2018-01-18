@@ -32,6 +32,7 @@ use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\CdbXMLImporter;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Title;
 
 class OrganizerLDProjector implements EventListenerInterface
@@ -115,6 +116,9 @@ class OrganizerLDProjector implements EventListenerInterface
 
         if ($jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
+
+            $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
+
             $this->repository->save($jsonDocument);
         }
     }
@@ -477,5 +481,20 @@ class OrganizerLDProjector implements EventListenerInterface
         }
 
         return $document;
+    }
+
+    /**
+     * @param JsonDocument $jsonDocument
+     * @param DomainMessage $domainMessage
+     * @return JsonDocument
+     */
+    private function updateModified(JsonDocument $jsonDocument, DomainMessage $domainMessage)
+    {
+        $body = $jsonDocument->getBody();
+
+        $recordedDateTime = RecordedOn::fromDomainMessage($domainMessage);
+        $body->modified = $recordedDateTime->toString();
+
+        return $jsonDocument->withBody($body);
     }
 }

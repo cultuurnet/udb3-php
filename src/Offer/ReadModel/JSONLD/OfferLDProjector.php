@@ -91,7 +91,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @var EventFilterInterface
      */
-    protected $eventFilter;
+    protected $eventsNotTriggeringUpdateModified;
 
     /**
      * @var SluggerInterface
@@ -104,7 +104,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
-     * @param EventFilterInterface $eventFilter
+     * @param EventFilterInterface $eventsNotTriggeringUpdateModified
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -112,14 +112,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventFilterInterface $eventFilter
+        EventFilterInterface $eventsNotTriggeringUpdateModified
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
-        $this->eventFilter = $eventFilter;
+        $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -154,7 +154,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         foreach ($jsonDocuments as $jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
 
-            if (!$this->eventFilter->matches($event)) {
+            if (!$this->eventsNotTriggeringUpdateModified->matches($event)) {
                 $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
             }
 

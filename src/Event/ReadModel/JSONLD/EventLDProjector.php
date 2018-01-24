@@ -111,7 +111,7 @@ class EventLDProjector extends OfferLDProjector implements
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
-     * @param EventFilterInterface $eventFilter
+     * @param EventFilterInterface $eventsNotTriggeringUpdateModified
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -123,7 +123,7 @@ class EventLDProjector extends OfferLDProjector implements
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
         CdbXMLImporter $cdbXMLImporter,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventFilterInterface $eventFilter
+        EventFilterInterface $eventsNotTriggeringUpdateModified
     ) {
         parent::__construct(
             $repository,
@@ -131,7 +131,7 @@ class EventLDProjector extends OfferLDProjector implements
             $organizerService,
             $mediaObjectSerializer,
             $jsonDocumentMetaDataEnricher,
-            $eventFilter
+            $eventsNotTriggeringUpdateModified
         );
 
         $this->placeService = $placeService;

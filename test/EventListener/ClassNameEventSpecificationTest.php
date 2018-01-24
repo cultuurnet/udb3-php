@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ClassNameEventFilterTest extends \PHPUnit_Framework_TestCase
+class ClassNameEventSpecificationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var LabelAdded
@@ -27,7 +27,7 @@ class ClassNameEventFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_true_when_class_name_matches()
     {
-        $classNameEventFilter = new ClassNameEventFilter(
+        $classNameEventFilter = new ClassNameEventSpecification(
             new StringLiteral(LabelAdded::class),
             new StringLiteral(LabelRemoved::class)
         );
@@ -40,7 +40,7 @@ class ClassNameEventFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_false_when_class_name_does_not_match()
     {
-        $classNameEventFilter = new ClassNameEventFilter(
+        $classNameEventFilter = new ClassNameEventSpecification(
             new StringLiteral(LabelRemoved::class)
         );
 

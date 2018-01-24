@@ -35,7 +35,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
-use CultuurNet\UDB3\EventListener\EventFilterInterface;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -114,7 +114,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $cdbXMLImporter;
 
     /**
-     * @var EventFilterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventSpecification|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $eventFilter;
 
@@ -155,7 +155,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
-        $this->eventFilter = $this->createMock(EventFilterInterface::class);
+        $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(

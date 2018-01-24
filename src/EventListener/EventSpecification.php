@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\EventListener;
 
-interface EventFilterInterface
+interface EventSpecification
 {
     public function matches($event);
 }

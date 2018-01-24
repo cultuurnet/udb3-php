@@ -18,7 +18,7 @@ use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventListener\EventFilterInterface;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -78,7 +78,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $cdbXMLImporter;
 
     /**
-     * @var EventFilterInterface
+     * @var EventSpecification
      */
     private $eventFilter;
 
@@ -124,7 +124,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new CdbXmlContactInfoImporter()
         );
 
-        $this->eventFilter = $this->createMock(EventFilterInterface::class);
+        $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,

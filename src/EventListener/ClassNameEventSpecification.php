@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\EventListener;
 
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ClassNameEventFilter implements EventFilterInterface
+class ClassNameEventSpecification implements EventSpecification
 {
     private $classNames;
 

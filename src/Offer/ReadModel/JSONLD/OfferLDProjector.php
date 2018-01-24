@@ -11,7 +11,7 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\EventListener\EventFilterInterface;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -89,9 +89,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $mediaObjectSerializer;
 
     /**
-     * @var EventFilterInterface
+     * @var EventSpecification
      */
-    protected $eventFilter;
+    protected $eventsNotTriggeringUpdateModified;
 
     /**
      * @var SluggerInterface
@@ -104,7 +104,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
-     * @param EventFilterInterface $eventFilter
+     * @param EventSpecification $eventsNotTriggeringUpdateModified
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -112,14 +112,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventFilterInterface $eventFilter
+        EventSpecification $eventsNotTriggeringUpdateModified
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
-        $this->eventFilter = $eventFilter;
+        $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -154,7 +154,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         foreach ($jsonDocuments as $jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
 
-            if (!$this->eventFilter->matches($event)) {
+            if (!$this->eventsNotTriggeringUpdateModified->matches($event)) {
                 $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
             }
 

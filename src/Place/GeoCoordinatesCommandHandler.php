@@ -18,7 +18,12 @@ class GeoCoordinatesCommandHandler extends Udb3CommandHandler
     /**
      * @var AddressFormatterInterface
      */
-    private $addressFormatter;
+    private $defaultAddressFormatter;
+
+    /**
+     * @var AddressFormatterInterface
+     */
+    private $fallbackAddressFormatter;
 
     /**
      * @var GeocodingServiceInterface
@@ -27,16 +32,19 @@ class GeoCoordinatesCommandHandler extends Udb3CommandHandler
 
     /**
      * @param RepositoryInterface $placeRepository
-     * @param AddressFormatterInterface $addressFormatter
+     * @param AddressFormatterInterface $defaultAddressFormatter
+     * @param AddressFormatterInterface $fallbackAddressFormatter
      * @param GeocodingServiceInterface $geocodingService
      */
     public function __construct(
         RepositoryInterface $placeRepository,
-        AddressFormatterInterface $addressFormatter,
+        AddressFormatterInterface $defaultAddressFormatter,
+        AddressFormatterInterface $fallbackAddressFormatter,
         GeocodingServiceInterface $geocodingService
     ) {
         $this->placeRepository = $placeRepository;
-        $this->addressFormatter = $addressFormatter;
+        $this->defaultAddressFormatter = $defaultAddressFormatter;
+        $this->fallbackAddressFormatter = $fallbackAddressFormatter;
         $this->geocodingService = $geocodingService;
     }
 
@@ -46,10 +54,18 @@ class GeoCoordinatesCommandHandler extends Udb3CommandHandler
     public function handleUpdateGeoCoordinatesFromAddress(UpdateGeoCoordinatesFromAddress $updateGeoCoordinates)
     {
         $coordinates = $this->geocodingService->getCoordinates(
-            $this->addressFormatter->format(
+            $this->defaultAddressFormatter->format(
                 $updateGeoCoordinates->getAddress()
             )
         );
+
+        if ($coordinates === null) {
+            $coordinates = $this->geocodingService->getCoordinates(
+                $this->fallbackAddressFormatter->format(
+                    $updateGeoCoordinates->getAddress()
+                )
+            );
+        }
 
         /** @var Place $place */
         $place = $this->placeRepository->load($updateGeoCoordinates->getItemId());

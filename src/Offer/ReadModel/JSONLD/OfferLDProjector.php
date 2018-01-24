@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -10,6 +11,7 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -49,6 +51,7 @@ use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
@@ -86,6 +89,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $mediaObjectSerializer;
 
     /**
+     * @var EventSpecification
+     */
+    protected $eventsNotTriggeringUpdateModified;
+
+    /**
      * @var SluggerInterface
      */
     protected $slugger;
@@ -96,19 +104,22 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param EventSpecification $eventsNotTriggeringUpdateModified
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
-        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        EventSpecification $eventsNotTriggeringUpdateModified
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
+        $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -142,6 +153,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         foreach ($jsonDocuments as $jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
+
+            if (!$this->eventsNotTriggeringUpdateModified->matches($event)) {
+                $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
+            }
+
             $this->repository->save($jsonDocument);
         }
     }
@@ -1009,5 +1025,20 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
                 '@id' => $this->organizerService->iri($organizerId),
             );
         }
+    }
+
+    /**
+     * @param JsonDocument $jsonDocument
+     * @param DomainMessage $domainMessage
+     * @return JsonDocument
+     */
+    private function updateModified(JsonDocument $jsonDocument, DomainMessage $domainMessage)
+    {
+        $body = $jsonDocument->getBody();
+
+        $recordedDateTime = RecordedOn::fromDomainMessage($domainMessage);
+        $body->modified = $recordedDateTime->toString();
+
+        return $jsonDocument->withBody($body);
     }
 }

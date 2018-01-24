@@ -40,6 +40,11 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     protected $eventNamespace;
 
     /**
+     * @var RecordedOn
+     */
+    protected $recordedOn;
+
+    /**
      * @var OrganizerService|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $organizerService;
@@ -49,6 +54,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         parent::__construct($name, $data, $dataName);
 
         $this->eventNamespace = $eventNamespace;
+
+        $this->recordedOn = RecordedOn::fromBroadwayDateTime(DateTime::now());
     }
 
     /**
@@ -153,9 +160,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'availabilityStarts' => $availabilityStarts,
                 'availabilityEnds' => $availabilityEnds,
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($bookingInfoUpdated, $id);
+        $body = $this->project($bookingInfoUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedBody, $body);
     }
@@ -176,7 +184,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $initialDocument = new JsonDocument($id);
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($contactPointUpdated, $id);
+        $body = $this->project($contactPointUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = (object)[
             'contactPoint' => (object)[
@@ -184,6 +192,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'email' => $emails,
                 'url' => $urls,
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
         $this->assertEquals(
@@ -224,9 +233,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
             ],
             'languages' => ['nl'],
             'completedLanguages' => ['nl'],
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($descriptionUpdated, $id);
+        $body = $this->project($descriptionUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedBody, $body);
     }
@@ -264,9 +274,11 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'inLanguage' => 'en',
                 ],
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($imageAdded, $id);
+        $body = $this->project($imageAdded, $id, null, $this->recordedOn->toBroadwayDateTime());
+
         $this->assertEquals($expectedBody, $body);
     }
 
@@ -312,9 +324,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                     'inLanguage' => 'en',
                 ],
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($imageUpdated, $id);
+        $body = $this->project($imageUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedBody, $body);
     }
@@ -338,9 +351,10 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
 
         $expectedBody = (object)[
             'typicalAgeRange' => '-18',
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($typicalAgeRangeUpdated, $id);
+        $body = $this->project($typicalAgeRangeUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedBody, $body);
     }
@@ -362,8 +376,12 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         );
         $this->documentRepository->save($initialDocument);
 
-        $body = $this->project($typicalAgeRangeDeleted, $id);
+        $expectedBody = (object)[
+            'modified' => $this->recordedOn->toString(),
+        ];
 
-        $this->assertEquals(new \stdClass(), $body);
+        $body = $this->project($typicalAgeRangeDeleted, $id, null, $this->recordedOn->toBroadwayDateTime());
+
+        $this->assertEquals($expectedBody, $body);
     }
 }

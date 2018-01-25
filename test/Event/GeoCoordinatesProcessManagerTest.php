@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use ValueObjects\Geography\Country;
 
 class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
@@ -53,6 +54,39 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
             0,
             new Metadata(),
             new EventImportedFromUDB2(
+                'e3604613-af01-4d2b-8cee-13ab61b89651',
+                file_get_contents(__DIR__ . '/samples/geocoding/event_with_dummy_location.cdbxml.xml'),
+                'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+            )
+        );
+
+        $expectedCommand = new UpdateGeoCoordinatesFromAddress(
+            'e3604613-af01-4d2b-8cee-13ab61b89651',
+            new Address(
+                new Street('Martelarenplein 1'),
+                new PostalCode('3000'),
+                new Locality('Leuven'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedCommand);
+
+        $this->processManager->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_event_updated_from_udb2_with_dummy_location()
+    {
+        $domainMessage = DomainMessage::recordNow(
+            'e3604613-af01-4d2b-8cee-13ab61b89651',
+            0,
+            new Metadata(),
+            new EventUpdatedFromUDB2(
                 'e3604613-af01-4d2b-8cee-13ab61b89651',
                 file_get_contents(__DIR__ . '/samples/geocoding/event_with_dummy_location.cdbxml.xml'),
                 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'

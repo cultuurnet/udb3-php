@@ -10,7 +10,6 @@ use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
-use Psr\Log\LoggerInterface;
 
 class GeoCoordinatesProcessManager implements EventListenerInterface
 {

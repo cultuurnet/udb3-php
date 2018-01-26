@@ -388,6 +388,15 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     }
 
     /**
+     * @test
+     */
+    public function it_replaces_place_id_with_item_id_on_geo_coordinates_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_geo_coordinates_updated_class.json';
+        $this->assertPlaceIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
      * @param string $sampleFile
      */
     private function assertEventIdReplacedWithItemId($sampleFile)

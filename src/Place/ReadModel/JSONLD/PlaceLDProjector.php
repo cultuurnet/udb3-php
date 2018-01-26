@@ -266,7 +266,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         $document = $this
-            ->loadPlaceDocumentFromRepository($majorInfoUpdated)
+            ->loadPlaceDocumentFromRepositoryById($majorInfoUpdated->getPlaceId())
             ->apply(OfferUpdate::calendar($majorInfoUpdated->getCalendar()));
 
         $jsonLD = $document->getBody();
@@ -314,7 +314,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
-        $document = $this->loadPlaceDocumentFromRepository($addressUpdated);
+        $document = $this->loadPlaceDocumentFromRepositoryById($addressUpdated->getPlaceId());
         $jsonLD = $document->getBody();
         $this->setAddress($jsonLD, $addressUpdated->getAddress(), $this->getMainLanguage($jsonLD));
         return $document->withBody($jsonLD);
@@ -326,7 +326,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyAddressTranslated(AddressTranslated $addressTranslated)
     {
-        $document = $this->loadPlaceDocumentFromRepository($addressTranslated);
+        $document = $this->loadPlaceDocumentFromRepositoryById($addressTranslated->getPlaceId());
         $jsonLD = $document->getBody();
         $this->setAddress($jsonLD, $addressTranslated->getAddress(), $addressTranslated->getLanguage());
         return $document->withBody($jsonLD);
@@ -364,7 +364,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      */
     protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
     {
-        $document = $this->loadPlaceDocumentFromRepository($geoCoordinatesUpdated);
+        $document = $this->loadPlaceDocumentFromRepositoryById($geoCoordinatesUpdated->getItemId());
 
         $placeLd = $document->getBody();
 
@@ -374,21 +374,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         ];
 
         return $document->withBody($placeLd);
-    }
-
-    /**
-     * @param PlaceEvent $place
-     * @return JsonDocument
-     */
-    protected function loadPlaceDocumentFromRepository(PlaceEvent $place)
-    {
-        $document = $this->repository->get($place->getPlaceId());
-
-        if (!$document) {
-            return $this->newDocument($place->getPlaceId());
-        }
-
-        return $document;
     }
 
     /**

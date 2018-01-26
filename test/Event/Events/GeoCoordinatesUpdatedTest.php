@@ -22,7 +22,7 @@ class GeoCoordinatesUpdatedTest extends \PHPUnit_Framework_TestCase
         );
 
         $expectedArray = [
-            'event_id' => 'f281bc85-3ee4-43a7-b42d-a8982ec9bbc4',
+            'item_id' => 'f281bc85-3ee4-43a7-b42d-a8982ec9bbc4',
             'coordinates' => [
                 'lat' => 0.00456,
                 'long' => -1.24567,

@@ -2,61 +2,9 @@
 
 namespace CultuurNet\UDB3\Place\Events;
 
-use CultuurNet\Geocoding\Coordinate\Coordinates;
-use CultuurNet\Geocoding\Coordinate\Latitude;
-use CultuurNet\Geocoding\Coordinate\Longitude;
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
 
-class GeoCoordinatesUpdated extends PlaceEvent
+class GeoCoordinatesUpdated extends AbstractGeoCoordinatesUpdated
 {
-    /**
-     * @var Coordinates
-     */
-    private $coordinates;
 
-    /**
-     * @param string $placeId
-     * @param Coordinates $coordinates
-     */
-    public function __construct($placeId, Coordinates $coordinates)
-    {
-        parent::__construct($placeId);
-        $this->coordinates = $coordinates;
-    }
-
-    /**
-     * @return Coordinates
-     */
-    public function getCoordinates()
-    {
-        return $this->coordinates;
-    }
-
-    /**
-     * @return array
-     */
-    public function serialize()
-    {
-        return parent::serialize() + [
-            'coordinates' => [
-                'lat' => $this->coordinates->getLatitude()->toDouble(),
-                'long' => $this->coordinates->getLongitude()->toDouble(),
-            ],
-        ];
-    }
-
-    /**
-     * @param array $data
-     * @return GeoCoordinatesUpdated
-     */
-    public static function deserialize(array $data)
-    {
-        return new GeoCoordinatesUpdated(
-            $data['place_id'],
-            new Coordinates(
-                new Latitude($data['coordinates']['lat']),
-                new Longitude($data['coordinates']['long'])
-            )
-        );
-    }
 }

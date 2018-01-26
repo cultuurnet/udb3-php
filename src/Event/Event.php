@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
@@ -23,6 +24,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
@@ -280,6 +282,15 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     {
         // For now no special business rules for updating the location of an event.
         $this->apply(new LocationUpdated($this->eventId, $locationId));
+    }
+
+    /**
+     * @param Coordinates $coordinates
+     */
+    public function updateGeoCoordinates(Coordinates $coordinates)
+    {
+        // Note: DON'T compare to previous coordinates and apply only on changes.
+        $this->apply(new GeoCoordinatesUpdated($this->eventId, $coordinates));
     }
 
     /**

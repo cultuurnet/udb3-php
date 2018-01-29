@@ -8,6 +8,9 @@ use Broadway\Domain\Metadata;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
+use CultuurNet\Geocoding\Coordinate\Latitude;
+use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -25,6 +28,7 @@ use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LocationUpdated;
@@ -1158,6 +1162,55 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($locationUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_geo_coordinates()
+    {
+        $id = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode(
+                [
+                    '@id' => 'http://uitdatabank/event/' . $id,
+                    '@type' => 'Event',
+                    'name' => [
+                        'nl' => 'Test',
+                    ],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $coordinatesUpdated = new GeoCoordinatesUpdated(
+            $id,
+            new Coordinates(
+                new Latitude(1.1234567),
+                new Longitude(-0.34567)
+            )
+        );
+
+        $expectedBody = (object) [
+            '@id' => 'http://uitdatabank/event/' . $id,
+            '@type' => 'Event',
+            'name' => (object) ['nl' => 'Test'],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'geo' => (object) [
+                'latitude' => 1.1234567,
+                'longitude' => -0.34567,
+            ],
+            'modified' => $this->recordedOn->toString(),
+        ];
+
+        $body = $this->project($coordinatesUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
+        $this->assertEquals($expectedBody, $body);
     }
 
     /**

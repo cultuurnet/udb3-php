@@ -285,15 +285,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Coordinates $coordinates
-     */
-    public function updateGeoCoordinates(Coordinates $coordinates)
-    {
-        // Note: DON'T compare to previous coordinates and apply only on changes.
-        $this->apply(new GeoCoordinatesUpdated($this->eventId, $coordinates));
-    }
-
-    /**
      * @param Audience $audience
      */
     public function updateAudience(
@@ -495,6 +486,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
     {
         return new ContactPointUpdated($this->eventId, $contactPoint);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createGeoCoordinatesUpdatedEvent(Coordinates $coordinates)
+    {
+        return new GeoCoordinatesUpdated($this->eventId, $coordinates);
     }
 
     /**

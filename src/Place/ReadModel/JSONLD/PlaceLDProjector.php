@@ -359,24 +359,6 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     }
 
     /**
-     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
-     * @return JsonDocument
-     */
-    protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
-    {
-        $document = $this->loadPlaceDocumentFromRepositoryById($geoCoordinatesUpdated->getItemId());
-
-        $placeLd = $document->getBody();
-
-        $placeLd->geo = (object) [
-            'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
-            'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
-        ];
-
-        return $document->withBody($placeLd);
-    }
-
-    /**
      * @param string $itemId
      * @return JsonDocument
      */
@@ -484,6 +466,14 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getGeoCoordinatesUpdatedClassName()
+    {
+        return GeoCoordinatesUpdated::class;
     }
 
     protected function getDescriptionUpdatedClassName()

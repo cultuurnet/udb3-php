@@ -1185,7 +1185,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     'location' => (object) [
                         '@type' => 'Place',
                         '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
-                    ]
+                    ],
                 ]
             )
         );

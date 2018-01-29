@@ -623,14 +623,14 @@ class EventLDProjector extends OfferLDProjector implements
     {
         $document = $this->loadDocumentFromRepositoryByItemId($geoCoordinatesUpdated->getItemId());
 
-        $placeLd = $document->getBody();
+        $eventLd = $document->getBody();
 
-        $placeLd->geo = (object) [
+        $eventLd->location->geo = (object) [
             'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
             'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
         ];
 
-        return $document->withBody($placeLd);
+        return $document->withBody($eventLd);
     }
 
     /**

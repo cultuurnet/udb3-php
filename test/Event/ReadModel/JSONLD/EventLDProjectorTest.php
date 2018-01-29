@@ -1182,6 +1182,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     ],
                     'languages' => ['nl'],
                     'completedLanguages' => ['nl'],
+                    'location' => (object) [
+                        '@type' => 'Place',
+                        '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+                    ]
                 ]
             )
         );
@@ -1202,9 +1206,13 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'name' => (object) ['nl' => 'Test'],
             'languages' => ['nl'],
             'completedLanguages' => ['nl'],
-            'geo' => (object) [
-                'latitude' => 1.1234567,
-                'longitude' => -0.34567,
+            'location' => (object) [
+                '@type' => 'Place',
+                '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+                'geo' => (object) [
+                    'latitude' => 1.1234567,
+                    'longitude' => -0.34567,
+                ],
             ],
             'modified' => $this->recordedOn->toString(),
         ];

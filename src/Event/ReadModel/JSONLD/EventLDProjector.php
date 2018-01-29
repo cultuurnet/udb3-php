@@ -616,6 +616,24 @@ class EventLDProjector extends OfferLDProjector implements
     }
 
     /**
+     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
+     * @return JsonDocument
+     */
+    protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
+    {
+        $document = $this->loadDocumentFromRepositoryByItemId($geoCoordinatesUpdated->getItemId());
+
+        $placeLd = $document->getBody();
+
+        $placeLd->geo = (object) [
+            'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
+            'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
+        ];
+
+        return $document->withBody($placeLd);
+    }
+
+    /**
      * @param AudienceUpdated $audienceUpdated
      * @return JsonDocument
      */
@@ -776,14 +794,6 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getGeoCoordinatesUpdatedClassName()
-    {
-        return GeoCoordinatesUpdated::class;
     }
 
     protected function getDescriptionUpdatedClassName()

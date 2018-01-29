@@ -24,7 +24,6 @@ use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
-use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
@@ -257,11 +256,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getContactPointUpdatedClassName();
-
-    /**
-     * @return string
-     */
-    abstract protected function getGeoCoordinatesUpdatedClassName();
 
     /**
      * @return string
@@ -792,24 +786,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
 
         return $document->withBody($offerLd);
-    }
-
-    /**
-     * @param AbstractGeoCoordinatesUpdated $geoCoordinatesUpdated
-     * @return JsonDocument
-     */
-    protected function applyGeoCoordinatesUpdated(AbstractGeoCoordinatesUpdated $geoCoordinatesUpdated)
-    {
-        $document = $this->loadDocumentFromRepositoryByItemId($geoCoordinatesUpdated->getItemId());
-
-        $placeLd = $document->getBody();
-
-        $placeLd->geo = (object) [
-            'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
-            'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
-        ];
-
-        return $document->withBody($placeLd);
     }
 
     /**

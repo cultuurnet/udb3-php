@@ -8,7 +8,6 @@ use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
-use CultuurNet\UDB3\Offer\Item\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
@@ -119,14 +118,6 @@ class ItemLDProjector extends OfferLDProjector
     protected function getContactPointUpdatedClassName()
     {
         return ContactPointUpdated::class;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getGeoCoordinatesUpdatedClassName()
-    {
-        return GeoCoordinatesUpdated::class;
     }
 
     protected function getDescriptionUpdatedClassName()

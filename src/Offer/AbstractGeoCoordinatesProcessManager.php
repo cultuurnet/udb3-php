@@ -40,7 +40,7 @@ abstract class AbstractGeoCoordinatesProcessManager implements EventListenerInte
         $this->logger = $logger;
     }
 
-    protected abstract function getEventHandlers();
+    abstract protected function getEventHandlers();
 
     /**
      * @param DomainMessage $domainMessage

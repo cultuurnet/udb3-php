@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use Psr\Log\NullLogger;
 use ValueObjects\Geography\Country;
 
 class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
@@ -40,7 +41,8 @@ class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->processManager = new GeoCoordinatesProcessManager(
             $this->commandBus,
-            $this->addressFactory
+            $this->addressFactory,
+            new NullLogger()
         );
     }
 

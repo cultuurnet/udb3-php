@@ -2,43 +2,18 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\Domain\DomainMessage;
-use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Address\CultureFeedAddressFactoryInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Offer\AbstractGeoCoordinatesProcessManager;
 
-class GeoCoordinatesProcessManager implements EventListenerInterface
+class GeoCoordinatesProcessManager extends AbstractGeoCoordinatesProcessManager
 {
-    /**
-     * @var CommandBusInterface
-     */
-    private $commandBus;
-
-    /**
-     * @var CultureFeedAddressFactoryInterface
-     */
-    private $addressFactory;
-
-    /**
-     * @param CommandBusInterface $commandBus
-     * @param CultureFeedAddressFactoryInterface $addressFactory
-     */
-    public function __construct(
-        CommandBusInterface $commandBus,
-        CultureFeedAddressFactoryInterface $addressFactory
-    ) {
-        $this->commandBus = $commandBus;
-        $this->addressFactory = $addressFactory;
-    }
-
     /**
      * @return array
      */
-    private function getEventHandlers()
+    protected function getEventHandlers()
     {
         return [
             EventImportedFromUDB2::class => 'handleEventImportedFromUDB2',
@@ -47,28 +22,10 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
     }
 
     /**
-     * @param DomainMessage $domainMessage
-     *
-     * @uses handleEventImportedFromUDB2
-     * @uses handleEventUpdatedFromUDB2
-     */
-    public function handle(DomainMessage $domainMessage)
-    {
-        $payload = $domainMessage->getPayload();
-        $className = get_class($payload);
-        $eventHandlers = $this->getEventHandlers();
-
-        if (isset($eventHandlers[$className])) {
-            $eventHandler = $eventHandlers[$className];
-            call_user_func([$this, $eventHandler], $payload);
-        }
-    }
-
-    /**
      * @param EventImportedFromUDB2 $eventImportedFromUDB2
      * @throws \CultureFeed_Cdb_ParseException
      */
-    private function handleEventImportedFromUDB2(
+    protected function handleEventImportedFromUDB2(
         EventImportedFromUDB2 $eventImportedFromUDB2
     ) {
         $this->dispatchCommand(
@@ -82,7 +39,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
      * @param EventUpdatedFromUDB2 $eventUpdatedFromUDB2
      * @throws \CultureFeed_Cdb_ParseException
      */
-    private function handleEventUpdatedFromUDB2(
+    protected function handleEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdatedFromUDB2
     ) {
         $this->dispatchCommand(

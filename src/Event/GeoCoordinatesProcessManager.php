@@ -109,6 +109,8 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
         );
 
         // Location is required, else the create would fail.
+        // This location needs to be a dummy location.
+        // A dummy location has no cdbid and no external id.
         $location = $event->getLocation();
         if ($location->getCdbid() || $location->getExternalId()) {
             return;

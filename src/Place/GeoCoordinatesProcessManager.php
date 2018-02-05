@@ -2,57 +2,23 @@
 
 namespace CultuurNet\UDB3\Place;
 
-use Broadway\CommandHandling\CommandBusInterface;
-use Broadway\Domain\DomainMessage;
-use Broadway\EventHandling\EventListenerInterface;
 use CultureFeed_Cdb_Data_Address;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
-use CultuurNet\UDB3\Address\CultureFeedAddressFactoryInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Offer\AbstractGeoCoordinatesProcessManager;
 use CultuurNet\UDB3\Place\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
-use Psr\Log\LoggerInterface;
 
-class GeoCoordinatesProcessManager implements EventListenerInterface
+class GeoCoordinatesProcessManager extends AbstractGeoCoordinatesProcessManager
 {
-    /**
-     * @var CommandBusInterface
-     */
-    private $commandBus;
-
-    /**
-     * @var CultureFeedAddressFactoryInterface
-     */
-    private $addressFactory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param CommandBusInterface $commandBus
-     * @param CultureFeedAddressFactoryInterface $addressFactory
-     * @param LoggerInterface $logger
-     */
-    public function __construct(
-        CommandBusInterface $commandBus,
-        CultureFeedAddressFactoryInterface $addressFactory,
-        LoggerInterface $logger
-    ) {
-        $this->commandBus = $commandBus;
-        $this->addressFactory = $addressFactory;
-        $this->logger = $logger;
-    }
-
     /**
      * @return array
      */
-    private function getEventHandlers()
+    protected function getEventHandlers()
     {
         return [
             PlaceCreated::class => 'handlePlaceCreated',
@@ -64,29 +30,9 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
     }
 
     /**
-     * @param DomainMessage $domainMessage
-     *
-     * @uses handlePlaceCreated
-     * @uses handleMajorInfoUpdated
-     * @uses handleAddressUpdated
-     * @uses handleActorImportedFromUDB2
-     */
-    public function handle(DomainMessage $domainMessage)
-    {
-        $payload = $domainMessage->getPayload();
-        $className = get_class($payload);
-        $eventHandlers = $this->getEventHandlers();
-
-        if (isset($eventHandlers[$className])) {
-            $eventHandler = $eventHandlers[$className];
-            call_user_func([$this, $eventHandler], $payload);
-        }
-    }
-
-    /**
      * @param PlaceCreated $placeCreated
      */
-    private function handlePlaceCreated(PlaceCreated $placeCreated)
+    protected function handlePlaceCreated(PlaceCreated $placeCreated)
     {
         $command = new UpdateGeoCoordinatesFromAddress(
             $placeCreated->getPlaceId(),
@@ -99,7 +45,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
     /**
      * @param MajorInfoUpdated $majorInfoUpdated
      */
-    private function handleMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    protected function handleMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         // We don't know if the address has actually been updated because
         // MajorInfoUpdated is too coarse, but if we use the cached geocoding
@@ -116,7 +62,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
     /**
      * @param AddressUpdated $addressUpdated
      */
-    private function handleAddressUpdated(AddressUpdated $addressUpdated)
+    protected function handleAddressUpdated(AddressUpdated $addressUpdated)
     {
         $command = new UpdateGeoCoordinatesFromAddress(
             $addressUpdated->getPlaceId(),
@@ -128,8 +74,9 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
 
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
+     * @throws \CultureFeed_Cdb_ParseException
      */
-    private function handleActorImportedFromUDB2(ActorImportedFromUDB2 $actorImportedFromUDB2)
+    protected function handleActorImportedFromUDB2(ActorImportedFromUDB2 $actorImportedFromUDB2)
     {
         $actor = ActorItemFactory::createActorFromCdbXml(
             $actorImportedFromUDB2->getCdbXmlNamespaceUri(),

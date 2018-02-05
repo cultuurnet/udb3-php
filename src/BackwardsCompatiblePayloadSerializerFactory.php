@@ -203,6 +203,18 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
+         * GEOCOORDINATES UPDATED EVENT
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated',
+            function (array $serializedObject) {
+                $serializedObject = self::replacePlaceIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
          * EventEvent to AbstractEvent (Offer)
          */
         $refactoredEventEvents = [

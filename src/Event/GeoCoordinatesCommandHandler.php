@@ -1,9 +1,9 @@
 <?php
 
-namespace CultuurNet\UDB3\Place;
+namespace CultuurNet\UDB3\Event;
 
+use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Offer\AbstractGeoCoordinatesCommandHandler;
-use CultuurNet\UDB3\Place\Commands\UpdateGeoCoordinatesFromAddress;
 
 class GeoCoordinatesCommandHandler extends AbstractGeoCoordinatesCommandHandler
 {

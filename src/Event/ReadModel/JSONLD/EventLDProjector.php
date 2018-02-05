@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
@@ -612,6 +613,24 @@ class EventLDProjector extends OfferLDProjector implements
          ] + (array) $this->placeJSONLD($locationUpdated->getLocationId()->toNative());
 
         return $document->withBody($jsonLD);
+    }
+
+    /**
+     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
+     * @return JsonDocument
+     */
+    protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
+    {
+        $document = $this->loadDocumentFromRepositoryByItemId($geoCoordinatesUpdated->getItemId());
+
+        $eventLd = $document->getBody();
+
+        $eventLd->location->geo = (object) [
+            'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
+            'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
+        ];
+
+        return $document->withBody($eventLd);
     }
 
     /**

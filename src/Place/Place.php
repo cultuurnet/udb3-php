@@ -175,19 +175,6 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Coordinates $coordinates
-     */
-    public function updateGeoCoordinates(
-        Coordinates $coordinates
-    ) {
-        // Note: DON'T compare to previous coordinates and apply only on
-        // changes. Various projectors expect GeoCoordinatesUpdated after
-        // MajorInfoUpdated and PlaceUpdatedFromUDB2, even if the address
-        // and thus the coordinates haven't actually changed.
-        $this->apply(new GeoCoordinatesUpdated($this->placeId, $coordinates));
-    }
-
-    /**
      * Import from UDB2.
      *
      * @param string $actorId
@@ -396,6 +383,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
     {
         return new ContactPointUpdated($this->placeId, $contactPoint);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createGeoCoordinatesUpdatedEvent(Coordinates $coordinates)
+    {
+        return new GeoCoordinatesUpdated($this->placeId, $coordinates);
     }
 
     /**

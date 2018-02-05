@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultureFeed_Cdb_Item_Base;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
@@ -19,6 +20,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
@@ -288,6 +290,20 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     {
         $this->apply(
             $this->createContactPointUpdatedEvent($contactPoint)
+        );
+    }
+
+    /**
+     * @param Coordinates $coordinates
+     */
+    public function updateGeoCoordinates(Coordinates $coordinates)
+    {
+        // Note: DON'T compare to previous coordinates and apply only on
+        // changes. Various projectors expect GeoCoordinatesUpdated after
+        // MajorInfoUpdated and PlaceUpdatedFromUDB2, even if the address
+        // and thus the coordinates haven't actually changed.
+        $this->apply(
+            $this->createGeoCoordinatesUpdatedEvent($coordinates)
         );
     }
 
@@ -807,6 +823,12 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractContactPointUpdated
      */
     abstract protected function createContactPointUpdatedEvent(ContactPoint $contactPoint);
+
+    /**
+     * @param Coordinates $coordinates
+     * @return AbstractGeoCoordinatesUpdated
+     */
+    abstract protected function createGeoCoordinatesUpdatedEvent(Coordinates $coordinates);
 
     /**
      * @param BookingInfo $bookingInfo

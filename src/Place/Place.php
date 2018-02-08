@@ -68,9 +68,16 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $placeId;
 
+    /**
+     * @var Address[]
+     */
+    private $addresses;
+
     public function __construct()
     {
         parent::__construct();
+
+        $this->addresses = [];
     }
 
     /**
@@ -127,6 +134,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
+        $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
@@ -160,6 +168,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
+     * @param MajorInfoUpdated $majorInfoUpdated
+     */
+    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+        $this->addresses[$this->mainLanguage->getCode()] = $majorInfoUpdated->getAddress();
+    }
+
+    /**
      * @param Address $address
      * @param Language $language
      */
@@ -171,7 +187,45 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $event = new AddressTranslated($this->placeId, $address, $language);
         }
 
-        $this->apply($event);
+        if ($this->allowAddressUpdate($address, $language)) {
+            $this->apply($event);
+        }
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     */
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $this->addresses[$this->mainLanguage->getCode()] = $addressUpdated->getAddress();
+    }
+
+    /**
+     * @param AddressTranslated $addressTranslated
+     */
+    protected function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        $this->addresses[$addressTranslated->getLanguage()->getCode()] = $addressTranslated->getAddress();
+    }
+
+    /**
+     * @param Address $address
+     * @param Language $language
+     * @return bool
+     */
+    private function allowAddressUpdate(Address $address, Language $language)
+    {
+        // No current address in the provided language so update with new address is allowed.
+        if (!isset($this->addresses[$language->getCode()])) {
+            return true;
+        }
+
+        // The current address in de the provided language is different then the new address, so update allowed.
+        if (!$this->addresses[$language->getCode()]->sameAs($address)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

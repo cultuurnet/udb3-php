@@ -80,6 +80,50 @@ class PlaceTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_should_not_update_the_address_when_address_is_not_changed()
+    {
+        $address = new Address(
+            new Street('Eenmeilaan'),
+            new PostalCode('3010'),
+            new Locality('Kessel-Lo'),
+            Country::fromNative('BE')
+        );
+
+        $translatedAddress = new Address(
+            new Street('One May Street'),
+            new PostalCode('3010'),
+            new Locality('Kessel-High'),
+            Country::fromNative('BE')
+        );
+
+        $this->scenario
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->given(
+                [
+                    new PlaceCreated(
+                        'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                        new Title('Test place'),
+                        new EventType('0.1.1', 'Jeugdhuis'),
+                        $address,
+                        new Calendar(CalendarType::PERMANENT())
+                    ),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($address, $translatedAddress) {
+                    $place->updateAddress($address, new Language('nl'));
+                    $place->updateAddress($translatedAddress, new Language('en'));
+                    $place->updateAddress($translatedAddress, new Language('en'));
+                }
+            )
+            ->then([
+                new AddressTranslated('c5c1b435-0f3c-4b75-9f28-94d93be7078b', $translatedAddress, new Language('en')),
+            ]);
+    }
+
+    /**
+     * @test
      * @dataProvider updateAddressDataProvider
      *
      * @param Address $originalAddress

@@ -3,8 +3,10 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use Broadway\Repository\AggregateNotFoundException;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
+use CultuurNet\UDB3\Event\Commands\CreateEventOrUpdateOnDuplicate;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
@@ -31,7 +33,10 @@ use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateType;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
+use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -41,6 +46,46 @@ use Psr\Log\LoggerAwareTrait;
 class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * Create or update an event based on the required fields.
+     * @param CreateEventOrUpdateOnDuplicate $command
+     */
+    public function handleCreateEventOrUpdateOnDuplicate(CreateEventOrUpdateOnDuplicate $command)
+    {
+        try {
+            /* @var Event $event */
+            $event = $this->offerRepository->load($command->getItemId());
+        } catch (AggregateNotFoundException $e) {
+            $event = null;
+        }
+
+        if (!$event) {
+            $event = Event::create(
+                $command->getItemId(),
+                $command->getTitle(),
+                $command->getEventType(),
+                $command->getLocation(),
+                $command->getCalendar(),
+                $command->getTheme(),
+                $command->getPublicationDate()
+            );
+        } else {
+            // @todo Use mainLanguage when updating the title.
+            $event->updateTitle(new Language('nl'), $command->getTitle());
+            $event->updateType($command->getEventType());
+            $event->updateLocation(new LocationId($command->getLocation()->getCdbid()));
+            $event->updateCalendar($command->getCalendar());
+            $event->updateTheme($command->getTheme());
+
+            $publicationDate = $command->getPublicationDate();
+            if ($publicationDate) {
+                $event->publish($publicationDate);
+            }
+        }
+
+        $this->offerRepository->save($event);
+    }
 
     /**
      * Handle an update the major info command.

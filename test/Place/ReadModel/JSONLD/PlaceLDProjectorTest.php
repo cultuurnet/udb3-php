@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
+use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
 use CultureFeed_Cdb_Data_File;
@@ -27,6 +28,7 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
@@ -37,6 +39,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\PlaceServiceInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
@@ -71,6 +74,11 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      * @var Address
      */
     private $address;
+
+    /**
+     * @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $placeService;
 
     /**
      * @var CdbXMLImporter
@@ -124,12 +132,15 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new CdbXmlContactInfoImporter()
         );
 
+        $this->placeService = $this->createMock(PlaceServiceInterface::class);
+
         $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
+            $this->placeService,
             $this->serializer,
             $this->cdbXMLImporter,
             new JsonDocumentLanguageEnricher(
@@ -988,6 +999,130 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
 
         $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_all_related_places_when_an_organizer_is_updated()
+    {
+        $kantoorLeuvenId = 'c01f5799-b914-487d-9e00-6c224ab6555e';
+        $kantoorKesselLoId = '57eaaa61-31d8-42c3-8d1b-1b1ecbb153a8';
+
+        $stadLeuvenId = 'dbef3da9-13f0-42be-9ac2-8593376a508a';
+
+        $stadLeuvenJSONLD = json_encode(
+            [
+                'name' => [
+                    'nl' => 'Stad Leuven',
+                ],
+                'email' => [
+                    'info@leuven.be',
+                ],
+            ]
+        );
+
+        $kantoorLeuvenJSONLD = json_encode(
+            [
+                'name' => [
+                    'nl' => 'Kantoor Leuven',
+                ],
+            ]
+        );
+        $initialKantoorLeuvenDocument = new JsonDocument(
+            $kantoorLeuvenId,
+            $kantoorLeuvenJSONLD
+        );
+        $this->documentRepository->save($initialKantoorLeuvenDocument);
+
+        $kantoorKesselLoJSONLD = json_encode(
+            [
+                'name' => [
+                    'nl' => 'Kantoor Kessel-Lo',
+                ],
+            ]
+        );
+        $initialKantoorKesselLoDocument = new JsonDocument(
+            $kantoorKesselLoId,
+            $kantoorKesselLoJSONLD
+        );
+        $this->documentRepository->save($initialKantoorKesselLoDocument);
+
+        $this->placeService
+            ->expects($this->once())
+            ->method('placesOrganizedByOrganizer')
+            ->with($stadLeuvenId)
+            ->willReturn(
+                [
+                    $kantoorLeuvenId,
+                    $kantoorKesselLoId,
+                ]
+            );
+
+        $this->organizerService
+            ->expects($this->once())
+            ->method('getEntity')
+            ->with($stadLeuvenId)
+            ->willReturn($stadLeuvenJSONLD);
+
+        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
+            $stadLeuvenId,
+            'organizers/' . $stadLeuvenId
+        );
+
+        $this->projector->handle(
+            new DomainMessage(
+                $organizerProjectedToJSONLD->getId(),
+                0,
+                new Metadata(),
+                $organizerProjectedToJSONLD,
+                $this->recordedOn->toBroadwayDateTime()
+            )
+        );
+
+        $expectedKantoorLeuvenBody = (object) [
+            'name' => (object) [
+                'nl' => 'Kantoor Leuven',
+            ],
+            'organizer' => (object) [
+                'name' => (object) [
+                    'nl' => 'Stad Leuven',
+                ],
+                'email' => [
+                    'info@leuven.be',
+                ],
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'modified' => $this->recordedOn->toString(),
+        ];
+
+        $expectedKantoorKesselLoBody = (object) [
+            'name' => (object) [
+                'nl' => 'Kantoor Kessel-Lo',
+            ],
+            'organizer' => (object) [
+                'name' => (object) [
+                    'nl' => 'Stad Leuven',
+                ],
+                'email' => [
+                    'info@leuven.be',
+                ],
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'modified' => $this->recordedOn->toString(),
+        ];
+
+        $this->assertEquals(
+            $expectedKantoorLeuvenBody,
+            $this->documentRepository->get($kantoorLeuvenId)->getBody()
+        );
+
+        $this->assertEquals(
+            $expectedKantoorKesselLoBody,
+            $this->documentRepository->get($kantoorKesselLoId)->getBody()
+        );
     }
 
     /**

@@ -40,6 +40,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\PlaceServiceInterface;
+use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
@@ -76,9 +77,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $address;
 
     /**
-     * @var PlaceServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $placeService;
+    private $placeRelations;
 
     /**
      * @var CdbXMLImporter
@@ -132,7 +133,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new CdbXmlContactInfoImporter()
         );
 
-        $this->placeService = $this->createMock(PlaceServiceInterface::class);
+        $this->placeRelations = $this->createMock(RepositoryInterface::class);
 
         $this->eventFilter = $this->createMock(EventSpecification::class);
 
@@ -140,7 +141,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
-            $this->placeService,
+            $this->placeRelations,
             $this->serializer,
             $this->cdbXMLImporter,
             new JsonDocumentLanguageEnricher(
@@ -1048,9 +1049,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         );
         $this->documentRepository->save($initialKantoorKesselLoDocument);
 
-        $this->placeService
+        $this->placeRelations
             ->expects($this->once())
-            ->method('placesOrganizedByOrganizer')
+            ->method('getPlacesOrganizedByOrganizer')
             ->with($stadLeuvenId)
             ->willReturn(
                 [

@@ -56,7 +56,7 @@ use CultuurNet\UDB3\Place\Events\TitleUpdated;
 use CultuurNet\UDB3\Place\Events\TypeUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Place\PlaceServiceInterface;
+use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\Theme;
@@ -69,9 +69,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
     /**
-     * @var PlaceServiceInterface
+     * @var RepositoryInterface
      */
-    private $placeService;
+    private $placeRelations;
 
     /**
      * @var CdbXMLImporter
@@ -82,7 +82,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
-     * @param PlaceServiceInterface $placeService
+     * @param RepositoryInterface $placeRelations
      * @param SerializerInterface $mediaObjectSerializer
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
@@ -92,7 +92,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        PlaceServiceInterface $placeService,
+        RepositoryInterface $placeRelations,
         SerializerInterface $mediaObjectSerializer,
         CdbXMLImporter $cdbXMLImporter,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
@@ -107,7 +107,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $eventFilter
         );
 
-        $this->placeService = $placeService;
+        $this->placeRelations = $placeRelations;
 
         $this->cdbXMLImporter = $cdbXMLImporter;
     }
@@ -394,7 +394,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function applyOrganizerProjectedToJSONLD(
         OrganizerProjectedToJSONLD $organizerProjectedToJSONLD
     ) {
-        $placeIds = $this->placeService->placesOrganizedByOrganizer(
+        $placeIds = $this->placeRelations->getPlacesOrganizedByOrganizer(
             $organizerProjectedToJSONLD->getId()
         );
 

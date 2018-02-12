@@ -36,7 +36,6 @@ use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
-use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -51,26 +50,12 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
      * Create or update an event based on the required fields.
      * @param CreateEventOrUpdateOnDuplicate $command
      */
-    public function handleCreateEventOrUpdateOnDuplicate(CreateEventOrUpdateOnDuplicate $command)
+    protected function handleCreateEventOrUpdateOnDuplicate(CreateEventOrUpdateOnDuplicate $command)
     {
         try {
             /* @var Event $event */
             $event = $this->offerRepository->load($command->getItemId());
-        } catch (AggregateNotFoundException $e) {
-            $event = null;
-        }
 
-        if (!$event) {
-            $event = Event::create(
-                $command->getItemId(),
-                $command->getTitle(),
-                $command->getEventType(),
-                $command->getLocation(),
-                $command->getCalendar(),
-                $command->getTheme(),
-                $command->getPublicationDate()
-            );
-        } else {
             // @todo Use mainLanguage when updating the title.
             $event->updateTitle(new Language('nl'), $command->getTitle());
             $event->updateType($command->getEventType());
@@ -82,6 +67,16 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
             if ($publicationDate) {
                 $event->publish($publicationDate);
             }
+        } catch (AggregateNotFoundException $e) {
+            $event = Event::create(
+                $command->getItemId(),
+                $command->getTitle(),
+                $command->getEventType(),
+                $command->getLocation(),
+                $command->getCalendar(),
+                $command->getTheme(),
+                $command->getPublicationDate()
+            );
         }
 
         $this->offerRepository->save($event);

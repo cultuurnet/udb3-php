@@ -29,9 +29,11 @@ use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
 use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Organizer\Events\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
@@ -161,6 +163,33 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ),
             $this->labelRepository
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_create_organizer()
+    {
+        $id = new UUID();
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->when(
+                new CreateOrganizer(
+                    $id,
+                    Url::fromNative('http://www.depot.be'),
+                    new Title('Het depot')
+                )
+            )
+            ->then(
+                [
+                    new OrganizerCreatedWithUniqueWebsite(
+                        $id,
+                        Url::fromNative('http://www.depot.be'),
+                        new Title('Het depot')
+                    )
+                ]
+            );
     }
 
     /**

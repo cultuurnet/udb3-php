@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
 use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
 use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
+use CultuurNet\UDB3\Organizer\Events\CreateOrganizer;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 
@@ -65,6 +66,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     protected function getCommandHandlerMethods()
     {
         return [
+            CreateOrganizer::class => 'createOrganizer',
             UpdateWebsite::class => 'updateWebsite',
             UpdateTitle::class => 'updateTitle',
             UpdateAddress::class => 'updateAddress',
@@ -87,6 +89,17 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             $method = $handlers[$class];
             $this->{$method}($command);
         }
+    }
+
+    protected function createOrganizer(CreateOrganizer $createOrganizer)
+    {
+        $organizer = Organizer::create(
+            $createOrganizer->getOrganizerId(),
+            $createOrganizer->getWebsite(),
+            $createOrganizer->getTitle()
+        );
+
+        $this->organizerRepository->save($organizer);
     }
 
     /**

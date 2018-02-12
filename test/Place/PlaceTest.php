@@ -124,6 +124,54 @@ class PlaceTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_should_update_the_address_after_udb2_updates()
+    {
+        $address = new Address(
+            new Street('Eenmeilaan'),
+            new PostalCode('3010'),
+            new Locality('Kessel-Lo'),
+            Country::fromNative('BE')
+        );
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_same_address.xml');
+        $cdbNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
+
+        $this->scenario
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->given(
+                [
+                    new PlaceCreated(
+                        'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                        new Title('Test place'),
+                        new EventType('GnPFp9uvOUyqhOckIFMKmg', 'Museum of galerij'),
+                        $address,
+                        new Calendar(CalendarType::PERMANENT())
+                    ),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($address, $cdbXml, $cdbNamespace) {
+                    $place->updateAddress($address, new Language('nl'));
+                    $place->updateWithCdbXml($cdbXml, $cdbNamespace);
+                    $place->updateAddress($address, new Language('nl'));
+                }
+            )
+            ->then([
+                new PlaceUpdatedFromUDB2(
+                    'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                    $cdbXml,
+                    $cdbNamespace
+                ),
+                new AddressUpdated(
+                    'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                    $address
+                ),
+            ]);
+    }
+
+    /**
+     * @test
      * @dataProvider updateAddressDataProvider
      *
      * @param Address $originalAddress

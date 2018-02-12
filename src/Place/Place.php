@@ -287,6 +287,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
+
+        unset($this->addresses[$this->mainLanguage->getCode()]);
     }
 
     /**

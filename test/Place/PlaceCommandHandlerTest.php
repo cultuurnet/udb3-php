@@ -34,17 +34,23 @@ use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\CalendarUpdated;
+use CultuurNet\UDB3\Place\Events\CreatePlaceOrUpdateOnDuplicate;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Place\Events\ThemeUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
+use CultuurNet\UDB3\Place\Events\TitleUpdated;
+use CultuurNet\UDB3\Place\Events\TypeUpdated;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
@@ -59,6 +65,125 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
      * @var PlaceCommandFactory
      */
     private $commandFactory;
+
+    /**
+     * @test
+     */
+    public function it_should_create_a_new_place_if_one_with_the_given_id_does_not_exist()
+    {
+        $id = '1';
+        $title = new Title('foo');
+        $type = new EventType('0.50.4.0.0', 'jeugdhuis');
+        $address = new Address(
+            new Street('Kerkstraat 69'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = new Theme('0.1.0.1.0.1', 'foo');
+        $publicationDate = new \DateTimeImmutable();
+
+        $command = new CreatePlaceOrUpdateOnDuplicate(
+            $id,
+            $title,
+            $type,
+            $address,
+            $calendar,
+            $theme,
+            $publicationDate
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->when($command)
+            ->then([new PlaceCreated($id, $title, $type, $address, $calendar, $theme, $publicationDate)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_update_the_event_if_one_with_the_given_id_exists()
+    {
+        $id = '1';
+        $title = new Title('foo');
+        $type = new EventType('0.50.4.0.0', 'jeugdhuis');
+        $address = new Address(
+            new Street('Kerkstraat 69'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = new Theme('0.1.0.1.0.1', 'foo');
+        $publicationDate = new \DateTimeImmutable();
+
+        $command = new CreatePlaceOrUpdateOnDuplicate(
+            $id,
+            $title,
+            $type,
+            $address,
+            $calendar,
+            $theme,
+            $publicationDate
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given([$this->factorOfferCreated($id)])
+            ->when($command)
+            ->then(
+                [
+                    new TitleUpdated($id, $title),
+                    new TypeUpdated($id, $type),
+                    new AddressUpdated($id, $address),
+                    new CalendarUpdated($id, $calendar),
+                    new ThemeUpdated($id, $theme),
+                    new Published($id, $publicationDate)
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_only_update_the_publication_date_if_one_was_given()
+    {
+        $id = '1';
+        $title = new Title('foo');
+        $type = new EventType('0.50.4.0.0', 'jeugdhuis');
+        $address = new Address(
+            new Street('Kerkstraat 69'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = new Theme('0.1.0.1.0.1', 'foo');
+
+        $command = new CreatePlaceOrUpdateOnDuplicate(
+            $id,
+            $title,
+            $type,
+            $address,
+            $calendar,
+            $theme
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given([$this->factorOfferCreated($id)])
+            ->when($command)
+            ->then(
+                [
+                    new TitleUpdated($id, $title),
+                    new TypeUpdated($id, $type),
+                    new AddressUpdated($id, $address),
+                    new CalendarUpdated($id, $calendar),
+                    new ThemeUpdated($id, $theme),
+                ]
+            );
+    }
 
     /**
      * @test

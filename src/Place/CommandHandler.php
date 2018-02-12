@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\Place;
 
+use Broadway\Repository\AggregateNotFoundException;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
@@ -30,6 +32,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateTheme;
 use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateType;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
+use CultuurNet\UDB3\Place\Events\CreatePlaceOrUpdateOnDuplicate;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -199,6 +202,46 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getFlagAsInappropriateClassName()
     {
         return FlagAsInappropriate::class;
+    }
+
+    /**
+     * Create or update an event based on the required fields.
+     * @param CreatePlaceOrUpdateOnDuplicate $command
+     */
+    protected function handleCreatePlaceOrUpdateOnDuplicate(CreatePlaceOrUpdateOnDuplicate $command)
+    {
+        try {
+            /* @var Place $place */
+            $place = $this->offerRepository->load($command->getItemId());
+        } catch (AggregateNotFoundException $e) {
+            $place = null;
+        }
+
+        if (!$place) {
+            $place = Place::createPlace(
+                $command->getItemId(),
+                $command->getTitle(),
+                $command->getEventType(),
+                $command->getAddress(),
+                $command->getCalendar(),
+                $command->getTheme(),
+                $command->getPublicationDate()
+            );
+        } else {
+            // @todo Use mainLanguage when updating the title.
+            $place->updateTitle(new Language('nl'), $command->getTitle());
+            $place->updateType($command->getEventType());
+            $place->updateAddress($command->getAddress(), new Language('nl'));
+            $place->updateCalendar($command->getCalendar());
+            $place->updateTheme($command->getTheme());
+
+            $publicationDate = $command->getPublicationDate();
+            if ($publicationDate) {
+                $place->publish($publicationDate);
+            }
+        }
+
+        $this->offerRepository->save($place);
     }
 
     /**

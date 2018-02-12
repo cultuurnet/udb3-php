@@ -34,7 +34,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\CalendarUpdated;
-use CultuurNet\UDB3\Place\Events\CreatePlaceOrUpdateOnDuplicate;
+use CultuurNet\UDB3\Place\Events\CreatePlace;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
@@ -69,7 +69,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_should_create_a_new_place_if_one_with_the_given_id_does_not_exist()
+    public function it_should_create_a_new_place()
     {
         $id = '1';
         $title = new Title('foo');
@@ -84,7 +84,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         $theme = new Theme('0.1.0.1.0.1', 'foo');
         $publicationDate = new \DateTimeImmutable();
 
-        $command = new CreatePlaceOrUpdateOnDuplicate(
+        $command = new CreatePlace(
             $id,
             $title,
             $type,
@@ -98,91 +98,6 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->when($command)
             ->then([new PlaceCreated($id, $title, $type, $address, $calendar, $theme, $publicationDate)]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_update_the_event_if_one_with_the_given_id_exists()
-    {
-        $id = '1';
-        $title = new Title('foo');
-        $type = new EventType('0.50.4.0.0', 'jeugdhuis');
-        $address = new Address(
-            new Street('Kerkstraat 69'),
-            new PostalCode('3000'),
-            new Locality('Leuven'),
-            Country::fromNative('BE')
-        );
-        $calendar = new Calendar(CalendarType::PERMANENT());
-        $theme = new Theme('0.1.0.1.0.1', 'foo');
-        $publicationDate = new \DateTimeImmutable();
-
-        $command = new CreatePlaceOrUpdateOnDuplicate(
-            $id,
-            $title,
-            $type,
-            $address,
-            $calendar,
-            $theme,
-            $publicationDate
-        );
-
-        $this->scenario
-            ->withAggregateId($id)
-            ->given([$this->factorOfferCreated($id)])
-            ->when($command)
-            ->then(
-                [
-                    new TitleUpdated($id, $title),
-                    new TypeUpdated($id, $type),
-                    new AddressUpdated($id, $address),
-                    new CalendarUpdated($id, $calendar),
-                    new ThemeUpdated($id, $theme),
-                    new Published($id, $publicationDate)
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_only_update_the_publication_date_if_one_was_given()
-    {
-        $id = '1';
-        $title = new Title('foo');
-        $type = new EventType('0.50.4.0.0', 'jeugdhuis');
-        $address = new Address(
-            new Street('Kerkstraat 69'),
-            new PostalCode('3000'),
-            new Locality('Leuven'),
-            Country::fromNative('BE')
-        );
-        $calendar = new Calendar(CalendarType::PERMANENT());
-        $theme = new Theme('0.1.0.1.0.1', 'foo');
-
-        $command = new CreatePlaceOrUpdateOnDuplicate(
-            $id,
-            $title,
-            $type,
-            $address,
-            $calendar,
-            $theme
-        );
-
-        $this->scenario
-            ->withAggregateId($id)
-            ->given([$this->factorOfferCreated($id)])
-            ->when($command)
-            ->then(
-                [
-                    new TitleUpdated($id, $title),
-                    new TypeUpdated($id, $type),
-                    new AddressUpdated($id, $address),
-                    new CalendarUpdated($id, $calendar),
-                    new ThemeUpdated($id, $theme),
-                ]
-            );
     }
 
     /**

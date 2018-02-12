@@ -14,7 +14,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
-use CultuurNet\UDB3\Event\Commands\CreateEventOrUpdateOnDuplicate;
+use CultuurNet\UDB3\Event\Commands\CreateEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
@@ -129,7 +129,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_should_create_a_new_event_if_one_with_the_given_id_does_not_exist()
+    public function it_should_create_a_new_event()
     {
         $id = '5e36d2f2-b5de-4f5e-81b3-a129d996e9b6';
         $title = new Title('some representative title');
@@ -148,7 +148,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $theme = new Theme('0.1.0.1.0.1', 'blues');
         $publicationDate = new \DateTimeImmutable();
 
-        $command = new CreateEventOrUpdateOnDuplicate(
+        $command = new CreateEvent(
             $id,
             $title,
             $type,
@@ -162,107 +162,6 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($id)
             ->when($command)
             ->then([new EventCreated($id, $title, $type, $location, $calendar, $theme, $publicationDate)]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_update_the_event_if_one_with_the_given_id_exists()
-    {
-        $id = '5e36d2f2-b5de-4f5e-81b3-a129d996e9b6';
-        $title = new Title('some representative title UPDATED');
-        $type = new EventType('0.50.4.0.0.updated', 'concert updated');
-        $location = new Location(
-            '38eea284-b715-4e09-ad26-bae9864d2c5d',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
-        $calendar = new Calendar(
-            CalendarType::SINGLE(),
-            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
-            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
-        );
-        $theme = new Theme('0.1.0.1.0.1.updated', 'blues updated');
-        $publicationDate = new \DateTimeImmutable();
-
-        $command = new CreateEventOrUpdateOnDuplicate(
-            $id,
-            $title,
-            $type,
-            $location,
-            $calendar,
-            $theme,
-            $publicationDate
-        );
-
-        $this->scenario
-            ->withAggregateId($id)
-            ->given([$this->factorOfferCreated($id)])
-            ->when($command)
-            ->then(
-                [
-                    new TitleUpdated($id, $title),
-                    new TypeUpdated($id, $type),
-                    new LocationUpdated($id, new LocationId($location->getCdbid())),
-                    new CalendarUpdated($id, $calendar),
-                    new ThemeUpdated($id, $theme),
-                    new Published($id, $publicationDate)
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_only_update_the_publication_date_if_one_was_given()
-    {
-        $id = '5e36d2f2-b5de-4f5e-81b3-a129d996e9b6';
-        $title = new Title('some representative title UPDATED');
-        $type = new EventType('0.50.4.0.0.updated', 'concert updated');
-        $location = new Location(
-            '38eea284-b715-4e09-ad26-bae9864d2c5d',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
-        $calendar = new Calendar(
-            CalendarType::SINGLE(),
-            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
-            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
-        );
-        $theme = new Theme('0.1.0.1.0.1.updated', 'blues updated');
-
-        $command = new CreateEventOrUpdateOnDuplicate(
-            $id,
-            $title,
-            $type,
-            $location,
-            $calendar,
-            $theme
-        );
-
-        $this->scenario
-            ->withAggregateId($id)
-            ->given([$this->factorOfferCreated($id)])
-            ->when($command)
-            ->then(
-                [
-                    new TitleUpdated($id, $title),
-                    new TypeUpdated($id, $type),
-                    new LocationUpdated($id, new LocationId($location->getCdbid())),
-                    new CalendarUpdated($id, $calendar),
-                    new ThemeUpdated($id, $theme),
-                ]
-            );
     }
 
     /**

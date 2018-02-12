@@ -32,7 +32,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateTheme;
 use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateType;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Place\Events\CreatePlaceOrUpdateOnDuplicate;
+use CultuurNet\UDB3\Place\Events\CreatePlace;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -205,41 +205,19 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Create or update an event based on the required fields.
-     * @param CreatePlaceOrUpdateOnDuplicate $command
+     * @param CreatePlace $command
      */
-    protected function handleCreatePlaceOrUpdateOnDuplicate(CreatePlaceOrUpdateOnDuplicate $command)
+    protected function handleCreatePlace(CreatePlace $command)
     {
-        try {
-            /* @var Place $place */
-            $place = $this->offerRepository->load($command->getItemId());
-        } catch (AggregateNotFoundException $e) {
-            $place = null;
-        }
-
-        if (!$place) {
-            $place = Place::createPlace(
-                $command->getItemId(),
-                $command->getTitle(),
-                $command->getEventType(),
-                $command->getAddress(),
-                $command->getCalendar(),
-                $command->getTheme(),
-                $command->getPublicationDate()
-            );
-        } else {
-            // @todo Use mainLanguage when updating the title.
-            $place->updateTitle(new Language('nl'), $command->getTitle());
-            $place->updateType($command->getEventType());
-            $place->updateAddress($command->getAddress(), new Language('nl'));
-            $place->updateCalendar($command->getCalendar());
-            $place->updateTheme($command->getTheme());
-
-            $publicationDate = $command->getPublicationDate();
-            if ($publicationDate) {
-                $place->publish($publicationDate);
-            }
-        }
+        $place = Place::createPlace(
+            $command->getItemId(),
+            $command->getTitle(),
+            $command->getEventType(),
+            $command->getAddress(),
+            $command->getCalendar(),
+            $command->getTheme(),
+            $command->getPublicationDate()
+        );
 
         $this->offerRepository->save($place);
     }

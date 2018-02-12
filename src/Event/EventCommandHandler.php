@@ -6,7 +6,7 @@ namespace CultuurNet\UDB3\Event;
 use Broadway\Repository\AggregateNotFoundException;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
-use CultuurNet\UDB3\Event\Commands\CreateEventOrUpdateOnDuplicate;
+use CultuurNet\UDB3\Event\Commands\CreateEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
@@ -47,37 +47,19 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     use LoggerAwareTrait;
 
     /**
-     * Create or update an event based on the required fields.
-     * @param CreateEventOrUpdateOnDuplicate $command
+     * @param CreateEvent $command
      */
-    protected function handleCreateEventOrUpdateOnDuplicate(CreateEventOrUpdateOnDuplicate $command)
+    protected function handleCreateEvent(CreateEvent $command)
     {
-        try {
-            /* @var Event $event */
-            $event = $this->offerRepository->load($command->getItemId());
-
-            // @todo Use mainLanguage when updating the title.
-            $event->updateTitle(new Language('nl'), $command->getTitle());
-            $event->updateType($command->getEventType());
-            $event->updateLocation(new LocationId($command->getLocation()->getCdbid()));
-            $event->updateCalendar($command->getCalendar());
-            $event->updateTheme($command->getTheme());
-
-            $publicationDate = $command->getPublicationDate();
-            if ($publicationDate) {
-                $event->publish($publicationDate);
-            }
-        } catch (AggregateNotFoundException $e) {
-            $event = Event::create(
-                $command->getItemId(),
-                $command->getTitle(),
-                $command->getEventType(),
-                $command->getLocation(),
-                $command->getCalendar(),
-                $command->getTheme(),
-                $command->getPublicationDate()
-            );
-        }
+        $event = Event::create(
+            $command->getItemId(),
+            $command->getTitle(),
+            $command->getEventType(),
+            $command->getLocation(),
+            $command->getCalendar(),
+            $command->getTheme(),
+            $command->getPublicationDate()
+        );
 
         $this->offerRepository->save($event);
     }

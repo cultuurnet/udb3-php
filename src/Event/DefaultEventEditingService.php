@@ -72,9 +72,9 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         CalendarInterface $calendar,
         $theme = null
     ) {
-        // @todo use CreateEventOrUpdateOnDuplicate command
         $eventId = $this->uuidGenerator->generate();
 
+        // @todo Use CreateEvent command.
         $event = Event::create(
             $eventId,
             $title,

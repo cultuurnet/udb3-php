@@ -1,16 +1,16 @@
 <?php
 
-namespace CultuurNet\UDB3\Place\Events;
+namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
+use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Offer\Commands\AbstractCreateCommand;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 
-class CreatePlaceOrUpdateOnDuplicate extends AbstractCommand
+class CreateEvent extends AbstractCreateCommand
 {
     /**
      * @var Title
@@ -25,12 +25,12 @@ class CreatePlaceOrUpdateOnDuplicate extends AbstractCommand
     /**
      * @var Theme
      */
-    private $theme = null;
+    private $theme;
 
     /**
-     * @var Address
+     * @var Location
      */
-    private $address;
+    private $location;
 
     /**
      * @var Calendar
@@ -40,13 +40,13 @@ class CreatePlaceOrUpdateOnDuplicate extends AbstractCommand
     /**
      * @var DateTimeImmutable|null
      */
-    private $publicationDate = null;
+    private $publicationDate;
 
     /**
      * @param string $eventId
      * @param Title $title
-     * @param Address $address
      * @param EventType $eventType
+     * @param Location $location
      * @param Calendar $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
@@ -55,7 +55,7 @@ class CreatePlaceOrUpdateOnDuplicate extends AbstractCommand
         $eventId,
         Title $title,
         EventType $eventType,
-        Address $address,
+        Location $location,
         Calendar $calendar,
         Theme $theme = null,
         DateTimeImmutable $publicationDate = null
@@ -64,7 +64,7 @@ class CreatePlaceOrUpdateOnDuplicate extends AbstractCommand
 
         $this->title = $title;
         $this->eventType = $eventType;
-        $this->address = $address;
+        $this->location = $location;
         $this->calendar = $calendar;
         $this->theme = $theme;
         $this->publicationDate = $publicationDate;
@@ -103,11 +103,11 @@ class CreatePlaceOrUpdateOnDuplicate extends AbstractCommand
     }
 
     /**
-     * @return Address
+     * @return Location
      */
-    public function getAddress()
+    public function getLocation()
     {
-        return $this->address;
+        return $this->location;
     }
 
     /**

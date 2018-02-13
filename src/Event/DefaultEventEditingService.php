@@ -78,6 +78,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
 
         $event = Event::create(
             $eventId,
+            $mainLanguage,
             $title,
             $eventType,
             $location,

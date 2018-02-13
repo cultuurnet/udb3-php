@@ -111,7 +111,10 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->title = new Title('English title');
         $this->description = new StringLiteral('English description');
 
-        $this->itemCreated = new ItemCreated($this->id);
+        $this->itemCreated = new ItemCreated(
+            $this->id,
+            new Language('nl')
+        );
 
         $this->priceInfo = new PriceInfo(
             new BasePrice(

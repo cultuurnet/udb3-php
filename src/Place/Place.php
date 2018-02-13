@@ -89,6 +89,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * The PlaceImportedFromUDB2 could be a superclass of Place.
      *
      * @param string $id
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
@@ -100,6 +101,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     public static function createPlace(
         $id,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Address $address,
@@ -110,6 +112,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $place = new self();
         $place->apply(new PlaceCreated(
             $id,
+            $mainLanguage,
             $title,
             $eventType,
             $address,
@@ -127,6 +130,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
+        $this->mainLanguage = $placeCreated->getMainLanguage();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }

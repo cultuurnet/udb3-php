@@ -62,6 +62,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $this->event = Event::create(
             'foo',
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -82,6 +83,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         return new EventCreated(
             'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -108,6 +110,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         Event::create(
             101,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(

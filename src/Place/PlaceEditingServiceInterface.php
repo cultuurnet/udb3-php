@@ -20,6 +20,7 @@ interface PlaceEditingServiceInterface
     /**
      * Create a new place.
      *
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
@@ -28,7 +29,14 @@ interface PlaceEditingServiceInterface
      *
      * @return string $eventId
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
+    public function createPlace(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    );
 
     /**
      * @param string $id

@@ -43,6 +43,7 @@ use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
@@ -1426,6 +1427,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     ) {
         return new EventCreated(
             $eventId,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(

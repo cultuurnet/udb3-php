@@ -118,6 +118,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $country = Country::fromNative('BE');
 
         $placeId = 'generated-uuid';
+        $mainLanguage = new Language('en');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $address = new Address($street, $postalCode, $locality, $country);
@@ -130,12 +131,20 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->eventStore->trace();
 
-        $this->placeEditingService->createPlace($title, $eventType, $address, $calendar, $theme);
+        $this->placeEditingService->createPlace(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme
+        );
 
         $this->assertEquals(
             [
                 new PlaceCreated(
                     $placeId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $address,
@@ -159,6 +168,7 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
         $postalCode = new PostalCode('3000');
         $country = Country::fromNative('BE');
         $placeId = 'generated-uuid';
+        $mainLanguage = new Language('en');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $address = new Address($street, $postalCode, $locality, $country);
@@ -173,12 +183,20 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $editingService = $this->placeEditingService->withFixedPublicationDateForNewOffers($publicationDate);
 
-        $editingService->createPlace($title, $eventType, $address, $calendar, $theme);
+        $editingService->createPlace(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme
+        );
 
         $this->assertEquals(
             [
                 new PlaceCreated(
                     $placeId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $address,

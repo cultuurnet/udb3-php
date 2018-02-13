@@ -59,6 +59,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 [
                     new PlaceCreated(
                         'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                        new Language('nl'),
                         new Title('Test place'),
                         new EventType('0.1.1', 'Jeugdhuis'),
                         $originalAddress,
@@ -97,6 +98,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 [
                     new PlaceCreated(
                         'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                        new Language('nl'),
                         new Title('Test place'),
                         new EventType('0.1.1', 'Jeugdhuis'),
                         $originalAddress,

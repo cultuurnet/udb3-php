@@ -83,8 +83,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $concluded = false;
 
-    const MAIN_LANGUAGE_CODE = 'nl';
-
     public function __construct()
     {
         parent::__construct();
@@ -94,6 +92,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * Factory method to create a new event.
      *
      * @param $eventId
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
@@ -104,6 +103,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public static function create(
         $eventId,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Location $location,
@@ -116,6 +116,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $event->apply(
             new EventCreated(
                 $eventId,
+                $mainLanguage,
                 $title,
                 $eventType,
                 $location,
@@ -212,6 +213,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 

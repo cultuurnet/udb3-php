@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
@@ -127,6 +128,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $payload = new EventCreated(
             $eventId->toNative(),
+            new Language('nl'),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(

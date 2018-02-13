@@ -190,6 +190,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
 
         $eventCreated = new EventCreated(
             $eventId,
+            new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
             new Location(

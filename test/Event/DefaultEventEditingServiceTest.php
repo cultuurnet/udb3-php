@@ -219,6 +219,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new EventCreated(
                     $eventId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $location,
@@ -275,6 +276,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new EventCreated(
                     $originalEventId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $location,
@@ -367,6 +369,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new EventCreated(
                     $eventId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $location,

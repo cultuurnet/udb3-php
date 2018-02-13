@@ -361,6 +361,7 @@ class EventLDProjector extends OfferLDProjector implements
             $this->slugger
         );
 
+        // When importing from UDB2 the main language is always nl.
         $this->setMainLanguage($jsonLd, new Language('nl'));
 
         // Because we can not properly track media coming from UDB2 we simply
@@ -448,9 +449,9 @@ class EventLDProjector extends OfferLDProjector implements
             $eventCreated->getEventId()
         );
 
-        $this->setMainLanguage($jsonLD, new Language('nl'));
+        $this->setMainLanguage($jsonLD, $eventCreated->getMainLanguage());
 
-        $jsonLD->name['nl'] = $eventCreated->getTitle();
+        $jsonLD->name[$eventCreated->getMainLanguage()->getCode()] = $eventCreated->getTitle();
         $jsonLD->location = array(
                 '@type' => 'Place',
             ) + (array)$this->placeJSONLD(

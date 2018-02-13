@@ -166,10 +166,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
-        $jsonLD->mainLanguage = 'nl';
-        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object)[ 'en' => 'some representative title' ];
         $jsonLD->address = (object) [
-            'nl' => (object) [
+            'en' => (object) [
                 'addressCountry' => 'BE',
                 'addressLocality' => 'Leuven',
                 'postalCode' => '3000',
@@ -188,8 +188,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->workflowStatus = 'DRAFT';
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $body = $this->project(
             $placeCreated,
@@ -225,10 +225,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
-        $jsonLD->mainLanguage = 'nl';
-        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object)[ 'en' => 'some representative title' ];
         $jsonLD->address = (object) [
-            'nl' => (object) [
+            'en' => (object) [
                 'addressCountry' => 'BE',
                 'addressLocality' => 'Leuven',
                 'postalCode' => '3000',
@@ -252,8 +252,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->workflowStatus = 'DRAFT';
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $body = $this->project(
             $placeCreated,
@@ -288,10 +288,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
-        $jsonLD->mainLanguage = 'nl';
-        $jsonLD->name = (object) ['nl' => 'some representative title'];
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object) ['en' => 'some representative title'];
         $jsonLD->address = (object) [
-            'nl' => (object) [
+            'en' => (object) [
                 'addressCountry' => 'BE',
                 'addressLocality' => 'Leuven',
                 'postalCode' => '3000',
@@ -311,8 +311,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->creator = 'Tester';
         $jsonLD->workflowStatus = 'DRAFT';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $metadata = new Metadata(
             [

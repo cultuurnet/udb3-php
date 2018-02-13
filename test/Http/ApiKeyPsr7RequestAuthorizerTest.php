@@ -1,0 +1,27 @@
+<?php
+
+namespace CultuurNet\UDB3\Http;
+
+use GuzzleHttp\Psr7\Request;
+use ValueObjects\StringLiteral\StringLiteral;
+
+class ApiKeyPsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @test
+     */
+    public function it_can_authorize_requests()
+    {
+        $apiKey = new StringLiteral('adde5285-a48c-4f3a-bf30-0e75b7b888e8');
+
+        $authorizer = new ApiKeyPsr7RequestAuthorizer($apiKey);
+
+        $request = new Request('DELETE', 'http://foo.bar');
+        $authorizedRequest = $authorizer->authorize($request);
+
+        $this->assertEquals(
+            'adde5285-a48c-4f3a-bf30-0e75b7b888e8',
+            $authorizedRequest->getHeaderLine('X-Api-Key')
+        );
+    }
+}

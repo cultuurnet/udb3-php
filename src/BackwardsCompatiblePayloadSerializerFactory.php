@@ -41,7 +41,6 @@ use ValueObjects\Identity\UUID;
  */
 class BackwardsCompatiblePayloadSerializerFactory
 {
-
     private function __construct()
     {
 
@@ -55,6 +54,25 @@ class BackwardsCompatiblePayloadSerializerFactory
     {
         $payloadManipulatingSerializer = new PayloadManipulatingSerializer(
             new SimpleInterfaceSerializer()
+        );
+
+        /*
+         * CREATE EVENTS
+         *
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\Events\EventCreated',
+            function (array $serializedObject) {
+                return self::addDefaultMainLanguage($serializedObject);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\PlaceCreated',
+            function (array $serializedObject) {
+                return self::addDefaultMainLanguage($serializedObject);
+            }
         );
 
         /*
@@ -349,6 +367,20 @@ class BackwardsCompatiblePayloadSerializerFactory
 
             $serializedObject['payload']['label'] = $label->getName()->toNative();
             $serializedObject['payload']['visibility'] = $label->getVisibility() === Visibility::VISIBLE();
+        }
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function addDefaultMainLanguage(array $serializedObject)
+    {
+        if (!isset($serializedObject['payload']['main_language'])) {
+            $mainLanguage = new Language('nl');
+            $serializedObject['payload']['main_language'] = $mainLanguage->getCode();
         }
 
         return $serializedObject;

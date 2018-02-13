@@ -188,6 +188,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_a_new_event()
     {
         $eventId = 'generated-uuid';
+        $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $street = new Street('Kerkstraat 69');
@@ -205,7 +206,14 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+        $this->eventEditingService->createEvent(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
 
         $this->assertEquals(
             [
@@ -231,6 +239,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
         $calendar = new Calendar(CalendarType::PERMANENT());
 
+        $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $location = new Location(
@@ -252,6 +261,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturnOnConsecutiveCalls($originalEventId, $eventId);
 
         $this->eventEditingService->createEvent(
+            $mainLanguage,
             $title,
             $eventType,
             $location,
@@ -319,6 +329,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_a_new_event_with_a_fixed_publication_date()
     {
         $eventId = 'generated-uuid';
+        $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $street = new Street('Kerkstraat 69');
@@ -343,7 +354,14 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+        $this->eventEditingService->createEvent(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
 
         $this->assertEquals(
             [

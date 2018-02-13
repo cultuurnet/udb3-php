@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -110,6 +111,7 @@ interface EventEditingServiceInterface
     public function removeImage($id, Image $image);
 
     /**
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
@@ -118,7 +120,14 @@ interface EventEditingServiceInterface
      *
      * @return string $eventId
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+    public function createEvent(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    );
 
     /**
      * @param string $originalEventId

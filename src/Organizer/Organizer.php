@@ -75,10 +75,6 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     public function __construct()
     {
-        // For now the main language is hard coded on nl.
-        // In the future it should be set on create.
-        $this->mainLanguage = new Language('nl');
-
         // Contact points can be empty, but we only want to start recording
         // ContactPointUpdated events as soon as the organizer is updated
         // with a non-empty contact point. To enforce this we initialize the
@@ -121,19 +117,21 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      * Factory method to create a new Organizer.
      *
      * @param string $id
+     * @param Language $mainLanguage
      * @param Url $website
      * @param Title $title
      * @return Organizer
      */
     public static function create(
         $id,
+        Language $mainLanguage,
         Url $website,
         Title $title
     ) {
         $organizer = new self();
 
         $organizer->apply(
-            new OrganizerCreatedWithUniqueWebsite($id, $website, $title)
+            new OrganizerCreatedWithUniqueWebsite($id, $mainLanguage, $website, $title)
         );
 
         return $organizer;
@@ -253,6 +251,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     {
         $this->actorId = $organizerCreated->getOrganizerId();
 
+        $this->mainLanguage = new Language('nl');
+
         $this->setTitle($organizerCreated->getTitle(), $this->mainLanguage);
     }
 
@@ -263,6 +263,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected function applyOrganizerCreatedWithUniqueWebsite(OrganizerCreatedWithUniqueWebsite $organizerCreated)
     {
         $this->actorId = $organizerCreated->getOrganizerId();
+
+        $this->mainLanguage = $organizerCreated->getMainLanguage();
 
         $this->website = $organizerCreated->getWebsite();
 
@@ -276,6 +278,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         OrganizerImportedFromUDB2 $organizerImported
     ) {
         $this->actorId = (string) $organizerImported->getActorId();
+
+        $this->mainLanguage = new Language('nl');
 
         $actor = ActorItemFactory::createActorFromCdbXml(
             $organizerImported->getCdbXmlNamespaceUri(),

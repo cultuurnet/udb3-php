@@ -74,7 +74,7 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     ) {
         $id = $this->uuidGenerator->generate();
 
-        $organizer = Organizer::create($id, $website, $title);
+        $organizer = Organizer::create($id, $mainLanguage, $website, $title);
 
         if (!is_null($address)) {
             $organizer->updateAddress($address);

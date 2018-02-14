@@ -107,6 +107,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new OrganizerCreatedWithUniqueWebsite(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',
+                    new Language('en'),
                     Url::fromNative('http://www.stuk.be'),
                     new Title('Het Stuk')
                 ),
@@ -143,6 +144,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new OrganizerCreatedWithUniqueWebsite(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',
+                    new Language('en'),
                     Url::fromNative('http://www.stuk.be'),
                     new Title('Het Stuk')
                 ),

@@ -201,6 +201,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
             $id,
+            new Language('en'),
             Url::fromNative('http://www.stuk.be'),
             new Title('some representative title')
         );
@@ -208,12 +209,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
-        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->mainLanguage = 'en';
         $jsonLD->url = 'http://www.stuk.be';
-        $jsonLD->name['nl'] = 'some representative title';
+        $jsonLD->name['en'] = 'some representative title';
         $jsonLD->created = $this->recordedOn->toString();
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
         $jsonLD->modified = $this->recordedOn->toString();
 
         $expectedDocument = (new JsonDocument($id))

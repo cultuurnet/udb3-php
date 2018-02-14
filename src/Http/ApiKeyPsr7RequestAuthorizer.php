@@ -8,15 +8,11 @@ use ValueObjects\StringLiteral\StringLiteral;
 class ApiKeyPsr7RequestAuthorizer implements Psr7RequestAuthorizerInterface
 {
     /**
-     * @todo Is it possible to reuse ApiKey from 'cultuurnet/udb3-api-guard'?
      * @var StringLiteral
      */
     private $apiKey;
 
     /**
-     * It is also possible to work without ApiKey, so the ApiKey can be null.
-     * This can only be covered by setting default null value.
-     *
      * @param StringLiteral $apiKey
      */
     public function __construct(StringLiteral $apiKey)

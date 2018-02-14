@@ -11,7 +11,7 @@ class JwtPsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_authorize_requests()
+    public function it_can_authorize_a_request_with_jwt_token()
     {
         $jwt = new Jwt(
             ['alg' => 'mock'],

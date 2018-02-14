@@ -96,6 +96,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore->trace();
 
         $organizerId = $this->service->create(
+            new Language('en'),
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk')
         );
@@ -124,6 +125,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore->trace();
 
         $organizerId = $this->service->create(
+            new Language('en'),
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk'),
             new Address(

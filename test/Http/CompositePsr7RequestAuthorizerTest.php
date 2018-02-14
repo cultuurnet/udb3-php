@@ -9,7 +9,7 @@ class CompositePsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_authorize_requests()
+    public function it_can_authorize_a_request_with_all_provided_authorizers()
     {
         $request = new Request('DELETE', 'http://foo.bar');
         $requestWithJwt = $request->withHeader('Authorization', 'Big jwt token');

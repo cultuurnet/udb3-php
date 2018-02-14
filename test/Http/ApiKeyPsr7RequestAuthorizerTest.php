@@ -10,7 +10,7 @@ class ApiKeyPsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_authorize_requests()
+    public function it_can_authorize_a_requests_with_x_api_key()
     {
         $apiKey = new StringLiteral('adde5285-a48c-4f3a-bf30-0e75b7b888e8');
 

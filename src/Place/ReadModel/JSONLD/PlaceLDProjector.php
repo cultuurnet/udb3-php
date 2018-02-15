@@ -13,13 +13,13 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventListener\EventSpecification;
-use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
@@ -56,7 +56,7 @@ use CultuurNet\UDB3\Place\Events\TitleUpdated;
 use CultuurNet\UDB3\Place\Events\TypeUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\Theme;
@@ -69,6 +69,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
     /**
+     * @var RepositoryInterface
+     */
+    private $placeRelations;
+
+    /**
      * @var CdbXMLImporter
      */
     protected $cdbXMLImporter;
@@ -77,6 +82,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
+     * @param RepositoryInterface $placeRelations
      * @param SerializerInterface $mediaObjectSerializer
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
@@ -86,6 +92,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
+        RepositoryInterface $placeRelations,
         SerializerInterface $mediaObjectSerializer,
         CdbXMLImporter $cdbXMLImporter,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
@@ -99,6 +106,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $jsonDocumentMetaDataEnricher,
             $eventFilter
         );
+
+        $this->placeRelations = $placeRelations;
 
         $this->cdbXMLImporter = $cdbXMLImporter;
     }
@@ -374,6 +383,40 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         ];
 
         return $document->withBody($placeLd);
+    }
+
+    /**
+     * @param OrganizerProjectedToJSONLD $organizerProjectedToJSONLD
+     * @return JsonDocument[]
+     *
+     * @throws \CultuurNet\UDB3\EntityNotFoundException
+     */
+    protected function applyOrganizerProjectedToJSONLD(
+        OrganizerProjectedToJSONLD $organizerProjectedToJSONLD
+    ) {
+        $placeIds = $this->placeRelations->getPlacesOrganizedByOrganizer(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        $organizer = $this->organizerService->getEntity(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        $documents = [];
+
+        foreach ($placeIds as $placeId) {
+            $document = $this->loadDocumentFromRepositoryByItemId($placeId);
+            $placeLD = $document->getBody();
+
+            $newPlaceLD = clone $placeLD;
+            $newPlaceLD->organizer = json_decode($organizer);
+
+            if ($newPlaceLD != $placeLD) {
+                $documents[] = $document->withBody($newPlaceLD);
+            }
+        }
+
+        return $documents;
     }
 
     /**

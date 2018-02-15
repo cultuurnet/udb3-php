@@ -75,6 +75,13 @@ class BackwardsCompatiblePayloadSerializerFactory
             }
         );
 
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite',
+            function (array $serializedObject) {
+                return self::addDefaultMainLanguage($serializedObject);
+            }
+        );
+
         /*
          * TRANSLATION EVENTS
          */

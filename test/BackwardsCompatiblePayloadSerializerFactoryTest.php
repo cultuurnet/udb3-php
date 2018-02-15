@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
@@ -73,7 +74,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $serialized = file_get_contents($sampleFile);
         $decoded = json_decode($serialized, true);
 
-        /** @var EventCreated|PlaceCreated $created */
+        /** @var EventCreated|PlaceCreated|OrganizerCreatedWithUniqueWebsite $created */
         $created = $this->serializer->deserialize($decoded);
 
         $this->assertEquals($expectedMainLanguage, $created->getMainLanguage());
@@ -93,12 +94,20 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
                 __DIR__ . '/samples/serialized_event_place_created_class.json',
                 new Language('nl'),
             ],
+            'OrganizerCreatedWithUniqueWebsite no main language' => [
+                __DIR__ . '/samples/serialized_event_organizer_created_with_unique_website_class.json',
+                new Language('nl'),
+            ],
             'EventCreated with es as main language' => [
                 __DIR__ . '/samples/serialized_event_event_created_with_main_language_class.json',
                 new Language('es'),
             ],
             'PlaceCreated with es as main language' => [
                 __DIR__ . '/samples/serialized_event_place_created_with_main_language_class.json',
+                new Language('es'),
+            ],
+            'OrganizerCreatedWithUniqueWebsite with es as main language' => [
+                __DIR__ . '/samples/serialized_event_organizer_created_with_unique_website_and_main_language.class.json',
                 new Language('es'),
             ],
         ];

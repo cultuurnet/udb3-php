@@ -498,13 +498,29 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      */
     public function it_should_not_change_main_language_when_updating()
     {
+        // First make sure there is already an event, so it is a real update.
+        $eventId = 'a2d50a8d-5b83-4c8b-84e6-e9c0bacbb1a3';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+        );
+        $eventCreated = $this->createEventCreated($eventId, $calendar, null);
+        $this->mockPlaceService();
+        $this->project(
+            $eventCreated,
+            $eventId,
+            new Metadata(),
+            DateTime::fromString('2015-01-20T13:25:21+01:00')
+        );
+
+        // Now do the real update.
         $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
             'samples/event_with_calendar_periods.cdbxml.xml'
         );
 
-        $body = $this->project($event, $event->getEventId());
+        $body = $this->project($event, $eventId);
 
-        $this->assertFalse(property_exists($body, 'mainLanguage'));
+        $this->assertEquals(new Language('en'), $body->mainLanguage);
     }
 
     /**

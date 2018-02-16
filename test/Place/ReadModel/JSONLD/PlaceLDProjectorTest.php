@@ -507,13 +507,32 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_should_set_a_main_language_when_updating_from_udb2()
+    public function it_should_not_update_the_main_language_when_updating_from_udb2()
     {
-        $event = $this->placeUpdatedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+        // First make sure there is a new place created.
+        $placeId = 'foo';
+        $created = '2015-01-20T13:25:21+01:00';
+        $placeCreated = new PlaceCreated(
+            $placeId,
+            new Language('en'),
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            $this->address,
+            new Calendar(CalendarType::PERMANENT())
+        );
+        $this->project(
+            $placeCreated,
+            $placeId,
+            null,
+            DateTime::fromString($created)
+        );
 
-        $body = $this->project($event, $event->getActorId());
+        // Now do the real update.
+        $place = $this->placeUpdatedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
 
-        $this->assertEquals('nl', $body->mainLanguage);
+        $body = $this->project($place, $placeId);
+
+        $this->assertEquals(new Language('en'), $body->mainLanguage);
     }
 
     /**

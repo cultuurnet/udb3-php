@@ -108,7 +108,9 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImportedFromUDB2
     ) {
-        return $this->projectActorImportedFromUDB2($placeImportedFromUDB2);
+        return $this->projectActorImportedFromUDB2(
+            $placeImportedFromUDB2
+        );
     }
 
     /**
@@ -118,12 +120,15 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function applyPlaceUpdatedFromUDB2(
         PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
     ) {
-        return $this->projectActorImportedFromUDB2($placeUpdatedFromUDB2);
+        return $this->projectActorImportedFromUDB2(
+            $placeUpdatedFromUDB2
+        );
     }
 
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
      * @return JsonDocument
+     * @throws \CultureFeed_Cdb_ParseException
      */
     protected function projectActorImportedFromUDB2(
         ActorImportedFromUDB2 $actorImportedFromUDB2
@@ -149,7 +154,10 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         );
 
         // When importing from UDB2 the main language is always nl.
-        $this->setMainLanguage($actorLd, new Language('nl'));
+        // When updating from UDB2 never change the main language.
+        if (!isset($actorLd->mainLanguage)) {
+            $this->setMainLanguage($actorLd, new Language('nl'));
+        }
 
         // Remove geocoordinates, because the address might have been
         // updated and we might get inconsistent data if it takes a while

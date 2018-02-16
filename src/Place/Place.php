@@ -215,6 +215,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     ) {
         $this->placeId = $placeImported->getActorId();
 
+        // When importing from UDB2 the default main language is always 'nl'.
+        $this->mainLanguage = new Language('nl');
+
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeImported->getCdbXmlNamespaceUri(),
             $placeImported->getCdbXml()
@@ -234,6 +237,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $placeUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $placeUpdatedFromUDB2->getCdbXml()
         );
+
+        // Note: when updating from UDB2 never change the main language.
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));

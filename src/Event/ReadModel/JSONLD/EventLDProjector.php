@@ -252,8 +252,7 @@ class EventLDProjector extends OfferLDProjector implements
         return $this->applyEventCdbXmlFromUDB2(
             $eventImportedFromUDB2->getEventId(),
             $eventImportedFromUDB2->getCdbXmlNamespaceUri(),
-            $eventImportedFromUDB2->getCdbXml(),
-            false
+            $eventImportedFromUDB2->getCdbXml()
         );
     }
 
@@ -267,8 +266,7 @@ class EventLDProjector extends OfferLDProjector implements
         return $this->applyEventCdbXmlFromUDB2(
             $eventUpdatedFromUDB2->getEventId(),
             $eventUpdatedFromUDB2->getCdbXmlNamespaceUri(),
-            $eventUpdatedFromUDB2->getCdbXml(),
-            true
+            $eventUpdatedFromUDB2->getCdbXml()
         );
     }
 
@@ -278,14 +276,12 @@ class EventLDProjector extends OfferLDProjector implements
      * @param string $eventId
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
-     * @param bool $isUpdate
      * @return JsonDocument
      */
     protected function applyEventCdbXmlFromUDB2(
         $eventId,
         $cdbXmlNamespaceUri,
-        $cdbXml,
-        $isUpdate
+        $cdbXml
     ) {
         $document = $this->newDocument($eventId);
 
@@ -293,8 +289,7 @@ class EventLDProjector extends OfferLDProjector implements
             $document->getBody(),
             $eventId,
             $cdbXmlNamespaceUri,
-            $cdbXml,
-            $isUpdate
+            $cdbXml
         );
 
         return $document->withBody($eventLd);
@@ -305,7 +300,6 @@ class EventLDProjector extends OfferLDProjector implements
      * @param string $eventId
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
-     * @param bool $isUpdate
      * @return \stdClass
      * @throws \CultureFeed_Cdb_ParseException
      */
@@ -313,8 +307,7 @@ class EventLDProjector extends OfferLDProjector implements
         \stdClass $jsonLd,
         $eventId,
         $cdbXmlNamespaceUri,
-        $cdbXml,
-        $isUpdate
+        $cdbXml
     ) {
         $udb2Event = EventItemFactory::createEventFromCdbXml(
             $cdbXmlNamespaceUri,
@@ -328,12 +321,6 @@ class EventLDProjector extends OfferLDProjector implements
             $this,
             $this->slugger
         );
-
-        // When importing from UDB2 the main language is always nl.
-        // When updating from UDB2 never change the main language.
-        if (!$isUpdate) {
-            $this->setMainLanguage($jsonLd, new Language('nl'));
-        }
 
         // Because we can not properly track media coming from UDB2 we simply
         // ignore it and give priority to content added through UDB3.
@@ -350,6 +337,12 @@ class EventLDProjector extends OfferLDProjector implements
         $media = $this->UDB3Media($document);
         if (!empty($media)) {
             $jsonLd->mediaObject = $media;
+        }
+
+        // When importing from UDB2 the main language is always nl.
+        // When updating from UDB2 never change the main language.
+        if (!isset($jsonLd->mainLanguage)) {
+            $this->setMainLanguage($jsonLd, new Language('nl'));
         }
 
         // Because UDB2 cannot keep track of UDB3 places as a location

@@ -231,6 +231,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         EventImportedFromUDB2 $eventImported
     ) {
         $this->eventId = $eventImported->getEventId();
+        // When importing from UDB2 the default main language is always 'nl'.
+        $this->mainLanguage = new Language('nl');
         $this->setUDB2Data($eventImported);
     }
 
@@ -240,6 +242,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdated
     ) {
+        // Note: when updating from UDB2 never change the main language.
         $this->setUDB2Data($eventUpdated);
     }
 

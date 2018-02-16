@@ -496,7 +496,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_should_set_a_main_language_when_updating_from_cdbxml()
+    public function it_should_not_change_main_language_when_updating()
     {
         $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
             'samples/event_with_calendar_periods.cdbxml.xml'
@@ -504,7 +504,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($event, $event->getEventId());
 
-        $this->assertEquals('nl', $body->mainLanguage);
+        $this->assertFalse(property_exists($body, 'mainLanguage'));
     }
 
     /**

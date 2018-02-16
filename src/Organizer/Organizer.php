@@ -279,6 +279,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     ) {
         $this->actorId = (string) $organizerImported->getActorId();
 
+        // On import from UDB2 the default main language is 'nl'.
         $this->mainLanguage = new Language('nl');
 
         $actor = ActorItemFactory::createActorFromCdbXml(
@@ -297,6 +298,8 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     protected function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
     ) {
+        // Note: never change the main language on update from UDB2.
+
         $actor = ActorItemFactory::createActorFromCdbXml(
             $organizerUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $organizerUpdatedFromUDB2->getCdbXml()

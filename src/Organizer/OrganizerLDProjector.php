@@ -338,8 +338,6 @@ class OrganizerLDProjector implements EventListenerInterface
             $udb2Actor
         );
 
-        $this->setMainLanguage($actorLd, new Language('nl'));
-
         return $document->withBody($actorLd);
     }
 

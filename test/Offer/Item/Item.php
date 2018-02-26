@@ -65,6 +65,7 @@ class Item extends Offer
     protected function applyItemCreated(ItemCreated $created)
     {
         $this->id = $created->getItemId();
+        $this->mainLanguage = $created->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 

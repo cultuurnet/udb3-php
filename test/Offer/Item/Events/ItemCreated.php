@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Item\Events;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Language;
 
 class ItemCreated implements SerializableInterface
 {
@@ -12,11 +13,20 @@ class ItemCreated implements SerializableInterface
     protected $itemId;
 
     /**
-     * @param string $itemId
+     * @var Language
      */
-    public function __construct($itemId)
-    {
+    protected $mainLanguage;
+
+    /**
+     * @param string $itemId
+     * @param Language $mainLanguage
+     */
+    public function __construct(
+        $itemId,
+        Language $mainLanguage = null
+    ) {
         $this->itemId = $itemId;
+        $this->mainLanguage = $mainLanguage ? $mainLanguage : new Language('nl');
     }
 
     /**
@@ -28,12 +38,20 @@ class ItemCreated implements SerializableInterface
     }
 
     /**
+     * @return Language
+     */
+    public function getMainLanguage()
+    {
+        return $this->mainLanguage;
+    }
+
+    /**
      * @param array $data
      * @return static
      */
     public static function deserialize(array $data)
     {
-        return new static($data['itemId']);
+        return new static($data['itemId'], $data['main_language']);
     }
 
     /**
@@ -41,6 +59,9 @@ class ItemCreated implements SerializableInterface
      */
     public function serialize()
     {
-        return ['itemId' => $this->itemId];
+        return [
+            'itemId' => $this->itemId,
+            'main_language'=> $this->mainLanguage->getCode(),
+        ];
     }
 }

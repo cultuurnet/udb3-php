@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
@@ -66,6 +67,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * {@inheritdoc}
      */
     public function createEvent(
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Location $location,
@@ -76,6 +78,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
 
         $event = Event::create(
             $eventId,
+            $mainLanguage,
             $title,
             $eventType,
             $location,

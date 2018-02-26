@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
@@ -182,6 +183,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $this->domainMessage(
                 new EventCreated(
                     'f2b227c5-4756-49f6-a25d-8286b6a2351f',
+                    new Language('en'),
                     new Title('Algorave'),
                     new EventType('0.50.4.0.0', 'concert'),
                     new Location(
@@ -254,6 +256,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             $this->domainMessage(
                 new PlaceCreated(
                     'f2b227c5-4756-49f6-a25d-8286b6a2351f',
+                    new Language('en'),
                     new Title('Algorave'),
                     new EventType('0.50.4.0.0', 'concert'),
                     new Address(

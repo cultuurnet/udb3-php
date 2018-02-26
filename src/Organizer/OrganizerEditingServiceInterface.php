@@ -12,13 +12,20 @@ use ValueObjects\Web\Url;
 interface OrganizerEditingServiceInterface
 {
     /**
+     * @param Language $mainLanguage
      * @param Url $website
      * @param Title $title
      * @param Address|null $address
      * @param ContactPoint|null $contactPoint
      * @return string $organizerId
      */
-    public function create(Url $website, Title $title, Address $address = null, ContactPoint $contactPoint = null);
+    public function create(
+        Language $mainLanguage,
+        Url $website,
+        Title $title,
+        Address $address = null,
+        ContactPoint $contactPoint = null
+    );
 
     /**
      * @param string $organizerId

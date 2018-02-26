@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -16,6 +17,11 @@ use DateTimeImmutable;
  */
 class PlaceCreated extends PlaceEvent
 {
+    /**
+     * @var Language
+     */
+    private $mainLanguage;
+
     /**
      * @var Title
      */
@@ -47,16 +53,18 @@ class PlaceCreated extends PlaceEvent
     private $publicationDate = null;
 
     /**
-     * @param string $eventId
+     * @param string $placeId
+     * @param Language $mainLanguage
      * @param Title $title
-     * @param Address $address
      * @param EventType $eventType
+     * @param Address $address
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
      */
     public function __construct(
-        $eventId,
+        $placeId,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Address $address,
@@ -64,14 +72,23 @@ class PlaceCreated extends PlaceEvent
         Theme $theme = null,
         DateTimeImmutable $publicationDate = null
     ) {
-        parent::__construct($eventId);
+        parent::__construct($placeId);
 
+        $this->mainLanguage = $mainLanguage;
         $this->title = $title;
         $this->eventType = $eventType;
         $this->address = $address;
         $this->calendar = $calendar;
         $this->theme = $theme;
         $this->publicationDate = $publicationDate;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getMainLanguage()
+    {
+        return $this->mainLanguage;
     }
 
     /**
@@ -136,6 +153,7 @@ class PlaceCreated extends PlaceEvent
             $publicationDate = $this->getPublicationDate()->format(\DateTime::ATOM);
         }
         return parent::serialize() + array(
+            'main_language' => $this->mainLanguage->getCode(),
             'title' => (string) $this->getTitle(),
             'event_type' => $this->getEventType()->serialize(),
             'theme' => $theme,
@@ -163,6 +181,7 @@ class PlaceCreated extends PlaceEvent
         }
         return new static(
             $data['place_id'],
+            new Language($data['main_language']),
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Address::deserialize($data['address']),

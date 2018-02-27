@@ -271,50 +271,11 @@ class EventLDProjector extends OfferLDProjector implements
     }
 
     /**
-     * Helper function to save JSONLD document from entryapi cdbxml.
-     *
-     * @param string $eventId
-     * @param string $cdbXmlNamespaceUri
-     * @param string $cdbXml
-     * @param DomainMessage $domainMessage
-     * @return JsonDocument
-     */
-    protected function applyEventFromCdbXml(
-        $eventId,
-        $cdbXmlNamespaceUri,
-        $cdbXml,
-        $domainMessage
-    ) {
-        $document = $this->newDocument($eventId);
-
-        $eventLd = $this->projectEventCdbXmlToObject(
-            $document->getBody(),
-            $eventId,
-            $cdbXmlNamespaceUri,
-            $cdbXml
-        );
-
-        // Add creation date and update date from domain message.
-        $created = RecordedOn::fromDomainMessage($domainMessage);
-        $eventLd->created = $created->toString();
-        $eventLd->modified = $created->toString();
-
-        // Add creator.
-        $eventLd->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
-
-        // Add publisher, which is the consumer name.
-        $eventLd->publisher = $this->getConsumerFromMetadata($domainMessage->getMetadata())->toNative();
-
-        return $document->withBody($eventLd);
-    }
-
-    /**
      * Helper function to save a JSON-LD document from cdbxml coming from UDB2.
      *
      * @param string $eventId
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
-     *
      * @return JsonDocument
      */
     protected function applyEventCdbXmlFromUDB2(
@@ -339,8 +300,8 @@ class EventLDProjector extends OfferLDProjector implements
      * @param string $eventId
      * @param string $cdbXmlNamespaceUri
      * @param string $cdbXml
-     *
      * @return \stdClass
+     * @throws \CultureFeed_Cdb_ParseException
      */
     protected function projectEventCdbXmlToObject(
         \stdClass $jsonLd,
@@ -361,8 +322,6 @@ class EventLDProjector extends OfferLDProjector implements
             $this->slugger
         );
 
-        $this->setMainLanguage($jsonLd, new Language('nl'));
-
         // Because we can not properly track media coming from UDB2 we simply
         // ignore it and give priority to content added through UDB3.
         // It's possible that an event has been deleted in udb3, but never
@@ -378,6 +337,12 @@ class EventLDProjector extends OfferLDProjector implements
         $media = $this->UDB3Media($document);
         if (!empty($media)) {
             $jsonLd->mediaObject = $media;
+        }
+
+        // When importing from UDB2 the main language is always nl.
+        // When updating from UDB2 never change the main language.
+        if (!isset($jsonLd->mainLanguage)) {
+            $this->setMainLanguage($jsonLd, new Language('nl'));
         }
 
         // Because UDB2 cannot keep track of UDB3 places as a location
@@ -448,9 +413,9 @@ class EventLDProjector extends OfferLDProjector implements
             $eventCreated->getEventId()
         );
 
-        $this->setMainLanguage($jsonLD, new Language('nl'));
+        $this->setMainLanguage($jsonLD, $eventCreated->getMainLanguage());
 
-        $jsonLD->name['nl'] = $eventCreated->getTitle();
+        $jsonLD->name[$eventCreated->getMainLanguage()->getCode()] = $eventCreated->getTitle();
         $jsonLD->location = array(
                 '@type' => 'Place',
             ) + (array)$this->placeJSONLD(

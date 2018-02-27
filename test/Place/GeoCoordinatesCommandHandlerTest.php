@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -83,6 +84,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $placeCreated = new PlaceCreated(
             $id,
+            new Language('en'),
             new Title('Some place'),
             new EventType('01.01', 'Some category'),
             $address,
@@ -126,6 +128,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $placeCreated = new PlaceCreated(
             $id,
+            new Language('en'),
             new Title('Some place'),
             new EventType('01.01', 'Some category'),
             $address,

@@ -802,7 +802,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         if (empty($offerLd->description)) {
             $offerLd->description = new \stdClass();
         }
-        $offerLd->description->{'nl'} = $descriptionUpdated->getDescription();
+
+        $mainLanguage = isset($offerLd->mainLanguage) ? $offerLd->mainLanguage : 'nl';
+        $offerLd->description->{$mainLanguage} = $descriptionUpdated->getDescription();
 
         return $document->withBody($offerLd);
     }

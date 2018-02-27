@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -15,6 +16,8 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 
@@ -56,6 +59,58 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         );
 
         $this->sampleDir = __DIR__ . '/samples/';
+    }
+
+    /**
+     * @test
+     * @dataProvider mainLanguageDataProvider
+     * @param string $sampleFile
+     * @param Language $expectedMainLanguage
+     */
+    public function it_handles_main_language(
+        $sampleFile,
+        Language $expectedMainLanguage
+    ) {
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /** @var EventCreated|PlaceCreated|OrganizerCreatedWithUniqueWebsite $created */
+        $created = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals($expectedMainLanguage, $created->getMainLanguage());
+    }
+
+    /**
+     * @return array
+     */
+    public function mainLanguageDataProvider()
+    {
+        return [
+            'EventCreated no main language' => [
+                __DIR__ . '/samples/serialized_event_event_created_class.json',
+                new Language('nl'),
+            ],
+            'PlaceCreated no main language' => [
+                __DIR__ . '/samples/serialized_event_place_created_class.json',
+                new Language('nl'),
+            ],
+            'OrganizerCreatedWithUniqueWebsite no main language' => [
+                __DIR__ . '/samples/serialized_event_organizer_created_with_unique_website_class.json',
+                new Language('nl'),
+            ],
+            'EventCreated with es as main language' => [
+                __DIR__ . '/samples/serialized_event_event_created_with_main_language_class.json',
+                new Language('es'),
+            ],
+            'PlaceCreated with es as main language' => [
+                __DIR__ . '/samples/serialized_event_place_created_with_main_language_class.json',
+                new Language('es'),
+            ],
+            'OrganizerCreatedWithUniqueWebsite with es as main language' => [
+                __DIR__ . '/samples/serialized_event_organizer_created_with_unique_website_and_main_language.class.json',
+                new Language('es'),
+            ],
+        ];
     }
 
     /**

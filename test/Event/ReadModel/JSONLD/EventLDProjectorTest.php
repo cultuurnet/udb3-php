@@ -43,6 +43,7 @@ use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
@@ -203,7 +204,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, null);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
@@ -238,7 +239,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, $theme);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
@@ -285,7 +286,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, $theme);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
@@ -433,7 +434,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, $theme);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->calendarType = 'multiple';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $jsonLD->endDate = '2015-01-29T13:25:21+01:00';
@@ -495,15 +496,31 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_should_set_a_main_language_when_updating_from_cdbxml()
+    public function it_should_not_change_main_language_when_updating()
     {
+        // First make sure there is already an event, so it is a real update.
+        $eventId = 'a2d50a8d-5b83-4c8b-84e6-e9c0bacbb1a3';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+        );
+        $eventCreated = $this->createEventCreated($eventId, $calendar, null);
+        $this->mockPlaceService();
+        $this->project(
+            $eventCreated,
+            $eventId,
+            new Metadata(),
+            DateTime::fromString('2015-01-20T13:25:21+01:00')
+        );
+
+        // Now do the real update.
         $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
             'samples/event_with_calendar_periods.cdbxml.xml'
         );
 
-        $body = $this->project($event, $event->getEventId());
+        $body = $this->project($event, $eventId);
 
-        $this->assertEquals('nl', $body->mainLanguage);
+        $this->assertEquals(new Language('en'), $body->mainLanguage);
     }
 
     /**
@@ -1426,6 +1443,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     ) {
         return new EventCreated(
             $eventId,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -1445,16 +1463,17 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
     /**
      * @param string $eventId
+     * @param Language $mainLanguage
      * @return stdClass
      */
-    private function createJsonLD($eventId)
+    private function createJsonLD($eventId, Language $mainLanguage)
     {
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/'. $eventId;
         $jsonLD->{'@context'} = '/contexts/event';
-        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->mainLanguage = $mainLanguage->getCode();
         $jsonLD->name = (object)[
-            'nl' => 'some representative title',
+            $mainLanguage->getCode() => 'some representative title',
         ];
         $jsonLD->location = (object)[
             '@type' => 'Place',
@@ -1470,8 +1489,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'DRAFT';
         $jsonLD->audience = (object)['audienceType' => 'everyone'];
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = [$mainLanguage->getCode()];
+        $jsonLD->completedLanguages = [$mainLanguage->getCode()];
 
         return $jsonLD;
     }

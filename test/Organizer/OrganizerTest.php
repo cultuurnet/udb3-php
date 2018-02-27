@@ -32,6 +32,11 @@ class OrganizerTest extends AggregateRootScenarioTestCase
     private $id;
 
     /**
+     * @var Language
+     */
+    private $mainLanguage;
+
+    /**
      * @var Url
      */
     private $website;
@@ -51,11 +56,13 @@ class OrganizerTest extends AggregateRootScenarioTestCase
         parent::setUp();
 
         $this->id = '18eab5bf-09bf-4521-a8b4-c0f4a585c096';
+        $this->mainLanguage = new Language('en');
         $this->website = Url::fromNative('http://www.stuk.be');
         $this->title = new Title('STUK');
 
         $this->organizerCreatedWithUniqueWebsite = new OrganizerCreatedWithUniqueWebsite(
             $this->id,
+            new Language('en'),
             $this->website,
             $this->title
         );
@@ -158,6 +165,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                 function () {
                     return Organizer::create(
                         $this->id,
+                        $this->mainLanguage,
                         $this->website,
                         $this->title
                     );
@@ -323,15 +331,15 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                 function (Organizer $organizer) {
                     $organizer->updateTitle(
                         new Title('STUK'),
-                        new Language('nl')
+                        new Language('en')
                     );
                     $organizer->updateTitle(
                         new Title('Het Depot'),
-                        new Language('nl')
+                        new Language('en')
                     );
                     $organizer->updateTitle(
                         new Title('Het Depot'),
-                        new Language('nl')
+                        new Language('en')
                     );
                     $organizer->updateTitle(
                         new Title('Le Depot'),
@@ -459,11 +467,11 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     );
                     $organizer->updateTitle(
                         new Title('DE Studio'),
-                        new Language('nl')
+                        new Language('en')
                     );
                     $organizer->updateTitle(
                         new Title('Het Depot'),
-                        new Language('nl')
+                        new Language('en')
                     );
                 }
             )

@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -54,6 +55,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
 
         $this->eventCreated = new EventCreated(
             'id',
+            new Language('es'),
             new Title('title'),
             new EventType('id', 'label'),
             $this->location,
@@ -69,6 +71,14 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
     public function it_stores_an_event_id()
     {
         $this->assertEquals('id', $this->eventCreated->getEventId());
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_an_event_main_language()
+    {
+        $this->assertEquals(new Language('es'), $this->eventCreated->getMainLanguage());
     }
 
     /**
@@ -147,6 +157,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'event_id' => 'test 456',
+                    'main_language' => 'es',
                     'title' => 'title',
                     'theme' => null,
                     'location' => array(
@@ -171,6 +182,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                 ],
                 new EventCreated(
                     'test 456',
+                    new Language('es'),
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(
@@ -191,6 +203,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'event_id' => 'test 456',
+                    'main_language' => 'es',
                     'title' => 'title',
                     'theme' => [
                         'id' => '123',
@@ -219,6 +232,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                 ],
                 new EventCreated(
                     'test 456',
+                    new Language('es'),
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(
@@ -240,6 +254,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'event_id' => 'test 456',
+                    'main_language' => 'es',
                     'title' => 'title',
                     'theme' => null,
                     'location' => array(
@@ -264,6 +279,7 @@ class EventCreatedTest extends \PHPUnit_Framework_TestCase
                 ],
                 new EventCreated(
                     'test 456',
+                    new Language('es'),
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Location(

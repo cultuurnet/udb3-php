@@ -110,6 +110,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         return new EventCreated(
             $id,
+            new Language('nl'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(

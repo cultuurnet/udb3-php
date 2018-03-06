@@ -547,13 +547,48 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_handles_update_location()
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
-
-        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+        $createEvent = $this->getCreationEvent();
+        $oldLocationId = new LocationId($createEvent->getLocation()->getCdbid());
+        $newLocationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
         $this->scenario
             ->given(
                 [
-                    $this->getCreationEvent(),
+                    $createEvent,
+                ]
+            )
+            ->when(
+                function (Event $event) use ($oldLocationId, $newLocationId) {
+                    $event->updateLocation($oldLocationId);
+                    $event->updateLocation($newLocationId);
+                    $event->updateLocation($newLocationId);
+                }
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $newLocationId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_location_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+        $locationId = new LocationId($createEvent->getLocation()->getCdbid());
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new LocationUpdated($eventId, $locationId),
+                    new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace),
                 ]
             )
             ->when(

@@ -79,6 +79,11 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     private $audience;
 
     /**
+     * @var LocationId
+     */
+    private $locationId;
+
+    /**
      * @var boolean
      */
     private $concluded = false;
@@ -212,6 +217,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
@@ -252,6 +258,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCdbXML->getCdbXml()
         );
 
+        // Just clear the location id after an import or update.
+        $this->locationId = null;
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
@@ -280,8 +288,17 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function updateLocation(LocationId $locationId)
     {
-        // For now no special business rules for updating the location of an event.
-        $this->apply(new LocationUpdated($this->eventId, $locationId));
+        if (is_null($this->locationId) || !$this->locationId->sameValueAs($locationId)) {
+            $this->apply(new LocationUpdated($this->eventId, $locationId));
+        }
+    }
+
+    /**
+     * @param LocationUpdated $locationUpdated
+     */
+    public function applyLocationUpdated(LocationUpdated $locationUpdated)
+    {
+        $this->locationId = $locationUpdated->getLocationId();
     }
 
     /**

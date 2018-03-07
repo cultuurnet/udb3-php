@@ -123,6 +123,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $facilities;
 
     /**
+     * @var ContactPoint
+     */
+    protected $contactPoint;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -136,6 +141,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->labels = new LabelCollection();
         $this->images = new ImageCollection();
         $this->facilities = [];
+        $this->contactPoint = null;
     }
 
     /**
@@ -192,7 +198,8 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
             $facilities2,
             function (Facility $facility1, Facility $facility2) {
                 return strcmp($facility1->getId(), $facility2->getId());
-            });
+            }
+        );
 
         return count($sameFacilities) === count($facilities2);
     }
@@ -326,9 +333,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateContactPoint(ContactPoint $contactPoint)
     {
-        $this->apply(
-            $this->createContactPointUpdatedEvent($contactPoint)
-        );
+        if (is_null($this->contactPoint) || !$this->contactPoint->sameAs($contactPoint)) {
+            $this->apply(
+                $this->createContactPointUpdatedEvent($contactPoint)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(AbstractContactPointUpdated $contactPointUpdated)
+    {
+        $this->contactPoint = $contactPointUpdated->getContactPoint();
     }
 
     /**

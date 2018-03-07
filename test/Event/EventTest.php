@@ -9,8 +9,10 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\Concluded;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -170,7 +172,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $facilities = [
             new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
-            new Facility("3.30.0.0.0", "Rolstoelpodium")
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
         ];
 
         $xmlData = $this->getSample('EventTest.cdbxml.xml');
@@ -192,6 +194,43 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new FacilitiesUpdated($eventId, $facilities),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_contact_point_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $contactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new ContactPointUpdated($eventId, $contactPoint),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($contactPoint) {
+                    $event->updateContactPoint($contactPoint);
+                }
+            )
+            ->then(
+                [
+                    new ContactPointUpdated($eventId, $contactPoint),
                 ]
             );
     }

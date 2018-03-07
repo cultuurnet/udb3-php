@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
@@ -155,7 +157,7 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $facilities = [
             new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
-            new Facility("3.30.0.0.0", "Rolstoelpodium")
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
         ];
 
         $sameFacilities = [
@@ -202,6 +204,52 @@ class OfferTest extends AggregateRootScenarioTestCase
                 new FacilitiesUpdated($itemId, $otherFacilities),
                 new FacilitiesUpdated($itemId, $moreFacilities),
                 new FacilitiesUpdated($itemId, $lessFacilities),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_contact_point_when_changed()
+    {
+        $itemId = UUID::generateAsString();
+
+        $contactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $sameContactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $otherContactPoint = new ContactPoint(
+            ['02/101010',],
+            ['admin@public.be', 'test@public.be'],
+            ['http://www.public.be']
+        );
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use (
+                    $contactPoint,
+                    $sameContactPoint,
+                    $otherContactPoint
+                ) {
+                    $item->updateContactPoint($contactPoint);
+                    $item->updateContactPoint($sameContactPoint);
+                    $item->updateContactPoint($otherContactPoint);
+                }
+            )
+            ->then([
+                new ContactPointUpdated($itemId, $contactPoint),
+                new ContactPointUpdated($itemId, $otherContactPoint),
             ]);
     }
 

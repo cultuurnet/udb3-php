@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
@@ -117,6 +118,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $themeId;
 
     /**
+     * @var array
+     */
+    protected $facilities;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -129,6 +135,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->descriptions = [];
         $this->labels = new LabelCollection();
         $this->images = new ImageCollection();
+        $this->facilities = [];
     }
 
     /**
@@ -156,7 +163,38 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateFacilities(array $facilities)
     {
-        $this->apply($this->createFacilitiesUpdatedEvent($facilities));
+        if (empty($this->facilities) || !$this->sameFacilities($this->facilities, $facilities)) {
+            $this->apply($this->createFacilitiesUpdatedEvent($facilities));
+        }
+    }
+
+    /**
+     * @param AbstractFacilitiesUpdated $facilitiesUpdated
+     */
+    protected function applyFacilitiesUpdated(AbstractFacilitiesUpdated $facilitiesUpdated)
+    {
+        $this->facilities = $facilitiesUpdated->getFacilities();
+    }
+
+    /**
+     * @param array $facilities1
+     * @param array $facilities2
+     * @return bool
+     */
+    private function sameFacilities($facilities1, $facilities2)
+    {
+        if (count($facilities1) !== count($facilities2)) {
+            return false;
+        }
+
+        $sameFacilities = array_uintersect(
+            $facilities1,
+            $facilities2,
+            function (Facility $facility1, Facility $facility2) {
+                return strcmp($facility1->getId(), $facility2->getId());
+            });
+
+        return count($sameFacilities) === count($facilities2);
     }
 
     /**

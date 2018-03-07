@@ -270,6 +270,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $placeImported->getCdbXml()
         );
 
+        // Just clear the facilities.
+        $this->facilities = [];
+
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
@@ -284,6 +287,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $placeUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $placeUpdatedFromUDB2->getCdbXml()
         );
+
+        // Just clear the facilities.
+        $this->facilities = [];
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));

@@ -6,6 +6,7 @@ use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -17,6 +18,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
@@ -141,6 +143,65 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->then([
                 new TypeUpdated($itemId, $filmType),
                 new TypeUpdated($itemId, $concertType),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_facilities_when_changed()
+    {
+        $itemId = UUID::generateAsString();
+
+        $facilities = [
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+            new Facility("3.30.0.0.0", "Rolstoelpodium")
+        ];
+
+        $sameFacilities = [
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+        ];
+
+        $otherFacilities = [
+            new Facility("3.34.0.0.0", "Vereenvoudigde informatie"),
+            new Facility("3.38.0.0.0", "Inter-assistentie"),
+        ];
+
+        $moreFacilities = [
+            new Facility("3.34.0.0.0", "Vereenvoudigde informatie"),
+            new Facility("3.38.0.0.0", "Inter-assistentie"),
+            new Facility("3.40.0.0.0", "Inter-events"),
+        ];
+
+        $lessFacilities = [
+            new Facility("3.34.0.0.0", "Vereenvoudigde informatie"),
+        ];
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use (
+                    $facilities,
+                    $sameFacilities,
+                    $otherFacilities,
+                    $moreFacilities,
+                    $lessFacilities
+                ) {
+                    $item->updateFacilities($facilities);
+                    $item->updateFacilities($sameFacilities);
+                    $item->updateFacilities($otherFacilities);
+                    $item->updateFacilities($moreFacilities);
+                    $item->updateFacilities($lessFacilities);
+                }
+            )
+            ->then([
+                new FacilitiesUpdated($itemId, $facilities),
+                new FacilitiesUpdated($itemId, $otherFacilities),
+                new FacilitiesUpdated($itemId, $moreFacilities),
+                new FacilitiesUpdated($itemId, $lessFacilities),
             ]);
     }
 

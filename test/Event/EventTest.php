@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
@@ -23,6 +24,7 @@ use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
@@ -154,6 +156,42 @@ class EventTest extends AggregateRootScenarioTestCase
                         'foo',
                         $calendar
                     ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_facilities_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $facilities = [
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+            new Facility("3.30.0.0.0", "Rolstoelpodium")
+        ];
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new FacilitiesUpdated($eventId, $facilities),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($facilities) {
+                    $event->updateFacilities($facilities);
+                }
+            )
+            ->then(
+                [
+                    new FacilitiesUpdated($eventId, $facilities),
                 ]
             );
     }

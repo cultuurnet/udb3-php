@@ -258,8 +258,12 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCdbXML->getCdbXml()
         );
 
+        // Just clear the facilities.
+        $this->facilities = [];
+
         // Just clear the location id after an import or update.
         $this->locationId = null;
+
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }

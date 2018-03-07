@@ -11,10 +11,12 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
+use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
@@ -38,6 +40,56 @@ class PlaceTest extends AggregateRootScenarioTestCase
         return file_get_contents(
             __DIR__ . $filename
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_facilities_after_udb2_import()
+    {
+        $placeId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $address = new Address(
+            new Street('Eenmeilaan'),
+            new PostalCode('3010'),
+            new Locality('Kessel-Lo'),
+            Country::fromNative('BE')
+        );
+
+        $placeCreated = new PlaceCreated(
+            $placeId,
+            new Title('Test place'),
+            new EventType('0.1.1', 'Jeugdhuis'),
+            $address,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $facilities = [
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+            new Facility("3.30.0.0.0", "Rolstoelpodium")
+        ];
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
+        $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
+
+        $this->scenario
+            ->given(
+                [
+                    $placeCreated,
+                    new FacilitiesUpdated($placeId, $facilities),
+                    new PlaceUpdatedFromUDB2($placeId, $cdbXml, $cdbXmlNamespace),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($facilities) {
+                    $place->updateFacilities($facilities);
+                }
+            )
+            ->then(
+                [
+                    new FacilitiesUpdated($placeId, $facilities),
+                ]
+            );
     }
 
     /**

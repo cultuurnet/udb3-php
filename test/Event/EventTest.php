@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\Concluded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
@@ -231,6 +232,43 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new ContactPointUpdated($eventId, $contactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_calendar_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new CalendarUpdated($eventId, $calendar),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($calendar) {
+                    $event->updateCalendar($calendar);
+                }
+            )
+            ->then(
+                [
+                    new CalendarUpdated($eventId, $calendar),
                 ]
             );
     }

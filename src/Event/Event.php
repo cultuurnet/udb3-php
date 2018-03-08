@@ -267,6 +267,9 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the contact point.
         $this->contactPoint = null;
 
+        // Just clear the calendar.
+        $this->calendar = null;
+
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }

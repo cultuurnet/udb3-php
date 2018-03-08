@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
+use CultuurNet\UDB3\Place\Events\CalendarUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -141,6 +142,57 @@ class PlaceTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new ContactPointUpdated($placeId, $contactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_calendar_after_udb2_import()
+    {
+        $placeId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $address = new Address(
+            new Street('Eenmeilaan'),
+            new PostalCode('3010'),
+            new Locality('Kessel-Lo'),
+            Country::fromNative('BE')
+        );
+
+        $placeCreated = new PlaceCreated(
+            $placeId,
+            new Title('Test place'),
+            new EventType('0.1.1', 'Jeugdhuis'),
+            $address,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
+        $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
+
+        $this->scenario
+            ->given(
+                [
+                    $placeCreated,
+                    new CalendarUpdated($placeId, $calendar),
+                    new PlaceUpdatedFromUDB2($placeId, $cdbXml, $cdbXmlNamespace),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($calendar) {
+                    $place->updateCalendar($calendar);
+                }
+            )
+            ->then(
+                [
+                    new CalendarUpdated($placeId, $calendar),
                 ]
             );
     }

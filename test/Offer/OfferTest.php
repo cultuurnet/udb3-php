@@ -1051,6 +1051,18 @@ class OfferTest extends AggregateRootScenarioTestCase
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
         );
 
+        $sameCalendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $otherCalendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-28T12:12:12+01:00')
+        );
+
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
@@ -1059,13 +1071,16 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use ($calendar) {
+                function (Item $item) use ($calendar, $sameCalendar, $otherCalendar) {
                     $item->updateCalendar($calendar);
+                    $item->updateCalendar($sameCalendar);
+                    $item->updateCalendar($otherCalendar);
                 }
             )
             ->then(
                 [
                     new CalendarUpdated($itemId, $calendar),
+                    new CalendarUpdated($itemId, $otherCalendar),
                 ]
             );
     }

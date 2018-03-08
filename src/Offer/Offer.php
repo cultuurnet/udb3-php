@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
@@ -128,6 +129,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $contactPoint;
 
     /**
+     * @var Calendar
+     */
+    protected $calendar;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -142,6 +148,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->images = new ImageCollection();
         $this->facilities = [];
         $this->contactPoint = null;
+        $this->calendar = null;
     }
 
     /**
@@ -278,10 +285,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateCalendar(Calendar $calendar)
     {
-        // For now no special business rules for updating the calendar.
-        $this->apply(
-            $this->createCalendarUpdatedEvent($calendar)
-        );
+        if (is_null($this->calendar) || !$this->calendar->sameAs($calendar)) {
+            $this->apply(
+                $this->createCalendarUpdatedEvent($calendar)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractCalendarUpdated $calendarUpdated
+     */
+    protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
+    {
+        $this->calendar = $calendarUpdated->getCalendar();
     }
 
     /**

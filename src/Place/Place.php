@@ -276,6 +276,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the contact point.
         $this->contactPoint = null;
 
+        // Just clear the calendar.
+        $this->calendar = null;
+
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
@@ -296,6 +299,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
         // Just clear the contact point.
         $this->contactPoint = null;
+
+        // Just clear the calendar.
+        $this->calendar = null;
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));

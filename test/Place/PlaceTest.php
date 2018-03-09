@@ -11,10 +11,12 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\CalendarUpdated;
@@ -23,8 +25,10 @@ use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
+use ValueObjects\Person\Age;
 
 class PlaceTest extends AggregateRootScenarioTestCase
 {
@@ -50,23 +54,8 @@ class PlaceTest extends AggregateRootScenarioTestCase
      */
     public function it_handles_update_facilities_after_udb2_update()
     {
-        $placeId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
-
-        $address = new Address(
-            new Street('Eenmeilaan'),
-            new PostalCode('3010'),
-            new Locality('Kessel-Lo'),
-            Country::fromNative('BE')
-        );
-
-        $placeCreated = new PlaceCreated(
-            $placeId,
-            new Language('nl'),
-            new Title('Test place'),
-            new EventType('0.1.1', 'Jeugdhuis'),
-            $address,
-            new Calendar(CalendarType::PERMANENT())
-        );
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
 
         $facilities = [
             new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
@@ -101,23 +90,8 @@ class PlaceTest extends AggregateRootScenarioTestCase
      */
     public function it_handles_update_contact_point_after_udb2_import()
     {
-        $placeId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
-
-        $address = new Address(
-            new Street('Eenmeilaan'),
-            new PostalCode('3010'),
-            new Locality('Kessel-Lo'),
-            Country::fromNative('BE')
-        );
-
-        $placeCreated = new PlaceCreated(
-            $placeId,
-            new Language('nl'),
-            new Title('Test place'),
-            new EventType('0.1.1', 'Jeugdhuis'),
-            $address,
-            new Calendar(CalendarType::PERMANENT())
-        );
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
 
         $contactPoint = new ContactPoint(
             ['016/101010',],
@@ -153,23 +127,8 @@ class PlaceTest extends AggregateRootScenarioTestCase
      */
     public function it_handles_update_calendar_after_udb2_import()
     {
-        $placeId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
-
-        $address = new Address(
-            new Street('Eenmeilaan'),
-            new PostalCode('3010'),
-            new Locality('Kessel-Lo'),
-            Country::fromNative('BE')
-        );
-
-        $placeCreated = new PlaceCreated(
-            $placeId,
-            new Language('nl'),
-            new Title('Test place'),
-            new EventType('0.1.1', 'Jeugdhuis'),
-            $address,
-            new Calendar(CalendarType::PERMANENT())
-        );
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),
@@ -244,12 +203,9 @@ class PlaceTest extends AggregateRootScenarioTestCase
      */
     public function it_should_not_update_the_address_when_address_is_not_changed()
     {
-        $address = new Address(
-            new Street('Eenmeilaan'),
-            new PostalCode('3010'),
-            new Locality('Kessel-Lo'),
-            Country::fromNative('BE')
-        );
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+        $address = $placeCreated->getAddress();
 
         $translatedAddress = new Address(
             new Street('One May Street'),
@@ -259,17 +215,10 @@ class PlaceTest extends AggregateRootScenarioTestCase
         );
 
         $this->scenario
-            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->withAggregateId($placeId)
             ->given(
                 [
-                    new PlaceCreated(
-                        'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
-                        new Language('nl'),
-                        new Title('Test place'),
-                        new EventType('0.1.1', 'Jeugdhuis'),
-                        $address,
-                        new Calendar(CalendarType::PERMANENT())
-                    ),
+                    $placeCreated,
                 ]
             )
             ->when(
@@ -280,7 +229,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([
-                new AddressTranslated('c5c1b435-0f3c-4b75-9f28-94d93be7078b', $translatedAddress, new Language('en')),
+                new AddressTranslated($placeId, $translatedAddress, new Language('en')),
             ]);
     }
 
@@ -289,6 +238,9 @@ class PlaceTest extends AggregateRootScenarioTestCase
      */
     public function it_should_update_the_address_after_udb2_updates()
     {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+
         $address = new Address(
             new Street('Eenmeilaan'),
             new PostalCode('3010'),
@@ -300,17 +252,10 @@ class PlaceTest extends AggregateRootScenarioTestCase
         $cdbNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
         $this->scenario
-            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->withAggregateId($placeId)
             ->given(
                 [
-                    new PlaceCreated(
-                        'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
-                        new Language('nl'),
-                        new Title('Test place'),
-                        new EventType('GnPFp9uvOUyqhOckIFMKmg', 'Museum of galerij'),
-                        $address,
-                        new Calendar(CalendarType::PERMANENT())
-                    ),
+                    $placeCreated,
                 ]
             )
             ->when(
@@ -322,15 +267,81 @@ class PlaceTest extends AggregateRootScenarioTestCase
             )
             ->then([
                 new PlaceUpdatedFromUDB2(
-                    'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                    $placeId,
                     $cdbXml,
                     $cdbNamespace
                 ),
                 new AddressUpdated(
-                    'c5c1b435-0f3c-4b75-9f28-94d93be7078b',
+                    $placeId,
                     $address
                 ),
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_typical_age_range_after_udb2_update()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
+        $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
+
+        $this->scenario
+            ->given(
+                [
+                    $placeCreated,
+                    new TypicalAgeRangeUpdated($placeId, $typicalAgeRange),
+                    new PlaceUpdatedFromUDB2($placeId, $cdbXml, $cdbXmlNamespace),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($typicalAgeRange) {
+                    $place->updateTypicalAgeRange($typicalAgeRange);
+                }
+            )
+            ->then(
+                [
+                    new TypicalAgeRangeUpdated($placeId, $typicalAgeRange),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_delete_typical_age_range_after_udb2_update()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
+        $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
+
+        $this->scenario
+            ->given(
+                [
+                    $placeCreated,
+                    new TypicalAgeRangeUpdated($placeId, $typicalAgeRange),
+                    new PlaceUpdatedFromUDB2($placeId, $cdbXml, $cdbXmlNamespace),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($typicalAgeRange) {
+                    $place->deleteTypicalAgeRange();
+                }
+            )
+            ->then(
+                [
+                    new TypicalAgeRangeDeleted($placeId),
+                ]
+            );
     }
 
     /**
@@ -502,5 +513,29 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 ),
             ],
         ];
+    }
+
+    /**
+     * @return PlaceCreated
+     */
+    private function createPlaceCreatedEvent()
+    {
+        $placeId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+
+        $address = new Address(
+            new Street('Eenmeilaan'),
+            new PostalCode('3010'),
+            new Locality('Kessel-Lo'),
+            Country::fromNative('BE')
+        );
+
+        return  new PlaceCreated(
+            $placeId,
+            new Language('nl'),
+            new Title('Test place'),
+            new EventType('0.1.1', 'Jeugdhuis'),
+            $address,
+            new Calendar(CalendarType::PERMANENT())
+        );
     }
 }

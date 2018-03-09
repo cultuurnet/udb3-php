@@ -65,11 +65,16 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function create(Url $website, Title $title, Address $address = null, ContactPoint $contactPoint = null)
-    {
+    public function create(
+        Language $mainLanguage,
+        Url $website,
+        Title $title,
+        Address $address = null,
+        ContactPoint $contactPoint = null
+    ) {
         $id = $this->uuidGenerator->generate();
 
-        $organizer = Organizer::create($id, $website, $title);
+        $organizer = Organizer::create($id, $mainLanguage, $website, $title);
 
         if (!is_null($address)) {
             $organizer->updateAddress($address);

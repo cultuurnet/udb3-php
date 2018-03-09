@@ -143,10 +143,6 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function __construct()
     {
-        // For now the main language is hard coded on nl.
-        // In the future it should be set on create.
-        $this->mainLanguage = new Language('nl');
-
         $this->titles = [];
         $this->descriptions = [];
         $this->labels = new LabelCollection();

@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
@@ -52,6 +53,7 @@ class WebsiteUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
             new Metadata([]),
             new OrganizerCreatedWithUniqueWebsite(
                 $this->organizerId,
+                new Language('en'),
                 Url::fromNative('http://cultuurnet.be'),
                 new Title('CultuurNet')
             )

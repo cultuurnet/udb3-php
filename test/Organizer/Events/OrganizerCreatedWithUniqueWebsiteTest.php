@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
@@ -45,11 +46,13 @@ class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
             'organizerCreatedWithUniqueWebsite' => [
                 [
                     'organizer_id' => 'organizer_id',
+                    'main_language' => 'en',
                     'website' => 'http://www.stuk.be',
                     'title' => 'title',
                 ],
                 new OrganizerCreatedWithUniqueWebsite(
                     'organizer_id',
+                    new Language('en'),
                     Url::fromNative('http://www.stuk.be'),
                     new Title('title')
                 ),

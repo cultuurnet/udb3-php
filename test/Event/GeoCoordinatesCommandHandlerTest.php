@@ -21,6 +21,7 @@ use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -85,6 +86,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $eventCreated = new EventCreated(
             $eventId,
+            new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
             new Location(
@@ -133,6 +135,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $eventCreated = new EventCreated(
             $eventId,
+            new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
             new Location(

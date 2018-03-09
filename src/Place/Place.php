@@ -96,6 +96,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * The PlaceImportedFromUDB2 could be a superclass of Place.
      *
      * @param string $id
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
@@ -107,6 +108,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     public static function createPlace(
         $id,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Address $address,
@@ -117,6 +119,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $place = new self();
         $place->apply(new PlaceCreated(
             $id,
+            $mainLanguage,
             $title,
             $eventType,
             $address,
@@ -134,6 +137,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
+        $this->mainLanguage = $placeCreated->getMainLanguage();
         $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
@@ -265,6 +269,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     ) {
         $this->placeId = $placeImported->getActorId();
 
+        // When importing from UDB2 the default main language is always 'nl'.
+        $this->mainLanguage = new Language('nl');
+
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeImported->getCdbXmlNamespaceUri(),
             $placeImported->getCdbXml()
@@ -289,6 +296,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     public function applyPlaceUpdatedFromUDB2(
         PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
     ) {
+        // Note: when updating from UDB2 never change the main language.
+
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $placeUpdatedFromUDB2->getCdbXml()

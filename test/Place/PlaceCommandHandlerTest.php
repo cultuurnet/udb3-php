@@ -366,6 +366,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     {
         return new PlaceCreated(
             $id,
+            new Language('nl'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Address(

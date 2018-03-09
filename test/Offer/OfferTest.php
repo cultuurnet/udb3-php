@@ -42,11 +42,14 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TypeUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -250,6 +253,46 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->then([
                 new ContactPointUpdated($itemId, $contactPoint),
                 new ContactPointUpdated($itemId, $otherContactPoint),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_typical_age_range_when_changed()
+    {
+        $itemId = UUID::generateAsString();
+
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $sameAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherAgeRange = new AgeRange(new Age(1), new Age(99));
+        $allAges = new AgeRange();
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use (
+                    $typicalAgeRange,
+                    $sameAgeRange,
+                    $otherAgeRange,
+                    $allAges
+                ) {
+                    $item->updateTypicalAgeRange($typicalAgeRange);
+                    $item->updateTypicalAgeRange($sameAgeRange);
+                    $item->deleteTypicalAgeRange();
+                    $item->updateTypicalAgeRange($sameAgeRange);
+                    $item->updateTypicalAgeRange($otherAgeRange);
+                    $item->updateTypicalAgeRange($allAges);
+                }
+            )
+            ->then([
+                new TypicalAgeRangeUpdated($itemId, $typicalAgeRange),
+                new TypicalAgeRangeDeleted($itemId),
+                new TypicalAgeRangeUpdated($itemId, $sameAgeRange),
+                new TypicalAgeRangeUpdated($itemId, $otherAgeRange),
+                new TypicalAgeRangeUpdated($itemId, $allAges),
             ]);
     }
 

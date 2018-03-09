@@ -134,6 +134,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $calendar;
 
     /**
+     * @var AgeRange
+     */
+    protected $typicalAgeRange;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -149,6 +154,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->facilities = [];
         $this->contactPoint = null;
         $this->calendar = null;
+        $this->typicalAgeRange = null;
     }
 
     /**
@@ -305,9 +311,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateTypicalAgeRange($typicalAgeRange)
     {
-        $this->apply(
-            $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
-        );
+        $typicalAgeRangeUpdatedEvent = $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange);
+
+        if (empty($this->typicalAgeRange) || !$this->typicalAgeRange->sameAs($typicalAgeRangeUpdatedEvent->getTypicalAgeRange())) {
+            $this->apply($typicalAgeRangeUpdatedEvent);
+        }
+    }
+
+    /**
+     * @param AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated)
+    {
+        $this->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
     }
 
     public function deleteTypicalAgeRange()
@@ -315,6 +331,14 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->apply(
             $this->createTypicalAgeRangeDeletedEvent()
         );
+    }
+
+    /**
+     * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    protected function applyTypicalAgeRangeDeleted(AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted)
+    {
+        $this->typicalAgeRange = null;
     }
 
     /**

@@ -4,6 +4,12 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar as Udb3ModelCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithDateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithOpeningHours;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithSubEvents;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3ModelOpeningHour;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
@@ -11,6 +17,7 @@ use InvalidArgumentException;
 
 /**
  * Calendar for events and places.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
  */
 class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
@@ -242,5 +249,44 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         }
 
         return $jsonLd;
+    }
+
+    /**
+     * @param Udb3ModelCalendar $calendar
+     * @return self
+     */
+    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar)
+    {
+        $type = CalendarType::fromNative($calendar->getType()->toString());
+
+        $startDate = null;
+        $endDate = null;
+        $timestamps = [];
+        $openingHours = [];
+
+        if ($calendar instanceof CalendarWithDateRange) {
+            $startDate = $calendar->getStartDate();
+            $endDate = $calendar->getEndDate();
+        }
+
+        if ($calendar instanceof CalendarWithSubEvents) {
+            $timestamps = array_map(
+                function (DateRange $dateRange) {
+                    return Timestamp::fromUdb3ModelDateRange($dateRange);
+                },
+                $calendar->getSubEvents()->toArray()
+            );
+        }
+
+        if ($calendar instanceof CalendarWithOpeningHours) {
+            $openingHours = array_map(
+                function (Udb3ModelOpeningHour $openingHour) {
+                    return OpeningHour::fromUdb3ModelOpeningHour($openingHour);
+                },
+                $calendar->getOpeningHours()->toArray()
+            );
+        }
+
+        return new self($type, $startDate, $endDate, $timestamps, $openingHours);
     }
 }

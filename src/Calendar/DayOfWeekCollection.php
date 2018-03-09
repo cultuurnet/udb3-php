@@ -3,7 +3,12 @@
 namespace CultuurNet\UDB3\Calendar;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Days;
 
+/**
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Days.
+ */
 class DayOfWeekCollection implements SerializableInterface
 {
     /**
@@ -74,5 +79,21 @@ class DayOfWeekCollection implements SerializableInterface
     public function serialize()
     {
         return $this->daysOfWeek;
+    }
+
+    /**
+     * @param Days $days
+     * @return self
+     */
+    public static function fromUdb3ModelDays(Days $days)
+    {
+        $days = array_map(
+            function (Day $day) {
+                return DayOfWeek::fromUdb3ModelDay($day);
+            },
+            $days->toArray()
+        );
+
+        return new self(...$days);
     }
 }

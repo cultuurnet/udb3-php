@@ -6,16 +6,15 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
+use CultuurNet\UDB3\Organizer\Commands\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
 use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
 use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
-use CultuurNet\UDB3\Organizer\Events\CreateOrganizer;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 
@@ -95,6 +94,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = Organizer::create(
             $createOrganizer->getOrganizerId(),
+            $createOrganizer->getMainLanguage(),
             $createOrganizer->getWebsite(),
             $createOrganizer->getTitle()
         );

@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
+use CultuurNet\UDB3\Organizer\Commands\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
@@ -29,7 +30,6 @@ use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
 use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
-use CultuurNet\UDB3\Organizer\Events\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -177,6 +177,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when(
                 new CreateOrganizer(
                     $id,
+                    new Language('nl'),
                     Url::fromNative('http://www.depot.be'),
                     new Title('Het depot')
                 )
@@ -185,6 +186,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                 [
                     new OrganizerCreatedWithUniqueWebsite(
                         $id,
+                        new Language('nl'),
                         Url::fromNative('http://www.depot.be'),
                         new Title('Het depot')
                     )

@@ -211,6 +211,7 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     {
         $place = Place::createPlace(
             $command->getItemId(),
+            $command->getMainLanguage(),
             $command->getTitle(),
             $command->getEventType(),
             $command->getAddress(),

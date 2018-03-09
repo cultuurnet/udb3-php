@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Place\Events;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractCreateCommand;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -12,6 +13,11 @@ use DateTimeImmutable;
 
 class CreatePlace extends AbstractCreateCommand
 {
+    /**
+     * @var Language
+     */
+    private $mainLanguage;
+
     /**
      * @var Title
      */
@@ -44,15 +50,17 @@ class CreatePlace extends AbstractCreateCommand
 
     /**
      * @param string $eventId
+     * @param Language $mainLanguage
      * @param Title $title
-     * @param Address $address
      * @param EventType $eventType
+     * @param Address $address
      * @param Calendar $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
      */
     public function __construct(
         $eventId,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Address $address,
@@ -62,12 +70,21 @@ class CreatePlace extends AbstractCreateCommand
     ) {
         parent::__construct($eventId);
 
+        $this->mainLanguage = $mainLanguage;
         $this->title = $title;
         $this->eventType = $eventType;
         $this->address = $address;
         $this->calendar = $calendar;
         $this->theme = $theme;
         $this->publicationDate = $publicationDate;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getMainLanguage()
+    {
+        return $this->mainLanguage;
     }
 
     /**

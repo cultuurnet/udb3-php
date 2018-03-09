@@ -72,6 +72,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
     public function it_should_create_a_new_place()
     {
         $id = '1';
+        $language = new Language('nl');
         $title = new Title('foo');
         $type = new EventType('0.50.4.0.0', 'jeugdhuis');
         $address = new Address(
@@ -86,6 +87,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
 
         $command = new CreatePlace(
             $id,
+            $language,
             $title,
             $type,
             $address,
@@ -97,7 +99,7 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->when($command)
-            ->then([new PlaceCreated($id, $title, $type, $address, $calendar, $theme, $publicationDate)]);
+            ->then([new PlaceCreated($id, $language, $title, $type, $address, $calendar, $theme, $publicationDate)]);
     }
 
     /**

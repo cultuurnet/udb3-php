@@ -53,6 +53,7 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     {
         $event = Event::create(
             $command->getItemId(),
+            $command->getMainLanguage(),
             $command->getTitle(),
             $command->getEventType(),
             $command->getLocation(),

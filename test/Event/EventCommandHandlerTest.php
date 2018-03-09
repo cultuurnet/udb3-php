@@ -133,6 +133,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     public function it_should_create_a_new_event()
     {
         $id = '5e36d2f2-b5de-4f5e-81b3-a129d996e9b6';
+        $language = new Language('nl');
         $title = new Title('some representative title');
         $type = new EventType('0.50.4.0.0', 'concert');
         $location = new Location(
@@ -151,6 +152,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $command = new CreateEvent(
             $id,
+            $language,
             $title,
             $type,
             $location,
@@ -162,7 +164,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->scenario
             ->withAggregateId($id)
             ->when($command)
-            ->then([new EventCreated($id, $title, $type, $location, $calendar, $theme, $publicationDate)]);
+            ->then([new EventCreated($id, $language, $title, $type, $location, $calendar, $theme, $publicationDate)]);
     }
 
     /**

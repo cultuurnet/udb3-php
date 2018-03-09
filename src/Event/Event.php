@@ -184,22 +184,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param ImageCollection $images
-     */
-    public function updateImagesFromUDB2(ImageCollection $images)
-    {
-        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
-    }
-
-    /**
-     * @param ImageCollection $images
-     */
-    public function importImagesFromUDB2(ImageCollection $images)
-    {
-        $this->apply(new ImagesImportedFromUDB2($this->eventId, $images));
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()

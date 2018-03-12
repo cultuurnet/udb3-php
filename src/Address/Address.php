@@ -4,7 +4,9 @@ namespace CultuurNet\UDB3\Address;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\JsonLdSerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Geography\Address as Udb3ModelAddress;
 use ValueObjects\Geography\Country;
+use ValueObjects\Geography\CountryCode;
 
 /**
  * Value object for address information.
@@ -121,5 +123,19 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
     public function sameAs(Address $otherAddress)
     {
         return $this->toJsonLd() === $otherAddress->toJsonLd();
+    }
+
+    /**
+     * @param Udb3ModelAddress $address
+     * @return self
+     */
+    public static function fromUdb3Model(Udb3ModelAddress $address)
+    {
+        return new self(
+            new Street($address->getStreet()->toString()),
+            new PostalCode($address->getPostalCode()->toString()),
+            new Locality($address->getLocality()->toString()),
+            new Country(CountryCode::fromNative($address->getCountryCode()->toString()))
+        );
     }
 }

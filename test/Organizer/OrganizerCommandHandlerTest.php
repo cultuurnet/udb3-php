@@ -189,7 +189,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                         new Language('nl'),
                         Url::fromNative('http://www.depot.be'),
                         new Title('Het depot')
-                    )
+                    ),
                 ]
             );
     }

@@ -8,6 +8,7 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
 
 /**
  * Instantiates an UDB3 category.
@@ -93,5 +94,18 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     {
         // Matches the serialized array.
         return $this->serialize();
+    }
+
+    /**
+     * @param Udb3ModelCategory $category
+     * @return static
+     */
+    public static function fromUdb3Model(Udb3ModelCategory $category)
+    {
+        return new static(
+            $category->getId()->toString(),
+            $category->getLabel()->toString(),
+            $category->getDomain()->toString()
+        );
     }
 }

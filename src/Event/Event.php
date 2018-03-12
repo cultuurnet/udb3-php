@@ -262,6 +262,9 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear typical age range.
         $this->typicalAgeRange = null;
 
+        // Just clear the booking info.
+        $this->bookingInfo = null;
+
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }

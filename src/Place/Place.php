@@ -289,6 +289,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear typical age range.
         $this->typicalAgeRange = null;
 
+        // Just clear the booking info.
+        $this->bookingInfo = null;
+
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
@@ -317,6 +320,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
         // Just clear typical age range.
         $this->typicalAgeRange = null;
+
+        // Just clear the booking info.
+        $this->bookingInfo = null;
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));

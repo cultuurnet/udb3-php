@@ -8,9 +8,11 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
@@ -340,6 +342,44 @@ class PlaceTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new TypicalAgeRangeDeleted($placeId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_booking_info_after_udb2_import()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+
+        $bookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
+        $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
+
+        $this->scenario
+            ->given(
+                [
+                    $placeCreated,
+                    new BookingInfoUpdated($placeId, $bookingInfo),
+                    new PlaceUpdatedFromUDB2($placeId, $cdbXml, $cdbXmlNamespace),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($bookingInfo) {
+                    $place->updateBookingInfo($bookingInfo);
+                }
+            )
+            ->then(
+                [
+                    new BookingInfoUpdated($placeId, $bookingInfo),
                 ]
             );
     }

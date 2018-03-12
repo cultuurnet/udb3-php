@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
@@ -1124,6 +1126,56 @@ class OfferTest extends AggregateRootScenarioTestCase
                 [
                     new CalendarUpdated($itemId, $calendar),
                     new CalendarUpdated($itemId, $otherCalendar),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_booking_info_updated_events()
+    {
+        $itemId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $bookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+
+        $sameBookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+
+        $otherBookingInfo = new BookingInfo(
+            'www.2dotstwice.be',
+            '2dotstwice',
+            '016 12 34 56',
+            'info@2dotstwice.be'
+        );
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($bookingInfo, $sameBookingInfo, $otherBookingInfo) {
+                    $item->updateBookingInfo($bookingInfo);
+                    $item->updateBookingInfo($sameBookingInfo);
+                    $item->updateBookingInfo($otherBookingInfo);
+                }
+            )
+            ->then(
+                [
+                    new BookingInfoUpdated($itemId, $bookingInfo),
+                    new BookingInfoUpdated($itemId, $otherBookingInfo),
                 ]
             );
     }

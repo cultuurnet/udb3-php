@@ -7,10 +7,12 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\Concluded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
@@ -342,6 +344,43 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new TypicalAgeRangeDeleted($eventId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_booking_info_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $bookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new BookingInfoUpdated($eventId, $bookingInfo),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($bookingInfo) {
+                    $event->updateBookingInfo($bookingInfo);
+                }
+            )
+            ->then(
+                [
+                    new BookingInfoUpdated($eventId, $bookingInfo),
                 ]
             );
     }

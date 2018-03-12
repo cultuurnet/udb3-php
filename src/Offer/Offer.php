@@ -49,6 +49,7 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
+use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -139,6 +140,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $typicalAgeRange;
 
     /**
+     * @var BookingInfo
+     */
+    protected $bookingInfo;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -151,6 +157,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->contactPoint = null;
         $this->calendar = null;
         $this->typicalAgeRange = null;
+        $this->bookingInfo = null;
     }
 
     /**
@@ -405,9 +412,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateBookingInfo(BookingInfo $bookingInfo)
     {
-        $this->apply(
-            $this->createBookingInfoUpdatedEvent($bookingInfo)
-        );
+        if (is_null($this->bookingInfo) || !$this->bookingInfo->sameAs($bookingInfo)) {
+            $this->apply(
+                $this->createBookingInfoUpdatedEvent($bookingInfo)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractBookingInfoUpdated $bookingInfoUpdated
+     */
+    public function applyBookingInfoUpdated(AbstractBookingInfoUpdated $bookingInfoUpdated)
+    {
+        $this->bookingInfo = $bookingInfoUpdated->getBookingInfo();
     }
 
     /**

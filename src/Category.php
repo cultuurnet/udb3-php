@@ -100,8 +100,16 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
      * @param Udb3ModelCategory $category
      * @return static
      */
-    public static function fromUdb3Model(Udb3ModelCategory $category)
+    public static function fromUdb3ModelCategory(Udb3ModelCategory $category)
     {
+        if (is_null($category->getLabel())) {
+            throw new \InvalidArgumentException('Category label is required.');
+        }
+
+        if (is_null($category->getDomain())) {
+            throw new \InvalidArgumentException('Category domain is required.');
+        }
+
         return new static(
             $category->getId()->toString(),
             $category->getLabel()->toString(),

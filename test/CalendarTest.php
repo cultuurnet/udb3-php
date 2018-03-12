@@ -6,6 +6,10 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleDateRangeCalendar;
 use DateTime;
 use DateTimeInterface;
 use UnexpectedValueException;
@@ -331,5 +335,75 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_single_date_range_calendar()
+    {
+        $dateRange = new DateRange(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+        );
+
+        $udb3ModelCalendar = new SingleDateRangeCalendar($dateRange);
+
+        $expected = new Calendar(
+            CalendarType::SINGLE(),
+            $dateRange->getFrom(),
+            $dateRange->getTo(),
+            [
+                new Timestamp(
+                    $dateRange->getFrom(),
+                    $dateRange->getTo()
+                ),
+            ],
+            []
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_multiple_date_range_calendar()
+    {
+        $dateRanges = new DateRanges(
+            new DateRange(
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+            ),
+            new DateRange(
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-12T10:00:00+01:00'),
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-13T10:00:00+01:00')
+            )
+        );
+
+        $udb3ModelCalendar = new MultipleDateRangesCalendar($dateRanges);
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            $dateRanges->getFirst()->getFrom(),
+            $dateRanges->getLast()->getTo(),
+            [
+                new Timestamp(
+                    $dateRanges->getFirst()->getFrom(),
+                    $dateRanges->getFirst()->getTo()
+                ),
+                new Timestamp(
+                    $dateRanges->getLast()->getFrom(),
+                    $dateRanges->getLast()->getTo()
+                ),
+            ],
+            []
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
     }
 }

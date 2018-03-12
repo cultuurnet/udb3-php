@@ -48,4 +48,12 @@ class LanguageTest extends PHPUnit_Framework_TestCase
 
         new Language($invalid_code);
     }
+
+    public function it_should_be_creatable_from_an_udb3_model_language()
+    {
+        $udb3ModelLanguage = new \CultuurNet\UDB3\Model\ValueObject\Translation\Language('nl');
+        $expected = new Language('nl');
+        $actual = Language::fromUdb3ModelLanguage($udb3ModelLanguage);
+        $this->assertEquals($expected, $actual);
+    }
 }

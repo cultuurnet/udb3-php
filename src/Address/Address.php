@@ -129,7 +129,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
      * @param Udb3ModelAddress $address
      * @return self
      */
-    public static function fromUdb3Model(Udb3ModelAddress $address)
+    public static function fromUdb3ModelAddress(Udb3ModelAddress $address)
     {
         return new self(
             new Street($address->getStreet()->toString()),

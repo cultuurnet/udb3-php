@@ -2,11 +2,8 @@
 
 namespace CultuurNet\UDB3\Address;
 
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use ValueObjects\Geography\Country;
+use ValueObjects\Geography\CountryCode;
 
 class AddressTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,5 +28,29 @@ class AddressTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($addressLeuven->sameAs(clone $addressLeuven));
         $this->assertFalse($addressLeuven->sameAs($addressBrussel));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_address()
+    {
+        $udb3ModelAddress = new \CultuurNet\UDB3\Model\ValueObject\Geography\Address(
+            new \CultuurNet\UDB3\Model\ValueObject\Geography\Street('Henegouwenkaai 41-43'),
+            new \CultuurNet\UDB3\Model\ValueObject\Geography\PostalCode('1080'),
+            new \CultuurNet\UDB3\Model\ValueObject\Geography\Locality('Brussel'),
+            new \CultuurNet\UDB3\Model\ValueObject\Geography\CountryCode('BE')
+        );
+
+        $expected = new Address(
+            new Street('Henegouwenkaai 41-43'),
+            new PostalCode('1080'),
+            new Locality('Brussel'),
+            new Country(CountryCode::fromNative('BE'))
+        );
+
+        $actual = Address::fromUdb3ModelAddress($udb3ModelAddress);
+
+        $this->assertEquals($expected, $actual);
     }
 }

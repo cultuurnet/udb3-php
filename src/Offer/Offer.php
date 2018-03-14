@@ -331,15 +331,17 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     public function deleteTypicalAgeRange()
     {
-        $this->apply(
-            $this->createTypicalAgeRangeDeletedEvent()
-        );
+        if (!is_null($this->typicalAgeRange)) {
+            $this->apply(
+                $this->createTypicalAgeRangeDeletedEvent()
+            );
+        }
     }
 
     /**
      * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
      */
-    protected function applyTypicalAgeRangeDeleted(AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted)
+    public function applyTypicalAgeRangeDeleted(AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted)
     {
         $this->typicalAgeRange = null;
     }

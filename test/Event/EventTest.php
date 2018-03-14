@@ -291,26 +291,27 @@ class EventTest extends AggregateRootScenarioTestCase
         $createEvent = $this->getCreationEvent();
 
         $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherTypicalAgeRange = new AgeRange(new Age(7), new Age(11));
 
-        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlData = $this->getSample('EventTest_WithAgeRange.cdbxml.xml');
         $xmlNamespace = self::NS_CDBXML_3_2;
 
         $this->scenario
             ->given(
                 [
                     $createEvent,
-                    new TypicalAgeRangeUpdated($eventId, $typicalAgeRange),
                     new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
                 ]
             )
             ->when(
-                function (Event $event) use ($typicalAgeRange) {
+                function (Event $event) use ($typicalAgeRange, $otherTypicalAgeRange) {
                     $event->updateTypicalAgeRange($typicalAgeRange);
+                    $event->updateTypicalAgeRange($otherTypicalAgeRange);
                 }
             )
             ->then(
                 [
-                    new TypicalAgeRangeUpdated($eventId, $typicalAgeRange),
+                    new TypicalAgeRangeUpdated($eventId, $otherTypicalAgeRange),
                 ]
             );
     }
@@ -323,16 +324,13 @@ class EventTest extends AggregateRootScenarioTestCase
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
         $createEvent = $this->getCreationEvent();
 
-        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
-
-        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlData = $this->getSample('EventTest_WithAgeRange.cdbxml.xml');
         $xmlNamespace = self::NS_CDBXML_3_2;
 
         $this->scenario
             ->given(
                 [
                     $createEvent,
-                    new TypicalAgeRangeUpdated($eventId, $typicalAgeRange),
                     new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
                 ]
             )

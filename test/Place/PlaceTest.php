@@ -289,6 +289,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
         $placeId = $placeCreated->getPlaceId();
 
         $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherTypicalAgeRange = new AgeRange(new Age(9), new Age(11));
 
         $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
         $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
@@ -302,13 +303,14 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Place $place) use ($typicalAgeRange) {
+                function (Place $place) use ($typicalAgeRange, $otherTypicalAgeRange) {
                     $place->updateTypicalAgeRange($typicalAgeRange);
+                    $place->updateTypicalAgeRange($otherTypicalAgeRange);
                 }
             )
             ->then(
                 [
-                    new TypicalAgeRangeUpdated($placeId, $typicalAgeRange),
+                    new TypicalAgeRangeUpdated($placeId, $otherTypicalAgeRange),
                 ]
             );
     }

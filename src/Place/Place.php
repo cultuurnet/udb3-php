@@ -286,8 +286,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the calendar.
         $this->calendar = null;
 
-        // Just clear typical age range.
-        $this->typicalAgeRange = null;
+        // Note: an actor has no typical age range so after it can't be changed
+        // by an UDB2 update. Nothing has to be done.
 
         // Just clear the booking info.
         $this->bookingInfo = null;
@@ -318,8 +318,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the calendar.
         $this->calendar = null;
 
-        // Just clear typical age range.
-        $this->typicalAgeRange = null;
+        // Note: an actor has no typical age range so after it can't be changed
+        // by an UDB2 update. Nothing has to be done.
 
         // Just clear the booking info.
         $this->bookingInfo = null;

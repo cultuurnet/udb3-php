@@ -57,6 +57,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -64,6 +65,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Event extends Offer implements UpdateableWithCdbXmlInterface
@@ -259,8 +261,12 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the calendar.
         $this->calendar = null;
 
-        // Just clear typical age range.
-        $this->typicalAgeRange = null;
+        // Correctly set the age range to avoid issues with deleting age range.
+        // after an update from UDB2.
+        $this->typicalAgeRange = new AgeRange(
+            $udb2Event->getAgeFrom() ? new Age($udb2Event->getAgeFrom()) : null,
+            $udb2Event->getAgeTo() ? new Age($udb2Event->getAgeTo()) : null
+        );
 
         // Just clear the booking info.
         $this->bookingInfo = null;

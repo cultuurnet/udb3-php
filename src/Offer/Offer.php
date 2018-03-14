@@ -16,6 +16,8 @@ use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
@@ -511,11 +513,29 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateImage(AbstractUpdateImage $updateImageCommand)
     {
-        if ($this->images->findImageByUUID($updateImageCommand->getMediaObjectId())) {
+        if ($this->updateImageAllowed($updateImageCommand)) {
             $this->apply(
                 $this->createImageUpdatedEvent($updateImageCommand)
             );
         }
+    }
+
+    /**
+     * @param AbstractUpdateImage $updateImageCommand
+     * @return bool
+     */
+    private function updateImageAllowed(AbstractUpdateImage $updateImageCommand)
+    {
+        $image = $this->images->findImageByUUID($updateImageCommand->getMediaObjectId());
+
+        // Don't update if the image is not found based on UUID.
+        if (!$image) {
+            return false;
+        }
+
+        // Update when copyright or description is changed.
+        return !$updateImageCommand->getCopyrightHolder()->sameValueAs($image->getCopyrightHolder()) ||
+            !$updateImageCommand->getDescription()->sameValueAs($image->getDescription());
     }
 
     /**
@@ -766,6 +786,24 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
         $this->images = $this->images->with($imageAdded->getImage());
+    }
+
+    protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
+    {
+        $image = $this->images->findImageByUUID($imageUpdated->getMediaObjectId());
+
+        $updatedImage = new Image(
+            $image->getMediaObjectId(),
+            $image->getMimeType(),
+            new ImageDescription($imageUpdated->getDescription()->toNative()),
+            new CopyrightHolder($imageUpdated->getCopyrightHolder()->toNative()),
+            $image->getSourceLocation(),
+            $image->getLanguage()
+        );
+
+        // Currently no other option to update an item inside a collection.
+        $this->images = $this->images->without($image);
+        $this->images = $this->images->with($updatedImage);
     }
 
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)

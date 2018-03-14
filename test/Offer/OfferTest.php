@@ -450,6 +450,105 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_checks_for_difference_of_image_when_updating()
+    {
+        $sameUpdateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            $this->image->getDescription(),
+            $this->image->getCopyrightHolder()
+        );
+
+        $otherDescriptionUpdateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            new Description('other description'),
+            $this->image->getCopyrightHolder()
+        );
+
+        $otherCopyrightUpdateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            new Description('other description'),
+            new CopyrightHolder('other copyright')
+        );
+
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) use (
+                    $sameUpdateImage,
+                    $otherDescriptionUpdateImage,
+                    $otherCopyrightUpdateImage
+                ) {
+                    $item->addImage($this->image);
+                    $item->updateImage($sameUpdateImage);
+                    $item->updateImage($otherDescriptionUpdateImage);
+                    $item->updateImage($otherCopyrightUpdateImage);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded(
+                        'someId',
+                        $this->image
+                    ),
+                    new ImageUpdated(
+                        'someId',
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        $this->image->getCopyrightHolder()
+                    ),
+                    new ImageUpdated(
+                        'someId',
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        new CopyrightHolder('other copyright')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_for_presence_when_adding_image()
+    {
+        $updateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            new Description('my favorite cat'),
+            new CopyrightHolder('Jane Doe')
+        );
+
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($updateImage) {
+                    $item->addImage($this->image);
+                    $item->addImage($this->image);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded('someId', $this->image),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_should_make_the_oldest_image_main_when_deleting_the_current_main_image()
     {
         $oldestImage = new Image(

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Model\ValueObject\Translation\Language as Udb3ModelLanguage;
 use InvalidArgumentException;
 use PHPUnit_Framework_TestCase;
 
@@ -49,9 +50,12 @@ class LanguageTest extends PHPUnit_Framework_TestCase
         new Language($invalid_code);
     }
 
+    /**
+     * @test
+     */
     public function it_should_be_creatable_from_an_udb3_model_language()
     {
-        $udb3ModelLanguage = new \CultuurNet\UDB3\Model\ValueObject\Translation\Language('nl');
+        $udb3ModelLanguage = new Udb3ModelLanguage('nl');
         $expected = new Language('nl');
         $actual = Language::fromUdb3ModelLanguage($udb3ModelLanguage);
         $this->assertEquals($expected, $actual);

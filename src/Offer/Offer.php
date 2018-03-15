@@ -10,14 +10,18 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
@@ -117,6 +121,31 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $themeId;
 
     /**
+     * @var array
+     */
+    protected $facilities;
+
+    /**
+     * @var ContactPoint
+     */
+    protected $contactPoint;
+
+    /**
+     * @var Calendar
+     */
+    protected $calendar;
+
+    /**
+     * @var AgeRange
+     */
+    protected $typicalAgeRange;
+
+    /**
+     * @var BookingInfo
+     */
+    protected $bookingInfo;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
@@ -125,6 +154,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $this->descriptions = [];
         $this->labels = new LabelCollection();
         $this->images = new ImageCollection();
+        $this->facilities = [];
+        $this->contactPoint = null;
+        $this->calendar = null;
+        $this->typicalAgeRange = null;
+        $this->bookingInfo = null;
     }
 
     /**
@@ -152,7 +186,39 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateFacilities(array $facilities)
     {
-        $this->apply($this->createFacilitiesUpdatedEvent($facilities));
+        if (empty($this->facilities) || !$this->sameFacilities($this->facilities, $facilities)) {
+            $this->apply($this->createFacilitiesUpdatedEvent($facilities));
+        }
+    }
+
+    /**
+     * @param AbstractFacilitiesUpdated $facilitiesUpdated
+     */
+    protected function applyFacilitiesUpdated(AbstractFacilitiesUpdated $facilitiesUpdated)
+    {
+        $this->facilities = $facilitiesUpdated->getFacilities();
+    }
+
+    /**
+     * @param array $facilities1
+     * @param array $facilities2
+     * @return bool
+     */
+    private function sameFacilities($facilities1, $facilities2)
+    {
+        if (count($facilities1) !== count($facilities2)) {
+            return false;
+        }
+
+        $sameFacilities = array_uintersect(
+            $facilities1,
+            $facilities2,
+            function (Facility $facility1, Facility $facility2) {
+                return strcmp($facility1->getId(), $facility2->getId());
+            }
+        );
+
+        return count($sameFacilities) === count($facilities2);
     }
 
     /**
@@ -229,10 +295,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateCalendar(Calendar $calendar)
     {
-        // For now no special business rules for updating the calendar.
-        $this->apply(
-            $this->createCalendarUpdatedEvent($calendar)
-        );
+        if (is_null($this->calendar) || !$this->calendar->sameAs($calendar)) {
+            $this->apply(
+                $this->createCalendarUpdatedEvent($calendar)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractCalendarUpdated $calendarUpdated
+     */
+    protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
+    {
+        $this->calendar = $calendarUpdated->getCalendar();
     }
 
     /**
@@ -240,16 +315,36 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateTypicalAgeRange($typicalAgeRange)
     {
-        $this->apply(
-            $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
-        );
+        $typicalAgeRangeUpdatedEvent = $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange);
+
+        if (empty($this->typicalAgeRange) || !$this->typicalAgeRange->sameAs($typicalAgeRangeUpdatedEvent->getTypicalAgeRange())) {
+            $this->apply($typicalAgeRangeUpdatedEvent);
+        }
+    }
+
+    /**
+     * @param AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated)
+    {
+        $this->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
     }
 
     public function deleteTypicalAgeRange()
     {
-        $this->apply(
-            $this->createTypicalAgeRangeDeletedEvent()
-        );
+        if (!is_null($this->typicalAgeRange)) {
+            $this->apply(
+                $this->createTypicalAgeRangeDeletedEvent()
+            );
+        }
+    }
+
+    /**
+     * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    public function applyTypicalAgeRangeDeleted(AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted)
+    {
+        $this->typicalAgeRange = null;
     }
 
     /**
@@ -284,9 +379,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateContactPoint(ContactPoint $contactPoint)
     {
-        $this->apply(
-            $this->createContactPointUpdatedEvent($contactPoint)
-        );
+        if (is_null($this->contactPoint) || !$this->contactPoint->sameAs($contactPoint)) {
+            $this->apply(
+                $this->createContactPointUpdatedEvent($contactPoint)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(AbstractContactPointUpdated $contactPointUpdated)
+    {
+        $this->contactPoint = $contactPointUpdated->getContactPoint();
     }
 
     /**
@@ -310,9 +415,19 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateBookingInfo(BookingInfo $bookingInfo)
     {
-        $this->apply(
-            $this->createBookingInfoUpdatedEvent($bookingInfo)
-        );
+        if (is_null($this->bookingInfo) || !$this->bookingInfo->sameAs($bookingInfo)) {
+            $this->apply(
+                $this->createBookingInfoUpdatedEvent($bookingInfo)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractBookingInfoUpdated $bookingInfoUpdated
+     */
+    public function applyBookingInfoUpdated(AbstractBookingInfoUpdated $bookingInfoUpdated)
+    {
+        $this->bookingInfo = $bookingInfoUpdated->getBookingInfo();
     }
 
     /**
@@ -398,11 +513,29 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function updateImage(AbstractUpdateImage $updateImageCommand)
     {
-        if ($this->images->findImageByUUID($updateImageCommand->getMediaObjectId())) {
+        if ($this->updateImageAllowed($updateImageCommand)) {
             $this->apply(
                 $this->createImageUpdatedEvent($updateImageCommand)
             );
         }
+    }
+
+    /**
+     * @param AbstractUpdateImage $updateImageCommand
+     * @return bool
+     */
+    private function updateImageAllowed(AbstractUpdateImage $updateImageCommand)
+    {
+        $image = $this->images->findImageByUUID($updateImageCommand->getMediaObjectId());
+
+        // Don't update if the image is not found based on UUID.
+        if (!$image) {
+            return false;
+        }
+
+        // Update when copyright or description is changed.
+        return !$updateImageCommand->getCopyrightHolder()->sameValueAs($image->getCopyrightHolder()) ||
+            !$updateImageCommand->getDescription()->sameValueAs($image->getDescription());
     }
 
     /**
@@ -653,6 +786,24 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
         $this->images = $this->images->with($imageAdded->getImage());
+    }
+
+    protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
+    {
+        $image = $this->images->findImageByUUID($imageUpdated->getMediaObjectId());
+
+        $updatedImage = new Image(
+            $image->getMediaObjectId(),
+            $image->getMimeType(),
+            new ImageDescription($imageUpdated->getDescription()->toNative()),
+            new CopyrightHolder($imageUpdated->getCopyrightHolder()->toNative()),
+            $image->getSourceLocation(),
+            $image->getLanguage()
+        );
+
+        // Currently no other option to update an item inside a collection.
+        $this->images = $this->images->without($image);
+        $this->images = $this->images->with($updatedImage);
     }
 
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)

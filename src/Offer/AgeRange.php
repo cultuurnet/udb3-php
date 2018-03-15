@@ -118,4 +118,13 @@ class AgeRange
 
         return new self($from, $to);
     }
+
+    /**
+     * @param AgeRange $otherAgeRange
+     * @return bool
+     */
+    public function sameAs(AgeRange $otherAgeRange)
+    {
+        return "$this" === "$otherAgeRange";
+    }
 }

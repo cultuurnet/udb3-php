@@ -7,22 +7,31 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\Concluded;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
@@ -31,10 +40,12 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Title;
 use RuntimeException;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -157,6 +168,217 @@ class EventTest extends AggregateRootScenarioTestCase
                         'foo',
                         $calendar
                     ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_facilities_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $facilities = [
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
+        ];
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new FacilitiesUpdated($eventId, $facilities),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($facilities) {
+                    $event->updateFacilities($facilities);
+                }
+            )
+            ->then(
+                [
+                    new FacilitiesUpdated($eventId, $facilities),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_contact_point_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $contactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new ContactPointUpdated($eventId, $contactPoint),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($contactPoint) {
+                    $event->updateContactPoint($contactPoint);
+                }
+            )
+            ->then(
+                [
+                    new ContactPointUpdated($eventId, $contactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_calendar_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new CalendarUpdated($eventId, $calendar),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($calendar) {
+                    $event->updateCalendar($calendar);
+                }
+            )
+            ->then(
+                [
+                    new CalendarUpdated($eventId, $calendar),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_typical_age_range_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherTypicalAgeRange = new AgeRange(new Age(7), new Age(11));
+
+        $xmlData = $this->getSample('EventTest_WithAgeRange.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($typicalAgeRange, $otherTypicalAgeRange) {
+                    $event->updateTypicalAgeRange($typicalAgeRange);
+                    $event->updateTypicalAgeRange($otherTypicalAgeRange);
+                }
+            )
+            ->then(
+                [
+                    new TypicalAgeRangeUpdated($eventId, $otherTypicalAgeRange),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_delete_typical_age_range_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $xmlData = $this->getSample('EventTest_WithAgeRange.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) {
+                    $event->deleteTypicalAgeRange();
+                }
+            )
+            ->then(
+                [
+                    new TypicalAgeRangeDeleted($eventId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_booking_info_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $bookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new BookingInfoUpdated($eventId, $bookingInfo),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($bookingInfo) {
+                    $event->updateBookingInfo($bookingInfo);
+                }
+            )
+            ->then(
+                [
+                    new BookingInfoUpdated($eventId, $bookingInfo),
                 ]
             );
     }
@@ -550,13 +772,48 @@ class EventTest extends AggregateRootScenarioTestCase
     public function it_handles_update_location()
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
-
-        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+        $createEvent = $this->getCreationEvent();
+        $oldLocationId = new LocationId($createEvent->getLocation()->getCdbid());
+        $newLocationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
         $this->scenario
             ->given(
                 [
-                    $this->getCreationEvent(),
+                    $createEvent,
+                ]
+            )
+            ->when(
+                function (Event $event) use ($oldLocationId, $newLocationId) {
+                    $event->updateLocation($oldLocationId);
+                    $event->updateLocation($newLocationId);
+                    $event->updateLocation($newLocationId);
+                }
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $newLocationId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_location_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+        $locationId = new LocationId($createEvent->getLocation()->getCdbid());
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new LocationUpdated($eventId, $locationId),
+                    new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace),
                 ]
             )
             ->when(

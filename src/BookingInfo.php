@@ -64,7 +64,14 @@ class BookingInfo implements JsonLdSerializableInterface
     protected $description = '';
 
     /**
-     * Constructor.
+     * @param string $url
+     * @param string $urlLabel
+     * @param string $phone
+     * @param string $email
+     * @param string $availabilityStarts
+     * @param string $availabilityEnds
+     * @param string $name
+     * @param string $description
      */
     public function __construct(
         $url = '',
@@ -160,5 +167,14 @@ class BookingInfo implements JsonLdSerializableInterface
     public function toJsonLd()
     {
         return $this->serialize();
+    }
+
+    /**
+     * @param BookingInfo $otherBookingInfo
+     * @return bool
+     */
+    public function sameAs(BookingInfo $otherBookingInfo)
+    {
+        return $this->toJsonLd() === $otherBookingInfo->toJsonLd();
     }
 }

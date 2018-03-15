@@ -3,9 +3,12 @@
 namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -14,9 +17,12 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
@@ -38,11 +44,14 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TypeUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Exception;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -141,6 +150,151 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->then([
                 new TypeUpdated($itemId, $filmType),
                 new TypeUpdated($itemId, $concertType),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_facilities_when_changed()
+    {
+        $itemId = UUID::generateAsString();
+
+        $facilities = [
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
+        ];
+
+        $sameFacilities = [
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+        ];
+
+        $otherFacilities = [
+            new Facility("3.34.0.0.0", "Vereenvoudigde informatie"),
+            new Facility("3.38.0.0.0", "Inter-assistentie"),
+        ];
+
+        $moreFacilities = [
+            new Facility("3.34.0.0.0", "Vereenvoudigde informatie"),
+            new Facility("3.38.0.0.0", "Inter-assistentie"),
+            new Facility("3.40.0.0.0", "Inter-events"),
+        ];
+
+        $lessFacilities = [
+            new Facility("3.34.0.0.0", "Vereenvoudigde informatie"),
+        ];
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use (
+                    $facilities,
+                    $sameFacilities,
+                    $otherFacilities,
+                    $moreFacilities,
+                    $lessFacilities
+                ) {
+                    $item->updateFacilities($facilities);
+                    $item->updateFacilities($sameFacilities);
+                    $item->updateFacilities($otherFacilities);
+                    $item->updateFacilities($moreFacilities);
+                    $item->updateFacilities($lessFacilities);
+                }
+            )
+            ->then([
+                new FacilitiesUpdated($itemId, $facilities),
+                new FacilitiesUpdated($itemId, $otherFacilities),
+                new FacilitiesUpdated($itemId, $moreFacilities),
+                new FacilitiesUpdated($itemId, $lessFacilities),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_contact_point_when_changed()
+    {
+        $itemId = UUID::generateAsString();
+
+        $contactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $sameContactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $otherContactPoint = new ContactPoint(
+            ['02/101010',],
+            ['admin@public.be', 'test@public.be'],
+            ['http://www.public.be']
+        );
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use (
+                    $contactPoint,
+                    $sameContactPoint,
+                    $otherContactPoint
+                ) {
+                    $item->updateContactPoint($contactPoint);
+                    $item->updateContactPoint($sameContactPoint);
+                    $item->updateContactPoint($otherContactPoint);
+                }
+            )
+            ->then([
+                new ContactPointUpdated($itemId, $contactPoint),
+                new ContactPointUpdated($itemId, $otherContactPoint),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_typical_age_range_when_changed()
+    {
+        $itemId = UUID::generateAsString();
+
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $sameAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherAgeRange = new AgeRange(new Age(1), new Age(99));
+        $allAges = new AgeRange();
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+            ])
+            ->when(
+                function (Item $item) use (
+                    $typicalAgeRange,
+                    $sameAgeRange,
+                    $otherAgeRange,
+                    $allAges
+                ) {
+                    $item->updateTypicalAgeRange($typicalAgeRange);
+                    $item->updateTypicalAgeRange($sameAgeRange);
+                    $item->deleteTypicalAgeRange();
+                    $item->updateTypicalAgeRange($sameAgeRange);
+                    $item->updateTypicalAgeRange($otherAgeRange);
+                    $item->updateTypicalAgeRange($allAges);
+                }
+            )
+            ->then([
+                new TypicalAgeRangeUpdated($itemId, $typicalAgeRange),
+                new TypicalAgeRangeDeleted($itemId),
+                new TypicalAgeRangeUpdated($itemId, $sameAgeRange),
+                new TypicalAgeRangeUpdated($itemId, $otherAgeRange),
+                new TypicalAgeRangeUpdated($itemId, $allAges),
             ]);
     }
 
@@ -289,6 +443,105 @@ class OfferTest extends AggregateRootScenarioTestCase
                         new Description('my favorite cat'),
                         new CopyrightHolder('Jane Doe')
                     ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_for_difference_of_image_when_updating()
+    {
+        $sameUpdateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            $this->image->getDescription(),
+            $this->image->getCopyrightHolder()
+        );
+
+        $otherDescriptionUpdateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            new Description('other description'),
+            $this->image->getCopyrightHolder()
+        );
+
+        $otherCopyrightUpdateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            new Description('other description'),
+            new CopyrightHolder('other copyright')
+        );
+
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) use (
+                    $sameUpdateImage,
+                    $otherDescriptionUpdateImage,
+                    $otherCopyrightUpdateImage
+                ) {
+                    $item->addImage($this->image);
+                    $item->updateImage($sameUpdateImage);
+                    $item->updateImage($otherDescriptionUpdateImage);
+                    $item->updateImage($otherCopyrightUpdateImage);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded(
+                        'someId',
+                        $this->image
+                    ),
+                    new ImageUpdated(
+                        'someId',
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        $this->image->getCopyrightHolder()
+                    ),
+                    new ImageUpdated(
+                        'someId',
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        new CopyrightHolder('other copyright')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_for_presence_when_adding_image()
+    {
+        $updateImage = new UpdateImage(
+            'someId',
+            new UUID($this->image->getMediaObjectId()),
+            new Description('my favorite cat'),
+            new CopyrightHolder('Jane Doe')
+        );
+
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($updateImage) {
+                    $item->addImage($this->image);
+                    $item->addImage($this->image);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded('someId', $this->image),
                 ]
             );
     }
@@ -942,6 +1195,18 @@ class OfferTest extends AggregateRootScenarioTestCase
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
         );
 
+        $sameCalendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $otherCalendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-28T12:12:12+01:00')
+        );
+
         $this->scenario
             ->withAggregateId($itemId)
             ->given(
@@ -950,13 +1215,66 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use ($calendar) {
+                function (Item $item) use ($calendar, $sameCalendar, $otherCalendar) {
                     $item->updateCalendar($calendar);
+                    $item->updateCalendar($sameCalendar);
+                    $item->updateCalendar($otherCalendar);
                 }
             )
             ->then(
                 [
                     new CalendarUpdated($itemId, $calendar),
+                    new CalendarUpdated($itemId, $otherCalendar),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_booking_info_updated_events()
+    {
+        $itemId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $bookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+
+        $sameBookingInfo = new BookingInfo(
+            'www.publiq.be',
+            'publiq',
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+
+        $otherBookingInfo = new BookingInfo(
+            'www.2dotstwice.be',
+            '2dotstwice',
+            '016 12 34 56',
+            'info@2dotstwice.be'
+        );
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($bookingInfo, $sameBookingInfo, $otherBookingInfo) {
+                    $item->updateBookingInfo($bookingInfo);
+                    $item->updateBookingInfo($sameBookingInfo);
+                    $item->updateBookingInfo($otherBookingInfo);
+                }
+            )
+            ->then(
+                [
+                    new BookingInfoUpdated($itemId, $bookingInfo),
+                    new BookingInfoUpdated($itemId, $otherBookingInfo),
                 ]
             );
     }

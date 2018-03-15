@@ -185,4 +185,19 @@ class AgeRangeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new Age(0), $ageRange->getFrom());
         $this->assertEquals(new Age(18), $ageRange->getTo());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_compare_age_ranges()
+    {
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $sameAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherAgeRange = new AgeRange(new Age(1), new Age(99));
+        $allAges = new AgeRange();
+
+        $this->assertTrue($typicalAgeRange->sameAs($sameAgeRange));
+        $this->assertFalse($typicalAgeRange->sameAs($otherAgeRange));
+        $this->assertFalse($typicalAgeRange->sameAs($allAges));
+    }
 }

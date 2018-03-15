@@ -57,6 +57,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -64,6 +65,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Event extends Offer implements UpdateableWithCdbXmlInterface
@@ -77,6 +79,11 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * @var Audience
      */
     private $audience;
+
+    /**
+     * @var LocationId
+     */
+    private $locationId;
 
     /**
      * @var boolean
@@ -179,22 +186,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param ImageCollection $images
-     */
-    public function updateImagesFromUDB2(ImageCollection $images)
-    {
-        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
-    }
-
-    /**
-     * @param ImageCollection $images
-     */
-    public function importImagesFromUDB2(ImageCollection $images)
-    {
-        $this->apply(new ImagesImportedFromUDB2($this->eventId, $images));
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -213,6 +204,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
         $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
@@ -257,6 +249,28 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCdbXML->getCdbXml()
         );
 
+        // Just clear the facilities.
+        $this->facilities = [];
+
+        // Just clear the location id after an import or update.
+        $this->locationId = null;
+
+        // Just clear the contact point.
+        $this->contactPoint = null;
+
+        // Just clear the calendar.
+        $this->calendar = null;
+
+        // Correctly set the age range to avoid issues with deleting age range.
+        // after an update from UDB2.
+        $this->typicalAgeRange = new AgeRange(
+            $udb2Event->getAgeFrom() ? new Age($udb2Event->getAgeFrom()) : null,
+            $udb2Event->getAgeTo() ? new Age($udb2Event->getAgeTo()) : null
+        );
+
+        // Just clear the booking info.
+        $this->bookingInfo = null;
+
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }
@@ -285,8 +299,17 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function updateLocation(LocationId $locationId)
     {
-        // For now no special business rules for updating the location of an event.
-        $this->apply(new LocationUpdated($this->eventId, $locationId));
+        if (is_null($this->locationId) || !$this->locationId->sameValueAs($locationId)) {
+            $this->apply(new LocationUpdated($this->eventId, $locationId));
+        }
+    }
+
+    /**
+     * @param LocationUpdated $locationUpdated
+     */
+    public function applyLocationUpdated(LocationUpdated $locationUpdated)
+    {
+        $this->locationId = $locationUpdated->getLocationId();
     }
 
     /**

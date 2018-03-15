@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Place\Events;
+namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;

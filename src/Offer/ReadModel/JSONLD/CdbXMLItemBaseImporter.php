@@ -50,14 +50,32 @@ class CdbXMLItemBaseImporter
         \CultureFeed_Cdb_Item_Base $item,
         \stdClass $jsonLD
     ) {
-        $availableString = $item->getAvailableFrom();
-        if ($availableString) {
-            $available = DateTimeFactory::dateTimeFromDateString(
-                $availableString
+        $availableFromString = $item->getAvailableFrom();
+        if ($availableFromString) {
+            $jsonLD->availableFrom = $this->formatAvailableString(
+                $availableFromString
             );
-
-            $jsonLD->availableFrom = $available->format('c');
         }
+
+        $availableToString = $item->getAvailableTo();
+        if ($availableToString) {
+            $jsonLD->availableTo = $this->formatAvailableString(
+                $availableToString
+            );
+        }
+    }
+
+    /**
+     * @param string $availableString
+     * @return string
+     */
+    private function formatAvailableString($availableString)
+    {
+        $available = DateTimeFactory::dateTimeFromDateString(
+            $availableString
+        );
+
+        return $available->format('c');
     }
 
     /**

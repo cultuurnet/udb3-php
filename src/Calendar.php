@@ -250,6 +250,15 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
 
         return $jsonLd;
     }
+    
+    /**
+     * @param Calendar $otherCalendar
+     * @return bool
+     */
+    public function sameAs(Calendar $otherCalendar)
+    {
+        return $this->toJsonLd() == $otherCalendar->toJsonLd();
+    }
 
     /**
      * @param Udb3ModelCalendar $calendar

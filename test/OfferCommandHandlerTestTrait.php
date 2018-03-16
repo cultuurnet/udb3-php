@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description as MediaDescription;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
+use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Organizer\Organizer;
 use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionObject;
@@ -373,7 +374,16 @@ trait OfferCommandHandlerTestTrait
         $this->scenario
             ->withAggregateId($id)
             ->given(
-                [$this->factorOfferCreated($id)]
+                [
+                    $this->factorOfferCreated($id),
+                    new TypicalAgeRangeUpdated(
+                        $id,
+                        new AgeRange(
+                            new Age(8),
+                            new Age(11)
+                        )
+                    ),
+                ]
             )
             ->when(
                 new $commandClass($id)

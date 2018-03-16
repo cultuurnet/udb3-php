@@ -62,4 +62,25 @@ class ContactPointTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->urls, $this->contactPoint->getUrls());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_compare()
+    {
+        $sameContactPoint = new ContactPoint(
+            $this->phones,
+            $this->emails,
+            $this->urls
+        );
+
+        $differentOrderContactPoint = new ContactPoint(
+            $this->phones,
+            $this->emails,
+            ['http//www.company.com', 'http//www.company.be']
+        );
+
+        $this->assertTrue($this->contactPoint->sameAs($sameContactPoint));
+        $this->assertFalse($this->contactPoint->sameAs($differentOrderContactPoint));
+    }
 }

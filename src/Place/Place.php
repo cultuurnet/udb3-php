@@ -68,9 +68,16 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $placeId;
 
+    /**
+     * @var Address[]
+     */
+    private $addresses;
+
     public function __construct()
     {
         parent::__construct();
+
+        $this->addresses = [];
     }
 
     /**
@@ -131,6 +138,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->mainLanguage = $placeCreated->getMainLanguage();
+        $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
@@ -164,6 +172,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
+     * @param MajorInfoUpdated $majorInfoUpdated
+     */
+    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    {
+        $this->addresses[$this->mainLanguage->getCode()] = $majorInfoUpdated->getAddress();
+    }
+
+    /**
      * @param Address $address
      * @param Language $language
      */
@@ -175,7 +191,45 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $event = new AddressTranslated($this->placeId, $address, $language);
         }
 
-        $this->apply($event);
+        if ($this->allowAddressUpdate($address, $language)) {
+            $this->apply($event);
+        }
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     */
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    {
+        $this->addresses[$this->mainLanguage->getCode()] = $addressUpdated->getAddress();
+    }
+
+    /**
+     * @param AddressTranslated $addressTranslated
+     */
+    protected function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        $this->addresses[$addressTranslated->getLanguage()->getCode()] = $addressTranslated->getAddress();
+    }
+
+    /**
+     * @param Address $address
+     * @param Language $language
+     * @return bool
+     */
+    private function allowAddressUpdate(Address $address, Language $language)
+    {
+        // No current address in the provided language so update with new address is allowed.
+        if (!isset($this->addresses[$language->getCode()])) {
+            return true;
+        }
+
+        // The current address in de the provided language is different then the new address, so update allowed.
+        if (!$this->addresses[$language->getCode()]->sameAs($address)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -223,6 +277,21 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             $placeImported->getCdbXml()
         );
 
+        // Just clear the facilities.
+        $this->facilities = [];
+
+        // Just clear the contact point.
+        $this->contactPoint = null;
+
+        // Just clear the calendar.
+        $this->calendar = null;
+
+        // Note: an actor has no typical age range so after it can't be changed
+        // by an UDB2 update. Nothing has to be done.
+
+        // Just clear the booking info.
+        $this->bookingInfo = null;
+
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
@@ -233,15 +302,32 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     public function applyPlaceUpdatedFromUDB2(
         PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
     ) {
+        // Note: when updating from UDB2 never change the main language.
+
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeUpdatedFromUDB2->getCdbXmlNamespaceUri(),
             $placeUpdatedFromUDB2->getCdbXml()
         );
 
-        // Note: when updating from UDB2 never change the main language.
+        // Just clear the facilities.
+        $this->facilities = [];
+
+        // Just clear the contact point.
+        $this->contactPoint = null;
+
+        // Just clear the calendar.
+        $this->calendar = null;
+
+        // Note: an actor has no typical age range so after it can't be changed
+        // by an UDB2 update. Nothing has to be done.
+
+        // Just clear the booking info.
+        $this->bookingInfo = null;
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
+
+        unset($this->addresses[$this->mainLanguage->getCode()]);
     }
 
     /**

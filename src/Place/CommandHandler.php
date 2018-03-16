@@ -6,6 +6,7 @@ use Broadway\Repository\AggregateNotFoundException;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\CreatePlace;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
@@ -32,7 +33,6 @@ use CultuurNet\UDB3\Place\Commands\UpdateTheme;
 use CultuurNet\UDB3\Place\Commands\UpdateTitle;
 use CultuurNet\UDB3\Place\Commands\UpdateType;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Place\Events\CreatePlace;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

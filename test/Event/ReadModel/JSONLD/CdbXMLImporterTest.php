@@ -262,10 +262,16 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('availableFrom', $jsonEvent);
         $this->assertEquals('2014-07-25T05:18:22+02:00', $jsonEvent->availableFrom);
 
+        $this->assertObjectHasAttribute('availableTo', $jsonEvent);
+        $this->assertEquals('2015-03-29T00:00:00+01:00', $jsonEvent->availableTo);
+
         $anotherJsonEvent = $this->createJsonEventFromCdbXml('event_with_cdb_externalid.cdbxml.xml');
 
         $this->assertObjectHasAttribute('availableFrom', $anotherJsonEvent);
         $this->assertEquals('2014-10-22T00:00:00+02:00', $anotherJsonEvent->availableFrom);
+
+        $this->assertObjectHasAttribute('availableTo', $anotherJsonEvent);
+        $this->assertEquals('2015-03-19T00:00:00+01:00', $anotherJsonEvent->availableTo);
     }
 
     /**

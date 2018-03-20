@@ -25,7 +25,7 @@
     "broadway/broadway": "~0.10",
     "chrisboulton/php-resque": "~1.2",
     "cultuurnet/culturefeed-php": "~1.7",
-    "cultuurnet/udb3-models": "dev-feature/III-2522 as 0.1",
+    "cultuurnet/udb3-models": "~0.1",
     "cultuurnet/valueobjects": "~3.0",
     "php": "~5.6 || >=7.0",
     "predis/predis": "~1.0",

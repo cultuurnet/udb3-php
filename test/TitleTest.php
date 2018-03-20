@@ -1,9 +1,8 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3;
+
+use \CultuurNet\UDB3\Model\ValueObject\Text\Title as Udb3ModelTitle;
 
 class TitleTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,10 +22,8 @@ class TitleTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_not_be_empty($emptyStringValue)
     {
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'Title can not be empty.'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Title can not be empty.');
         new Title($emptyStringValue);
     }
 
@@ -35,7 +32,7 @@ class TitleTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_be_creatable_from_an_udb3_model_title()
     {
-        $udb3ModelTitle = new \CultuurNet\UDB3\Model\ValueObject\Text\Title('foo bar');
+        $udb3ModelTitle = new Udb3ModelTitle('foo bar');
 
         $expected = new Title('foo bar');
         $actual = Title::fromUdb3ModelTitle($udb3ModelTitle);

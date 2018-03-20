@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\Place;
 
-use Broadway\Repository\AggregateNotFoundException;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\CreatePlace;

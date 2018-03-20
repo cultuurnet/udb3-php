@@ -3,7 +3,6 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use Broadway\Repository\AggregateNotFoundException;
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\CreateEvent;
@@ -33,8 +32,6 @@ use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateType;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
-use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;

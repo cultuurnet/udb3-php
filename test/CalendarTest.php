@@ -6,6 +6,19 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Days;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Hour as Udb3ModelHour;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Minute as Udb3ModelMinute;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3ModelOpeningHour;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHours;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Time;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\PeriodicCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\PermanentCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleDateRangeCalendar;
 use DateTime;
 use DateTimeInterface;
 use UnexpectedValueException;
@@ -331,6 +344,261 @@ class CalendarTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_single_date_range_calendar()
+    {
+        $dateRange = new DateRange(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+        );
+
+        $udb3ModelCalendar = new SingleDateRangeCalendar($dateRange);
+
+        $expected = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00'),
+            [
+                new Timestamp(
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+                ),
+            ],
+            []
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_multiple_date_range_calendar()
+    {
+        $dateRanges = new DateRanges(
+            new DateRange(
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+            ),
+            new DateRange(
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-09T10:00:00+01:00'),
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-10T10:00:00+01:00')
+            )
+        );
+
+        $udb3ModelCalendar = new MultipleDateRangesCalendar($dateRanges);
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-10T10:00:00+01:00'),
+            [
+                new Timestamp(
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+                ),
+                new Timestamp(
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-09T10:00:00+01:00'),
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-10T10:00:00+01:00')
+                ),
+            ],
+            []
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_periodic_calendar()
+    {
+        $dateRange = new DateRange(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+        );
+
+        $openingHours = new OpeningHours();
+
+        $udb3ModelCalendar = new PeriodicCalendar($dateRange, $openingHours);
+
+        $expected = new Calendar(
+            CalendarType::PERIODIC(),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00'),
+            [],
+            []
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_periodic_calendar_with_opening_hours()
+    {
+        $dateRange = new DateRange(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+        );
+
+        $openingHours = new OpeningHours(
+            new Udb3ModelOpeningHour(
+                new Days(
+                    Day::monday(),
+                    Day::tuesday()
+                ),
+                new Time(
+                    new Udb3ModelHour(8),
+                    new Udb3ModelMinute(0)
+                ),
+                new Time(
+                    new Udb3ModelHour(12),
+                    new Udb3ModelMinute(59)
+                )
+            ),
+            new Udb3ModelOpeningHour(
+                new Days(
+                    Day::saturday()
+                ),
+                new Time(
+                    new Udb3ModelHour(10),
+                    new Udb3ModelMinute(0)
+                ),
+                new Time(
+                    new Udb3ModelHour(14),
+                    new Udb3ModelMinute(0)
+                )
+            )
+        );
+
+        $udb3ModelCalendar = new PeriodicCalendar($dateRange, $openingHours);
+
+        $expected = new Calendar(
+            CalendarType::PERIODIC(),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00'),
+            [],
+            [
+                new OpeningHour(
+                    new OpeningTime(new Hour(8), new Minute(0)),
+                    new OpeningTime(new Hour(12), new Minute(59)),
+                    new DayOfWeekCollection(
+                        DayOfWeek::MONDAY(),
+                        DayOfWeek::TUESDAY()
+                    )
+                ),
+                new OpeningHour(
+                    new OpeningTime(new Hour(10), new Minute(0)),
+                    new OpeningTime(new Hour(14), new Minute(0)),
+                    new DayOfWeekCollection(
+                        DayOfWeek::SATURDAY()
+                    )
+                ),
+            ]
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_permanent_calendar()
+    {
+        $openingHours = new OpeningHours();
+        $udb3ModelCalendar = new PermanentCalendar($openingHours);
+
+        $expected = new Calendar(
+            CalendarType::PERMANENT(),
+            null,
+            null,
+            [],
+            []
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_permanent_calendar_with_opening_hours()
+    {
+        $openingHours = new OpeningHours(
+            new Udb3ModelOpeningHour(
+                new Days(
+                    Day::monday(),
+                    Day::tuesday()
+                ),
+                new Time(
+                    new Udb3ModelHour(8),
+                    new Udb3ModelMinute(0)
+                ),
+                new Time(
+                    new Udb3ModelHour(12),
+                    new Udb3ModelMinute(59)
+                )
+            ),
+            new Udb3ModelOpeningHour(
+                new Days(
+                    Day::saturday()
+                ),
+                new Time(
+                    new Udb3ModelHour(10),
+                    new Udb3ModelMinute(0)
+                ),
+                new Time(
+                    new Udb3ModelHour(14),
+                    new Udb3ModelMinute(0)
+                )
+            )
+        );
+
+        $udb3ModelCalendar = new PermanentCalendar($openingHours);
+
+        $expected = new Calendar(
+            CalendarType::PERMANENT(),
+            null,
+            null,
+            [],
+            [
+                new OpeningHour(
+                    new OpeningTime(new Hour(8), new Minute(0)),
+                    new OpeningTime(new Hour(12), new Minute(59)),
+                    new DayOfWeekCollection(
+                        DayOfWeek::MONDAY(),
+                        DayOfWeek::TUESDAY()
+                    )
+                ),
+                new OpeningHour(
+                    new OpeningTime(new Hour(10), new Minute(0)),
+                    new OpeningTime(new Hour(14), new Minute(0)),
+                    new DayOfWeekCollection(
+                        DayOfWeek::SATURDAY()
+                    )
+                ),
+            ]
+        );
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
     }
 
     /**

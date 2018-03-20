@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
+use CultuurNet\UDB3\Event\Commands\CreateEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
@@ -41,6 +42,25 @@ use Psr\Log\LoggerAwareTrait;
 class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * @param CreateEvent $command
+     */
+    protected function handleCreateEvent(CreateEvent $command)
+    {
+        $event = Event::create(
+            $command->getItemId(),
+            $command->getMainLanguage(),
+            $command->getTitle(),
+            $command->getEventType(),
+            $command->getLocation(),
+            $command->getCalendar(),
+            $command->getTheme(),
+            $command->getPublicationDate()
+        );
+
+        $this->offerRepository->save($event);
+    }
 
     /**
      * Handle an update the major info command.

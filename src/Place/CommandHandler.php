@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\CreatePlace;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
@@ -199,6 +200,25 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getFlagAsInappropriateClassName()
     {
         return FlagAsInappropriate::class;
+    }
+
+    /**
+     * @param CreatePlace $command
+     */
+    protected function handleCreatePlace(CreatePlace $command)
+    {
+        $place = Place::createPlace(
+            $command->getItemId(),
+            $command->getMainLanguage(),
+            $command->getTitle(),
+            $command->getEventType(),
+            $command->getAddress(),
+            $command->getCalendar(),
+            $command->getTheme(),
+            $command->getPublicationDate()
+        );
+
+        $this->offerRepository->save($place);
     }
 
     /**

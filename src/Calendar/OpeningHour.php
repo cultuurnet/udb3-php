@@ -3,7 +3,11 @@
 namespace CultuurNet\UDB3\Calendar;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3ModelOpeningHour;
 
+/**
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour.
+ */
 class OpeningHour implements SerializableInterface
 {
     /**
@@ -103,5 +107,18 @@ class OpeningHour implements SerializableInterface
             'closes' => $this->closes->toNativeString(),
             'dayOfWeek' => $this->dayOfWeekCollection->serialize(),
         ];
+    }
+
+    /**
+     * @param Udb3ModelOpeningHour $openingHour
+     * @return self
+     */
+    public static function fromUdb3ModelOpeningHour(Udb3ModelOpeningHour $openingHour)
+    {
+        return new OpeningHour(
+            OpeningTime::fromUdb3ModelTime($openingHour->getOpeningTime()),
+            OpeningTime::fromUdb3ModelTime($openingHour->getClosingTime()),
+            DayOfWeekCollection::fromUdb3ModelDays($openingHour->getDays())
+        );
     }
 }

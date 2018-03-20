@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
+use CultuurNet\UDB3\Event\Commands\CreateEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
@@ -49,6 +50,7 @@ use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
@@ -119,6 +121,46 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             ),
             new Calendar(CalendarType::PERMANENT())
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_create_a_new_event()
+    {
+        $id = '5e36d2f2-b5de-4f5e-81b3-a129d996e9b6';
+        $language = new Language('nl');
+        $title = new Title('some representative title');
+        $type = new EventType('0.50.4.0.0', 'concert');
+        $location = new Location(
+            'd0cd4e9d-3cf1-4324-9835-2bfba63ac015',
+            new StringLiteral('Repeteerkot'),
+            new Address(
+                new Street('Kerkstraat 69'),
+                new PostalCode('9630'),
+                new Locality('Zottegem'),
+                Country::fromNative('BE')
+            )
+        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = new Theme('0.1.0.1.0.1', 'blues');
+        $publicationDate = new \DateTimeImmutable();
+
+        $command = new CreateEvent(
+            $id,
+            $language,
+            $title,
+            $type,
+            $location,
+            $calendar,
+            $theme,
+            $publicationDate
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->when($command)
+            ->then([new EventCreated($id, $language, $title, $type, $location, $calendar, $theme, $publicationDate)]);
     }
 
     /**

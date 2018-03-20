@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Calendar;
 
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Time;
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
 
@@ -108,5 +109,16 @@ class OpeningTime
         $time->setTime($hour, $minute);
 
         return $time;
+    }
+
+    /**
+     * @param Time $time
+     * @return self
+     */
+    public static function fromUdb3ModelTime(Time $time)
+    {
+        $hour = new Hour($time->getHour()->toInteger());
+        $minute = new Minute($time->getMinute()->toInteger());
+        return new self($hour, $minute);
     }
 }

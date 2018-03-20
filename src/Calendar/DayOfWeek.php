@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Calendar;
 
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day;
 use ValueObjects\Enum\Enum;
 
 /**
@@ -15,6 +16,8 @@ use ValueObjects\Enum\Enum;
  * @method static DayOfWeek FRIDAY()
  * @method static DayOfWeek SATURDAY()
  * @method static DayOfWeek SUNDAY()
+ *
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day.
  */
 class DayOfWeek extends Enum
 {
@@ -25,4 +28,13 @@ class DayOfWeek extends Enum
     const FRIDAY = 'friday';
     const SATURDAY = 'saturday';
     const SUNDAY = 'sunday';
+
+    /**
+     * @param Day $day
+     * @return DayOfWeek
+     */
+    public static function fromUdb3ModelDay(Day $day)
+    {
+        return self::fromNative($day->toString());
+    }
 }

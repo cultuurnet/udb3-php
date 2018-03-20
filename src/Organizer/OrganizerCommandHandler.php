@@ -6,9 +6,9 @@ use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
+use CultuurNet\UDB3\Organizer\Commands\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
@@ -65,6 +65,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     protected function getCommandHandlerMethods()
     {
         return [
+            CreateOrganizer::class => 'createOrganizer',
             UpdateWebsite::class => 'updateWebsite',
             UpdateTitle::class => 'updateTitle',
             UpdateAddress::class => 'updateAddress',
@@ -87,6 +88,18 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             $method = $handlers[$class];
             $this->{$method}($command);
         }
+    }
+
+    protected function createOrganizer(CreateOrganizer $createOrganizer)
+    {
+        $organizer = Organizer::create(
+            $createOrganizer->getOrganizerId(),
+            $createOrganizer->getMainLanguage(),
+            $createOrganizer->getWebsite(),
+            $createOrganizer->getTitle()
+        );
+
+        $this->organizerRepository->save($organizer);
     }
 
     /**

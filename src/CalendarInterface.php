@@ -7,6 +7,7 @@ use DateTimeInterface;
 
 /**
  * Interface for calendars.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
  */
 interface CalendarInterface
 {

@@ -2,6 +2,11 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Model\ValueObject\Translation\Language as Udb3ModelLanguage;
+
+/**
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Translation\Language.
+ */
 class Language
 {
     protected $code;
@@ -33,5 +38,14 @@ class Language
     public function getCode()
     {
         return $this->code;
+    }
+
+    /**
+     * @param Udb3ModelLanguage $language
+     * @return self
+     */
+    public static function fromUdb3ModelLanguage(Udb3ModelLanguage $language)
+    {
+        return new self($language->toString());
     }
 }

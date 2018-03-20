@@ -76,6 +76,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
     ) {
         $eventId = $this->uuidGenerator->generate();
 
+        // @todo Use CreateEvent command.
         $event = Event::create(
             $eventId,
             $mainLanguage,

@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
+use CultuurNet\UDB3\Place\Commands\CreatePlace;
 use CultuurNet\UDB3\Place\Commands\RemoveLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
@@ -45,6 +46,7 @@ use CultuurNet\UDB3\Place\Events\TitleTranslated;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
@@ -59,6 +61,42 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
      * @var PlaceCommandFactory
      */
     private $commandFactory;
+
+    /**
+     * @test
+     */
+    public function it_should_create_a_new_place()
+    {
+        $id = '1';
+        $language = new Language('nl');
+        $title = new Title('foo');
+        $type = new EventType('0.50.4.0.0', 'jeugdhuis');
+        $address = new Address(
+            new Street('Kerkstraat 69'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = new Theme('0.1.0.1.0.1', 'foo');
+        $publicationDate = new \DateTimeImmutable();
+
+        $command = new CreatePlace(
+            $id,
+            $language,
+            $title,
+            $type,
+            $address,
+            $calendar,
+            $theme,
+            $publicationDate
+        );
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->when($command)
+            ->then([new PlaceCreated($id, $language, $title, $type, $address, $calendar, $theme, $publicationDate)]);
+    }
 
     /**
      * @test

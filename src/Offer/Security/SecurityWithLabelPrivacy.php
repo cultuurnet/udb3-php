@@ -72,10 +72,15 @@ class SecurityWithLabelPrivacy extends SecurityDecoratorBase
         if ($this->userIdentification->isGodUser()) {
             return true;
         } else {
-            return $this->labelReadRepository->canUseLabel(
-                $this->userIdentification->getId(),
-                $command->getName()
-            );
+            foreach ($command->getNames() as $labelName) {
+                if (!$this->labelReadRepository->canUseLabel(
+                    $this->userIdentification->getId(),
+                    $labelName
+                )) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

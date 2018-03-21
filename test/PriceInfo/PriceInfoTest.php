@@ -2,6 +2,11 @@
 
 namespace CultuurNet\UDB3\PriceInfo;
 
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Model\ValueObject\Price\TariffName;
+use CultuurNet\UDB3\Model\ValueObject\Price\Tariffs;
+use CultuurNet\UDB3\Model\ValueObject\Price\TranslatedTariffName;
+use Money\Money;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -66,5 +71,77 @@ class PriceInfoTest extends \PHPUnit_Framework_TestCase
         $deserialized = PriceInfo::deserialize($serialized);
 
         $this->assertEquals($this->priceInfo, $deserialized);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_price_info_without_tariffs()
+    {
+        $udb3ModelPriceInfo = new \CultuurNet\UDB3\Model\ValueObject\Price\PriceInfo(
+            new \CultuurNet\UDB3\Model\ValueObject\Price\Tariff(
+                new TranslatedTariffName(
+                    new \CultuurNet\UDB3\Model\ValueObject\Translation\Language('nl'),
+                    new TariffName('Basistarief')
+                ),
+                new Money(1000, new \Money\Currency('EUR'))
+            ),
+            new Tariffs()
+        );
+
+        $expected = new PriceInfo(
+            new BasePrice(
+                new Price(1000),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $actual = PriceInfo::fromUdb3ModelPriceInfo($udb3ModelPriceInfo);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_price_info_with_tariffs()
+    {
+        $udb3ModelPriceInfo = new \CultuurNet\UDB3\Model\ValueObject\Price\PriceInfo(
+            new \CultuurNet\UDB3\Model\ValueObject\Price\Tariff(
+                new TranslatedTariffName(
+                    new \CultuurNet\UDB3\Model\ValueObject\Translation\Language('nl'),
+                    new TariffName('Basistarief')
+                ),
+                new Money(1000, new \Money\Currency('EUR'))
+            ),
+            new Tariffs(
+                new \CultuurNet\UDB3\Model\ValueObject\Price\Tariff(
+                    new TranslatedTariffName(
+                        new \CultuurNet\UDB3\Model\ValueObject\Translation\Language('nl'),
+                        new TariffName('Senioren')
+                    ),
+                    new Money(500, new \Money\Currency('EUR'))
+                )
+            )
+        );
+
+        $expected = new PriceInfo(
+            new BasePrice(
+                new Price(1000),
+                Currency::fromNative('EUR')
+            )
+        );
+        $expected = $expected
+            ->withExtraTariff(
+                new Tariff(
+                    new StringLiteral('Senioren'),
+                    new Price(500),
+                    Currency::fromNative('EUR')
+                )
+            );
+
+        $actual = PriceInfo::fromUdb3ModelPriceInfo($udb3ModelPriceInfo);
+
+        $this->assertEquals($expected, $actual);
     }
 }

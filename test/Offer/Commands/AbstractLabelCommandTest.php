@@ -66,8 +66,10 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     public function it_does_use_label_name()
     {
         $this->assertEquals(
-            new StringLiteral('LabelTest'),
-            $this->labelCommand->getName()
+            [
+                new StringLiteral('LabelTest'),
+            ],
+            $this->labelCommand->getNames()
         );
     }
 }

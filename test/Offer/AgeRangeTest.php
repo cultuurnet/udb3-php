@@ -200,4 +200,33 @@ class AgeRangeTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($typicalAgeRange->sameAs($otherAgeRange));
         $this->assertFalse($typicalAgeRange->sameAs($allAges));
     }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_a_restricted_udb3_model_age_range()
+    {
+        $udb3ModelAgeRange = new \CultuurNet\UDB3\Model\ValueObject\Audience\AgeRange(
+            new \CultuurNet\UDB3\Model\ValueObject\Audience\Age(8),
+            new \CultuurNet\UDB3\Model\ValueObject\Audience\Age(12)
+        );
+
+        $expected = new AgeRange(new Age(8), new Age(12));
+        $actual = AgeRange::fromUbd3ModelAgeRange($udb3ModelAgeRange);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_open_udb3_model_age_range()
+    {
+        $udb3ModelAgeRange = new \CultuurNet\UDB3\Model\ValueObject\Audience\AgeRange();
+
+        $expected = new AgeRange(null, null);
+        $actual = AgeRange::fromUbd3ModelAgeRange($udb3ModelAgeRange);
+
+        $this->assertEquals($expected, $actual);
+    }
 }

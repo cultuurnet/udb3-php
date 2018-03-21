@@ -6,6 +6,7 @@
  */
 
 namespace CultuurNet\UDB3;
+use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
 
 /**
  * BookingInfo info.
@@ -176,5 +177,48 @@ class BookingInfo implements JsonLdSerializableInterface
     public function sameAs(BookingInfo $otherBookingInfo)
     {
         return $this->toJsonLd() === $otherBookingInfo->toJsonLd();
+    }
+
+    /**
+     * @param Udb3ModelBookingInfo $udb3ModelBookingInfo
+     * @return BookingInfo
+     */
+    public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo)
+    {
+        $url = '';
+        $urlLabel = '';
+        $phone = '';
+        $email = '';
+        $availabilityStarts = '';
+        $availabilityEnds = '';
+
+        if ($udb3ModelWebsite = $udb3ModelBookingInfo->getWebsite()) {
+            $url = $udb3ModelWebsite->getUrl()->toString();
+            $urlLabel = $udb3ModelWebsite->getLabel()->getTranslation(
+                $udb3ModelWebsite->getLabel()->getOriginalLanguage()
+            )->toString();
+        }
+
+        if ($udb3ModelPhone = $udb3ModelBookingInfo->getTelephoneNumber()) {
+            $phone = $udb3ModelPhone->toString();
+        }
+
+        if ($udb3ModelEmail = $udb3ModelBookingInfo->getEmailAddress()) {
+            $email = $udb3ModelEmail->toString();
+        }
+
+        if ($udb3ModelAvailability = $udb3ModelBookingInfo->getAvailability()) {
+            $availabilityStarts = $udb3ModelAvailability->getFrom()->format(\DATE_ATOM);
+            $availabilityEnds = $udb3ModelAvailability->getTo()->format(\DATE_ATOM);
+        }
+
+        return new BookingInfo(
+            $url,
+            $urlLabel,
+            $phone,
+            $email,
+            $availabilityStarts,
+            $availabilityEnds
+        );
     }
 }

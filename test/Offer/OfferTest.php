@@ -1081,6 +1081,52 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_should_delete_the_current_organizer_regardless_of_the_id()
+    {
+        $itemId = UUID::generateAsString();
+        $organizerId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new OrganizerUpdated($itemId, $organizerId),
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->deleteCurrentOrganizer();
+                }
+            )
+            ->then([new OrganizerDeleted($itemId, $organizerId)]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_delete_the_current_organizer_if_there_is_none()
+    {
+        $itemId = UUID::generateAsString();
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                ]
+            )
+            ->when(
+                function (Item $item) {
+                    $item->deleteCurrentOrganizer();
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_ignore_a_title_update_that_does_not_change_the_existing_title()
     {
         $itemId = UUID::generateAsString();

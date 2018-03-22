@@ -6,6 +6,7 @@
  */
 
 namespace CultuurNet\UDB3;
+
 use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
 
 /**

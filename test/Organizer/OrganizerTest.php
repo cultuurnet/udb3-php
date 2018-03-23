@@ -10,8 +10,14 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
+use CultuurNet\UDB3\Organizer\Events\LabelsImported;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
@@ -153,6 +159,58 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                 }
             )
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_import_labels()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                    new LabelAdded($this->id, new Label('existing_label_1')),
+                    new LabelAdded($this->id, new Label('existing_label_2')),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->importLabels(new ImportLabels(
+                        $this->id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('new_label_1'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('existing_label_1'),
+                                true
+                            )
+                        ))
+                    );
+                }
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $this->id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('new_label_1'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('existing_label_1'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelRemoved($this->id, new Label('existing_label_2')),
+                    new LabelAdded($this->id, new Label('new_label_1')),
+                ]
+            );
     }
 
     /**

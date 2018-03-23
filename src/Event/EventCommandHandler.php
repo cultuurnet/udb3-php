@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\CreateEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\ImportLabels;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
@@ -124,6 +125,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getRemoveLabelClassName()
     {
         return RemoveLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImportLabelsClassName()
+    {
+        return ImportLabels::class;
     }
 
     /**

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\Media\MediaManagerInterface;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteCurrentOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractImportLabels;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
@@ -128,6 +129,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getRemoveLabelClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImportLabelsClassName();
 
     /**
      * @return string
@@ -305,6 +311,18 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $offer = $this->load($removeLabel->getItemId());
 
         $offer->removeLabel($this->createLabel($removeLabel));
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractImportLabels $importLabels
+     */
+    private function handleImportLabels(AbstractImportLabels $importLabels)
+    {
+        $offer = $this->load($importLabels->getItemId());
+
+        $offer->importLabels($importLabels->getLabels());
 
         $this->offerRepository->save($offer);
     }

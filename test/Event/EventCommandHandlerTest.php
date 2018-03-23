@@ -16,6 +16,7 @@ use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\CreateEvent;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\ImportLabels;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\EventCommandFactory;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
@@ -31,6 +32,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LabelsImported;
 use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
@@ -46,6 +48,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\MediaManager;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
@@ -301,6 +305,55 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->when(new RemoveLabel($id, new Label('foo')))
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_import_labels()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                ]
+            )
+            ->when(
+                new ImportLabels(
+                    $id,
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelAdded($id, new Label('foo')),
+                    new LabelAdded($id, new Label('bar')),
+                ]
+            );
     }
 
     /**

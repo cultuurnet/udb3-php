@@ -14,8 +14,11 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\MediaManager;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteCurrentOrganizer;
+use CultuurNet\UDB3\Offer\Item\Commands\ImportLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
@@ -28,6 +31,7 @@ use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
+use CultuurNet\UDB3\Offer\Item\Events\LabelsImported;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
@@ -233,6 +237,54 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new RemoveLabelFromSomethingElse($this->id, $this->label)
             )
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_import_labels()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                ]
+            )
+            ->when(
+                new ImportLabels(
+                    $this->id,
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $this->id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelAdded($this->id, new Label('foo')),
+                    new LabelAdded($this->id, new Label('bar')),
+                ]
+            );
     }
 
     /**

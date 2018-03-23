@@ -259,6 +259,52 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
+     * @param Labels $labels
+     */
+    public function importLabels(Labels $labels)
+    {
+        // Fire a LabelsImported event for everything.
+        $this->apply(
+            $this->createLabelsImportedEvent($labels)
+        );
+
+        // Convert to imported labels to label collection.
+        $importLabelsCollection = new LabelCollection(
+            array_map(
+                function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
+                    return new Label(
+                        $label->getName()->toString(),
+                        $label->isVisible()
+                    );
+                },
+                $labels->toArray()
+            )
+        );
+
+        // What are the deleted labels?
+        // Labels which are inside the internal state but not inside imported labels.
+        // For each label fire a LabelDeleted event.
+        foreach ($this->labels->asArray() as $label) {
+            if (!$importLabelsCollection->contains($label)) {
+                $this->apply(
+                    $this->createLabelRemovedEvent($label)
+                );
+            }
+        }
+
+        // What are the added labels?
+        // Labels which are not inside the internal state but inside the imported labels
+        // For each label fire a LabelAdded event.
+        foreach ($importLabelsCollection->asArray() as $label) {
+            if (!$this->labels->contains($label)) {
+                $this->apply(
+                    $this->createLabelAddedEvent($label)
+                );
+            }
+        }
+    }
+
+    /**
      * @param Language $language
      * @param Title $title
      */

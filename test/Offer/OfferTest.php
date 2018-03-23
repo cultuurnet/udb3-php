@@ -396,15 +396,11 @@ class OfferTest extends AggregateRootScenarioTestCase
                         new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
                             new LabelName('new_label_1'),
                             true
-                        ),
-                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('existing_label_1'),
-                            true
                         )
                     )
                 ),
-                new LabelRemoved($itemId, new Label('existing_label_2')),
                 new LabelAdded($itemId, new Label('new_label_1')),
+                new LabelRemoved($itemId, new Label('existing_label_2')),
             ]);
     }
 

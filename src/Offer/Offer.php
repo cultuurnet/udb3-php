@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
@@ -263,12 +264,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function importLabels(Labels $labels)
     {
-        // Fire a LabelsImported event for everything.
-        $this->apply(
-            $this->createLabelsImportedEvent($labels)
-        );
-
-        // Convert to imported labels to label collection.
+        // Convert the imported labels to label collection.
         $importLabelsCollection = new LabelCollection(
             array_map(
                 function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
@@ -281,25 +277,38 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
             )
         );
 
-        // What are the deleted labels?
-        // Labels which are inside the internal state but not inside imported labels.
-        // For each label fire a LabelDeleted event.
-        foreach ($this->labels->asArray() as $label) {
-            if (!$importLabelsCollection->contains($label)) {
-                $this->apply(
-                    $this->createLabelRemovedEvent($label)
-                );
+        // What are the added labels?
+        // Labels which are not inside the internal state but inside the imported labels
+        $addedLabels = new LabelCollection();
+        foreach ($importLabelsCollection->asArray() as $label) {
+            if (!$this->labels->contains($label)) {
+                $addedLabels = $addedLabels->with($label);
             }
         }
 
-        // What are the added labels?
-        // Labels which are not inside the internal state but inside the imported labels
-        // For each label fire a LabelAdded event.
-        foreach ($importLabelsCollection->asArray() as $label) {
-            if (!$this->labels->contains($label)) {
-                $this->apply(
-                    $this->createLabelAddedEvent($label)
-                );
+        // Fire a LabelsImported for all new labels.
+        $importLabels = new Labels();
+        foreach ($addedLabels->asArray() as $addedLabel) {
+            $importLabels = $importLabels->with(
+                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                    new LabelName((string) $addedLabel),
+                    $addedLabel->isVisible()
+                )
+            );
+        }
+        $this->apply($this->createLabelsImportedEvent($importLabels));
+
+        // For each added label fire a LabelAdded event.
+        foreach ($addedLabels->asArray() as $label) {
+            $this->apply($this->createLabelAddedEvent($label));
+        }
+
+        // What are the deleted labels?
+        // Labels which are inside the internal state but not inside imported labels.
+        // For each deleted label fire a LabelDeleted event.
+        foreach ($this->labels->asArray() as $label) {
+            if (!$importLabelsCollection->contains($label)) {
+                $this->apply($this->createLabelRemovedEvent($label));
             }
         }
     }

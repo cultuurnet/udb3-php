@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
@@ -25,6 +26,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelsImported;
 use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
@@ -890,6 +892,12 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractLabelRemoved
      */
     abstract protected function createLabelRemovedEvent(Label $label);
+
+    /**
+     * @param Labels $labels
+     * @return AbstractLabelsImported
+     */
+    abstract protected function createLabelsImportedEvent(Labels $labels);
 
     /**
      * @param Language $language

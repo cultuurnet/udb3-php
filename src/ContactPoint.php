@@ -3,6 +3,10 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Contact\ContactPoint as Udb3ModelContactPoint;
+use CultuurNet\UDB3\Model\ValueObject\Contact\TelephoneNumber;
+use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddress;
+use CultuurNet\UDB3\Model\ValueObject\Web\Url;
 
 /**
  * ContactPoint info.
@@ -99,5 +103,35 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
     public function sameAs(ContactPoint $otherContactPoint)
     {
         return $this->toJsonLd() == $otherContactPoint->toJsonLd();
+    }
+
+    /**
+     * @param Udb3ModelContactPoint $contactPoint
+     * @return ContactPoint
+     */
+    public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint)
+    {
+        $phones = array_map(
+            function (TelephoneNumber $phone) {
+                return $phone->toString();
+            },
+            $contactPoint->getTelephoneNumbers()->toArray()
+        );
+
+        $emails = array_map(
+            function (EmailAddress $emailAddress) {
+                return $emailAddress->toString();
+            },
+            $contactPoint->getEmailAddresses()->toArray()
+        );
+
+        $urls = array_map(
+            function (Url $url) {
+                return $url->toString();
+            },
+            $contactPoint->getUrls()->toArray()
+        );
+
+        return new ContactPoint($phones, $emails, $urls);
     }
 }

@@ -374,6 +374,18 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
+     * Delete the current organizer regardless of the id.
+     */
+    public function deleteCurrentOrganizer()
+    {
+        if (!is_null($this->organizerId)) {
+            $this->apply(
+                $this->createOrganizerDeletedEvent($this->organizerId)
+            );
+        }
+    }
+
+    /**
      * Updated the contact info.
      * @param ContactPoint $contactPoint
      */

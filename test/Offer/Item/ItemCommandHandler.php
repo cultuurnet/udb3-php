@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
@@ -100,6 +101,11 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getDeleteOrganizerClassName()
     {
         return DeleteOrganizer::class;
+    }
+
+    protected function getDeleteCurrentOrganizerClassName()
+    {
+        return DeleteCurrentOrganizer::class;
     }
 
     protected function getUpdateContactPointClassName()

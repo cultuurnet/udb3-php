@@ -3,7 +3,9 @@
 namespace CultuurNet\UDB3\PriceInfo;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Price\Tariff as Udb3ModelTariff;
 use ValueObjects\Money\Currency;
+use ValueObjects\Money\CurrencyCode;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Tariff implements SerializableInterface
@@ -84,6 +86,23 @@ class Tariff implements SerializableInterface
             new StringLiteral($data['name']),
             new Price($data['price']),
             Currency::fromNative($data['currency'])
+        );
+    }
+
+    /**
+     * @param Udb3ModelTariff $udb3ModelTariff
+     * @return Tariff
+     */
+    public static function fromUdb3ModelTariff(Udb3ModelTariff $udb3ModelTariff)
+    {
+        return new Tariff(
+            new StringLiteral(
+                $udb3ModelTariff->getName()->getTranslation(
+                    $udb3ModelTariff->getName()->getOriginalLanguage()
+                )->toString()
+            ),
+            new Price($udb3ModelTariff->getPrice()->getAmount()),
+            new Currency(CurrencyCode::fromNative($udb3ModelTariff->getPrice()->getCurrency()->getName()))
         );
     }
 }

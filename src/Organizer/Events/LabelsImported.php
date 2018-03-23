@@ -2,11 +2,12 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
+use CultuurNet\UDB3\LabelsImportedEventInterface;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 
-class LabelsImported extends OrganizerEvent
+class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterface
 {
     /**
      * @var Labels
@@ -23,6 +24,14 @@ class LabelsImported extends OrganizerEvent
     ) {
         parent::__construct($organizerId);
         $this->labels = $labels;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemId()
+    {
+        return $this->getOrganizerId();
     }
 
     /**

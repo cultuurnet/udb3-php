@@ -2,11 +2,12 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
+use CultuurNet\UDB3\LabelsImportedEventInterface;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 
-abstract class AbstractLabelsImported extends AbstractEvent
+abstract class AbstractLabelsImported extends AbstractEvent implements LabelsImportedEventInterface
 {
     /**
      * @var Labels

@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Label\ReadModels\AbstractProjector;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\WriteRepositoryInterface;
 use CultuurNet\UDB3\LabelEventInterface;
+use CultuurNet\UDB3\LabelsImportedEventInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -130,6 +131,14 @@ class Projector extends AbstractProjector
         if ($uuid) {
             $this->writeRepository->updateCountDecrement($uuid);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function applyLabelsImported(LabelsImportedEventInterface $labelsImported, Metadata $metadata)
+    {
+        // This projector does not handle this event, but it is part of abstract projector.
     }
 
     /**

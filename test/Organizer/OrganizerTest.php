@@ -199,15 +199,11 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                             new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
                                 new LabelName('new_label_1'),
                                 true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('existing_label_1'),
-                                true
                             )
                         )
                     ),
-                    new LabelRemoved($this->id, new Label('existing_label_2')),
                     new LabelAdded($this->id, new Label('new_label_1')),
+                    new LabelRemoved($this->id, new Label('existing_label_2')),
                 ]
             );
     }

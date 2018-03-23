@@ -178,17 +178,14 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             ->when(
                 function (Organizer $organizer) {
                     $organizer->importLabels(
-                        new ImportLabels(
-                            $this->id,
-                            new Labels(
-                                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                    new LabelName('new_label_1'),
-                                    true
-                                ),
-                                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                    new LabelName('existing_label_1'),
-                                    true
-                                )
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('new_label_1'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('existing_label_1'),
+                                true
                             )
                         )
                     );

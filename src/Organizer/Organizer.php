@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
@@ -239,14 +240,14 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
-     * @param ImportLabels $importLabels
+     * @param Labels $labels
      */
-    public function importLabels(ImportLabels $importLabels)
+    public function importLabels(Labels $labels)
     {
         // Fire a LabelsImported event for everything.
         $this->apply(new LabelsImported(
             $this->actorId,
-            $importLabels->getLabels()
+            $labels
         ));
 
         // Convert to imported labels to label collection.
@@ -258,7 +259,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
                         $label->isVisible()
                     );
                 },
-                $importLabels->getLabels()->toArray()
+                $labels->toArray()
             )
         );
 

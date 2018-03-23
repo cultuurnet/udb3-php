@@ -2,6 +2,13 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Model\ValueObject\Contact\TelephoneNumber;
+use CultuurNet\UDB3\Model\ValueObject\Contact\TelephoneNumbers;
+use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddress;
+use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddresses;
+use CultuurNet\UDB3\Model\ValueObject\Web\Url;
+use CultuurNet\UDB3\Model\ValueObject\Web\Urls;
+
 class ContactPointTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -82,5 +89,35 @@ class ContactPointTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->contactPoint->sameAs($sameContactPoint));
         $this->assertFalse($this->contactPoint->sameAs($differentOrderContactPoint));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_creatable_from_an_udb3_model_contact_point()
+    {
+        $udb3ModelContactPoint = new \CultuurNet\UDB3\Model\ValueObject\Contact\ContactPoint(
+            new TelephoneNumbers(
+                new TelephoneNumber('044/556677'),
+                new TelephoneNumber('011/223344')
+            ),
+            new EmailAddresses(
+                new EmailAddress('foo@publiq.be'),
+                new EmailAddress('bar@publiq.be')
+            ),
+            new Urls(
+                new Url('https://www.publiq.be'),
+                new Url('https://www.uitdatabank.be')
+            )
+        );
+
+        $expected = new ContactPoint(
+            ['044/556677', '011/223344'],
+            ['foo@publiq.be', 'bar@publiq.be'],
+            ['https://www.publiq.be', 'https://www.uitdatabank.be']
+        );
+        $actual = ContactPoint::fromUdb3ModelContactPoint($udb3ModelContactPoint);
+
+        $this->assertEquals($expected, $actual);
     }
 }

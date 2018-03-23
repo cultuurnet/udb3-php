@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use CultuurNet\UDB3\Model\ValueObject\Audience\AgeRange as Udb3ModelAgeRange;
 use ValueObjects\Person\Age;
 
 class AgeRange
@@ -126,5 +127,24 @@ class AgeRange
     public function sameAs(AgeRange $otherAgeRange)
     {
         return "$this" === "$otherAgeRange";
+    }
+
+    /**
+     * @param Udb3ModelAgeRange $udb3ModelAgeRange
+     * @return AgeRange
+     */
+    public static function fromUbd3ModelAgeRange(Udb3ModelAgeRange $udb3ModelAgeRange)
+    {
+        $from = null;
+        if ($from = $udb3ModelAgeRange->getFrom()) {
+            $from = new Age($from->toInteger());
+        }
+
+        $to = null;
+        if ($to = $udb3ModelAgeRange->getTo()) {
+            $to = new Age($to->toInteger());
+        }
+
+        return new AgeRange($from, $to);
     }
 }

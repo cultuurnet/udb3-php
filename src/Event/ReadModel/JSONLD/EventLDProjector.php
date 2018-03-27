@@ -537,7 +537,8 @@ class EventLDProjector extends OfferLDProjector implements
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
+        $jsonLD->name->{$this->getMainLanguage($jsonLD)->getCode()} = $majorInfoUpdated->getTitle();
+
         $jsonLD->location = array(
           '@type' => 'Place',
         ) + (array)$this->placeJSONLD($majorInfoUpdated->getLocation()->getCdbid());

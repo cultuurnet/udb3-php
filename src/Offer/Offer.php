@@ -296,7 +296,9 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
                 )
             );
         }
-        $this->apply($this->createLabelsImportedEvent($importLabels));
+        if ($importLabels->count() > 0) {
+            $this->apply($this->createLabelsImportedEvent($importLabels));
+        }
 
         // For each added label fire a LabelAdded event.
         foreach ($addedLabels->asArray() as $label) {

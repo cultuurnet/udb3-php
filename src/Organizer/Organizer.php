@@ -277,10 +277,12 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
                 )
             );
         }
-        $this->apply(new LabelsImported(
-            $this->actorId,
-            $importLabels
-        ));
+        if ($importLabels->count() > 0) {
+            $this->apply(new LabelsImported(
+                $this->actorId,
+                $importLabels
+            ));
+        }
 
         // For each added label fire a LabelAdded event.
         foreach ($addedLabels->asArray() as $label) {

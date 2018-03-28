@@ -166,6 +166,17 @@ class OrganizerTest extends AggregateRootScenarioTestCase
      */
     public function it_can_import_labels()
     {
+        $labels = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('new_label_1'),
+                true
+            ),
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_1'),
+                true
+            )
+        );
+
         $this->scenario
             ->withAggregateId($this->id)
             ->given(
@@ -176,19 +187,9 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Organizer $organizer) {
-                    $organizer->importLabels(
-                        new Labels(
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('new_label_1'),
-                                true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('existing_label_1'),
-                                true
-                            )
-                        )
-                    );
+                function (Organizer $organizer) use ($labels) {
+                    $organizer->importLabels($labels);
+                    $organizer->importLabels($labels);
                 }
             )
             ->then(

@@ -367,6 +367,17 @@ class OfferTest extends AggregateRootScenarioTestCase
     {
         $itemId = UUID::generateAsString();
 
+        $labels = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('new_label_1'),
+                true
+            ),
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_1'),
+                true
+            )
+        );
+
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
@@ -374,19 +385,9 @@ class OfferTest extends AggregateRootScenarioTestCase
                 new LabelAdded($itemId, new Label('existing_label_2')),
             ])
             ->when(
-                function (Item $item) {
-                    $item->importLabels(
-                        new Labels(
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('new_label_1'),
-                                true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('existing_label_1'),
-                                true
-                            )
-                        )
-                    );
+                function (Item $item) use ($labels) {
+                    $item->importLabels($labels);
+                    $item->importLabels($labels);
                 }
             )
             ->then([

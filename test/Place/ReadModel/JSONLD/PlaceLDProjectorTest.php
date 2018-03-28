@@ -39,7 +39,6 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
-use CultuurNet\UDB3\Place\PlaceServiceInterface;
 use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
@@ -720,10 +719,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
-        $jsonLD->mainLanguage = 'nl';
-        $jsonLD->name = (object)['nl'=>'some representative title'];
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object)['en'=>'some representative title'];
         $jsonLD->address = (object) [
-            'nl' => (object) [
+            'en' => (object) [
                 'addressCountry' => '$country',
                 'addressLocality' => '$locality',
                 'postalCode' => '$postalCode',
@@ -738,8 +737,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ],
         ];
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
@@ -748,10 +747,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $expectedJsonLD = new stdClass();
         $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
-        $expectedJsonLD->mainLanguage = 'nl';
-        $expectedJsonLD->name = (object)['nl'=>'new title'];
+        $expectedJsonLD->mainLanguage = 'en';
+        $expectedJsonLD->name = (object)['en'=>'new title'];
         $expectedJsonLD->address = (object) [
-            'nl' => (object) [
+            'en' => (object) [
                 'addressCountry' => 'BE',
                 'addressLocality' => 'Leuven',
                 'postalCode' => '3000',
@@ -774,8 +773,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
-        $expectedJsonLD->languages = ['nl'];
-        $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->languages = ['en'];
+        $expectedJsonLD->completedLanguages = ['en'];
         $expectedJsonLD->modified = $this->recordedOn->toString();
 
         $body = $this->project(

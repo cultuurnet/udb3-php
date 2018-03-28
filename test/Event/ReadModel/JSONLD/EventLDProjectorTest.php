@@ -1050,7 +1050,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->id = $id;
-        $jsonLD->name = ['nl' => 'some representative title'];
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = ['en' => 'some representative title'];
         $jsonLD->location = [
             '@type' => 'Place',
             '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
@@ -1063,8 +1064,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'eventtype',
             ],
         ];
-        $jsonLD->languages = ['nl'];
-        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
@@ -1073,8 +1074,9 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $expectedJsonLD = new stdClass();
         $expectedJsonLD->id = $id;
+        $expectedJsonLD->mainLanguage = 'en';
         $expectedJsonLD->name = (object)[
-            'nl' => 'new title',
+            'en' => 'new title',
         ];
         $expectedJsonLD->location = (object)[
             '@type' => 'Place',
@@ -1093,8 +1095,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'domain' => 'theme',
             ],
         ];
-        $expectedJsonLD->languages = ['nl'];
-        $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->languages = ['en'];
+        $expectedJsonLD->completedLanguages = ['en'];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
         $expectedJsonLD->availableTo = $expectedJsonLD->endDate;

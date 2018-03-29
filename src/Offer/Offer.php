@@ -589,6 +589,55 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
+     * @param ImageCollection $imageCollection
+     */
+    public function importImages(ImageCollection $imageCollection)
+    {
+        $currentImageCollection = $this->images;
+        $newMainImage = $imageCollection->getMain();
+
+        $newImages = $imageCollection->toArray();
+        $currentImages = $currentImageCollection->toArray();
+
+        $compareImages = function (Image $a, Image $b) {
+            $idA = $a->getMediaObjectId()->toNative();
+            $idB = $b->getMediaObjectId()->toNative();
+            return strcmp($idA, $idB);
+        };
+
+        /* @var Image[] $addedImages */
+        $addedImages = array_udiff($newImages, $currentImages, $compareImages);
+
+        /* @var Image[] $updatedImages */
+        $updatedImages = array_uintersect($newImages, $currentImages, $compareImages);
+
+        /* @var Image[] $removedImages */
+        $removedImages = array_udiff($currentImages, $newImages, $compareImages);
+
+        foreach ($addedImages as $addedImage) {
+            $this->apply($this->createImageAddedEvent($addedImage));
+        }
+
+        foreach ($updatedImages as $updatedImage) {
+            $this->apply(
+                $this->createImageUpdatedEvent(
+                    $updatedImage->getMediaObjectId(),
+                    $updatedImage->getDescription(),
+                    $updatedImage->getCopyrightHolder()
+                )
+            );
+        }
+
+        foreach ($removedImages as $removedImage) {
+            $this->apply($this->createImageRemovedEvent($removedImage));
+        }
+
+        if ($newMainImage) {
+            $this->apply($this->createMainImageSelectedEvent($newMainImage));
+        }
+    }
+
+    /**
      * Delete the offer.
      */
     public function delete()

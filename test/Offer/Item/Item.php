@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
@@ -27,6 +28,7 @@ use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
+use CultuurNet\UDB3\Offer\Item\Events\LabelsImported;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
@@ -86,6 +88,14 @@ class Item extends Offer
     protected function createLabelRemovedEvent(Label $label)
     {
         return new LabelRemoved($this->id, $label);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createLabelsImportedEvent(Labels $labels)
+    {
+        return new LabelsImported($this->id, $labels);
     }
 
     protected function createImageAddedEvent(Image $image)

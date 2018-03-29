@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
@@ -32,6 +33,7 @@ use CultuurNet\UDB3\Place\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
 use CultuurNet\UDB3\Place\Events\ImageRemoved;
 use CultuurNet\UDB3\Place\Events\ImageUpdated;
+use CultuurNet\UDB3\Place\Events\LabelsImported;
 use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
@@ -362,6 +364,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function createLabelRemovedEvent(Label $label)
     {
         return new LabelRemoved($this->placeId, $label);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createLabelsImportedEvent(Labels $labels)
+    {
+        return new LabelsImported($this->placeId, $labels);
     }
 
     protected function createImageAddedEvent(Image $image)

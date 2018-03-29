@@ -16,6 +16,8 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\LabelEventInterface;
+use CultuurNet\UDB3\LabelsImportedEventInterface;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -89,6 +91,22 @@ class Projector extends AbstractProjector
             $this->writeRepository->deleteByLabelNameAndRelationId(
                 $labelRelation->getLabelName(),
                 $labelRelation->getRelationId()
+            );
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function applyLabelsImported(LabelsImportedEventInterface $labelsImported, Metadata $metadata)
+    {
+        foreach ($labelsImported->getLabels()->toArray() as $label) {
+            /** @var Label $label */
+            $this->writeRepository->save(
+                new LabelName($label->getName()->toString()),
+                $this->offerTypeResolver->getRelationTypeForImport($labelsImported),
+                new StringLiteral($labelsImported->getItemId()),
+                true
             );
         }
     }

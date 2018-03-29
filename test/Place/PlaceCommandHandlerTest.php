@@ -21,9 +21,12 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\MediaManager;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\OfferCommandHandlerTestTrait;
 use CultuurNet\UDB3\Place\Commands\AddLabel;
 use CultuurNet\UDB3\Place\Commands\CreatePlace;
+use CultuurNet\UDB3\Place\Commands\ImportLabels;
 use CultuurNet\UDB3\Place\Commands\RemoveLabel;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\PlaceCommandFactory;
@@ -38,6 +41,7 @@ use CultuurNet\UDB3\Place\Events\CalendarUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
+use CultuurNet\UDB3\Place\Events\LabelsImported;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
@@ -264,6 +268,55 @@ class PlaceHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->when(new RemoveLabel($id, new Label('foo')))
             ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_import_labels()
+    {
+        $id = '1';
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [
+                    $this->factorOfferCreated($id),
+                ]
+            )
+            ->when(
+                new ImportLabels(
+                    $id,
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelAdded($id, new Label('foo')),
+                    new LabelAdded($id, new Label('bar')),
+                ]
+            );
     }
 
     /**

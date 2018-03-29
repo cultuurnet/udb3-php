@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
 use CultuurNet\UDB3\Offer\Item\Commands\ImportImages;
+use CultuurNet\UDB3\Offer\Item\Commands\ImportLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
@@ -41,6 +42,11 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getRemoveLabelClassName()
     {
         return RemoveLabel::class;
+    }
+
+    protected function getImportLabelsClassName()
+    {
+        return ImportLabels::class;
     }
 
     protected function getAddImageClassName()

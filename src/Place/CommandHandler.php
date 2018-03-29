@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Place\Commands\AddImage;
 use CultuurNet\UDB3\Place\Commands\CreatePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Place\Commands\ImportImages;
+use CultuurNet\UDB3\Place\Commands\ImportLabels;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
@@ -57,6 +58,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getRemoveLabelClassName()
     {
         return RemoveLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImportLabelsClassName()
+    {
+        return ImportLabels::class;
     }
 
     /**

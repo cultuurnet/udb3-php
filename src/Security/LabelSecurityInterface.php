@@ -7,7 +7,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 interface LabelSecurityInterface
 {
     /**
-     * @return StringLiteral|null
+     * @return StringLiteral[]
      */
-    public function getName();
+    public function getNames();
 }

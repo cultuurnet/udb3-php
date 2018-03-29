@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Organizer\Commands\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
 use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
 use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
@@ -73,6 +74,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             DeleteOrganizer::class => 'deleteOrganizer',
             AddLabel::class => 'addLabel',
             RemoveLabel::class => 'removeLabel',
+            ImportLabels::class => 'importLabels',
         ];
     }
 
@@ -173,6 +175,18 @@ class OrganizerCommandHandler implements CommandHandlerInterface
         $organizer = $this->loadOrganizer($removeLabel->getOrganizerId());
 
         $organizer->removeLabel($this->createLabel($removeLabel));
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param ImportLabels $importLabels
+     */
+    protected function importLabels(ImportLabels $importLabels)
+    {
+        $organizer = $this->loadOrganizer($importLabels->getOrganizerId());
+
+        $organizer->importLabels($importLabels->getLabels());
 
         $this->organizerRepository->save($organizer);
     }

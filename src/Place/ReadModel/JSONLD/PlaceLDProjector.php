@@ -285,7 +285,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
+        $jsonLD->name->{$this->getMainLanguage($jsonLD)->getCode()} = $majorInfoUpdated->getTitle();
 
         $this->setAddress(
             $jsonLD,

@@ -403,17 +403,21 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param AbstractUpdateImage $updateImageCommand
+     * @param UUID $mediaObjectId
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @return ImageUpdated
      */
     protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     ) {
         return new ImageUpdated(
             $this->eventId,
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
+            $mediaObjectId,
+            $description,
+            $copyrightHolder
         );
     }
 

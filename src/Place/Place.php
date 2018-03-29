@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\ImageCollection;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
@@ -59,6 +58,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Place extends Offer implements UpdateableWithCdbXmlInterface
@@ -375,13 +375,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     ) {
         return new ImageUpdated(
             $this->placeId,
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
+            $mediaObjectId,
+            $description,
+            $copyrightHolder
         );
     }
 
@@ -435,7 +437,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     {
         return new CalendarUpdated($this->placeId, $calendar);
     }
-    
+
     /**
      * @param string $typicalAgeRange
      * @return TypicalAgeRangeUpdated

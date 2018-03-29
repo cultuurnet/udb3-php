@@ -527,7 +527,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     {
         if ($this->updateImageAllowed($updateImageCommand)) {
             $this->apply(
-                $this->createImageUpdatedEvent($updateImageCommand)
+                $this->createImageUpdatedEvent(
+                    $updateImageCommand->getMediaObjectId(),
+                    $updateImageCommand->getDescription(),
+                    $updateImageCommand->getCopyrightHolder()
+                )
             );
         }
     }
@@ -918,11 +922,15 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     abstract protected function createImageRemovedEvent(Image $image);
 
     /**
-     * @param AbstractUpdateImage $updateImageCommand
+     * @param UUID $uuid
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @return AbstractImageUpdated
      */
     abstract protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $uuid,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     );
 
     /**

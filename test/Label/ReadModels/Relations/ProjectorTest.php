@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded as LabelAddedToEvent;
 use CultuurNet\UDB3\Event\Events\LabelRemoved as LabelRemovedFromEvent;
+use CultuurNet\UDB3\Event\Events\LabelsImported as EventLabelsImported;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelEventRelationTypeResolver;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
@@ -18,15 +19,20 @@ use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\WriteRepositoryInterfa
 use CultuurNet\UDB3\Label\ReadModels\Relations\Repository\ReadRepositoryInterface as RelationsReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelsImported;
+use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded as LabelAddedToOrganizer;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved as LabelRemovedFromOrganizer;
+use CultuurNet\UDB3\Organizer\Events\LabelsImported as OrganizerLabelsImported;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
 use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
+use CultuurNet\UDB3\Place\Events\LabelsImported as PlaceLabelsImported;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use ValueObjects\Identity\UUID;
@@ -203,6 +209,88 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 new LabelRemovedFromOrganizer(
                     $this->getRelationId(),
                     new Label('labelName')
+                ),
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider labelsImportedDataProvider
+     *
+     * @param string $relationId
+     * @param RelationType $relationType
+     * @param AbstractLabelsImported|ImportLabels $labelsImported
+     */
+    public function it_handles_import_labels_events(
+        $relationId,
+        RelationType $relationType,
+        $labelsImported
+    ) {
+        $domainMessage = $this->createDomainMessage(
+            $relationId,
+            $labelsImported
+        );
+
+        $this->writeRepository->expects($this->exactly(2))
+            ->method('save')
+            ->withConsecutive(
+                [
+                    new LabelName('foo'),
+                    $relationType,
+                    new StringLiteral($relationId),
+                    true,
+                ],
+                [
+                    new LabelName('bar'),
+                    $relationType,
+                    new StringLiteral($relationId),
+                    true,
+                ]
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @return array
+     */
+    public function labelsImportedDataProvider()
+    {
+        $labels = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName('foo'),
+                true
+            ),
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName('bar'),
+                false
+            )
+        );
+
+        return [
+            [
+                $this->getRelationId(),
+                RelationType::EVENT(),
+                new EventLabelsImported(
+                    $this->getRelationId(),
+                    $labels
+                ),
+            ],
+            [
+                $this->getRelationId(),
+                RelationType::PLACE(),
+                new PlaceLabelsImported(
+                    $this->getRelationId(),
+                    $labels
+                ),
+            ],
+            [
+                $this->getRelationId(),
+                RelationType::ORGANIZER(),
+                new OrganizerLabelsImported(
+                    $this->getRelationId(),
+                    $labels
                 ),
             ],
         ];

@@ -45,8 +45,10 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     /**
      * @inheritdoc
      */
-    public function getName()
+    public function getNames()
     {
-        return new StringLiteral((string)$this->label);
+        return [
+            new StringLiteral((string)$this->label),
+        ];
     }
 }

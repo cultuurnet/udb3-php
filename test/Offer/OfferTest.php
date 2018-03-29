@@ -17,12 +17,15 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\LabelsImported;
 use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
@@ -354,6 +357,51 @@ class OfferTest extends AggregateRootScenarioTestCase
                 new LabelAdded($itemId, new Label('green')),
                 new LabelRemoved($itemId, new Label('purple')),
                 new LabelAdded($itemId, new Label('purple')),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_import_labels()
+    {
+        $itemId = UUID::generateAsString();
+
+        $labels = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('new_label_1'),
+                true
+            ),
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_1'),
+                true
+            )
+        );
+
+        $this->scenario
+            ->given([
+                new ItemCreated($itemId),
+                new LabelAdded($itemId, new Label('existing_label_1')),
+                new LabelAdded($itemId, new Label('existing_label_2')),
+            ])
+            ->when(
+                function (Item $item) use ($labels) {
+                    $item->importLabels($labels);
+                    $item->importLabels($labels);
+                }
+            )
+            ->then([
+                new LabelsImported(
+                    $itemId,
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('new_label_1'),
+                            true
+                        )
+                    )
+                ),
+                new LabelAdded($itemId, new Label('new_label_1')),
+                new LabelRemoved($itemId, new Label('existing_label_2')),
             ]);
     }
 

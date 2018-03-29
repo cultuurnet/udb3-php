@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
@@ -25,6 +27,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelsImported;
 use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
@@ -253,6 +256,62 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
             $this->apply(
                 $this->createLabelRemovedEvent($label)
             );
+        }
+    }
+
+    /**
+     * @param Labels $labels
+     */
+    public function importLabels(Labels $labels)
+    {
+        // Convert the imported labels to label collection.
+        $importLabelsCollection = new LabelCollection(
+            array_map(
+                function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
+                    return new Label(
+                        $label->getName()->toString(),
+                        $label->isVisible()
+                    );
+                },
+                $labels->toArray()
+            )
+        );
+
+        // What are the added labels?
+        // Labels which are not inside the internal state but inside the imported labels
+        $addedLabels = new LabelCollection();
+        foreach ($importLabelsCollection->asArray() as $label) {
+            if (!$this->labels->contains($label)) {
+                $addedLabels = $addedLabels->with($label);
+            }
+        }
+
+        // Fire a LabelsImported for all new labels.
+        $importLabels = new Labels();
+        foreach ($addedLabels->asArray() as $addedLabel) {
+            $importLabels = $importLabels->with(
+                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                    new LabelName((string) $addedLabel),
+                    $addedLabel->isVisible()
+                )
+            );
+        }
+        if ($importLabels->count() > 0) {
+            $this->apply($this->createLabelsImportedEvent($importLabels));
+        }
+
+        // For each added label fire a LabelAdded event.
+        foreach ($addedLabels->asArray() as $label) {
+            $this->apply($this->createLabelAddedEvent($label));
+        }
+
+        // What are the deleted labels?
+        // Labels which are inside the internal state but not inside imported labels.
+        // For each deleted label fire a LabelDeleted event.
+        foreach ($this->labels->asArray() as $label) {
+            if (!$importLabelsCollection->contains($label)) {
+                $this->apply($this->createLabelRemovedEvent($label));
+            }
         }
     }
 
@@ -890,6 +949,12 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @return AbstractLabelRemoved
      */
     abstract protected function createLabelRemovedEvent(Label $label);
+
+    /**
+     * @param Labels $labels
+     * @return AbstractLabelsImported
+     */
+    abstract protected function createLabelsImportedEvent(Labels $labels);
 
     /**
      * @param Language $language

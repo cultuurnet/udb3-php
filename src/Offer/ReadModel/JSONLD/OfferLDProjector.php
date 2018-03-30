@@ -949,7 +949,18 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $currentMediaObjects = isset($offerLd->mediaObject) ? $offerLd->mediaObject : [];
         $dutchMediaObjects = array_map(
             function (Image $image) {
-                return $this->mediaObjectSerializer->serialize($image, 'json-ld');
+                // The mediaObject serializer violates the return statement of the serializer interface and returns an
+                // array instead of a serialized string.
+                /* @var array $serialized */
+                $serialized = $this->mediaObjectSerializer->serialize($image, 'json-ld');
+
+                // Hardcode @type to schema:Image because while ImagesImportedFromUDB2 and ImagesUpdatedFromUDB2 only
+                // contain images, some of them have "application/octet-stream" due to a missing file type in the
+                // imported cdbxml. And the serializer interprets "application/octet-stream" as "schema:MediaObject",
+                // while the file is in fact an image.
+                $serialized['@type'] = 'schema:Image';
+
+                return $serialized;
             },
             $images->toArray()
         );

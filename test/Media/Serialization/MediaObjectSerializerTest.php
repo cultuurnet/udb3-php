@@ -71,7 +71,7 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_serialize_media_objects_with_application_octet_stream_mime_type()
     {
-        $mediaObject = new Image(
+        $mediaObject = MediaObject::create(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('application/octet-stream'),
             new Description('my pic'),

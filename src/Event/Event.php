@@ -60,7 +60,6 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\AgeRange;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
@@ -193,14 +192,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     public function getAggregateRootId()
     {
         return $this->eventId;
-    }
-
-    /**
-     * @return UUID[]
-     */
-    public function getMediaObjects()
-    {
-        return $this->mediaObjects;
     }
 
     protected function applyEventCreated(EventCreated $eventCreated)

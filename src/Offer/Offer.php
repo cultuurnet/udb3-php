@@ -655,7 +655,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         $currentImageCollection = $this->images;
         $newMainImage = $imageCollection->getMain();
 
-        $newImages = $imageCollection->toArray();
+        $importImages = $imageCollection->toArray();
         $currentImages = $currentImageCollection->toArray();
 
         $compareImages = function (Image $a, Image $b) {
@@ -665,13 +665,13 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         };
 
         /* @var Image[] $addedImages */
-        $addedImages = array_udiff($newImages, $currentImages, $compareImages);
+        $addedImages = array_udiff($importImages, $currentImages, $compareImages);
 
         /* @var Image[] $updatedImages */
-        $updatedImages = array_uintersect($newImages, $currentImages, $compareImages);
+        $updatedImages = array_uintersect($importImages, $currentImages, $compareImages);
 
         /* @var Image[] $removedImages */
-        $removedImages = array_udiff($currentImages, $newImages, $compareImages);
+        $removedImages = array_udiff($currentImages, $importImages, $compareImages);
 
         foreach ($addedImages as $addedImage) {
             $this->apply($this->createImageAddedEvent($addedImage));

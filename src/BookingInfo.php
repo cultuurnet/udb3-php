@@ -9,85 +9,70 @@ use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInf
  */
 class BookingInfo implements JsonLdSerializableInterface
 {
-
     /**
-     * @var string
+     * @var string|null
      */
-    protected $price = '';
+    protected $phone;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $currency = 'EUR';
+    protected $email;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $phone = '';
+    protected $url;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $email = '';
+    protected $urlLabel;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $url = '';
+    protected $availabilityStarts;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $urlLabel = '';
+    protected $availabilityEnds;
 
     /**
-     * @var string
-     */
-    protected $availabilityStarts = '';
-
-    /**
-     * @var string
-     */
-    protected $availabilityEnds = '';
-
-    /**
-     * @var string
-     */
-    protected $name = '';
-
-    /**
-     * @var string
-     */
-    protected $description = '';
-
-    /**
-     * @param string $url
-     * @param string $urlLabel
-     * @param string $phone
-     * @param string $email
-     * @param string $availabilityStarts
-     * @param string $availabilityEnds
-     * @param string $name
-     * @param string $description
+     * @param string|null $url
+     * @param string|null $urlLabel
+     * @param string|null $phone
+     * @param string|null $email
+     * @param string|null $availabilityStarts
+     * @param string|null $availabilityEnds
      */
     public function __construct(
-        $url = '',
-        $urlLabel = '',
-        $phone = '',
-        $email = '',
-        $availabilityStarts = '',
-        $availabilityEnds = '',
-        $name = '',
-        $description = ''
+        $url = null,
+        $urlLabel = null,
+        $phone = null,
+        $email = null,
+        $availabilityStarts = null,
+        $availabilityEnds = null
     ) {
+        // Workaround to maintain compatibility with older BookingInfo data.
+        // Empty BookingInfo properties used to be stored as empty strings in the past.
+        // Convert those to null in case they are injected via the constructor (via BookingInfo::deserialize()).
+        // API clients are also allowed to send empty strings for BookingInfo properties via EntryAPI3, which should
+        // also be treated as null.
+        $url = $this->castEmptyStringToNull($url);
+        $urlLabel = $this->castEmptyStringToNull($urlLabel);
+        $phone = $this->castEmptyStringToNull($phone);
+        $email = $this->castEmptyStringToNull($email);
+        $availabilityStarts = $this->castEmptyStringToNull($availabilityStarts);
+        $availabilityEnds = $this->castEmptyStringToNull($availabilityEnds);
+
         $this->url = $url;
         $this->urlLabel = $urlLabel;
         $this->phone = $phone;
         $this->email = $email;
         $this->availabilityStarts = $availabilityStarts;
         $this->availabilityEnds = $availabilityEnds;
-        $this->name = $name;
-        $this->description = $description;
     }
 
     public function getPhone()
@@ -110,16 +95,6 @@ class BookingInfo implements JsonLdSerializableInterface
         return $this->urlLabel;
     }
 
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
     public function getAvailabilityStarts()
     {
         return $this->availabilityStarts;
@@ -135,16 +110,16 @@ class BookingInfo implements JsonLdSerializableInterface
      */
     public function serialize()
     {
-        return [
-          'phone' => $this->phone,
-          'email' => $this->email,
-          'url' => $this->url,
-          'urlLabel' => $this->urlLabel,
-          'name' => $this->name,
-          'description' => $this->description,
-          'availabilityStarts' => $this->availabilityStarts,
-          'availabilityEnds' => $this->availabilityEnds,
-        ];
+        return array_filter(
+            [
+              'phone' => $this->phone,
+              'email' => $this->email,
+              'url' => $this->url,
+              'urlLabel' => $this->urlLabel,
+              'availabilityStarts' => $this->availabilityStarts,
+              'availabilityEnds' => $this->availabilityEnds,
+            ]
+        );
     }
 
     /**
@@ -152,9 +127,24 @@ class BookingInfo implements JsonLdSerializableInterface
      */
     public static function deserialize(array $data)
     {
+        $defaults = [
+            'url' => null,
+            'urlLabel' => null,
+            'phone' => null,
+            'email' => null,
+            'availabilityStarts' => null,
+            'availabilityEnds' => null,
+        ];
+
+        $data = array_merge($defaults, $data);
+
         return new static(
-            $data['url'], $data['urlLabel'], $data['phone'], $data['email'],
-            $data['availabilityStarts'], $data['availabilityEnds'], $data['name'], $data['description']
+            $data['url'],
+            $data['urlLabel'],
+            $data['phone'],
+            $data['email'],
+            $data['availabilityStarts'],
+            $data['availabilityEnds']
         );
     }
 
@@ -181,12 +171,12 @@ class BookingInfo implements JsonLdSerializableInterface
      */
     public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo)
     {
-        $url = '';
-        $urlLabel = '';
-        $phone = '';
-        $email = '';
-        $availabilityStarts = '';
-        $availabilityEnds = '';
+        $url = null;
+        $urlLabel = null;
+        $phone = null;
+        $email = null;
+        $availabilityStarts = null;
+        $availabilityEnds = null;
 
         if ($udb3ModelWebsite = $udb3ModelBookingInfo->getWebsite()) {
             $url = $udb3ModelWebsite->getUrl()->toString();
@@ -216,5 +206,14 @@ class BookingInfo implements JsonLdSerializableInterface
             $availabilityStarts,
             $availabilityEnds
         );
+    }
+
+    /**
+     * @param $string
+     * @return null|string
+     */
+    private function castEmptyStringToNull($string)
+    {
+        return is_string($string) && strlen($string) === 0 ? null : $string;
     }
 }

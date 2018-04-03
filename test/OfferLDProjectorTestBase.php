@@ -139,9 +139,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $email = 'test@test.com';
         $availabilityStarts = '12';
         $availabilityEnds = '14';
-        $name = 'Booking name';
-        $description = 'booking description';
-        $bookingInfo = new BookingInfo($url, $urlLabel, $phone, $email, $availabilityStarts, $availabilityEnds, $name, $description);
+        $bookingInfo = new BookingInfo($url, $urlLabel, $phone, $email, $availabilityStarts, $availabilityEnds);
         $eventClass = $this->getEventClass('BookingInfoUpdated');
         $bookingInfoUpdated = new $eventClass($id, $bookingInfo);
 
@@ -155,8 +153,6 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'email' => $email,
                 'url' => $url,
                 'urlLabel' => $urlLabel,
-                'name' => $name,
-                'description' => $description,
                 'availabilityStarts' => $availabilityStarts,
                 'availabilityEnds' => $availabilityEnds,
             ],

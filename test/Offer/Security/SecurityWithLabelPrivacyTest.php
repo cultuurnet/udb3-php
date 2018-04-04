@@ -112,26 +112,11 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
         $this->securityWithLabelPrivacy->isAuthorized($labelSecurity);
     }
 
-
     /**
      * @test
      */
-    public function a_god_user_can_use_all_labels()
+    public function a_user_can_only_use_labels_he_is_allowed_to_use()
     {
-        $this->mockIsGodUser(true);
-
-        $this->assertTrue(
-            $this->securityWithLabelPrivacy->isAuthorized($this->addLabel)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function a_normal_user_can_only_use_labels_he_is_allowed_to_use()
-    {
-        $this->mockIsGodUser(false);
-
         $this->userIdentification->method('getId')
             ->willReturn(new StringLiteral('82650413-baf2-4257-a25b-d25dc18999dc'));
 
@@ -141,14 +126,5 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(
             $this->securityWithLabelPrivacy->isAuthorized($this->addLabel)
         );
-    }
-
-    /**
-     * @param $isGodUser
-     */
-    private function mockIsGodUser($isGodUser)
-    {
-        $this->userIdentification->method('isGodUser')
-            ->willReturn($isGodUser);
     }
 }

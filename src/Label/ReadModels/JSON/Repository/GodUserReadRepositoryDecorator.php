@@ -71,5 +71,4 @@ class GodUserReadRepositoryDecorator implements ReadRepositoryInterface
     {
         return $this->repository->searchTotalLabels($query);
     }
-
 }

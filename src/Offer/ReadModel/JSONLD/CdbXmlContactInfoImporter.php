@@ -2,8 +2,12 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+
 class CdbXmlContactInfoImporter implements CdbXmlContactInfoImporterInterface
 {
+    use MultilingualJsonLDProjectorTrait;
+
     /**
      * @inheritdoc
      */
@@ -46,7 +50,8 @@ class CdbXmlContactInfoImporter implements CdbXmlContactInfoImporterInterface
         }
 
         if (array_key_exists('url', $bookingInfo)) {
-            $bookingInfo['urlLabel'] = 'Reserveer plaatsen';
+            $mainLanguage = $this->getMainLanguage($jsonLD)->getCode();
+            $bookingInfo['urlLabel'] = [$mainLanguage => 'Reserveer plaatsen'];
         }
 
         /** @var \CultureFeed_Cdb_Data_Phone[] $phones */

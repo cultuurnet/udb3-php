@@ -30,12 +30,12 @@ class BookingInfo implements JsonLdSerializableInterface
     protected $urlLabel;
 
     /**
-     * @var string|null
+     * @var \DateTimeImmutable|null
      */
     protected $availabilityStarts;
 
     /**
-     * @var string|null
+     * @var \DateTimeImmutable|null
      */
     protected $availabilityEnds;
 
@@ -44,16 +44,16 @@ class BookingInfo implements JsonLdSerializableInterface
      * @param string|null $urlLabel
      * @param string|null $phone
      * @param string|null $email
-     * @param string|null $availabilityStarts
-     * @param string|null $availabilityEnds
+     * @param \DateTimeImmutable|null $availabilityStarts
+     * @param \DateTimeImmutable|null $availabilityEnds
      */
     public function __construct(
         $url = null,
         $urlLabel = null,
         $phone = null,
         $email = null,
-        $availabilityStarts = null,
-        $availabilityEnds = null
+        \DateTimeImmutable $availabilityStarts = null,
+        \DateTimeImmutable $availabilityEnds = null
     ) {
         // Workaround to maintain compatibility with older BookingInfo data.
         // Empty BookingInfo properties used to be stored as empty strings in the past.
@@ -64,8 +64,6 @@ class BookingInfo implements JsonLdSerializableInterface
         $urlLabel = $this->castEmptyStringToNull($urlLabel);
         $phone = $this->castEmptyStringToNull($phone);
         $email = $this->castEmptyStringToNull($email);
-        $availabilityStarts = $this->castEmptyStringToNull($availabilityStarts);
-        $availabilityEnds = $this->castEmptyStringToNull($availabilityEnds);
 
         $this->url = $url;
         $this->urlLabel = $urlLabel;
@@ -95,11 +93,17 @@ class BookingInfo implements JsonLdSerializableInterface
         return $this->urlLabel;
     }
 
+    /**
+     * @return \DateTimeImmutable|null
+     */
     public function getAvailabilityStarts()
     {
         return $this->availabilityStarts;
     }
 
+    /**
+     * @return \DateTimeImmutable|null
+     */
     public function getAvailabilityEnds()
     {
         return $this->availabilityEnds;
@@ -110,16 +114,24 @@ class BookingInfo implements JsonLdSerializableInterface
      */
     public function serialize()
     {
-        return array_filter(
+        $serialized = array_filter(
             [
               'phone' => $this->phone,
               'email' => $this->email,
               'url' => $this->url,
               'urlLabel' => $this->urlLabel,
-              'availabilityStarts' => $this->availabilityStarts,
-              'availabilityEnds' => $this->availabilityEnds,
             ]
         );
+
+        if ($this->availabilityStarts) {
+            $serialized['availabilityStarts'] = $this->availabilityStarts->format(\DATE_ATOM);
+        }
+
+        if ($this->availabilityEnds) {
+            $serialized['availabilityEnds'] = $this->availabilityEnds->format(\DATE_ATOM);
+        }
+
+        return $serialized;
     }
 
     /**
@@ -138,13 +150,23 @@ class BookingInfo implements JsonLdSerializableInterface
 
         $data = array_merge($defaults, $data);
 
+        $availabilityStarts = null;
+        if ($data['availabilityStarts']) {
+            $availabilityStarts = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityStarts']);
+        }
+
+        $availabilityEnds = null;
+        if ($data['availabilityEnds']) {
+            $availabilityEnds = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityEnds']);
+        }
+
         return new static(
             $data['url'],
             $data['urlLabel'],
             $data['phone'],
             $data['email'],
-            $data['availabilityStarts'],
-            $data['availabilityEnds']
+            $availabilityStarts,
+            $availabilityEnds
         );
     }
 
@@ -194,8 +216,8 @@ class BookingInfo implements JsonLdSerializableInterface
         }
 
         if ($udb3ModelAvailability = $udb3ModelBookingInfo->getAvailability()) {
-            $availabilityStarts = $udb3ModelAvailability->getFrom()->format(\DATE_ATOM);
-            $availabilityEnds = $udb3ModelAvailability->getTo()->format(\DATE_ATOM);
+            $availabilityStarts = $udb3ModelAvailability->getFrom();
+            $availabilityEnds = $udb3ModelAvailability->getTo();
         }
 
         return new BookingInfo(

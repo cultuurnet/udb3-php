@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
@@ -342,7 +343,99 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     public function it_replaces_event_id_with_item_id_on_event_booking_info_updated()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_class.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts());
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds());
+
         $this->assertEventIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_deprecated_availability_date_formats_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_deprecated_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-02-20T15:11:26+00:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts()
+        );
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-04-30T14:11:26+00:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_invalid_availability_date_formats_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_invalid_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts());
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds());
+    }
+
+    /**
+     * @test
+     */
+    public function it_keeps_valid_availability_date_formats_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_valid_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-02-20T15:11:26+01:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts()
+        );
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-04-30T14:11:26+01:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_missing_availability_dates_with_null_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_without_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts());
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds());
     }
 
     /**

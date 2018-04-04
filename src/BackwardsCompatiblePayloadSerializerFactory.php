@@ -21,6 +21,7 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeU
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated as PlaceBookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated as PlaceContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
@@ -240,10 +241,61 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
+         * BOOKING INFO EVENT
+         */
+        $manipulateAvailability = function (array $serializedBookingInfo, $propertyName) {
+            if (!isset($serializedBookingInfo[$propertyName]) || empty($serializedBookingInfo[$propertyName])) {
+                $serializedBookingInfo[$propertyName] = null;
+                return $serializedBookingInfo;
+            }
+
+            $dateTimeString = $serializedBookingInfo[$propertyName];
+
+            $dateTimeFromAtom = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $dateTimeString);
+            if ($dateTimeFromAtom) {
+                $serializedBookingInfo[$propertyName] = $dateTimeFromAtom->format(\DATE_ATOM);
+                return $serializedBookingInfo;
+            }
+
+            $dateTimeFromAtomWithMilliseconds = \DateTimeImmutable::createFromFormat(
+                'Y-m-d\TH:i:s.uP',
+                $dateTimeString
+            );
+            if ($dateTimeFromAtomWithMilliseconds) {
+                $serializedBookingInfo[$propertyName] = $dateTimeFromAtomWithMilliseconds->format(\DATE_ATOM);
+                return $serializedBookingInfo;
+            }
+
+            unset($serializedBookingInfo[$propertyName]);
+            return $serializedBookingInfo;
+        };
+
+        $manipulateBookingInfoEvent = function (array $serializedEvent) use ($manipulateAvailability) {
+            $serializedEvent = self::replaceEventIdWithItemId($serializedEvent);
+            $serializedEvent = self::replacePlaceIdWithItemId($serializedEvent);
+
+            $serializedBookingInfo = $serializedEvent['payload']['bookingInfo'];
+            $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityStarts');
+            $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityEnds');
+            $serializedEvent['payload']['bookingInfo'] = $serializedBookingInfo;
+
+            return $serializedEvent;
+        };
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            EventBookingInfoUpdated::class,
+            $manipulateBookingInfoEvent
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            PlaceBookingInfoUpdated::class,
+            $manipulateBookingInfoEvent
+        );
+
+        /**
          * EventEvent to AbstractEvent (Offer)
          */
         $refactoredEventEvents = [
-            EventBookingInfoUpdated::class,
             EventTypicalAgeRangeDeleted::class,
             EventTypicalAgeRangeUpdated::class,
             EventContactPointUpdated::class,
@@ -270,7 +322,6 @@ class BackwardsCompatiblePayloadSerializerFactory
         $refactoredPlaceEvents = [
             PlaceOrganizerUpdated::class,
             PlaceOrganizerDeleted::class,
-            PlaceBookingInfoUpdated::class,
             PlaceTypicalAgeRangeDeleted::class,
             PlaceTypicalAgeRangeUpdated::class,
             PlaceContactPointUpdated::class,

@@ -49,8 +49,6 @@ class BookingInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                         'email' => 'foo@bar.com',
                         'url' => 'http://foo.bar',
                         'urlLabel' => 'urlLabel',
-                        'name' => 'name',
-                        'description' => 'description',
                         'availabilityStarts' => '01/01/2016',
                         'availabilityEnds' => '31/01/2016',
                     ],
@@ -63,9 +61,7 @@ class BookingInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                         '0123456789',
                         'foo@bar.com',
                         '01/01/2016',
-                        '31/01/2016',
-                        'name',
-                        'description'
+                        '31/01/2016'
                     )
                 ),
             ],

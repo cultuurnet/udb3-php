@@ -192,7 +192,7 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
             '044/444444',
             'info@publiq.be',
             \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00'),
-            \DateTimeImmutable::createFromFormat(\DATE_ATOM,'2018-01-14T23:59:59+01:00')
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-14T23:59:59+01:00')
         );
 
         $actual = BookingInfo::deserialize($data);

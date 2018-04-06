@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\ValueObject;
 
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Model\ValueObject\Translation\TranslatedValueObject;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class MultilingualString
@@ -72,7 +73,7 @@ class MultilingualString
     }
 
     /**
-     * @return StringLiteral
+     * @return StringLiteral[]
      *   Associative array with languages as keys and translations as values.
      */
     public function getTranslationsIncludingOriginal()
@@ -103,5 +104,76 @@ class MultilingualString
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        $serialized = [];
+
+        foreach ($this->getTranslationsIncludingOriginal() as $language => $translation) {
+            $serialized[$language] = $translation->toNative();
+        }
+
+        return $serialized;
+    }
+
+    /**
+     * @param array $data
+     * @param string|null $originalLanguage
+     * @return MultilingualString
+     */
+    public static function deserialize(array $data, $originalLanguage = null)
+    {
+        $languages = array_keys($data);
+
+        if (!$originalLanguage || !isset($data[$originalLanguage])) {
+            $originalLanguage = reset($languages);
+        }
+
+        $string = new MultilingualString(new Language($originalLanguage), new StringLiteral($data[$originalLanguage]));
+        foreach ($data as $language => $translation) {
+            if ($language === $originalLanguage) {
+                continue;
+            }
+
+            $string = $string->withTranslation(new Language($language), new StringLiteral($translation));
+        }
+
+        return $string;
+    }
+
+    /**
+     * @param TranslatedValueObject $udb3Model
+     * @return MultilingualString
+     */
+    public static function fromUdb3ModelTranslatedValueObject(TranslatedValueObject $udb3Model)
+    {
+        $originalLanguage = $udb3Model->getOriginalLanguage();
+        $originalValue = $udb3Model->getTranslation($originalLanguage);
+
+        if (!method_exists($originalValue, 'toString')) {
+            throw new \InvalidArgumentException(
+                'Cannot create MultilingualString from TranslatedValueObject that cannot be casted to string.'
+            );
+        }
+
+        $string = new MultilingualString(
+            Language::fromUdb3ModelLanguage($originalLanguage),
+            new StringLiteral($originalValue->toString())
+        );
+
+        foreach ($udb3Model->getLanguagesWithoutOriginal() as $language) {
+            $translation = $udb3Model->getTranslation($language);
+
+            $string = $string->withTranslation(
+                new Language($language->toString()),
+                new StringLiteral($translation->toString())
+            );
+        }
+
+        return $string;
     }
 }

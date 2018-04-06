@@ -147,10 +147,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new Language('en')
         );
 
-        $this->setExpectedException(
-            UnsupportedException::class,
-            'Unsupported MIME-type "video/avi"'
-        );
+        $this->expectException(UnsupportedException::class);
+        $this->expectExceptionMessage('Unsupported MIME-type "video/avi"');
 
         $this->serializer->serialize($mediaObject, 'json-ld');
     }
@@ -169,10 +167,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new Language('en')
         );
 
-        $this->setExpectedException(
-            UnsupportedException::class,
-            'Unsupported format, only json-ld is available.'
-        );
+        $this->expectException(UnsupportedException::class);
+        $this->expectExceptionMessage('Unsupported format, only json-ld is available.');
 
         $this->serializer->serialize($mediaObject, 'xml');
     }
@@ -182,10 +178,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_throw_an_exception_when_trying_to_deserialize()
     {
-        $this->setExpectedException(
-            \Exception::class,
-            'Deserialization currently not supported.'
-        );
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Deserialization currently not supported.');
 
         $this->serializer->deserialize((object) [], MediaObject::class, 'json-ld');
     }

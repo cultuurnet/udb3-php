@@ -756,7 +756,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd->priceInfo[] = [
             'category' => 'base',
-            'name' => 'Basistarief',
+            'name' => ['nl' => 'Basistarief'],
             'price' => $basePrice->getPrice()->toFloat(),
             'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
         ];
@@ -764,7 +764,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
             $offerLd->priceInfo[] = [
                 'category' => 'tariff',
-                'name' => $tariff->getName()->toNative(),
+                'name' => $tariff->getName()->serialize(),
                 'price' => $tariff->getPrice()->toFloat(),
                 'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
             ];

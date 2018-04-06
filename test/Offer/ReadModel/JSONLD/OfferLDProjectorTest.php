@@ -53,6 +53,7 @@ use CultuurNet\UDB3\ReadModel\JsonDocumentNullEnricher;
 use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -467,7 +468,10 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $priceInfo = $priceInfo->withExtraTariff(
             new Tariff(
-                new StringLiteral('Werkloze dodo kwekers'),
+                new MultilingualString(
+                    new Language('nl'),
+                    new StringLiteral('Werkloze dodo kwekers')
+                ),
                 new Price(0),
                 Currency::fromNative('EUR')
             )
@@ -487,13 +491,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'priceInfo' => [
                 (object) [
                     'category' => 'base',
-                    'name' => 'Basistarief',
+                    'name' => (object) ['nl' => 'Basistarief'],
                     'price' => 10.5,
                     'priceCurrency' => 'EUR',
                 ],
                 (object) [
                     'category' => 'tariff',
-                    'name' => 'Werkloze dodo kwekers',
+                    'name' => (object) ['nl' => 'Werkloze dodo kwekers'],
                     'price' => 0,
                     'priceCurrency' => 'EUR',
                 ],

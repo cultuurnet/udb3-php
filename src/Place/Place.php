@@ -294,6 +294,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the booking info.
         $this->bookingInfo = null;
 
+        // Just clear the price info.
+        $this->priceInfo = null;
+
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
@@ -325,6 +328,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
         // Just clear the booking info.
         $this->bookingInfo = null;
+
+        // Just clear the price info.
+        $this->priceInfo = null;
 
         $this->importWorkflowStatus($udb2Actor);
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));

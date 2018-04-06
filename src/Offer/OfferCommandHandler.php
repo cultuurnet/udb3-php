@@ -28,6 +28,7 @@ use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTheme;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateType;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractImportImages;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
@@ -159,6 +160,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getSelectMainImageClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getImportImagesClassName();
 
     /**
      * @return string
@@ -393,6 +399,16 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($selectMainImage->getItemId());
         $offer->selectMainImage($selectMainImage->getImage());
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractImportImages $importImages
+     */
+    public function handleImportImages(AbstractImportImages $importImages)
+    {
+        $offer = $this->load($importImages->getItemId());
+        $offer->importImages($importImages->getImages());
         $this->offerRepository->save($offer);
     }
 

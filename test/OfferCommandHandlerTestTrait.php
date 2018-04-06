@@ -7,6 +7,7 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\CommandHandling\Testing\Scenario;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description as MediaDescription;
@@ -263,6 +264,138 @@ trait OfferCommandHandlerTestTrait
                 $copyrightHolder
                 ),
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_import_images()
+    {
+        $itemId = '1';
+
+        $imageAdded = $this->getEventClass('ImageAdded');
+        $imageUpdated = $this->getEventClass('ImageUpdated');
+        $imageRemoved = $this->getEventClass('ImageRemoved');
+        $mainImageSelected = $this->getEventClass('MainImageSelected');
+
+        $addedEvent = function (Image $image) use ($itemId, $imageAdded) {
+            return new $imageAdded($itemId, $image);
+        };
+
+        $updatedEvent = function (Image $image) use ($itemId, $imageUpdated) {
+            return new $imageUpdated(
+                $itemId,
+                $image->getMediaObjectId(),
+                $image->getDescription(),
+                $image->getCopyrightHolder()
+            );
+        };
+
+        $removedEvent = function (Image $image) use ($itemId, $imageRemoved) {
+            return new $imageRemoved($itemId, $image);
+        };
+
+        $initialImages = [
+            new Image(
+                new UUID('b0939d37-68f7-4c55-bfa3-fabdbb46154e'),
+                new MIMEType('image/jpeg'),
+                new MediaDescription('my best selfie'),
+                new CopyrightHolder('Dirk Dirkington'),
+                Url::fromNative('http://foo.bar/media/my_best_selfie.jpg'),
+                new Language('en')
+            ),
+            new Image(
+                new UUID('0de3d4a4-abaa-4685-896a-34cfa70f3cd0'),
+                new MIMEType('image/png'),
+                new MediaDescription('mijn beste selfie'),
+                new CopyrightHolder('Dirk Dirkington'),
+                Url::fromNative('http://foo.bar/media/mijn_beste_selfie.png'),
+                new Language('nl')
+            ),
+            new Image(
+                new UUID('0aee1053-bc6c-43bc-9743-20656b579167'),
+                new MIMEType('image/jpeg'),
+                new MediaDescription('my second best selfie'),
+                new CopyrightHolder('Dirk Dirkington'),
+                Url::fromNative('http://foo.bar/media/my_second_best_selfie.jpg'),
+                new Language('en')
+            ),
+            new Image(
+                new UUID('7e1d0180-97cc-4fbf-a133-c691a07a5a04'),
+                new MIMEType('image/gif'),
+                new MediaDescription('mijn tweede beste selfie'),
+                new CopyrightHolder('Dirk Dirkington'),
+                Url::fromNative('http://foo.bar/media/mijn_tweede_beste_selfie.gif'),
+                new Language('nl')
+            ),
+        ];
+
+        $importImages = [
+            new Image(
+                new UUID('4a66a43a-83e5-4d87-a28d-c16508140fd7'),
+                new MIMEType('image/jpeg'),
+                new MediaDescription('new selfie'),
+                new CopyrightHolder('Dirk Dirkington'),
+                Url::fromNative('http://foo.bar/media/new_selfie.jpg'),
+                new Language('en')
+            ),
+            new Image(
+                new UUID('b0939d37-68f7-4c55-bfa3-fabdbb46154e'),
+                new MIMEType('image/jpeg'),
+                new MediaDescription('my best selfie UPDATED'),
+                new CopyrightHolder('Dirk Dirkington UPDATED'),
+                Url::fromNative('http://foo.bar/media/my_best_selfie.jpg'),
+                new Language('en')
+            ),
+            new Image(
+                new UUID('0de3d4a4-abaa-4685-896a-34cfa70f3cd0'),
+                new MIMEType('image/png'),
+                new MediaDescription('mijn beste selfie UPDATED'),
+                new CopyrightHolder('Dirk Dirkington UPDATED'),
+                Url::fromNative('http://foo.bar/media/mijn_beste_selfie.png'),
+                new Language('nl')
+            ),
+        ];
+
+        $expectedAddedImages = [
+            $importImages[0],
+        ];
+
+        $expectedUpdatedImages = [
+            $importImages[1],
+            $importImages[2],
+        ];
+
+        $expectedRemovedImages = [
+            $initialImages[2],
+            $initialImages[3],
+        ];
+
+        $expectedMainImage = $importImages[0];
+
+        $initialEvents = array_map($addedEvent, $initialImages);
+        array_unshift($initialEvents, $this->factorOfferCreated($itemId));
+
+        $expectedAddedEvents = array_map($addedEvent, $expectedAddedImages);
+        $expectedUpdatedEvents = array_map($updatedEvent, $expectedUpdatedImages);
+        $expectedRemovedEvents = array_map($removedEvent, $expectedRemovedImages);
+        $expectedMainImageEvent = new $mainImageSelected($itemId, $expectedMainImage);
+
+        $commandClass = $this->getCommandClass('ImportImages');
+        $command = new $commandClass($itemId, ImageCollection::fromArray($importImages));
+
+        $expectedEvents = array_merge(
+            $expectedAddedEvents,
+            $expectedUpdatedEvents,
+            $expectedRemovedEvents
+        );
+        $expectedEvents[] = $expectedMainImageEvent;
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given($initialEvents)
+            ->when($command)
+            ->then($expectedEvents);
     }
 
     /**

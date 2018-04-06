@@ -52,6 +52,7 @@ use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Item extends Offer
@@ -108,13 +109,15 @@ class Item extends Offer
     }
 
     protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     ) {
         return new ImageUpdated(
             $this->id,
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
+            $mediaObjectId,
+            $description,
+            $copyrightHolder
         );
     }
 

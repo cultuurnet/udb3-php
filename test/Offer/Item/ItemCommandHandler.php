@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
+use CultuurNet\UDB3\Offer\Item\Commands\ImportImages;
 use CultuurNet\UDB3\Offer\Item\Commands\ImportLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
@@ -66,6 +67,14 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getSelectMainImageClassName()
     {
         return SelectMainImage::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImportImagesClassName()
+    {
+        return ImportImages::class;
     }
 
     /**

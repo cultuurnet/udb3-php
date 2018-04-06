@@ -10,14 +10,13 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
-use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
 class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|SerializerInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|MediaObjectSerializer
      */
     protected $serializer;
 
@@ -189,5 +188,19 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->serializer->deserialize((object) [], MediaObject::class, 'json-ld');
+    }
+
+    /**
+     * @test
+     */
+    public function it_serializes_mime_type_image_to_image_object()
+    {
+        /** @var MIMEType $mimeType */
+        $mimeType = MIMEType::fromNative('image/jpeg');
+
+        $this->assertEquals(
+            'schema:ImageObject',
+            $this->serializer->serializeMimeType($mimeType)
+        );
     }
 }

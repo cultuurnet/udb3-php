@@ -21,7 +21,6 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeU
 use CultuurNet\UDB3\EventSourcing\PayloadManipulatingSerializer;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
-use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated as PlaceBookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated as PlaceContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
@@ -251,12 +250,14 @@ class BackwardsCompatiblePayloadSerializerFactory
 
             $dateTimeString = $serializedBookingInfo[$propertyName];
 
+            // The new serialized date time format is a string according the ISO 8601 format.
+            // If this is so return without modifications.
             $dateTimeFromAtom = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $dateTimeString);
             if ($dateTimeFromAtom) {
-                $serializedBookingInfo[$propertyName] = $dateTimeFromAtom->format(\DATE_ATOM);
                 return $serializedBookingInfo;
             }
 
+            // For older format a modification is needed to ISO 8601 format.
             $dateTimeFromAtomWithMilliseconds = \DateTimeImmutable::createFromFormat(
                 'Y-m-d\TH:i:s.uP',
                 $dateTimeString
@@ -266,6 +267,7 @@ class BackwardsCompatiblePayloadSerializerFactory
                 return $serializedBookingInfo;
             }
 
+            // In case of unknown format clear the available date property.
             unset($serializedBookingInfo[$propertyName]);
             return $serializedBookingInfo;
         };

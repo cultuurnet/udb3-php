@@ -152,7 +152,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'phone' => $phone,
                 'email' => $email,
                 'url' => $url,
-                'urlLabel' => $urlLabel,
+                'urlLabel' => (object) ['nl' => $urlLabel],
                 'availabilityStarts' => $availabilityStarts,
                 'availabilityEnds' => $availabilityEnds,
             ],

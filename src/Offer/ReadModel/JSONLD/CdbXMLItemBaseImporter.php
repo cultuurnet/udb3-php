@@ -4,10 +4,34 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use CultureFeed_Cdb_Item_Base;
 use CultuurNet\UDB3\Cdb\DateTimeFactory;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\Tariff;
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
+use ValueObjects\Money\Currency;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class CdbXMLItemBaseImporter
 {
+    use MultilingualJsonLDProjectorTrait;
+
+    /**
+     * @var PriceDescriptionParser
+     */
+    private $priceDescriptionParser;
+
+    /**
+     * @param PriceDescriptionParser $priceDescriptionParser
+     */
+    public function __construct(PriceDescriptionParser $priceDescriptionParser)
+    {
+        $this->priceDescriptionParser = $priceDescriptionParser;
+    }
+
     /**
      * @param CultureFeed_Cdb_Item_Base $item
      * @param \stdClass $jsonLD
@@ -117,5 +141,119 @@ class CdbXMLItemBaseImporter
         $workflowStatus = $wfStatus ? WorkflowStatus::fromNative($wfStatus) : WorkflowStatus::READY_FOR_VALIDATION();
 
         $jsonLD->workflowStatus = $workflowStatus->getName();
+    }
+
+    /**
+     * @param \CultureFeed_Cdb_Data_DetailList $details
+     * @param \stdClass $jsonLD
+     */
+    public function importPriceInfo(
+        \CultureFeed_Cdb_Data_DetailList $details,
+        $jsonLD
+    ) {
+        $mainLanguage = $this->getMainLanguage($jsonLD);
+
+        $detailsArray = [];
+        foreach ($details as $detail) {
+            $detailsArray[] = $detail;
+        }
+        $details = $detailsArray;
+
+        $mainLanguageDetails = array_filter(
+            $details,
+            function (\CultureFeed_Cdb_Data_EventDetail $detail) use ($mainLanguage) {
+                return $detail->getLanguage() === $mainLanguage->getCode();
+            }
+        );
+
+        /* @var \CultureFeed_Cdb_Data_EventDetail $mainLanguageDetail */
+        $mainLanguageDetail = reset($mainLanguageDetails);
+        if (!$mainLanguageDetail) {
+            return;
+        }
+
+        $mainLanguagePrice = $mainLanguageDetail->getPrice();
+
+        if (!$mainLanguagePrice) {
+            return;
+        }
+
+        $basePrice = $mainLanguagePrice->getValue();
+        if ($basePrice !== null) {
+            $basePrice = floatval($basePrice);
+        }
+
+        if (!$basePrice) {
+            return;
+        }
+
+        $basePrice = new BasePrice(
+            Price::fromFloat($basePrice),
+            Currency::fromNative('EUR')
+        );
+
+        /* @var Tariff[] $tariffs */
+        $tariffs = [];
+        foreach ($details as $detail) {
+            $language = $detail->getLanguage();
+
+            $price = $detail->getPrice();
+            if (!$price) {
+                continue;
+            }
+
+            $description = $price->getDescription();
+            if (!$description) {
+                continue;
+            }
+
+            $translatedTariffs = $this->priceDescriptionParser->parse($description);
+
+            // Skip the base price tariff.
+            array_shift($translatedTariffs);
+
+            $tariffIndex = 0;
+            foreach ($translatedTariffs as $tariffName => $tariffPrice) {
+                if (!isset($tariffs[$tariffIndex])) {
+                    $tariff = new Tariff(
+                        new MultilingualString(new Language($language), new StringLiteral($tariffName)),
+                        Price::fromFloat($tariffPrice),
+                        Currency::fromNative('EUR')
+                    );
+                } else {
+                    $tariff = $tariffs[$tariffIndex];
+                    $name = $tariff->getName();
+                    $name = $name->withTranslation(new Language($language), new StringLiteral($tariffName));
+                    $tariff = new Tariff(
+                        $name,
+                        $tariff->getPrice(),
+                        $tariff->getCurrency()
+                    );
+                }
+
+                $tariffs[$tariffIndex] = $tariff;
+                $tariffIndex++;
+            }
+        }
+
+        $jsonLD->priceInfo = [
+            [
+                'category' => 'base',
+                'name' => [
+                    'nl' => 'Basistarief',
+                ],
+                'price' => $basePrice->getPrice()->toFloat(),
+                'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
+            ]
+        ];
+
+        foreach ($tariffs as $tariff) {
+            $jsonLD->priceInfo[] = [
+                'category' => 'tariff',
+                'name' => $tariff->getName()->serialize(),
+                'price' => $tariff->getPrice()->toFloat(),
+                'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
+            ];
+        }
     }
 }

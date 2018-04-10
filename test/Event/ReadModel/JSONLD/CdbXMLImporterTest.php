@@ -38,17 +38,14 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $mediaIriGenerator = new CallableIriGenerator(function () {
-            return 'http://du.de/media/87e8b421-5e87-4fae-bb3b-2c9119852a11';
-        });
-
         $this->importer = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($mediaIriGenerator),
-            new EventCdbIdExtractor(),
-            new PriceDescriptionParser(
-                new NumberFormatRepository(),
-                new CurrencyRepository()
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                )
             ),
+            new EventCdbIdExtractor(),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );

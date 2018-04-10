@@ -469,20 +469,20 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => 'Basistarief',
+                    'name' => ['nl' => 'Basistarief'],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
                 ],
                 [
-                    'name' => 'Met kinderen',
+                    'name' => ['nl' => 'Met kinderen'],
                     'category' => 'tariff',
-                    'price' => 20.0,
+                    'price' => 20,
                     'priceCurrency' => 'EUR',
                 ],
                 [
-                    'name' => 'Senioren',
+                    'name' => ['nl' => 'Senioren'],
                     'category' => 'tariff',
-                    'price' => 30.0,
+                    'price' => 30,
                     'priceCurrency' => 'EUR',
                 ],
             ],
@@ -493,7 +493,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_ignores_a_properly_formatted_price_description_when_its_base_price_does_not_match_pricevalue()
+    public function it_ignores_base_price_in_price_description()
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_properly_formatted_price_description_but_different_pricevalue.cdbxml.xml');
 
@@ -501,8 +501,20 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => 'Basistarief',
-                    'price' => 12.00,
+                    'name' => ['nl' => 'Basistarief'],
+                    'price' => 12,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'category' => 'tariff',
+                    'name' => ['nl' => 'Met kinderen'],
+                    'price' => 20,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'category' => 'tariff',
+                    'name' => ['nl' => 'Senioren'],
+                    'price' => 30,
                     'priceCurrency' => 'EUR',
                 ],
             ],
@@ -521,7 +533,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => 'Basistarief',
+                    'name' => ['nl' => 'Basistarief'],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
                 ],

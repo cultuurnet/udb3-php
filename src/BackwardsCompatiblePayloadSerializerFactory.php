@@ -240,10 +240,64 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
+         * BOOKING INFO EVENT
+         */
+        $manipulateAvailability = function (array $serializedBookingInfo, $propertyName) {
+            if (!isset($serializedBookingInfo[$propertyName]) || empty($serializedBookingInfo[$propertyName])) {
+                $serializedBookingInfo[$propertyName] = null;
+                return $serializedBookingInfo;
+            }
+
+            $dateTimeString = $serializedBookingInfo[$propertyName];
+
+            // The new serialized date time format is a string according the ISO 8601 format.
+            // If this is so return without modifications.
+            $dateTimeFromAtom = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $dateTimeString);
+            if ($dateTimeFromAtom) {
+                return $serializedBookingInfo;
+            }
+
+            // For older format a modification is needed to ISO 8601 format.
+            $dateTimeFromAtomWithMilliseconds = \DateTimeImmutable::createFromFormat(
+                'Y-m-d\TH:i:s.uP',
+                $dateTimeString
+            );
+            if ($dateTimeFromAtomWithMilliseconds) {
+                $serializedBookingInfo[$propertyName] = $dateTimeFromAtomWithMilliseconds->format(\DATE_ATOM);
+                return $serializedBookingInfo;
+            }
+
+            // In case of unknown format clear the available date property.
+            unset($serializedBookingInfo[$propertyName]);
+            return $serializedBookingInfo;
+        };
+
+        $manipulateBookingInfoEvent = function (array $serializedEvent) use ($manipulateAvailability) {
+            $serializedEvent = self::replaceEventIdWithItemId($serializedEvent);
+            $serializedEvent = self::replacePlaceIdWithItemId($serializedEvent);
+
+            $serializedBookingInfo = $serializedEvent['payload']['bookingInfo'];
+            $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityStarts');
+            $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityEnds');
+            $serializedEvent['payload']['bookingInfo'] = $serializedBookingInfo;
+
+            return $serializedEvent;
+        };
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            EventBookingInfoUpdated::class,
+            $manipulateBookingInfoEvent
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            PlaceBookingInfoUpdated::class,
+            $manipulateBookingInfoEvent
+        );
+
+        /**
          * EventEvent to AbstractEvent (Offer)
          */
         $refactoredEventEvents = [
-            EventBookingInfoUpdated::class,
             EventTypicalAgeRangeDeleted::class,
             EventTypicalAgeRangeUpdated::class,
             EventContactPointUpdated::class,
@@ -270,7 +324,6 @@ class BackwardsCompatiblePayloadSerializerFactory
         $refactoredPlaceEvents = [
             PlaceOrganizerUpdated::class,
             PlaceOrganizerDeleted::class,
-            PlaceBookingInfoUpdated::class,
             PlaceTypicalAgeRangeDeleted::class,
             PlaceTypicalAgeRangeUpdated::class,
             PlaceContactPointUpdated::class,

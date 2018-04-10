@@ -68,8 +68,8 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
             'Publiq',
             '044/444444',
             'info@publiq.be',
-            '2018-01-01T00:00:00+01:00',
-            '2018-01-10T00:00:00+01:00'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-10T00:00:00+01:00')
         );
 
         $actual = BookingInfo::fromUdb3ModelBookingInfo($udb3ModelBookingInfo);
@@ -102,8 +102,8 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
             '',
             '',
             '',
-            '',
-            ''
+            null,
+            null
         );
 
         $deserialized = BookingInfo::deserialize([]);
@@ -191,8 +191,8 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
             'Publiq',
             '044/444444',
             'info@publiq.be',
-            '2018-01-01T00:00:00+01:00',
-            '2018-01-14T23:59:59+01:00'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-14T23:59:59+01:00')
         );
 
         $actual = BookingInfo::deserialize($data);

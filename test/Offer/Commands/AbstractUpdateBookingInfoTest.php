@@ -29,10 +29,8 @@ class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
             'urlLabel',
             '0123456789',
             'foo@bar.com',
-            '01/01/2016',
-            '31/01/2016',
-            'name',
-            'description'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
         );
 
         $this->updateBookingInfo = $this->getMockForAbstractClass(
@@ -52,10 +50,8 @@ class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
             'urlLabel',
             '0123456789',
             'foo@bar.com',
-            '01/01/2016',
-            '31/01/2016',
-            'name',
-            'description'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
         );
 
         $this->assertEquals($expectedBookingInfo, $bookingInfo);

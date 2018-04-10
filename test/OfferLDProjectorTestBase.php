@@ -137,8 +137,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $urlLabel = 'Google';
         $phone = '045';
         $email = 'test@test.com';
-        $availabilityStarts = '12';
-        $availabilityEnds = '14';
+        $availabilityStarts = \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00');
+        $availabilityEnds = \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-31T00:00:00+01:00');
         $bookingInfo = new BookingInfo($url, $urlLabel, $phone, $email, $availabilityStarts, $availabilityEnds);
         $eventClass = $this->getEventClass('BookingInfoUpdated');
         $bookingInfoUpdated = new $eventClass($id, $bookingInfo);
@@ -153,8 +153,8 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'email' => $email,
                 'url' => $url,
                 'urlLabel' => (object) ['nl' => $urlLabel],
-                'availabilityStarts' => $availabilityStarts,
-                'availabilityEnds' => $availabilityEnds,
+                'availabilityStarts' => '2018-01-01T00:00:00+01:00',
+                'availabilityEnds' => '2018-01-31T00:00:00+01:00',
             ],
             'modified' => $this->recordedOn->toString(),
         ];

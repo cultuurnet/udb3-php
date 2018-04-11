@@ -466,18 +466,26 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => ['nl' => 'Basistarief'],
+                    'name' => [
+                        'nl' => 'Basistarief',
+                    ],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
                 ],
                 [
-                    'name' => ['nl' => 'Met kinderen'],
+                    'name' => [
+                        'nl' => 'Met kinderen',
+                        'fr' => 'Avec des enfants',
+                    ],
                     'category' => 'tariff',
                     'price' => 20,
                     'priceCurrency' => 'EUR',
                 ],
                 [
-                    'name' => ['nl' => 'Senioren'],
+                    'name' => [
+                        'nl' => 'Senioren',
+                        'fr' => 'Aînés',
+                    ],
                     'category' => 'tariff',
                     'price' => 30,
                     'priceCurrency' => 'EUR',

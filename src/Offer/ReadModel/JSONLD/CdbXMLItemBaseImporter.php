@@ -161,7 +161,7 @@ class CdbXMLItemBaseImporter
 
         $mainLanguageDetails = array_filter(
             $details,
-            function (\CultureFeed_Cdb_Data_EventDetail $detail) use ($mainLanguage) {
+            function (\CultureFeed_Cdb_Data_Detail $detail) use ($mainLanguage) {
                 return $detail->getLanguage() === $mainLanguage->getCode();
             }
         );
@@ -195,6 +195,10 @@ class CdbXMLItemBaseImporter
         /* @var Tariff[] $tariffs */
         $tariffs = [];
         foreach ($details as $detail) {
+            $language = null;
+            $price = null;
+            $description = null;
+
             $language = $detail->getLanguage();
 
             $price = $detail->getPrice();
@@ -208,8 +212,11 @@ class CdbXMLItemBaseImporter
             }
 
             $translatedTariffs = $this->priceDescriptionParser->parse($description);
+            if (empty($translatedTariffs)) {
+                continue;
+            }
 
-            // Skip the base price tariff.
+            // Skip the base price.
             array_shift($translatedTariffs);
 
             $tariffIndex = 0;

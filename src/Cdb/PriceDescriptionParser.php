@@ -60,15 +60,6 @@ class PriceDescriptionParser
             $prices = array();
         }
 
-        if (!empty($prices)) {
-            reset($prices);
-            $firstPriceName = key($prices);
-
-            if ($firstPriceName !== 'Basistarief') {
-                $prices = array();
-            }
-        }
-
         return $prices;
     }
 

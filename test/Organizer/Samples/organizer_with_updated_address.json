@@ -7,9 +7,9 @@
   "address": {
     "nl": {
       "addressCountry": "BE",
-      "addressLocality": "Kessel-Lo (Leuven)",
-      "postalCode": "3010",
-      "streetAddress": "Straat"
+      "addressLocality": "Leuven",
+      "postalCode": "3000",
+      "streetAddress": "Martelarenplein"
     }
   },
   "phone": [],
@@ -19,6 +19,5 @@
   "creator": "20a72430-7e3e-4b75-ab59-043156b3169c (LucW)",
   "languages": ["nl"],
   "completedLanguages": ["nl"],
-  "workflowStatus": "DELETED",
   "modified": "2018-01-18T13:57:09+00:00"
 }

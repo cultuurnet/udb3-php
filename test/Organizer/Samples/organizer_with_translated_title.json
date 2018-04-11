@@ -5,14 +5,14 @@
     "nl": "TestOrganisatie",
     "fr": "EssaiOrganisation"
   },
-  "addresses": [
-    {
+  "address": {
+    "nl": {
       "addressCountry": "BE",
       "addressLocality": "Kessel-Lo (Leuven)",
       "postalCode": "3010",
       "streetAddress": "Straat"
     }
-  ],
+  },
   "phone": [],
   "email": [],
   "url": [],

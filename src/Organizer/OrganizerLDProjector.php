@@ -169,15 +169,18 @@ class OrganizerLDProjector implements EventListenerInterface
             $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle(),
         ];
 
+        // Only take the first address into account.
         $addresses = $organizerCreated->getAddresses();
-        $jsonLD->addresses = array();
-        foreach ($addresses as $address) {
-            $jsonLD->addresses[] = array(
-                'addressCountry' => $address->getCountry(),
-                'addressLocality' => $address->getLocality(),
-                'postalCode' => $address->getPostalCode(),
-                'streetAddress' => $address->getStreetAddress(),
-            );
+        if (!empty($addresses)) {
+            $address = $addresses[0];
+            $jsonLD->address = [
+                $this->getMainLanguage($jsonLD)->getCode() => [
+                    'addressCountry' => $address->getCountry(),
+                    'addressLocality' => $address->getLocality(),
+                    'postalCode' => $address->getPostalCode(),
+                    'streetAddress' => $address->getStreetAddress(),
+                ]
+            ];
         }
 
         $jsonLD->phone = $organizerCreated->getPhones();
@@ -287,7 +290,9 @@ class OrganizerLDProjector implements EventListenerInterface
         $document = $this->repository->get($organizerId);
 
         $jsonLD = $document->getBody();
-        $jsonLD->address = $address->toJsonLd();
+        $jsonLD->address = [
+            $this->getMainLanguage($jsonLD)->getCode() => $address->toJsonLd(),
+        ];
 
         return $document->withBody($jsonLD);
     }
@@ -343,6 +348,7 @@ class OrganizerLDProjector implements EventListenerInterface
 
     /**
      * @param LabelAdded $labelAdded
+     * @return JsonDocument
      */
     private function applyLabelAdded(LabelAdded $labelAdded)
     {
@@ -364,6 +370,7 @@ class OrganizerLDProjector implements EventListenerInterface
 
     /**
      * @param LabelRemoved $labelRemoved
+     * @return JsonDocument
      */
     private function applyLabelRemoved(LabelRemoved $labelRemoved)
     {

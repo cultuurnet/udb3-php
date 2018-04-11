@@ -179,7 +179,7 @@ class OrganizerLDProjector implements EventListenerInterface
                     'addressLocality' => $address->getLocality(),
                     'postalCode' => $address->getPostalCode(),
                     'streetAddress' => $address->getStreetAddress(),
-                ]
+                ],
             ];
         }
 

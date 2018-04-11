@@ -26,7 +26,13 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 new PriceDescriptionParser(
                     new NumberFormatRepository(),
                     new CurrencyRepository()
-                )
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
             ),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()

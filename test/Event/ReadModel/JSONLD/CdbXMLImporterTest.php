@@ -43,7 +43,13 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 new PriceDescriptionParser(
                     new NumberFormatRepository(),
                     new CurrencyRepository()
-                )
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
             ),
             new EventCdbIdExtractor(),
             new CalendarFactory(),
@@ -468,6 +474,9 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                     'category' => 'base',
                     'name' => [
                         'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
                     ],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
@@ -506,7 +515,12 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => ['nl' => 'Basistarief'],
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
                     'price' => 12,
                     'priceCurrency' => 'EUR',
                 ],
@@ -538,7 +552,12 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => ['nl' => 'Basistarief'],
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
                 ],

@@ -134,7 +134,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 new PriceDescriptionParser(
                     new NumberFormatRepository(),
                     new CurrencyRepository()
-                )
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
             ),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()

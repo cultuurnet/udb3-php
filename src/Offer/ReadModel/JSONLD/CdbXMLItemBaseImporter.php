@@ -25,11 +25,20 @@ class CdbXMLItemBaseImporter
     private $priceDescriptionParser;
 
     /**
-     * @param PriceDescriptionParser $priceDescriptionParser
+     * @var string[]
      */
-    public function __construct(PriceDescriptionParser $priceDescriptionParser)
-    {
+    private $basePriceTranslations;
+
+    /**
+     * @param PriceDescriptionParser $priceDescriptionParser
+     * @param array $basePriceTranslations
+     */
+    public function __construct(
+        PriceDescriptionParser $priceDescriptionParser,
+        array $basePriceTranslations
+    ) {
         $this->priceDescriptionParser = $priceDescriptionParser;
+        $this->basePriceTranslations = $basePriceTranslations;
     }
 
     /**
@@ -246,9 +255,7 @@ class CdbXMLItemBaseImporter
         $jsonLD->priceInfo = [
             [
                 'category' => 'base',
-                'name' => [
-                    'nl' => 'Basistarief',
-                ],
+                'name' => $this->basePriceTranslations,
                 'price' => $basePrice->getPrice()->toFloat(),
                 'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
             ]

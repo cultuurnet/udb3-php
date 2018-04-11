@@ -94,6 +94,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $eventsNotTriggeringUpdateModified;
 
     /**
+     * @var string[]
+     */
+    private $basePriceTranslations;
+
+    /**
      * @var SluggerInterface
      */
     protected $slugger;
@@ -105,6 +110,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      * @param EventSpecification $eventsNotTriggeringUpdateModified
+     * @param string[] $basePriceTranslations
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -112,7 +118,8 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventSpecification $eventsNotTriggeringUpdateModified
+        EventSpecification $eventsNotTriggeringUpdateModified,
+        array $basePriceTranslations
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
@@ -120,6 +127,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
         $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
+        $this->basePriceTranslations = $basePriceTranslations;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -756,7 +764,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd->priceInfo[] = [
             'category' => 'base',
-            'name' => ['nl' => 'Basistarief'],
+            'name' => $this->basePriceTranslations,
             'price' => $basePrice->getPrice()->toFloat(),
             'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
         ];

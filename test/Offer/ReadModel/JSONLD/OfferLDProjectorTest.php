@@ -122,7 +122,13 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             $this->organizerService,
             $this->serializer,
             new JsonDocumentNullEnricher(),
-            $this->eventFilter
+            $this->eventFilter,
+            [
+                'nl' => 'Basistarief',
+                'fr' => 'Tarif de base',
+                'en' => 'Base tariff',
+                'de' => 'Basisrate',
+            ]
         );
 
         $this->recordedOn = RecordedOn::fromBroadwayDateTime(
@@ -491,7 +497,12 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
             'priceInfo' => [
                 (object) [
                     'category' => 'base',
-                    'name' => (object) ['nl' => 'Basistarief'],
+                    'name' => (object) [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tariff',
+                        'de' => 'Basisrate',
+                    ],
                     'price' => 10.5,
                     'priceCurrency' => 'EUR',
                 ],

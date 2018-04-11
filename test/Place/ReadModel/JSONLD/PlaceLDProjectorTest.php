@@ -160,7 +160,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new JsonDocumentLanguageEnricher(
                 new PlaceJsonDocumentLanguageAnalyzer()
             ),
-            $this->eventFilter
+            $this->eventFilter,
+            [
+                'nl' => 'Basistarief',
+                'fr' => 'Tarif de base',
+                'en' => 'Base tariff',
+                'de' => 'Basisrate',
+            ]
         );
 
         $street = new Street('Kerkstraat 69');

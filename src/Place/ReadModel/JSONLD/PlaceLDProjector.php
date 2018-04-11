@@ -87,6 +87,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      * @param EventSpecification $eventFilter
+     * @param string[] $basePriceTranslations
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -96,7 +97,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         SerializerInterface $mediaObjectSerializer,
         CdbXMLImporter $cdbXMLImporter,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventSpecification $eventFilter
+        EventSpecification $eventFilter,
+        array $basePriceTranslations
     ) {
         parent::__construct(
             $repository,
@@ -104,7 +106,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $organizerService,
             $mediaObjectSerializer,
             $jsonDocumentMetaDataEnricher,
-            $eventFilter
+            $eventFilter,
+            $basePriceTranslations
         );
 
         $this->placeRelations = $placeRelations;

@@ -84,6 +84,38 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
     }
 
     /**
+     * @inheritdoc
+     */
+    public function createApprovedPlace(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
+        $id = $this->uuidGenerator->generate();
+
+        $place = Place::createPlace(
+            $id,
+            $mainLanguage,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme
+        );
+
+        $publicationDate = $this->publicationDate ? $this->publicationDate : new \DateTimeImmutable();
+        $place->publish($publicationDate);
+        $place->approve();
+
+        $this->writeRepository->save($place);
+
+        return $id;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null)

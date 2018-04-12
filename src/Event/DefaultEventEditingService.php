@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface
@@ -76,7 +77,6 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
     ) {
         $eventId = $this->uuidGenerator->generate();
 
-        // @todo Use CreateEvent command.
         $event = Event::create(
             $eventId,
             $mainLanguage,
@@ -87,6 +87,38 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $theme,
             $this->publicationDate
         );
+
+        $this->writeRepository->save($event);
+
+        return $eventId;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createApprovedEvent(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
+        $eventId = $this->uuidGenerator->generate();
+
+        $event = Event::create(
+            $eventId,
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
+
+        $publicationDate = $this->publicationDate ? $this->publicationDate : new \DateTimeImmutable();
+        $event->publish($publicationDate);
+        $event->approve();
 
         $this->writeRepository->save($event);
 

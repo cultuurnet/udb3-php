@@ -21,6 +21,8 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateCalendar;
+use CultuurNet\UDB3\Place\Events\Moderation\Approved;
+use CultuurNet\UDB3\Place\Events\Moderation\Published;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
@@ -151,6 +153,60 @@ class DefaultPlaceEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $calendar,
                     $theme
                 ),
+            ],
+            $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_able_to_create_a_new_place_and_approve_it_immediately()
+    {
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+
+        $placeId = 'generated-uuid';
+        $mainLanguage = new Language('en');
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $address = new Address($street, $postalCode, $locality, $country);
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = null;
+
+        $publicationDate = new \DateTimeImmutable();
+        $service = $this->placeEditingService->withFixedPublicationDateForNewOffers($publicationDate);
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $this->eventStore->trace();
+
+        $service->createApprovedPlace(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme
+        );
+
+        $this->assertEquals(
+            [
+                new PlaceCreated(
+                    $placeId,
+                    $mainLanguage,
+                    $title,
+                    $eventType,
+                    $address,
+                    $calendar,
+                    $theme
+                ),
+                new Published($placeId, $publicationDate),
+                new Approved($placeId),
             ],
             $this->eventStore->getEvents()
         );

@@ -130,6 +130,24 @@ interface EventEditingServiceInterface
     );
 
     /**
+     * @param Language $mainLanguage
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @return string $eventId
+     */
+    public function createApprovedEvent(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    );
+
+    /**
      * @param string $originalEventId
      * @param CalendarInterface $calendar
      * @return string $eventId

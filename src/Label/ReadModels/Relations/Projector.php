@@ -101,13 +101,17 @@ class Projector extends AbstractProjector
     public function applyLabelsImported(LabelsImportedEventInterface $labelsImported, Metadata $metadata)
     {
         foreach ($labelsImported->getLabels()->toArray() as $label) {
-            /** @var Label $label */
-            $this->writeRepository->save(
-                new LabelName($label->getName()->toString()),
-                $this->offerTypeResolver->getRelationTypeForImport($labelsImported),
-                new StringLiteral($labelsImported->getItemId()),
-                true
-            );
+            try {
+                /** @var Label $label */
+                $this->writeRepository->save(
+                    new LabelName($label->getName()->toString()),
+                    $this->offerTypeResolver->getRelationTypeForImport($labelsImported),
+                    new StringLiteral($labelsImported->getItemId()),
+                    true
+                );
+            } catch (UniqueConstraintViolationException $exception) {
+                // By design to catch unique exception.
+            }
         }
     }
 

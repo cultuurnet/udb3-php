@@ -258,7 +258,7 @@ class CdbXMLItemBaseImporter
                 'name' => $this->basePriceTranslations,
                 'price' => $basePrice->getPrice()->toFloat(),
                 'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
-            ]
+            ],
         ];
 
         foreach ($tariffs as $tariff) {

@@ -94,6 +94,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $eventsNotTriggeringUpdateModified;
 
     /**
+     * Associative array of bases prices.
+     * Key is the language, value is the translated string.
+     *
      * @var string[]
      */
     private $basePriceTranslations;

@@ -82,10 +82,8 @@ class CdbXMLImporter
     ) {
         $jsonLD = clone $base;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail[] $details */
         $details = $event->getDetails();
 
         foreach ($details as $languageDetail) {

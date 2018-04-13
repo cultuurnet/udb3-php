@@ -153,7 +153,7 @@ class CdbXMLItemBaseImporter
     }
 
     /**
-     * @param \CultureFeed_Cdb_Data_DetailList $details
+     * @param \CultureFeed_Cdb_Data_DetailList|\CultureFeed_Cdb_Data_Detail[] $details
      * @param \stdClass $jsonLD
      */
     public function importPriceInfo(

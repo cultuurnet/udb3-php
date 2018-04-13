@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Model\ValueObject\Price\Tariff as Udb3ModelTariff;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
 use ValueObjects\Money\Currency;
 use ValueObjects\Money\CurrencyCode;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class Tariff implements SerializableInterface
 {

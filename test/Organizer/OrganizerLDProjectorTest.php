@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -157,8 +158,8 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->mainLanguage = 'nl';
         $jsonLD->name[$jsonLD->mainLanguage] = 'some representative title';
 
-        $jsonLD->addresses = [
-            [
+        $jsonLD->address = [
+            'nl' => [
                 'addressCountry' => $country,
                 'addressLocality' => $locality,
                 'postalCode' => $postalCode,
@@ -275,6 +276,32 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->expectSave($organizerId, 'organizer_with_updated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_address_updated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new AddressUpdated(
+                $organizerId,
+                new Address(
+                    new Street('Martelarenplein'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_updated_address.json');
 
         $this->projector->handle($domainMessage);
     }

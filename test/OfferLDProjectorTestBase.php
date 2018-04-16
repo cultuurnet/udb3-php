@@ -157,6 +157,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'availabilityEnds' => '2018-01-31T00:00:00+01:00',
             ],
             'modified' => $this->recordedOn->toString(),
+            'languages' => ['nl'],
         ];
 
         $body = $this->project($bookingInfoUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());

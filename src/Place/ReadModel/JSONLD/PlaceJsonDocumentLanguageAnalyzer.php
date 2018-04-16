@@ -14,6 +14,7 @@ class PlaceJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLanguage
                 'name',
                 'description',
                 'address',
+                'bookingInfo.urlLabel',
             ]
         );
     }
@@ -62,6 +63,12 @@ class PlaceJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLanguage
         if (isset($body->address->streetAddress)) {
             $body->address = (object) [
                 $mainLanguage => $body->address,
+            ];
+        }
+
+        if (isset($body->bookingInfo->urlLabel) && is_string($body->bookingInfo->urlLabel)) {
+            $body->bookingInfo->urlLabel = (object) [
+                $mainLanguage => $body->bookingInfo->urlLabel,
             ];
         }
 

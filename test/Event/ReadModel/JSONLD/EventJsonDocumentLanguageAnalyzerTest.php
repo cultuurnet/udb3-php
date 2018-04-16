@@ -28,12 +28,15 @@ class EventJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
                 'nl' => 'Naam NL',
                 'fr' => 'Nom FR',
                 'en' => 'Name EN',
-                'de' => 'Name DE',
             ],
             'description' => [
                 'nl' => 'Teaser NL',
                 'fr' => 'Teaser FR',
-                'de' => 'Teaser DE',
+            ],
+            'bookingInfo' => [
+                'urlLabel' => [
+                    'de' => 'Label DE',
+                ],
             ],
         ];
 
@@ -69,18 +72,66 @@ class EventJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
                 'fr' => 'Teaser FR',
                 'de' => 'Teaser DE',
             ],
+            'bookingInfo' => [
+                'urlLabel' => [
+                    'nl' => 'Label NL',
+                    'de' => 'Label DE',
+                ],
+            ],
         ];
 
         $document = new JsonDocument('919c7904-ecfa-440c-92d0-ae912213c615', json_encode($data));
 
         $expected = [
             new Language('nl'),
-            new Language('fr'),
             new Language('de'),
         ];
 
         $actual = $this->analyzer->determineCompletedLanguages($document);
 
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_polyfill_url_label_projections_from_a_single_object_to_multilingual_projections()
+    {
+        $data = [
+            '@id' => 'https://io.uitdatabank.be/events/919c7904-ecfa-440c-92d0-ae912213c615',
+            'name' => [
+                'nl' => 'Naam NL',
+                'fr' => 'Nom FR',
+                'en' => 'Name EN',
+                'de' => 'Name DE',
+            ],
+            'description' => [
+                'nl' => 'Teaser NL',
+                'fr' => 'Teaser FR',
+                'de' => 'Teaser DE',
+            ],
+            'bookingInfo' => [
+                'urlLabel' => 'Label NL',
+            ],
+        ];
+
+        $document = new JsonDocument('919c7904-ecfa-440c-92d0-ae912213c615', json_encode($data));
+
+        $expectedAll = [
+            new Language('nl'),
+            new Language('fr'),
+            new Language('en'),
+            new Language('de'),
+        ];
+
+        $expectedCompleted = [
+            new Language('nl'),
+        ];
+
+        $actualAll = $this->analyzer->determineAvailableLanguages($document);
+        $actualCompleted = $this->analyzer->determineCompletedLanguages($document);
+
+        $this->assertEquals($expectedAll, $actualAll);
+        $this->assertEquals($expectedCompleted, $actualCompleted);
     }
 }

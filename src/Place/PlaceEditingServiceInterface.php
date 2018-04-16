@@ -39,6 +39,24 @@ interface PlaceEditingServiceInterface
     );
 
     /**
+     * @param Language $mainLanguage
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Address $address
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @return string $eventId
+     */
+    public function createApprovedPlace(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    );
+
+    /**
      * @param string $id
      *
      * @return string $id

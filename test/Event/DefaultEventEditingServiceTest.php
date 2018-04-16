@@ -18,6 +18,8 @@ use CultuurNet\UDB3\Event\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -226,6 +228,62 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $calendar,
                     $theme
                 ),
+            ],
+            $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_able_to_create_a_new_event_and_approve_it_immediately()
+    {
+        $eventId = 'generated-uuid';
+        $mainLanguage = new Language('nl');
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+        $address = new Address($street, $postalCode, $locality, $country);
+        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = null;
+
+        $publicationDate = new \DateTimeImmutable();
+        $service = $this->eventEditingService->withFixedPublicationDateForNewOffers(
+            $publicationDate
+        );
+
+        $this->eventStore->trace();
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $service->createApprovedEvent(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
+
+        $this->assertEquals(
+            [
+                new EventCreated(
+                    $eventId,
+                    $mainLanguage,
+                    $title,
+                    $eventType,
+                    $location,
+                    $calendar,
+                    $theme
+                ),
+                new Published($eventId, $publicationDate),
+                new Approved($eventId),
             ],
             $this->eventStore->getEvents()
         );

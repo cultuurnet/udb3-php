@@ -12,6 +12,7 @@ class OrganizerJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLang
         parent::__construct(
             [
                 'name',
+                'address',
             ]
         );
     }
@@ -60,6 +61,12 @@ class OrganizerJsonDocumentLanguageAnalyzer extends ConfigurableJsonDocumentLang
         if (is_string($body->name)) {
             $body->name = (object) [
                 $mainLanguage => $body->name,
+            ];
+        }
+
+        if (isset($body->address->streetAddress)) {
+            $body->address = (object) [
+                $mainLanguage => $body->address,
             ];
         }
 

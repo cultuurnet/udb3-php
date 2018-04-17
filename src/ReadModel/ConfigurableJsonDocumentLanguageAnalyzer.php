@@ -112,20 +112,38 @@ class ConfigurableJsonDocumentLanguageAnalyzer implements JsonDocumentLanguageAn
      */
     private function getLanguageStringsFromNestedProperty(\stdClass $json, $propertyName)
     {
-        $nestedProperties = array_reduce(
-            explode('.', $propertyName),
-            function ($object, $path) {
-                if (isset($object->$path)) {
-                    return $object->$path;
-                } else {
-                    return null;
-                }
-            },
-            $json
-        );
+        $nestedProperties = explode('.', $propertyName);
+        $traversedProperties = [];
+        $propertyReference = $json;
 
-        if ($nestedProperties) {
-            return array_keys(get_object_vars($nestedProperties));
+        $languages = [];
+
+        while ($nestedPropertyName = array_shift($nestedProperties)) {
+            if ($nestedPropertyName === '[]') {
+                foreach ($propertyReference as $key => $arrayItem) {
+                    $remainingPath = implode('.', $nestedProperties);
+
+                    $recursiveLanguages = $this->getLanguageStringsFromNestedProperty(
+                        $propertyReference[$key],
+                        $remainingPath
+                    );
+
+                    $languages = array_merge($languages, $recursiveLanguages);
+                }
+                return $languages;
+            }
+
+            if (!isset($propertyReference->{$nestedPropertyName})) {
+                // Is either optional or should be handled by a different rule.
+                return [];
+            }
+
+            $propertyReference = $propertyReference->{$nestedPropertyName};
+            $traversedProperties[] = $nestedPropertyName;
+        }
+
+        if (is_object($propertyReference) && $propertyReference) {
+            return array_keys(get_object_vars($propertyReference));
         } else {
             return [];
         }

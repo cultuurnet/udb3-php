@@ -194,16 +194,15 @@ class CdbXMLImporter
             $location += (array)$placeManager->placeJSONLD($location_id);
         } else {
             $location_cdb = $event->getLocation();
+            $location['mainLanguage'] = 'nl';
             $location['name']['nl'] = $location_cdb->getLabel();
             $address = $location_cdb->getAddress()->getPhysicalAddress();
             if ($address) {
-                $location['address'] = array(
+                $location['address']['nl'] = array(
                     'addressCountry' => $address->getCountry(),
                     'addressLocality' => $address->getCity(),
                     'postalCode' => $address->getZip(),
-                    'streetAddress' =>
-                        $address->getStreet() . ' ' . $address->getHouseNumber(
-                        ),
+                    'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
                 );
             }
         }

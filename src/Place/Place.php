@@ -140,6 +140,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->mainLanguage = $placeCreated->getMainLanguage();
+        $this->titles[$this->mainLanguage->getCode()] = $placeCreated->getTitle();
         $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();

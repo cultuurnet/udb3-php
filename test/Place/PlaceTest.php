@@ -579,6 +579,26 @@ class PlaceTest extends AggregateRootScenarioTestCase
     }
 
     /**
+     * @test
+     */
+    public function it_does_not_update_the_same_calendar_after_place_created()
+    {
+        $this->scenario
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->given([
+                $this->createPlaceCreatedEvent(),
+            ])
+            ->when(
+                function (Place $place) {
+                    $place->updateCalendar(
+                        new Calendar(CalendarType::PERMANENT())
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
      * @return PlaceCreated
      */
     private function createPlaceCreatedEvent()

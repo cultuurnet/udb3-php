@@ -202,6 +202,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $this->calendar = $eventCreated->getCalendar();
         $this->audience = new Audience(AudienceType::EVERYONE());
         $this->contactPoint = new ContactPoint();
+        $this->typeId = $eventCreated->getEventType()->getId();
         $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
         $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();

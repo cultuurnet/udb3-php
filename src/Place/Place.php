@@ -143,6 +143,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->titles[$this->mainLanguage->getCode()] = $placeCreated->getTitle();
         $this->calendar = $placeCreated->getCalendar();
         $this->contactPoint = new ContactPoint();
+        $this->bookingInfo = new BookingInfo();
         $this->typeId = $placeCreated->getEventType()->getId();
         $this->themeId = $placeCreated->getTheme() ? $placeCreated->getTheme()->getId() : null;
         $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();

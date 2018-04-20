@@ -73,7 +73,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_booking_info_of_an_offer()
     {
         $id = '1';
-        $bookingInfo = new BookingInfo();
+        $bookingInfo = new BookingInfo('https://www.publiq.be');
         $commandClass = $this->getCommandClass('UpdateBookingInfo');
         $eventClass = $this->getEventClass('BookingInfoUpdated');
 

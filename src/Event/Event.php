@@ -197,6 +197,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->titles[$eventCreated->getMainLanguage()->getCode()] = $eventCreated->getTitle();
         $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
         $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();

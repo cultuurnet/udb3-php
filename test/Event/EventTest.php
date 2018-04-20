@@ -1085,6 +1085,27 @@ class EventTest extends AggregateRootScenarioTestCase
     }
 
     /**
+     * @test
+     */
+    public function it_does_not_update_the_same_title_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateTitle(
+                        new Language('en'),
+                        new Title('some representative title')
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
      * @param string $file
      * @return string
      */

@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
-use ValueObjects\StringLiteral\StringLiteral;
+use CultuurNet\UDB3\Title;
 
 class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +32,7 @@ class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
     {
         $this->itemId = 'Foo';
         $this->language = new Language('en');
-        $this->title = new StringLiteral('Title');
+        $this->title = new Title('Title');
         $this->titleTranslatedEvent = new TitleTranslated($this->itemId, $this->language, $this->title);
     }
 
@@ -43,7 +43,7 @@ class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
-        $expectedTitle = new StringLiteral('Title');
+        $expectedTitle = new Title('Title');
         $expectedTitleTranslated = new TitleTranslated(
             $expectedItemId,
             $expectedLanguage,
@@ -60,7 +60,7 @@ class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
-        $expectedTitle = new StringLiteral('Title');
+        $expectedTitle = new Title('Title');
 
         $itemId = $this->titleTranslatedEvent->getItemId();
         $language = $this->titleTranslatedEvent->getLanguage();
@@ -118,7 +118,7 @@ class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
                 new TitleTranslated(
                     'madId',
                     new Language('en'),
-                    new StringLiteral('Title')
+                    new Title('Title')
                 ),
             ],
         ];

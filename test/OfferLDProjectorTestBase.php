@@ -6,6 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
+use Cultuurnet\UDB3\Description as OfferDescription;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -202,7 +203,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
      */
     public function it_projects_the_updating_of_description()
     {
-        $description = 'description';
+        $description = new OfferDescription('description');
         $id = 'foo';
         $eventClass = $this->getEventClass('DescriptionUpdated');
         $descriptionUpdated = new $eventClass($id, $description);

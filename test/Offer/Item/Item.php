@@ -6,15 +6,14 @@ use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
-use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
@@ -135,11 +134,9 @@ class Item extends Offer
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
-     * @return AbstractTitleTranslated
+     * @inheritdoc
      */
-    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
+    protected function createTitleTranslatedEvent(Language $language, Title $title)
     {
         return new TitleTranslated($this->id, $language, $title);
     }
@@ -154,20 +151,17 @@ class Item extends Offer
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractDescriptionTranslated
+     * @inheritdoc
      */
-    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
+    protected function createDescriptionTranslatedEvent(Language $language, Description $description)
     {
         return new DescriptionTranslated($this->id, $language, $description);
     }
 
     /**
-     * @param string $description
-     * @return DescriptionUpdated
+     * @inheritdoc
      */
-    protected function createDescriptionUpdatedEvent($description)
+    protected function createDescriptionUpdatedEvent(Description $description)
     {
         return new DescriptionUpdated($this->id, $description);
     }
@@ -181,7 +175,7 @@ class Item extends Offer
     }
 
     /**
-     * @param string $typicalAgeRange
+     * @param AgeRange $typicalAgeRange
      * @return TypicalAgeRangeUpdated
      */
     protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)

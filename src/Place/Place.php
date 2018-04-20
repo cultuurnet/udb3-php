@@ -144,6 +144,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->calendar = $placeCreated->getCalendar();
         $this->contactPoint = new ContactPoint();
         $this->typeId = $placeCreated->getEventType()->getId();
+        $this->themeId = $placeCreated->getTheme() ? $placeCreated->getTheme()->getId() : null;
         $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();

@@ -142,6 +142,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->mainLanguage = $placeCreated->getMainLanguage();
         $this->titles[$this->mainLanguage->getCode()] = $placeCreated->getTitle();
         $this->calendar = $placeCreated->getCalendar();
+        $this->contactPoint = new ContactPoint();
         $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();

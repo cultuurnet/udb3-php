@@ -10,12 +10,14 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
@@ -140,6 +142,12 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceCreated(PlaceCreated $placeCreated)
     {
         $this->mainLanguage = $placeCreated->getMainLanguage();
+        $this->titles[$this->mainLanguage->getCode()] = $placeCreated->getTitle();
+        $this->calendar = $placeCreated->getCalendar();
+        $this->contactPoint = new ContactPoint();
+        $this->bookingInfo = new BookingInfo();
+        $this->typeId = $placeCreated->getEventType()->getId();
+        $this->themeId = $placeCreated->getTheme() ? $placeCreated->getTheme()->getId() : null;
         $this->addresses[$this->mainLanguage->getCode()] = $placeCreated->getAddress();
         $this->placeId = $placeCreated->getPlaceId();
         $this->workflowStatus = WorkflowStatus::DRAFT();
@@ -403,11 +411,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
-     * @return TitleTranslated
+     * @inheritdoc
      */
-    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
+    protected function createTitleTranslatedEvent(Language $language, Title $title)
     {
         return new TitleTranslated($this->placeId, $language, $title);
     }
@@ -422,20 +428,17 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $description
-     * @return DescriptionTranslated
+     * @inheritdoc
      */
-    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
+    protected function createDescriptionTranslatedEvent(Language $language, Description $description)
     {
         return new DescriptionTranslated($this->placeId, $language, $description);
     }
 
     /**
-     * @param string $description
-     * @return DescriptionUpdated
+     * @inheritdoc
      */
-    protected function createDescriptionUpdatedEvent($description)
+    protected function createDescriptionUpdatedEvent(Description $description)
     {
         return new DescriptionUpdated($this->placeId, $description);
     }
@@ -449,7 +452,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param string $typicalAgeRange
+     * @param AgeRange $typicalAgeRange
      * @return TypicalAgeRangeUpdated
      */
     protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)

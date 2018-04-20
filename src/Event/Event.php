@@ -10,6 +10,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\CalendarUpdated;
@@ -51,6 +52,7 @@ use CultuurNet\UDB3\Event\Events\TypeUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
@@ -197,6 +199,13 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->titles[$eventCreated->getMainLanguage()->getCode()] = $eventCreated->getTitle();
+        $this->calendar = $eventCreated->getCalendar();
+        $this->audience = new Audience(AudienceType::EVERYONE());
+        $this->contactPoint = new ContactPoint();
+        $this->bookingInfo = new BookingInfo();
+        $this->typeId = $eventCreated->getEventType()->getId();
+        $this->themeId = $eventCreated->getTheme() ? $eventCreated->getTheme()->getId() : null;
         $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
         $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
@@ -432,11 +441,9 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
-     * @return TitleTranslated
+     * @inheritdoc
      */
-    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
+    protected function createTitleTranslatedEvent(Language $language, Title $title)
     {
         return new TitleTranslated($this->eventId, $language, $title);
     }
@@ -451,20 +458,17 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $description
-     * @return DescriptionTranslated
+     * @inheritdoc
      */
-    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
+    protected function createDescriptionTranslatedEvent(Language $language, Description $description)
     {
         return new DescriptionTranslated($this->eventId, $language, $description);
     }
 
     /**
-     * @param string $description
-     * @return DescriptionUpdated
+     * @inheritdoc
      */
-    protected function createDescriptionUpdatedEvent($description)
+    protected function createDescriptionUpdatedEvent(Description $description)
     {
         return new DescriptionUpdated($this->eventId, $description);
     }
@@ -478,7 +482,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param string $typicalAgeRange
+     * @param AgeRange $typicalAgeRange
      * @return TypicalAgeRangeUpdated
      */
     protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)

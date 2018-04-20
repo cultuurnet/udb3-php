@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Offer\ReadModel\History;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
@@ -14,7 +15,7 @@ use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Offer\Item\ReadModel\History\ItemHistoryProjector;
-use ValueObjects\StringLiteral\StringLiteral;
+use CultuurNet\UDB3\Title;
 
 class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,7 +43,7 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
-        parent::__construct($name, $data, $dataName, 'CultuurNet\\UDB3\\Offer\\Item');
+        parent::__construct($name, $data, $dataName);
     }
 
     /**
@@ -159,7 +160,7 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             self::EVENT_ID_1,
             new Language('en'),
-            new StringLiteral('English title')
+            new Title('English title')
         );
 
         $initialDocument = new JsonDocument(
@@ -202,7 +203,7 @@ class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             self::EVENT_ID_1,
             new Language('en'),
-            new StringLiteral('English description')
+            new Description('English description')
         );
 
         $initialDocument = new JsonDocument(

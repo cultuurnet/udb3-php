@@ -2,26 +2,28 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
+use CultuurNet\UDB3\Description;
+
 abstract class AbstractDescriptionUpdated extends AbstractEvent
 {
     /**
      * The new description.
-     * @var string
+     * @var Description
      */
     protected $description;
 
     /**
      * @param string $id
-     * @param string $description
+     * @param Description $description
      */
-    public function __construct($id, $description)
+    public function __construct($id, Description $description)
     {
         parent::__construct($id);
         $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return Description
      */
     public function getDescription()
     {
@@ -39,10 +41,11 @@ abstract class AbstractDescriptionUpdated extends AbstractEvent
     }
 
     /**
+     * @param array $data
      * @return AbstractDescriptionUpdated
      */
     public static function deserialize(array $data)
     {
-        return new static($data['item_id'], $data['description']);
+        return new static($data['item_id'], new Description($data['description']));
     }
 }

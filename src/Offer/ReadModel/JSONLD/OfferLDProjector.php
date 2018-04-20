@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
-use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\CulturefeedSlugger;
@@ -810,7 +809,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         }
 
         $mainLanguage = isset($offerLd->mainLanguage) ? $offerLd->mainLanguage : 'nl';
-        $offerLd->description->{$mainLanguage} = $descriptionUpdated->getDescription();
+        $offerLd->description->{$mainLanguage} = $descriptionUpdated->getDescription()->toNative();
 
         return $document->withBody($offerLd);
     }

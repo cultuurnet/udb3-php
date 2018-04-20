@@ -1265,7 +1265,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new DescriptionUpdated($itemId, (string) $description),
+                    new DescriptionUpdated($itemId, $description),
                 ]
             )
             ->when(
@@ -1290,7 +1290,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new DescriptionUpdated($itemId, 'Een beschrijving'),
+                    new DescriptionUpdated($itemId, new \CultuurNet\UDB3\Description('Een beschrijving')),
                 ]
             )
             ->when(

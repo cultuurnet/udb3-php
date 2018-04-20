@@ -73,7 +73,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_booking_info_of_an_offer()
     {
         $id = '1';
-        $bookingInfo = new BookingInfo();
+        $bookingInfo = new BookingInfo('https://www.publiq.be');
         $commandClass = $this->getCommandClass('UpdateBookingInfo');
         $eventClass = $this->getEventClass('BookingInfoUpdated');
 
@@ -94,7 +94,7 @@ trait OfferCommandHandlerTestTrait
     public function it_can_update_contact_point_of_an_offer()
     {
         $id = '1';
-        $contactPoint = new ContactPoint();
+        $contactPoint = new ContactPoint(['016102030']);
         $commandClass = $this->getCommandClass('UpdateContactPoint');
         $eventClass = $this->getEventClass('ContactPointUpdated');
 

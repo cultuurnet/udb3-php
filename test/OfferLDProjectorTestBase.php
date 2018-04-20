@@ -9,7 +9,6 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
-use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -203,7 +202,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
      */
     public function it_projects_the_updating_of_description()
     {
-        $description = 'description';
+        $description = new \Cultuurnet\UDB3\Description('description');
         $id = 'foo';
         $eventClass = $this->getEventClass('DescriptionUpdated');
         $descriptionUpdated = new $eventClass($id, $description);
@@ -245,7 +244,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $description = new Description('Some description.');
+        $description = new \Cultuurnet\UDB3\Media\Properties\Description('Some description.');
         $copyrightHolder = new CopyrightHolder('Dirk Dirkington');
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');

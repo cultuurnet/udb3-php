@@ -382,7 +382,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             'foo',
             new Language('en'),
-            new StringLiteral('English title')
+            new Title('English title')
         );
 
         $initialDocument = new JsonDocument(
@@ -424,7 +424,7 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             'foo',
             new Language('en'),
-            new StringLiteral('English description')
+            new \CultuurNet\UDB3\Description('English description')
         );
 
         $initialDocument = new JsonDocument(

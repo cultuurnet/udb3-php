@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
@@ -277,7 +278,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $titleTranslated = new TitleTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            new StringLiteral('Titre en français')
+            new Title('Titre en français')
         );
 
         $translatedDate = '2015-03-26T10:17:19.176169+02:00';
@@ -321,7 +322,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
         $descriptionTranslated = new DescriptionTranslated(
             self::EVENT_ID_1,
             new Language('fr'),
-            new StringLiteral('Signalement en français')
+            new Description('Signalement en français')
         );
 
         $translatedDate = '2015-03-27T10:17:19.176169+02:00';

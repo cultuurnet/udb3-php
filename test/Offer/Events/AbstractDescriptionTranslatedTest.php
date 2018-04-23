@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractDescriptionTranslatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +32,7 @@ class AbstractDescriptionTranslatedTest extends \PHPUnit_Framework_TestCase
     {
         $this->itemId = 'Foo';
         $this->language = new Language('en');
-        $this->description = new StringLiteral('Description');
+        $this->description = new Description('Description');
         $this->descriptionTranslatedEvent = new DescriptionTranslated($this->itemId, $this->language, $this->description);
     }
 
@@ -43,7 +43,7 @@ class AbstractDescriptionTranslatedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
-        $expectedDescription = new StringLiteral('Description');
+        $expectedDescription = new Description('Description');
         $expectedDescriptionTranslated = new DescriptionTranslated(
             $expectedItemId,
             $expectedLanguage,
@@ -60,7 +60,7 @@ class AbstractDescriptionTranslatedTest extends \PHPUnit_Framework_TestCase
     {
         $expectedItemId = 'Foo';
         $expectedLanguage = new Language('en');
-        $expectedDescription = new StringLiteral('Description');
+        $expectedDescription = new Description('Description');
 
         $itemId = $this->descriptionTranslatedEvent->getItemId();
         $language = $this->descriptionTranslatedEvent->getLanguage();
@@ -118,7 +118,7 @@ class AbstractDescriptionTranslatedTest extends \PHPUnit_Framework_TestCase
                 new DescriptionTranslated(
                     'madId',
                     new Language('en'),
-                    new StringLiteral('Description')
+                    new Description('Description')
                 ),
             ],
         ];

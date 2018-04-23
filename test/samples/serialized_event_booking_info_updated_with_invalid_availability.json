@@ -9,8 +9,8 @@
       "urlLabel": "Reserveer plaatsen",
       "name": "",
       "description": "",
-      "availabilityStarts": "",
-      "availabilityEnds": ""
+      "availabilityStarts": "12",
+      "availabilityEnds": "14"
     }
   }
 }

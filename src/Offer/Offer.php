@@ -333,6 +333,23 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
+     * @param AbstractTitleTranslated $titleTranslated
+     */
+    public function applyTitleTranslated(AbstractTitleTranslated $titleTranslated)
+    {
+        $this->titles[$titleTranslated->getLanguage()->getCode()] = $titleTranslated->getTitle();
+    }
+
+
+    /**
+     * @param AbstractTitleUpdated $titleUpdated
+     */
+    public function applyTitleUpdated(AbstractTitleUpdated $titleUpdated)
+    {
+        $this->titles[$this->mainLanguage->getCode()] = $titleUpdated->getTitle();
+    }
+
+    /**
      * @param Description $description
      * @param Language $language
      */
@@ -342,7 +359,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
             if ($language->getCode() !== $this->mainLanguage->getCode()) {
                 $event = $this->createDescriptionTranslatedEvent($language, $description);
             } else {
-                $event = $this->createDescriptionUpdatedEvent((string) $description);
+                $event = $this->createDescriptionUpdatedEvent($description);
             }
 
             $this->apply($event);
@@ -556,7 +573,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected function applyDescriptionUpdated(AbstractDescriptionUpdated $descriptionUpdated)
     {
         $mainLanguageCode = $this->mainLanguage->getCode();
-        $this->descriptions[$mainLanguageCode] = new Description($descriptionUpdated->getDescription());
+        $this->descriptions[$mainLanguageCode] = $descriptionUpdated->getDescription();
     }
 
     protected function applyDescriptionTranslated(AbstractDescriptionTranslated $descriptionTranslated)
@@ -1011,17 +1028,17 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     /**
      * @param Language $language
-     * @param StringLiteral $title
+     * @param Title $title
      * @return AbstractTitleTranslated
      */
-    abstract protected function createTitleTranslatedEvent(Language $language, StringLiteral $title);
+    abstract protected function createTitleTranslatedEvent(Language $language, Title $title);
 
     /**
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Description $description
      * @return AbstractDescriptionTranslated
      */
-    abstract protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description);
+    abstract protected function createDescriptionTranslatedEvent(Language $language, Description $description);
 
     /**
      * @param Image $image
@@ -1065,10 +1082,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     abstract protected function createTitleUpdatedEvent(Title $title);
 
     /**
-     * @param string $description
+     * @param Description $description
      * @return AbstractDescriptionUpdated
      */
-    abstract protected function createDescriptionUpdatedEvent($description);
+    abstract protected function createDescriptionUpdatedEvent(Description $description);
 
     /**
      * @param Calendar $calendar

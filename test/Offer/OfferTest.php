@@ -1193,9 +1193,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                     $item->updateTitle(new Language('nl'), $title);
                 }
             )
-            ->then([
-                new TitleUpdated($itemId, $title),
-            ]);
+            ->then([]);
     }
 
     /**
@@ -1228,6 +1226,35 @@ class OfferTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_should_ignore_a_title_translation_that_does_not_translate_the_title()
+    {
+        $itemId = UUID::generateAsString();
+        $title = new Title('The Title');
+        $language = new Language('en');
+
+        $this->scenario
+            ->withAggregateId($itemId)
+            ->given(
+                [
+                    new ItemCreated($itemId),
+                    new TitleUpdated($itemId, new Title('Een titel')),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($title, $language) {
+                    $item->updateTitle($language, $title);
+                    $item->updateTitle($language, $title);
+                    $item->updateTitle(new Language('nl'), new Title('Een titel'));
+                }
+            )
+            ->then([
+                new TitleTranslated($itemId, $language, $title),
+            ]);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_ignore_a_description_update_that_does_not_change_the_existing_descriptions()
     {
         $itemId = UUID::generateAsString();
@@ -1238,7 +1265,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new DescriptionUpdated($itemId, (string) $description),
+                    new DescriptionUpdated($itemId, $description),
                 ]
             )
             ->when(
@@ -1263,7 +1290,7 @@ class OfferTest extends AggregateRootScenarioTestCase
             ->given(
                 [
                     new ItemCreated($itemId),
-                    new DescriptionUpdated($itemId, 'Een beschrijving'),
+                    new DescriptionUpdated($itemId, new \CultuurNet\UDB3\Description('Een beschrijving')),
                 ]
             )
             ->when(

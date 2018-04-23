@@ -9,7 +9,6 @@ use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
-use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
@@ -137,11 +136,9 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
         $urlLabel = 'Google';
         $phone = '045';
         $email = 'test@test.com';
-        $availabilityStarts = '12';
-        $availabilityEnds = '14';
-        $name = 'Booking name';
-        $description = 'booking description';
-        $bookingInfo = new BookingInfo($url, $urlLabel, $phone, $email, $availabilityStarts, $availabilityEnds, $name, $description);
+        $availabilityStarts = \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00');
+        $availabilityEnds = \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-31T00:00:00+01:00');
+        $bookingInfo = new BookingInfo($url, $urlLabel, $phone, $email, $availabilityStarts, $availabilityEnds);
         $eventClass = $this->getEventClass('BookingInfoUpdated');
         $bookingInfoUpdated = new $eventClass($id, $bookingInfo);
 
@@ -154,13 +151,12 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'phone' => $phone,
                 'email' => $email,
                 'url' => $url,
-                'urlLabel' => $urlLabel,
-                'name' => $name,
-                'description' => $description,
-                'availabilityStarts' => $availabilityStarts,
-                'availabilityEnds' => $availabilityEnds,
+                'urlLabel' => (object) ['nl' => $urlLabel],
+                'availabilityStarts' => '2018-01-01T00:00:00+01:00',
+                'availabilityEnds' => '2018-01-31T00:00:00+01:00',
             ],
             'modified' => $this->recordedOn->toString(),
+            'languages' => ['nl'],
         ];
 
         $body = $this->project($bookingInfoUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
@@ -206,7 +202,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
      */
     public function it_projects_the_updating_of_description()
     {
-        $description = 'description';
+        $description = new \Cultuurnet\UDB3\Description('description');
         $id = 'foo';
         $eventClass = $this->getEventClass('DescriptionUpdated');
         $descriptionUpdated = new $eventClass($id, $description);
@@ -248,7 +244,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $imageId = UUID::fromNative('de305d54-75b4-431b-adb2-eb6b9e546014');
-        $description = new Description('Some description.');
+        $description = new \Cultuurnet\UDB3\Media\Properties\Description('Some description.');
         $copyrightHolder = new CopyrightHolder('Dirk Dirkington');
         $type = new MIMEType('image/png');
         $location = Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png');

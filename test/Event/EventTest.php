@@ -45,6 +45,7 @@ use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use RuntimeException;
 use ValueObjects\Geography\Country;
@@ -113,6 +114,28 @@ class EventTest extends AggregateRootScenarioTestCase
                 )
             ),
             new Calendar(CalendarType::PERMANENT())
+        );
+    }
+
+    private function getCreationEventWithTheme()
+    {
+        return new EventCreated(
+            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Language('en'),
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location(
+                UUID::generateAsString(),
+                new StringLiteral('P-P-Partyzone'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
+            ),
+            new Calendar(CalendarType::PERMANENT()),
+            new Theme('1.8.3.1.0', 'Pop en rock')
         );
     }
 
@@ -1122,6 +1145,147 @@ class EventTest extends AggregateRootScenarioTestCase
             ->when(
                 function (Event $event) {
                     $event->conclude();
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_title_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateTitle(
+                        new Language('en'),
+                        new Title('some representative title')
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_calendar_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateCalendar(
+                        new Calendar(CalendarType::PERMANENT())
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_audience_type_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateAudience(
+                        new Audience(AudienceType::EVERYONE())
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_contact_point_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateContactPoint(
+                        new ContactPoint()
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_booking_info_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEventWithTheme(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateBookingInfo(
+                        new BookingInfo()
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_type_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateType(
+                        new EventType('0.50.4.0.0', 'concert')
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_theme_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEventWithTheme(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateTheme(
+                        new Theme('1.8.3.1.0', 'Pop en rock')
+                    );
                 }
             )
             ->then([]);

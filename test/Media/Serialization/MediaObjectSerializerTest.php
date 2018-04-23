@@ -10,14 +10,13 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
-use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
 class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|SerializerInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|MediaObjectSerializer
      */
     protected $serializer;
 
@@ -71,7 +70,7 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_serialize_media_objects_with_application_octet_stream_mime_type()
     {
-        $mediaObject = new Image(
+        $mediaObject = MediaObject::create(
             new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
             new MIMEType('application/octet-stream'),
             new Description('my pic'),
@@ -103,6 +102,40 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_should_serialize_image_objects_with_application_octet_stream_mime_type()
+    {
+        $mediaObject = new Image(
+            new UUID('de305d54-75b4-431b-adb2-eb6b9e546014'),
+            new MIMEType('application/octet-stream'),
+            new Description('my pic'),
+            new CopyrightHolder('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_pic.jpg'),
+            new Language('en')
+        );
+
+        $this->iriGenerator
+            ->expects($this->once())
+            ->method('iri')
+            ->willReturn('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014');
+
+        $expectedJsonld = [
+            '@id' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014',
+            '@type' => 'schema:ImageObject',
+            'thumbnailUrl' => 'http://foo.bar/media/my_pic.jpg',
+            'contentUrl' => 'http://foo.bar/media/my_pic.jpg',
+            'description' => 'my pic',
+            'copyrightHolder' => 'Dirk Dirkington',
+            'inLanguage' => 'en',
+        ];
+
+        $jsonld = $this->serializer->serialize($mediaObject, 'json-ld');
+
+        $this->assertEquals($expectedJsonld, $jsonld);
+    }
+
+    /**
+     * @test
+     */
     public function it_should_throw_an_exception_when_trying_to_serialize_unknown_media_types()
     {
         $mediaObject = MediaObject::create(
@@ -114,10 +147,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new Language('en')
         );
 
-        $this->setExpectedException(
-            UnsupportedException::class,
-            'Unsupported MIME-type "video/avi"'
-        );
+        $this->expectException(UnsupportedException::class);
+        $this->expectExceptionMessage('Unsupported MIME-type "video/avi"');
 
         $this->serializer->serialize($mediaObject, 'json-ld');
     }
@@ -136,10 +167,8 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
             new Language('en')
         );
 
-        $this->setExpectedException(
-            UnsupportedException::class,
-            'Unsupported format, only json-ld is available.'
-        );
+        $this->expectException(UnsupportedException::class);
+        $this->expectExceptionMessage('Unsupported format, only json-ld is available.');
 
         $this->serializer->serialize($mediaObject, 'xml');
     }
@@ -149,11 +178,23 @@ class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_throw_an_exception_when_trying_to_deserialize()
     {
-        $this->setExpectedException(
-            \Exception::class,
-            'Deserialization currently not supported.'
-        );
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Deserialization currently not supported.');
 
         $this->serializer->deserialize((object) [], MediaObject::class, 'json-ld');
+    }
+
+    /**
+     * @test
+     */
+    public function it_serializes_mime_type_image_to_image_object()
+    {
+        /** @var MIMEType $mimeType */
+        $mimeType = MIMEType::fromNative('image/jpeg');
+
+        $this->assertEquals(
+            'schema:ImageObject',
+            $this->serializer->serializeMimeType($mimeType)
+        );
     }
 }

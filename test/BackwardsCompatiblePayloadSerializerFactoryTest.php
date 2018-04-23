@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -19,8 +20,15 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\PriceInfo\Tariff;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -542,6 +550,53 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     {
         $sampleFile = $this->sampleDir . 'serialized_event_geo_coordinates_updated_class.json';
         $this->assertPlaceIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_replace_string_names_with_translatable_objects_in_price_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_price_info_updated_class.json';
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        $expectedPriceInfo = new PriceInfo(
+            new BasePrice(
+                new Price(1500),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $expectedPriceInfo = $expectedPriceInfo
+            ->withExtraTariff(
+                new Tariff(
+                    new MultilingualString(
+                        new Language('nl'),
+                        new StringLiteral('Senioren')
+                    ),
+                    new Price(1000),
+                    Currency::fromNative('EUR')
+                )
+            )
+            ->withExtraTariff(
+                new Tariff(
+                    new MultilingualString(
+                        new Language('nl'),
+                        new StringLiteral('Studenten')
+                    ),
+                    new Price(750),
+                    Currency::fromNative('EUR')
+                )
+            );
+
+        /**
+         * @var PriceInfoUpdated $event
+         */
+        $event = $this->serializer->deserialize($decoded);
+        $actualPriceInfo = $event->getPriceInfo();
+
+        $this->assertEquals($expectedPriceInfo, $actualPriceInfo);
     }
 
     /**

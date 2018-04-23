@@ -93,6 +93,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $eventsNotTriggeringUpdateModified;
 
     /**
+     * Associative array of bases prices.
+     * Key is the language, value is the translated string.
+     *
+     * @var string[]
+     */
+    private $basePriceTranslations;
+
+    /**
      * @var SluggerInterface
      */
     protected $slugger;
@@ -104,6 +112,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
      * @param EventSpecification $eventsNotTriggeringUpdateModified
+     * @param string[] $basePriceTranslations
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
@@ -111,7 +120,8 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventSpecification $eventsNotTriggeringUpdateModified
+        EventSpecification $eventsNotTriggeringUpdateModified,
+        array $basePriceTranslations
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
@@ -119,6 +129,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
         $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
+        $this->basePriceTranslations = $basePriceTranslations;
 
         $this->slugger = new CulturefeedSlugger();
     }
@@ -761,7 +772,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd->priceInfo[] = [
             'category' => 'base',
-            'name' => 'Basistarief',
+            'name' => $this->basePriceTranslations,
             'price' => $basePrice->getPrice()->toFloat(),
             'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
         ];
@@ -769,7 +780,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
             $offerLd->priceInfo[] = [
                 'category' => 'tariff',
-                'name' => $tariff->getName()->toNative(),
+                'name' => $tariff->getName()->serialize(),
                 'price' => $tariff->getPrice()->toFloat(),
                 'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
             ];

@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Model\ValueObject\Price\TariffName;
 use CultuurNet\UDB3\Model\ValueObject\Price\Tariffs;
 use CultuurNet\UDB3\Model\ValueObject\Price\TranslatedTariffName;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use Money\Money;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -36,7 +37,10 @@ class PriceInfoTest extends \PHPUnit_Framework_TestCase
 
         $this->tariffs = [
             new Tariff(
-                new StringLiteral('Werkloze dodo kwekers'),
+                new MultilingualString(
+                    new Language('nl'),
+                    new StringLiteral('Werkloze dodo kwekers')
+                ),
                 new Price(0),
                 Currency::fromNative('EUR')
             ),
@@ -134,7 +138,10 @@ class PriceInfoTest extends \PHPUnit_Framework_TestCase
         $expected = $expected
             ->withExtraTariff(
                 new Tariff(
-                    new StringLiteral('Senioren'),
+                    new MultilingualString(
+                        new Language('nl'),
+                        new StringLiteral('Senioren')
+                    ),
                     new Price(500),
                     Currency::fromNative('EUR')
                 )

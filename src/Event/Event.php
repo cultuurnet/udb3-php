@@ -273,6 +273,9 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         // Just clear the booking info.
         $this->bookingInfo = null;
 
+        // Just clear the price info.
+        $this->priceInfo = null;
+
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
     }

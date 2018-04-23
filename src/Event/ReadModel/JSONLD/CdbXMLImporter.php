@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
 use CultuurNet\UDB3\Cdb\Description\MergedDescription;
-use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\LabelImporter;
@@ -30,11 +29,6 @@ class CdbXMLImporter
     private $cdbIdExtractor;
 
     /**
-     * @var PriceDescriptionParser
-     */
-    private $priceDescriptionParser;
-
-    /**
      * @var CalendarFactoryInterface
      */
     private $calendarFactory;
@@ -47,20 +41,17 @@ class CdbXMLImporter
     /**
      * @param CdbXMLItemBaseImporter $cdbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
-     * @param PriceDescriptionParser $priceDescriptionParser
      * @param CalendarFactoryInterface $calendarFactory
      * @param CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
      */
     public function __construct(
         CdbXMLItemBaseImporter $cdbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
-        PriceDescriptionParser $priceDescriptionParser,
         CalendarFactoryInterface $calendarFactory,
         CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
     ) {
         $this->cdbXMLItemBaseImporter = $cdbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
-        $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
         $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
     }
@@ -91,10 +82,8 @@ class CdbXMLImporter
     ) {
         $jsonLD = clone $base;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail[] $details */
         $details = $event->getDetails();
 
         foreach ($details as $languageDetail) {
@@ -137,7 +126,7 @@ class CdbXMLImporter
             );
         }
 
-        $this->importPriceInfo($detail, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importPriceInfo($details, $jsonLD);
 
         $this->importTerms($event, $jsonLD);
 
@@ -251,70 +240,6 @@ class CdbXMLImporter
         if (!is_null($organizer)) {
             $organizer['@type'] = 'Organizer';
             $jsonLD->organizer = $organizer;
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Data_EventDetail $detail
-     * @param \stdClass $jsonLD
-     */
-    private function importPriceInfo(
-        \CultureFeed_Cdb_Data_EventDetail $detail,
-        $jsonLD
-    ) {
-        $prices = array();
-
-        $price = $detail->getPrice();
-
-        if ($price) {
-            $description = $price->getDescription();
-
-            if ($description) {
-                $prices = $this->priceDescriptionParser->parse($description);
-            }
-
-            $priceValue = $price->getValue();
-
-            if ($priceValue !== null) {
-                $priceValue = floatval($priceValue);
-            }
-
-            // Ignore prices parsed from description when its base price
-            // does not equal the cdbxml price value.
-            if (!empty($prices) && $prices['Basistarief'] !== $priceValue) {
-                $prices = [];
-            }
-
-            // If price description was not interpretable, fall back to
-            // price title and value.
-            if (empty($prices) && $priceValue !== null) {
-                $prices['Basistarief'] = floatval($price->getValue());
-            }
-        }
-
-        if (!empty($prices)) {
-            $priceInfo = array();
-
-            /** @var \CultureFeed_Cdb_Data_Price $price */
-            foreach ($prices as $title => $value) {
-                $priceInfoItem = array(
-                    'name' => $title,
-                    'priceCurrency' => 'EUR',
-                    'price' => $value,
-                );
-
-                $priceInfoItem['category'] = 'tariff';
-
-                if ($priceInfoItem['name'] === 'Basistarief') {
-                    $priceInfoItem['category'] = 'base';
-                }
-
-                $priceInfo[] = $priceInfoItem;
-            }
-
-            if (!empty($priceInfo)) {
-                $jsonLD->priceInfo = $priceInfo;
-            }
         }
     }
 

@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated as EventOrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated as EventPriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted as EventTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeUpdated;
@@ -27,6 +28,7 @@ use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted as PlaceOrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated as PlaceOrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated as PlacePriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
 use ValueObjects\Identity\UUID;
@@ -336,6 +338,37 @@ class BackwardsCompatiblePayloadSerializerFactory
                 $refactoredPlaceEvent,
                 function (array $serializedObject) {
                     $serializedObject = self::replacePlaceIdWithItemId($serializedObject);
+                    return $serializedObject;
+                }
+            );
+        }
+
+        /**
+         * PriceInfoUpdated events
+         */
+        $priceInfoEvents = [
+            EventPriceInfoUpdated::class,
+            PlacePriceInfoUpdated::class,
+        ];
+
+        foreach ($priceInfoEvents as $priceInfoEvent) {
+            $payloadManipulatingSerializer->manipulateEventsOfClass(
+                $priceInfoEvent,
+                function (array $serializedObject) {
+                    $payload = &$serializedObject['payload'];
+                    $priceInfo = &$payload['price_info'];
+                    $tariffs = array_map(
+                        function (array $tariff) {
+                            $name = $tariff['name'];
+                            if (is_string($name)) {
+                                $name = ['nl' => $name];
+                            }
+                            $tariff['name'] = $name;
+                            return $tariff;
+                        },
+                        isset($priceInfo['tariffs']) ? $priceInfo['tariffs'] : []
+                    );
+                    $priceInfo['tariffs'] = $tariffs;
                     return $serializedObject;
                 }
             );

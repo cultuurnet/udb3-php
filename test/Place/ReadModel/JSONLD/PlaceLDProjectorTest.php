@@ -6,6 +6,8 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CultureFeed_Cdb_Data_File;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
@@ -17,6 +19,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\EventListener\EventSpecification;
@@ -127,7 +130,18 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         });
 
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
+            ),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );
@@ -146,7 +160,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new JsonDocumentLanguageEnricher(
                 new PlaceJsonDocumentLanguageAnalyzer()
             ),
-            $this->eventFilter
+            $this->eventFilter,
+            [
+                'nl' => 'Basistarief',
+                'fr' => 'Tarif de base',
+                'en' => 'Base tariff',
+                'de' => 'Basisrate',
+            ]
         );
 
         $street = new Street('Kerkstraat 69');

@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Facility;
@@ -28,9 +29,13 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
+use ValueObjects\Money\Currency;
 use ValueObjects\Person\Age;
 
 class PlaceTest extends AggregateRootScenarioTestCase
@@ -158,6 +163,44 @@ class PlaceTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new CalendarUpdated($placeId, $calendar),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_price_info_after_udb2_import()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+
+        $priceInfo = new PriceInfo(
+            new BasePrice(
+                new Price(1000),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $cdbXml = $this->getCdbXML('/ReadModel/JSONLD/place_with_long_description.cdbxml.xml');
+        $cdbXmlNamespace = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
+
+        $this->scenario
+            ->given(
+                [
+                    $placeCreated,
+                    new PriceInfoUpdated($placeId, $priceInfo),
+                    new PlaceUpdatedFromUDB2($placeId, $cdbXml, $cdbXmlNamespace),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($priceInfo) {
+                    $place->updatePriceInfo($priceInfo);
+                }
+            )
+            ->then(
+                [
+                    new PriceInfoUpdated($placeId, $priceInfo),
                 ]
             );
     }

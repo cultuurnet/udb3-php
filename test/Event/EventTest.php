@@ -27,6 +27,7 @@ use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -41,11 +42,15 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use RuntimeException;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
 use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
@@ -402,6 +407,44 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new BookingInfoUpdated($eventId, $bookingInfo),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_price_info_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $priceInfo = new PriceInfo(
+            new BasePrice(
+                new Price(1000),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new PriceInfoUpdated($eventId, $priceInfo),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($priceInfo) {
+                    $event->updatePriceInfo($priceInfo);
+                }
+            )
+            ->then(
+                [
+                    new PriceInfoUpdated($eventId, $priceInfo),
                 ]
             );
     }

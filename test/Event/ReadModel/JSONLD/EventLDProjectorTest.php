@@ -87,11 +87,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     private $iriGenerator;
 
     /**
-     * @var IriGeneratorInterface
-     */
-    private $mediaIriGenerator;
-
-    /**
      * @var CdbXMLEventFactory
      */
     private $cdbXMLEventFactory;
@@ -152,22 +147,25 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             }
         );
 
-        $this->mediaIriGenerator = new CallableIriGenerator(function (CultureFeed_Cdb_Data_File $file) {
-            return 'http://example.com/media/' . $file->getFileName();
-        });
-
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
         $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
-            new EventCdbIdExtractor(),
-            new PriceDescriptionParser(
-                new NumberFormatRepository(),
-                new CurrencyRepository()
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
             ),
+            new EventCdbIdExtractor(),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );
@@ -184,7 +182,13 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new JsonDocumentLanguageEnricher(
                 new EventJsonDocumentLanguageAnalyzer()
             ),
-            $this->eventFilter
+            $this->eventFilter,
+            [
+                'nl' => 'Basistarief',
+                'fr' => 'Tarif de base',
+                'en' => 'Base tariff',
+                'de' => 'Basisrate',
+            ]
         );
     }
 

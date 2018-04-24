@@ -164,6 +164,30 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     /**
      * @test
      */
+    public function it_can_get_by_name_case_insensitive()
+    {
+        $entity = $this->dbalReadRepository->getByName(
+            new StringLiteral('BosWandeling')
+        );
+
+        $this->assertEquals($this->entityByName, $entity);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_get_on_part_of_name()
+    {
+        $entity = $this->dbalReadRepository->getByName(
+            new StringLiteral('oswand')
+        );
+
+        $this->assertNull($entity);
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_null_when_not_found_by_name()
     {
         $entity = $this->dbalReadRepository->getByName(

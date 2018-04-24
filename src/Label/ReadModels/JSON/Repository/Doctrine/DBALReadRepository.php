@@ -82,7 +82,7 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
             ->where($likeCondition)
             ->setParameter(
                 SchemaConfigurator::NAME_COLUMN,
-                '%' . $name->toNative() . '%'
+                $name->toNative()
             );
 
         return $this->getResult($queryBuilder);

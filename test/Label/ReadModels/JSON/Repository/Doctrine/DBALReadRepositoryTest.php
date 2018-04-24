@@ -370,6 +370,25 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     }
 
     /**
+     * @test
+     */
+    public function a_user_needs_permission_on_private_label_case_insensitive()
+    {
+        $userId = new StringLiteral('a02f67cb-3227-439b-861b-6ec24de7f0d1');
+        $this->seedRoles($userId);
+
+        $this->assertTrue($this->dbalReadRepository->canUseLabel(
+            $userId,
+            new StringLiteral('Wandeltocht')
+        ));
+
+        $this->assertFalse($this->dbalReadRepository->canUseLabel(
+            $userId,
+            new StringLiteral('Stadswandeling')
+        ));
+    }
+
+    /**
      * @param UUID $labelId
      * @param UUID $roleId
      */

@@ -58,6 +58,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use Exception;
+use TwoDotsTwice\Collection\Exception\CollectionItemNotFoundException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -949,7 +950,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
     {
-        $this->images = $this->images->without($imageRemoved->getImage());
+        try {
+            $this->images = $this->images->without($imageRemoved->getImage());
+        } catch (CollectionItemNotFoundException $exception) {
+
+        }
     }
 
     protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)

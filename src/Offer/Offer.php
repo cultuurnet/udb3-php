@@ -953,7 +953,6 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         try {
             $this->images = $this->images->without($imageRemoved->getImage());
         } catch (CollectionItemNotFoundException $exception) {
-
         }
     }
 

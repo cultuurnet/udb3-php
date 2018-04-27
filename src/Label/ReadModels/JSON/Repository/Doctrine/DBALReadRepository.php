@@ -71,12 +71,19 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
     public function getByName(StringLiteral $name)
     {
         $aliases = $this->getAliases();
-        $whereName = SchemaConfigurator::NAME_COLUMN . ' = ?';
+        $queryBuilder = $this->createQueryBuilder();
+        $likeCondition = $queryBuilder->expr()->like(
+            SchemaConfigurator::NAME_COLUMN,
+            $queryBuilder->expr()->literal($name->toNative())
+        );
 
-        $queryBuilder = $this->createQueryBuilder()->select($aliases)
+        $queryBuilder = $queryBuilder->select($aliases)
             ->from($this->getTableName()->toNative())
-            ->where($whereName)
-            ->setParameters([$name]);
+            ->where($likeCondition)
+            ->setParameter(
+                SchemaConfigurator::NAME_COLUMN,
+                $name->toNative()
+            );
 
         return $this->getResult($queryBuilder);
     }
@@ -104,8 +111,10 @@ class DBALReadRepository extends AbstractDBALRepository implements ReadRepositor
         $foundLabels = $this->search($query);
 
         if ($foundLabels) {
+            $nameLowerCase = mb_strtolower($name->toNative());
             foreach ($foundLabels as $foundLabel) {
-                if ($foundLabel->getName()->sameValueAs($name)) {
+                $foundLabelLowerCase = mb_strtolower($foundLabel->getName()->toNative());
+                if ($nameLowerCase === $foundLabelLowerCase) {
                     return true;
                 }
             }

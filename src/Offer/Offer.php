@@ -644,7 +644,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         // Use the image from the internal state.
         $existingImage = $this->images->findImageByUUID($image->getMediaObjectId());
 
-        if ($existingImage && $this->images->contains($existingImage)) {
+        if ($existingImage) {
             $this->apply(
                 $this->createImageRemovedEvent($existingImage)
             );

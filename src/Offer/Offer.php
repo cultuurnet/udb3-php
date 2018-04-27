@@ -589,7 +589,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function addImage(Image $image)
     {
-        if (!$this->images->contains($image)) {
+        // Find the image based on UUID inside the internal state.
+        $existingImage = $this->images->findImageByUUID($image->getMediaObjectId());
+
+        if ($existingImage === null) {
             $this->apply(
                 $this->createImageAddedEvent($image)
             );
@@ -637,9 +640,13 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function removeImage(Image $image)
     {
-        if ($this->images->contains($image)) {
+        // Find the image based on UUID inside the internal state.
+        // Use the image from the internal state.
+        $existingImage = $this->images->findImageByUUID($image->getMediaObjectId());
+
+        if ($existingImage) {
             $this->apply(
-                $this->createImageRemovedEvent($image)
+                $this->createImageRemovedEvent($existingImage)
             );
         }
     }

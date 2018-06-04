@@ -35,6 +35,7 @@ class EventTypeResolver implements TypeResolverInterface
             "0.19.0.0.0" => new EventType("0.19.0.0.0", "Sportwedstrijd bekijken"),
             "0.0.0.0.0" => new EventType("0.0.0.0.0", "Tentoonstelling"),
             "0.55.0.0.0" => new EventType("0.55.0.0.0", "Theatervoorstelling"),
+            "0.51.0.0.0" => new EventType("0.51.0.0.0", "Type onbepaald"),
         ];
     }
 

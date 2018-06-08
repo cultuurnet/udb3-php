@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
@@ -113,8 +114,18 @@ class Projector implements EventListenerInterface
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         $eventId = $majorInfoUpdated->getItemId();
-        $cdbid = $majorInfoUpdated->getLocation()->getCdbid();
-        $this->repository->storeRelation($eventId, 'place', $cdbid);
+        $cdbId = $majorInfoUpdated->getLocation()->getCdbid();
+        $this->repository->storePlace($eventId, $cdbId);
+    }
+
+    /**
+     * @param LocationUpdated $locationUpdated
+     */
+    protected function applyLocationUpdated(LocationUpdated $locationUpdated)
+    {
+        $eventId = $locationUpdated->getItemId();
+        $locationId = $locationUpdated->getLocationId()->toNative();
+        $this->repository->storePlace($eventId, $locationId);
     }
 
     /**

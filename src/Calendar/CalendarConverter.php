@@ -21,6 +21,20 @@ use League\Period\Period;
 class CalendarConverter implements CalendarConverterInterface
 {
     /**
+     * @var \DateTimeZone
+     */
+    private $cdbTimezone;
+
+    public function __construct(\DateTimeZone $cdbTimezone = null)
+    {
+        if (is_null($cdbTimezone)) {
+            $cdbTimezone = new \DateTimeZone('Europe/Brussels');
+        }
+
+        $this->cdbTimezone = $cdbTimezone;
+    }
+
+    /**
      * @inheritdoc
      */
     public function toCdbCalendar(CalendarInterface $calendar)
@@ -35,8 +49,8 @@ class CalendarConverter implements CalendarConverterInterface
                 foreach ($calendar->getTimestamps() as $timestamp) {
                     $currentCount = $this->countTimestamps($cdbCalendar);
                     $cdbCalendar = $this->createTimestampCalendar(
-                        $timestamp->getStartDate(),
-                        $timestamp->getEndDate(),
+                        $this->configureCdbTimezone($timestamp->getStartDate()),
+                        $this->configureCdbTimezone($timestamp->getEndDate()),
                         $cdbCalendar,
                         $index
                     );
@@ -48,16 +62,17 @@ class CalendarConverter implements CalendarConverterInterface
                 break;
             case CalendarType::SINGLE:
                 $cdbCalendar = $this->createTimestampCalendar(
-                    $calendar->getStartDate(),
-                    $calendar->getEndDate(),
+                    $this->configureCdbTimezone($calendar->getStartDate()),
+                    $this->configureCdbTimezone($calendar->getEndDate()),
                     new CultureFeed_Cdb_Data_Calendar_TimestampList(),
                     1
                 );
                 break;
             case CalendarType::PERIODIC:
                 $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_PeriodList();
-                $startDate = $calendar->getStartDate()->format('Y-m-d');
-                $endDate = $calendar->getEndDate()->format('Y-m-d');
+
+                $startDate = $this->configureCdbTimezone($calendar->getStartDate())->format('Y-m-d');
+                $endDate = $this->configureCdbTimezone($calendar->getEndDate())->format('Y-m-d');
 
                 $period = new CultureFeed_Cdb_Data_Calendar_Period($startDate, $endDate);
                 if (!empty($weekScheme) && !empty($weekScheme->getDays())) {
@@ -254,5 +269,17 @@ class CalendarConverter implements CalendarConverterInterface
     private function createIndexedTimeString($index)
     {
         return '00:00:' . str_pad((string) $index, 2, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * DateTimeInterface has no setTimezone() method, so we need to convert it to a DateTimeImmutable object
+     * first using Chronos.
+     *
+     * @param DateTimeInterface $dateTime
+     * @return DateTimeInterface
+     */
+    private function configureCdbTimezone(\DateTimeInterface $dateTime)
+    {
+        return Chronos::instance($dateTime)->setTimezone($this->cdbTimezone);
     }
 }

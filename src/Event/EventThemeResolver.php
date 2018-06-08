@@ -275,6 +275,10 @@ class EventThemeResolver implements ThemeResolverInterface
                         "label" => "Decoratieve kunst",
                     ],
                     [
+                        "id" => "1.2.2.0.0",
+                        "label" => "Design",
+                    ],
+                    [
                         "id" => "1.0.6.0.0",
                         "label" => "Fotografie",
                     ],

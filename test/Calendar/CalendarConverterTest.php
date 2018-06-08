@@ -47,8 +47,8 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-24',
-            '08:00:00',
-            '18:00:00'
+            '09:00:00',
+            '19:00:00'
         ));
 
         $calendar = new Calendar(
@@ -78,18 +78,18 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-24',
-            '08:00:00',
-            '18:00:00'
+            '09:00:00',
+            '19:00:00'
         ));
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-25',
-            '08:00:00',
-            '18:00:00'
+            '09:00:00',
+            '19:00:00'
         ));
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-26',
-            '08:00:00',
-            '18:00:00'
+            '09:00:00',
+            '19:00:00'
         ));
 
         $calendar = new Calendar(
@@ -127,13 +127,13 @@ class CalendarConverterTest extends \PHPUnit_Framework_TestCase
         $expectedCalendar = new \CultureFeed_Cdb_Data_Calendar_TimestampList();
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-24',
-            '18:00:00',
-            '02:00:00'
+            '19:00:00',
+            '03:00:00'
         ));
         $expectedCalendar->add(new \CultureFeed_Cdb_Data_Calendar_Timestamp(
             '2017-01-25',
-            '18:00:00',
-            '02:00:00'
+            '19:00:00',
+            '03:00:00'
         ));
 
         $calendar = new Calendar(

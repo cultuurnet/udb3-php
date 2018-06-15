@@ -211,6 +211,18 @@ class EventThemeResolver implements ThemeResolverInterface
                         "label" => "Creativiteit",
                     ],
                     [
+                        "id" => "1.66.0.0.0",
+                        "label" => "Economie",
+                    ],
+                    [
+                        "id" => "1.40.0.0.0",
+                        "label" => "Erfgoed",
+                    ],
+                    [
+                        "id" => "1.10.11.0.0",
+                        "label" => "Fictie",
+                    ],
+                    [
                         "id" => "1.11.0.0.0",
                         "label" => "Geschiedenis",
                     ],
@@ -223,12 +235,20 @@ class EventThemeResolver implements ThemeResolverInterface
                         "label" => "Kunst en kunsteducatie",
                     ],
                     [
+                        "id" => "1.63.0.0.0",
+                        "label" => "Landbouw en platteland",
+                    ],
+                    [
                         "id" => "1.10.0.0.0",
                         "label" => "Literatuur",
                     ],
                     [
                         "id" => "1.64.0.0.0",
                         "label" => "Milieu en natuur",
+                    ],
+                    [
+                        "id" => "1.10.12.0.0",
+                        "label" => "Non fictie",
                     ],
                     [
                         "id" => "1.37.0.0.0",
@@ -239,8 +259,24 @@ class EventThemeResolver implements ThemeResolverInterface
                         "label" => "Persoon en relaties",
                     ],
                     [
+                        "id" => "1.10.5.0.0",
+                        "label" => "Poëzie",
+                    ],
+                    [
+                        "id" => "1.52.0.0.0",
+                        "label" => "Politiek en maatschappij",
+                    ],
+                    [
                         "id" => "1.37.2.0.0",
                         "label" => "Samenleving",
+                    ],
+                    [
+                        "id" => "1.10.8.0.0",
+                        "label" => "Strips",
+                    ],
+                    [
+                        "id" => "1.58.0.0.0",
+                        "label" => "Thema onbepaald",
                     ],
                     [
                         "id" => "1.25.0.0.0",
@@ -297,6 +333,10 @@ class EventThemeResolver implements ThemeResolverInterface
                     [
                         "id" => "1.0.9.0.0",
                         "label" => "Meerdere kunstvormen",
+                    ],
+                    [
+                        "id" => "1.49.0.0.0",
+                        "label" => "Mode",
                     ],
                     [
                         "id" => "1.37.2.0.0",

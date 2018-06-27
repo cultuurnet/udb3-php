@@ -55,12 +55,17 @@ class DBALRepository implements RepositoryInterface
         $this->storeRelation($eventId, 'organizer', $organizerId);
     }
 
+    public function storePlace($eventId, $placeId)
+    {
+        $this->storeRelation($eventId, 'place', $placeId);
+    }
+
     /**
      * @param string $eventId
      * @param string $relationType either 'place' or 'organizer'
      * @param string $itemId
      */
-    public function storeRelation($eventId, $relationType, $itemId)
+    private function storeRelation($eventId, $relationType, $itemId)
     {
         $transaction = function ($connection) use ($eventId, $relationType, $itemId) {
             if ($this->eventHasRelations($connection, $eventId)) {

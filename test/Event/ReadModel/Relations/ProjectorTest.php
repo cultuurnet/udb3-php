@@ -17,8 +17,10 @@ use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
+use CultuurNet\UDB3\Location\LocationId;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -253,6 +255,34 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             1,
             new Metadata(),
             $eventCopied,
+            DateTime::now()
+        );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_stores_the_location_relation_when_the_place_of_an_event_is_updated()
+    {
+        $eventId = 'event-id';
+        $locationId = 'location-id';
+        $organizerUpdatedEvent = new LocationUpdated($eventId, new LocationId($locationId));
+
+        $this->repository
+            ->expects($this->once())
+            ->method('storePlace')
+            ->with(
+                $this->equalTo($eventId),
+                $this->equalTo($locationId)
+            );
+
+        $domainMessage = new DomainMessage(
+            $organizerUpdatedEvent->getItemId(),
+            1,
+            new Metadata(),
+            $organizerUpdatedEvent,
             DateTime::now()
         );
 

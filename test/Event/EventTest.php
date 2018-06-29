@@ -385,7 +385,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $bookingInfo = new BookingInfo(
             'www.publiq.be',
-             new MultilingualString(new Language('nl'), new StringLiteral('publiq')),
+            new MultilingualString(new Language('nl'), new StringLiteral('publiq')),
             '02 123 45 67',
             'info@publiq.be'
         );

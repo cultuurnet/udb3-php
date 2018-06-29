@@ -276,23 +276,23 @@ class BackwardsCompatiblePayloadSerializerFactory
 
         $manipulateUrlLabel = function (array $serializedBookingInfo) {
             if (!isset($serializedBookingInfo['urlLabel'])) {
-              return $serializedBookingInfo;
+                return $serializedBookingInfo;
             }
 
             $urlLabel = $serializedBookingInfo['urlLabel'];
 
             if (empty($urlLabel)) {
-              unset($serializedBookingInfo['urlLabel']);
-              return $serializedBookingInfo;
+                unset($serializedBookingInfo['urlLabel']);
+                return $serializedBookingInfo;
             }
 
             if (is_string($urlLabel)) {
-              $serializedBookingInfo['urlLabel'] = ['nl' => $urlLabel];
-              return $serializedBookingInfo;
+                $serializedBookingInfo['urlLabel'] = ['nl' => $urlLabel];
+                return $serializedBookingInfo;
             }
 
             if (is_array($urlLabel)) {
-              return $serializedBookingInfo;
+                return $serializedBookingInfo;
             }
 
             // In case of unknown format clear the urlLabel property.

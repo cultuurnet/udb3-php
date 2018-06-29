@@ -408,6 +408,25 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
+    public function it_replaces_deprecated_url_label_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_deprecated_url_label.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            new MultilingualString(new Language('nl'), new StringLiteral('Reserveer plaatsen')),
+            $bookingInfoUpdated->getBookingInfo()->getUrlLabel()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_keeps_valid_availability_date_formats_on_booking_info_updated()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_valid_availability.json';

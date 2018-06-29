@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 
 /**
  * BookingInfo info.
@@ -25,7 +26,7 @@ class BookingInfo implements JsonLdSerializableInterface
     protected $url;
 
     /**
-     * @var string|null
+     * @var MultilingualString|null
      */
     protected $urlLabel;
 
@@ -41,7 +42,7 @@ class BookingInfo implements JsonLdSerializableInterface
 
     /**
      * @param string|null $url
-     * @param string|null $urlLabel
+     * @param MultilingualString|null $urlLabel
      * @param string|null $phone
      * @param string|null $email
      * @param \DateTimeImmutable|null $availabilityStarts
@@ -49,7 +50,7 @@ class BookingInfo implements JsonLdSerializableInterface
      */
     public function __construct(
         $url = null,
-        $urlLabel = null,
+        MultilingualString $urlLabel = null,
         $phone = null,
         $email = null,
         \DateTimeImmutable $availabilityStarts = null,
@@ -61,7 +62,6 @@ class BookingInfo implements JsonLdSerializableInterface
         // API clients are also allowed to send empty strings for BookingInfo properties via EntryAPI3, which should
         // also be treated as null.
         $url = $this->castEmptyStringToNull($url);
-        $urlLabel = $this->castEmptyStringToNull($urlLabel);
         $phone = $this->castEmptyStringToNull($phone);
         $email = $this->castEmptyStringToNull($email);
 
@@ -119,7 +119,6 @@ class BookingInfo implements JsonLdSerializableInterface
               'phone' => $this->phone,
               'email' => $this->email,
               'url' => $this->url,
-              'urlLabel' => $this->urlLabel,
             ]
         );
 
@@ -129,6 +128,10 @@ class BookingInfo implements JsonLdSerializableInterface
 
         if ($this->availabilityEnds) {
             $serialized['availabilityEnds'] = $this->availabilityEnds->format(\DATE_ATOM);
+        }
+
+        if ($this->urlLabel) {
+            $serialized['urlLabel'] = $this->urlLabel->serialize();
         }
 
         return $serialized;
@@ -160,9 +163,14 @@ class BookingInfo implements JsonLdSerializableInterface
             $availabilityEnds = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityEnds']);
         }
 
+        $urlLabel = null;
+        if ($data['urlLabel']) {
+            $urlLabel = MultilingualString::deserialize($data['urlLabel']);
+        }
+
         return new static(
             $data['url'],
-            $data['urlLabel'],
+            $urlLabel,
             $data['phone'],
             $data['email'],
             $availabilityStarts,
@@ -202,9 +210,7 @@ class BookingInfo implements JsonLdSerializableInterface
 
         if ($udb3ModelWebsite = $udb3ModelBookingInfo->getWebsite()) {
             $url = $udb3ModelWebsite->getUrl()->toString();
-            $urlLabel = $udb3ModelWebsite->getLabel()->getTranslation(
-                $udb3ModelWebsite->getLabel()->getOriginalLanguage()
-            )->toString();
+            $urlLabel = MultilingualString::fromUdb3ModelTranslatedValueObject($udb3ModelWebsite->getLabel());
         }
 
         if ($udb3ModelPhone = $udb3ModelBookingInfo->getTelephoneNumber()) {

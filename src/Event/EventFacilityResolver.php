@@ -19,6 +19,8 @@ class EventFacilityResolver extends OfferFacilityResolver
             "3.17.1.0.0" => new Facility("3.17.1.0.0", "Ringleiding"),
             "3.17.2.0.0" => new Facility("3.17.2.0.0", "Voelstoelen"),
             "3.17.3.0.0" => new Facility("3.17.3.0.0", "Boven- of ondertiteling"),
+            "3.23.3.0.0" => new Facility("3.23.3.0.0", "Rolstoel ter beschikking"),
+            "3.25.0.0.0" => new Facility("3.25.0.0.0", "Contactpunt voor personen met handicap"),
             "3.26.0.0.0" => new Facility("3.26.0.0.0", "Parkeerplaats"),
             "3.27.0.0.0" => new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
             "3.28.0.0.0" => new Facility("3.28.0.0.0", "Alternatieve ingang"),

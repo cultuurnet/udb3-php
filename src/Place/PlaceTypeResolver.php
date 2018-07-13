@@ -18,7 +18,7 @@ class PlaceTypeResolver implements TypeResolverInterface
         $this->types = [
             "0.14.0.0.0" => new EventType("0.14.0.0.0", "Monument"),
             "0.15.0.0.0" => new EventType("0.15.0.0.0", "Natuur, park of tuin"),
-            "3CuHvenJ" => new EventType("3CuHvenJ", "Archeologische Site"),
+            "3CuHvenJ+EGkcvhXLg9Ykg" => new EventType("3CuHvenJ+EGkcvhXLg9Ykg", "Archeologische Site"),
             "GnPFp9uvOUyqhOckIFMKmg" => new EventType("GnPFp9uvOUyqhOckIFMKmg", "Museum of galerij"),
             "kI7uAyn2uUu9VV6Z3uWZTA" => new EventType("kI7uAyn2uUu9VV6Z3uWZTA", "Bibliotheek of documentatiecentrum"),
             "0.53.0.0.0" => new EventType("0.53.0.0.0", "Recreatiedomein of centrum"),

@@ -35,7 +35,10 @@ class PermissionSplitVoter implements PermissionVoterInterface
      * @param \CultuurNet\UDB3\Role\ValueObjects\Permission ...$permissions
      * @return \CultuurNet\UDB3\Offer\Security\Permission\PermissionSplitVoter
      */
-    public function withVoter(PermissionVoterInterface $voter, Permission ...$permissions) {
+    public function withVoter(
+        PermissionVoterInterface $voter,
+        Permission ...$permissions
+    ) {
         $c = clone $this;
 
         foreach ($permissions as $permission) {

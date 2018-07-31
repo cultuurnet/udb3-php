@@ -20,6 +20,6 @@ abstract class AbstractUpdateOrganizerCommand extends AbstractOrganizerCommand i
      */
     public function getPermission()
     {
-        return Permission::ORGANISATIES_BEHEREN();
+        return Permission::ORGANISATIES_BEWERKEN();
     }
 }

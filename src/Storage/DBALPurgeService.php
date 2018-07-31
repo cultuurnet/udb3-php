@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Storage;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 
 /**
  * Class DBALPurgeService
@@ -39,5 +40,10 @@ class DBALPurgeService implements PurgeServiceInterface
         $platform = $this->connection->getDatabasePlatform();
         $sql = $platform->getTruncateTableSQL($this->tableName);
         $this->connection->exec($sql);
+
+        if ($platform instanceof SqlitePlatform) {
+            $sql = 'UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME=' . $this->connection->quoteIdentifier($this->tableName);
+            $this->connection->exec($sql);
+        }
     }
 }

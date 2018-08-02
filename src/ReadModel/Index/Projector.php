@@ -177,6 +177,7 @@ class Projector implements EventListenerInterface
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
         $postalCode = '';
+        $country = '';
 
         $details = $udb2Event->getDetails();
         foreach ($details as $languageDetail) {
@@ -203,6 +204,7 @@ class Projector implements EventListenerInterface
                 $physicalAddress = $address->getPhysicalAddress();
                 if ($physicalAddress) {
                     $postalCode = $physicalAddress->getZip();
+                    $country = $physicalAddress->getCountry();
                 }
             }
         }
@@ -217,6 +219,7 @@ class Projector implements EventListenerInterface
             (string) $userId,
             $name,
             $postalCode,
+            $country,
             $this->UDB2Domain,
             $creationDate
         );
@@ -233,6 +236,7 @@ class Projector implements EventListenerInterface
         /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
         $detail = null;
         $postalCode = '';
+        $country = '';
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
             $placeImportedFromUDB2->getCdbXmlNamespaceUri(),
@@ -265,6 +269,7 @@ class Projector implements EventListenerInterface
                 $physicalAddress = $address->getPhysicalAddress();
                 if ($physicalAddress) {
                     $postalCode = $physicalAddress->getZip();
+                    $country = $physicalAddress->getCountry();
                 }
             }
         }
@@ -279,6 +284,7 @@ class Projector implements EventListenerInterface
             $userId,
             $name,
             $postalCode,
+            $country,
             $this->UDB2Domain,
             $creationDate
         );
@@ -303,6 +309,7 @@ class Projector implements EventListenerInterface
             $userId,
             $eventCreated->getTitle(),
             $location->getAddress()->getPostalCode(),
+            $location->getAddress()->getCountry()->getCode(),
             $this->localDomain,
             $this->getRecordedDate($domainMessage)
         );
@@ -322,6 +329,7 @@ class Projector implements EventListenerInterface
             $eventId,
             EntityType::EVENT(),
             $userId,
+            '',
             '',
             '',
             $this->localDomain,
@@ -348,6 +356,7 @@ class Projector implements EventListenerInterface
             $userId,
             $placeCreated->getTitle(),
             $address->getPostalCode(),
+            $address->getCountry()->getCode(),
             $this->localDomain,
             $this->getRecordedDate($domainMessage)
         );
@@ -375,6 +384,7 @@ class Projector implements EventListenerInterface
      * @param $userId
      * @param $name
      * @param $postalCode
+     * @param $country
      * @param Domain $owningDomain
      * @param DateTimeInterface $creationDate
      */
@@ -384,6 +394,7 @@ class Projector implements EventListenerInterface
         $userId,
         $name,
         $postalCode,
+        $country,
         Domain $owningDomain,
         DateTimeInterface $creationDate = null
     ) {
@@ -393,6 +404,7 @@ class Projector implements EventListenerInterface
             $userId,
             $name,
             $postalCode,
+            $country,
             $owningDomain,
             $creationDate
         );

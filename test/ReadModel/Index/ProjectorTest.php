@@ -90,6 +90,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'user-id-one-two-three',
                 'GALLERY TRAEGHE exhibition Janine de Coninck \'BLACK AND WHITE\' 1 - 9 November 2014',
                 '8000',
+                'BE',
                 Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2014-09-08T09:10:16',
@@ -144,6 +145,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 'user-id-one-two-three',
                 'CC Palethe',
                 '3900',
+                'BE',
                 Domain::specifyType('udb.be'),
                 new \DateTime(
                     '2010-01-06T13:33:06+0100',
@@ -175,6 +177,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '1adf21b4-711d-4e33-b9ef-c96843582a56',
                 'Algorave',
                 '9630',
+                Country::fromNative('BE'),
                 Domain::specifyType('omd.be'),
                 $this->anything()
             );
@@ -228,6 +231,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 $userId,
                 '',
                 '',
+                '',
                 Domain::specifyType('omd.be'),
                 $this->isInstanceOf(\DateTime::class)
             );
@@ -248,6 +252,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '1adf21b4-711d-4e33-b9ef-c96843582a56',
                 'Algorave',
                 '9630',
+                Country::fromNative('BE'),
                 Domain::specifyType('omd.be'),
                 $this->anything()
             );

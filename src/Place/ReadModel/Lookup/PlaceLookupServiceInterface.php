@@ -9,9 +9,10 @@ interface PlaceLookupServiceInterface
 {
     /**
      * @param string $postalCode
+     * @param string $country
      *
      * @return string[]
      *   A list of place IDs.
      */
-    public function findPlacesByPostalCode($postalCode);
+    public function findPlacesByPostalCode($postalCode, $country = 'BE');
 }

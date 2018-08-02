@@ -61,6 +61,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
@@ -77,6 +78,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     ->set('uid', ':uid')
                     ->set('title', ':title')
                     ->set('zip', ':zip')
+                    ->set('country', ':country')
                     ->set('owning_domain', ':owning_domain')
                     ->set('entity_iri', ':entity_iri');
 
@@ -85,7 +87,15 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                 }
 
                 $this->setIdAndEntityType($q, $id, $entityType);
-                $this->setValues($q, $userId, $name, $postalCode, $owningDomain, $created);
+                $this->setValues(
+                    $q,
+                    $userId,
+                    $name,
+                    $postalCode,
+                    $country,
+                    $owningDomain,
+                    $created
+                );
                 $q->setParameter('entity_iri', $iri);
 
                 $q->execute();
@@ -104,6 +114,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'uid' => ':uid',
                             'title' => ':title',
                             'zip' => ':zip',
+                            'country' => ':country',
                             'created' => ':created',
                             'updated' => ':created',
                             'owning_domain' => ':owning_domain',
@@ -116,6 +127,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     $userId,
                     $name,
                     $postalCode,
+                    $country,
                     $owningDomain,
                     $created
                 );
@@ -137,6 +149,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
      * @param string $userId
      * @param string $name
      * @param string $postalCode
+     * @param string $country
      * @param Domain $owningDomain
      * @param DateTimeInterface $created
      */
@@ -145,12 +158,14 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
         $q->setParameter('uid', $userId);
         $q->setParameter('title', $name);
         $q->setParameter('zip', $postalCode);
+        $q->setParameter('country', $country);
         $q->setParameter('owning_domain', $owningDomain->toNative());
         if ($created instanceof DateTimeInterface) {
             $q->setParameter('created', $created->getTimestamp());
@@ -225,7 +240,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     /**
      * @inheritdoc
      */
-    public function findPlacesByPostalCode($postalCode)
+    public function findPlacesByPostalCode($postalCode, $country = 'BE')
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $q->expr();
@@ -235,12 +250,14 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             ->where(
                 $expr->andX(
                     $expr->eq('entity_type', ':entity_type'),
-                    $expr->eq('zip', ':zip')
+                    $expr->eq('zip', ':zip'),
+                    $expr->eq('country', ':country')
                 )
             );
 
         $q->setParameter('entity_type', EntityType::PLACE()->toNative());
         $q->setParameter('zip', $postalCode);
+        $q->setParameter('country', $country);
 
         $results = $q->execute();
 

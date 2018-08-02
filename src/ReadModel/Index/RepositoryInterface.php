@@ -16,6 +16,7 @@ interface RepositoryInterface
      * @param string $userId
      * @param string $name
      * @param string $postalCode
+     * @param string $country
      * @param Domain $owningDomain
      * @param DateTimeInterface $created
      * @return void
@@ -26,6 +27,7 @@ interface RepositoryInterface
         $userId,
         $name,
         $postalCode,
+        $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
     );

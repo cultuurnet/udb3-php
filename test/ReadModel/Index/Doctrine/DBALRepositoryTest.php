@@ -128,6 +128,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'bar',
             'Test event abc update',
             '3020',
+            'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
@@ -139,6 +140,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'title' => 'Test event abc update',
             'created' => '100',
             'zip' => '3020',
+            'country' => 'BE',
         ] + (array) $expectedData[3];
 
         $expectedData[3] = (object) $expectedData[3];
@@ -161,6 +163,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'bar',
             'Test event abc update',
             '3020',
+            'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
@@ -172,6 +175,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                 'title' => 'Test event abc update',
                 'created' => '100',
                 'zip' => '3020',
+                'country' => 'BE',
                 'owning_domain' => 'udb.be',
                 'entity_iri' => 'http://hello.world/something/blub',
             ] + (array) $expectedData[5];
@@ -196,6 +200,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'foo',
             'Test event xyz',
             '3020',
+            'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@0')
         );
@@ -208,6 +213,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'foo',
             'title' => 'Test event xyz',
             'zip' => '3020',
+            'country' => 'BE',
             'created' => 0,
             'updated' => 0,
             'owning_domain' => 'udb.be',

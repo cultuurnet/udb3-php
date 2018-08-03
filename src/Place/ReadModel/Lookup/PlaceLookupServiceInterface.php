@@ -14,5 +14,5 @@ interface PlaceLookupServiceInterface
      * @return string[]
      *   A list of place IDs.
      */
-    public function findPlacesByPostalCode($postalCode, $country = 'BE');
+    public function findPlacesByPostalCode($postalCode, $country);
 }

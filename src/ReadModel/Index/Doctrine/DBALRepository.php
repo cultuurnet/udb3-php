@@ -240,7 +240,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     /**
      * @inheritdoc
      */
-    public function findPlacesByPostalCode($postalCode, $country = 'BE')
+    public function findPlacesByPostalCode($postalCode, $country)
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $q->expr();

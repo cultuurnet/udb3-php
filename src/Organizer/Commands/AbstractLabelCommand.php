@@ -55,6 +55,6 @@ abstract class AbstractLabelCommand extends AbstractOrganizerCommand implements 
 
     public function getPermission()
     {
-        return Permission::AANBOD_BEWERKEN();
+        return Permission::ORGANISATIES_BEWERKEN();
     }
 }

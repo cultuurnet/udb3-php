@@ -269,7 +269,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $expectedIds,
-            $this->repository->findPlacesByPostalCode('3000')
+            $this->repository->findPlacesByPostalCode('3000', 'BE')
         );
     }
 

@@ -49,7 +49,7 @@ class DBALPurgeServiceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $personCount);
 
         $sequence = $this->getSequence();
-        $this->assertEquals(1, $sequence);
+        $this->assertEquals(4, $sequence);
     }
 
     private function createPersonTable()

@@ -74,7 +74,7 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     public function it_returns_a_permission()
     {
         $this->assertEquals(
-            Permission::AANBOD_BEWERKEN(),
+            Permission::ORGANISATIES_BEWERKEN(),
             $this->abstractLabelCommand->getPermission()
         );
     }

@@ -53,10 +53,10 @@ class AbstractUpdateOrganizerCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_has_permission_organisaties_beheren()
+    public function it_has_permission_organisaties_bewerken()
     {
         $this->assertEquals(
-            Permission::ORGANISATIES_BEHEREN(),
+            Permission::ORGANISATIES_BEWERKEN(),
             $this->updateOrganizerCommand->getPermission()
         );
     }

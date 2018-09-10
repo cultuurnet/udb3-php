@@ -71,24 +71,14 @@ class DBALLookupService implements MyOrganizersLookupServiceInterface
             $results->fetchAll(PDO::FETCH_ASSOC)
         );
 
-        $itemCount = count($organizers);
+        $q = $this->connection->createQueryBuilder();
 
-        // We can skip an additional query to determine to total items count
-        // if the amount of rows on the first page does not reach the limit.
-        $onFirstPage = $queryBuilder->getFirstResult() === 0;
-        $hasSinglePage = $itemCount < $queryBuilder->getMaxResults();
-        if ($onFirstPage && $hasSinglePage) {
-            $totalItems = $itemCount;
-        } else {
-            $q = $this->connection->createQueryBuilder();
-
-            $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
-                ->from($this->tableName->toNative())
-                ->where($itemIsOwnedByUser)
-                ->setParameters($parameters)
-                ->execute()
-                ->fetchColumn(0);
-        }
+        $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
+            ->from($this->tableName->toNative())
+            ->where($itemIsOwnedByUser)
+            ->setParameters($parameters)
+            ->execute()
+            ->fetchColumn(0);
 
         return new PartOfCollection($organizers, new Natural($totalItems));
     }

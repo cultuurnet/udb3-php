@@ -34,9 +34,11 @@ use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use ValueObjects\Geography\Country;
 use ValueObjects\Money\Currency;
 use ValueObjects\Person\Age;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class PlaceTest extends AggregateRootScenarioTestCase
 {
@@ -402,7 +404,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
 
         $bookingInfo = new BookingInfo(
             'www.publiq.be',
-            'publiq',
+            new MultilingualString(new Language('nl'), new StringLiteral('publiq')),
             '02 123 45 67',
             'info@publiq.be'
         );

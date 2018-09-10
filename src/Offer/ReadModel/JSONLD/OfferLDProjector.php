@@ -747,12 +747,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
 
-        $bookingInfoJsonLd = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
-        if (isset($bookingInfoJsonLd['urlLabel'])) {
-            $mainLanguage = $this->getMainLanguage($offerLd)->getCode();
-            $bookingInfoJsonLd['urlLabel'] = [$mainLanguage => $bookingInfoJsonLd['urlLabel']];
-        }
-        $offerLd->bookingInfo = $bookingInfoJsonLd;
+        $offerLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
 
         return $document->withBody($offerLd);
     }

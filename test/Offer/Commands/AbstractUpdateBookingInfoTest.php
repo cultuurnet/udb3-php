@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +29,7 @@ class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
         $this->itemId = 'Foo';
         $this->bookingInfo = new BookingInfo(
             'http://foo.bar',
-            'urlLabel',
+            new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
             '0123456789',
             'foo@bar.com',
             \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
@@ -47,7 +50,7 @@ class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
         $bookingInfo = $this->updateBookingInfo->getBookingInfo();
         $expectedBookingInfo = new BookingInfo(
             'http://foo.bar',
-            'urlLabel',
+            new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
             '0123456789',
             'foo@bar.com',
             \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),

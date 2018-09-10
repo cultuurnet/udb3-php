@@ -274,13 +274,45 @@ class BackwardsCompatiblePayloadSerializerFactory
             return $serializedBookingInfo;
         };
 
-        $manipulateBookingInfoEvent = function (array $serializedEvent) use ($manipulateAvailability) {
+        $manipulateUrlLabel = function (array $serializedBookingInfo) {
+            if (!isset($serializedBookingInfo['urlLabel'])) {
+                return $serializedBookingInfo;
+            }
+
+            $urlLabel = $serializedBookingInfo['urlLabel'];
+
+            if (empty($urlLabel)) {
+                unset($serializedBookingInfo['urlLabel']);
+                return $serializedBookingInfo;
+            }
+
+            if (is_string($urlLabel)) {
+                $serializedBookingInfo['urlLabel'] = ['nl' => $urlLabel];
+                return $serializedBookingInfo;
+            }
+
+            if (is_array($urlLabel)) {
+                return $serializedBookingInfo;
+            }
+
+            // In case of unknown format clear the urlLabel property.
+            unset($serializedBookingInfo['urlLabel']);
+            return $serializedBookingInfo;
+        };
+
+        $manipulateBookingInfoEvent = function (
+            array $serializedEvent
+        ) use (
+            $manipulateAvailability,
+            $manipulateUrlLabel
+        ) {
             $serializedEvent = self::replaceEventIdWithItemId($serializedEvent);
             $serializedEvent = self::replacePlaceIdWithItemId($serializedEvent);
 
             $serializedBookingInfo = $serializedEvent['payload']['bookingInfo'];
             $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityStarts');
             $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityEnds');
+            $serializedBookingInfo = $manipulateUrlLabel($serializedBookingInfo);
             $serializedEvent['payload']['bookingInfo'] = $serializedBookingInfo;
 
             return $serializedEvent;

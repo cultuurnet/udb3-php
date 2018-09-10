@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -133,7 +134,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
     {
         $id = 'foo';
         $url = 'http://www.google.be';
-        $urlLabel = 'Google';
+        $urlLabel = new MultilingualString(new Language('nl'), new StringLiteral('Google'));
         $phone = '045';
         $email = 'test@test.com';
         $availabilityStarts = \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00');
@@ -151,7 +152,7 @@ abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
                 'phone' => $phone,
                 'email' => $email,
                 'url' => $url,
-                'urlLabel' => (object) ['nl' => $urlLabel],
+                'urlLabel' => (object) $urlLabel->serialize(),
                 'availabilityStarts' => '2018-01-01T00:00:00+01:00',
                 'availabilityEnds' => '2018-01-31T00:00:00+01:00',
             ],

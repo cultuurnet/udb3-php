@@ -52,6 +52,7 @@ use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Item\Item;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use Exception;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Person\Age;
@@ -1359,21 +1360,21 @@ class OfferTest extends AggregateRootScenarioTestCase
 
         $bookingInfo = new BookingInfo(
             'www.publiq.be',
-            'publiq',
+            new MultilingualString(new Language('nl'), new StringLiteral('publiq')),
             '02 123 45 67',
             'info@publiq.be'
         );
 
         $sameBookingInfo = new BookingInfo(
             'www.publiq.be',
-            'publiq',
+            new MultilingualString(new Language('nl'), new StringLiteral('publiq')),
             '02 123 45 67',
             'info@publiq.be'
         );
 
         $otherBookingInfo = new BookingInfo(
             'www.2dotstwice.be',
-            '2dotstwice',
+            new MultilingualString(new Language('nl'), new StringLiteral('2dotstwice')),
             '016 12 34 56',
             'info@2dotstwice.be'
         );

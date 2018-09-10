@@ -9,6 +9,8 @@ use CultuurNet\UDB3\Model\ValueObject\Web\TranslatedWebsiteLabel;
 use CultuurNet\UDB3\Model\ValueObject\Web\Url;
 use CultuurNet\UDB3\Model\ValueObject\Web\WebsiteLabel;
 use CultuurNet\UDB3\Model\ValueObject\Web\WebsiteLink;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class BookingInfoTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,21 +21,30 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
     {
         $bookingInfo = new BookingInfo(
             'www.publiq.be',
-            'publiq',
+            new MultilingualString(
+                new Language('nl'),
+                new StringLiteral('publiq')
+            ),
             '02 123 45 67',
             'info@publiq.be'
         );
 
         $sameBookingInfo = new BookingInfo(
             'www.publiq.be',
-            'publiq',
+            new MultilingualString(
+                new Language('nl'),
+                new StringLiteral('publiq')
+            ),
             '02 123 45 67',
             'info@publiq.be'
         );
 
         $otherBookingInfo = new BookingInfo(
             'www.2dotstwice.be',
-            '2dotstwice',
+            new MultilingualString(
+                new Language('nl'),
+                new StringLiteral('2dotstwice')
+            ),
             '016 12 34 56',
             'info@2dotstwice.be'
         );
@@ -52,7 +63,7 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
                 new Url('https://publiq.be'),
                 new TranslatedWebsiteLabel(
                     new \CultuurNet\UDB3\Model\ValueObject\Translation\Language('nl'),
-                    new WebsiteLabel('Publiq')
+                    new WebsiteLabel('publiq')
                 )
             ),
             new TelephoneNumber('044/444444'),
@@ -65,7 +76,10 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
 
         $expected = new BookingInfo(
             'https://publiq.be',
-            'Publiq',
+            new MultilingualString(
+                new Language('nl'),
+                new StringLiteral('publiq')
+            ),
             '044/444444',
             'info@publiq.be',
             \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00'),
@@ -99,7 +113,7 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
 
         $bookingInfoWithEmptyString = new BookingInfo(
             '',
-            '',
+            null,
             '',
             '',
             null,
@@ -175,7 +189,7 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
     {
         $data = [
             'url' => 'https://www.publiq.be',
-            'urlLabel' => 'Publiq',
+            'urlLabel' => ['nl' => 'publiq'],
             'phone' => '044/444444',
             'email' => 'info@publiq.be',
             'availabilityStarts' => '2018-01-01T00:00:00+01:00',
@@ -188,7 +202,10 @@ class BookingInfoTest extends \PHPUnit_Framework_TestCase
 
         $expected = new BookingInfo(
             'https://www.publiq.be',
-            'Publiq',
+            new MultilingualString(
+                new Language('nl'),
+                new StringLiteral('publiq')
+            ),
             '044/444444',
             'info@publiq.be',
             \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-01-01T00:00:00+01:00'),

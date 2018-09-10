@@ -233,8 +233,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             ),
             array(
                 new EventProjectedToJSONLD(
-                  '6ecf5da4-220d-4486-9327-17c7ec8fa070',
-                  'http://du.de/event/6ecf5da4-220d-4486-9327-17c7ec8fa070'
+                    '6ecf5da4-220d-4486-9327-17c7ec8fa070',
+                    'http://du.de/event/6ecf5da4-220d-4486-9327-17c7ec8fa070'
                 ),
                 '6ecf5da4-220d-4486-9327-17c7ec8fa070',
             ),

@@ -55,7 +55,7 @@ class DomainMessageBuilder
 
     public function setPlayhead(int $i): self
     {
-        $this->i = $i;
+        $this->playhead = $i;
 
         return $this;
     }

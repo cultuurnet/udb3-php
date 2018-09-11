@@ -50,6 +50,7 @@ class DBALLookupService implements MyOrganizersLookupServiceInterface
             ->from($this->tableName->toNative())
             ->where($itemIsOwnedByUser)
             ->orderBy(Columns::UPDATED, 'DESC')
+            ->addOrderBy(Columns::ID, 'ASC')
             ->setMaxResults($limit->toNative())
             ->setFirstResult($start->toNative());
 

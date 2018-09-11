@@ -95,5 +95,4 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
     }
-
 }

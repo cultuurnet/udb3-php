@@ -133,8 +133,8 @@ class DBALLookupServiceTest extends AbstractDBALTableTest
                         ],
                     ],
                     new Natural(3)
-                )
-            ]
+                ),
+            ],
         ];
     }
 }

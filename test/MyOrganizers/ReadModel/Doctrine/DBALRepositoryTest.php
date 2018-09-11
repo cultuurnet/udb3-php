@@ -56,7 +56,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
                 'uid' => 'user-id',
                 'created' => $created,
                 'updated' => $updated,
-            ]
+            ],
         ];
 
         $this->assertCurrentData($expectedData);
@@ -94,7 +94,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
                 'uid' => 'user-id',
                 'created' => $created->getTimestamp(),
                 'updated' => $updated->getTimestamp(),
-            ]
+            ],
         ];
 
         $this->assertCurrentData($expectedData);

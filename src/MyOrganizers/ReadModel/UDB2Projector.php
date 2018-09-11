@@ -51,5 +51,10 @@ class UDB2Projector implements EventListenerInterface
             $udb2ActorAdapter->getResolvedCreatorUserId(),
             $udb2ActorAdapter->getCreationDateTime()
         );
+        
+        $this->repository->setUpdateDate(
+            $udb2Actor->getCdbId(),
+            $udb2ActorAdapter->getLastUpdateDateTime()
+        );
     }
 }

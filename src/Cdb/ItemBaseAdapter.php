@@ -44,4 +44,11 @@ class ItemBaseAdapter
             $this->item->getCreationDate()
         );
     }
+
+    public function getLastUpdateDateTime(): ?DateTimeImmutable
+    {
+        return DateTimeFactory::dateTimeFromDateString(
+            $this->item->getLastUpdated()
+        );
+    }
 }

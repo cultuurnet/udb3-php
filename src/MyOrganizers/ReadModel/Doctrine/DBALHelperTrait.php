@@ -9,7 +9,7 @@ trait DBALHelperTrait
      */
     private $connection;
 
-    private function parameter(string $name): string
+    public function parameter(string $name): string
     {
         return ':' . $name;
     }

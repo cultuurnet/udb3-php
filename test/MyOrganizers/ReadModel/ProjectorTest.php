@@ -6,6 +6,7 @@ use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
+use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Title;
@@ -112,5 +113,22 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->projector->handle($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_organizer_from_readmodel_when_organizer_is_deleted()
+    {
+        $organizerId = 'my-organizer';
+        $organizerDeleted = new OrganizerDeleted($organizerId);
+
+        $this->repository->expects($this->once())
+            ->method('delete')
+            ->with($organizerId);
+
+        $this->projector->handle(
+            $this->domainMessageBuilder->create($organizerDeleted)
+        );
     }
 }

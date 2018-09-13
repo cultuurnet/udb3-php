@@ -359,23 +359,13 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             $results->fetchAll(\PDO::FETCH_ASSOC)
         );
 
-        $itemCount = count($offerIdentifierArray);
-        // We can skip an additional query to determine to total items count
-        // if the amount of rows on the first page does not reach the limit.
-        $onFirstPage = $queryBuilder->getFirstResult() === 0;
-        $hasSinglePage = $itemCount < $queryBuilder->getMaxResults();
-        if ($onFirstPage && $hasSinglePage) {
-            $totalItems = $itemCount;
-        } else {
-            $q = $this->connection->createQueryBuilder();
-
-            $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
-                ->from($this->tableName->toNative())
-                ->where($filterExpression)
-                ->setParameters($parameters)
-                ->execute()
-                ->fetchColumn(0);
-        }
+        $q = $this->connection->createQueryBuilder();
+        $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
+            ->from($this->tableName->toNative())
+            ->where($filterExpression)
+            ->setParameters($parameters)
+            ->execute()
+            ->fetchColumn(0);
 
         return new Results(
             OfferIdentifierCollection::fromArray($offerIdentifierArray),

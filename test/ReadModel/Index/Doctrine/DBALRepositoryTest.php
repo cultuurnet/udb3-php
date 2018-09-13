@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
+use CultuurNet\UDB3\AbstractDBALTableTest;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -9,26 +10,18 @@ use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use PDO;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 
-class DBALRepositoryTest extends PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends AbstractDBALTableTest
 {
-    use DBALTestConnectionTrait;
-
     /**
      * @var DBALRepository
      */
     protected $repository;
-
-    /**
-     * @var StringLiteral
-     */
-    protected $tableName;
 
     /**
      * @var EntityIriGeneratorFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -54,7 +47,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         (new SchemaConfigurator($this->tableName))
             ->configure($schemaManager);
 
-        $this->data = $this->loadData();
+        $this->data = $this->loadData(__DIR__ . '/initial-values.json');
 
         $this->insert($this->data);
 
@@ -70,47 +63,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             $this->tableName,
             $this->iriGeneratorFactory
         );
-    }
-
-    /**
-     * @return array
-     */
-    private function loadData()
-    {
-         return json_decode(file_get_contents(__DIR__ . '/initial-values.json'));
-    }
-
-    /**
-     * @param array $rows
-     */
-    private function insert($rows)
-    {
-        $q = $this->getConnection()->createQueryBuilder();
-
-        $schema = $this->getConnection()->getSchemaManager()->createSchema();
-
-        $columns = $schema
-            ->getTable($this->tableName->toNative())
-            ->getColumns();
-
-        $values = [];
-        foreach ($columns as $column) {
-            $values[$column->getName()] = '?';
-        }
-
-        $q->insert($this->tableName->toNative())
-            ->values($values);
-
-        foreach ($rows as $row) {
-            $parameters = [];
-            foreach (array_keys($values) as $columnName) {
-                $parameters[] = $row->$columnName;
-            }
-
-            $q->setParameters($parameters);
-
-            $q->execute();
-        }
     }
 
     /**
@@ -221,20 +173,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->assertCurrentData($expectedData);
-    }
-
-    private function assertCurrentData($expectedData)
-    {
-        $expectedData = array_values($expectedData);
-
-        $results = $this->getConnection()->executeQuery('SELECT * from ' . $this->tableName->toNative());
-
-        $actualData = $results->fetchAll(PDO::FETCH_OBJ);
-
-        $this->assertEquals(
-            $expectedData,
-            $actualData
-        );
     }
 
     /**

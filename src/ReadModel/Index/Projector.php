@@ -111,6 +111,7 @@ class Projector implements EventListenerInterface
             EntityType::EVENT(),
             $eventCreated->getTitle(),
             $location->getAddress()->getPostalCode(),
+            $location->getAddress()->getLocality(),
             $location->getAddress()->getCountry()->getCode()
         );
     }
@@ -151,6 +152,7 @@ class Projector implements EventListenerInterface
             EntityType::PLACE(),
             $placeCreated->getTitle(),
             $address->getPostalCode(),
+            $address->getLocality(),
             $address->getCountry()->getCode()
         );
     }
@@ -161,6 +163,7 @@ class Projector implements EventListenerInterface
         EntityType $entityType,
         $name = '',
         $postalCode = '',
+        $city = '',
         $country = ''
     ) {
         $this->repository->updateIndex(
@@ -169,6 +172,7 @@ class Projector implements EventListenerInterface
             $domainMessage->getUserId(),
             $name,
             $postalCode,
+            $city,
             $country,
             $this->localDomain,
             $domainMessage->getRecordedDateTime()

@@ -66,6 +66,7 @@ class UDB2Projector implements EventListenerInterface
         /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
         $postalCode = '';
+        $city = '';
         $country = '';
 
         $details = $udb2Event->getDetails();
@@ -93,6 +94,7 @@ class UDB2Projector implements EventListenerInterface
                 $physicalAddress = $address->getPhysicalAddress();
                 if ($physicalAddress) {
                     $postalCode = $physicalAddress->getZip();
+                    $city = $physicalAddress->getCity();
                     $country = $physicalAddress->getCountry();
                 }
             }
@@ -106,6 +108,7 @@ class UDB2Projector implements EventListenerInterface
             (string) $userId,
             $name,
             $postalCode,
+            $city,
             $country,
             $this->UDB2Domain,
             $creationDate
@@ -121,6 +124,7 @@ class UDB2Projector implements EventListenerInterface
         /** @var \CultureFeed_Cdb_Data_ActorDetail $detail */
         $detail = null;
         $postalCode = '';
+        $city = '';
         $country = '';
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(
@@ -156,6 +160,7 @@ class UDB2Projector implements EventListenerInterface
                 $physicalAddress = $address->getPhysicalAddress();
                 if ($physicalAddress) {
                     $postalCode = $physicalAddress->getZip();
+                    $city = $physicalAddress->getCity();
                     $country = $physicalAddress->getCountry();
                 }
             }
@@ -169,6 +174,7 @@ class UDB2Projector implements EventListenerInterface
             $userId,
             $name,
             $postalCode,
+            $city,
             $country,
             $this->UDB2Domain,
             $creationDate

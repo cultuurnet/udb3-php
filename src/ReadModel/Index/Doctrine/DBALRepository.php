@@ -280,7 +280,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             ->where(
                 $expr->andX(
                     $expr->eq('entity_type', ':entity_type'),
-                    $expr->eq('city', ':zip'),
+                    $expr->eq('city', ':city'),
                     $expr->eq('country', ':country')
                 )
             );

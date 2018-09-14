@@ -74,6 +74,7 @@ class UDB2ProjectorTest extends PHPUnit_Framework_TestCase
                 self::USER_ID,
                 'GALLERY TRAEGHE exhibition Janine de Coninck \'BLACK AND WHITE\' 1 - 9 November 2014',
                 '8000',
+                'Brugge',
                 'BE',
                 Domain::specifyType('udb.be'),
                 new \DateTime(
@@ -129,6 +130,7 @@ class UDB2ProjectorTest extends PHPUnit_Framework_TestCase
                 self::USER_ID,
                 'CC Palethe',
                 '3900',
+                'Overpelt',
                 'BE',
                 Domain::specifyType('udb.be'),
                 new \DateTime(

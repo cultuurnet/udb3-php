@@ -94,6 +94,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '1adf21b4-711d-4e33-b9ef-c96843582a56',
                 'Algorave',
                 '9630',
+                'Zottegem',
                 'BE',
                 Domain::specifyType('omd.be'),
                 $this->anything()
@@ -148,6 +149,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '',
                 '',
                 '',
+                '',
                 Domain::specifyType('omd.be'),
                 $this->isInstanceOf(\DateTime::class)
             );
@@ -168,6 +170,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '1adf21b4-711d-4e33-b9ef-c96843582a56',
                 'Algorave',
                 '9630',
+                'Zottegem',
                 'BE',
                 Domain::specifyType('omd.be'),
                 $this->anything()

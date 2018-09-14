@@ -80,6 +80,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
             'bar',
             'Test event abc update',
             '3020',
+            'Herent',
             'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
@@ -92,6 +93,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
             'title' => 'Test event abc update',
             'created' => '100',
             'zip' => '3020',
+            'city' => 'Herent',
             'country' => 'BE',
         ] + (array) $expectedData[3];
 
@@ -115,6 +117,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
             'bar',
             'Test event abc update',
             '3020',
+            'Herent',
             'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
@@ -127,6 +130,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
                 'title' => 'Test event abc update',
                 'created' => '100',
                 'zip' => '3020',
+                'city' => 'Herent',
                 'country' => 'BE',
                 'owning_domain' => 'udb.be',
                 'entity_iri' => 'http://hello.world/something/blub',
@@ -152,6 +156,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
             'foo',
             'Test event xyz',
             '3020',
+            'Herent',
             'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@0')
@@ -165,6 +170,7 @@ class DBALRepositoryTest extends AbstractDBALTableTest
             'uid' => 'foo',
             'title' => 'Test event xyz',
             'zip' => '3020',
+            'city' => 'Herent',
             'country' => 'BE',
             'created' => 0,
             'updated' => 0,
@@ -208,6 +214,22 @@ class DBALRepositoryTest extends AbstractDBALTableTest
         $this->assertEquals(
             $expectedIds,
             $this->repository->findPlacesByPostalCode('3000', 'BE')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_find_places_by_city_name()
+    {
+        $expectedIds = [
+            'abcd',
+            '123',
+        ];
+
+        $this->assertEquals(
+            $expectedIds,
+            $this->repository->findPlacesByCity('Leuven', 'BE')
         );
     }
 

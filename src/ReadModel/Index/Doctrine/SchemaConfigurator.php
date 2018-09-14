@@ -57,6 +57,11 @@ class SchemaConfigurator implements SchemaConfiguratorInterface
             array('length' => 32)
         );
         $table->addColumn(
+            'city',
+            'string',
+            array('length' => 256)
+        );
+        $table->addColumn(
             'country',
             'string',
             array('length' => 2)

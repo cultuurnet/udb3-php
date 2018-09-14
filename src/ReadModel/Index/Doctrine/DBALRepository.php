@@ -61,6 +61,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        $city,
         $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
@@ -78,6 +79,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     ->set('uid', ':uid')
                     ->set('title', ':title')
                     ->set('zip', ':zip')
+                    ->set('city', ':city')
                     ->set('country', ':country')
                     ->set('owning_domain', ':owning_domain')
                     ->set('entity_iri', ':entity_iri');
@@ -92,6 +94,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     $userId,
                     $name,
                     $postalCode,
+                    $city,
                     $country,
                     $owningDomain,
                     $created
@@ -114,6 +117,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'uid' => ':uid',
                             'title' => ':title',
                             'zip' => ':zip',
+                            'city' => ':city',
                             'country' => ':country',
                             'created' => ':created',
                             'updated' => ':created',
@@ -127,6 +131,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     $userId,
                     $name,
                     $postalCode,
+                    $city,
                     $country,
                     $owningDomain,
                     $created
@@ -158,6 +163,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        $city,
         $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
@@ -165,6 +171,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $q->setParameter('uid', $userId);
         $q->setParameter('title', $name);
         $q->setParameter('zip', $postalCode);
+        $q->setParameter('city', $city);
         $q->setParameter('country', $country);
         $q->setParameter('owning_domain', $owningDomain->toNative());
         if ($created instanceof DateTimeInterface) {

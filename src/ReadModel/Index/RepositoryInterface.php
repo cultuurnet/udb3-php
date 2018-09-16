@@ -27,6 +27,7 @@ interface RepositoryInterface
         $userId,
         $name,
         $postalCode,
+        $city,
         $country,
         Domain $owningDomain,
         DateTimeInterface $created = null

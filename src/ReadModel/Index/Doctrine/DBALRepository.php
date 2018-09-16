@@ -271,7 +271,8 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         return $results->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    public function findPlacesByCity($city, $country) {
+    public function findPlacesByCity($city, $country)
+    {
         $q = $this->connection->createQueryBuilder();
         $expr = $q->expr();
 

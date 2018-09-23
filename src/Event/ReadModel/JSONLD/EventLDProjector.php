@@ -20,10 +20,10 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
-use CultuurNet\UDB3\Event\Events\ImageAdded;
-use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\ImageAdded;
+use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
@@ -47,7 +47,6 @@ use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\EventListener\EventSpecification;
@@ -58,9 +57,7 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\OrganizerService;
-use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
@@ -68,7 +65,6 @@ use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\StringLiteral\StringLiteral;
-use ValueObjects\Web\Url;
 
 /**
  * Projects state changes on Event entities to a JSON-LD read model in a
@@ -88,11 +84,6 @@ class EventLDProjector extends OfferLDProjector implements
     protected $placeService;
 
     /**
-     * @var EventServiceInterface
-     */
-    protected $eventService;
-
-    /**
      * @var IriOfferIdentifierFactoryInterface
      */
     protected $iriOfferIdentifierFactory;
@@ -105,27 +96,23 @@ class EventLDProjector extends OfferLDProjector implements
     /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
-     * @param EventServiceInterface $eventService
      * @param PlaceService $placeService
      * @param OrganizerService $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory
      * @param CdbXMLImporter $cdbXMLImporter
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
-     * @param EventSpecification $eventsNotTriggeringUpdateModified
      * @param string[] $basePriceTranslations
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
-        EventServiceInterface $eventService,
         PlaceService $placeService,
         OrganizerService $organizerService,
         SerializerInterface $mediaObjectSerializer,
         IriOfferIdentifierFactoryInterface $iriOfferIdentifierFactory,
         CdbXMLImporter $cdbXMLImporter,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventSpecification $eventsNotTriggeringUpdateModified,
         array $basePriceTranslations
     ) {
         parent::__construct(
@@ -134,12 +121,10 @@ class EventLDProjector extends OfferLDProjector implements
             $organizerService,
             $mediaObjectSerializer,
             $jsonDocumentMetaDataEnricher,
-            $eventsNotTriggeringUpdateModified,
             $basePriceTranslations
         );
 
         $this->placeService = $placeService;
-        $this->eventService = $eventService;
         $this->cdbXMLImporter = $cdbXMLImporter;
 
         $this->iriOfferIdentifierFactory = $iriOfferIdentifierFactory;
@@ -158,91 +143,6 @@ class EventLDProjector extends OfferLDProjector implements
         $offerLd->{'@context'} = '/contexts/event';
 
         return $document->withBody($offerLd);
-    }
-
-    protected function applyOrganizerProjectedToJSONLD(OrganizerProjectedToJSONLD $organizerProjectedToJSONLD)
-    {
-        $eventIds = $this->eventsOrganizedByOrganizer(
-            $organizerProjectedToJSONLD->getId()
-        );
-
-        $organizer = $this->organizerService->getEntity(
-            $organizerProjectedToJSONLD->getId()
-        );
-
-        $documents = [];
-
-        foreach ($eventIds as $eventId) {
-            $document = $this->loadDocumentFromRepositoryByItemId(
-                $eventId
-            );
-            $eventLD = $document->getBody();
-
-            $newEventLD = clone $eventLD;
-            $newEventLD->organizer = json_decode($organizer);
-
-            if ($newEventLD != $eventLD) {
-                $documents[] = $document->withBody($newEventLD);
-            }
-        }
-
-        return $documents;
-    }
-
-    protected function applyPlaceProjectedToJSONLD(
-        PlaceProjectedToJSONLD $placeProjectedToJSONLD
-    ) {
-        $identifier = $this->iriOfferIdentifierFactory->fromIri(
-            Url::fromNative($placeProjectedToJSONLD->getIri())
-        );
-
-        $eventsLocatedAtPlace = $this->eventsLocatedAtPlace(
-            $identifier->getId()
-        );
-
-        $placeJSONLD = $this->placeService->getEntity(
-            $identifier->getId()
-        );
-
-        $documents = [];
-
-        foreach ($eventsLocatedAtPlace as $eventId) {
-            $document = $this->loadDocumentFromRepositoryByItemId(
-                $eventId
-            );
-            $eventLD = $document->getBody();
-
-            $newEventLD = clone $eventLD;
-            $newEventLD->location = json_decode($placeJSONLD);
-
-            if ($newEventLD != $eventLD) {
-                $documents[] = $document->withBody($newEventLD);
-            }
-        }
-
-        return $documents;
-    }
-
-    /**
-     * @param string $organizerId
-     * @return string[]
-     */
-    protected function eventsOrganizedByOrganizer($organizerId)
-    {
-        return $this->eventService->eventsOrganizedByOrganizer(
-            $organizerId
-        );
-    }
-
-    /**
-     * @param string $placeId
-     * @return string[]
-     */
-    protected function eventsLocatedAtPlace($placeId)
-    {
-        return $this->eventService->eventsLocatedAtPlace(
-            $placeId
-        );
     }
 
     /**

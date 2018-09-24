@@ -10,6 +10,7 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
+use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Projector implements EventListenerInterface
@@ -54,7 +55,7 @@ class Projector implements EventListenerInterface
             }
 
             $this->permissionRepository->markOfferEditableByUser(
-                new StringLiteral($organizerImportedFromUDB2->getEventId()),
+                new StringLiteral($organizerImportedFromUDB2->getActorId()),
                 $ownerId
             );
         }
